@@ -214,6 +214,13 @@ function Dashboard() {
               <Printer className="size-4" />
               PDF
             </button>
+            <button
+              onClick={resetData}
+              className="hidden sm:inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium transition hover:bg-destructive/20 hover:text-destructive"
+              title="Lokale Änderungen zurücksetzen"
+            >
+              Reset
+            </button>
             <button className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary">
               <Bell className="size-4" />
               <span className="absolute right-2 top-2 size-2 rounded-full bg-destructive" />
