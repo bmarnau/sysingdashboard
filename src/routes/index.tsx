@@ -74,14 +74,53 @@ const projectStatusLabel: Record<ProjectStatus, string> = {
   abgeschlossen: "Fertig",
 };
 
+const STORAGE_KEY = "northbit-dashboard-v1";
+
+type PersistedState = {
+  tasks: Task[];
+  projects: Project[];
+  logs: TimeLog[];
+  weeklyHours: typeof dashboardData.weeklyHours;
+};
+
+function loadPersisted(): PersistedState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as PersistedState;
+  } catch {
+    return null;
+  }
+}
+
 function Dashboard() {
-  const [tasks, setTasks] = useState<Task[]>(dashboardData.tasks);
-  const [projects] = useState<Project[]>(dashboardData.projects);
-  const [logs, setLogs] = useState<TimeLog[]>(dashboardData.recentLogs);
-  const [weeklyHours, setWeeklyHours] = useState(dashboardData.weeklyHours);
+  const persisted = loadPersisted();
+  const [tasks, setTasks] = useState<Task[]>(persisted?.tasks ?? dashboardData.tasks);
+  const [projects] = useState<Project[]>(persisted?.projects ?? dashboardData.projects);
+  const [logs, setLogs] = useState<TimeLog[]>(persisted?.logs ?? dashboardData.recentLogs);
+  const [weeklyHours, setWeeklyHours] = useState(persisted?.weeklyHours ?? dashboardData.weeklyHours);
   const [filter, setFilter] = useState<"alle" | "offen" | "kritisch">("alle");
   const [showTask, setShowTask] = useState(false);
   const [showLog, setShowLog] = useState(false);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ tasks, projects, logs, weeklyHours }),
+      );
+    } catch {
+      /* ignore quota errors */
+    }
+  }, [tasks, projects, logs, weeklyHours]);
+
+  const resetData = () => {
+    window.localStorage.removeItem(STORAGE_KEY);
+    setTasks(dashboardData.tasks);
+    setLogs(dashboardData.recentLogs);
+    setWeeklyHours(dashboardData.weeklyHours);
+  };
 
   const engineer = dashboardData.engineer;
   const weeklyLogged = useMemo(
