@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -74,6 +74,26 @@ const projectStatusLabel: Record<ProjectStatus, string> = {
   abgeschlossen: "Fertig",
 };
 
+const STORAGE_KEY = "northbit-dashboard-v1";
+
+type PersistedState = {
+  tasks: Task[];
+  projects: Project[];
+  logs: TimeLog[];
+  weeklyHours: typeof dashboardData.weeklyHours;
+};
+
+function loadPersisted(): PersistedState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as PersistedState;
+  } catch {
+    return null;
+  }
+}
+
 function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>(dashboardData.tasks);
   const [projects] = useState<Project[]>(dashboardData.projects);
@@ -82,6 +102,37 @@ function Dashboard() {
   const [filter, setFilter] = useState<"alle" | "offen" | "kritisch">("alle");
   const [showTask, setShowTask] = useState(false);
   const [showLog, setShowLog] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Load persisted state after mount to avoid SSR hydration mismatch
+  useEffect(() => {
+    const p = loadPersisted();
+    if (p) {
+      if (p.tasks) setTasks(p.tasks);
+      if (p.logs) setLogs(p.logs);
+      if (p.weeklyHours) setWeeklyHours(p.weeklyHours);
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ tasks, projects, logs, weeklyHours }),
+      );
+    } catch {
+      /* ignore quota errors */
+    }
+  }, [hydrated, tasks, projects, logs, weeklyHours]);
+
+  const resetData = () => {
+    window.localStorage.removeItem(STORAGE_KEY);
+    setTasks(dashboardData.tasks);
+    setLogs(dashboardData.recentLogs);
+    setWeeklyHours(dashboardData.weeklyHours);
+  };
 
   const engineer = dashboardData.engineer;
   const weeklyLogged = useMemo(
@@ -162,6 +213,13 @@ function Dashboard() {
             >
               <Printer className="size-4" />
               PDF
+            </button>
+            <button
+              onClick={resetData}
+              className="hidden sm:inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium transition hover:bg-destructive/20 hover:text-destructive"
+              title="Lokale Änderungen zurücksetzen"
+            >
+              Reset
             </button>
             <button className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary">
               <Bell className="size-4" />
