@@ -148,7 +148,7 @@ function Dashboard() {
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ engineerState, tasks, projects, logs, weeklyHours }),
+        JSON.stringify({ engineer: engineerState, tasks, projects, logs, weeklyHours }),
       );
     } catch {
       /* ignore quota errors */
