@@ -638,6 +638,16 @@ function Dashboard() {
           }}
         />
       )}
+      {showEngineer && (
+        <EngineerDialog
+          engineer={engineer}
+          onClose={() => setShowEngineer(false)}
+          onSave={(e) => {
+            setEngineer(e);
+            setShowEngineer(false);
+          }}
+        />
+      )}
     </div>
   );
 }
