@@ -11,12 +11,14 @@ import {
   Printer,
   Search,
   Server,
+  Settings,
   Trash2,
   TrendingUp,
   Users,
 } from "lucide-react";
 import {
   dashboardData,
+  type Engineer,
   type Priority,
   type Project,
   type ProjectStatus,
