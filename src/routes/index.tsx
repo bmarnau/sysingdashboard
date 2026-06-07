@@ -126,7 +126,7 @@ function Dashboard() {
   const [hydrated, setHydrated] = useState(false);
   const [currentDateStr, setCurrentDateStr] = useState("");
   const [currentKW, setCurrentKW] = useState("");
-  const [engineerState, setEngineer] = useState<Engineer>(dashboardData.engineerState);
+  const [engineerState, setEngineer] = useState<Engineer>(dashboardData.engineer);
 
   // Load persisted state after mount to avoid SSR hydration mismatch
   useEffect(() => {
@@ -157,7 +157,7 @@ function Dashboard() {
 
   const resetData = () => {
     window.localStorage.removeItem(STORAGE_KEY);
-    setEngineer(dashboardData.engineerState);
+    setEngineer(dashboardData.engineer);
     setTasks(dashboardData.tasks);
     setLogs(dashboardData.recentLogs);
     setWeeklyHours(dashboardData.weeklyHours);
