@@ -94,6 +94,23 @@ function loadPersisted(): PersistedState | null {
   }
 }
 
+function getISOWeek(date: Date): number {
+  const tmp = new Date(date.getTime());
+  tmp.setHours(0, 0, 0, 0);
+  tmp.setDate(tmp.getDate() + 4 - (tmp.getDay() || 7));
+  const yearStart = new Date(tmp.getFullYear(), 0, 1);
+  return Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+}
+
+function formatGermanDateLong(date: Date): string {
+  return date.toLocaleDateString("de-DE", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>(dashboardData.tasks);
   const [projects] = useState<Project[]>(dashboardData.projects);
@@ -103,6 +120,8 @@ function Dashboard() {
   const [showTask, setShowTask] = useState(false);
   const [showLog, setShowLog] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [currentDateStr, setCurrentDateStr] = useState("");
+  const [currentKW, setCurrentKW] = useState("");
 
   // Load persisted state after mount to avoid SSR hydration mismatch
   useEffect(() => {
