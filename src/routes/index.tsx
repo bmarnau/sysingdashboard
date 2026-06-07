@@ -11,12 +11,14 @@ import {
   Printer,
   Search,
   Server,
+  Settings,
   Trash2,
   TrendingUp,
   Users,
 } from "lucide-react";
 import {
   dashboardData,
+  type Engineer,
   type Priority,
   type Project,
   type ProjectStatus,
@@ -77,6 +79,7 @@ const projectStatusLabel: Record<ProjectStatus, string> = {
 const STORAGE_KEY = "northbit-dashboard-v1";
 
 type PersistedState = {
+  engineer?: Engineer;
   tasks: Task[];
   projects: Project[];
   logs: TimeLog[];
@@ -119,14 +122,17 @@ function Dashboard() {
   const [filter, setFilter] = useState<"alle" | "offen" | "kritisch">("alle");
   const [showTask, setShowTask] = useState(false);
   const [showLog, setShowLog] = useState(false);
+  const [showEngineer, setShowEngineer] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [currentDateStr, setCurrentDateStr] = useState("");
   const [currentKW, setCurrentKW] = useState("");
+  const [engineer, setEngineer] = useState<Engineer>(dashboardData.engineer);
 
   // Load persisted state after mount to avoid SSR hydration mismatch
   useEffect(() => {
     const p = loadPersisted();
     if (p) {
+      if (p.engineer) setEngineer(p.engineer);
       if (p.tasks) setTasks(p.tasks);
       if (p.logs) setLogs(p.logs);
       if (p.weeklyHours) setWeeklyHours(p.weeklyHours);
@@ -142,21 +148,21 @@ function Dashboard() {
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ tasks, projects, logs, weeklyHours }),
+        JSON.stringify({ engineer, tasks, projects, logs, weeklyHours }),
       );
     } catch {
       /* ignore quota errors */
     }
-  }, [hydrated, tasks, projects, logs, weeklyHours]);
+  }, [hydrated, engineer, tasks, projects, logs, weeklyHours]);
 
   const resetData = () => {
     window.localStorage.removeItem(STORAGE_KEY);
+    setEngineer(dashboardData.engineer);
     setTasks(dashboardData.tasks);
     setLogs(dashboardData.recentLogs);
     setWeeklyHours(dashboardData.weeklyHours);
   };
 
-  const engineer = dashboardData.engineer;
   const weeklyLogged = useMemo(
     () => weeklyHours.reduce((s, d) => s + d.hours, 0),
     [weeklyHours],
@@ -247,7 +253,10 @@ function Dashboard() {
               <Bell className="size-4" />
               <span className="absolute right-2 top-2 size-2 rounded-full bg-destructive" />
             </button>
-            <div className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3">
+            <button
+              onClick={() => setShowEngineer(true)}
+              className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3 transition hover:bg-secondary"
+            >
               <div
                 className="grid size-8 place-items-center rounded-md font-mono text-sm font-bold text-primary-foreground"
                 style={{ background: "var(--gradient-primary)" }}
@@ -258,7 +267,7 @@ function Dashboard() {
                 <p className="text-sm font-semibold">{engineer.name}</p>
                 <p className="text-xs text-muted-foreground">{engineer.role}</p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </header>
@@ -629,6 +638,16 @@ function Dashboard() {
           }}
         />
       )}
+      {showEngineer && (
+        <EngineerDialog
+          engineer={engineer}
+          onClose={() => setShowEngineer(false)}
+          onSave={(e) => {
+            setEngineer(e);
+            setShowEngineer(false);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -888,6 +907,98 @@ function LogDialog({
           style={{ background: "var(--gradient-primary)" }}
         >
           Buchen
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+function EngineerDialog({
+  engineer,
+  onClose,
+  onSave,
+}: {
+  engineer: Engineer;
+  onClose: () => void;
+  onSave: (e: Engineer) => void;
+}) {
+  const [form, setForm] = useState({ ...engineer });
+  const valid = form.name.trim().length > 1 && form.role.trim().length > 1 && form.company.trim().length > 1;
+
+  const generateInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+
+  return (
+    <Modal title="Engineer-Profil bearbeiten" onClose={onClose}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Name
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.name}
+            onChange={(e) => {
+              const name = e.target.value;
+              setForm({ ...form, name, initials: generateInitials(name) });
+            }}
+            placeholder="Max Mustermann"
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Rolle
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+            placeholder="Senior Systems Engineer"
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Unternehmen
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.company}
+            onChange={(e) => setForm({ ...form, company: e.target.value })}
+            placeholder="NorthBit IT-Systemhaus GmbH"
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Initialen
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.initials}
+            onChange={(e) => setForm({ ...form, initials: e.target.value.toUpperCase().slice(0, 2) })}
+            placeholder="MM"
+            maxLength={2}
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Wochenziel (h)
+          <input
+            type="number"
+            min={1}
+            step={1}
+            className={`mt-1 ${inputCls}`}
+            value={form.weeklyTarget}
+            onChange={(e) => setForm({ ...form, weeklyTarget: Number(e.target.value) })}
+          />
+        </label>
+      </div>
+      <div className="mt-5 flex justify-end gap-2">
+        <button onClick={onClose} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
+          Abbrechen
+        </button>
+        <button
+          disabled={!valid}
+          onClick={() => onSave(form)}
+          className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
+          style={{ background: "var(--gradient-primary)" }}
+        >
+          Speichern
         </button>
       </div>
     </Modal>
