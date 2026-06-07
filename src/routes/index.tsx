@@ -131,6 +131,9 @@ function Dashboard() {
       if (p.logs) setLogs(p.logs);
       if (p.weeklyHours) setWeeklyHours(p.weeklyHours);
     }
+    const now = new Date();
+    setCurrentDateStr(now.toLocaleString("de-DE"));
+    setCurrentKW(`KW ${getISOWeek(now)} · ${formatGermanDateLong(now)}`);
     setHydrated(true);
   }, []);
 
