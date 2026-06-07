@@ -79,6 +79,7 @@ const projectStatusLabel: Record<ProjectStatus, string> = {
 const STORAGE_KEY = "northbit-dashboard-v1";
 
 type PersistedState = {
+  engineer?: Engineer;
   tasks: Task[];
   projects: Project[];
   logs: TimeLog[];
