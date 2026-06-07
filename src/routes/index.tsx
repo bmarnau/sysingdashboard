@@ -157,12 +157,12 @@ function Dashboard() {
 
   const resetData = () => {
     window.localStorage.removeItem(STORAGE_KEY);
+    setEngineer(dashboardData.engineer);
     setTasks(dashboardData.tasks);
     setLogs(dashboardData.recentLogs);
     setWeeklyHours(dashboardData.weeklyHours);
   };
 
-  
   const weeklyLogged = useMemo(
     () => weeklyHours.reduce((s, d) => s + d.hours, 0),
     [weeklyHours],
