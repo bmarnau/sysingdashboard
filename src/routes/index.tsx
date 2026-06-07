@@ -132,7 +132,7 @@ function Dashboard() {
   useEffect(() => {
     const p = loadPersisted();
     if (p) {
-      if (p.engineerState) setEngineer(p.engineerState);
+      if (p.engineer) setEngineer(p.engineer);
       if (p.tasks) setTasks(p.tasks);
       if (p.logs) setLogs(p.logs);
       if (p.weeklyHours) setWeeklyHours(p.weeklyHours);
