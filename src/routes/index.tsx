@@ -122,9 +122,11 @@ function Dashboard() {
   const [filter, setFilter] = useState<"alle" | "offen" | "kritisch">("alle");
   const [showTask, setShowTask] = useState(false);
   const [showLog, setShowLog] = useState(false);
+  const [showEngineer, setShowEngineer] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [currentDateStr, setCurrentDateStr] = useState("");
   const [currentKW, setCurrentKW] = useState("");
+  const [engineer, setEngineer] = useState<Engineer>(dashboardData.engineer);
 
   // Load persisted state after mount to avoid SSR hydration mismatch
   useEffect(() => {
