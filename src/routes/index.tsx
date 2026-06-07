@@ -94,6 +94,23 @@ function loadPersisted(): PersistedState | null {
   }
 }
 
+function getISOWeek(date: Date): number {
+  const tmp = new Date(date.getTime());
+  tmp.setHours(0, 0, 0, 0);
+  tmp.setDate(tmp.getDate() + 4 - (tmp.getDay() || 7));
+  const yearStart = new Date(tmp.getFullYear(), 0, 1);
+  return Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+}
+
+function formatGermanDateLong(date: Date): string {
+  return date.toLocaleDateString("de-DE", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>(dashboardData.tasks);
   const [projects] = useState<Project[]>(dashboardData.projects);
@@ -103,6 +120,8 @@ function Dashboard() {
   const [showTask, setShowTask] = useState(false);
   const [showLog, setShowLog] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [currentDateStr, setCurrentDateStr] = useState("");
+  const [currentKW, setCurrentKW] = useState("");
 
   // Load persisted state after mount to avoid SSR hydration mismatch
   useEffect(() => {
@@ -112,6 +131,9 @@ function Dashboard() {
       if (p.logs) setLogs(p.logs);
       if (p.weeklyHours) setWeeklyHours(p.weeklyHours);
     }
+    const now = new Date();
+    setCurrentDateStr(now.toLocaleString("de-DE"));
+    setCurrentKW(`KW ${getISOWeek(now)} · ${formatGermanDateLong(now)}`);
     setHydrated(true);
   }, []);
 
@@ -249,7 +271,7 @@ function Dashboard() {
             {engineer.name} · {engineer.role} · {engineer.company}
           </p>
           <p className="text-xs text-muted-foreground">
-            Stand: {new Date().toLocaleString("de-DE")}
+            Stand: {currentDateStr || "…"}
           </p>
         </div>
 
@@ -257,7 +279,7 @@ function Dashboard() {
         <section className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
-              KW 19 · Freitag, 8. Mai 2026
+              {currentKW || "…"}
             </p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
               Guten Morgen, {engineer.name.split(" ")[0]}.
