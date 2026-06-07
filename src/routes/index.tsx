@@ -279,7 +279,7 @@ function Dashboard() {
         <section className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
-              KW 19 · Freitag, 8. Mai 2026
+              {currentKW || "…"}
             </p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
               Guten Morgen, {engineer.name.split(" ")[0]}.
