@@ -162,7 +162,7 @@ function Dashboard() {
     setWeeklyHours(dashboardData.weeklyHours);
   };
 
-  const engineer = dashboardData.engineer;
+  
   const weeklyLogged = useMemo(
     () => weeklyHours.reduce((s, d) => s + d.hours, 0),
     [weeklyHours],
