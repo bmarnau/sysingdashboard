@@ -132,6 +132,7 @@ function Dashboard() {
   useEffect(() => {
     const p = loadPersisted();
     if (p) {
+      if (p.engineer) setEngineer(p.engineer);
       if (p.tasks) setTasks(p.tasks);
       if (p.logs) setLogs(p.logs);
       if (p.weeklyHours) setWeeklyHours(p.weeklyHours);
@@ -147,12 +148,12 @@ function Dashboard() {
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ tasks, projects, logs, weeklyHours }),
+        JSON.stringify({ engineer, tasks, projects, logs, weeklyHours }),
       );
     } catch {
       /* ignore quota errors */
     }
-  }, [hydrated, tasks, projects, logs, weeklyHours]);
+  }, [hydrated, engineer, tasks, projects, logs, weeklyHours]);
 
   const resetData = () => {
     window.localStorage.removeItem(STORAGE_KEY);
