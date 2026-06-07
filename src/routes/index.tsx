@@ -79,7 +79,7 @@ const projectStatusLabel: Record<ProjectStatus, string> = {
 const STORAGE_KEY = "northbit-dashboard-v1";
 
 type PersistedState = {
-  engineer?: Engineer;
+  engineerState?: Engineer;
   tasks: Task[];
   projects: Project[];
   logs: TimeLog[];
@@ -126,13 +126,13 @@ function Dashboard() {
   const [hydrated, setHydrated] = useState(false);
   const [currentDateStr, setCurrentDateStr] = useState("");
   const [currentKW, setCurrentKW] = useState("");
-  const [engineer, setEngineer] = useState<Engineer>(dashboardData.engineer);
+  const [engineerState, setEngineer] = useState<Engineer>(dashboardData.engineerState);
 
   // Load persisted state after mount to avoid SSR hydration mismatch
   useEffect(() => {
     const p = loadPersisted();
     if (p) {
-      if (p.engineer) setEngineer(p.engineer);
+      if (p.engineerState) setEngineer(p.engineerState);
       if (p.tasks) setTasks(p.tasks);
       if (p.logs) setLogs(p.logs);
       if (p.weeklyHours) setWeeklyHours(p.weeklyHours);
@@ -148,16 +148,16 @@ function Dashboard() {
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ engineer, tasks, projects, logs, weeklyHours }),
+        JSON.stringify({ engineerState, tasks, projects, logs, weeklyHours }),
       );
     } catch {
       /* ignore quota errors */
     }
-  }, [hydrated, engineer, tasks, projects, logs, weeklyHours]);
+  }, [hydrated, engineerState, tasks, projects, logs, weeklyHours]);
 
   const resetData = () => {
     window.localStorage.removeItem(STORAGE_KEY);
-    setEngineer(dashboardData.engineer);
+    setEngineer(dashboardData.engineerState);
     setTasks(dashboardData.tasks);
     setLogs(dashboardData.recentLogs);
     setWeeklyHours(dashboardData.weeklyHours);
@@ -261,11 +261,11 @@ function Dashboard() {
                 className="grid size-8 place-items-center rounded-md font-mono text-sm font-bold text-primary-foreground"
                 style={{ background: "var(--gradient-primary)" }}
               >
-                {engineer.initials}
+                {engineerState.initials}
               </div>
               <div className="hidden text-left leading-tight sm:block">
-                <p className="text-sm font-semibold">{engineer.name}</p>
-                <p className="text-xs text-muted-foreground">{engineer.role}</p>
+                <p className="text-sm font-semibold">{engineerState.name}</p>
+                <p className="text-xs text-muted-foreground">{engineerState.role}</p>
               </div>
             </button>
           </div>
@@ -277,7 +277,7 @@ function Dashboard() {
         <div className="print-only mb-6 border-b border-border pb-4">
           <h1 className="text-2xl font-bold">Engineer Aufwandsbericht</h1>
           <p className="text-sm">
-            {engineer.name} · {engineer.role} · {engineer.company}
+            {engineerState.name} · {engineerState.role} · {engineerState.company}
           </p>
           <p className="text-xs text-muted-foreground">
             Stand: {currentDateStr || "…"}
@@ -291,7 +291,7 @@ function Dashboard() {
               {currentKW || "…"}
             </p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-              Guten Morgen, {engineer.name.split(" ")[0]}.
+              Guten Morgen, {engineerState.name.split(" ")[0]}.
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
               {openTasks} offene Aufgaben · {activeProjects} aktive Projekte ·{" "}
@@ -327,8 +327,8 @@ function Dashboard() {
             icon={<Clock className="size-5" />}
             label="Aufwand diese Woche"
             value={`${weeklyLogged.toFixed(1)} h`}
-            sub={`Ziel ${engineer.weeklyTarget} h`}
-            progress={(weeklyLogged / engineer.weeklyTarget) * 100}
+            sub={`Ziel ${engineerState.weeklyTarget} h`}
+            progress={(weeklyLogged / engineerState.weeklyTarget) * 100}
           />
           <KpiCard
             icon={<TrendingUp className="size-5" />}
@@ -614,7 +614,7 @@ function Dashboard() {
             <Activity className="size-3.5 text-success" />
             <span>Alle Systeme operativ · Sync vor 2 Min.</span>
           </div>
-          <p className="font-mono">{engineer.company}</p>
+          <p className="font-mono">{engineerState.company}</p>
         </footer>
       </main>
 
@@ -640,7 +640,7 @@ function Dashboard() {
       )}
       {showEngineer && (
         <EngineerDialog
-          engineer={engineer}
+          engineerState={engineerState}
           onClose={() => setShowEngineer(false)}
           onSave={(e) => {
             setEngineer(e);
@@ -914,15 +914,15 @@ function LogDialog({
 }
 
 function EngineerDialog({
-  engineer,
+  engineerState,
   onClose,
   onSave,
 }: {
-  engineer: Engineer;
+  engineerState: Engineer;
   onClose: () => void;
   onSave: (e: Engineer) => void;
 }) {
-  const [form, setForm] = useState({ ...engineer });
+  const [form, setForm] = useState({ ...engineerState });
   const valid = form.name.trim().length > 1 && form.role.trim().length > 1 && form.company.trim().length > 1;
 
   const generateInitials = (name: string) =>
