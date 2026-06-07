@@ -271,7 +271,7 @@ function Dashboard() {
             {engineer.name} · {engineer.role} · {engineer.company}
           </p>
           <p className="text-xs text-muted-foreground">
-            Stand: {new Date().toLocaleString("de-DE")}
+            Stand: {currentDateStr || "…"}
           </p>
         </div>
 
