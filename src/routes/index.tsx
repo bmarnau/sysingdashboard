@@ -253,7 +253,10 @@ function Dashboard() {
               <Bell className="size-4" />
               <span className="absolute right-2 top-2 size-2 rounded-full bg-destructive" />
             </button>
-            <div className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3">
+            <button
+              onClick={() => setShowEngineer(true)}
+              className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3 transition hover:bg-secondary"
+            >
               <div
                 className="grid size-8 place-items-center rounded-md font-mono text-sm font-bold text-primary-foreground"
                 style={{ background: "var(--gradient-primary)" }}
@@ -264,7 +267,7 @@ function Dashboard() {
                 <p className="text-sm font-semibold">{engineer.name}</p>
                 <p className="text-xs text-muted-foreground">{engineer.role}</p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </header>
