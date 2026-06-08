@@ -303,7 +303,7 @@ function Dashboard() {
               onClick={() => setShowLog(true)}
               className="h-10 rounded-lg border border-border bg-secondary/40 px-4 text-sm font-medium transition hover:bg-secondary"
             >
-              Zeit erfassen
+              Tätigkeit erfassen
             </button>
             <button
               onClick={() => setShowTask(true)}
@@ -510,7 +510,7 @@ function Dashboard() {
 
             <Card>
               <div className="border-b border-border px-6 py-4">
-                <h2 className="text-lg font-semibold">Heutige Zeitbuchungen</h2>
+                <h2 className="text-lg font-semibold">Heutige Tätigkeiten</h2>
                 <p className="text-xs text-muted-foreground">
                   {logs.reduce((s, l) => s + l.duration, 0).toFixed(2)} h erfasst
                 </p>
@@ -869,7 +869,7 @@ function LogDialog({
   const valid = duration > 0 && taskTitle.trim().length > 1;
 
   return (
-    <Modal title="Zeit erfassen" onClose={onClose}>
+    <Modal title="Tätigkeit erfassen" onClose={onClose}>
       <div className="space-y-3">
         <label className="block text-xs font-medium">
           Aufgabe
