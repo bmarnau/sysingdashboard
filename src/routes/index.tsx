@@ -689,6 +689,14 @@ function Dashboard() {
             setShowEngineer(false);
           }}
         />
+      {showProject && (
+        <ProjectDialog
+          onClose={() => setShowProject(false)}
+          onSave={(p) => {
+            addProject(p);
+            setShowProject(false);
+          }}
+        />
       )}
     </div>
   );
