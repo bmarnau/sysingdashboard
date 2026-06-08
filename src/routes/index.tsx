@@ -137,6 +137,7 @@ function Dashboard() {
     if (p) {
       if (p.engineer) setEngineer(p.engineer);
       if (p.tasks) setTasks(p.tasks);
+      if (p.projects) setProjects(p.projects);
       if (p.logs) setLogs(p.logs);
       if (p.weeklyHours) setWeeklyHours(p.weeklyHours);
     }
