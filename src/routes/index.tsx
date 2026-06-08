@@ -203,6 +203,12 @@ function Dashboard() {
     setTasks((ts) => [{ ...t, id, spent: 0 }, ...ts]);
   };
 
+  const addProject = (p: Omit<Project, "id" | "spent" | "progress">) => {
+    const id = `P-${100 + projects.length}`;
+    setProjects((ps) => [{ ...p, id, spent: 0, progress: 0 }, ...ps]);
+  };
+
+
   const addLog = (entry: TimeLog) => {
     setLogs((l) => [entry, ...l]);
     const today = ["Mo", "Di", "Mi", "Do", "Fr"][new Date().getDay() - 1] ?? "Fr";
