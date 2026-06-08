@@ -117,12 +117,14 @@ function formatGermanDateLong(date: Date): string {
 
 function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>(dashboardData.tasks);
-  const [projects] = useState<Project[]>(dashboardData.projects);
+  const [projects, setProjects] = useState<Project[]>(dashboardData.projects);
   const [logs, setLogs] = useState<TimeLog[]>(dashboardData.recentLogs);
   const [weeklyHours, setWeeklyHours] = useState(dashboardData.weeklyHours);
   const [filter, setFilter] = useState<"alle" | "offen" | "kritisch">("alle");
   const [showTask, setShowTask] = useState(false);
   const [showLog, setShowLog] = useState(false);
+  const [showProject, setShowProject] = useState(false);
+  const [showNewMenu, setShowNewMenu] = useState(false);
   const [showEngineer, setShowEngineer] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [currentDateStr, setCurrentDateStr] = useState("");
