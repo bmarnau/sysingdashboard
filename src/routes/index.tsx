@@ -30,7 +30,7 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Engineer Console – NorthBit IT-Systemhaus" },
+      { title: `Engineer Console – ${dashboardData.engineer.company}` },
       {
         name: "description",
         content:
@@ -220,7 +220,7 @@ function Dashboard() {
               <Server className="size-5 text-primary-foreground" />
             </div>
             <div className="leading-tight">
-              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">NorthBit</p>
+              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">{engineerState.company}</p>
               <p className="text-sm font-semibold">Engineer Console</p>
             </div>
           </div>
