@@ -810,7 +810,7 @@ function TaskDialog({
   const valid = form.title.trim().length > 1 && form.ticket.trim().length > 1;
 
   return (
-    <Modal title="Neues Ticket anlegen" onClose={onClose}>
+    <Modal title="Neues Arbeitspaket anlegen" onClose={onClose}>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Titel
