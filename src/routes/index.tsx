@@ -315,13 +315,45 @@ function Dashboard() {
             >
               Tätigkeit erfassen
             </button>
-            <button
-              onClick={() => setShowTask(true)}
-              className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
-              style={{ background: "var(--gradient-primary)" }}
-            >
-              <Plus className="size-4" /> Neues Ticket
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowNewMenu((v) => !v)}
+                className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
+                style={{ background: "var(--gradient-primary)" }}
+              >
+                <Plus className="size-4" /> Neu
+                <ChevronDown className="size-4 opacity-80" />
+              </button>
+              {showNewMenu && (
+                <>
+                  <button
+                    aria-label="Menü schließen"
+                    className="fixed inset-0 z-30 cursor-default"
+                    onClick={() => setShowNewMenu(false)}
+                  />
+                  <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
+                    <button
+                      onClick={() => { setShowNewMenu(false); setShowLog(true); }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Clock className="size-4 opacity-70" /> Neue Tätigkeit
+                    </button>
+                    <button
+                      onClick={() => { setShowNewMenu(false); setShowTask(true); }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <CheckCircle2 className="size-4 opacity-70" /> Neues Arbeitspaket
+                    </button>
+                    <button
+                      onClick={() => { setShowNewMenu(false); setShowProject(true); }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <FolderKanban className="size-4 opacity-70" /> Neues Projekt
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
             <button
               onClick={() => window.print()}
               className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-4 text-sm font-medium transition hover:bg-secondary sm:hidden"
