@@ -34,7 +34,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Aufgaben, Projekte und Aufwände eines Systems Engineers – mit Eingabe & PDF-Druckausgabe.",
+          "Arbeitspakete, Projekte und Aufwände eines Systems Engineers – mit Eingabe & PDF-Druckausgabe.",
       },
     ],
   }),
@@ -294,7 +294,7 @@ function Dashboard() {
               Guten Morgen, {engineerState.name.split(" ")[0]}.
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {openTasks} offene Aufgaben · {activeProjects} aktive Projekte ·{" "}
+              {openTasks} offene Arbeitspakete · {activeProjects} aktive Projekte ·{" "}
               <span className="text-warning">{criticalTasks} kritisch</span>
             </p>
           </div>
@@ -360,7 +360,7 @@ function Dashboard() {
             <Card>
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
                 <div>
-                  <h2 className="text-lg font-semibold">Meine Aufgaben</h2>
+                  <h2 className="text-lg font-semibold">Meine Arbeitspakete</h2>
                   <p className="text-xs text-muted-foreground">
                     Aktuelle Tickets & Changes · inline editierbar
                   </p>
@@ -457,7 +457,7 @@ function Dashboard() {
                 })}
                 {filteredTasks.length === 0 && (
                   <p className="px-6 py-10 text-center text-sm text-muted-foreground">
-                    Keine Aufgaben in dieser Ansicht.
+                    Keine Arbeitspakete in dieser Ansicht.
                   </p>
                 )}
               </div>
@@ -872,7 +872,7 @@ function LogDialog({
     <Modal title="Tätigkeit erfassen" onClose={onClose}>
       <div className="space-y-3">
         <label className="block text-xs font-medium">
-          Aufgabe
+          Arbeitspaket
           <select className={`mt-1 ${inputCls}`} value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)}>
             {tasks.map((t) => (
               <option key={t.id} value={t.title} className="bg-background">
