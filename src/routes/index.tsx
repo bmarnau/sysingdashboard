@@ -689,6 +689,7 @@ function Dashboard() {
             setShowEngineer(false);
           }}
         />
+      )}
       {showProject && (
         <ProjectDialog
           onClose={() => setShowProject(false)}
