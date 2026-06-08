@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Clock,
   FolderKanban,
+  ChevronDown,
   Plus,
   Printer,
   Search,
@@ -116,12 +117,14 @@ function formatGermanDateLong(date: Date): string {
 
 function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>(dashboardData.tasks);
-  const [projects] = useState<Project[]>(dashboardData.projects);
+  const [projects, setProjects] = useState<Project[]>(dashboardData.projects);
   const [logs, setLogs] = useState<TimeLog[]>(dashboardData.recentLogs);
   const [weeklyHours, setWeeklyHours] = useState(dashboardData.weeklyHours);
   const [filter, setFilter] = useState<"alle" | "offen" | "kritisch">("alle");
   const [showTask, setShowTask] = useState(false);
   const [showLog, setShowLog] = useState(false);
+  const [showProject, setShowProject] = useState(false);
+  const [showNewMenu, setShowNewMenu] = useState(false);
   const [showEngineer, setShowEngineer] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [currentDateStr, setCurrentDateStr] = useState("");
@@ -134,6 +137,7 @@ function Dashboard() {
     if (p) {
       if (p.engineer) setEngineer(p.engineer);
       if (p.tasks) setTasks(p.tasks);
+      if (p.projects) setProjects(p.projects);
       if (p.logs) setLogs(p.logs);
       if (p.weeklyHours) setWeeklyHours(p.weeklyHours);
     }
@@ -198,6 +202,12 @@ function Dashboard() {
     const id = `T-${2049 + tasks.length}`;
     setTasks((ts) => [{ ...t, id, spent: 0 }, ...ts]);
   };
+
+  const addProject = (p: Omit<Project, "id" | "spent" | "progress">) => {
+    const id = `P-${100 + projects.length}`;
+    setProjects((ps) => [{ ...p, id, spent: 0, progress: 0 }, ...ps]);
+  };
+
 
   const addLog = (entry: TimeLog) => {
     setLogs((l) => [entry, ...l]);
@@ -305,13 +315,45 @@ function Dashboard() {
             >
               Tätigkeit erfassen
             </button>
-            <button
-              onClick={() => setShowTask(true)}
-              className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
-              style={{ background: "var(--gradient-primary)" }}
-            >
-              <Plus className="size-4" /> Neues Ticket
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowNewMenu((v) => !v)}
+                className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
+                style={{ background: "var(--gradient-primary)" }}
+              >
+                <Plus className="size-4" /> Neu
+                <ChevronDown className="size-4 opacity-80" />
+              </button>
+              {showNewMenu && (
+                <>
+                  <button
+                    aria-label="Menü schließen"
+                    className="fixed inset-0 z-30 cursor-default"
+                    onClick={() => setShowNewMenu(false)}
+                  />
+                  <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
+                    <button
+                      onClick={() => { setShowNewMenu(false); setShowLog(true); }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Clock className="size-4 opacity-70" /> Neue Tätigkeit
+                    </button>
+                    <button
+                      onClick={() => { setShowNewMenu(false); setShowTask(true); }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <CheckCircle2 className="size-4 opacity-70" /> Neues Arbeitspaket
+                    </button>
+                    <button
+                      onClick={() => { setShowNewMenu(false); setShowProject(true); }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <FolderKanban className="size-4 opacity-70" /> Neues Projekt
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
             <button
               onClick={() => window.print()}
               className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-4 text-sm font-medium transition hover:bg-secondary sm:hidden"
@@ -648,6 +690,15 @@ function Dashboard() {
           }}
         />
       )}
+      {showProject && (
+        <ProjectDialog
+          onClose={() => setShowProject(false)}
+          onSave={(p) => {
+            addProject(p);
+            setShowProject(false);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -759,7 +810,7 @@ function TaskDialog({
   const valid = form.title.trim().length > 1 && form.ticket.trim().length > 1;
 
   return (
-    <Modal title="Neues Ticket anlegen" onClose={onClose}>
+    <Modal title="Neues Arbeitspaket anlegen" onClose={onClose}>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Titel
@@ -1004,3 +1055,114 @@ function EngineerDialog({
     </Modal>
   );
 }
+
+function ProjectDialog({
+  onClose,
+  onSave,
+}: {
+  onClose: () => void;
+  onSave: (p: Omit<Project, "id" | "spent" | "progress">) => void;
+}) {
+  const [form, setForm] = useState({
+    name: "",
+    client: "",
+    budget: 40,
+    status: "on_track" as ProjectStatus,
+    deadline: new Date().toISOString().slice(0, 10),
+    team: "",
+  });
+  const valid = form.name.trim().length > 1 && form.client.trim().length > 1;
+
+  return (
+    <Modal title="Neues Projekt anlegen" onClose={onClose}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Projektname
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="z. B. Datacenter Migration"
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Kunde
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.client}
+            onChange={(e) => setForm({ ...form, client: e.target.value })}
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Deadline
+          <input
+            type="date"
+            className={`mt-1 ${inputCls}`}
+            value={form.deadline}
+            onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Budget (h)
+          <input
+            type="number"
+            min="1"
+            step="1"
+            className={`mt-1 ${inputCls}`}
+            value={form.budget}
+            onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })}
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Status
+          <select
+            className={`mt-1 ${inputCls}`}
+            value={form.status}
+            onChange={(e) => setForm({ ...form, status: e.target.value as ProjectStatus })}
+          >
+            {(["on_track", "at_risk", "delayed", "abgeschlossen"] as ProjectStatus[]).map((s) => (
+              <option key={s} value={s} className="bg-background">
+                {s}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Team (Komma-getrennt)
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.team}
+            onChange={(e) => setForm({ ...form, team: e.target.value })}
+            placeholder="AB, CD, EF"
+          />
+        </label>
+      </div>
+      <div className="mt-5 flex justify-end gap-2">
+        <button onClick={onClose} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
+          Abbrechen
+        </button>
+        <button
+          disabled={!valid}
+          onClick={() =>
+            onSave({
+              name: form.name,
+              client: form.client,
+              budget: form.budget,
+              status: form.status,
+              deadline: form.deadline,
+              team: form.team
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean),
+            })
+          }
+          className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
+          style={{ background: "var(--gradient-primary)" }}
+        >
+          Anlegen
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
