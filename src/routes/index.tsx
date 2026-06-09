@@ -179,18 +179,28 @@ function Dashboard() {
   // Load persisted state after mount to avoid SSR hydration mismatch
   useEffect(() => {
     const p = loadPersisted();
+    const baseTasks = p?.tasks ?? dashboardData.tasks;
+    const baseLogs = p?.logs ?? dashboardData.recentLogs;
     if (p) {
       if (p.engineer) setEngineer(p.engineer);
-      if (p.tasks) setTasks(p.tasks);
       if (p.projects) setProjects(p.projects);
-      if (p.logs) setLogs(p.logs);
-      if (p.weeklyHours) setWeeklyHours(p.weeklyHours);
+      setLogs(baseLogs);
     }
     const now = new Date();
+    // Recompute everything from logs on each start
+    setTasks(computeTaskSpent(baseTasks, baseLogs));
+    setWeeklyHours(computeWeeklyHours(baseLogs, now));
     setCurrentDateStr(now.toLocaleString("de-DE"));
     setCurrentKW(`KW ${getISOWeek(now)} · ${formatGermanDateLong(now)}`);
     setHydrated(true);
   }, []);
+
+  // Recompute derived state (weekly chart, task spent) whenever logs change
+  useEffect(() => {
+    if (!hydrated) return;
+    setWeeklyHours(computeWeeklyHours(logs, new Date()));
+    setTasks((ts) => computeTaskSpent(ts, logs));
+  }, [logs, hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -207,10 +217,11 @@ function Dashboard() {
   const resetData = () => {
     window.localStorage.removeItem(STORAGE_KEY);
     setEngineer(dashboardData.engineer);
-    setTasks(dashboardData.tasks);
+    setTasks(computeTaskSpent(dashboardData.tasks, dashboardData.recentLogs));
     setLogs(dashboardData.recentLogs);
-    setWeeklyHours(dashboardData.weeklyHours);
+    setWeeklyHours(computeWeeklyHours(dashboardData.recentLogs, new Date()));
   };
+
 
   const weeklyLogged = useMemo(
     () => weeklyHours.reduce((s, d) => s + d.hours, 0),
