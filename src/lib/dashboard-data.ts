@@ -14,7 +14,7 @@ export interface Task {
   due: string;
   estimated: number;
   spent: number;
-  ticket: string;
+  activity: string;
   description?: string;
   assignee?: string;
   tags?: string[];
