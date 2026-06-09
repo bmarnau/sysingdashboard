@@ -238,7 +238,7 @@ function Dashboard() {
           <div className="relative ml-2 hidden flex-1 max-w-md md:block">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
-              placeholder="Tickets, Kunden, Projekte suchen…"
+              placeholder="Tätigkeiten, Kunden, Projekte suchen…"
               className="h-10 w-full rounded-lg border border-input bg-secondary/40 pl-9 pr-3 text-sm outline-none transition focus:border-ring focus:bg-secondary/70"
             />
           </div>
