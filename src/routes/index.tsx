@@ -806,6 +806,9 @@ function TaskDialog({
     due: new Date().toISOString().slice(0, 10),
     estimated: 4,
     ticket: "",
+    assignee: "",
+    tags: "",
+    description: "",
   });
   const valid = form.title.trim().length > 1 && form.ticket.trim().length > 1;
 
@@ -862,6 +865,20 @@ function TaskDialog({
           </select>
         </label>
         <label className="text-xs font-medium">
+          Status
+          <select
+            className={`mt-1 ${inputCls}`}
+            value={form.status}
+            onChange={(e) => setForm({ ...form, status: e.target.value as TaskStatus })}
+          >
+            {(["offen", "in_arbeit", "wartend", "erledigt"] as TaskStatus[]).map((s) => (
+              <option key={s} value={s} className="bg-background">
+                {s}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-xs font-medium">
           Priorität
           <select
             className={`mt-1 ${inputCls}`}
@@ -886,14 +903,51 @@ function TaskDialog({
             onChange={(e) => setForm({ ...form, estimated: Number(e.target.value) })}
           />
         </label>
+        <label className="text-xs font-medium">
+          Zuständig
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.assignee}
+            onChange={(e) => setForm({ ...form, assignee: e.target.value })}
+            placeholder="z. B. Max Mustermann"
+          />
+        </label>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Tags (Komma-getrennt)
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.tags}
+            onChange={(e) => setForm({ ...form, tags: e.target.value })}
+            placeholder="firewall, security, review"
+          />
+        </label>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Beschreibung
+          <textarea
+            rows={3}
+            className={`mt-1 ${inputCls}`}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="Kontext, Akzeptanzkriterien, Links …"
+          />
+        </label>
       </div>
+
       <div className="mt-5 flex justify-end gap-2">
         <button onClick={onClose} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
           Abbrechen
         </button>
         <button
           disabled={!valid}
-          onClick={() => onSave(form)}
+          onClick={() =>
+            onSave({
+              ...form,
+              tags: form.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean),
+            })
+          }
           className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
           style={{ background: "var(--gradient-primary)" }}
         >
@@ -913,16 +967,22 @@ function LogDialog({
   onClose: () => void;
   onSave: (l: TimeLog) => void;
 }) {
+  const now = new Date();
   const [taskTitle, setTaskTitle] = useState(tasks[0]?.title ?? "");
   const [duration, setDuration] = useState(1);
+  const [date, setDate] = useState(now.toISOString().slice(0, 10));
+  const [time, setTime] = useState(
+    now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }),
+  );
+  const [billable, setBillable] = useState(true);
+  const [note, setNote] = useState("");
   const client = tasks.find((t) => t.title === taskTitle)?.client ?? "";
-  const time = new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-  const valid = duration > 0 && taskTitle.trim().length > 1;
+  const valid = duration > 0 && taskTitle.trim().length > 1 && time.trim().length > 0;
 
   return (
     <Modal title="Tätigkeit erfassen" onClose={onClose}>
-      <div className="space-y-3">
-        <label className="block text-xs font-medium">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="col-span-1 sm:col-span-2 block text-xs font-medium">
           Arbeitspaket
           <select className={`mt-1 ${inputCls}`} value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)}>
             {tasks.map((t) => (
@@ -931,6 +991,24 @@ function LogDialog({
               </option>
             ))}
           </select>
+        </label>
+        <label className="block text-xs font-medium">
+          Datum
+          <input
+            type="date"
+            className={`mt-1 ${inputCls}`}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </label>
+        <label className="block text-xs font-medium">
+          Uhrzeit
+          <input
+            type="time"
+            className={`mt-1 ${inputCls}`}
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+          />
         </label>
         <label className="block text-xs font-medium">
           Dauer (h)
@@ -943,8 +1021,27 @@ function LogDialog({
             onChange={(e) => setDuration(Number(e.target.value))}
           />
         </label>
-        <p className="text-xs text-muted-foreground">
-          Buchung um {time} · Kunde: <span className="text-foreground">{client || "—"}</span>
+        <label className="flex items-center gap-2 text-xs font-medium pt-5">
+          <input
+            type="checkbox"
+            checked={billable}
+            onChange={(e) => setBillable(e.target.checked)}
+            className="h-4 w-4 accent-primary"
+          />
+          Abrechenbar
+        </label>
+        <label className="col-span-1 sm:col-span-2 block text-xs font-medium">
+          Notiz
+          <textarea
+            rows={3}
+            className={`mt-1 ${inputCls}`}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Was wurde gemacht? (optional)"
+          />
+        </label>
+        <p className="col-span-1 sm:col-span-2 text-xs text-muted-foreground">
+          Kunde: <span className="text-foreground">{client || "—"}</span>
         </p>
       </div>
       <div className="mt-5 flex justify-end gap-2">
@@ -953,7 +1050,7 @@ function LogDialog({
         </button>
         <button
           disabled={!valid}
-          onClick={() => onSave({ time, task: taskTitle, duration, client })}
+          onClick={() => onSave({ time, date, task: taskTitle, duration, client, billable, note })}
           className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
           style={{ background: "var(--gradient-primary)" }}
         >
@@ -1063,15 +1160,22 @@ function ProjectDialog({
   onClose: () => void;
   onSave: (p: Omit<Project, "id" | "spent" | "progress">) => void;
 }) {
+  const today = new Date().toISOString().slice(0, 10);
   const [form, setForm] = useState({
     name: "",
     client: "",
     budget: 40,
     status: "on_track" as ProjectStatus,
-    deadline: new Date().toISOString().slice(0, 10),
+    start: today,
+    deadline: today,
     team: "",
+    lead: "",
+    description: "",
   });
-  const valid = form.name.trim().length > 1 && form.client.trim().length > 1;
+  const valid =
+    form.name.trim().length > 1 &&
+    form.client.trim().length > 1 &&
+    form.deadline >= form.start;
 
   return (
     <Modal title="Neues Projekt anlegen" onClose={onClose}>
@@ -1091,6 +1195,24 @@ function ProjectDialog({
             className={`mt-1 ${inputCls}`}
             value={form.client}
             onChange={(e) => setForm({ ...form, client: e.target.value })}
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Projektleitung
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.lead}
+            onChange={(e) => setForm({ ...form, lead: e.target.value })}
+            placeholder="z. B. Max Mustermann"
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Start
+          <input
+            type="date"
+            className={`mt-1 ${inputCls}`}
+            value={form.start}
+            onChange={(e) => setForm({ ...form, start: e.target.value })}
           />
         </label>
         <label className="text-xs font-medium">
@@ -1136,6 +1258,16 @@ function ProjectDialog({
             placeholder="AB, CD, EF"
           />
         </label>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Beschreibung
+          <textarea
+            rows={3}
+            className={`mt-1 ${inputCls}`}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="Ziele, Scope, Anmerkungen …"
+          />
+        </label>
       </div>
       <div className="mt-5 flex justify-end gap-2">
         <button onClick={onClose} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
@@ -1149,7 +1281,10 @@ function ProjectDialog({
               client: form.client,
               budget: form.budget,
               status: form.status,
+              start: form.start,
               deadline: form.deadline,
+              lead: form.lead,
+              description: form.description,
               team: form.team
                 .split(",")
                 .map((t) => t.trim())

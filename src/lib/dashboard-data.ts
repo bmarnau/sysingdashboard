@@ -15,6 +15,9 @@ export interface Task {
   estimated: number;
   spent: number;
   ticket: string;
+  description?: string;
+  assignee?: string;
+  tags?: string[];
 }
 
 export interface Project {
@@ -27,6 +30,9 @@ export interface Project {
   status: ProjectStatus;
   team: string[];
   deadline: string;
+  description?: string;
+  start?: string;
+  lead?: string;
 }
 
 export interface TimeLog {
@@ -34,6 +40,9 @@ export interface TimeLog {
   task: string;
   duration: number;
   client: string;
+  date?: string;
+  billable?: boolean;
+  note?: string;
 }
 
 export interface WeeklyHour {
