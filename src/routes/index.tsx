@@ -967,16 +967,22 @@ function LogDialog({
   onClose: () => void;
   onSave: (l: TimeLog) => void;
 }) {
+  const now = new Date();
   const [taskTitle, setTaskTitle] = useState(tasks[0]?.title ?? "");
   const [duration, setDuration] = useState(1);
+  const [date, setDate] = useState(now.toISOString().slice(0, 10));
+  const [time, setTime] = useState(
+    now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }),
+  );
+  const [billable, setBillable] = useState(true);
+  const [note, setNote] = useState("");
   const client = tasks.find((t) => t.title === taskTitle)?.client ?? "";
-  const time = new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-  const valid = duration > 0 && taskTitle.trim().length > 1;
+  const valid = duration > 0 && taskTitle.trim().length > 1 && time.trim().length > 0;
 
   return (
     <Modal title="Tätigkeit erfassen" onClose={onClose}>
-      <div className="space-y-3">
-        <label className="block text-xs font-medium">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="col-span-1 sm:col-span-2 block text-xs font-medium">
           Arbeitspaket
           <select className={`mt-1 ${inputCls}`} value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)}>
             {tasks.map((t) => (
@@ -985,6 +991,24 @@ function LogDialog({
               </option>
             ))}
           </select>
+        </label>
+        <label className="block text-xs font-medium">
+          Datum
+          <input
+            type="date"
+            className={`mt-1 ${inputCls}`}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </label>
+        <label className="block text-xs font-medium">
+          Uhrzeit
+          <input
+            type="time"
+            className={`mt-1 ${inputCls}`}
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+          />
         </label>
         <label className="block text-xs font-medium">
           Dauer (h)
@@ -997,8 +1021,27 @@ function LogDialog({
             onChange={(e) => setDuration(Number(e.target.value))}
           />
         </label>
-        <p className="text-xs text-muted-foreground">
-          Buchung um {time} · Kunde: <span className="text-foreground">{client || "—"}</span>
+        <label className="flex items-center gap-2 text-xs font-medium pt-5">
+          <input
+            type="checkbox"
+            checked={billable}
+            onChange={(e) => setBillable(e.target.checked)}
+            className="h-4 w-4 accent-primary"
+          />
+          Abrechenbar
+        </label>
+        <label className="col-span-1 sm:col-span-2 block text-xs font-medium">
+          Notiz
+          <textarea
+            rows={3}
+            className={`mt-1 ${inputCls}`}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Was wurde gemacht? (optional)"
+          />
+        </label>
+        <p className="col-span-1 sm:col-span-2 text-xs text-muted-foreground">
+          Kunde: <span className="text-foreground">{client || "—"}</span>
         </p>
       </div>
       <div className="mt-5 flex justify-end gap-2">
@@ -1007,7 +1050,7 @@ function LogDialog({
         </button>
         <button
           disabled={!valid}
-          onClick={() => onSave({ time, task: taskTitle, duration, client })}
+          onClick={() => onSave({ time, date, task: taskTitle, duration, client, billable, note })}
           className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
           style={{ background: "var(--gradient-primary)" }}
         >
