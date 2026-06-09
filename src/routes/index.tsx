@@ -238,7 +238,7 @@ function Dashboard() {
           <div className="relative ml-2 hidden flex-1 max-w-md md:block">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
-              placeholder="Tickets, Kunden, Projekte suchen…"
+              placeholder="Tätigkeiten, Kunden, Projekte suchen…"
               className="h-10 w-full rounded-lg border border-input bg-secondary/40 pl-9 pr-3 text-sm outline-none transition focus:border-ring focus:bg-secondary/70"
             />
           </div>
@@ -402,10 +402,10 @@ function Dashboard() {
             <Card>
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
                 <div>
-                  <h2 className="text-lg font-semibold">Meine Arbeitspakete</h2>
-                  <p className="text-xs text-muted-foreground">
-                    Aktuelle Tickets & Changes · inline editierbar
-                  </p>
+                   <h2 className="text-lg font-semibold">Meine Arbeitspakete</h2>
+                   <p className="text-xs text-muted-foreground">
+                     Aktuelle Tätigkeiten & Changes · inline editierbar
+                   </p>
                 </div>
                 <div className="flex gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-xs no-print">
                   {(["alle", "offen", "kritisch"] as const).map((f) => (
@@ -437,7 +437,7 @@ function Dashboard() {
                           <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${priorityStyles[t.priority]}`}>
                             {t.priority.toUpperCase()}
                           </span>
-                          <span className="font-mono text-xs text-muted-foreground">{t.ticket}</span>
+                          <span className="font-mono text-xs text-muted-foreground">{t.activity}</span>
                         </div>
                         <p className="mt-1.5 font-medium leading-snug">{t.title}</p>
                         <p className="mt-0.5 text-xs text-muted-foreground">
@@ -805,12 +805,12 @@ function TaskDialog({
     priority: "mittel" as Priority,
     due: new Date().toISOString().slice(0, 10),
     estimated: 4,
-    ticket: "",
+    activity: "",
     assignee: "",
     tags: "",
     description: "",
   });
-  const valid = form.title.trim().length > 1 && form.ticket.trim().length > 1;
+  const valid = form.title.trim().length > 1 && form.activity.trim().length > 1;
 
   return (
     <Modal title="Neues Arbeitspaket anlegen" onClose={onClose}>
@@ -825,11 +825,11 @@ function TaskDialog({
           />
         </label>
         <label className="text-xs font-medium">
-          Ticket-ID
+          Tätigkeit-ID
           <input
             className={`mt-1 ${inputCls}`}
-            value={form.ticket}
-            onChange={(e) => setForm({ ...form, ticket: e.target.value })}
+            value={form.activity}
+            onChange={(e) => setForm({ ...form, activity: e.target.value })}
             placeholder="INC-12345"
           />
         </label>
