@@ -1160,15 +1160,22 @@ function ProjectDialog({
   onClose: () => void;
   onSave: (p: Omit<Project, "id" | "spent" | "progress">) => void;
 }) {
+  const today = new Date().toISOString().slice(0, 10);
   const [form, setForm] = useState({
     name: "",
     client: "",
     budget: 40,
     status: "on_track" as ProjectStatus,
-    deadline: new Date().toISOString().slice(0, 10),
+    start: today,
+    deadline: today,
     team: "",
+    lead: "",
+    description: "",
   });
-  const valid = form.name.trim().length > 1 && form.client.trim().length > 1;
+  const valid =
+    form.name.trim().length > 1 &&
+    form.client.trim().length > 1 &&
+    form.deadline >= form.start;
 
   return (
     <Modal title="Neues Projekt anlegen" onClose={onClose}>
@@ -1188,6 +1195,24 @@ function ProjectDialog({
             className={`mt-1 ${inputCls}`}
             value={form.client}
             onChange={(e) => setForm({ ...form, client: e.target.value })}
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Projektleitung
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.lead}
+            onChange={(e) => setForm({ ...form, lead: e.target.value })}
+            placeholder="z. B. Max Mustermann"
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Start
+          <input
+            type="date"
+            className={`mt-1 ${inputCls}`}
+            value={form.start}
+            onChange={(e) => setForm({ ...form, start: e.target.value })}
           />
         </label>
         <label className="text-xs font-medium">
@@ -1233,6 +1258,16 @@ function ProjectDialog({
             placeholder="AB, CD, EF"
           />
         </label>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Beschreibung
+          <textarea
+            rows={3}
+            className={`mt-1 ${inputCls}`}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="Ziele, Scope, Anmerkungen …"
+          />
+        </label>
       </div>
       <div className="mt-5 flex justify-end gap-2">
         <button onClick={onClose} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
@@ -1246,7 +1281,10 @@ function ProjectDialog({
               client: form.client,
               budget: form.budget,
               status: form.status,
+              start: form.start,
               deadline: form.deadline,
+              lead: form.lead,
+              description: form.description,
               team: form.team
                 .split(",")
                 .map((t) => t.trim())
