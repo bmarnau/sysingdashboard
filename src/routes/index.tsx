@@ -402,10 +402,10 @@ function Dashboard() {
             <Card>
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
                 <div>
-                  <h2 className="text-lg font-semibold">Meine Arbeitspakete</h2>
-                  <p className="text-xs text-muted-foreground">
-                    Aktuelle Tickets & Changes · inline editierbar
-                  </p>
+                   <h2 className="text-lg font-semibold">Meine Arbeitspakete</h2>
+                   <p className="text-xs text-muted-foreground">
+                     Aktuelle Tätigkeiten & Changes · inline editierbar
+                   </p>
                 </div>
                 <div className="flex gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-xs no-print">
                   {(["alle", "offen", "kritisch"] as const).map((f) => (
