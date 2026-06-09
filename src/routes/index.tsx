@@ -266,16 +266,10 @@ function Dashboard() {
 
 
   const addLog = (entry: TimeLog) => {
+    // weeklyHours + task.spent recompute via effect on `logs`
     setLogs((l) => [entry, ...l]);
-    const today = ["Mo", "Di", "Mi", "Do", "Fr"][new Date().getDay() - 1] ?? "Fr";
-    setWeeklyHours((ws) =>
-      ws.map((w) =>
-        w.day === today
-          ? { ...w, hours: +(w.hours + entry.duration).toFixed(2), billable: +(w.billable + entry.duration).toFixed(2) }
-          : w,
-      ),
-    );
   };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
