@@ -939,7 +939,15 @@ function TaskDialog({
         </button>
         <button
           disabled={!valid}
-          onClick={() => onSave(form)}
+          onClick={() =>
+            onSave({
+              ...form,
+              tags: form.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean),
+            })
+          }
           className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
           style={{ background: "var(--gradient-primary)" }}
         >
