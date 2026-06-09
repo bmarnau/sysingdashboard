@@ -115,6 +115,51 @@ function formatGermanDateLong(date: Date): string {
   });
 }
 
+const WEEK_DAYS = ["Mo", "Di", "Mi", "Do", "Fr"] as const;
+
+function startOfISOWeek(date: Date): Date {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const day = d.getDay() || 7; // Sun=0 → 7
+  d.setDate(d.getDate() - (day - 1));
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function computeWeeklyHours(logs: TimeLog[], reference: Date) {
+  const weekStart = startOfISOWeek(reference);
+  const weekEnd = new Date(weekStart.getTime());
+  weekEnd.setDate(weekEnd.getDate() + 5); // Sat 00:00 → covers Mo–Fr
+  const buckets = WEEK_DAYS.map((day) => ({ day, hours: 0, billable: 0 }));
+  for (const log of logs) {
+    if (!log.date) continue;
+    const d = new Date(log.date);
+    if (Number.isNaN(d.getTime())) continue;
+    if (d < weekStart || d >= weekEnd) continue;
+    const idx = (d.getDay() || 7) - 1;
+    if (idx < 0 || idx > 4) continue;
+    const dur = Number(log.duration) || 0;
+    buckets[idx].hours = +(buckets[idx].hours + dur).toFixed(2);
+    if (log.billable !== false) {
+      buckets[idx].billable = +(buckets[idx].billable + dur).toFixed(2);
+    }
+  }
+  return buckets;
+}
+
+function computeTaskSpent(tasks: Task[], logs: TimeLog[]): Task[] {
+  const sums = new Map<string, number>();
+  for (const log of logs) {
+    if (!log.task) continue;
+    const dur = Number(log.duration) || 0;
+    sums.set(log.task, (sums.get(log.task) ?? 0) + dur);
+  }
+  return tasks.map((t) => {
+    const sum = sums.get(t.title) ?? sums.get(t.id);
+    return sum !== undefined ? { ...t, spent: +sum.toFixed(2) } : t;
+  });
+}
+
+
 function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>(dashboardData.tasks);
   const [projects, setProjects] = useState<Project[]>(dashboardData.projects);
