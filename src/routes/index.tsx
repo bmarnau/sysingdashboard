@@ -806,6 +806,9 @@ function TaskDialog({
     due: new Date().toISOString().slice(0, 10),
     estimated: 4,
     ticket: "",
+    assignee: "",
+    tags: "",
+    description: "",
   });
   const valid = form.title.trim().length > 1 && form.ticket.trim().length > 1;
 
@@ -862,6 +865,20 @@ function TaskDialog({
           </select>
         </label>
         <label className="text-xs font-medium">
+          Status
+          <select
+            className={`mt-1 ${inputCls}`}
+            value={form.status}
+            onChange={(e) => setForm({ ...form, status: e.target.value as TaskStatus })}
+          >
+            {(["offen", "in_arbeit", "wartend", "erledigt"] as TaskStatus[]).map((s) => (
+              <option key={s} value={s} className="bg-background">
+                {s}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="text-xs font-medium">
           Priorität
           <select
             className={`mt-1 ${inputCls}`}
@@ -886,7 +903,36 @@ function TaskDialog({
             onChange={(e) => setForm({ ...form, estimated: Number(e.target.value) })}
           />
         </label>
+        <label className="text-xs font-medium">
+          Zuständig
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.assignee}
+            onChange={(e) => setForm({ ...form, assignee: e.target.value })}
+            placeholder="z. B. Max Mustermann"
+          />
+        </label>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Tags (Komma-getrennt)
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.tags}
+            onChange={(e) => setForm({ ...form, tags: e.target.value })}
+            placeholder="firewall, security, review"
+          />
+        </label>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Beschreibung
+          <textarea
+            rows={3}
+            className={`mt-1 ${inputCls}`}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="Kontext, Akzeptanzkriterien, Links …"
+          />
+        </label>
       </div>
+
       <div className="mt-5 flex justify-end gap-2">
         <button onClick={onClose} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
           Abbrechen
