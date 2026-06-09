@@ -805,12 +805,12 @@ function TaskDialog({
     priority: "mittel" as Priority,
     due: new Date().toISOString().slice(0, 10),
     estimated: 4,
-    ticket: "",
+    activity: "",
     assignee: "",
     tags: "",
     description: "",
   });
-  const valid = form.title.trim().length > 1 && form.ticket.trim().length > 1;
+  const valid = form.title.trim().length > 1 && form.activity.trim().length > 1;
 
   return (
     <Modal title="Neues Arbeitspaket anlegen" onClose={onClose}>
@@ -825,11 +825,11 @@ function TaskDialog({
           />
         </label>
         <label className="text-xs font-medium">
-          Ticket-ID
+          Tätigkeit-ID
           <input
             className={`mt-1 ${inputCls}`}
-            value={form.ticket}
-            onChange={(e) => setForm({ ...form, ticket: e.target.value })}
+            value={form.activity}
+            onChange={(e) => setForm({ ...form, activity: e.target.value })}
             placeholder="INC-12345"
           />
         </label>
