@@ -437,7 +437,7 @@ function Dashboard() {
                           <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${priorityStyles[t.priority]}`}>
                             {t.priority.toUpperCase()}
                           </span>
-                          <span className="font-mono text-xs text-muted-foreground">{t.ticket}</span>
+                          <span className="font-mono text-xs text-muted-foreground">{t.activity}</span>
                         </div>
                         <p className="mt-1.5 font-medium leading-snug">{t.title}</p>
                         <p className="mt-0.5 text-xs text-muted-foreground">
