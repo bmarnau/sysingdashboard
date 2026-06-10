@@ -1,54 +1,49 @@
 import data from "@/data/dashboard.json";
 
-export type TaskStatus = "offen" | "in_arbeit" | "wartend" | "erledigt";
+export type WorkPackageStatus = "offen" | "in_arbeit" | "wartend" | "erledigt";
 export type Priority = "niedrig" | "mittel" | "hoch" | "kritisch";
 export type ProjectStatus = "on_track" | "at_risk" | "delayed" | "abgeschlossen";
-
-export interface Task {
-  id: string;
-  title: string;
-  client: string;
-  project: string;
-  status: TaskStatus;
-  priority: Priority;
-  due: string;
-  estimated: number;
-  spent: number;
-  activity: string;
-  description?: string;
-  assignee?: string;
-  tags?: string[];
-}
+export type BillingStatus = "offen" | "abgerechnet" | "nicht_abrechenbar";
 
 export interface Project {
   id: string;
   name: string;
   client: string;
-  budget: number;
-  spent: number;
-  progress: number;
-  status: ProjectStatus;
-  team: string[];
-  deadline: string;
   description?: string;
   start?: string;
+  deadline?: string;
   lead?: string;
+  team?: string[];
+  budget?: number;
+  status: ProjectStatus;
 }
 
-export interface TimeLog {
-  time: string;
-  task: string;
-  duration: number;
-  client: string;
-  date?: string;
-  billable?: boolean;
-  note?: string;
+export interface WorkPackage {
+  id: string;
+  title: string;
+  projectId?: string | null; // optional: kann ohne Projekt existieren
+  client?: string;
+  status: WorkPackageStatus;
+  priority: Priority;
+  due?: string;
+  estimated?: number;
+  assignee?: string;
+  tags?: string[];
+  description?: string;
 }
 
-export interface WeeklyHour {
-  day: string;
-  hours: number;
-  billable: number;
+export interface Activity {
+  id: string;
+  title: string;
+  workPackageId?: string | null; // optional: kann ohne Arbeitspaket existieren
+  client?: string;
+  date: string; // YYYY-MM-DD
+  time?: string; // HH:MM
+  duration: number; // Stunden
+  hourlyRate: number; // €/h
+  billable: boolean;
+  billingStatus: BillingStatus;
+  description?: string;
 }
 
 export interface Engineer {
@@ -56,17 +51,15 @@ export interface Engineer {
   role: string;
   company: string;
   weeklyTarget: number;
-  weeklyLogged: number;
   initials: string;
 }
 
 export interface DashboardData {
   engineer: Engineer;
-  tasks: Task[];
   projects: Project[];
-  weeklyHours: WeeklyHour[];
-  recentLogs: TimeLog[];
+  workPackages: WorkPackage[];
+  activities: Activity[];
 }
 
 export const dashboardData = data as DashboardData;
-export const { engineer, tasks, projects, weeklyHours, recentLogs } = dashboardData;
+export const { engineer, projects, workPackages, activities } = dashboardData;
