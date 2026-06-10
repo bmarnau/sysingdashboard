@@ -1,31 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Activity,
+  Activity as ActivityIcon,
   AlertTriangle,
   Bell,
   CheckCircle2,
-  Clock,
-  FolderKanban,
   ChevronDown,
+  Clock,
+  Euro,
+  FolderKanban,
+  Layers,
+  Pencil,
   Plus,
   Printer,
   Search,
   Server,
-  Settings,
   Trash2,
   TrendingUp,
-  Users,
 } from "lucide-react";
 import {
   dashboardData,
+  type Activity,
+  type BillingStatus,
   type Engineer,
   type Priority,
   type Project,
   type ProjectStatus,
-  type Task,
-  type TaskStatus,
-  type TimeLog,
+  type WorkPackage,
+  type WorkPackageStatus,
 } from "@/lib/dashboard-data";
 
 export const Route = createFileRoute("/")({
@@ -35,56 +37,65 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Arbeitspakete, Projekte und Aufwände eines Systems Engineers – mit Eingabe & PDF-Druckausgabe.",
+          "Senior Systems Engineer Dashboard: Projekte, Arbeitspakete und Tätigkeiten verwalten und abrechnen.",
       },
     ],
   }),
   component: Dashboard,
 });
 
-const statusLabel: Record<TaskStatus, string> = {
+/* ------------------------------ Labels & Styles ------------------------------ */
+
+const wpStatusLabel: Record<WorkPackageStatus, string> = {
   offen: "Offen",
   in_arbeit: "In Arbeit",
   wartend: "Wartet",
   erledigt: "Erledigt",
 };
-
-const statusStyles: Record<TaskStatus, string> = {
+const wpStatusStyles: Record<WorkPackageStatus, string> = {
   offen: "bg-info/15 text-info border-info/30",
   in_arbeit: "bg-primary/15 text-primary border-primary/30",
   wartend: "bg-warning/15 text-warning border-warning/30",
   erledigt: "bg-success/15 text-success border-success/30",
 };
-
 const priorityStyles: Record<Priority, string> = {
   niedrig: "bg-muted text-muted-foreground",
   mittel: "bg-info/20 text-info",
   hoch: "bg-warning/20 text-warning",
   kritisch: "bg-destructive/20 text-destructive",
 };
-
-const projectStatusStyles: Record<ProjectStatus, string> = {
-  on_track: "bg-success/15 text-success border-success/30",
-  at_risk: "bg-warning/15 text-warning border-warning/30",
-  delayed: "bg-destructive/15 text-destructive border-destructive/30",
-  abgeschlossen: "bg-muted text-muted-foreground border-border",
-};
-
 const projectStatusLabel: Record<ProjectStatus, string> = {
   on_track: "Im Plan",
   at_risk: "Risiko",
   delayed: "Verzug",
   abgeschlossen: "Fertig",
 };
+const projectStatusStyles: Record<ProjectStatus, string> = {
+  on_track: "bg-success/15 text-success border-success/30",
+  at_risk: "bg-warning/15 text-warning border-warning/30",
+  delayed: "bg-destructive/15 text-destructive border-destructive/30",
+  abgeschlossen: "bg-muted text-muted-foreground border-border",
+};
+const billingLabel: Record<BillingStatus, string> = {
+  offen: "Offen",
+  abgerechnet: "Abgerechnet",
+  nicht_abrechenbar: "Nicht abrechenbar",
+};
+const billingStyles: Record<BillingStatus, string> = {
+  offen: "bg-warning/15 text-warning border-warning/30",
+  abgerechnet: "bg-success/15 text-success border-success/30",
+  nicht_abrechenbar: "bg-muted text-muted-foreground border-border",
+};
 
-const STORAGE_KEY = "northbit-dashboard-v1";
+/* ----------------------------- Persistence & utils ---------------------------- */
+
+const STORAGE_KEY = "northbit-dashboard-v2";
 
 type PersistedState = {
-  engineer?: Engineer;
-  tasks: Task[];
+  engineer: Engineer;
   projects: Project[];
-  logs: TimeLog[];
-  weeklyHours: typeof dashboardData.weeklyHours;
+  workPackages: WorkPackage[];
+  activities: Activity[];
 };
 
 function loadPersisted(): PersistedState | null {
@@ -98,6 +109,10 @@ function loadPersisted(): PersistedState | null {
   }
 }
 
+function newId(prefix: string) {
+  return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+}
+
 function getISOWeek(date: Date): number {
   const tmp = new Date(date.getTime());
   tmp.setHours(0, 0, 0, 0);
@@ -106,170 +121,190 @@ function getISOWeek(date: Date): number {
   return Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 }
 
-function formatGermanDateLong(date: Date): string {
-  return date.toLocaleDateString("de-DE", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
 const WEEK_DAYS = ["Mo", "Di", "Mi", "Do", "Fr"] as const;
 
 function startOfISOWeek(date: Date): Date {
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const day = d.getDay() || 7; // Sun=0 → 7
+  const day = d.getDay() || 7;
   d.setDate(d.getDate() - (day - 1));
   d.setHours(0, 0, 0, 0);
   return d;
 }
 
-function computeWeeklyHours(logs: TimeLog[], reference: Date) {
+function computeWeeklyHours(activities: Activity[], reference: Date) {
   const weekStart = startOfISOWeek(reference);
   const weekEnd = new Date(weekStart.getTime());
-  weekEnd.setDate(weekEnd.getDate() + 5); // Sat 00:00 → covers Mo–Fr
+  weekEnd.setDate(weekEnd.getDate() + 5);
   const buckets = WEEK_DAYS.map((day) => ({ day, hours: 0, billable: 0 }));
-  for (const log of logs) {
-    if (!log.date) continue;
-    const d = new Date(log.date);
+  for (const a of activities) {
+    if (!a.date) continue;
+    const d = new Date(a.date);
     if (Number.isNaN(d.getTime())) continue;
     if (d < weekStart || d >= weekEnd) continue;
     const idx = (d.getDay() || 7) - 1;
     if (idx < 0 || idx > 4) continue;
-    const dur = Number(log.duration) || 0;
+    const dur = Number(a.duration) || 0;
     buckets[idx].hours = +(buckets[idx].hours + dur).toFixed(2);
-    if (log.billable !== false) {
-      buckets[idx].billable = +(buckets[idx].billable + dur).toFixed(2);
-    }
+    if (a.billable) buckets[idx].billable = +(buckets[idx].billable + dur).toFixed(2);
   }
   return buckets;
 }
 
-function computeTaskSpent(tasks: Task[], logs: TimeLog[]): Task[] {
-  const sums = new Map<string, number>();
-  for (const log of logs) {
-    if (!log.task) continue;
-    const dur = Number(log.duration) || 0;
-    sums.set(log.task, (sums.get(log.task) ?? 0) + dur);
-  }
-  return tasks.map((t) => {
-    const sum = sums.get(t.title) ?? sums.get(t.id);
-    return sum !== undefined ? { ...t, spent: +sum.toFixed(2) } : t;
-  });
+function fmtDate(s?: string) {
+  if (!s) return "—";
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return s;
+  return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "2-digit" });
 }
 
+function fmtEuro(v: number) {
+  return v.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+}
+
+/* ---------------------------------- Component --------------------------------- */
+
+type Tab = "projekte" | "arbeitspakete" | "taetigkeiten" | "abrechnung";
 
 function Dashboard() {
-  const [tasks, setTasks] = useState<Task[]>(dashboardData.tasks);
   const [projects, setProjects] = useState<Project[]>(dashboardData.projects);
-  const [logs, setLogs] = useState<TimeLog[]>(dashboardData.recentLogs);
-  const [weeklyHours, setWeeklyHours] = useState(dashboardData.weeklyHours);
-  const [filter, setFilter] = useState<"alle" | "offen" | "kritisch">("alle");
-  const [showTask, setShowTask] = useState(false);
-  const [showLog, setShowLog] = useState(false);
-  const [showProject, setShowProject] = useState(false);
-  const [showNewMenu, setShowNewMenu] = useState(false);
-  const [showEngineer, setShowEngineer] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-  const [currentDateStr, setCurrentDateStr] = useState("");
-  const [currentKW, setCurrentKW] = useState("");
+  const [workPackages, setWorkPackages] = useState<WorkPackage[]>(dashboardData.workPackages);
+  const [activities, setActivities] = useState<Activity[]>(dashboardData.activities);
   const [engineerState, setEngineer] = useState<Engineer>(dashboardData.engineer);
+  const [hydrated, setHydrated] = useState(false);
 
-  // Load persisted state after mount to avoid SSR hydration mismatch
+  const [tab, setTab] = useState<Tab>("projekte");
+  const [showNewMenu, setShowNewMenu] = useState(false);
+
+  // Dialog state
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editingWP, setEditingWP] = useState<WorkPackage | null>(null);
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const [showEngineer, setShowEngineer] = useState(false);
+
+  const [now, setNow] = useState<Date | null>(null);
+
   useEffect(() => {
     const p = loadPersisted();
-    const baseTasks = p?.tasks ?? dashboardData.tasks;
-    const baseLogs = p?.logs ?? dashboardData.recentLogs;
     if (p) {
-      if (p.engineer) setEngineer(p.engineer);
-      if (p.projects) setProjects(p.projects);
-      setLogs(baseLogs);
+      setEngineer(p.engineer ?? dashboardData.engineer);
+      setProjects(p.projects ?? dashboardData.projects);
+      setWorkPackages(p.workPackages ?? dashboardData.workPackages);
+      setActivities(p.activities ?? dashboardData.activities);
     }
-    const now = new Date();
-    // Recompute everything from logs on each start
-    setTasks(computeTaskSpent(baseTasks, baseLogs));
-    setWeeklyHours(computeWeeklyHours(baseLogs, now));
-    setCurrentDateStr(now.toLocaleString("de-DE"));
-    setCurrentKW(`KW ${getISOWeek(now)} · ${formatGermanDateLong(now)}`);
+    setNow(new Date());
     setHydrated(true);
   }, []);
-
-  // Recompute derived state (weekly chart, task spent) whenever logs change
-  useEffect(() => {
-    if (!hydrated) return;
-    setWeeklyHours(computeWeeklyHours(logs, new Date()));
-    setTasks((ts) => computeTaskSpent(ts, logs));
-  }, [logs, hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ engineer: engineerState, tasks, projects, logs, weeklyHours }),
+        JSON.stringify({ engineer: engineerState, projects, workPackages, activities }),
       );
     } catch {
-      /* ignore quota errors */
+      /* ignore */
     }
-  }, [hydrated, engineerState, tasks, projects, logs, weeklyHours]);
+  }, [hydrated, engineerState, projects, workPackages, activities]);
 
   const resetData = () => {
+    if (!confirm("Lokale Daten zurücksetzen?")) return;
     window.localStorage.removeItem(STORAGE_KEY);
     setEngineer(dashboardData.engineer);
-    setTasks(computeTaskSpent(dashboardData.tasks, dashboardData.recentLogs));
-    setLogs(dashboardData.recentLogs);
-    setWeeklyHours(computeWeeklyHours(dashboardData.recentLogs, new Date()));
+    setProjects(dashboardData.projects);
+    setWorkPackages(dashboardData.workPackages);
+    setActivities(dashboardData.activities);
   };
 
+  /* ---------- Derived ---------- */
 
-  const weeklyLogged = useMemo(
-    () => weeklyHours.reduce((s, d) => s + d.hours, 0),
-    [weeklyHours],
+  const weekly = useMemo(
+    () => (now ? computeWeeklyHours(activities, now) : WEEK_DAYS.map((day) => ({ day, hours: 0, billable: 0 }))),
+    [activities, now],
   );
-  const billableThisWeek = useMemo(
-    () => weeklyHours.reduce((s, d) => s + d.billable, 0),
-    [weeklyHours],
+  const weeklyLogged = weekly.reduce((s, d) => s + d.hours, 0);
+  const billableThisWeek = weekly.reduce((s, d) => s + d.billable, 0);
+  const maxHours = Math.max(...weekly.map((d) => d.hours), 10);
+
+  // Aufwand je Arbeitspaket aus Tätigkeiten
+  const spentByWP = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const a of activities) {
+      if (!a.workPackageId) continue;
+      m.set(a.workPackageId, (m.get(a.workPackageId) ?? 0) + (a.duration || 0));
+    }
+    return m;
+  }, [activities]);
+
+  // Aufwand je Projekt = Summe der Tätigkeiten der zugeordneten Arbeitspakete
+  const spentByProject = useMemo(() => {
+    const m = new Map<string, number>();
+    const wpToProj = new Map(workPackages.map((wp) => [wp.id, wp.projectId ?? null] as const));
+    for (const a of activities) {
+      if (!a.workPackageId) continue;
+      const pid = wpToProj.get(a.workPackageId);
+      if (!pid) continue;
+      m.set(pid, (m.get(pid) ?? 0) + (a.duration || 0));
+    }
+    return m;
+  }, [activities, workPackages]);
+
+  const totalRevenue = useMemo(
+    () => activities.filter((a) => a.billable).reduce((s, a) => s + a.duration * a.hourlyRate, 0),
+    [activities],
   );
-  const totalSpent = tasks.reduce((s, t) => s + t.spent, 0);
-  const totalEstimated = tasks.reduce((s, t) => s + t.estimated, 0);
-  const openTasks = tasks.filter((t) => t.status !== "erledigt").length;
-  const criticalTasks = tasks.filter(
-    (t) => t.priority === "kritisch" && t.status !== "erledigt",
-  ).length;
+  const openRevenue = useMemo(
+    () =>
+      activities
+        .filter((a) => a.billable && a.billingStatus === "offen")
+        .reduce((s, a) => s + a.duration * a.hourlyRate, 0),
+    [activities],
+  );
+
+  const openWPs = workPackages.filter((w) => w.status !== "erledigt").length;
   const activeProjects = projects.filter((p) => p.status !== "abgeschlossen").length;
-  const maxHours = Math.max(...weeklyHours.map((d) => d.hours), 10);
 
-  const filteredTasks = tasks.filter((t) => {
-    if (filter === "offen") return t.status !== "erledigt";
-    if (filter === "kritisch") return t.priority === "kritisch" || t.priority === "hoch";
-    return true;
-  });
+  /* ---------- CRUD ---------- */
 
-  const updateTaskStatus = (id: string, status: TaskStatus) =>
-    setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, status } : t)));
-
-  const updateTaskSpent = (id: string, spent: number) =>
-    setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, spent } : t)));
-
-  const removeTask = (id: string) => setTasks((ts) => ts.filter((t) => t.id !== id));
-
-  const addTask = (t: Omit<Task, "id" | "spent">) => {
-    const id = `T-${2049 + tasks.length}`;
-    setTasks((ts) => [{ ...t, id, spent: 0 }, ...ts]);
+  const saveProject = (p: Project) => {
+    setProjects((arr) =>
+      arr.some((x) => x.id === p.id) ? arr.map((x) => (x.id === p.id ? p : x)) : [p, ...arr],
+    );
+  };
+  const deleteProject = (id: string) => {
+    if (!confirm("Projekt wirklich löschen? Arbeitspakete bleiben projektlos erhalten.")) return;
+    setProjects((arr) => arr.filter((x) => x.id !== id));
+    setWorkPackages((arr) => arr.map((w) => (w.projectId === id ? { ...w, projectId: null } : w)));
   };
 
-  const addProject = (p: Omit<Project, "id" | "spent" | "progress">) => {
-    const id = `P-${100 + projects.length}`;
-    setProjects((ps) => [{ ...p, id, spent: 0, progress: 0 }, ...ps]);
+  const saveWP = (w: WorkPackage) => {
+    setWorkPackages((arr) =>
+      arr.some((x) => x.id === w.id) ? arr.map((x) => (x.id === w.id ? w : x)) : [w, ...arr],
+    );
+  };
+  const deleteWP = (id: string) => {
+    if (!confirm("Arbeitspaket löschen? Tätigkeiten bleiben ohne Arbeitspaket erhalten.")) return;
+    setWorkPackages((arr) => arr.filter((x) => x.id !== id));
+    setActivities((arr) =>
+      arr.map((a) => (a.workPackageId === id ? { ...a, workPackageId: null } : a)),
+    );
   };
 
-
-  const addLog = (entry: TimeLog) => {
-    // weeklyHours + task.spent recompute via effect on `logs`
-    setLogs((l) => [entry, ...l]);
+  const saveActivity = (a: Activity) => {
+    setActivities((arr) =>
+      arr.some((x) => x.id === a.id) ? arr.map((x) => (x.id === a.id ? a : x)) : [a, ...arr],
+    );
+  };
+  const deleteActivity = (id: string) => {
+    if (!confirm("Tätigkeit löschen?")) return;
+    setActivities((arr) => arr.filter((x) => x.id !== id));
   };
 
+  /* ---------- Render ---------- */
+
+  const dateLine = now
+    ? `KW ${getISOWeek(now)} · ${now.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`
+    : "…";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -280,36 +315,27 @@ function Dashboard() {
               <Server className="size-5 text-primary-foreground" />
             </div>
             <div className="leading-tight">
-              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">{engineerState.company}</p>
+              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                {engineerState.company}
+              </p>
               <p className="text-sm font-semibold">Engineer Console</p>
             </div>
-          </div>
-
-          <div className="relative ml-2 hidden flex-1 max-w-md md:block">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              placeholder="Tätigkeiten, Kunden, Projekte suchen…"
-              className="h-10 w-full rounded-lg border border-input bg-secondary/40 pl-9 pr-3 text-sm outline-none transition focus:border-ring focus:bg-secondary/70"
-            />
           </div>
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => window.print()}
               className="hidden sm:inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium transition hover:bg-secondary"
-              title="Als PDF drucken"
             >
-              <Printer className="size-4" />
-              PDF
+              <Printer className="size-4" /> PDF
             </button>
             <button
               onClick={resetData}
               className="hidden sm:inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium transition hover:bg-destructive/20 hover:text-destructive"
-              title="Lokale Änderungen zurücksetzen"
             >
               Reset
             </button>
-            <button className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary">
+            <button className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40">
               <Bell className="size-4" />
               <span className="absolute right-2 top-2 size-2 rounded-full bg-destructive" />
             </button>
@@ -333,83 +359,65 @@ function Dashboard() {
       </header>
 
       <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 sm:py-8">
-        {/* Print header */}
-        <div className="print-only mb-6 border-b border-border pb-4">
-          <h1 className="text-2xl font-bold">Engineer Aufwandsbericht</h1>
-          <p className="text-sm">
-            {engineerState.name} · {engineerState.role} · {engineerState.company}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Stand: {currentDateStr || "…"}
-          </p>
-        </div>
-
         {/* Hero */}
         <section className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
-              {currentKW || "…"}
-            </p>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">{dateLine}</p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-              Guten Morgen, {engineerState.name.split(" ")[0]}.
+              Guten Tag, {engineerState.name.split(" ")[0]}.
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {openTasks} offene Arbeitspakete · {activeProjects} aktive Projekte ·{" "}
-              <span className="text-warning">{criticalTasks} kritisch</span>
+              {activeProjects} aktive Projekte · {openWPs} offene Arbeitspakete ·{" "}
+              {activities.length} Tätigkeiten
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 no-print">
+          <div className="relative no-print">
             <button
-              onClick={() => setShowLog(true)}
-              className="h-10 rounded-lg border border-border bg-secondary/40 px-4 text-sm font-medium transition hover:bg-secondary"
+              onClick={() => setShowNewMenu((v) => !v)}
+              className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
+              style={{ background: "var(--gradient-primary)" }}
             >
-              Tätigkeit erfassen
+              <Plus className="size-4" /> Neu
+              <ChevronDown className="size-4 opacity-80" />
             </button>
-            <div className="relative">
-              <button
-                onClick={() => setShowNewMenu((v) => !v)}
-                className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
-                style={{ background: "var(--gradient-primary)" }}
-              >
-                <Plus className="size-4" /> Neu
-                <ChevronDown className="size-4 opacity-80" />
-              </button>
-              {showNewMenu && (
-                <>
+            {showNewMenu && (
+              <>
+                <button
+                  aria-label="Menü schließen"
+                  className="fixed inset-0 z-30 cursor-default"
+                  onClick={() => setShowNewMenu(false)}
+                />
+                <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
                   <button
-                    aria-label="Menü schließen"
-                    className="fixed inset-0 z-30 cursor-default"
-                    onClick={() => setShowNewMenu(false)}
-                  />
-                  <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
-                    <button
-                      onClick={() => { setShowNewMenu(false); setShowLog(true); }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <Clock className="size-4 opacity-70" /> Neue Tätigkeit
-                    </button>
-                    <button
-                      onClick={() => { setShowNewMenu(false); setShowTask(true); }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <CheckCircle2 className="size-4 opacity-70" /> Neues Arbeitspaket
-                    </button>
-                    <button
-                      onClick={() => { setShowNewMenu(false); setShowProject(true); }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <FolderKanban className="size-4 opacity-70" /> Neues Projekt
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-            <button
-              onClick={() => window.print()}
-              className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-4 text-sm font-medium transition hover:bg-secondary sm:hidden"
-            >
-              <Printer className="size-4" /> PDF
-            </button>
+                    onClick={() => {
+                      setShowNewMenu(false);
+                      setEditingActivity(emptyActivity());
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                  >
+                    <Clock className="size-4 opacity-70" /> Neue Tätigkeit
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowNewMenu(false);
+                      setEditingWP(emptyWP());
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                  >
+                    <CheckCircle2 className="size-4 opacity-70" /> Neues Arbeitspaket
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowNewMenu(false);
+                      setEditingProject(emptyProject());
+                    }}
+                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                  >
+                    <FolderKanban className="size-4 opacity-70" /> Neues Projekt
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </section>
 
@@ -430,303 +438,117 @@ function Dashboard() {
             tone="success"
           />
           <KpiCard
-            icon={<FolderKanban className="size-5" />}
-            label="Aktive Projekte"
-            value={String(activeProjects)}
-            sub={`${projects.filter((p) => p.status === "at_risk" || p.status === "delayed").length} mit Risiko`}
+            icon={<Euro className="size-5" />}
+            label="Umsatz gesamt"
+            value={fmtEuro(totalRevenue)}
+            sub={`${fmtEuro(openRevenue)} noch offen`}
             tone="info"
           />
           <KpiCard
             icon={<AlertTriangle className="size-5" />}
-            label="Aufwand vs. Schätzung"
-            value={`${totalSpent.toFixed(1)} / ${totalEstimated} h`}
-            sub={`${Math.round((totalSpent / totalEstimated) * 100)}% verbraucht`}
+            label="Offene Arbeitspakete"
+            value={String(openWPs)}
+            sub={`${workPackages.filter((w) => w.priority === "kritisch" && w.status !== "erledigt").length} kritisch`}
             tone="warning"
-            progress={(totalSpent / totalEstimated) * 100}
           />
         </section>
 
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-          {/* Tasks */}
-          <section className="xl:col-span-2">
-            <Card>
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
-                <div>
-                   <h2 className="text-lg font-semibold">Meine Arbeitspakete</h2>
-                   <p className="text-xs text-muted-foreground">
-                     Aktuelle Tätigkeiten & Changes · inline editierbar
-                   </p>
-                </div>
-                <div className="flex gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-xs no-print">
-                  {(["alle", "offen", "kritisch"] as const).map((f) => (
-                    <button
-                      key={f}
-                      onClick={() => setFilter(f)}
-                      className={`rounded-md px-3 py-1.5 capitalize transition ${
-                        filter === f
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {f}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="divide-y divide-border">
-                {filteredTasks.map((t) => {
-                  const overrun = t.spent > t.estimated;
-                  const pct = Math.min((t.spent / t.estimated) * 100, 100);
-                  return (
-                    <div
-                      key={t.id}
-                      className="group grid grid-cols-12 items-center gap-3 px-4 py-4 transition hover:bg-secondary/30 sm:px-6"
-                    >
-                      <div className="col-span-12 md:col-span-5">
-                        <div className="flex items-center gap-2">
-                          <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${priorityStyles[t.priority]}`}>
-                            {t.priority.toUpperCase()}
-                          </span>
-                          <span className="font-mono text-xs text-muted-foreground">{t.activity}</span>
-                        </div>
-                        <p className="mt-1.5 font-medium leading-snug">{t.title}</p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">
-                          {t.client} · <span className="text-foreground/70">{t.project}</span>
-                        </p>
-                      </div>
-                      <div className="col-span-6 md:col-span-2">
-                        <select
-                          value={t.status}
-                          onChange={(e) => updateTaskStatus(t.id, e.target.value as TaskStatus)}
-                          className={`w-full rounded-md border bg-transparent px-2 py-1 text-xs font-medium outline-none ${statusStyles[t.status]}`}
-                        >
-                          {(Object.keys(statusLabel) as TaskStatus[]).map((s) => (
-                            <option key={s} value={s} className="bg-background text-foreground">
-                              {statusLabel[s]}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="col-span-6 md:col-span-3">
-                        <div className="flex items-baseline gap-1 font-mono text-sm">
-                          <input
-                            type="number"
-                            step="0.25"
-                            min="0"
-                            value={t.spent}
-                            onChange={(e) => updateTaskSpent(t.id, Number(e.target.value))}
-                            className={`w-16 rounded border border-input bg-secondary/40 px-1.5 py-0.5 text-right outline-none focus:border-ring ${overrun ? "text-destructive font-semibold" : ""}`}
-                          />
-                          <span className="text-xs text-muted-foreground">/ {t.estimated} h</span>
-                        </div>
-                        <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-secondary">
-                          <div
-                            className="h-full rounded-full transition-all"
-                            style={{
-                              width: `${pct}%`,
-                              background: overrun ? "var(--destructive)" : "var(--gradient-primary)",
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-span-10 md:col-span-1 text-right">
-                        <p className="font-mono text-[10px] text-muted-foreground">Fällig</p>
-                        <p className="text-xs font-medium">
-                          {new Date(t.due).toLocaleDateString("de-DE", { day: "2-digit", month: "short" })}
-                        </p>
-                      </div>
-                      <div className="col-span-2 md:col-span-1 flex justify-end no-print">
-                        <button
-                          onClick={() => removeTask(t.id)}
-                          className="grid size-7 place-items-center rounded-md text-muted-foreground opacity-0 transition hover:bg-destructive/20 hover:text-destructive group-hover:opacity-100"
-                          title="Löschen"
-                        >
-                          <Trash2 className="size-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-                {filteredTasks.length === 0 && (
-                  <p className="px-6 py-10 text-center text-sm text-muted-foreground">
-                    Keine Arbeitspakete in dieser Ansicht.
-                  </p>
-                )}
-              </div>
-            </Card>
-          </section>
-
-          {/* Right column */}
-          <section className="space-y-6">
-            <Card>
-              <div className="border-b border-border px-6 py-4">
-                <h2 className="text-lg font-semibold">Aufwände dieser Woche</h2>
-                <p className="text-xs text-muted-foreground">Erfasst vs. verrechenbar</p>
-              </div>
-              <div className="px-6 py-5">
-                <div className="flex h-40 items-end justify-between gap-3">
-                  {weeklyHours.map((d) => (
-                    <div key={d.day} className="flex flex-1 flex-col items-center gap-2">
-                      <div className="relative flex w-full flex-1 items-end">
-                        <div
-                          className="w-full rounded-t-md bg-secondary"
-                          style={{ height: `${(d.hours / maxHours) * 100}%` }}
-                        />
-                        <div
-                          className="absolute bottom-0 w-full rounded-t-md"
-                          style={{
-                            height: `${(d.billable / maxHours) * 100}%`,
-                            background: "var(--gradient-primary)",
-                          }}
-                        />
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs font-medium">{d.day}</p>
-                        <p className="font-mono text-[10px] text-muted-foreground">{d.hours}h</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 flex items-center justify-between border-t border-border pt-4 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="size-2.5 rounded-sm" style={{ background: "var(--gradient-primary)" }} />
-                    <span className="text-muted-foreground">Verrechenbar</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="size-2.5 rounded-sm bg-secondary" />
-                    <span className="text-muted-foreground">Intern</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            <Card>
-              <div className="border-b border-border px-6 py-4">
-                <h2 className="text-lg font-semibold">Heutige Tätigkeiten</h2>
-                <p className="text-xs text-muted-foreground">
-                  {logs.reduce((s, l) => s + l.duration, 0).toFixed(2)} h erfasst
-                </p>
-              </div>
-              <ul className="divide-y divide-border">
-                {logs.map((l, i) => (
-                  <li key={i} className="flex items-start gap-3 px-6 py-3">
-                    <div className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-md bg-secondary font-mono text-[11px]">
-                      {l.time}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{l.task}</p>
-                      <p className="text-xs text-muted-foreground">{l.client}</p>
-                    </div>
-                    <span className="font-mono text-sm text-primary">{l.duration}h</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          </section>
+        {/* Tabs */}
+        <div className="mb-4 flex flex-wrap gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-sm no-print">
+          <TabButton active={tab === "projekte"} onClick={() => setTab("projekte")} icon={<FolderKanban className="size-4" />}>
+            Projekte ({projects.length})
+          </TabButton>
+          <TabButton active={tab === "arbeitspakete"} onClick={() => setTab("arbeitspakete")} icon={<Layers className="size-4" />}>
+            Arbeitspakete ({workPackages.length})
+          </TabButton>
+          <TabButton active={tab === "taetigkeiten"} onClick={() => setTab("taetigkeiten")} icon={<Clock className="size-4" />}>
+            Tätigkeiten ({activities.length})
+          </TabButton>
+          <TabButton active={tab === "abrechnung"} onClick={() => setTab("abrechnung")} icon={<Euro className="size-4" />}>
+            Abrechnung
+          </TabButton>
         </div>
 
-        {/* Projects */}
-        <section className="mt-8">
-          <Card>
-            <div className="flex items-center justify-between border-b border-border px-6 py-4">
-              <div>
-                <h2 className="text-lg font-semibold">Projekte & Aufwandstracking</h2>
-                <p className="text-xs text-muted-foreground">Budget, Fortschritt und Status</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2 xl:grid-cols-3">
-              {projects.map((p) => {
-                const usage = (p.spent / p.budget) * 100;
-                const overBudget = p.spent > p.budget;
-                return (
-                  <div key={p.id} className="bg-card p-5 transition hover:bg-secondary/20">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{p.id}</p>
-                        <h3 className="mt-1 font-semibold leading-tight">{p.name}</h3>
-                        <p className="mt-1 text-xs text-muted-foreground">{p.client}</p>
-                      </div>
-                      <span className={`rounded-md border px-2 py-1 text-[11px] font-medium ${projectStatusStyles[p.status]}`}>
-                        {projectStatusLabel[p.status]}
-                      </span>
-                    </div>
-
-                    <div className="mt-4">
-                      <div className="mb-1.5 flex items-baseline justify-between text-xs">
-                        <span className="text-muted-foreground">Fortschritt</span>
-                        <span className="font-mono font-semibold">{p.progress}%</span>
-                      </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
-                        <div className="h-full rounded-full" style={{ width: `${p.progress}%`, background: "var(--gradient-primary)" }} />
-                      </div>
-                    </div>
-
-                    <div className="mt-3">
-                      <div className="mb-1.5 flex items-baseline justify-between text-xs">
-                        <span className="text-muted-foreground">Aufwand</span>
-                        <span className={`font-mono ${overBudget ? "text-destructive font-semibold" : ""}`}>
-                          {p.spent} / {p.budget} h
-                        </span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${Math.min(usage, 100)}%`,
-                            background: overBudget ? "var(--destructive)" : usage > 85 ? "var(--warning)" : "var(--success)",
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
-                      <div className="flex -space-x-2">
-                        {p.team.map((m) => (
-                          <div key={m} className="grid size-7 place-items-center rounded-full border-2 border-card bg-secondary font-mono text-[10px] font-bold">
-                            {m}
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Users className="size-3" />
-                        <span>
-                          Deadline {new Date(p.deadline).toLocaleDateString("de-DE", { day: "2-digit", month: "short" })}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
-        </section>
+        {tab === "projekte" && (
+          <ProjectsView
+            projects={projects}
+            spentByProject={spentByProject}
+            workPackages={workPackages}
+            onNew={() => setEditingProject(emptyProject())}
+            onEdit={setEditingProject}
+            onDelete={deleteProject}
+          />
+        )}
+        {tab === "arbeitspakete" && (
+          <WorkPackagesView
+            workPackages={workPackages}
+            projects={projects}
+            spentByWP={spentByWP}
+            onNew={() => setEditingWP(emptyWP())}
+            onEdit={setEditingWP}
+            onDelete={deleteWP}
+          />
+        )}
+        {tab === "taetigkeiten" && (
+          <ActivitiesView
+            activities={activities}
+            workPackages={workPackages}
+            projects={projects}
+            onNew={() => setEditingActivity(emptyActivity())}
+            onEdit={setEditingActivity}
+            onDelete={deleteActivity}
+          />
+        )}
+        {tab === "abrechnung" && (
+          <BillingView
+            activities={activities}
+            workPackages={workPackages}
+            projects={projects}
+            weekly={weekly}
+            maxHours={maxHours}
+            onEdit={setEditingActivity}
+          />
+        )}
 
         <footer className="mt-10 flex items-center justify-between border-t border-border pt-6 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
-            <Activity className="size-3.5 text-success" />
-            <span>Alle Systeme operativ · Sync vor 2 Min.</span>
+            <ActivityIcon className="size-3.5 text-success" />
+            <span>Alle Systeme operativ</span>
           </div>
           <p className="font-mono">{engineerState.company}</p>
         </footer>
       </main>
 
-      {showTask && (
-        <TaskDialog
-          projects={projects}
-          onClose={() => setShowTask(false)}
-          onSave={(t) => {
-            addTask(t);
-            setShowTask(false);
+      {editingProject && (
+        <ProjectDialog
+          project={editingProject}
+          onClose={() => setEditingProject(null)}
+          onSave={(p) => {
+            saveProject(p);
+            setEditingProject(null);
           }}
         />
       )}
-      {showLog && (
-        <LogDialog
-          tasks={tasks}
-          onClose={() => setShowLog(false)}
-          onSave={(l) => {
-            addLog(l);
-            setShowLog(false);
+      {editingWP && (
+        <WorkPackageDialog
+          wp={editingWP}
+          projects={projects}
+          onClose={() => setEditingWP(null)}
+          onSave={(w) => {
+            saveWP(w);
+            setEditingWP(null);
+          }}
+        />
+      )}
+      {editingActivity && (
+        <ActivityDialog
+          activity={editingActivity}
+          workPackages={workPackages}
+          projects={projects}
+          onClose={() => setEditingActivity(null)}
+          onSave={(a) => {
+            saveActivity(a);
+            setEditingActivity(null);
           }}
         />
       )}
@@ -740,18 +562,52 @@ function Dashboard() {
           }}
         />
       )}
-      {showProject && (
-        <ProjectDialog
-          onClose={() => setShowProject(false)}
-          onSave={(p) => {
-            addProject(p);
-            setShowProject(false);
-          }}
-        />
-      )}
     </div>
   );
 }
+
+/* --------------------------------- Factories --------------------------------- */
+
+function emptyProject(): Project {
+  const today = new Date().toISOString().slice(0, 10);
+  return {
+    id: newId("P"),
+    name: "",
+    client: "",
+    status: "on_track",
+    start: today,
+    deadline: today,
+    team: [],
+    budget: 40,
+  };
+}
+function emptyWP(): WorkPackage {
+  return {
+    id: newId("WP"),
+    title: "",
+    projectId: null,
+    status: "offen",
+    priority: "mittel",
+    estimated: 4,
+    tags: [],
+  };
+}
+function emptyActivity(): Activity {
+  const now = new Date();
+  return {
+    id: newId("A"),
+    title: "",
+    workPackageId: null,
+    date: now.toISOString().slice(0, 10),
+    time: now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }),
+    duration: 1,
+    hourlyRate: 145,
+    billable: true,
+    billingStatus: "offen",
+  };
+}
+
+/* --------------------------------- Shared UI --------------------------------- */
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
@@ -761,6 +617,30 @@ function Card({ children }: { children: React.ReactNode }) {
     >
       {children}
     </div>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  icon,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 transition ${
+        active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {icon}
+      {children}
+    </button>
   );
 }
 
@@ -792,11 +672,10 @@ function KpiCard({
     >
       <div className="flex items-start justify-between">
         <div className={`grid size-10 place-items-center rounded-lg ${toneMap[tone]}`}>{icon}</div>
-        <CheckCircle2 className="size-4 text-muted-foreground/40" />
       </div>
-      <p className="mt-4 text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className="mt-1 text-3xl font-semibold tracking-tight">{value}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{sub}</p>
+      <p className="mt-4 text-xs uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
+      <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>
       {progress !== undefined && (
         <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-secondary">
           <div
@@ -812,19 +691,723 @@ function KpiCard({
   );
 }
 
-function Modal({
+function SearchInput({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+}) {
+  return (
+    <div className="relative w-full sm:w-72">
+      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="h-9 w-full rounded-lg border border-input bg-secondary/40 pl-9 pr-3 text-sm outline-none transition focus:border-ring"
+      />
+    </div>
+  );
+}
+
+function IconBtn({
+  onClick,
+  variant = "default",
   title,
-  onClose,
   children,
 }: {
+  onClick: () => void;
+  variant?: "default" | "danger";
   title: string;
-  onClose: () => void;
   children: React.ReactNode;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 p-4 backdrop-blur-sm no-print" onClick={onClose}>
+    <button
+      onClick={onClick}
+      title={title}
+      className={`grid size-7 place-items-center rounded-md transition ${
+        variant === "danger"
+          ? "text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
+          : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+/* -------------------------------- Projects view ------------------------------- */
+
+function ProjectsView({
+  projects,
+  workPackages,
+  spentByProject,
+  onNew,
+  onEdit,
+  onDelete,
+}: {
+  projects: Project[];
+  workPackages: WorkPackage[];
+  spentByProject: Map<string, number>;
+  onNew: () => void;
+  onEdit: (p: Project) => void;
+  onDelete: (id: string) => void;
+}) {
+  const [q, setQ] = useState("");
+  const [status, setStatus] = useState<"alle" | ProjectStatus>("alle");
+  const filtered = projects.filter((p) => {
+    if (status !== "alle" && p.status !== status) return false;
+    if (q) {
+      const s = q.toLowerCase();
+      return (
+        p.name.toLowerCase().includes(s) ||
+        p.client.toLowerCase().includes(s) ||
+        (p.lead ?? "").toLowerCase().includes(s)
+      );
+    }
+    return true;
+  });
+
+  return (
+    <Card>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
+        <div>
+          <h2 className="text-lg font-semibold">Projekte</h2>
+          <p className="text-xs text-muted-foreground">Übergeordnete Klammer für Arbeitspakete</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <SearchInput value={q} onChange={setQ} placeholder="Projekte suchen…" />
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as typeof status)}
+            className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"
+          >
+            <option value="alle">Alle Status</option>
+            {(["on_track", "at_risk", "delayed", "abgeschlossen"] as ProjectStatus[]).map((s) => (
+              <option key={s} value={s}>
+                {projectStatusLabel[s]}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={onNew}
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium hover:bg-secondary"
+          >
+            <Plus className="size-4" /> Neu
+          </button>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2 xl:grid-cols-3">
+        {filtered.map((p) => {
+          const spent = spentByProject.get(p.id) ?? 0;
+          const budget = p.budget ?? 0;
+          const usage = budget > 0 ? (spent / budget) * 100 : 0;
+          const overBudget = budget > 0 && spent > budget;
+          const wpCount = workPackages.filter((w) => w.projectId === p.id).length;
+          return (
+            <div key={p.id} className="group bg-card p-5 transition hover:bg-secondary/20">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{p.id}</p>
+                  <h3 className="mt-1 truncate font-semibold leading-tight">{p.name}</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">{p.client}</p>
+                </div>
+                <span className={`rounded-md border px-2 py-1 text-[11px] font-medium ${projectStatusStyles[p.status]}`}>
+                  {projectStatusLabel[p.status]}
+                </span>
+              </div>
+
+              {p.description && <p className="mt-3 line-clamp-2 text-xs text-muted-foreground">{p.description}</p>}
+
+              <div className="mt-4">
+                <div className="mb-1.5 flex items-baseline justify-between text-xs">
+                  <span className="text-muted-foreground">Aufwand (aus Tätigkeiten)</span>
+                  <span className={`font-mono ${overBudget ? "text-destructive font-semibold" : ""}`}>
+                    {spent.toFixed(1)} {budget ? `/ ${budget}` : ""} h
+                  </span>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${Math.min(usage, 100)}%`,
+                      background: overBudget ? "var(--destructive)" : usage > 85 ? "var(--warning)" : "var(--gradient-primary)",
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs text-muted-foreground">
+                <span>{wpCount} Arbeitspakete</span>
+                <span>Deadline {fmtDate(p.deadline)}</span>
+              </div>
+              <div className="mt-3 flex items-center justify-between">
+                <div className="flex -space-x-2">
+                  {(p.team ?? []).map((m) => (
+                    <div key={m} className="grid size-7 place-items-center rounded-full border-2 border-card bg-secondary font-mono text-[10px] font-bold">
+                      {m}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-1 no-print">
+                  <IconBtn onClick={() => onEdit(p)} title="Bearbeiten">
+                    <Pencil className="size-3.5" />
+                  </IconBtn>
+                  <IconBtn onClick={() => onDelete(p.id)} variant="danger" title="Löschen">
+                    <Trash2 className="size-3.5" />
+                  </IconBtn>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p className="col-span-full bg-card px-6 py-10 text-center text-sm text-muted-foreground">
+            Keine Projekte gefunden.
+          </p>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+/* ---------------------------- Work Packages view ---------------------------- */
+
+function WorkPackagesView({
+  workPackages,
+  projects,
+  spentByWP,
+  onNew,
+  onEdit,
+  onDelete,
+}: {
+  workPackages: WorkPackage[];
+  projects: Project[];
+  spentByWP: Map<string, number>;
+  onNew: () => void;
+  onEdit: (w: WorkPackage) => void;
+  onDelete: (id: string) => void;
+}) {
+  const [q, setQ] = useState("");
+  const [status, setStatus] = useState<"alle" | WorkPackageStatus>("alle");
+  const [proj, setProj] = useState<string>("alle");
+  const projMap = new Map(projects.map((p) => [p.id, p]));
+
+  const filtered = workPackages.filter((w) => {
+    if (status !== "alle" && w.status !== status) return false;
+    if (proj !== "alle") {
+      if (proj === "ohne" && w.projectId) return false;
+      if (proj !== "ohne" && w.projectId !== proj) return false;
+    }
+    if (q) {
+      const s = q.toLowerCase();
+      return (
+        w.title.toLowerCase().includes(s) ||
+        (w.client ?? "").toLowerCase().includes(s) ||
+        (w.assignee ?? "").toLowerCase().includes(s) ||
+        (w.tags ?? []).some((t) => t.toLowerCase().includes(s))
+      );
+    }
+    return true;
+  });
+
+  return (
+    <Card>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
+        <div>
+          <h2 className="text-lg font-semibold">Arbeitspakete</h2>
+          <p className="text-xs text-muted-foreground">
+            Optional einem Projekt zuordnen – kann auch projektlos existieren
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <SearchInput value={q} onChange={setQ} placeholder="Arbeitspakete suchen…" />
+          <select
+            value={proj}
+            onChange={(e) => setProj(e.target.value)}
+            className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"
+          >
+            <option value="alle">Alle Projekte</option>
+            <option value="ohne">Ohne Projekt</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as typeof status)}
+            className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"
+          >
+            <option value="alle">Alle Status</option>
+            {(Object.keys(wpStatusLabel) as WorkPackageStatus[]).map((s) => (
+              <option key={s} value={s}>
+                {wpStatusLabel[s]}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={onNew}
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium hover:bg-secondary"
+          >
+            <Plus className="size-4" /> Neu
+          </button>
+        </div>
+      </div>
+      <div className="divide-y divide-border">
+        {filtered.map((w) => {
+          const project = w.projectId ? projMap.get(w.projectId) : null;
+          const spent = spentByWP.get(w.id) ?? 0;
+          const est = w.estimated ?? 0;
+          const overrun = est > 0 && spent > est;
+          const pct = est > 0 ? Math.min((spent / est) * 100, 100) : 0;
+          return (
+            <div key={w.id} className="group grid grid-cols-12 items-center gap-3 px-4 py-4 transition hover:bg-secondary/30 sm:px-6">
+              <div className="col-span-12 md:col-span-5">
+                <div className="flex items-center gap-2">
+                  <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${priorityStyles[w.priority]}`}>
+                    {w.priority.toUpperCase()}
+                  </span>
+                  <span className="font-mono text-xs text-muted-foreground">{w.id}</span>
+                </div>
+                <p className="mt-1.5 font-medium leading-snug">{w.title}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {w.client ?? "—"} ·{" "}
+                  {project ? (
+                    <span className="text-foreground/70">{project.name}</span>
+                  ) : (
+                    <span className="italic text-muted-foreground">projektlos</span>
+                  )}
+                </p>
+                {(w.tags?.length ?? 0) > 0 && (
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {w.tags!.map((t) => (
+                      <span key={t} className="rounded bg-secondary/60 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="col-span-6 md:col-span-2">
+                <span className={`inline-block rounded-md border px-2 py-1 text-xs font-medium ${wpStatusStyles[w.status]}`}>
+                  {wpStatusLabel[w.status]}
+                </span>
+              </div>
+              <div className="col-span-6 md:col-span-3">
+                <div className="flex items-baseline gap-1 font-mono text-sm">
+                  <span className={overrun ? "text-destructive font-semibold" : ""}>{spent.toFixed(1)}</span>
+                  <span className="text-xs text-muted-foreground">/ {est || "—"} h</span>
+                </div>
+                {est > 0 && (
+                  <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-secondary">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${pct}%`,
+                        background: overrun ? "var(--destructive)" : "var(--gradient-primary)",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="col-span-10 md:col-span-1 text-right">
+                <p className="font-mono text-[10px] text-muted-foreground">Fällig</p>
+                <p className="text-xs font-medium">{fmtDate(w.due)}</p>
+              </div>
+              <div className="col-span-2 md:col-span-1 flex justify-end gap-1 no-print">
+                <IconBtn onClick={() => onEdit(w)} title="Bearbeiten">
+                  <Pencil className="size-3.5" />
+                </IconBtn>
+                <IconBtn onClick={() => onDelete(w.id)} variant="danger" title="Löschen">
+                  <Trash2 className="size-3.5" />
+                </IconBtn>
+              </div>
+            </div>
+          );
+        })}
+        {filtered.length === 0 && (
+          <p className="px-6 py-10 text-center text-sm text-muted-foreground">Keine Arbeitspakete in dieser Ansicht.</p>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+/* ----------------------------- Activities view ----------------------------- */
+
+function ActivitiesView({
+  activities,
+  workPackages,
+  projects,
+  onNew,
+  onEdit,
+  onDelete,
+}: {
+  activities: Activity[];
+  workPackages: WorkPackage[];
+  projects: Project[];
+  onNew: () => void;
+  onEdit: (a: Activity) => void;
+  onDelete: (id: string) => void;
+}) {
+  const [q, setQ] = useState("");
+  const [billing, setBilling] = useState<"alle" | BillingStatus>("alle");
+  const [scope, setScope] = useState<"alle" | "billable" | "non_billable" | "ohne_wp" | "projektlos">("alle");
+
+  const wpMap = new Map(workPackages.map((w) => [w.id, w]));
+  const projMap = new Map(projects.map((p) => [p.id, p]));
+
+  const filtered = activities.filter((a) => {
+    if (billing !== "alle" && a.billingStatus !== billing) return false;
+    if (scope === "billable" && !a.billable) return false;
+    if (scope === "non_billable" && a.billable) return false;
+    if (scope === "ohne_wp" && a.workPackageId) return false;
+    if (scope === "projektlos") {
+      const wp = a.workPackageId ? wpMap.get(a.workPackageId) : null;
+      if (wp?.projectId) return false;
+    }
+    if (q) {
+      const s = q.toLowerCase();
+      return (
+        a.title.toLowerCase().includes(s) ||
+        (a.client ?? "").toLowerCase().includes(s) ||
+        (a.description ?? "").toLowerCase().includes(s)
+      );
+    }
+    return true;
+  });
+
+  // Sort by date desc
+  const sorted = [...filtered].sort((a, b) => (b.date + (b.time ?? "")).localeCompare(a.date + (a.time ?? "")));
+
+  return (
+    <Card>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
+        <div>
+          <h2 className="text-lg font-semibold">Tätigkeiten</h2>
+          <p className="text-xs text-muted-foreground">
+            Optional einem Arbeitspaket zugeordnet · Abrechnung erfolgt ausschließlich hier
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <SearchInput value={q} onChange={setQ} placeholder="Tätigkeiten suchen…" />
+          <select
+            value={scope}
+            onChange={(e) => setScope(e.target.value as typeof scope)}
+            className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"
+          >
+            <option value="alle">Alle</option>
+            <option value="billable">Abrechenbar</option>
+            <option value="non_billable">Nicht abrechenbar</option>
+            <option value="ohne_wp">Ohne Arbeitspaket</option>
+            <option value="projektlos">Projektlos (inkl. WP ohne Projekt)</option>
+          </select>
+          <select
+            value={billing}
+            onChange={(e) => setBilling(e.target.value as typeof billing)}
+            className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"
+          >
+            <option value="alle">Alle Abr.-Status</option>
+            {(Object.keys(billingLabel) as BillingStatus[]).map((b) => (
+              <option key={b} value={b}>
+                {billingLabel[b]}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={onNew}
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium hover:bg-secondary"
+          >
+            <Plus className="size-4" /> Neu
+          </button>
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="border-b border-border bg-secondary/30 text-left text-xs uppercase tracking-wider text-muted-foreground">
+            <tr>
+              <th className="px-4 py-3 sm:px-6">Datum</th>
+              <th className="px-4 py-3">Tätigkeit</th>
+              <th className="px-4 py-3">Zuordnung</th>
+              <th className="px-4 py-3 text-right">Dauer</th>
+              <th className="px-4 py-3 text-right">Satz</th>
+              <th className="px-4 py-3 text-right">Betrag</th>
+              <th className="px-4 py-3">Abrechnung</th>
+              <th className="px-4 py-3 no-print" />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {sorted.map((a) => {
+              const wp = a.workPackageId ? wpMap.get(a.workPackageId) : null;
+              const project = wp?.projectId ? projMap.get(wp.projectId) : null;
+              const amount = a.billable ? a.duration * a.hourlyRate : 0;
+              return (
+                <tr key={a.id} className="hover:bg-secondary/20">
+                  <td className="px-4 py-3 sm:px-6">
+                    <p className="font-medium">{fmtDate(a.date)}</p>
+                    <p className="font-mono text-xs text-muted-foreground">{a.time ?? ""}</p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="font-medium">{a.title}</p>
+                    <p className="text-xs text-muted-foreground">{a.client ?? "—"}</p>
+                    {a.description && <p className="mt-0.5 text-xs italic text-muted-foreground">{a.description}</p>}
+                  </td>
+                  <td className="px-4 py-3 text-xs">
+                    {wp ? (
+                      <>
+                        <p className="font-medium text-foreground">{wp.title}</p>
+                        <p className="text-muted-foreground">
+                          {project ? (
+                            <>
+                              <FolderKanban className="mr-1 inline size-3" />
+                              {project.name}
+                            </>
+                          ) : (
+                            <span className="italic">Arbeitspaket ohne Projekt</span>
+                          )}
+                        </p>
+                      </>
+                    ) : (
+                      <span className="italic text-muted-foreground">ohne Arbeitspaket</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono">{a.duration.toFixed(2)} h</td>
+                  <td className="px-4 py-3 text-right font-mono text-xs text-muted-foreground">
+                    {a.billable ? fmtEuro(a.hourlyRate) : "—"}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono font-semibold">
+                    {a.billable ? fmtEuro(amount) : <span className="text-muted-foreground">—</span>}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-block rounded-md border px-2 py-1 text-[11px] font-medium ${billingStyles[a.billingStatus]}`}>
+                      {billingLabel[a.billingStatus]}
+                    </span>
+                    {!a.billable && (
+                      <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">nicht abr.</p>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 no-print">
+                    <div className="flex justify-end gap-1">
+                      <IconBtn onClick={() => onEdit(a)} title="Bearbeiten">
+                        <Pencil className="size-3.5" />
+                      </IconBtn>
+                      <IconBtn onClick={() => onDelete(a.id)} variant="danger" title="Löschen">
+                        <Trash2 className="size-3.5" />
+                      </IconBtn>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+            {sorted.length === 0 && (
+              <tr>
+                <td colSpan={8} className="px-6 py-10 text-center text-sm text-muted-foreground">
+                  Keine Tätigkeiten in dieser Ansicht.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+}
+
+/* ------------------------------ Billing view ------------------------------ */
+
+function BillingView({
+  activities,
+  workPackages,
+  projects,
+  weekly,
+  maxHours,
+  onEdit,
+}: {
+  activities: Activity[];
+  workPackages: WorkPackage[];
+  projects: Project[];
+  weekly: { day: string; hours: number; billable: number }[];
+  maxHours: number;
+  onEdit: (a: Activity) => void;
+}) {
+  const wpMap = new Map(workPackages.map((w) => [w.id, w]));
+  const projMap = new Map(projects.map((p) => [p.id, p]));
+
+  const open = activities.filter((a) => a.billable && a.billingStatus === "offen");
+  const billed = activities.filter((a) => a.billable && a.billingStatus === "abgerechnet");
+
+  const openSum = open.reduce((s, a) => s + a.duration * a.hourlyRate, 0);
+  const billedSum = billed.reduce((s, a) => s + a.duration * a.hourlyRate, 0);
+
+  // Group open by client
+  const byClient = new Map<string, { hours: number; amount: number; count: number }>();
+  for (const a of open) {
+    const c = a.client ?? "Ohne Kunde";
+    const cur = byClient.get(c) ?? { hours: 0, amount: 0, count: 0 };
+    cur.hours += a.duration;
+    cur.amount += a.duration * a.hourlyRate;
+    cur.count += 1;
+    byClient.set(c, cur);
+  }
+
+  return (
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+      <div className="xl:col-span-2 space-y-6">
+        <Card>
+          <div className="border-b border-border px-6 py-4">
+            <h2 className="text-lg font-semibold">Offene Posten</h2>
+            <p className="text-xs text-muted-foreground">
+              {open.length} abrechenbare Tätigkeiten · {fmtEuro(openSum)} offen
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b border-border bg-secondary/30 text-left text-xs uppercase tracking-wider text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-3">Datum</th>
+                  <th className="px-4 py-3">Tätigkeit</th>
+                  <th className="px-4 py-3">Kunde</th>
+                  <th className="px-4 py-3">Zuordnung</th>
+                  <th className="px-4 py-3 text-right">Betrag</th>
+                  <th className="px-4 py-3 no-print" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {open.map((a) => {
+                  const wp = a.workPackageId ? wpMap.get(a.workPackageId) : null;
+                  const project = wp?.projectId ? projMap.get(wp.projectId) : null;
+                  return (
+                    <tr key={a.id} className="hover:bg-secondary/20">
+                      <td className="px-4 py-3 font-mono text-xs">{fmtDate(a.date)}</td>
+                      <td className="px-4 py-3">{a.title}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">{a.client ?? "—"}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">
+                        {wp ? (
+                          <>
+                            {wp.title}
+                            {" · "}
+                            {project ? project.name : <span className="italic">projektlos</span>}
+                          </>
+                        ) : (
+                          <span className="italic">ohne Arbeitspaket</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-semibold">{fmtEuro(a.duration * a.hourlyRate)}</td>
+                      <td className="px-4 py-3 no-print text-right">
+                        <IconBtn onClick={() => onEdit(a)} title="Bearbeiten">
+                          <Pencil className="size-3.5" />
+                        </IconBtn>
+                      </td>
+                    </tr>
+                  );
+                })}
+                {open.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-10 text-center text-sm text-muted-foreground">
+                      Keine offenen Posten.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
+
+      <div className="space-y-6">
+        <Card>
+          <div className="border-b border-border px-6 py-4">
+            <h2 className="text-lg font-semibold">Umsatzübersicht</h2>
+          </div>
+          <div className="space-y-3 px-6 py-5 text-sm">
+            <div className="flex items-baseline justify-between">
+              <span className="text-muted-foreground">Offen</span>
+              <span className="font-mono text-lg font-semibold text-warning">{fmtEuro(openSum)}</span>
+            </div>
+            <div className="flex items-baseline justify-between">
+              <span className="text-muted-foreground">Abgerechnet</span>
+              <span className="font-mono text-lg font-semibold text-success">{fmtEuro(billedSum)}</span>
+            </div>
+            <div className="border-t border-border pt-3 flex items-baseline justify-between">
+              <span className="font-medium">Gesamt</span>
+              <span className="font-mono text-lg font-semibold">{fmtEuro(openSum + billedSum)}</span>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="border-b border-border px-6 py-4">
+            <h2 className="text-lg font-semibold">Offen je Kunde</h2>
+          </div>
+          <ul className="divide-y divide-border">
+            {[...byClient.entries()]
+              .sort((a, b) => b[1].amount - a[1].amount)
+              .map(([client, v]) => (
+                <li key={client} className="flex items-center justify-between px-6 py-3 text-sm">
+                  <div>
+                    <p className="font-medium">{client}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {v.count} Tätigkeiten · {v.hours.toFixed(1)} h
+                    </p>
+                  </div>
+                  <span className="font-mono font-semibold">{fmtEuro(v.amount)}</span>
+                </li>
+              ))}
+            {byClient.size === 0 && (
+              <li className="px-6 py-6 text-center text-sm text-muted-foreground">Keine offenen Beträge.</li>
+            )}
+          </ul>
+        </Card>
+
+        <Card>
+          <div className="border-b border-border px-6 py-4">
+            <h2 className="text-lg font-semibold">Aufwände dieser Woche</h2>
+            <p className="text-xs text-muted-foreground">Erfasst vs. verrechenbar</p>
+          </div>
+          <div className="px-6 py-5">
+            <div className="flex h-32 items-end justify-between gap-2">
+              {weekly.map((d) => (
+                <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
+                  <div className="relative flex w-full flex-1 items-end">
+                    <div className="w-full rounded-t-md bg-secondary" style={{ height: `${(d.hours / maxHours) * 100}%` }} />
+                    <div
+                      className="absolute bottom-0 w-full rounded-t-md"
+                      style={{
+                        height: `${(d.billable / maxHours) * 100}%`,
+                        background: "var(--gradient-primary)",
+                      }}
+                    />
+                  </div>
+                  <p className="text-[10px] font-medium">{d.day}</p>
+                  <p className="font-mono text-[10px] text-muted-foreground">{d.hours.toFixed(1)}h</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------------- Dialogs --------------------------------- */
+
+const inputCls =
+  "h-10 w-full rounded-md border border-input bg-secondary/40 px-3 text-sm outline-none transition focus:border-ring";
+
+function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-background/70 p-4 backdrop-blur-sm no-print"
+      onClick={onClose}
+    >
       <div
-        className="w-full max-w-lg rounded-2xl border border-border p-6 shadow-[var(--shadow-elevated)]"
+        className="my-8 w-full max-w-2xl rounded-2xl border border-border p-6 shadow-[var(--shadow-elevated)]"
         style={{ background: "var(--gradient-card)" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -835,106 +1418,173 @@ function Modal({
   );
 }
 
-const inputCls =
-  "h-10 w-full rounded-md border border-input bg-secondary/40 px-3 text-sm outline-none transition focus:border-ring";
+function FormActions({
+  onCancel,
+  onSave,
+  saveDisabled,
+  saveLabel = "Speichern",
+}: {
+  onCancel: () => void;
+  onSave: () => void;
+  saveDisabled?: boolean;
+  saveLabel?: string;
+}) {
+  return (
+    <div className="mt-5 flex justify-end gap-2">
+      <button onClick={onCancel} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
+        Abbrechen
+      </button>
+      <button
+        disabled={saveDisabled}
+        onClick={onSave}
+        className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
+        style={{ background: "var(--gradient-primary)" }}
+      >
+        {saveLabel}
+      </button>
+    </div>
+  );
+}
 
-function TaskDialog({
+function ProjectDialog({
+  project,
+  onClose,
+  onSave,
+}: {
+  project: Project;
+  onClose: () => void;
+  onSave: (p: Project) => void;
+}) {
+  const [form, setForm] = useState<Project & { teamText: string }>({
+    ...project,
+    teamText: (project.team ?? []).join(", "),
+  });
+  const isNew = !project.name;
+  const valid = form.name.trim().length > 1 && form.client.trim().length > 1;
+
+  return (
+    <Modal title={isNew ? "Neues Projekt anlegen" : `Projekt bearbeiten – ${project.id}`} onClose={onClose}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Projektname
+          <input className={`mt-1 ${inputCls}`} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="z. B. Datacenter Migration" />
+        </label>
+        <label className="text-xs font-medium">
+          Kunde
+          <input className={`mt-1 ${inputCls}`} value={form.client} onChange={(e) => setForm({ ...form, client: e.target.value })} />
+        </label>
+        <label className="text-xs font-medium">
+          Projektleitung
+          <input className={`mt-1 ${inputCls}`} value={form.lead ?? ""} onChange={(e) => setForm({ ...form, lead: e.target.value })} />
+        </label>
+        <label className="text-xs font-medium">
+          Start
+          <input type="date" className={`mt-1 ${inputCls}`} value={form.start ?? ""} onChange={(e) => setForm({ ...form, start: e.target.value })} />
+        </label>
+        <label className="text-xs font-medium">
+          Deadline
+          <input type="date" className={`mt-1 ${inputCls}`} value={form.deadline ?? ""} onChange={(e) => setForm({ ...form, deadline: e.target.value })} />
+        </label>
+        <label className="text-xs font-medium">
+          Budget (h)
+          <input type="number" min="0" step="1" className={`mt-1 ${inputCls}`} value={form.budget ?? 0} onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })} />
+        </label>
+        <label className="text-xs font-medium">
+          Status
+          <select className={`mt-1 ${inputCls}`} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as ProjectStatus })}>
+            {(["on_track", "at_risk", "delayed", "abgeschlossen"] as ProjectStatus[]).map((s) => (
+              <option key={s} value={s} className="bg-background">
+                {projectStatusLabel[s]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Team (Komma-getrennt)
+          <input className={`mt-1 ${inputCls}`} value={form.teamText} onChange={(e) => setForm({ ...form, teamText: e.target.value })} placeholder="AB, CD, EF" />
+        </label>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Beschreibung
+          <textarea rows={3} className={`mt-1 ${inputCls}`} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+        </label>
+      </div>
+
+      <FormActions
+        onCancel={onClose}
+        saveDisabled={!valid}
+        saveLabel={isNew ? "Anlegen" : "Speichern"}
+        onSave={() => {
+          const { teamText, ...rest } = form;
+          onSave({
+            ...rest,
+            team: teamText
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean),
+          });
+        }}
+      />
+    </Modal>
+  );
+}
+
+function WorkPackageDialog({
+  wp,
   projects,
   onClose,
   onSave,
 }: {
+  wp: WorkPackage;
   projects: Project[];
   onClose: () => void;
-  onSave: (t: Omit<Task, "id" | "spent">) => void;
+  onSave: (w: WorkPackage) => void;
 }) {
-  const [form, setForm] = useState({
-    title: "",
-    client: projects[0]?.client ?? "",
-    project: projects[0]?.name ?? "",
-    status: "offen" as TaskStatus,
-    priority: "mittel" as Priority,
-    due: new Date().toISOString().slice(0, 10),
-    estimated: 4,
-    activity: "",
-    assignee: "",
-    tags: "",
-    description: "",
+  const [form, setForm] = useState<WorkPackage & { tagsText: string }>({
+    ...wp,
+    tagsText: (wp.tags ?? []).join(", "),
   });
-  const valid = form.title.trim().length > 1 && form.activity.trim().length > 1;
+  const isNew = !wp.title;
+  const valid = form.title.trim().length > 1;
 
   return (
-    <Modal title="Neues Arbeitspaket anlegen" onClose={onClose}>
+    <Modal title={isNew ? "Neues Arbeitspaket" : `Arbeitspaket bearbeiten – ${wp.id}`} onClose={onClose}>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Titel
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            placeholder="z. B. Firewall Regelwerk reviewen"
-          />
+          <input className={`mt-1 ${inputCls}`} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
         </label>
         <label className="text-xs font-medium">
-          Tätigkeit-ID
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.activity}
-            onChange={(e) => setForm({ ...form, activity: e.target.value })}
-            placeholder="INC-12345"
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Fällig
-          <input
-            type="date"
-            className={`mt-1 ${inputCls}`}
-            value={form.due}
-            onChange={(e) => setForm({ ...form, due: e.target.value })}
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Kunde
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.client}
-            onChange={(e) => setForm({ ...form, client: e.target.value })}
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Projekt
+          Projekt (optional)
           <select
             className={`mt-1 ${inputCls}`}
-            value={form.project}
-            onChange={(e) => setForm({ ...form, project: e.target.value })}
+            value={form.projectId ?? ""}
+            onChange={(e) => setForm({ ...form, projectId: e.target.value || null })}
           >
+            <option value="">— Kein Projekt —</option>
             {projects.map((p) => (
-              <option key={p.id} value={p.name} className="bg-background">
+              <option key={p.id} value={p.id} className="bg-background">
                 {p.name}
               </option>
             ))}
           </select>
         </label>
         <label className="text-xs font-medium">
+          Kunde
+          <input className={`mt-1 ${inputCls}`} value={form.client ?? ""} onChange={(e) => setForm({ ...form, client: e.target.value })} />
+        </label>
+        <label className="text-xs font-medium">
           Status
-          <select
-            className={`mt-1 ${inputCls}`}
-            value={form.status}
-            onChange={(e) => setForm({ ...form, status: e.target.value as TaskStatus })}
-          >
-            {(["offen", "in_arbeit", "wartend", "erledigt"] as TaskStatus[]).map((s) => (
+          <select className={`mt-1 ${inputCls}`} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as WorkPackageStatus })}>
+            {(Object.keys(wpStatusLabel) as WorkPackageStatus[]).map((s) => (
               <option key={s} value={s} className="bg-background">
-                {s}
+                {wpStatusLabel[s]}
               </option>
             ))}
           </select>
         </label>
         <label className="text-xs font-medium">
           Priorität
-          <select
-            className={`mt-1 ${inputCls}`}
-            value={form.priority}
-            onChange={(e) => setForm({ ...form, priority: e.target.value as Priority })}
-          >
+          <select className={`mt-1 ${inputCls}`} value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value as Priority })}>
             {(["niedrig", "mittel", "hoch", "kritisch"] as Priority[]).map((p) => (
               <option key={p} value={p} className="bg-background">
                 {p}
@@ -943,170 +1593,190 @@ function TaskDialog({
           </select>
         </label>
         <label className="text-xs font-medium">
+          Fällig
+          <input type="date" className={`mt-1 ${inputCls}`} value={form.due ?? ""} onChange={(e) => setForm({ ...form, due: e.target.value })} />
+        </label>
+        <label className="text-xs font-medium">
           Geschätzt (h)
-          <input
-            type="number"
-            min="0.25"
-            step="0.25"
-            className={`mt-1 ${inputCls}`}
-            value={form.estimated}
-            onChange={(e) => setForm({ ...form, estimated: Number(e.target.value) })}
-          />
+          <input type="number" min="0" step="0.25" className={`mt-1 ${inputCls}`} value={form.estimated ?? 0} onChange={(e) => setForm({ ...form, estimated: Number(e.target.value) })} />
         </label>
         <label className="text-xs font-medium">
           Zuständig
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.assignee}
-            onChange={(e) => setForm({ ...form, assignee: e.target.value })}
-            placeholder="z. B. Max Mustermann"
-          />
+          <input className={`mt-1 ${inputCls}`} value={form.assignee ?? ""} onChange={(e) => setForm({ ...form, assignee: e.target.value })} />
         </label>
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Tags (Komma-getrennt)
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.tags}
-            onChange={(e) => setForm({ ...form, tags: e.target.value })}
-            placeholder="firewall, security, review"
-          />
+          <input className={`mt-1 ${inputCls}`} value={form.tagsText} onChange={(e) => setForm({ ...form, tagsText: e.target.value })} />
         </label>
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Beschreibung
-          <textarea
-            rows={3}
-            className={`mt-1 ${inputCls}`}
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            placeholder="Kontext, Akzeptanzkriterien, Links …"
-          />
+          <textarea rows={3} className={`mt-1 ${inputCls}`} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </label>
       </div>
 
-      <div className="mt-5 flex justify-end gap-2">
-        <button onClick={onClose} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
-          Abbrechen
-        </button>
-        <button
-          disabled={!valid}
-          onClick={() =>
-            onSave({
-              ...form,
-              tags: form.tags
-                .split(",")
-                .map((t) => t.trim())
-                .filter(Boolean),
-            })
-          }
-          className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
-          style={{ background: "var(--gradient-primary)" }}
-        >
-          Anlegen
-        </button>
-      </div>
+      <FormActions
+        onCancel={onClose}
+        saveDisabled={!valid}
+        saveLabel={isNew ? "Anlegen" : "Speichern"}
+        onSave={() => {
+          const { tagsText, ...rest } = form;
+          onSave({
+            ...rest,
+            tags: tagsText
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean),
+          });
+        }}
+      />
     </Modal>
   );
 }
 
-function LogDialog({
-  tasks,
+function ActivityDialog({
+  activity,
+  workPackages,
+  projects,
   onClose,
   onSave,
 }: {
-  tasks: Task[];
+  activity: Activity;
+  workPackages: WorkPackage[];
+  projects: Project[];
   onClose: () => void;
-  onSave: (l: TimeLog) => void;
+  onSave: (a: Activity) => void;
 }) {
-  const now = new Date();
-  const [taskTitle, setTaskTitle] = useState(tasks[0]?.title ?? "");
-  const [duration, setDuration] = useState(1);
-  const [date, setDate] = useState(now.toISOString().slice(0, 10));
-  const [time, setTime] = useState(
-    now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }),
-  );
-  const [billable, setBillable] = useState(true);
-  const [note, setNote] = useState("");
-  const client = tasks.find((t) => t.title === taskTitle)?.client ?? "";
-  const valid = duration > 0 && taskTitle.trim().length > 1 && time.trim().length > 0;
+  const [form, setForm] = useState<Activity>({ ...activity });
+  const isNew = !activity.title;
+  const valid = form.title.trim().length > 1 && form.date && form.duration > 0;
+
+  const wp = form.workPackageId ? workPackages.find((w) => w.id === form.workPackageId) : null;
+  const project = wp?.projectId ? projects.find((p) => p.id === wp.projectId) : null;
+  const amount = form.billable ? form.duration * form.hourlyRate : 0;
 
   return (
-    <Modal title="Tätigkeit erfassen" onClose={onClose}>
+    <Modal title={isNew ? "Neue Tätigkeit erfassen" : `Tätigkeit bearbeiten – ${activity.id}`} onClose={onClose}>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <label className="col-span-1 sm:col-span-2 block text-xs font-medium">
-          Arbeitspaket
-          <select className={`mt-1 ${inputCls}`} value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)}>
-            {tasks.map((t) => (
-              <option key={t.id} value={t.title} className="bg-background">
-                {t.title}
-              </option>
-            ))}
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Tätigkeit
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            placeholder="Was wurde gemacht?"
+          />
+        </label>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Arbeitspaket (optional)
+          <select
+            className={`mt-1 ${inputCls}`}
+            value={form.workPackageId ?? ""}
+            onChange={(e) => {
+              const id = e.target.value || null;
+              const w = id ? workPackages.find((x) => x.id === id) : null;
+              setForm({ ...form, workPackageId: id, client: form.client || w?.client });
+            }}
+          >
+            <option value="">— Ohne Arbeitspaket —</option>
+            {workPackages.map((w) => {
+              const proj = w.projectId ? projects.find((p) => p.id === w.projectId) : null;
+              return (
+                <option key={w.id} value={w.id} className="bg-background">
+                  {w.title} {proj ? `· ${proj.name}` : "· projektlos"}
+                </option>
+              );
+            })}
           </select>
+          {wp && (
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Zuordnung:{" "}
+              {project ? (
+                <span>
+                  <FolderKanban className="mr-1 inline size-3" />
+                  Projekt <span className="text-foreground">{project.name}</span>
+                </span>
+              ) : (
+                <span className="italic">Arbeitspaket ohne Projekt</span>
+              )}
+            </p>
+          )}
         </label>
-        <label className="block text-xs font-medium">
+        <label className="text-xs font-medium">
+          Kunde
+          <input className={`mt-1 ${inputCls}`} value={form.client ?? ""} onChange={(e) => setForm({ ...form, client: e.target.value })} />
+        </label>
+        <label className="text-xs font-medium">
           Datum
-          <input
-            type="date"
-            className={`mt-1 ${inputCls}`}
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
+          <input type="date" className={`mt-1 ${inputCls}`} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
         </label>
-        <label className="block text-xs font-medium">
+        <label className="text-xs font-medium">
           Uhrzeit
-          <input
-            type="time"
-            className={`mt-1 ${inputCls}`}
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-          />
+          <input type="time" className={`mt-1 ${inputCls}`} value={form.time ?? ""} onChange={(e) => setForm({ ...form, time: e.target.value })} />
         </label>
-        <label className="block text-xs font-medium">
+        <label className="text-xs font-medium">
           Dauer (h)
+          <input type="number" min="0.25" step="0.25" className={`mt-1 ${inputCls}`} value={form.duration} onChange={(e) => setForm({ ...form, duration: Number(e.target.value) })} />
+        </label>
+        <label className="text-xs font-medium">
+          Stundensatz (€)
           <input
             type="number"
-            min="0.25"
-            step="0.25"
-            className={`mt-1 ${inputCls}`}
-            value={duration}
-            onChange={(e) => setDuration(Number(e.target.value))}
+            min="0"
+            step="1"
+            disabled={!form.billable}
+            className={`mt-1 ${inputCls} disabled:opacity-50`}
+            value={form.hourlyRate}
+            onChange={(e) => setForm({ ...form, hourlyRate: Number(e.target.value) })}
           />
         </label>
         <label className="flex items-center gap-2 text-xs font-medium pt-5">
           <input
             type="checkbox"
-            checked={billable}
-            onChange={(e) => setBillable(e.target.checked)}
+            checked={form.billable}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                billable: e.target.checked,
+                billingStatus: e.target.checked ? (form.billingStatus === "nicht_abrechenbar" ? "offen" : form.billingStatus) : "nicht_abrechenbar",
+              })
+            }
             className="h-4 w-4 accent-primary"
           />
           Abrechenbar
         </label>
-        <label className="col-span-1 sm:col-span-2 block text-xs font-medium">
-          Notiz
-          <textarea
-            rows={3}
-            className={`mt-1 ${inputCls}`}
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Was wurde gemacht? (optional)"
-          />
+        <label className="text-xs font-medium">
+          Abrechnungsstatus
+          <select
+            disabled={!form.billable}
+            className={`mt-1 ${inputCls} disabled:opacity-50`}
+            value={form.billingStatus}
+            onChange={(e) => setForm({ ...form, billingStatus: e.target.value as BillingStatus })}
+          >
+            {(["offen", "abgerechnet"] as BillingStatus[]).map((s) => (
+              <option key={s} value={s} className="bg-background">
+                {billingLabel[s]}
+              </option>
+            ))}
+          </select>
         </label>
-        <p className="col-span-1 sm:col-span-2 text-xs text-muted-foreground">
-          Kunde: <span className="text-foreground">{client || "—"}</span>
-        </p>
+        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
+          Beschreibung
+          <textarea rows={3} className={`mt-1 ${inputCls}`} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+        </label>
+        <div className="col-span-1 sm:col-span-2 rounded-md border border-border bg-secondary/30 px-3 py-2 text-xs">
+          Betrag:{" "}
+          <span className="font-mono font-semibold text-foreground">
+            {form.billable ? fmtEuro(amount) : "nicht abrechenbar"}
+          </span>
+        </div>
       </div>
-      <div className="mt-5 flex justify-end gap-2">
-        <button onClick={onClose} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
-          Abbrechen
-        </button>
-        <button
-          disabled={!valid}
-          onClick={() => onSave({ time, date, task: taskTitle, duration, client, billable, note })}
-          className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
-          style={{ background: "var(--gradient-primary)" }}
-        >
-          Buchen
-        </button>
-      </div>
+
+      <FormActions
+        onCancel={onClose}
+        saveDisabled={!valid}
+        saveLabel={isNew ? "Buchen" : "Speichern"}
+        onSave={() => onSave(form)}
+      />
     </Modal>
   );
 }
@@ -1122,232 +1792,38 @@ function EngineerDialog({
 }) {
   const [form, setForm] = useState({ ...engineerState });
   const valid = form.name.trim().length > 1 && form.role.trim().length > 1 && form.company.trim().length > 1;
-
-  const generateInitials = (name: string) =>
-    name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
+  const genInitials = (name: string) =>
+    name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
   return (
-    <Modal title="Engineer-Profil bearbeiten" onClose={onClose}>
+    <Modal title="Engineer-Profil" onClose={onClose}>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Name
           <input
             className={`mt-1 ${inputCls}`}
             value={form.name}
-            onChange={(e) => {
-              const name = e.target.value;
-              setForm({ ...form, name, initials: generateInitials(name) });
-            }}
-            placeholder="Max Mustermann"
+            onChange={(e) => setForm({ ...form, name: e.target.value, initials: genInitials(e.target.value) })}
           />
         </label>
         <label className="text-xs font-medium">
           Rolle
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.role}
-            onChange={(e) => setForm({ ...form, role: e.target.value })}
-            placeholder="Senior Systems Engineer"
-          />
+          <input className={`mt-1 ${inputCls}`} value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} />
         </label>
         <label className="text-xs font-medium">
           Unternehmen
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.company}
-            onChange={(e) => setForm({ ...form, company: e.target.value })}
-            placeholder="NorthBit IT-Systemhaus GmbH"
-          />
+          <input className={`mt-1 ${inputCls}`} value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
         </label>
         <label className="text-xs font-medium">
           Initialen
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.initials}
-            onChange={(e) => setForm({ ...form, initials: e.target.value.toUpperCase().slice(0, 2) })}
-            placeholder="MM"
-            maxLength={2}
-          />
+          <input className={`mt-1 ${inputCls}`} value={form.initials} maxLength={2} onChange={(e) => setForm({ ...form, initials: e.target.value.toUpperCase().slice(0, 2) })} />
         </label>
         <label className="text-xs font-medium">
           Wochenziel (h)
-          <input
-            type="number"
-            min={1}
-            step={1}
-            className={`mt-1 ${inputCls}`}
-            value={form.weeklyTarget}
-            onChange={(e) => setForm({ ...form, weeklyTarget: Number(e.target.value) })}
-          />
+          <input type="number" min={1} className={`mt-1 ${inputCls}`} value={form.weeklyTarget} onChange={(e) => setForm({ ...form, weeklyTarget: Number(e.target.value) })} />
         </label>
       </div>
-      <div className="mt-5 flex justify-end gap-2">
-        <button onClick={onClose} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
-          Abbrechen
-        </button>
-        <button
-          disabled={!valid}
-          onClick={() => onSave(form)}
-          className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
-          style={{ background: "var(--gradient-primary)" }}
-        >
-          Speichern
-        </button>
-      </div>
+      <FormActions onCancel={onClose} saveDisabled={!valid} onSave={() => onSave(form)} />
     </Modal>
   );
 }
-
-function ProjectDialog({
-  onClose,
-  onSave,
-}: {
-  onClose: () => void;
-  onSave: (p: Omit<Project, "id" | "spent" | "progress">) => void;
-}) {
-  const today = new Date().toISOString().slice(0, 10);
-  const [form, setForm] = useState({
-    name: "",
-    client: "",
-    budget: 40,
-    status: "on_track" as ProjectStatus,
-    start: today,
-    deadline: today,
-    team: "",
-    lead: "",
-    description: "",
-  });
-  const valid =
-    form.name.trim().length > 1 &&
-    form.client.trim().length > 1 &&
-    form.deadline >= form.start;
-
-  return (
-    <Modal title="Neues Projekt anlegen" onClose={onClose}>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
-          Projektname
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="z. B. Datacenter Migration"
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Kunde
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.client}
-            onChange={(e) => setForm({ ...form, client: e.target.value })}
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Projektleitung
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.lead}
-            onChange={(e) => setForm({ ...form, lead: e.target.value })}
-            placeholder="z. B. Max Mustermann"
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Start
-          <input
-            type="date"
-            className={`mt-1 ${inputCls}`}
-            value={form.start}
-            onChange={(e) => setForm({ ...form, start: e.target.value })}
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Deadline
-          <input
-            type="date"
-            className={`mt-1 ${inputCls}`}
-            value={form.deadline}
-            onChange={(e) => setForm({ ...form, deadline: e.target.value })}
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Budget (h)
-          <input
-            type="number"
-            min="1"
-            step="1"
-            className={`mt-1 ${inputCls}`}
-            value={form.budget}
-            onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })}
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Status
-          <select
-            className={`mt-1 ${inputCls}`}
-            value={form.status}
-            onChange={(e) => setForm({ ...form, status: e.target.value as ProjectStatus })}
-          >
-            {(["on_track", "at_risk", "delayed", "abgeschlossen"] as ProjectStatus[]).map((s) => (
-              <option key={s} value={s} className="bg-background">
-                {s}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
-          Team (Komma-getrennt)
-          <input
-            className={`mt-1 ${inputCls}`}
-            value={form.team}
-            onChange={(e) => setForm({ ...form, team: e.target.value })}
-            placeholder="AB, CD, EF"
-          />
-        </label>
-        <label className="col-span-1 sm:col-span-2 text-xs font-medium">
-          Beschreibung
-          <textarea
-            rows={3}
-            className={`mt-1 ${inputCls}`}
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            placeholder="Ziele, Scope, Anmerkungen …"
-          />
-        </label>
-      </div>
-      <div className="mt-5 flex justify-end gap-2">
-        <button onClick={onClose} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
-          Abbrechen
-        </button>
-        <button
-          disabled={!valid}
-          onClick={() =>
-            onSave({
-              name: form.name,
-              client: form.client,
-              budget: form.budget,
-              status: form.status,
-              start: form.start,
-              deadline: form.deadline,
-              lead: form.lead,
-              description: form.description,
-              team: form.team
-                .split(",")
-                .map((t) => t.trim())
-                .filter(Boolean),
-            })
-          }
-          className="h-9 rounded-md px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] disabled:opacity-50"
-          style={{ background: "var(--gradient-primary)" }}
-        >
-          Anlegen
-        </button>
-      </div>
-    </Modal>
-  );
-}
-
