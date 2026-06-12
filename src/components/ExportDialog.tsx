@@ -573,6 +573,15 @@ export function ExportDialog({
           </div>
         </div>
 
+        {pdfError && (
+          <div
+            role="alert"
+            className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+          >
+            {pdfError}
+          </div>
+        )}
+
         <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">
           {onJsonBackup ? (
             <Button
@@ -587,14 +596,34 @@ export function ExportDialog({
             </Button>
           ) : <span />}
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>Abbrechen</Button>
-            <Button onClick={handlePrepare}>Export vorbereiten</Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+              Abbrechen
+            </Button>
+            <Button onClick={handlePrepare} disabled={loading}>
+              {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {format === "pdf" ? "PDF erzeugen" : "Export vorbereiten"}
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    <PdfPreviewDialog
+      open={previewOpen}
+      onOpenChange={(o) => {
+        setPreviewOpen(o);
+        if (!o) setPdfPreview(null);
+      }}
+      preview={pdfPreview}
+      onReconfigure={() => {
+        setPdfPreview(null);
+        onOpenChange(true);
+      }}
+    />
+    </>
   );
 }
+
 
 /* ------------------------ Formatter & Subkomponente ----------------------- */
 
