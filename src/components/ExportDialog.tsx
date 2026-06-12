@@ -177,6 +177,13 @@ export function ExportDialog({
   const [fileNameOverride, setFileNameOverride] = useState<string | null>(null);
   const [isMaximized, setIsMaximized] = useState(false);
 
+  // PDF-Erzeugung
+  const [loading, setLoading] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
+  const [pdfPreview, setPdfPreview] = useState<PdfPreview | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+
   // Beim Öffnen: gespeicherte Präferenzen laden, ansonsten Defaults
   useEffect(() => {
     if (!open) return;
