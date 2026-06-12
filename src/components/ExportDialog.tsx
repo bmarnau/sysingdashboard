@@ -246,10 +246,19 @@ export function ExportDialog({
     },
   };
 
+  const exportData = useMemo(
+    () =>
+      createExportDTO(
+        { projects, workPackages, activities, engineer },
+        config,
+      ),
+    [projects, workPackages, activities, engineer, config],
+  );
+
   const handlePrepare = () => {
     savePrefs({ format, month, clientId, projectId, grouping, sorting });
     // eslint-disable-next-line no-console
-    console.log("[Export] Vorbereitete Exportoptionen:", config);
+    console.log("[Export] Vorbereitete Exportoptionen:", exportData);
     onOpenChange(false);
   };
 
