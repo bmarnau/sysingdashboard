@@ -583,12 +583,6 @@ function Dashboard() {
                     >
                       <Download className="size-4 opacity-70" /> Export…
                     </button>
-                    <button
-                      onClick={exportData}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <Download className="size-4 opacity-70" /> JSON-Backup
-                    </button>
                   </div>
                 </>
               )}
