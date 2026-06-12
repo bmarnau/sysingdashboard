@@ -269,12 +269,54 @@ export function ExportDialog({
     [projects, workPackages, activities, engineer, config],
   );
 
-  const handlePrepare = () => {
+  const hasData = exportData.summary.activities > 0;
+
+  const handlePrepare = async () => {
     savePrefs({ format, month, clientId, projectId, grouping, sorting });
-    // eslint-disable-next-line no-console
-    console.log("[Export] Vorbereitete Exportoptionen:", exportData);
-    onOpenChange(false);
+
+    if (format !== "pdf") {
+      // CSV / JSON / Azure folgen in späteren Schritten
+      // eslint-disable-next-line no-console
+      console.log("[Export] Format noch nicht implementiert:", format, exportData);
+      onOpenChange(false);
+      return;
+    }
+
+    if (!hasData) {
+      setPdfError("Für den gewählten Zeitraum wurden keine Daten gefunden.");
+      return;
+    }
+
+    setPdfError(null);
+    setLoading(true);
+    try {
+      // Async, damit UI nicht blockiert (yield)
+      await new Promise((r) => setTimeout(r, 0));
+      const preview = await PdfExportService.createPreview({
+        engineer,
+        projects,
+        workPackages,
+        activities,
+        exportData,
+      });
+      // ggf. überschriebenen Dateinamen übernehmen
+      if (fileNameOverride && fileNameOverride.trim()) {
+        preview.fileName = fileNameOverride.trim().endsWith(".pdf")
+          ? fileNameOverride.trim()
+          : `${fileNameOverride.trim()}.pdf`;
+      }
+      setPdfPreview(preview);
+      setPreviewOpen(true);
+      onOpenChange(false);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[Export] PDF-Erzeugung fehlgeschlagen:", err);
+      setPdfError("PDF konnte nicht erzeugt werden.");
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   const availableSorts = SORT_OPTIONS.filter((o) => !sorting.includes(o.value));
 
