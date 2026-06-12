@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Download, Settings2 } from "lucide-react";
 import type { PdfPreview } from "@/lib/pdf-export";
+import { SaveTargetDialog } from "@/components/SaveTargetDialog";
 
 interface PdfPreviewDialogProps {
   open: boolean;
