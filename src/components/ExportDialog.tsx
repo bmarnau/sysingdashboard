@@ -18,8 +18,14 @@ import {
   type GroupingId,
   type SortKey,
 } from "@/lib/export-data";
-import { PdfExportService, type PdfPreview } from "@/lib/pdf-export";
-import { PdfPreviewDialog } from "@/components/PdfPreviewDialog";
+import type { PdfPreview } from "@/lib/pdf-export";
+import { lazy, Suspense } from "react";
+
+// jsPDF/autotable (~350 KB gz) und der Preview-Dialog werden erst on-demand geladen,
+// damit das Dashboard nicht durch den PDF-Stack ausgebremst wird.
+const PdfPreviewDialog = lazy(() =>
+  import("@/components/PdfPreviewDialog").then((m) => ({ default: m.PdfPreviewDialog })),
+);
 
 export type { ExportConfiguration, ExportFormat, GroupingId, SortKey };
 
