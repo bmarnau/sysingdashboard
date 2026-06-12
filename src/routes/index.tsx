@@ -575,10 +575,19 @@ function Dashboard() {
                   />
                   <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
                     <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
+                        setShowExportDialog(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Download className="size-4 opacity-70" /> Export…
+                    </button>
+                    <button
                       onClick={exportData}
                       className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
                     >
-                      <Download className="size-4 opacity-70" /> Export
+                      <Download className="size-4 opacity-70" /> JSON-Backup
                     </button>
                   </div>
                 </>
