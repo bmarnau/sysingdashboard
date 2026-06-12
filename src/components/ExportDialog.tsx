@@ -14,6 +14,7 @@ import {
   createExportDTO,
   type ExportConfiguration,
   type ExportFormat,
+  type ExportGroupNode,
   type GroupingId,
   type SortKey,
 } from "@/lib/export-data";
