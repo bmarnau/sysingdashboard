@@ -277,6 +277,15 @@ function Dashboard() {
     setHydrated(true);
   }, []);
 
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, []);
 
   useEffect(() => {
     if (!hydrated) return;
