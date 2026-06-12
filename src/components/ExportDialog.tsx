@@ -148,6 +148,7 @@ interface ExportDialogProps {
   projects: Project[];
   workPackages: WorkPackage[];
   activities: Activity[];
+  engineer: Engineer;
   onJsonBackup?: () => void;
 }
 
@@ -157,6 +158,7 @@ export function ExportDialog({
   projects,
   workPackages,
   activities,
+  engineer,
   onJsonBackup,
 }: ExportDialogProps) {
   const [format, setFormat] = useState<ExportFormat>(DEFAULTS.format);
