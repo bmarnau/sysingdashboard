@@ -522,3 +522,41 @@ export function ExportDialog({
     </Dialog>
   );
 }
+
+/* ------------------------ Formatter & Subkomponente ----------------------- */
+
+const HOURS_FMT = new Intl.NumberFormat("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const CURRENCY_FMT = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2 });
+
+function formatHours(h: number): string {
+  return HOURS_FMT.format(h);
+}
+
+function formatCurrency(n: number): string {
+  return CURRENCY_FMT.format(n);
+}
+
+import type { ExportGroupNode } from "@/lib/export-data";
+
+function GroupNode({ node, depth }: { node: ExportGroupNode; depth: number }) {
+  return (
+    <li>
+      <div
+        className="flex items-baseline gap-2"
+        style={{ paddingLeft: `${depth * 12}px` }}
+      >
+        <span className="truncate font-medium">{node.label}</span>
+        <span className="ml-auto whitespace-nowrap text-muted-foreground">
+          {formatHours(node.hours)} h · {formatCurrency(node.amount)}
+        </span>
+      </div>
+      {node.children.length > 0 && (
+        <ul className="space-y-0.5">
+          {node.children.map((c) => (
+            <GroupNode key={c.key} node={c} depth={depth + 1} />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+}
