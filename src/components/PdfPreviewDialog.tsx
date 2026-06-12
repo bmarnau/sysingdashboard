@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Download, Settings2 } from "lucide-react";
 import type { PdfPreview } from "@/lib/pdf-export";
+import { SaveTargetDialog } from "@/components/SaveTargetDialog";
 
 interface PdfPreviewDialogProps {
   open: boolean;
@@ -41,15 +42,11 @@ export function PdfPreviewDialog({
     }
   }, [open, preview?.url]);
 
-  const handleDownload = () => {
-    if (!preview) return;
-    const a = document.createElement("a");
-    a.href = preview.url;
-    a.download = preview.fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
+  const [saveOpen, setSaveOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) setSaveOpen(false);
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -115,13 +112,22 @@ export function PdfPreviewDialog({
                 Neu konfigurieren
               </Button>
             )}
-            <Button onClick={handleDownload} disabled={!preview}>
+            <Button onClick={() => setSaveOpen(true)} disabled={!preview}>
               <Download className="mr-2 size-4" />
-              Download PDF
+              Speichern…
             </Button>
           </div>
         </DialogFooter>
       </DialogContent>
+
+      <SaveTargetDialog
+        open={saveOpen}
+        onOpenChange={setSaveOpen}
+        blob={preview?.blob ?? null}
+        fileName={preview?.fileName ?? ""}
+        format="pdf"
+        reportId={preview?.metadata.reportId ?? ""}
+      />
     </Dialog>
   );
 }
