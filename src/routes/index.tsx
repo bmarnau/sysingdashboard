@@ -254,6 +254,9 @@ function Dashboard() {
   const [editingWP, setEditingWP] = useState<WorkPackage | null>(null);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [showEngineer, setShowEngineer] = useState(false);
+  const [searchQ, setSearchQ] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const [now, setNow] = useState<Date | null>(null);
 
