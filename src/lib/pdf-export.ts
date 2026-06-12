@@ -141,7 +141,7 @@ export const PdfExportService = {
       createdBy: engineer.name,
       exportFormat: "pdf",
       dashboardVersion: DASHBOARD_VERSION,
-      grouping: GROUPING_LABEL[cfg.configuration?.grouping ?? cfg.grouping] ?? cfg.grouping,
+      grouping: GROUPING_LABEL[cfg.grouping] ?? cfg.grouping,
       sorting: cfg.sorting.map((k) => SORT_LABEL[k] ?? k),
     };
   },
