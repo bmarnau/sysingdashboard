@@ -249,6 +249,7 @@ function Dashboard() {
 
   const [tab, setTab] = useState<Tab>("projekte");
   const [showNewMenu, setShowNewMenu] = useState(false);
+  const [showServiceMenu, setShowServiceMenu] = useState(false);
 
   // Dialog state
   const [editingProject, setEditingProject] = useState<Project | null>(null);
