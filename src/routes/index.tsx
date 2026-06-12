@@ -30,6 +30,7 @@ import {
   type WorkPackage,
   type WorkPackageStatus,
 } from "@/lib/dashboard-data";
+import { ExportDialog } from "@/components/ExportDialog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
