@@ -816,6 +816,14 @@ function Dashboard() {
           }}
         />
       )}
+
+      <ExportDialog
+        open={showExportDialog}
+        onOpenChange={setShowExportDialog}
+        projects={projects}
+        workPackages={workPackages}
+        activities={activities}
+      />
     </div>
   );
 }
