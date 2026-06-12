@@ -20,14 +20,6 @@ import {
 
 export type { ExportConfiguration, ExportFormat, GroupingId, SortKey };
 
-  sorting: SortKey[];
-  filter: {
-    clientId: string | null;
-    clientName: string | null;
-    projectId: string | null;
-    projectName: string | null;
-  };
-}
 
 /* ----------------------------- Konstanten ------------------------------ */
 
