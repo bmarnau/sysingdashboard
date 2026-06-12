@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, RotateCcw, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Maximize2, Minimize2, RotateCcw, X } from "lucide-react";
 import type { Activity, Engineer, Project, WorkPackage } from "@/lib/dashboard-data";
 import {
   createExportDTO,
@@ -171,6 +171,7 @@ export function ExportDialog({
 
   // Manuell editierter Dateiname (null => automatisch generieren)
   const [fileNameOverride, setFileNameOverride] = useState<string | null>(null);
+  const [isMaximized, setIsMaximized] = useState(false);
 
   // Beim Öffnen: gespeicherte Präferenzen laden, ansonsten Defaults
   useEffect(() => {
@@ -183,6 +184,7 @@ export function ExportDialog({
     setGrouping(p.grouping ?? DEFAULTS.grouping);
     setSorting(p.sorting?.length ? p.sorting : DEFAULTS.sorting);
     setFileNameOverride(null);
+    setIsMaximized(false);
   }, [open]);
 
   const clients = useMemo(() => {
@@ -267,7 +269,22 @@ export function ExportDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className={
+          isMaximized
+            ? "w-[95vw] max-w-[95vw] max-h-[95vh] overflow-y-auto"
+            : "max-w-lg max-h-[90vh] overflow-y-auto"
+        }
+      >
+        <button
+          type="button"
+          onClick={() => setIsMaximized((m) => !m)}
+          className="absolute right-10 top-4 grid size-7 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+          aria-label={isMaximized ? "Verkleinern" : "Vergrößern"}
+          title={isMaximized ? "Verkleinern" : "Vergrößern"}
+        >
+          {isMaximized ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+        </button>
         <DialogHeader>
           <DialogTitle>Export erstellen</DialogTitle>
           <DialogDescription>
