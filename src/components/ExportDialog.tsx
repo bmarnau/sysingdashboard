@@ -269,7 +269,22 @@ export function ExportDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className={
+          isMaximized
+            ? "w-[95vw] max-w-[95vw] max-h-[95vh] overflow-y-auto"
+            : "max-w-lg max-h-[90vh] overflow-y-auto"
+        }
+      >
+        <button
+          type="button"
+          onClick={() => setIsMaximized((m) => !m)}
+          className="absolute right-10 top-4 grid size-7 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+          aria-label={isMaximized ? "Verkleinern" : "Vergrößern"}
+          title={isMaximized ? "Verkleinern" : "Vergrößern"}
+        >
+          {isMaximized ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+        </button>
         <DialogHeader>
           <DialogTitle>Export erstellen</DialogTitle>
           <DialogDescription>
