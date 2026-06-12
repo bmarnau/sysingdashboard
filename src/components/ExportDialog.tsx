@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Maximize2, Minimize2, RotateCcw, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Maximize2, Minimize2, RotateCcw, X } from "lucide-react";
 import type { Activity, Engineer, Project, WorkPackage } from "@/lib/dashboard-data";
 import {
   createExportDTO,
@@ -18,8 +18,12 @@ import {
   type GroupingId,
   type SortKey,
 } from "@/lib/export-data";
+import { PdfExportService, type PdfPreview } from "@/lib/pdf-export";
+import { PdfPreviewDialog } from "@/components/PdfPreviewDialog";
 
 export type { ExportConfiguration, ExportFormat, GroupingId, SortKey };
+
+
 
 
 /* ----------------------------- Konstanten ------------------------------ */
