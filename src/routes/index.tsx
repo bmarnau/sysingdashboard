@@ -161,6 +161,80 @@ function fmtEuro(v: number) {
   return v.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 }
 
+/* ----------------------------- Validation & normalization ---------------------- */
+
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function isValidISODate(s?: string): boolean {
+  if (!s || !ISO_DATE_RE.test(s)) return false;
+  const d = new Date(s);
+  return !Number.isNaN(d.getTime());
+}
+
+export type ActivityErrors = {
+  title?: string;
+  date?: string;
+  duration?: string;
+  hourlyRate?: string;
+  billingStatus?: string;
+};
+
+function validateActivity(a: Activity): ActivityErrors {
+  const errs: ActivityErrors = {};
+  if (!a.title || a.title.trim().length < 2) errs.title = "Titel ist erforderlich (mind. 2 Zeichen).";
+  if (!isValidISODate(a.date)) errs.date = "Gültiges Datum erforderlich.";
+  if (!(Number(a.duration) > 0)) errs.duration = "Dauer muss größer als 0 sein.";
+  if (a.billable) {
+    if (!(Number(a.hourlyRate) >= 0) || Number.isNaN(Number(a.hourlyRate)))
+      errs.hourlyRate = "Stundensatz erforderlich für abrechenbare Tätigkeiten.";
+    if (a.billingStatus !== "offen" && a.billingStatus !== "abgerechnet")
+      errs.billingStatus = "Abrechnungsstatus muss 'Offen' oder 'Abgerechnet' sein.";
+  }
+  return errs;
+}
+
+/** Erzwingt Invarianten:
+ *  - !billable ⇒ status="nicht_abrechenbar", hourlyRate=0
+ *  - billable ⇒ status ∈ {offen,abgerechnet}, hourlyRate≥0
+ *  - workPackageId zeigt entweder auf existierendes WP oder null
+ *  - duration/hourlyRate sind nicht-negative Zahlen
+ */
+function normalizeActivity(a: Activity, validWpIds: Set<string>): Activity {
+  const duration = Math.max(0, Number(a.duration) || 0);
+  const hourlyRateRaw = Math.max(0, Number(a.hourlyRate) || 0);
+  const workPackageId = a.workPackageId && validWpIds.has(a.workPackageId) ? a.workPackageId : null;
+  if (!a.billable) {
+    return {
+      ...a,
+      duration,
+      hourlyRate: 0,
+      billable: false,
+      billingStatus: "nicht_abrechenbar",
+      workPackageId,
+      title: (a.title ?? "").trim() === "" ? a.title : a.title.trim(),
+    };
+  }
+  const billingStatus: BillingStatus =
+    a.billingStatus === "abgerechnet" ? "abgerechnet" : "offen";
+  return {
+    ...a,
+    duration,
+    hourlyRate: hourlyRateRaw,
+    billable: true,
+    billingStatus,
+    workPackageId,
+    title: (a.title ?? "").trim() === "" ? a.title : a.title.trim(),
+  };
+}
+
+function normalizeWorkPackage(w: WorkPackage, validProjectIds: Set<string>): WorkPackage {
+  return {
+    ...w,
+    projectId: w.projectId && validProjectIds.has(w.projectId) ? w.projectId : null,
+  };
+}
+
+
 /* ---------------------------------- Component --------------------------------- */
 
 type Tab = "projekte" | "arbeitspakete" | "taetigkeiten" | "abrechnung";
