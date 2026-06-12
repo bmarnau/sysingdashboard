@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, RotateCcw, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Maximize2, Minimize2, RotateCcw, X } from "lucide-react";
 import type { Activity, Engineer, Project, WorkPackage } from "@/lib/dashboard-data";
 import {
   createExportDTO,
