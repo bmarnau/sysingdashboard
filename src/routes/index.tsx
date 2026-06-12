@@ -3,10 +3,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity as ActivityIcon,
   AlertTriangle,
-  Bell,
   CheckCircle2,
   ChevronDown,
   Clock,
+  Download,
   Euro,
   FolderKanban,
   Layers,
@@ -15,6 +15,7 @@ import {
   Printer,
   Search,
   Server,
+  Settings,
   Trash2,
   TrendingUp,
 } from "lucide-react";
@@ -248,6 +249,7 @@ function Dashboard() {
 
   const [tab, setTab] = useState<Tab>("projekte");
   const [showNewMenu, setShowNewMenu] = useState(false);
+  const [showServiceMenu, setShowServiceMenu] = useState(false);
 
   // Dialog state
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -306,6 +308,20 @@ function Dashboard() {
     setProjects(dashboardData.projects);
     setWorkPackages(dashboardData.workPackages);
     setActivities(dashboardData.activities);
+  };
+
+  const exportData = () => {
+    const payload = { projects, workPackages, activities, engineer: engineerState, exportedAt: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `engineer-dashboard-export-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setShowServiceMenu(false);
   };
 
   /* ---------- Derived ---------- */
@@ -541,10 +557,31 @@ function Dashboard() {
             >
               Reset
             </button>
-            <button className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40">
-              <Bell className="size-4" />
-              <span className="absolute right-2 top-2 size-2 rounded-full bg-destructive" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowServiceMenu((v) => !v)}
+                className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
+              >
+                <Settings className="size-4" />
+              </button>
+              {showServiceMenu && (
+                <>
+                  <button
+                    aria-label="Menü schließen"
+                    className="fixed inset-0 z-30 cursor-default"
+                    onClick={() => setShowServiceMenu(false)}
+                  />
+                  <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
+                    <button
+                      onClick={exportData}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Download className="size-4 opacity-70" /> Export
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
             <button
               onClick={() => setShowEngineer(true)}
               className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3 transition hover:bg-secondary"
