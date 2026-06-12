@@ -817,6 +817,7 @@ function Dashboard() {
         projects={projects}
         workPackages={workPackages}
         activities={activities}
+        engineer={engineerState}
         onJsonBackup={exportData}
       />
     </div>

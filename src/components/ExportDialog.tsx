@@ -9,33 +9,18 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, RotateCcw, X } from "lucide-react";
-import type { Activity, Project, WorkPackage } from "@/lib/dashboard-data";
+import type { Activity, Engineer, Project, WorkPackage } from "@/lib/dashboard-data";
+import {
+  createExportDTO,
+  type ExportConfiguration,
+  type ExportFormat,
+  type ExportGroupNode,
+  type GroupingId,
+  type SortKey,
+} from "@/lib/export-data";
 
-/* -------------------------------- Typen -------------------------------- */
+export type { ExportConfiguration, ExportFormat, GroupingId, SortKey };
 
-export type ExportFormat = "pdf" | "json" | "csv" | "azure-table";
-
-export type GroupingId =
-  | "customer-project-workpackage-task"
-  | "project-workpackage-task"
-  | "employee-project-task"
-  | "customer-month-project";
-
-export type SortKey = "date" | "date-desc" | "project" | "customer" | "employee" | "duration";
-
-export interface ExportConfiguration {
-  format: ExportFormat;
-  month: string; // YYYY-MM
-  fileName: string;
-  grouping: GroupingId;
-  sorting: SortKey[];
-  filter: {
-    clientId: string | null;
-    clientName: string | null;
-    projectId: string | null;
-    projectName: string | null;
-  };
-}
 
 /* ----------------------------- Konstanten ------------------------------ */
 
@@ -164,6 +149,7 @@ interface ExportDialogProps {
   projects: Project[];
   workPackages: WorkPackage[];
   activities: Activity[];
+  engineer: Engineer;
   onJsonBackup?: () => void;
 }
 
@@ -173,6 +159,7 @@ export function ExportDialog({
   projects,
   workPackages,
   activities,
+  engineer,
   onJsonBackup,
 }: ExportDialogProps) {
   const [format, setFormat] = useState<ExportFormat>(DEFAULTS.format);
@@ -260,10 +247,19 @@ export function ExportDialog({
     },
   };
 
+  const exportData = useMemo(
+    () =>
+      createExportDTO(
+        { projects, workPackages, activities, engineer },
+        config,
+      ),
+    [projects, workPackages, activities, engineer, config],
+  );
+
   const handlePrepare = () => {
     savePrefs({ format, month, clientId, projectId, grouping, sorting });
     // eslint-disable-next-line no-console
-    console.log("[Export] Vorbereitete Exportoptionen:", config);
+    console.log("[Export] Vorbereitete Exportoptionen:", exportData);
     onOpenChange(false);
   };
 
@@ -466,6 +462,43 @@ export function ExportDialog({
               </dd>
             </dl>
           </div>
+
+          {/* Export Vorschau */}
+          <div className="rounded-lg border border-primary/40 bg-primary/5 p-3">
+            <p className="mb-2 text-sm font-semibold">Export Vorschau</p>
+            <dl className="grid grid-cols-[10rem_1fr] gap-y-1 text-xs">
+              <dt className="text-muted-foreground">Kunden</dt>
+              <dd>{exportData.summary.customers}</dd>
+              <dt className="text-muted-foreground">Projekte</dt>
+              <dd>{exportData.summary.projects}</dd>
+              <dt className="text-muted-foreground">Arbeitspakete</dt>
+              <dd>{exportData.summary.workPackages}</dd>
+              <dt className="text-muted-foreground">Tätigkeiten</dt>
+              <dd>{exportData.summary.activities}</dd>
+              <dt className="text-muted-foreground">Zeitbuchungen</dt>
+              <dd>{exportData.summary.timeEntries}</dd>
+              <dt className="text-muted-foreground">Gesamtstunden</dt>
+              <dd>{formatHours(exportData.summary.totalHours)} h</dd>
+              <dt className="text-muted-foreground">Abrechnungsfähig</dt>
+              <dd>{formatHours(exportData.summary.billableHours)} h</dd>
+              <dt className="text-muted-foreground">Nicht abrechnungsfähig</dt>
+              <dd>{formatHours(exportData.summary.nonBillableHours)} h</dd>
+              <dt className="text-muted-foreground">Gesamtbetrag</dt>
+              <dd className="font-semibold">{formatCurrency(exportData.summary.totalAmount)}</dd>
+            </dl>
+            {exportData.groups.length > 0 && (
+              <details className="mt-3">
+                <summary className="cursor-pointer text-xs font-medium text-muted-foreground hover:text-foreground">
+                  Gruppierungs-Baum anzeigen ({exportData.groups.length} Knoten auf Top-Ebene)
+                </summary>
+                <ul className="mt-2 space-y-0.5 text-xs">
+                  {exportData.groups.map((g) => (
+                    <GroupNode key={g.key} node={g} depth={0} />
+                  ))}
+                </ul>
+              </details>
+            )}
+          </div>
         </div>
 
         <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">
@@ -488,5 +521,43 @@ export function ExportDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/* ------------------------ Formatter & Subkomponente ----------------------- */
+
+const HOURS_FMT = new Intl.NumberFormat("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const CURRENCY_FMT = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2 });
+
+function formatHours(h: number): string {
+  return HOURS_FMT.format(h);
+}
+
+function formatCurrency(n: number): string {
+  return CURRENCY_FMT.format(n);
+}
+
+
+
+function GroupNode({ node, depth }: { node: ExportGroupNode; depth: number }) {
+  return (
+    <li>
+      <div
+        className="flex items-baseline gap-2"
+        style={{ paddingLeft: `${depth * 12}px` }}
+      >
+        <span className="truncate font-medium">{node.label}</span>
+        <span className="ml-auto whitespace-nowrap text-muted-foreground">
+          {formatHours(node.hours)} h · {formatCurrency(node.amount)}
+        </span>
+      </div>
+      {node.children.length > 0 && (
+        <ul className="space-y-0.5">
+          {node.children.map((c) => (
+            <GroupNode key={c.key} node={c} depth={depth + 1} />
+          ))}
+        </ul>
+      )}
+    </li>
   );
 }
