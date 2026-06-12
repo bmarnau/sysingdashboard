@@ -42,15 +42,11 @@ export function PdfPreviewDialog({
     }
   }, [open, preview?.url]);
 
-  const handleDownload = () => {
-    if (!preview) return;
-    const a = document.createElement("a");
-    a.href = preview.url;
-    a.download = preview.fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
+  const [saveOpen, setSaveOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) setSaveOpen(false);
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
