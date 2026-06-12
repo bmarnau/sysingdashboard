@@ -618,18 +618,22 @@ export function ExportDialog({
       </DialogContent>
     </Dialog>
 
-    <PdfPreviewDialog
-      open={previewOpen}
-      onOpenChange={(o) => {
-        setPreviewOpen(o);
-        if (!o) setPdfPreview(null);
-      }}
-      preview={pdfPreview}
-      onReconfigure={() => {
-        setPdfPreview(null);
-        onOpenChange(true);
-      }}
-    />
+    {previewOpen && (
+      <Suspense fallback={null}>
+        <PdfPreviewDialog
+          open={previewOpen}
+          onOpenChange={(o) => {
+            setPreviewOpen(o);
+            if (!o) setPdfPreview(null);
+          }}
+          preview={pdfPreview}
+          onReconfigure={() => {
+            setPdfPreview(null);
+            onOpenChange(true);
+          }}
+        />
+      </Suspense>
+    )}
     </>
   );
 }
