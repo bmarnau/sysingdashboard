@@ -48,10 +48,10 @@ const MONTH_NAMES_DE = [
 ];
 
 const GROUPING_LABEL: Record<GroupingId, string> = {
-  "customer-project-workpackage-task": "Kunde → Projekt → Arbeitspaket → Tätigkeit",
-  "project-workpackage-task": "Projekt → Arbeitspaket → Tätigkeit",
-  "employee-project-task": "Mitarbeiter → Projekt → Tätigkeit",
-  "customer-month-project": "Kunde → Monat → Projekt",
+  "customer-project-workpackage-task": "Kunde > Projekt > Arbeitspaket > Tätigkeit",
+  "project-workpackage-task": "Projekt > Arbeitspaket > Tätigkeit",
+  "employee-project-task": "Mitarbeiter > Projekt > Tätigkeit",
+  "customer-month-project": "Kunde > Monat > Projekt",
 };
 
 const SORT_LABEL: Record<SortKey, string> = {
@@ -224,7 +224,7 @@ export const PdfExportService = {
       ["Exportformat", "PDF"],
       ["Monat", fmtMonth(cfg.month)],
       ["Gruppierung", metadata.grouping],
-      ["Sortierung", metadata.sorting.join(" → ") || "keine"],
+      ["Sortierung", metadata.sorting.join(" > ") || "keine"],
     ];
 
     autoTable(doc, {

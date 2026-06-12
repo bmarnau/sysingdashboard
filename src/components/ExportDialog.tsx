@@ -18,8 +18,14 @@ import {
   type GroupingId,
   type SortKey,
 } from "@/lib/export-data";
-import { PdfExportService, type PdfPreview } from "@/lib/pdf-export";
-import { PdfPreviewDialog } from "@/components/PdfPreviewDialog";
+import type { PdfPreview } from "@/lib/pdf-export";
+import { lazy, Suspense } from "react";
+
+// jsPDF/autotable (~350 KB gz) und der Preview-Dialog werden erst on-demand geladen,
+// damit das Dashboard nicht durch den PDF-Stack ausgebremst wird.
+const PdfPreviewDialog = lazy(() =>
+  import("@/components/PdfPreviewDialog").then((m) => ({ default: m.PdfPreviewDialog })),
+);
 
 export type { ExportConfiguration, ExportFormat, GroupingId, SortKey };
 
@@ -293,8 +299,9 @@ export function ExportDialog({
     setPdfError(null);
     setLoading(true);
     try {
-      // Async, damit UI nicht blockiert (yield)
-      await new Promise((r) => setTimeout(r, 0));
+      // jsPDF wird hier dynamisch nachgeladen — der initiale Dashboard-Bundle
+      // bleibt damit frei von ~350 KB PDF-Code.
+      const { PdfExportService } = await import("@/lib/pdf-export");
       const preview = await PdfExportService.createPreview({
         engineer,
         projects,
@@ -611,18 +618,22 @@ export function ExportDialog({
       </DialogContent>
     </Dialog>
 
-    <PdfPreviewDialog
-      open={previewOpen}
-      onOpenChange={(o) => {
-        setPreviewOpen(o);
-        if (!o) setPdfPreview(null);
-      }}
-      preview={pdfPreview}
-      onReconfigure={() => {
-        setPdfPreview(null);
-        onOpenChange(true);
-      }}
-    />
+    {previewOpen && (
+      <Suspense fallback={null}>
+        <PdfPreviewDialog
+          open={previewOpen}
+          onOpenChange={(o) => {
+            setPreviewOpen(o);
+            if (!o) setPdfPreview(null);
+          }}
+          preview={pdfPreview}
+          onReconfigure={() => {
+            setPdfPreview(null);
+            onOpenChange(true);
+          }}
+        />
+      </Suspense>
+    )}
     </>
   );
 }
