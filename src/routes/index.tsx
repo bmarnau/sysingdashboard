@@ -3,10 +3,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity as ActivityIcon,
   AlertTriangle,
-  Bell,
   CheckCircle2,
   ChevronDown,
   Clock,
+  Download,
   Euro,
   FolderKanban,
   Layers,
@@ -15,6 +15,7 @@ import {
   Printer,
   Search,
   Server,
+  Settings,
   Trash2,
   TrendingUp,
 } from "lucide-react";
