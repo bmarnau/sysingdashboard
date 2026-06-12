@@ -831,7 +831,10 @@ function Dashboard() {
         engineer={engineerState}
         onJsonBackup={exportData}
       />
+
+      <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
     </div>
+
   );
 }
 
