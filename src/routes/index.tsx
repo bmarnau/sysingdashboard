@@ -252,6 +252,7 @@ function Dashboard() {
   const [showNewMenu, setShowNewMenu] = useState(false);
   const [showServiceMenu, setShowServiceMenu] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 
   // Dialog state
   const [editingProject, setEditingProject] = useState<Project | null>(null);
