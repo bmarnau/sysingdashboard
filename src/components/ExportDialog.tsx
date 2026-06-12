@@ -171,6 +171,7 @@ export function ExportDialog({
 
   // Manuell editierter Dateiname (null => automatisch generieren)
   const [fileNameOverride, setFileNameOverride] = useState<string | null>(null);
+  const [isMaximized, setIsMaximized] = useState(false);
 
   // Beim Öffnen: gespeicherte Präferenzen laden, ansonsten Defaults
   useEffect(() => {
@@ -183,6 +184,7 @@ export function ExportDialog({
     setGrouping(p.grouping ?? DEFAULTS.grouping);
     setSorting(p.sorting?.length ? p.sorting : DEFAULTS.sorting);
     setFileNameOverride(null);
+    setIsMaximized(false);
   }, [open]);
 
   const clients = useMemo(() => {
