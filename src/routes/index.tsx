@@ -259,15 +259,21 @@ function Dashboard() {
 
   useEffect(() => {
     const p = loadPersisted();
-    if (p) {
-      setEngineer(p.engineer ?? dashboardData.engineer);
-      setProjects(p.projects ?? dashboardData.projects);
-      setWorkPackages(p.workPackages ?? dashboardData.workPackages);
-      setActivities(p.activities ?? dashboardData.activities);
-    }
+    const rawProjects = p?.projects ?? dashboardData.projects;
+    const rawWPs = p?.workPackages ?? dashboardData.workPackages;
+    const rawActs = p?.activities ?? dashboardData.activities;
+    const projectIds = new Set(rawProjects.map((x) => x.id));
+    const normWPs = rawWPs.map((w) => normalizeWorkPackage(w, projectIds));
+    const wpIds = new Set(normWPs.map((w) => w.id));
+    const normActs = rawActs.map((a) => normalizeActivity(a, wpIds));
+    setEngineer(p?.engineer ?? dashboardData.engineer);
+    setProjects(rawProjects);
+    setWorkPackages(normWPs);
+    setActivities(normActs);
     setNow(new Date());
     setHydrated(true);
   }, []);
+
 
   useEffect(() => {
     if (!hydrated) return;
