@@ -461,6 +461,43 @@ export function ExportDialog({
               </dd>
             </dl>
           </div>
+
+          {/* Export Vorschau */}
+          <div className="rounded-lg border border-primary/40 bg-primary/5 p-3">
+            <p className="mb-2 text-sm font-semibold">Export Vorschau</p>
+            <dl className="grid grid-cols-[10rem_1fr] gap-y-1 text-xs">
+              <dt className="text-muted-foreground">Kunden</dt>
+              <dd>{exportData.summary.customers}</dd>
+              <dt className="text-muted-foreground">Projekte</dt>
+              <dd>{exportData.summary.projects}</dd>
+              <dt className="text-muted-foreground">Arbeitspakete</dt>
+              <dd>{exportData.summary.workPackages}</dd>
+              <dt className="text-muted-foreground">Tätigkeiten</dt>
+              <dd>{exportData.summary.activities}</dd>
+              <dt className="text-muted-foreground">Zeitbuchungen</dt>
+              <dd>{exportData.summary.timeEntries}</dd>
+              <dt className="text-muted-foreground">Gesamtstunden</dt>
+              <dd>{formatHours(exportData.summary.totalHours)} h</dd>
+              <dt className="text-muted-foreground">Abrechnungsfähig</dt>
+              <dd>{formatHours(exportData.summary.billableHours)} h</dd>
+              <dt className="text-muted-foreground">Nicht abrechnungsfähig</dt>
+              <dd>{formatHours(exportData.summary.nonBillableHours)} h</dd>
+              <dt className="text-muted-foreground">Gesamtbetrag</dt>
+              <dd className="font-semibold">{formatCurrency(exportData.summary.totalAmount)}</dd>
+            </dl>
+            {exportData.groups.length > 0 && (
+              <details className="mt-3">
+                <summary className="cursor-pointer text-xs font-medium text-muted-foreground hover:text-foreground">
+                  Gruppierungs-Baum anzeigen ({exportData.groups.length} Knoten auf Top-Ebene)
+                </summary>
+                <ul className="mt-2 space-y-0.5 text-xs">
+                  {exportData.groups.map((g) => (
+                    <GroupNode key={g.key} node={g} depth={0} />
+                  ))}
+                </ul>
+              </details>
+            )}
+          </div>
         </div>
 
         <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">
