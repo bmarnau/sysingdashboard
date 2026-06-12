@@ -196,6 +196,9 @@ export function ExportDialog({
     setSorting(p.sorting?.length ? p.sorting : DEFAULTS.sorting);
     setFileNameOverride(null);
     setIsMaximized(false);
+    setPdfError(null);
+    setLoading(false);
+
   }, [open]);
 
   const clients = useMemo(() => {
