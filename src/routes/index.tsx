@@ -310,6 +310,20 @@ function Dashboard() {
     setActivities(dashboardData.activities);
   };
 
+  const exportData = () => {
+    const payload = { projects, workPackages, activities, engineer: engineerState, exportedAt: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `engineer-dashboard-export-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setShowServiceMenu(false);
+  };
+
   /* ---------- Derived ---------- */
 
   const weekly = useMemo(
