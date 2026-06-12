@@ -112,13 +112,22 @@ export function PdfPreviewDialog({
                 Neu konfigurieren
               </Button>
             )}
-            <Button onClick={handleDownload} disabled={!preview}>
+            <Button onClick={() => setSaveOpen(true)} disabled={!preview}>
               <Download className="mr-2 size-4" />
-              Download PDF
+              Speichern…
             </Button>
           </div>
         </DialogFooter>
       </DialogContent>
+
+      <SaveTargetDialog
+        open={saveOpen}
+        onOpenChange={setSaveOpen}
+        blob={preview?.blob ?? null}
+        fileName={preview?.fileName ?? ""}
+        format="pdf"
+        reportId={preview?.metadata.reportId ?? ""}
+      />
     </Dialog>
   );
 }
