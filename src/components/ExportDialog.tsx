@@ -299,8 +299,9 @@ export function ExportDialog({
     setPdfError(null);
     setLoading(true);
     try {
-      // Async, damit UI nicht blockiert (yield)
-      await new Promise((r) => setTimeout(r, 0));
+      // jsPDF wird hier dynamisch nachgeladen — der initiale Dashboard-Bundle
+      // bleibt damit frei von ~350 KB PDF-Code.
+      const { PdfExportService } = await import("@/lib/pdf-export");
       const preview = await PdfExportService.createPreview({
         engineer,
         projects,
