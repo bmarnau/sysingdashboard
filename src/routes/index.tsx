@@ -330,14 +330,17 @@ function Dashboard() {
   }, [activities, workPackages]);
 
   const totalRevenue = useMemo(
-    () => activities.filter((a) => a.billable).reduce((s, a) => s + a.duration * a.hourlyRate, 0),
+    () =>
+      activities
+        .filter((a) => a.billable === true && a.billingStatus !== "nicht_abrechenbar")
+        .reduce((s, a) => s + (Number(a.duration) || 0) * (Number(a.hourlyRate) || 0), 0),
     [activities],
   );
   const openRevenue = useMemo(
     () =>
       activities
-        .filter((a) => a.billable && a.billingStatus === "offen")
-        .reduce((s, a) => s + a.duration * a.hourlyRate, 0),
+        .filter((a) => a.billable === true && a.billingStatus === "offen")
+        .reduce((s, a) => s + (Number(a.duration) || 0) * (Number(a.hourlyRate) || 0), 0),
     [activities],
   );
 
@@ -358,8 +361,12 @@ function Dashboard() {
   };
 
   const saveWP = (w: WorkPackage) => {
+    const projectIds = new Set(projects.map((x) => x.id));
+    const normalized = normalizeWorkPackage(w, projectIds);
     setWorkPackages((arr) =>
-      arr.some((x) => x.id === w.id) ? arr.map((x) => (x.id === w.id ? w : x)) : [w, ...arr],
+      arr.some((x) => x.id === normalized.id)
+        ? arr.map((x) => (x.id === normalized.id ? normalized : x))
+        : [normalized, ...arr],
     );
   };
   const deleteWP = (id: string) => {
@@ -371,10 +378,20 @@ function Dashboard() {
   };
 
   const saveActivity = (a: Activity) => {
+    const errs = validateActivity(a);
+    if (Object.keys(errs).length > 0) {
+      // Defensive: UI verhindert den Aufruf bereits, aber kein inkonsistenter State darf entstehen.
+      return;
+    }
+    const wpIds = new Set(workPackages.map((w) => w.id));
+    const normalized = normalizeActivity(a, wpIds);
     setActivities((arr) =>
-      arr.some((x) => x.id === a.id) ? arr.map((x) => (x.id === a.id ? a : x)) : [a, ...arr],
+      arr.some((x) => x.id === normalized.id)
+        ? arr.map((x) => (x.id === normalized.id ? normalized : x))
+        : [normalized, ...arr],
     );
   };
+
   const deleteActivity = (id: string) => {
     if (!confirm("Tätigkeit löschen?")) return;
     setActivities((arr) => arr.filter((x) => x.id !== id));
