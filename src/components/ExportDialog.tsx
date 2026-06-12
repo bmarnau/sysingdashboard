@@ -9,25 +9,17 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, RotateCcw, X } from "lucide-react";
-import type { Activity, Project, WorkPackage } from "@/lib/dashboard-data";
+import type { Activity, Engineer, Project, WorkPackage } from "@/lib/dashboard-data";
+import {
+  createExportDTO,
+  type ExportConfiguration,
+  type ExportFormat,
+  type GroupingId,
+  type SortKey,
+} from "@/lib/export-data";
 
-/* -------------------------------- Typen -------------------------------- */
+export type { ExportConfiguration, ExportFormat, GroupingId, SortKey };
 
-export type ExportFormat = "pdf" | "json" | "csv" | "azure-table";
-
-export type GroupingId =
-  | "customer-project-workpackage-task"
-  | "project-workpackage-task"
-  | "employee-project-task"
-  | "customer-month-project";
-
-export type SortKey = "date" | "date-desc" | "project" | "customer" | "employee" | "duration";
-
-export interface ExportConfiguration {
-  format: ExportFormat;
-  month: string; // YYYY-MM
-  fileName: string;
-  grouping: GroupingId;
   sorting: SortKey[];
   filter: {
     clientId: string | null;
