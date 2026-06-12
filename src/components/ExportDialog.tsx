@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Maximize2, Minimize2, RotateCcw, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Maximize2, Minimize2, RotateCcw, X } from "lucide-react";
 import type { Activity, Engineer, Project, WorkPackage } from "@/lib/dashboard-data";
 import {
   createExportDTO,
@@ -18,8 +18,12 @@ import {
   type GroupingId,
   type SortKey,
 } from "@/lib/export-data";
+import { PdfExportService, type PdfPreview } from "@/lib/pdf-export";
+import { PdfPreviewDialog } from "@/components/PdfPreviewDialog";
 
 export type { ExportConfiguration, ExportFormat, GroupingId, SortKey };
+
+
 
 
 /* ----------------------------- Konstanten ------------------------------ */
@@ -173,6 +177,13 @@ export function ExportDialog({
   const [fileNameOverride, setFileNameOverride] = useState<string | null>(null);
   const [isMaximized, setIsMaximized] = useState(false);
 
+  // PDF-Erzeugung
+  const [loading, setLoading] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
+  const [pdfPreview, setPdfPreview] = useState<PdfPreview | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+
   // Beim Öffnen: gespeicherte Präferenzen laden, ansonsten Defaults
   useEffect(() => {
     if (!open) return;
@@ -185,6 +196,9 @@ export function ExportDialog({
     setSorting(p.sorting?.length ? p.sorting : DEFAULTS.sorting);
     setFileNameOverride(null);
     setIsMaximized(false);
+    setPdfError(null);
+    setLoading(false);
+
   }, [open]);
 
   const clients = useMemo(() => {
@@ -258,17 +272,61 @@ export function ExportDialog({
     [projects, workPackages, activities, engineer, config],
   );
 
-  const handlePrepare = () => {
+  const hasData = exportData.summary.activities > 0;
+
+  const handlePrepare = async () => {
     savePrefs({ format, month, clientId, projectId, grouping, sorting });
-    // eslint-disable-next-line no-console
-    console.log("[Export] Vorbereitete Exportoptionen:", exportData);
-    onOpenChange(false);
+
+    if (format !== "pdf") {
+      // CSV / JSON / Azure folgen in späteren Schritten
+      // eslint-disable-next-line no-console
+      console.log("[Export] Format noch nicht implementiert:", format, exportData);
+      onOpenChange(false);
+      return;
+    }
+
+    if (!hasData) {
+      setPdfError("Für den gewählten Zeitraum wurden keine Daten gefunden.");
+      return;
+    }
+
+    setPdfError(null);
+    setLoading(true);
+    try {
+      // Async, damit UI nicht blockiert (yield)
+      await new Promise((r) => setTimeout(r, 0));
+      const preview = await PdfExportService.createPreview({
+        engineer,
+        projects,
+        workPackages,
+        activities,
+        exportData,
+      });
+      // ggf. überschriebenen Dateinamen übernehmen
+      if (fileNameOverride && fileNameOverride.trim()) {
+        preview.fileName = fileNameOverride.trim().endsWith(".pdf")
+          ? fileNameOverride.trim()
+          : `${fileNameOverride.trim()}.pdf`;
+      }
+      setPdfPreview(preview);
+      setPreviewOpen(true);
+      onOpenChange(false);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[Export] PDF-Erzeugung fehlgeschlagen:", err);
+      setPdfError("PDF konnte nicht erzeugt werden.");
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   const availableSorts = SORT_OPTIONS.filter((o) => !sorting.includes(o.value));
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
+
       <DialogContent
         className={
           isMaximized
@@ -518,6 +576,15 @@ export function ExportDialog({
           </div>
         </div>
 
+        {pdfError && (
+          <div
+            role="alert"
+            className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+          >
+            {pdfError}
+          </div>
+        )}
+
         <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">
           {onJsonBackup ? (
             <Button
@@ -532,14 +599,34 @@ export function ExportDialog({
             </Button>
           ) : <span />}
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>Abbrechen</Button>
-            <Button onClick={handlePrepare}>Export vorbereiten</Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+              Abbrechen
+            </Button>
+            <Button onClick={handlePrepare} disabled={loading}>
+              {loading && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {format === "pdf" ? "PDF erzeugen" : "Export vorbereiten"}
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    <PdfPreviewDialog
+      open={previewOpen}
+      onOpenChange={(o) => {
+        setPreviewOpen(o);
+        if (!o) setPdfPreview(null);
+      }}
+      preview={pdfPreview}
+      onReconfigure={() => {
+        setPdfPreview(null);
+        onOpenChange(true);
+      }}
+    />
+    </>
   );
 }
+
 
 /* ------------------------ Formatter & Subkomponente ----------------------- */
 
