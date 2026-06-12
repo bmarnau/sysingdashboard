@@ -8,10 +8,36 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { ChevronDown, ChevronUp, RotateCcw, X } from "lucide-react";
 import type { Activity, Project, WorkPackage } from "@/lib/dashboard-data";
 
+/* -------------------------------- Typen -------------------------------- */
+
 export type ExportFormat = "pdf" | "json" | "csv" | "azure-table";
+
+export type GroupingId =
+  | "customer-project-workpackage-task"
+  | "project-workpackage-task"
+  | "employee-project-task"
+  | "customer-month-project";
+
+export type SortKey = "date" | "date-desc" | "project" | "customer" | "employee" | "duration";
+
+export interface ExportConfiguration {
+  format: ExportFormat;
+  month: string; // YYYY-MM
+  fileName: string;
+  grouping: GroupingId;
+  sorting: SortKey[];
+  filter: {
+    clientId: string | null;
+    clientName: string | null;
+    projectId: string | null;
+    projectName: string | null;
+  };
+}
+
+/* ----------------------------- Konstanten ------------------------------ */
 
 const FORMAT_OPTIONS: { value: ExportFormat; label: string; ext: string }[] = [
   { value: "pdf", label: "PDF", ext: "pdf" },
@@ -20,50 +46,40 @@ const FORMAT_OPTIONS: { value: ExportFormat; label: string; ext: string }[] = [
   { value: "azure-table", label: "Azure Table (NDJSON)", ext: "ndjson" },
 ];
 
-export type GroupKey = "Kunde" | "Projekt" | "Arbeitspaket" | "Tätigkeit";
-export type SortKey =
-  | "Datum aufsteigend"
-  | "Datum absteigend"
-  | "Projekt"
-  | "Arbeitspaket"
-  | "Kunde"
-  | "Dauer";
-
-const ALL_GROUPS: GroupKey[] = ["Kunde", "Projekt", "Arbeitspaket", "Tätigkeit"];
-const ALL_SORTS: SortKey[] = [
-  "Datum aufsteigend",
-  "Datum absteigend",
-  "Projekt",
-  "Arbeitspaket",
-  "Kunde",
-  "Dauer",
+const GROUPING_OPTIONS: { value: GroupingId; label: string }[] = [
+  { value: "customer-project-workpackage-task", label: "Kunde → Projekt → Arbeitspaket → Tätigkeit" },
+  { value: "project-workpackage-task", label: "Projekt → Arbeitspaket → Tätigkeit" },
+  { value: "employee-project-task", label: "Mitarbeiter → Projekt → Tätigkeit" },
+  { value: "customer-month-project", label: "Kunde → Monat → Projekt" },
 ];
 
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "date", label: "Datum aufsteigend" },
+  { value: "date-desc", label: "Datum absteigend" },
+  { value: "project", label: "Projektname" },
+  { value: "customer", label: "Kunde" },
+  { value: "employee", label: "Mitarbeiter" },
+  { value: "duration", label: "Dauer" },
+];
+
+const sortLabel = (k: SortKey) => SORT_OPTIONS.find((o) => o.value === k)?.label ?? k;
+const groupingLabel = (g: GroupingId) =>
+  GROUPING_OPTIONS.find((o) => o.value === g)?.label ?? g;
+
 const DEFAULTS = {
-  grouping: ["Kunde", "Projekt", "Arbeitspaket", "Tätigkeit"] as GroupKey[],
-  sorting: ["Datum aufsteigend", "Projekt", "Arbeitspaket"] as SortKey[],
+  format: "pdf" as ExportFormat,
+  grouping: "customer-project-workpackage-task" as GroupingId,
+  sorting: ["date"] as SortKey[],
 };
 
 const PREFS_KEY = "engineer-dashboard:export-prefs";
 
-interface StoredPrefs {
-  format: ExportFormat;
-  month: string;
-  clientId: string | "";
-  projectId: string | "";
-  grouping: GroupKey[];
-  sorting: SortKey[];
-}
+const MONTH_NAMES_DE = [
+  "Januar", "Februar", "März", "April", "Mai", "Juni",
+  "Juli", "August", "September", "Oktober", "November", "Dezember",
+];
 
-interface ExportDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  projects: Project[];
-  workPackages: WorkPackage[];
-  activities: Activity[];
-  /** Optionaler Sofort-Trigger für JSON-Backup (full state). */
-  onJsonBackup?: () => void;
-}
+/* ------------------------------ Helpers -------------------------------- */
 
 function slugify(s: string): string {
   return (s || "")
@@ -83,6 +99,12 @@ function timestamp(): string {
   const d = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+}
+
+function formatMonthLabel(m: string): string {
+  const [y, mm] = m.split("-").map(Number);
+  if (!y || !mm) return m;
+  return `${MONTH_NAMES_DE[mm - 1]} ${y}`;
 }
 
 function buildFileName(opts: {
@@ -106,6 +128,15 @@ function buildFileName(opts: {
   return `${base}.${fmt.ext}`;
 }
 
+interface StoredPrefs {
+  format: ExportFormat;
+  month: string;
+  clientId: string;
+  projectId: string;
+  grouping: GroupingId;
+  sorting: SortKey[];
+}
+
 function loadPrefs(): Partial<StoredPrefs> {
   if (typeof window === "undefined") return {};
   try {
@@ -125,6 +156,17 @@ function savePrefs(p: StoredPrefs) {
   }
 }
 
+/* ----------------------------- Komponente ------------------------------ */
+
+interface ExportDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  projects: Project[];
+  workPackages: WorkPackage[];
+  activities: Activity[];
+  onJsonBackup?: () => void;
+}
+
 export function ExportDialog({
   open,
   onOpenChange,
@@ -133,26 +175,29 @@ export function ExportDialog({
   activities,
   onJsonBackup,
 }: ExportDialogProps) {
-  const [format, setFormat] = useState<ExportFormat>("pdf");
+  const [format, setFormat] = useState<ExportFormat>(DEFAULTS.format);
   const [month, setMonth] = useState<string>(currentMonth());
-  const [clientId, setClientId] = useState<string>(""); // "" = alle
-  const [projectId, setProjectId] = useState<string>(""); // "" = alle
-  const [grouping, setGrouping] = useState<GroupKey[]>(DEFAULTS.grouping);
+  const [clientId, setClientId] = useState<string>("");
+  const [projectId, setProjectId] = useState<string>("");
+  const [grouping, setGrouping] = useState<GroupingId>(DEFAULTS.grouping);
   const [sorting, setSorting] = useState<SortKey[]>(DEFAULTS.sorting);
+
+  // Manuell editierter Dateiname (null => automatisch generieren)
+  const [fileNameOverride, setFileNameOverride] = useState<string | null>(null);
 
   // Beim Öffnen: gespeicherte Präferenzen laden, ansonsten Defaults
   useEffect(() => {
     if (!open) return;
     const p = loadPrefs();
-    setFormat(p.format ?? "pdf");
+    setFormat(p.format ?? DEFAULTS.format);
     setMonth(p.month ?? currentMonth());
     setClientId(p.clientId ?? "");
     setProjectId(p.projectId ?? "");
-    setGrouping(p.grouping?.length ? p.grouping : DEFAULTS.grouping);
+    setGrouping(p.grouping ?? DEFAULTS.grouping);
     setSorting(p.sorting?.length ? p.sorting : DEFAULTS.sorting);
+    setFileNameOverride(null);
   }, [open]);
 
-  // Kundenliste aus Projekten + Tätigkeiten + Arbeitspaketen, unique
   const clients = useMemo(() => {
     const set = new Set<string>();
     projects.forEach((p) => p.client && set.add(p.client));
@@ -161,13 +206,11 @@ export function ExportDialog({
     return Array.from(set).sort();
   }, [projects, workPackages, activities]);
 
-  // Projekte ggf. auf gewählten Kunden filtern
   const projectChoices = useMemo(
     () => (clientId ? projects.filter((p) => p.client === clientId) : projects),
     [projects, clientId],
   );
 
-  // Wenn Kunde geändert wird und das gewählte Projekt nicht passt → zurücksetzen
   useEffect(() => {
     if (projectId && !projectChoices.some((p) => p.id === projectId)) {
       setProjectId("");
@@ -177,7 +220,7 @@ export function ExportDialog({
   const clientName = clientId || undefined;
   const projectName = projectId ? projects.find((p) => p.id === projectId)?.name : undefined;
 
-  const fileName = useMemo(
+  const autoFileName = useMemo(
     () =>
       buildFileName({
         format,
@@ -188,42 +231,43 @@ export function ExportDialog({
     [format, month, clientName, projectName],
   );
 
-  const moveItem = <T,>(arr: T[], idx: number, delta: number): T[] => {
-    const next = [...arr];
-    const j = idx + delta;
-    if (j < 0 || j >= next.length) return arr;
-    [next[idx], next[j]] = [next[j], next[idx]];
-    return next;
+  const fileName = fileNameOverride ?? autoFileName;
+
+  const resetFileName = () => setFileNameOverride(null);
+
+  const toggleSort = (k: SortKey) =>
+    setSorting((s) => (s.includes(k) ? s.filter((x) => x !== k) : [...s, k]));
+  const moveSort = (idx: number, delta: number) =>
+    setSorting((s) => {
+      const j = idx + delta;
+      if (j < 0 || j >= s.length) return s;
+      const next = [...s];
+      [next[idx], next[j]] = [next[j], next[idx]];
+      return next;
+    });
+
+  const config: ExportConfiguration = {
+    format,
+    month,
+    fileName,
+    grouping,
+    sorting,
+    filter: {
+      clientId: clientId || null,
+      clientName: clientName ?? null,
+      projectId: projectId || null,
+      projectName: projectName ?? null,
+    },
   };
 
-  const removeGroup = (k: GroupKey) => setGrouping((g) => g.filter((x) => x !== k));
-  const addGroup = (k: GroupKey) =>
-    setGrouping((g) => (g.includes(k) ? g : [...g, k]));
-  const removeSort = (k: SortKey) => setSorting((s) => s.filter((x) => x !== k));
-  const addSort = (k: SortKey) => setSorting((s) => (s.includes(k) ? s : [...s, k]));
-
   const handlePrepare = () => {
-    const options = {
-      format,
-      month,
-      fileName,
-      filter: {
-        clientId: clientId || null,
-        clientName: clientName ?? null,
-        projectId: projectId || null,
-        projectName: projectName ?? null,
-      },
-      grouping,
-      sorting,
-    };
     savePrefs({ format, month, clientId, projectId, grouping, sorting });
     // eslint-disable-next-line no-console
-    console.log("[Export] Vorbereitete Exportoptionen:", options);
+    console.log("[Export] Vorbereitete Exportoptionen:", config);
     onOpenChange(false);
   };
 
-  const availableGroups = ALL_GROUPS.filter((g) => !grouping.includes(g));
-  const availableSorts = ALL_SORTS.filter((s) => !sorting.includes(s));
+  const availableSorts = SORT_OPTIONS.filter((o) => !sorting.includes(o.value));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -231,17 +275,16 @@ export function ExportDialog({
         <DialogHeader>
           <DialogTitle>Export erstellen</DialogTitle>
           <DialogDescription>
-            Wähle Format, Zeitraum und optionale Filter. In dieser Iteration werden die
-            Optionen in der Konsole protokolliert.
+            Wähle Format, Zeitraum, Gruppierung und Sortierung. Der Export wird in dieser
+            Iteration ausschließlich in der Konsole protokolliert.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Format + Monat */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium" htmlFor="export-format">
-                Exportformat
-              </label>
+              <label className="text-sm font-medium" htmlFor="export-format">Format</label>
               <select
                 id="export-format"
                 value={format}
@@ -249,17 +292,12 @@ export function ExportDialog({
                 className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
               >
                 {FORMAT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
             </div>
-
             <div className="space-y-1.5">
-              <label className="text-sm font-medium" htmlFor="export-month">
-                Monat
-              </label>
+              <label className="text-sm font-medium" htmlFor="export-month">Monat</label>
               <input
                 id="export-month"
                 type="month"
@@ -270,11 +308,10 @@ export function ExportDialog({
             </div>
           </div>
 
+          {/* Filter */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium" htmlFor="export-client">
-                Kunde (optional)
-              </label>
+              <label className="text-sm font-medium" htmlFor="export-client">Kunde (optional)</label>
               <select
                 id="export-client"
                 value={clientId}
@@ -283,17 +320,12 @@ export function ExportDialog({
               >
                 <option value="">— Alle Kunden —</option>
                 {clients.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </select>
             </div>
-
             <div className="space-y-1.5">
-              <label className="text-sm font-medium" htmlFor="export-project">
-                Projekt (optional)
-              </label>
+              <label className="text-sm font-medium" htmlFor="export-project">Projekt (optional)</label>
               <select
                 id="export-project"
                 value={projectId}
@@ -302,38 +334,138 @@ export function ExportDialog({
               >
                 <option value="">— Alle Projekte —</option>
                 {projectChoices.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
+                  <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
             </div>
           </div>
 
+          {/* Dateiname (editierbar + Reset) */}
           <div className="space-y-1.5">
-            <span className="text-sm font-medium">Vorgeschlagener Dateiname</span>
-            <div className="rounded-md border border-border bg-secondary/40 px-3 py-2 font-mono text-xs break-all">
-              {fileName}
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium" htmlFor="export-filename">Dateiname</label>
+              <button
+                type="button"
+                onClick={resetFileName}
+                disabled={fileNameOverride === null}
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground transition hover:text-foreground disabled:opacity-40"
+              >
+                <RotateCcw className="size-3" /> Zurücksetzen
+              </button>
             </div>
+            <input
+              id="export-filename"
+              type="text"
+              value={fileName}
+              onChange={(e) => setFileNameOverride(e.target.value)}
+              className="h-10 w-full rounded-md border border-border bg-background px-3 font-mono text-xs"
+            />
+            {fileNameOverride !== null && (
+              <p className="text-xs text-muted-foreground">
+                Manuell überschrieben — automatischer Vorschlag:{" "}
+                <span className="font-mono">{autoFileName}</span>
+              </p>
+            )}
           </div>
 
-          <OrderedList
-            label="Gruppierung"
-            items={grouping}
-            available={availableGroups}
-            onMove={(i, d) => setGrouping((g) => moveItem(g, i, d))}
-            onRemove={(k) => removeGroup(k as GroupKey)}
-            onAdd={(k) => addGroup(k as GroupKey)}
-          />
+          {/* Gruppierung */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" htmlFor="export-grouping">Gruppierung</label>
+            <select
+              id="export-grouping"
+              value={grouping}
+              onChange={(e) => setGrouping(e.target.value as GroupingId)}
+              className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+            >
+              {GROUPING_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
 
-          <OrderedList
-            label="Sortierung"
-            items={sorting}
-            available={availableSorts}
-            onMove={(i, d) => setSorting((s) => moveItem(s, i, d))}
-            onRemove={(k) => removeSort(k as SortKey)}
-            onAdd={(k) => addSort(k as SortKey)}
-          />
+          {/* Sortierung — Mehrfach, geordnet */}
+          <div className="space-y-1.5">
+            <span className="text-sm font-medium">Sortierung</span>
+            <ul className="space-y-1">
+              {sorting.length === 0 && (
+                <li className="text-xs italic text-muted-foreground">Keine Sortierung gewählt</li>
+              )}
+              {sorting.map((k, i) => (
+                <li
+                  key={k}
+                  className="flex items-center gap-2 rounded-md border border-border bg-secondary/30 px-2 py-1 text-sm"
+                >
+                  <span className="w-4 text-center font-mono text-xs text-muted-foreground">{i + 1}</span>
+                  <span className="flex-1">{sortLabel(k)}</span>
+                  <button
+                    type="button"
+                    aria-label="Nach oben"
+                    disabled={i === 0}
+                    onClick={() => moveSort(i, -1)}
+                    className="grid size-6 place-items-center rounded hover:bg-secondary disabled:opacity-30"
+                  >
+                    <ChevronUp className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Nach unten"
+                    disabled={i === sorting.length - 1}
+                    onClick={() => moveSort(i, 1)}
+                    className="grid size-6 place-items-center rounded hover:bg-secondary disabled:opacity-30"
+                  >
+                    <ChevronDown className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Entfernen"
+                    onClick={() => toggleSort(k)}
+                    className="grid size-6 place-items-center rounded hover:bg-destructive/20 hover:text-destructive"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {availableSorts.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {availableSorts.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => toggleSort(opt.value)}
+                    className="rounded-full border border-dashed border-border px-2.5 py-0.5 text-xs text-muted-foreground transition hover:border-primary hover:text-foreground"
+                  >
+                    + {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Exportübersicht */}
+          <div className="rounded-lg border border-border bg-secondary/30 p-3">
+            <p className="mb-2 text-sm font-semibold">Exportübersicht</p>
+            <dl className="grid grid-cols-[7rem_1fr] gap-y-1 text-xs">
+              <dt className="text-muted-foreground">Format</dt>
+              <dd>{FORMAT_OPTIONS.find((f) => f.value === format)?.label}</dd>
+              <dt className="text-muted-foreground">Monat</dt>
+              <dd>{formatMonthLabel(month)}</dd>
+              <dt className="text-muted-foreground">Kunde</dt>
+              <dd>{clientName ?? <span className="text-muted-foreground italic">alle</span>}</dd>
+              <dt className="text-muted-foreground">Projekt</dt>
+              <dd>{projectName ?? <span className="text-muted-foreground italic">alle</span>}</dd>
+              <dt className="text-muted-foreground">Dateiname</dt>
+              <dd className="font-mono break-all">{fileName}</dd>
+              <dt className="text-muted-foreground">Gruppierung</dt>
+              <dd>{groupingLabel(grouping)}</dd>
+              <dt className="text-muted-foreground">Sortierung</dt>
+              <dd>
+                {sorting.length === 0
+                  ? <span className="italic text-muted-foreground">keine</span>
+                  : sorting.map(sortLabel).join(" → ")}
+              </dd>
+            </dl>
+          </div>
         </div>
 
         <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-between">
@@ -348,90 +480,13 @@ export function ExportDialog({
             >
               Vollständiges JSON-Backup
             </Button>
-          ) : (
-            <span />
-          )}
+          ) : <span />}
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Abbrechen
-            </Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Abbrechen</Button>
             <Button onClick={handlePrepare}>Export vorbereiten</Button>
           </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-interface OrderedListProps {
-  label: string;
-  items: string[];
-  available: string[];
-  onMove: (idx: number, delta: number) => void;
-  onRemove: (item: string) => void;
-  onAdd: (item: string) => void;
-}
-
-function OrderedList({ label, items, available, onMove, onRemove, onAdd }: OrderedListProps) {
-  return (
-    <div className="space-y-1.5">
-      <span className="text-sm font-medium">{label}</span>
-      <ul className="space-y-1">
-        {items.length === 0 && (
-          <li className="text-xs text-muted-foreground italic">Keine Auswahl</li>
-        )}
-        {items.map((it, i) => (
-          <li
-            key={it}
-            className="flex items-center gap-2 rounded-md border border-border bg-secondary/30 px-2 py-1 text-sm"
-          >
-            <span className="w-4 text-center font-mono text-xs text-muted-foreground">
-              {i + 1}
-            </span>
-            <span className="flex-1">{it}</span>
-            <button
-              type="button"
-              aria-label="Nach oben"
-              disabled={i === 0}
-              onClick={() => onMove(i, -1)}
-              className="grid size-6 place-items-center rounded hover:bg-secondary disabled:opacity-30"
-            >
-              <ChevronUp className="size-3.5" />
-            </button>
-            <button
-              type="button"
-              aria-label="Nach unten"
-              disabled={i === items.length - 1}
-              onClick={() => onMove(i, 1)}
-              className="grid size-6 place-items-center rounded hover:bg-secondary disabled:opacity-30"
-            >
-              <ChevronDown className="size-3.5" />
-            </button>
-            <button
-              type="button"
-              aria-label="Entfernen"
-              onClick={() => onRemove(it)}
-              className="grid size-6 place-items-center rounded hover:bg-destructive/20 hover:text-destructive"
-            >
-              <X className="size-3.5" />
-            </button>
-          </li>
-        ))}
-      </ul>
-      {available.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          {available.map((it) => (
-            <button
-              key={it}
-              type="button"
-              onClick={() => onAdd(it)}
-              className="rounded-full border border-dashed border-border px-2.5 py-0.5 text-xs text-muted-foreground transition hover:border-primary hover:text-foreground"
-            >
-              + {it}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
   );
 }
