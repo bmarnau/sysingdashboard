@@ -321,7 +321,9 @@ export function ExportDialog({
   const availableSorts = SORT_OPTIONS.filter((o) => !sorting.includes(o.value));
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
+
       <DialogContent
         className={
           isMaximized
