@@ -284,6 +284,7 @@ function Dashboard() {
   });
 
   useEffect(() => {
+    UserManagementService.bootstrap();
     const p = loadPersisted();
     const rawProjects = p?.projects ?? dashboardData.projects;
     const rawWPs = p?.workPackages ?? dashboardData.workPackages;
