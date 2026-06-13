@@ -100,6 +100,7 @@ const billingStyles: Record<BillingStatus, string> = {
 
 const STORAGE_KEY = "northbit-dashboard-v2";
 const VIEWMODE_KEY = "northbit-dashboard-viewmode";
+const PERIOD_KEY = "northbit-dashboard-period";
 
 type PersistedState = {
   engineer: Engineer;
