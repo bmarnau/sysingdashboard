@@ -1568,6 +1568,8 @@ function WorkPackagesView({
 
 function ActivitiesView({
   activities,
+  periodActivities,
+  periodLabel,
   workPackages,
   projects,
   onNew,
@@ -1575,6 +1577,8 @@ function ActivitiesView({
   onDelete,
 }: {
   activities: Activity[];
+  periodActivities: Activity[];
+  periodLabel: string;
   workPackages: WorkPackage[];
   projects: Project[];
   onNew: () => void;
@@ -1586,11 +1590,13 @@ function ActivitiesView({
   const [scope, setScope] = useState<
     "alle" | "billable" | "non_billable" | "ohne_wp" | "projektlos"
   >("alle");
+  const [periodOnly, setPeriodOnly] = useState(true);
 
   const wpMap = new Map(workPackages.map((w) => [w.id, w]));
   const projMap = new Map(projects.map((p) => [p.id, p]));
 
-  const filtered = activities.filter((a) => {
+  const source = periodOnly ? periodActivities : activities;
+  const filtered = source.filter((a) => {
     if (billing !== "alle" && a.billingStatus !== billing) return false;
     if (scope === "billable" && !a.billable) return false;
     if (scope === "non_billable" && a.billable) return false;
@@ -1621,10 +1627,20 @@ function ActivitiesView({
         <div>
           <h2 className="text-lg font-semibold">Tätigkeiten</h2>
           <p className="text-xs text-muted-foreground">
-            Optional einem Arbeitspaket zugeordnet · Abrechnung erfolgt ausschließlich hier
+            {periodOnly ? `${periodLabel} · ${periodActivities.length} Einträge` : `Alle · ${activities.length} Einträge`}
+            {" · "}Abrechnung erfolgt ausschließlich hier
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <label className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary/40 px-2.5 py-1.5 text-xs">
+            <input
+              type="checkbox"
+              checked={periodOnly}
+              onChange={(e) => setPeriodOnly(e.target.checked)}
+              className="size-3.5"
+            />
+            Nur Zeitraum
+          </label>
           <SearchInput value={q} onChange={setQ} placeholder="Tätigkeiten suchen…" />
           <select
             value={scope}
