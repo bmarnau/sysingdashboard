@@ -9,7 +9,7 @@ import {
   calculateMonthlyTargetHours,
   calculateUtilization,
   getWorkingDaysOfMonth,
-  type TargetConfig,
+  type TargetInput,
 } from "@/lib/time-period";
 
 export interface MonthlyPerformance {
@@ -125,7 +125,7 @@ function getMonthlyPerformance(
   activities: Activity[],
   year: number,
   month0: number,
-  cfg: TargetConfig,
+  cfg: TargetInput,
 ): MonthlyPerformance {
   const target = calculateMonthlyTargetHours(year, month0, cfg);
   const actual = calculateActualHours(activities, year, month0);
@@ -159,7 +159,7 @@ function getPerformanceTrend(
   activities: Activity[],
   from: { year: number; month0: number },
   to: { year: number; month0: number },
-  cfg: TargetConfig,
+  cfg: TargetInput,
 ): MonthlyPerformance[] {
   const out: MonthlyPerformance[] = [];
   let y = from.year;
@@ -215,7 +215,7 @@ function getMonthDetail(
   projects: Project[],
   year: number,
   month0: number,
-  cfg: TargetConfig,
+  cfg: TargetInput,
 ): MonthDetail {
   const perf = getMonthlyPerformance(activities, year, month0, cfg);
   const monthActs = activities.filter((a) => {

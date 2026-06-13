@@ -35,12 +35,17 @@ import {
 import { ExportDialog } from "@/components/ExportDialog";
 import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
 import { PerformanceReport } from "@/components/PerformanceReport";
+import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
 import {
   TimePeriodService,
   getISOWeek,
   type DashboardViewMode,
   type ChartBucket,
 } from "@/lib/time-period";
+import {
+  EngineerTargetTimeService,
+  type EngineerTargetTimeModel,
+} from "@/lib/engineer-target-time";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -243,6 +248,8 @@ function Dashboard() {
   const [editingWP, setEditingWP] = useState<WorkPackage | null>(null);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [showEngineer, setShowEngineer] = useState(false);
+  const [showWorkingTimeDialog, setShowWorkingTimeDialog] = useState(false);
+  const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -289,6 +296,7 @@ function Dashboard() {
     } catch {
       /* ignore */
     }
+    setTargetTimeModels(EngineerTargetTimeService.loadTargetTimeModels());
     setHydrated(true);
   }, []);
 
@@ -325,6 +333,11 @@ function Dashboard() {
     }
   }, [hydrated, engineerState, projects, workPackages, activities]);
 
+  useEffect(() => {
+    if (!hydrated) return;
+    EngineerTargetTimeService.saveTargetTimeModels(targetTimeModels);
+  }, [hydrated, targetTimeModels]);
+
   const resetData = () => {
     if (!confirm("Lokale Daten zurücksetzen?")) return;
     window.localStorage.removeItem(STORAGE_KEY);
@@ -356,12 +369,18 @@ function Dashboard() {
 
   /* ---------- Derived ---------- */
 
-  const targetCfg = useMemo(
-    () => ({
-      monthlyTargetHours: engineerState.monthlyTargetHours,
-      workloadPercent: engineerState.workloadPercent,
-    }),
-    [engineerState.monthlyTargetHours, engineerState.workloadPercent],
+  /** Tages-Sollzeit-Quelle: bevorzugt aktive Arbeitszeitmodelle, sonst Legacy-Profil. */
+  const targetSource = useMemo(
+    () =>
+      EngineerTargetTimeService.buildDailyTargetFnFromEngineer(
+        engineerState,
+        targetTimeModels,
+      ),
+    [
+      engineerState.monthlyTargetHours,
+      engineerState.workloadPercent,
+      targetTimeModels,
+    ],
   );
 
   /** Aktuell betrachteter Referenzzeitpunkt (heute + Offset im aktuellen Modus). */
@@ -375,8 +394,8 @@ function Dashboard() {
 
   const metrics = useMemo(() => {
     if (!periodRef) return null;
-    return TimePeriodService.computePeriodMetrics(activities, viewMode, periodRef, targetCfg);
-  }, [activities, periodRef, viewMode, targetCfg]);
+    return TimePeriodService.computePeriodMetrics(activities, viewMode, periodRef, targetSource);
+  }, [activities, periodRef, viewMode, targetSource]);
 
   const chartBuckets = useMemo<ChartBucket[]>(() => {
     if (!periodRef) return [];
@@ -748,9 +767,18 @@ function Dashboard() {
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
-                        setShowArchiveDialog(true);
+                        setShowWorkingTimeDialog(true);
                       }}
                       className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Clock className="size-4 opacity-70" /> Arbeitszeitmodell…
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
+                        setShowArchiveDialog(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
                     >
                       <Printer className="size-4 opacity-70" /> Lokale Ablage…
                     </button>
@@ -961,6 +989,7 @@ function Dashboard() {
             projects={projects}
             engineer={engineerState}
             reference={now}
+            targetTimeModels={targetTimeModels}
           />
         )}
 
@@ -1090,6 +1119,13 @@ function Dashboard() {
             setEngineer(e);
             setShowEngineer(false);
           }}
+        />
+      )}
+      {showWorkingTimeDialog && (
+        <WorkingTimeModelsDialog
+          models={targetTimeModels}
+          onChange={setTargetTimeModels}
+          onClose={() => setShowWorkingTimeDialog(false)}
         />
       )}
 
