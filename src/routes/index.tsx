@@ -972,6 +972,8 @@ function Dashboard() {
         {tab === "taetigkeiten" && (
           <ActivitiesView
             activities={activities}
+            periodActivities={periodActivities}
+            periodLabel={metrics?.range.label ?? ""}
             workPackages={workPackages}
             projects={projects}
             onNew={() => setEditingActivity(emptyActivity())}
