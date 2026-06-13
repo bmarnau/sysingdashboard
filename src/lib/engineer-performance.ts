@@ -9,7 +9,7 @@ import {
   calculateMonthlyTargetHours,
   calculateUtilization,
   getWorkingDaysOfMonth,
-  type TargetConfig,
+  type TargetInput,
 } from "@/lib/time-period";
 
 export interface MonthlyPerformance {
