@@ -1178,9 +1178,13 @@ function Dashboard() {
       {showEngineer && (
         <EngineerDialog
           engineerState={engineerState}
+          currentUser={currentUser}
           onClose={() => setShowEngineer(false)}
-          onSave={(e) => {
+          onSave={(e, userPatch) => {
             setEngineer(e);
+            if (currentUser && userPatch) {
+              UserManagementService.updateUser(currentUser.id, userPatch);
+            }
             setShowEngineer(false);
           }}
         />
