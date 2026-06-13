@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   Activity as ActivityIcon,
   AlertTriangle,
+  BookOpen,
   CheckCircle2,
   ChevronDown,
   Clock,
@@ -11,6 +12,7 @@ import {
   Eye,
   EyeOff,
   FolderKanban,
+  HelpCircle,
   Layers,
   Pencil,
   Plus,
