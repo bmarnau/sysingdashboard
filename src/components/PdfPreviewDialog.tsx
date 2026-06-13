@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, Settings2 } from "lucide-react";
+import { Download, ExternalLink, Settings2 } from "lucide-react";
 import type { PdfPreview } from "@/lib/pdf-export";
 import { SaveTargetDialog } from "@/components/SaveTargetDialog";
 
@@ -35,7 +35,6 @@ export function PdfPreviewDialog({
   // Object-URL beim Schließen wieder freigeben
   useEffect(() => {
     if (!open && preview?.url) {
-      // kleine Verzögerung, damit das iframe noch entladen kann
       const url = preview.url;
       const t = setTimeout(() => URL.revokeObjectURL(url), 0);
       return () => clearTimeout(t);
@@ -43,10 +42,25 @@ export function PdfPreviewDialog({
   }, [open, preview?.url]);
 
   const [saveOpen, setSaveOpen] = useState(false);
+  const [embedFailed, setEmbedFailed] = useState(false);
 
   useEffect(() => {
-    if (!open) setSaveOpen(false);
+    if (!open) {
+      setSaveOpen(false);
+      setEmbedFailed(false);
+    }
   }, [open]);
+
+  // Manche Browser (insb. Chrome in eingebetteten Vorschau-Iframes) blockieren
+  // das interne PDF-Plugin in verschachtelten iframes. In diesem Fall bieten wir
+  // direkt einen „In neuem Tab öffnen"-Button an.
+  const isEmbeddedPreview =
+    typeof window !== "undefined" && window.top !== window.self;
+
+  const openInNewTab = () => {
+    if (!preview) return;
+    window.open(preview.url, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -59,14 +73,32 @@ export function PdfPreviewDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden bg-secondary/40">
+        <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/30 px-6 py-2 text-xs">
+          <span className="text-muted-foreground">
+            Falls die Vorschau leer bleibt, kann sie in einem neuen Tab geöffnet werden.
+          </span>
+          <Button size="sm" variant="outline" onClick={openInNewTab} disabled={!preview}>
+            <ExternalLink className="mr-2 size-4" />
+            In neuem Tab öffnen
+          </Button>
+        </div>
+
+        <div className="relative flex-1 overflow-hidden bg-secondary/40">
           {preview ? (
-            <iframe
-              key={preview.url}
-              src={preview.url}
-              title={preview.fileName}
-              className="size-full border-0"
-            />
+            embedFailed ? (
+              <FallbackPanel onOpen={openInNewTab} />
+            ) : (
+              <object
+                key={preview.url}
+                data={`${preview.url}#view=FitH&toolbar=1`}
+                type="application/pdf"
+                aria-label={preview.fileName}
+                className="size-full"
+                onError={() => setEmbedFailed(true)}
+              >
+                <FallbackPanel onOpen={openInNewTab} />
+              </object>
+            )
           ) : (
             <div className="grid h-full place-items-center text-sm text-muted-foreground">
               Keine Vorschau verfügbar.
@@ -112,6 +144,12 @@ export function PdfPreviewDialog({
                 Neu konfigurieren
               </Button>
             )}
+            {isEmbeddedPreview && (
+              <Button variant="secondary" onClick={openInNewTab} disabled={!preview}>
+                <ExternalLink className="mr-2 size-4" />
+                Im Tab öffnen
+              </Button>
+            )}
             <Button onClick={() => setSaveOpen(true)} disabled={!preview}>
               <Download className="mr-2 size-4" />
               Speichern…
@@ -129,5 +167,20 @@ export function PdfPreviewDialog({
         reportId={preview?.metadata.reportId ?? ""}
       />
     </Dialog>
+  );
+}
+
+function FallbackPanel({ onOpen }: { onOpen: () => void }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+      <p className="text-sm text-muted-foreground">
+        Die Inline-Vorschau wurde vom Browser blockiert (häufig in eingebetteten
+        Vorschau-Fenstern). Öffne das PDF in einem neuen Tab.
+      </p>
+      <Button onClick={onOpen}>
+        <ExternalLink className="mr-2 size-4" />
+        PDF in neuem Tab öffnen
+      </Button>
+    </div>
   );
 }
