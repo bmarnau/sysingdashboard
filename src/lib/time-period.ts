@@ -365,13 +365,11 @@ export function computePeriodMetrics(
   activities: Activity[],
   mode: DashboardViewMode,
   ref: Date,
-  cfg: TargetConfig,
+  input: TargetInput,
 ): PeriodMetrics {
   const range = getCurrentPeriod(mode, ref);
-  const target =
-    mode === "month"
-      ? calculateMonthlyTargetHours(ref.getFullYear(), ref.getMonth(), cfg)
-      : calculateWeeklyTargetHours(ref, cfg);
+  const source = toDailyTargetFn(input);
+  const target = sumOverRange(source, range.start, range.end);
   const workingDays =
     mode === "month"
       ? getWorkingDaysOfMonth(ref.getFullYear(), ref.getMonth()).length
