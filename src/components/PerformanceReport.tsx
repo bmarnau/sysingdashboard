@@ -19,8 +19,14 @@ const PRESETS: { id: RangePreset; label: string }[] = [
   { id: "custom", label: "Individuell" },
 ];
 
-const STORAGE_PRESET = "northbit-perf-preset";
-const STORAGE_CUSTOM = "northbit-perf-custom";
+import { userScopedKey } from "@/lib/user-management";
+
+function storagePresetKey() {
+  return userScopedKey("northbit-perf-preset");
+}
+function storageCustomKey() {
+  return userScopedKey("northbit-perf-custom");
+}
 
 function fmtH(v: number) {
   return `${v.toFixed(1)} h`;
