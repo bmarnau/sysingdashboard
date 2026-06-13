@@ -420,6 +420,20 @@ function Dashboard() {
     });
   }, [activities, metrics]);
 
+  /** WP- und Projekt-IDs mit mindestens einer Tätigkeit in der aktuellen Periode. */
+  const activeInPeriod = useMemo(() => {
+    const wpIds = new Set<string>();
+    const projectIds = new Set<string>();
+    const wpToProj = new Map(workPackages.map((wp) => [wp.id, wp.projectId ?? null] as const));
+    for (const a of periodActivities) {
+      if (!a.workPackageId) continue;
+      wpIds.add(a.workPackageId);
+      const pid = wpToProj.get(a.workPackageId);
+      if (pid) projectIds.add(pid);
+    }
+    return { wpIds, projectIds };
+  }, [periodActivities, workPackages]);
+
   // Aufwand je Arbeitspaket aus Tätigkeiten
   const spentByWP = useMemo(() => {
     const m = new Map<string, number>();
@@ -1030,6 +1044,8 @@ function Dashboard() {
             projects={projects}
             spentByProject={spentByProject}
             workPackages={workPackages}
+            periodProjectIds={activeInPeriod.projectIds}
+            periodLabel={metrics?.range.label ?? ""}
             onNew={() => setEditingProject(emptyProject())}
             onEdit={setEditingProject}
             onDelete={deleteProject}
@@ -1040,6 +1056,8 @@ function Dashboard() {
             workPackages={workPackages}
             projects={projects}
             spentByWP={spentByWP}
+            periodWpIds={activeInPeriod.wpIds}
+            periodLabel={metrics?.range.label ?? ""}
             onNew={() => setEditingWP(emptyWP())}
             onEdit={setEditingWP}
             onDelete={deleteWP}
@@ -1224,6 +1242,42 @@ function TabButton({
   );
 }
 
+function PeriodToggle({
+  active,
+  onToggle,
+  periodLabel,
+  count,
+  total,
+}: {
+  active: boolean;
+  onToggle: () => void;
+  periodLabel: string;
+  count: number;
+  total: number;
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      aria-pressed={active}
+      title={active ? `Filter aufheben – alle ${total} anzeigen` : `Auf ${periodLabel} eingrenzen`}
+      className={`inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium transition ${
+        active
+          ? "border-primary bg-primary/10 text-foreground"
+          : "border-border bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground"
+      }`}
+    >
+      <Clock className="size-3.5" />
+      {active ? (
+        <span>
+          {periodLabel} · {count} von {total}
+        </span>
+      ) : (
+        <span>Auf {periodLabel || "Periode"} filtern</span>
+      )}
+    </button>
+  );
+}
+
 function KpiCard({
   icon,
   label,
@@ -1325,6 +1379,8 @@ function ProjectsView({
   projects,
   workPackages,
   spentByProject,
+  periodProjectIds,
+  periodLabel,
   onNew,
   onEdit,
   onDelete,
@@ -1332,13 +1388,18 @@ function ProjectsView({
   projects: Project[];
   workPackages: WorkPackage[];
   spentByProject: Map<string, number>;
+  periodProjectIds: Set<string>;
+  periodLabel: string;
   onNew: () => void;
   onEdit: (p: Project) => void;
   onDelete: (id: string) => void;
 }) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"alle" | ProjectStatus>("alle");
+  const [periodOnly, setPeriodOnly] = useState(false);
+  const periodCount = projects.filter((p) => periodProjectIds.has(p.id)).length;
   const filtered = projects.filter((p) => {
+    if (periodOnly && !periodProjectIds.has(p.id)) return false;
     if (status !== "alle" && p.status !== status) return false;
     if (q) {
       const s = q.toLowerCase();
@@ -1359,6 +1420,13 @@ function ProjectsView({
           <p className="text-xs text-muted-foreground">Übergeordnete Klammer für Arbeitspakete</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <PeriodToggle
+            active={periodOnly}
+            onToggle={() => setPeriodOnly((v) => !v)}
+            periodLabel={periodLabel}
+            count={periodCount}
+            total={projects.length}
+          />
           <SearchInput value={q} onChange={setQ} placeholder="Projekte suchen…" />
           <select
             value={status}
@@ -1475,6 +1543,8 @@ function WorkPackagesView({
   workPackages,
   projects,
   spentByWP,
+  periodWpIds,
+  periodLabel,
   onNew,
   onEdit,
   onDelete,
@@ -1482,6 +1552,8 @@ function WorkPackagesView({
   workPackages: WorkPackage[];
   projects: Project[];
   spentByWP: Map<string, number>;
+  periodWpIds: Set<string>;
+  periodLabel: string;
   onNew: () => void;
   onEdit: (w: WorkPackage) => void;
   onDelete: (id: string) => void;
@@ -1489,9 +1561,12 @@ function WorkPackagesView({
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"alle" | WorkPackageStatus>("alle");
   const [proj, setProj] = useState<string>("alle");
+  const [periodOnly, setPeriodOnly] = useState(false);
   const projMap = new Map(projects.map((p) => [p.id, p]));
+  const periodCount = workPackages.filter((w) => periodWpIds.has(w.id)).length;
 
   const filtered = workPackages.filter((w) => {
+    if (periodOnly && !periodWpIds.has(w.id)) return false;
     if (status !== "alle" && w.status !== status) return false;
     if (proj !== "alle") {
       if (proj === "ohne" && w.projectId) return false;
@@ -1519,6 +1594,13 @@ function WorkPackagesView({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <PeriodToggle
+            active={periodOnly}
+            onToggle={() => setPeriodOnly((v) => !v)}
+            periodLabel={periodLabel}
+            count={periodCount}
+            total={workPackages.length}
+          />
           <SearchInput value={q} onChange={setQ} placeholder="Arbeitspakete suchen…" />
           <select
             value={proj}
