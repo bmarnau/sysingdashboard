@@ -150,39 +150,70 @@ export interface TargetConfig {
   workloadPercent?: number;
 }
 
+/** Liefert Sollstunden für einen einzelnen Kalendertag (0 an arbeitsfreien Tagen). */
+export type DailyTargetFn = (date: Date) => number;
+
+/** Akzeptiert sowohl die neue Tages-Quelle als auch die Legacy-Konfiguration. */
+export type TargetInput = TargetConfig | DailyTargetFn;
+
 function effectiveMonthly(cfg: TargetConfig): number {
   const base = cfg.monthlyTargetHours ?? DEFAULT_FULLTIME_MONTH_HOURS;
   const pct = (cfg.workloadPercent ?? 100) / 100;
   return +(base * pct).toFixed(2);
 }
 
-/** Monats-Sollstunden unter Berücksichtigung des Arbeitszeitmodells. */
+function configToDailySource(cfg: TargetConfig): DailyTargetFn {
+  const monthly = effectiveMonthly(cfg);
+  const holidaysCache = new Map<number, Date[]>();
+  return (date: Date) => {
+    const dow = date.getDay();
+    if (dow === 0 || dow === 6) return 0;
+    const y = date.getFullYear();
+    let hs = holidaysCache.get(y);
+    if (!hs) {
+      hs = germanHolidays(y);
+      holidaysCache.set(y, hs);
+    }
+    if (hs.some((h) => sameDay(h, date))) return 0;
+    const monthDays = getWorkingDaysOfMonth(y, date.getMonth());
+    if (monthDays.length === 0) return 0;
+    return monthly / monthDays.length;
+  };
+}
+
+export function toDailyTargetFn(input: TargetInput): DailyTargetFn {
+  return typeof input === "function" ? input : configToDailySource(input);
+}
+
+function sumOverRange(source: DailyTargetFn, startIncl: Date, endExcl: Date): number {
+  let sum = 0;
+  const d = new Date(startIncl.getFullYear(), startIncl.getMonth(), startIncl.getDate());
+  while (d < endExcl) {
+    sum += source(d);
+    d.setDate(d.getDate() + 1);
+  }
+  return +sum.toFixed(2);
+}
+
+/** Monats-Sollstunden – Tag-für-Tag aus der Quelle aufsummiert. */
 export function calculateMonthlyTargetHours(
-  _year: number,
-  _month0: number,
-  cfg: TargetConfig,
+  year: number,
+  month0: number,
+  input: TargetInput,
 ): number {
-  // Aktuell unabhängig vom konkreten Monat (Vorgabe bleibt führend).
-  // Vorbereitet für künftige monatsspezifische Vorgaben.
-  return effectiveMonthly(cfg);
+  const source = toDailyTargetFn(input);
+  return sumOverRange(source, new Date(year, month0, 1), new Date(year, month0 + 1, 1));
 }
 
 /**
- * Automatische Berechnung der Wochen-Sollstunden:
- *   monatssoll / arbeitstage_monat * arbeitstage_woche (Schnittmenge mit Monat)
- * Wenn die Woche über zwei Monate geht, werden anteilig beide Monatsraten verwendet.
+ * Wochen-Sollstunden für die ISO-Woche, in der das Referenzdatum liegt.
+ * Tag-für-Tag aus der Quelle aufsummiert – wechselt das Modell innerhalb der
+ * Woche, wird automatisch anteilig gerechnet.
  */
-export function calculateWeeklyTargetHours(reference: Date, cfg: TargetConfig): number {
-  const weekDays = getWorkingDaysOfWeek(reference);
-  if (weekDays.length === 0) return 0;
-  let sum = 0;
-  for (const d of weekDays) {
-    const monthDays = getWorkingDaysOfMonth(d.getFullYear(), d.getMonth());
-    if (monthDays.length === 0) continue;
-    const monthly = calculateMonthlyTargetHours(d.getFullYear(), d.getMonth(), cfg);
-    sum += monthly / monthDays.length;
-  }
-  return +sum.toFixed(2);
+export function calculateWeeklyTargetHours(reference: Date, input: TargetInput): number {
+  const start = startOfISOWeek(reference);
+  const end = addDays(start, 7);
+  return sumOverRange(toDailyTargetFn(input), start, end);
 }
 
 /* ----------------------------- Period selection --------------------------- */
