@@ -2520,13 +2520,42 @@ function EngineerDialog({
           />
         </label>
         <label className="text-xs font-medium">
-          Wochenziel (h)
+          Wochenziel (h, legacy)
           <input
             type="number"
             min={1}
             className={`mt-1 ${inputCls}`}
             value={form.weeklyTarget}
             onChange={(e) => setForm({ ...form, weeklyTarget: Number(e.target.value) })}
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Monatssoll Vollzeit (h)
+          <input
+            type="number"
+            min={1}
+            className={`mt-1 ${inputCls}`}
+            value={form.monthlyTargetHours ?? 168}
+            onChange={(e) =>
+              setForm({ ...form, monthlyTargetHours: Number(e.target.value) || 168 })
+            }
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Arbeitszeitmodell (%)
+          <input
+            type="number"
+            min={1}
+            max={100}
+            step={5}
+            className={`mt-1 ${inputCls}`}
+            value={form.workloadPercent ?? 100}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                workloadPercent: Math.max(1, Math.min(100, Number(e.target.value) || 100)),
+              })
+            }
           />
         </label>
       </div>
