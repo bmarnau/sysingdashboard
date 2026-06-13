@@ -252,6 +252,15 @@ function Dashboard() {
   /** Offset relativ zur aktuellen Periode (0 = aktuell, -1 = vorherige, +1 = nächste). */
   const [periodOffset, setPeriodOffset] = useState(0);
   const [isSwitching, startSwitch] = useTransition();
+  const [showPerfReport, setShowPerfReport] = useState(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      const v = window.localStorage.getItem(PERF_REPORT_KEY);
+      return v !== "false";
+    } catch {
+      return true;
+    }
+  });
 
   useEffect(() => {
     const p = loadPersisted();
