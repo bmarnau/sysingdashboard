@@ -938,7 +938,7 @@ function Dashboard() {
             onClick={() => setTab("taetigkeiten")}
             icon={<Clock className="size-4" />}
           >
-            Tätigkeiten ({activities.length})
+            Tätigkeiten ({periodActivities.length}/{activities.length})
           </TabButton>
           <TabButton
             active={tab === "abrechnung"}
