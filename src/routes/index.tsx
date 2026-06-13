@@ -731,6 +731,23 @@ function Dashboard() {
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
+                        setShowPerfReport((v) => !v);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      {showPerfReport ? (
+                        <>
+                          <EyeOff className="size-4 opacity-70" /> Leistungsreport ausblenden
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="size-4 opacity-70" /> Leistungsreport anzeigen
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
                         setShowArchiveDialog(true);
                       }}
                       className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
