@@ -846,6 +846,15 @@ function Dashboard() {
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
+                        setShowManual(true);
+                      }}
+                      className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <BookOpen className="size-4 opacity-70" /> Handbuch…
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
                         resetData();
                       }}
                       className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm text-destructive hover:bg-destructive/10"
