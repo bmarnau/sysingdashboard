@@ -792,18 +792,19 @@ function Dashboard() {
         <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard
             icon={<Clock className="size-5" />}
-            label="Aufwand diese Woche"
-            value={`${weeklyLogged.toFixed(1)} h`}
-            sub={`Ziel ${engineerState.weeklyTarget} h`}
-            progress={(weeklyLogged / engineerState.weeklyTarget) * 100}
+            label={viewMode === "month" ? "Aufwand diesen Monat" : "Aufwand diese Woche"}
+            value={`${periodActual.toFixed(1)} h`}
+            sub={`Soll ${periodTarget.toFixed(1)} h · ${periodDiff >= 0 ? "+" : ""}${periodDiff.toFixed(1)} h`}
+            progress={periodUtilization}
           />
           <KpiCard
             icon={<TrendingUp className="size-5" />}
-            label="Verrechenbar (KW)"
-            value={`${billableThisWeek.toFixed(1)} h`}
-            sub={`${weeklyLogged > 0 ? Math.round((billableThisWeek / weeklyLogged) * 100) : 0}% Billable Ratio`}
+            label={viewMode === "month" ? "Verrechenbar (Monat)" : "Verrechenbar (KW)"}
+            value={`${periodBillable.toFixed(1)} h`}
+            sub={`${periodActual > 0 ? Math.round((periodBillable / periodActual) * 100) : 0}% Billable · Auslastung ${periodUtilization.toFixed(1)}%`}
             tone="success"
           />
+
           <KpiCard
             icon={<Euro className="size-5" />}
             label="Umsatz gesamt"
