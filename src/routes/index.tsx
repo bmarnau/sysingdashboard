@@ -836,6 +836,17 @@ function Dashboard() {
           />
         </section>
 
+        {/* Persönlicher Leistungsreport */}
+        {now && (
+          <PerformanceReport
+            activities={activities}
+            workPackages={workPackages}
+            projects={projects}
+            engineer={engineerState}
+            reference={now}
+          />
+        )}
+
         {/* Tabs */}
         <div className="mb-4 flex flex-wrap gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-sm no-print">
           <TabButton
