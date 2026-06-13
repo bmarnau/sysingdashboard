@@ -834,6 +834,7 @@ function Dashboard() {
               </>
             )}
           </div>
+          </div>
         </section>
 
         {/* KPIs */}
