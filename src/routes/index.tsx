@@ -32,6 +32,11 @@ import {
 } from "@/lib/dashboard-data";
 import { ExportDialog } from "@/components/ExportDialog";
 import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
+import {
+  TimePeriodService,
+  type DashboardViewMode,
+  type ChartBucket,
+} from "@/lib/time-period";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -93,6 +98,7 @@ const billingStyles: Record<BillingStatus, string> = {
 /* ----------------------------- Persistence & utils ---------------------------- */
 
 const STORAGE_KEY = "northbit-dashboard-v2";
+const VIEWMODE_KEY = "northbit-dashboard-viewmode";
 
 type PersistedState = {
   engineer: Engineer;
@@ -116,42 +122,8 @@ function newId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
 
-function getISOWeek(date: Date): number {
-  const tmp = new Date(date.getTime());
-  tmp.setHours(0, 0, 0, 0);
-  tmp.setDate(tmp.getDate() + 4 - (tmp.getDay() || 7));
-  const yearStart = new Date(tmp.getFullYear(), 0, 1);
-  return Math.ceil(((tmp.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-}
 
-const WEEK_DAYS = ["Mo", "Di", "Mi", "Do", "Fr"] as const;
 
-function startOfISOWeek(date: Date): Date {
-  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const day = d.getDay() || 7;
-  d.setDate(d.getDate() - (day - 1));
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function computeWeeklyHours(activities: Activity[], reference: Date) {
-  const weekStart = startOfISOWeek(reference);
-  const weekEnd = new Date(weekStart.getTime());
-  weekEnd.setDate(weekEnd.getDate() + 5);
-  const buckets = WEEK_DAYS.map((day) => ({ day, hours: 0, billable: 0 }));
-  for (const a of activities) {
-    if (!a.date) continue;
-    const d = new Date(a.date);
-    if (Number.isNaN(d.getTime())) continue;
-    if (d < weekStart || d >= weekEnd) continue;
-    const idx = (d.getDay() || 7) - 1;
-    if (idx < 0 || idx > 4) continue;
-    const dur = Number(a.duration) || 0;
-    buckets[idx].hours = +(buckets[idx].hours + dur).toFixed(2);
-    if (a.billable) buckets[idx].billable = +(buckets[idx].billable + dur).toFixed(2);
-  }
-  return buckets;
-}
 
 function fmtDate(s?: string) {
   if (!s) return "—";
@@ -268,6 +240,7 @@ function Dashboard() {
   const searchRef = useRef<HTMLDivElement>(null);
 
   const [now, setNow] = useState<Date | null>(null);
+  const [viewMode, setViewMode] = useState<DashboardViewMode>("month");
 
   useEffect(() => {
     const p = loadPersisted();
@@ -283,8 +256,23 @@ function Dashboard() {
     setWorkPackages(normWPs);
     setActivities(normActs);
     setNow(new Date());
+    try {
+      const stored = window.localStorage.getItem(VIEWMODE_KEY);
+      if (stored === "week" || stored === "month") setViewMode(stored);
+    } catch {
+      /* ignore */
+    }
     setHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      window.localStorage.setItem(VIEWMODE_KEY, viewMode);
+    } catch {
+      /* ignore */
+    }
+  }, [hydrated, viewMode]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -339,16 +327,30 @@ function Dashboard() {
 
   /* ---------- Derived ---------- */
 
-  const weekly = useMemo(
-    () =>
-      now
-        ? computeWeeklyHours(activities, now)
-        : WEEK_DAYS.map((day) => ({ day, hours: 0, billable: 0 })),
-    [activities, now],
+  const targetCfg = useMemo(
+    () => ({
+      monthlyTargetHours: engineerState.monthlyTargetHours,
+      workloadPercent: engineerState.workloadPercent,
+    }),
+    [engineerState.monthlyTargetHours, engineerState.workloadPercent],
   );
-  const weeklyLogged = weekly.reduce((s, d) => s + d.hours, 0);
-  const billableThisWeek = weekly.reduce((s, d) => s + d.billable, 0);
-  const maxHours = Math.max(...weekly.map((d) => d.hours), 10);
+
+  const metrics = useMemo(() => {
+    if (!now) return null;
+    return TimePeriodService.computePeriodMetrics(activities, viewMode, now, targetCfg);
+  }, [activities, now, viewMode, targetCfg]);
+
+  const chartBuckets = useMemo<ChartBucket[]>(() => {
+    if (!now) return [];
+    return TimePeriodService.buildChartBuckets(activities, viewMode, now);
+  }, [activities, now, viewMode]);
+
+  const chartMax = Math.max(10, ...chartBuckets.map((b) => b.hours));
+  const periodActual = metrics?.actual ?? 0;
+  const periodBillable = metrics?.billable ?? 0;
+  const periodTarget = metrics?.target ?? 0;
+  const periodDiff = metrics?.diff ?? 0;
+  const periodUtilization = metrics?.utilization ?? 0;
 
   // Aufwand je Arbeitspaket aus Tätigkeiten
   const spentByWP = useMemo(() => {
@@ -443,9 +445,26 @@ function Dashboard() {
 
   /* ---------- Render ---------- */
 
-  const dateLine = now
-    ? `KW ${getISOWeek(now)} · ${now.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`
-    : "…";
+  const dateLine = (() => {
+    if (!now || !metrics) return "…";
+    const dateStr = now.toLocaleDateString("de-DE", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    const rStart = metrics.range.start.toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    const rEnd = new Date(metrics.range.end.getTime() - 86400000).toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    return `${metrics.range.label} · ${rStart} – ${rEnd} · ${dateStr}`;
+  })();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -702,6 +721,37 @@ function Dashboard() {
               {activities.length} Tätigkeiten
             </p>
           </div>
+          <div className="flex items-center gap-2 no-print">
+            <div
+              role="tablist"
+              aria-label="Zeitraum"
+              className="inline-flex rounded-lg border border-border bg-secondary/40 p-1 text-sm"
+            >
+              <button
+                role="tab"
+                aria-selected={viewMode === "week"}
+                onClick={() => setViewMode("week")}
+                className={`rounded-md px-3 py-1.5 font-medium transition ${
+                  viewMode === "week"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Woche
+              </button>
+              <button
+                role="tab"
+                aria-selected={viewMode === "month"}
+                onClick={() => setViewMode("month")}
+                className={`rounded-md px-3 py-1.5 font-medium transition ${
+                  viewMode === "month"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Monat
+              </button>
+            </div>
           <div className="relative no-print">
             <button
               onClick={() => setShowNewMenu((v) => !v)}
@@ -750,24 +800,26 @@ function Dashboard() {
               </>
             )}
           </div>
+          </div>
         </section>
 
         {/* KPIs */}
         <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard
             icon={<Clock className="size-5" />}
-            label="Aufwand diese Woche"
-            value={`${weeklyLogged.toFixed(1)} h`}
-            sub={`Ziel ${engineerState.weeklyTarget} h`}
-            progress={(weeklyLogged / engineerState.weeklyTarget) * 100}
+            label={viewMode === "month" ? "Aufwand diesen Monat" : "Aufwand diese Woche"}
+            value={`${periodActual.toFixed(1)} h`}
+            sub={`Soll ${periodTarget.toFixed(1)} h · ${periodDiff >= 0 ? "+" : ""}${periodDiff.toFixed(1)} h`}
+            progress={periodUtilization}
           />
           <KpiCard
             icon={<TrendingUp className="size-5" />}
-            label="Verrechenbar (KW)"
-            value={`${billableThisWeek.toFixed(1)} h`}
-            sub={`${weeklyLogged > 0 ? Math.round((billableThisWeek / weeklyLogged) * 100) : 0}% Billable Ratio`}
+            label={viewMode === "month" ? "Verrechenbar (Monat)" : "Verrechenbar (KW)"}
+            value={`${periodBillable.toFixed(1)} h`}
+            sub={`${periodActual > 0 ? Math.round((periodBillable / periodActual) * 100) : 0}% Billable · Auslastung ${periodUtilization.toFixed(1)}%`}
             tone="success"
           />
+
           <KpiCard
             icon={<Euro className="size-5" />}
             label="Umsatz gesamt"
@@ -851,8 +903,9 @@ function Dashboard() {
             activities={activities}
             workPackages={workPackages}
             projects={projects}
-            weekly={weekly}
-            maxHours={maxHours}
+            buckets={chartBuckets}
+            chartMax={chartMax}
+            viewMode={viewMode}
             onEdit={setEditingActivity}
           />
         )}
@@ -1628,15 +1681,17 @@ function BillingView({
   activities,
   workPackages,
   projects,
-  weekly,
-  maxHours,
+  buckets,
+  chartMax,
+  viewMode,
   onEdit,
 }: {
   activities: Activity[];
   workPackages: WorkPackage[];
   projects: Project[];
-  weekly: { day: string; hours: number; billable: number }[];
-  maxHours: number;
+  buckets: ChartBucket[];
+  chartMax: number;
+  viewMode: DashboardViewMode;
   onEdit: (a: Activity) => void;
 }) {
   const wpMap = new Map(workPackages.map((w) => [w.id, w]));
@@ -1783,27 +1838,29 @@ function BillingView({
 
         <Card>
           <div className="border-b border-border px-6 py-4">
-            <h2 className="text-lg font-semibold">Aufwände dieser Woche</h2>
+            <h2 className="text-lg font-semibold">
+              {viewMode === "month" ? "Aufwände dieses Monats" : "Aufwände dieser Woche"}
+            </h2>
             <p className="text-xs text-muted-foreground">Erfasst vs. verrechenbar</p>
           </div>
           <div className="px-6 py-5">
             <div className="flex h-32 items-end justify-between gap-2">
-              {weekly.map((d) => (
-                <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
+              {buckets.map((d) => (
+                <div key={d.key} className="flex flex-1 flex-col items-center gap-1">
                   <div className="relative flex w-full flex-1 items-end">
                     <div
                       className="w-full rounded-t-md bg-secondary"
-                      style={{ height: `${(d.hours / maxHours) * 100}%` }}
+                      style={{ height: `${(d.hours / chartMax) * 100}%` }}
                     />
                     <div
                       className="absolute bottom-0 w-full rounded-t-md"
                       style={{
-                        height: `${(d.billable / maxHours) * 100}%`,
+                        height: `${(d.billable / chartMax) * 100}%`,
                         background: "var(--gradient-primary)",
                       }}
                     />
                   </div>
-                  <p className="text-[10px] font-medium">{d.day}</p>
+                  <p className="text-[10px] font-medium">{d.label}</p>
                   <p className="font-mono text-[10px] text-muted-foreground">
                     {d.hours.toFixed(1)}h
                   </p>
@@ -2429,13 +2486,42 @@ function EngineerDialog({
           />
         </label>
         <label className="text-xs font-medium">
-          Wochenziel (h)
+          Wochenziel (h, legacy)
           <input
             type="number"
             min={1}
             className={`mt-1 ${inputCls}`}
             value={form.weeklyTarget}
             onChange={(e) => setForm({ ...form, weeklyTarget: Number(e.target.value) })}
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Monatssoll Vollzeit (h)
+          <input
+            type="number"
+            min={1}
+            className={`mt-1 ${inputCls}`}
+            value={form.monthlyTargetHours ?? 168}
+            onChange={(e) =>
+              setForm({ ...form, monthlyTargetHours: Number(e.target.value) || 168 })
+            }
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Arbeitszeitmodell (%)
+          <input
+            type="number"
+            min={1}
+            max={100}
+            step={5}
+            className={`mt-1 ${inputCls}`}
+            value={form.workloadPercent ?? 100}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                workloadPercent: Math.max(1, Math.min(100, Number(e.target.value) || 100)),
+              })
+            }
           />
         </label>
       </div>

@@ -52,6 +52,10 @@ export interface Engineer {
   company: string;
   weeklyTarget: number;
   initials: string;
+  /** Vollzeit-Monatssollstunden (führende Vorgabe, Default 168). */
+  monthlyTargetHours?: number;
+  /** Arbeitszeitmodell in % (100, 80, 75, 50, ...). Default 100. */
+  workloadPercent?: number;
 }
 
 export interface DashboardData {
