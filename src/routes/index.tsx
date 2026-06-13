@@ -122,42 +122,8 @@ function newId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
 
-function getISOWeek(date: Date): number {
-  const tmp = new Date(date.getTime());
-  tmp.setHours(0, 0, 0, 0);
-  tmp.setDate(tmp.getDate() + 4 - (tmp.getDay() || 7));
-  const yearStart = new Date(tmp.getFullYear(), 0, 1);
-  return Math.ceil(((tmp.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
-}
 
-const WEEK_DAYS = ["Mo", "Di", "Mi", "Do", "Fr"] as const;
 
-function startOfISOWeek(date: Date): Date {
-  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const day = d.getDay() || 7;
-  d.setDate(d.getDate() - (day - 1));
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function computeWeeklyHours(activities: Activity[], reference: Date) {
-  const weekStart = startOfISOWeek(reference);
-  const weekEnd = new Date(weekStart.getTime());
-  weekEnd.setDate(weekEnd.getDate() + 5);
-  const buckets = WEEK_DAYS.map((day) => ({ day, hours: 0, billable: 0 }));
-  for (const a of activities) {
-    if (!a.date) continue;
-    const d = new Date(a.date);
-    if (Number.isNaN(d.getTime())) continue;
-    if (d < weekStart || d >= weekEnd) continue;
-    const idx = (d.getDay() || 7) - 1;
-    if (idx < 0 || idx > 4) continue;
-    const dur = Number(a.duration) || 0;
-    buckets[idx].hours = +(buckets[idx].hours + dur).toFixed(2);
-    if (a.billable) buckets[idx].billable = +(buckets[idx].billable + dur).toFixed(2);
-  }
-  return buckets;
-}
 
 function fmtDate(s?: string) {
   if (!s) return "—";
