@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   Activity as ActivityIcon,
   AlertTriangle,
+  BookOpen,
   CheckCircle2,
   ChevronDown,
   Clock,
@@ -11,6 +12,7 @@ import {
   Eye,
   EyeOff,
   FolderKanban,
+  HelpCircle,
   Layers,
   Pencil,
   Plus,
@@ -37,6 +39,7 @@ import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
 import { PerformanceReport } from "@/components/PerformanceReport";
 import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
 import { UserManagementDialog } from "@/components/UserManagementDialog";
+import { UserManualDialog } from "@/components/UserManualDialog";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
   UserManagementService,
@@ -263,6 +266,7 @@ function Dashboard() {
   const [showEngineer, setShowEngineer] = useState(false);
   const [showWorkingTimeDialog, setShowWorkingTimeDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
+  const [showManual, setShowManual] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
@@ -753,6 +757,14 @@ function Dashboard() {
           </div>
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => setShowManual(true)}
+              title="Hilfe zu dieser Seite"
+              aria-label="Hilfe zu dieser Seite"
+              className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
+            >
+              <HelpCircle className="size-4" />
+            </button>
             <div className="relative">
               <button
                 onClick={() => setShowServiceMenu((v) => !v)}
@@ -838,6 +850,15 @@ function Dashboard() {
                       className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
                     >
                       <Printer className="size-4 opacity-70" /> PDF Drucken
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
+                        setShowManual(true);
+                      }}
+                      className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <BookOpen className="size-4 opacity-70" /> Handbuch…
                     </button>
                     <button
                       onClick={() => {
@@ -1213,6 +1234,12 @@ function Dashboard() {
           }}
         />
       )}
+
+      <UserManualDialog
+        open={showManual}
+        onClose={() => setShowManual(false)}
+        initialRoute="/"
+      />
 
       <ExportDialog
         open={showExportDialog}
