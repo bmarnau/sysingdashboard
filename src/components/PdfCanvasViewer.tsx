@@ -27,7 +27,7 @@ export function PdfCanvasViewer({ blob }: PdfCanvasViewerProps) {
   const [error, setError] = useState<string | null>(null);
 
   // Stabile Referenz für <Document file=...>, sonst lädt es bei jedem Render neu.
-  const file = useMemo(() => (blob ? { data: blob } : null), [blob]);
+  const file = useMemo(() => blob ?? null, [blob]);
 
   useEffect(() => {
     setError(null);
