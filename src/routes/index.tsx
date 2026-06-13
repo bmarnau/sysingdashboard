@@ -1666,15 +1666,17 @@ function BillingView({
   activities,
   workPackages,
   projects,
-  weekly,
-  maxHours,
+  buckets,
+  chartMax,
+  viewMode,
   onEdit,
 }: {
   activities: Activity[];
   workPackages: WorkPackage[];
   projects: Project[];
-  weekly: { day: string; hours: number; billable: number }[];
-  maxHours: number;
+  buckets: ChartBucket[];
+  chartMax: number;
+  viewMode: DashboardViewMode;
   onEdit: (a: Activity) => void;
 }) {
   const wpMap = new Map(workPackages.map((w) => [w.id, w]));
