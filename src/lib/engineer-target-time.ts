@@ -38,14 +38,19 @@ export interface TargetModelValidationError {
   message: string;
 }
 
-const STORAGE_KEY = "northbit-target-time-models";
+import { userScopedKey } from "@/lib/user-management";
+
+const STORAGE_KEY_BASE = "northbit-target-time-models";
+function storageKey(): string {
+  return userScopedKey(STORAGE_KEY_BASE);
+}
 
 /* ------------------------------- Persistence ------------------------------ */
 
 export function loadTargetTimeModels(): EngineerTargetTimeModel[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(storageKey());
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
@@ -58,7 +63,7 @@ export function loadTargetTimeModels(): EngineerTargetTimeModel[] {
 export function saveTargetTimeModels(models: EngineerTargetTimeModel[]): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(models));
+    window.localStorage.setItem(storageKey(), JSON.stringify(models));
   } catch {
     /* ignore quota */
   }
