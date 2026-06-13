@@ -1242,6 +1242,42 @@ function TabButton({
   );
 }
 
+function PeriodToggle({
+  active,
+  onToggle,
+  periodLabel,
+  count,
+  total,
+}: {
+  active: boolean;
+  onToggle: () => void;
+  periodLabel: string;
+  count: number;
+  total: number;
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      aria-pressed={active}
+      title={active ? `Filter aufheben – alle ${total} anzeigen` : `Auf ${periodLabel} eingrenzen`}
+      className={`inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium transition ${
+        active
+          ? "border-primary bg-primary/10 text-foreground"
+          : "border-border bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground"
+      }`}
+    >
+      <Clock className="size-3.5" />
+      {active ? (
+        <span>
+          {periodLabel} · {count} von {total}
+        </span>
+      ) : (
+        <span>Auf {periodLabel || "Periode"} filtern</span>
+      )}
+    </button>
+  );
+}
+
 function KpiCard({
   icon,
   label,
