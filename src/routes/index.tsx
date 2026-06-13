@@ -1192,6 +1192,17 @@ function Dashboard() {
           onClose={() => setShowWorkingTimeDialog(false)}
         />
       )}
+      {showUserDialog && currentUser && (
+        <UserManagementDialog
+          open={showUserDialog}
+          onClose={() => setShowUserDialog(false)}
+          currentUser={currentUser}
+          onProfileSwitch={() => {
+            // Datenscope ist per-User; sicherster Weg: vollständiger Reload.
+            window.location.reload();
+          }}
+        />
+      )}
 
       <ExportDialog
         open={showExportDialog}
