@@ -34,7 +34,7 @@ function fmtH(v: number) {
 
 function readStoredPreset(): RangePreset {
   if (typeof window === "undefined") return "12m";
-  const v = window.localStorage.getItem(STORAGE_PRESET);
+  const v = window.localStorage.getItem(storagePresetKey());
   if (v === "3m" || v === "6m" || v === "12m" || v === "ytd" || v === "custom") return v;
   return "12m";
 }
@@ -46,7 +46,7 @@ function readStoredCustom(): { from: string; to: string } {
     return { from, to: from };
   })();
   if (typeof window === "undefined") return fallback;
-  const raw = window.localStorage.getItem(STORAGE_CUSTOM);
+  const raw = window.localStorage.getItem(storageCustomKey());
   if (!raw) return fallback;
   try {
     const parsed = JSON.parse(raw) as { from?: string; to?: string };
@@ -113,7 +113,7 @@ export function PerformanceReport({
   const handlePresetChange = (next: RangePreset) => {
     setPreset(next);
     try {
-      window.localStorage.setItem(STORAGE_PRESET, next);
+      window.localStorage.setItem(storagePresetKey(), next);
     } catch {
       /* ignore */
     }
@@ -123,7 +123,7 @@ export function PerformanceReport({
     const next = { ...custom, [key]: value };
     setCustom(next);
     try {
-      window.localStorage.setItem(STORAGE_CUSTOM, JSON.stringify(next));
+      window.localStorage.setItem(storageCustomKey(), JSON.stringify(next));
     } catch {
       /* ignore */
     }
