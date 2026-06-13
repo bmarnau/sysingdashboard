@@ -297,10 +297,11 @@ function Dashboard() {
     try {
       window.localStorage.setItem(VIEWMODE_KEY, viewMode);
       window.localStorage.setItem(PERIOD_KEY, String(periodOffset));
+      window.localStorage.setItem(PERF_REPORT_KEY, String(showPerfReport));
     } catch {
       /* ignore */
     }
-  }, [hydrated, viewMode, periodOffset]);
+  }, [hydrated, viewMode, periodOffset, showPerfReport]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
