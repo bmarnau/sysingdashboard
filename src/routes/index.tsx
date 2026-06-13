@@ -361,16 +361,30 @@ function Dashboard() {
 
   /* ---------- Derived ---------- */
 
-  const weekly = useMemo(
-    () =>
-      now
-        ? computeWeeklyHours(activities, now)
-        : WEEK_DAYS.map((day) => ({ day, hours: 0, billable: 0 })),
-    [activities, now],
+  const targetCfg = useMemo(
+    () => ({
+      monthlyTargetHours: engineerState.monthlyTargetHours,
+      workloadPercent: engineerState.workloadPercent,
+    }),
+    [engineerState.monthlyTargetHours, engineerState.workloadPercent],
   );
-  const weeklyLogged = weekly.reduce((s, d) => s + d.hours, 0);
-  const billableThisWeek = weekly.reduce((s, d) => s + d.billable, 0);
-  const maxHours = Math.max(...weekly.map((d) => d.hours), 10);
+
+  const metrics = useMemo(() => {
+    if (!now) return null;
+    return TimePeriodService.computePeriodMetrics(activities, viewMode, now, targetCfg);
+  }, [activities, now, viewMode, targetCfg]);
+
+  const chartBuckets = useMemo<ChartBucket[]>(() => {
+    if (!now) return [];
+    return TimePeriodService.buildChartBuckets(activities, viewMode, now);
+  }, [activities, now, viewMode]);
+
+  const chartMax = Math.max(10, ...chartBuckets.map((b) => b.hours));
+  const periodActual = metrics?.actual ?? 0;
+  const periodBillable = metrics?.billable ?? 0;
+  const periodTarget = metrics?.target ?? 0;
+  const periodDiff = metrics?.diff ?? 0;
+  const periodUtilization = metrics?.utilization ?? 0;
 
   // Aufwand je Arbeitspaket aus Tätigkeiten
   const spentByWP = useMemo(() => {
