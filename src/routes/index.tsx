@@ -295,7 +295,7 @@ function Dashboard() {
       if (prRaw === "false") setShowPerfReport(false);
     } catch {
       /* ignore */
-    }
+    setTargetTimeModels(EngineerTargetTimeService.loadTargetTimeModels());
     setHydrated(true);
   }, []);
 
