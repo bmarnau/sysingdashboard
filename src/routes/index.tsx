@@ -1044,6 +1044,8 @@ function Dashboard() {
             projects={projects}
             spentByProject={spentByProject}
             workPackages={workPackages}
+            periodProjectIds={activeInPeriod.projectIds}
+            periodLabel={metrics?.range.label ?? ""}
             onNew={() => setEditingProject(emptyProject())}
             onEdit={setEditingProject}
             onDelete={deleteProject}
@@ -1054,6 +1056,8 @@ function Dashboard() {
             workPackages={workPackages}
             projects={projects}
             spentByWP={spentByWP}
+            periodWpIds={activeInPeriod.wpIds}
+            periodLabel={metrics?.range.label ?? ""}
             onNew={() => setEditingWP(emptyWP())}
             onEdit={setEditingWP}
             onDelete={deleteWP}
