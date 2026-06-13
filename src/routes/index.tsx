@@ -1178,9 +1178,13 @@ function Dashboard() {
       {showEngineer && (
         <EngineerDialog
           engineerState={engineerState}
+          currentUser={currentUser}
           onClose={() => setShowEngineer(false)}
-          onSave={(e) => {
+          onSave={(e, userPatch) => {
             setEngineer(e);
+            if (currentUser && userPatch) {
+              UserManagementService.updateUser(currentUser.id, userPatch);
+            }
             setShowEngineer(false);
           }}
         />
@@ -2748,14 +2752,21 @@ function ActivityDialog({
 
 function EngineerDialog({
   engineerState,
+  currentUser,
   onClose,
   onSave,
 }: {
   engineerState: Engineer;
+  currentUser: UserProfile | null;
   onClose: () => void;
-  onSave: (e: Engineer) => void;
+  onSave: (
+    e: Engineer,
+    userPatch: { email: string; phone: string } | null,
+  ) => void;
 }) {
   const [form, setForm] = useState({ ...engineerState });
+  const [email, setEmail] = useState(currentUser?.email ?? "");
+  const [phone, setPhone] = useState(currentUser?.phone ?? "");
   const valid =
     form.name.trim().length > 1 && form.role.trim().length > 1 && form.company.trim().length > 1;
   const genInitials = (name: string) =>
@@ -2793,6 +2804,32 @@ function EngineerDialog({
             className={`mt-1 ${inputCls}`}
             value={form.company}
             onChange={(e) => setForm({ ...form, company: e.target.value })}
+          />
+        </label>
+        <label className="text-xs font-medium">
+          E-Mail
+          <input
+            type="email"
+            className={`mt-1 ${inputCls}`}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={!currentUser}
+            placeholder={currentUser ? "name@firma.de" : "kein Benutzerprofil verknüpft"}
+          />
+          {currentUser && (
+            <span className="mt-1 block text-[10px] text-muted-foreground">
+              wird auf Benutzerprofil „{currentUser.displayName}" gespeichert
+            </span>
+          )}
+        </label>
+        <label className="text-xs font-medium">
+          Telefon
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            disabled={!currentUser}
+            placeholder="+49 …"
           />
         </label>
         <label className="text-xs font-medium">
@@ -2846,7 +2883,16 @@ function EngineerDialog({
           />
         </label>
       </div>
-      <FormActions onCancel={onClose} saveDisabled={!valid} onSave={() => onSave(form)} />
+      <FormActions
+        onCancel={onClose}
+        saveDisabled={!valid}
+        onSave={() =>
+          onSave(
+            form,
+            currentUser ? { email: email.trim(), phone: phone.trim() } : null,
+          )
+        }
+      />
     </Modal>
   );
 }
