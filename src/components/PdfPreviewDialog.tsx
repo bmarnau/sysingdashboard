@@ -151,17 +151,3 @@ export function PdfPreviewDialog({
   );
 }
 
-function FallbackPanel({ onOpen }: { onOpen: () => void }) {
-  return (
-    <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
-      <p className="text-sm text-muted-foreground">
-        Die Inline-Vorschau wurde vom Browser blockiert (häufig in eingebetteten
-        Vorschau-Fenstern). Öffne das PDF in einem neuen Tab.
-      </p>
-      <Button onClick={onOpen}>
-        <ExternalLink className="mr-2 size-4" />
-        PDF in neuem Tab öffnen
-      </Button>
-    </div>
-  );
-}
