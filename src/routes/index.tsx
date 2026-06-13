@@ -346,15 +346,24 @@ function Dashboard() {
     [engineerState.monthlyTargetHours, engineerState.workloadPercent],
   );
 
-  const metrics = useMemo(() => {
+  /** Aktuell betrachteter Referenzzeitpunkt (heute + Offset im aktuellen Modus). */
+  const periodRef = useMemo(() => {
     if (!now) return null;
-    return TimePeriodService.computePeriodMetrics(activities, viewMode, now, targetCfg);
-  }, [activities, now, viewMode, targetCfg]);
+    const d = new Date(now);
+    if (viewMode === "month") d.setMonth(d.getMonth() + periodOffset);
+    else d.setDate(d.getDate() + periodOffset * 7);
+    return d;
+  }, [now, viewMode, periodOffset]);
+
+  const metrics = useMemo(() => {
+    if (!periodRef) return null;
+    return TimePeriodService.computePeriodMetrics(activities, viewMode, periodRef, targetCfg);
+  }, [activities, periodRef, viewMode, targetCfg]);
 
   const chartBuckets = useMemo<ChartBucket[]>(() => {
-    if (!now) return [];
-    return TimePeriodService.buildChartBuckets(activities, viewMode, now);
-  }, [activities, now, viewMode]);
+    if (!periodRef) return [];
+    return TimePeriodService.buildChartBuckets(activities, viewMode, periodRef);
+  }, [activities, periodRef, viewMode]);
 
   const chartMax = Math.max(10, ...chartBuckets.map((b) => b.hours));
   const periodActual = metrics?.actual ?? 0;
@@ -362,6 +371,17 @@ function Dashboard() {
   const periodTarget = metrics?.target ?? 0;
   const periodDiff = metrics?.diff ?? 0;
   const periodUtilization = metrics?.utilization ?? 0;
+
+  /** Tätigkeiten im aktuellen Periodenfenster. */
+  const periodActivities = useMemo(() => {
+    if (!metrics) return activities;
+    return activities.filter((a) => {
+      if (!a.date) return false;
+      const d = new Date(a.date);
+      if (Number.isNaN(d.getTime())) return false;
+      return d >= metrics.range.start && d < metrics.range.end;
+    });
+  }, [activities, metrics]);
 
   // Aufwand je Arbeitspaket aus Tätigkeiten
   const spentByWP = useMemo(() => {
