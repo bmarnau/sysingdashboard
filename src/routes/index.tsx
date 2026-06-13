@@ -52,6 +52,7 @@ import {
 } from "@/lib/time-period";
 import {
   EngineerTargetTimeService,
+  deriveCounterpart,
   type EngineerTargetTimeModel,
 } from "@/lib/engineer-target-time";
 
