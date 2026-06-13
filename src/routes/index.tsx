@@ -420,6 +420,20 @@ function Dashboard() {
     });
   }, [activities, metrics]);
 
+  /** WP- und Projekt-IDs mit mindestens einer Tätigkeit in der aktuellen Periode. */
+  const activeInPeriod = useMemo(() => {
+    const wpIds = new Set<string>();
+    const projectIds = new Set<string>();
+    const wpToProj = new Map(workPackages.map((wp) => [wp.id, wp.projectId ?? null] as const));
+    for (const a of periodActivities) {
+      if (!a.workPackageId) continue;
+      wpIds.add(a.workPackageId);
+      const pid = wpToProj.get(a.workPackageId);
+      if (pid) projectIds.add(pid);
+    }
+    return { wpIds, projectIds };
+  }, [periodActivities, workPackages]);
+
   // Aufwand je Arbeitspaket aus Tätigkeiten
   const spentByWP = useMemo(() => {
     const m = new Map<string, number>();
