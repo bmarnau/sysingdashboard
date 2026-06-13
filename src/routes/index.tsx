@@ -35,12 +35,17 @@ import {
 import { ExportDialog } from "@/components/ExportDialog";
 import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
 import { PerformanceReport } from "@/components/PerformanceReport";
+import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
 import {
   TimePeriodService,
   getISOWeek,
   type DashboardViewMode,
   type ChartBucket,
 } from "@/lib/time-period";
+import {
+  EngineerTargetTimeService,
+  type EngineerTargetTimeModel,
+} from "@/lib/engineer-target-time";
 
 export const Route = createFileRoute("/")({
   head: () => ({
