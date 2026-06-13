@@ -1823,27 +1823,29 @@ function BillingView({
 
         <Card>
           <div className="border-b border-border px-6 py-4">
-            <h2 className="text-lg font-semibold">Aufwände dieser Woche</h2>
+            <h2 className="text-lg font-semibold">
+              {viewMode === "month" ? "Aufwände dieses Monats" : "Aufwände dieser Woche"}
+            </h2>
             <p className="text-xs text-muted-foreground">Erfasst vs. verrechenbar</p>
           </div>
           <div className="px-6 py-5">
             <div className="flex h-32 items-end justify-between gap-2">
-              {weekly.map((d) => (
-                <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
+              {buckets.map((d) => (
+                <div key={d.key} className="flex flex-1 flex-col items-center gap-1">
                   <div className="relative flex w-full flex-1 items-end">
                     <div
                       className="w-full rounded-t-md bg-secondary"
-                      style={{ height: `${(d.hours / maxHours) * 100}%` }}
+                      style={{ height: `${(d.hours / chartMax) * 100}%` }}
                     />
                     <div
                       className="absolute bottom-0 w-full rounded-t-md"
                       style={{
-                        height: `${(d.billable / maxHours) * 100}%`,
+                        height: `${(d.billable / chartMax) * 100}%`,
                         background: "var(--gradient-primary)",
                       }}
                     />
                   </div>
-                  <p className="text-[10px] font-medium">{d.day}</p>
+                  <p className="text-[10px] font-medium">{d.label}</p>
                   <p className="font-mono text-[10px] text-muted-foreground">
                     {d.hours.toFixed(1)}h
                   </p>
