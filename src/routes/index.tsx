@@ -498,7 +498,13 @@ function Dashboard() {
       year: "numeric",
     });
     const suffix = periodOffset === 0 ? ` · ${today}` : "";
-    return `${metrics.range.label} · ${rStart} – ${rEnd}${suffix}`;
+    let kwInfo = "";
+    if (viewMode === "month") {
+      const kwStart = getISOWeek(metrics.range.start);
+      const kwEnd = getISOWeek(new Date(metrics.range.end.getTime() - 86400000));
+      kwInfo = kwStart === kwEnd ? ` · KW ${kwStart}` : ` · KW ${kwStart}–${kwEnd}`;
+    }
+    return `${metrics.range.label} · ${rStart} – ${rEnd}${kwInfo}${suffix}`;
   })();
 
   const switchView = (next: DashboardViewMode) =>
