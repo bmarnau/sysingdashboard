@@ -117,7 +117,6 @@ export function SaveTargetDialog({
       }
       onOpenChange(false);
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error("[Export] Speichern fehlgeschlagen:", err);
       setError("Speichern fehlgeschlagen. Bitte erneut versuchen.");
       setBusy(false);

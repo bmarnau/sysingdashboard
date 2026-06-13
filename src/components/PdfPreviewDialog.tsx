@@ -88,7 +88,6 @@ export function PdfPreviewDialog({
           )}
         </div>
 
-
         {preview && (
           <div className="grid grid-cols-1 gap-2 border-t border-border bg-background px-6 py-3 text-xs sm:grid-cols-4">
             <div>
@@ -150,4 +149,3 @@ export function PdfPreviewDialog({
     </Dialog>
   );
 }
-

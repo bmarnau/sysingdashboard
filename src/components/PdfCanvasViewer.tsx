@@ -78,7 +78,7 @@ export function PdfCanvasViewer({ blob }: PdfCanvasViewerProps) {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => setRotation((r) => (((r + 90) % 360) as 0 | 90 | 180 | 270))}
+            onClick={() => setRotation((r) => ((r + 90) % 360) as 0 | 90 | 180 | 270)}
             aria-label="Drehen"
           >
             <RotateCw className="size-4" />

@@ -159,7 +159,11 @@ function compareBy(
   a: Activity,
   b: Activity,
   key: SortKey,
-  ctx: { wpById: Map<string, WorkPackage>; projectById: Map<string, Project>; employeeName: string },
+  ctx: {
+    wpById: Map<string, WorkPackage>;
+    projectById: Map<string, Project>;
+    employeeName: string;
+  },
 ): number {
   switch (key) {
     case "date":
@@ -200,10 +204,7 @@ function projectName(
   return project?.name ?? "— ohne Projekt —";
 }
 
-function workPackageName(
-  a: Activity,
-  ctx: { wpById: Map<string, WorkPackage> },
-): string {
+function workPackageName(a: Activity, ctx: { wpById: Map<string, WorkPackage> }): string {
   const wp = a.workPackageId ? ctx.wpById.get(a.workPackageId) : undefined;
   return wp?.title ?? "— ohne Arbeitspaket —";
 }
@@ -222,7 +223,11 @@ const GROUPING_DIMENSIONS: Record<GroupingId, DimensionKey[]> = {
 function dimensionValue(
   dim: DimensionKey,
   a: Activity,
-  ctx: { wpById: Map<string, WorkPackage>; projectById: Map<string, Project>; employeeName: string },
+  ctx: {
+    wpById: Map<string, WorkPackage>;
+    projectById: Map<string, Project>;
+    employeeName: string;
+  },
 ): { key: string; label: string } {
   switch (dim) {
     case "customer": {
