@@ -1218,6 +1218,12 @@ function Dashboard() {
         />
       )}
 
+      <UserManualDialog
+        open={showManual}
+        onClose={() => setShowManual(false)}
+        initialRoute="/"
+      />
+
       <ExportDialog
         open={showExportDialog}
         onOpenChange={setShowExportDialog}
