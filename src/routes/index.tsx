@@ -39,6 +39,7 @@ import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
 import { PerformanceReport } from "@/components/PerformanceReport";
 import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
 import { UserManagementDialog } from "@/components/UserManagementDialog";
+import { UserManualDialog } from "@/components/UserManualDialog";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
   UserManagementService,
