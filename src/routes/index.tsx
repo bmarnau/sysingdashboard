@@ -478,12 +478,6 @@ function Dashboard() {
 
   const dateLine = (() => {
     if (!now || !metrics) return "…";
-    const dateStr = now.toLocaleDateString("de-DE", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
     const rStart = metrics.range.start.toLocaleDateString("de-DE", {
       day: "2-digit",
       month: "2-digit",
@@ -494,8 +488,23 @@ function Dashboard() {
       month: "2-digit",
       year: "numeric",
     });
-    return `${metrics.range.label} · ${rStart} – ${rEnd} · ${dateStr}`;
+    const today = now.toLocaleDateString("de-DE", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    const suffix = periodOffset === 0 ? ` · ${today}` : "";
+    return `${metrics.range.label} · ${rStart} – ${rEnd}${suffix}`;
   })();
+
+  const switchView = (next: DashboardViewMode) =>
+    startSwitch(() => {
+      setViewMode(next);
+      setPeriodOffset(0);
+    });
+  const shiftPeriod = (delta: number) => startSwitch(() => setPeriodOffset((p) => p + delta));
+  const resetPeriod = () => startSwitch(() => setPeriodOffset(0));
 
   return (
     <div className="min-h-screen bg-background text-foreground">
