@@ -980,6 +980,7 @@ function Dashboard() {
             projects={projects}
             engineer={engineerState}
             reference={now}
+            targetTimeModels={targetTimeModels}
           />
         )}
 
