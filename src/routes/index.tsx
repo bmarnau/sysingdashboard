@@ -243,6 +243,9 @@ function Dashboard() {
 
   const [now, setNow] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState<DashboardViewMode>("month");
+  /** Offset relativ zur aktuellen Periode (0 = aktuell, -1 = vorherige, +1 = nächste). */
+  const [periodOffset, setPeriodOffset] = useState(0);
+  const [isSwitching, startSwitch] = useTransition();
 
   useEffect(() => {
     const p = loadPersisted();
@@ -261,6 +264,11 @@ function Dashboard() {
     try {
       const stored = window.localStorage.getItem(VIEWMODE_KEY);
       if (stored === "week" || stored === "month") setViewMode(stored);
+      const offRaw = window.localStorage.getItem(PERIOD_KEY);
+      if (offRaw) {
+        const off = Number(offRaw);
+        if (Number.isFinite(off)) setPeriodOffset(off);
+      }
     } catch {
       /* ignore */
     }
@@ -271,10 +279,11 @@ function Dashboard() {
     if (!hydrated) return;
     try {
       window.localStorage.setItem(VIEWMODE_KEY, viewMode);
+      window.localStorage.setItem(PERIOD_KEY, String(periodOffset));
     } catch {
       /* ignore */
     }
-  }, [hydrated, viewMode]);
+  }, [hydrated, viewMode, periodOffset]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
