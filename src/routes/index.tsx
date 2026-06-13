@@ -274,7 +274,7 @@ function Dashboard() {
   const [showPerfReport, setShowPerfReport] = useState(() => {
     if (typeof window === "undefined") return true;
     try {
-      const v = window.localStorage.getItem(PERF_REPORT_KEY);
+      const v = window.localStorage.getItem(perfReportKey());
       return v !== "false";
     } catch {
       return true;
@@ -296,14 +296,14 @@ function Dashboard() {
     setActivities(normActs);
     setNow(new Date());
     try {
-      const stored = window.localStorage.getItem(VIEWMODE_KEY);
+      const stored = window.localStorage.getItem(viewmodeKey());
       if (stored === "week" || stored === "month") setViewMode(stored);
-      const offRaw = window.localStorage.getItem(PERIOD_KEY);
+      const offRaw = window.localStorage.getItem(periodKey());
       if (offRaw) {
         const off = Number(offRaw);
         if (Number.isFinite(off)) setPeriodOffset(off);
       }
-      const prRaw = window.localStorage.getItem(PERF_REPORT_KEY);
+      const prRaw = window.localStorage.getItem(perfReportKey());
       if (prRaw === "false") setShowPerfReport(false);
     } catch {
       /* ignore */
@@ -315,9 +315,9 @@ function Dashboard() {
   useEffect(() => {
     if (!hydrated) return;
     try {
-      window.localStorage.setItem(VIEWMODE_KEY, viewMode);
-      window.localStorage.setItem(PERIOD_KEY, String(periodOffset));
-      window.localStorage.setItem(PERF_REPORT_KEY, String(showPerfReport));
+      window.localStorage.setItem(viewmodeKey(), viewMode);
+      window.localStorage.setItem(periodKey(), String(periodOffset));
+      window.localStorage.setItem(perfReportKey(), String(showPerfReport));
     } catch {
       /* ignore */
     }
@@ -337,7 +337,7 @@ function Dashboard() {
     if (!hydrated) return;
     try {
       window.localStorage.setItem(
-        STORAGE_KEY,
+        storageKey(),
         JSON.stringify({ engineer: engineerState, projects, workPackages, activities }),
       );
     } catch {
@@ -352,7 +352,7 @@ function Dashboard() {
 
   const resetData = () => {
     if (!confirm("Lokale Daten zurücksetzen?")) return;
-    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(storageKey());
     setEngineer(dashboardData.engineer);
     setProjects(dashboardData.projects);
     setWorkPackages(dashboardData.workPackages);
