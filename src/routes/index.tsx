@@ -1384,6 +1384,13 @@ function ProjectsView({
           <p className="text-xs text-muted-foreground">Übergeordnete Klammer für Arbeitspakete</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <PeriodToggle
+            active={periodOnly}
+            onToggle={() => setPeriodOnly((v) => !v)}
+            periodLabel={periodLabel}
+            count={periodCount}
+            total={projects.length}
+          />
           <SearchInput value={q} onChange={setQ} placeholder="Projekte suchen…" />
           <select
             value={status}
