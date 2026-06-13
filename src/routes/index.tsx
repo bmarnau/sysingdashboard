@@ -8,6 +8,8 @@ import {
   Clock,
   Download,
   Euro,
+  Eye,
+  EyeOff,
   FolderKanban,
   Layers,
   Pencil,
@@ -102,6 +104,7 @@ const billingStyles: Record<BillingStatus, string> = {
 const STORAGE_KEY = "northbit-dashboard-v2";
 const VIEWMODE_KEY = "northbit-dashboard-viewmode";
 const PERIOD_KEY = "northbit-dashboard-period";
+const PERF_REPORT_KEY = "northbit-dashboard-perf-report";
 
 type PersistedState = {
   engineer: Engineer;
@@ -249,6 +252,15 @@ function Dashboard() {
   /** Offset relativ zur aktuellen Periode (0 = aktuell, -1 = vorherige, +1 = nächste). */
   const [periodOffset, setPeriodOffset] = useState(0);
   const [isSwitching, startSwitch] = useTransition();
+  const [showPerfReport, setShowPerfReport] = useState(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      const v = window.localStorage.getItem(PERF_REPORT_KEY);
+      return v !== "false";
+    } catch {
+      return true;
+    }
+  });
 
   useEffect(() => {
     const p = loadPersisted();
@@ -272,6 +284,8 @@ function Dashboard() {
         const off = Number(offRaw);
         if (Number.isFinite(off)) setPeriodOffset(off);
       }
+      const prRaw = window.localStorage.getItem(PERF_REPORT_KEY);
+      if (prRaw === "false") setShowPerfReport(false);
     } catch {
       /* ignore */
     }
@@ -283,10 +297,11 @@ function Dashboard() {
     try {
       window.localStorage.setItem(VIEWMODE_KEY, viewMode);
       window.localStorage.setItem(PERIOD_KEY, String(periodOffset));
+      window.localStorage.setItem(PERF_REPORT_KEY, String(showPerfReport));
     } catch {
       /* ignore */
     }
-  }, [hydrated, viewMode, periodOffset]);
+  }, [hydrated, viewMode, periodOffset, showPerfReport]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -716,6 +731,23 @@ function Dashboard() {
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
+                        setShowPerfReport((v) => !v);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      {showPerfReport ? (
+                        <>
+                          <EyeOff className="size-4 opacity-70" /> Leistungsreport ausblenden
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="size-4 opacity-70" /> Leistungsreport anzeigen
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
                         setShowArchiveDialog(true);
                       }}
                       className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
@@ -922,7 +954,7 @@ function Dashboard() {
         </section>
 
         {/* Persönlicher Leistungsreport */}
-        {now && (
+        {showPerfReport && now && (
           <PerformanceReport
             activities={activities}
             workPackages={workPackages}
