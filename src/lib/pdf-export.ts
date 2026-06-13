@@ -381,9 +381,11 @@ export const PdfExportService = {
 
   async createPreview(ctx: PdfExportContext): Promise<PdfPreview> {
     const { blob, pages, metadata } = await this.generatePdf(ctx);
-    const url = URL.createObjectURL(blob);
+    // Erzwinge korrekten MIME-Type — sonst zeigt Chrome im iframe ggf. nichts an.
+    const typedBlob = blob.type === "application/pdf" ? blob : new Blob([blob], { type: "application/pdf" });
+    const url = URL.createObjectURL(typedBlob);
     const fileName = this.generateFileName(ctx.exportData.configuration, new Date(metadata.createdAt));
-    return { blob, url, fileName, pages, sizeBytes: blob.size, metadata };
+    return { blob: typedBlob, url, fileName, pages, sizeBytes: typedBlob.size, metadata };
   },
 };
 
