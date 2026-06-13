@@ -1507,6 +1507,8 @@ function WorkPackagesView({
   workPackages,
   projects,
   spentByWP,
+  periodWpIds,
+  periodLabel,
   onNew,
   onEdit,
   onDelete,
@@ -1514,6 +1516,8 @@ function WorkPackagesView({
   workPackages: WorkPackage[];
   projects: Project[];
   spentByWP: Map<string, number>;
+  periodWpIds: Set<string>;
+  periodLabel: string;
   onNew: () => void;
   onEdit: (w: WorkPackage) => void;
   onDelete: (id: string) => void;
@@ -1521,9 +1525,12 @@ function WorkPackagesView({
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"alle" | WorkPackageStatus>("alle");
   const [proj, setProj] = useState<string>("alle");
+  const [periodOnly, setPeriodOnly] = useState(false);
   const projMap = new Map(projects.map((p) => [p.id, p]));
+  const periodCount = workPackages.filter((w) => periodWpIds.has(w.id)).length;
 
   const filtered = workPackages.filter((w) => {
+    if (periodOnly && !periodWpIds.has(w.id)) return false;
     if (status !== "alle" && w.status !== status) return false;
     if (proj !== "alle") {
       if (proj === "ohne" && w.projectId) return false;
@@ -1551,6 +1558,13 @@ function WorkPackagesView({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <PeriodToggle
+            active={periodOnly}
+            onToggle={() => setPeriodOnly((v) => !v)}
+            periodLabel={periodLabel}
+            count={periodCount}
+            total={workPackages.length}
+          />
           <SearchInput value={q} onChange={setQ} placeholder="Arbeitspakete suchen…" />
           <select
             value={proj}
