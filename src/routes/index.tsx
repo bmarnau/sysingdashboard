@@ -52,6 +52,7 @@ import {
 } from "@/lib/time-period";
 import {
   EngineerTargetTimeService,
+  deriveCounterpart,
   type EngineerTargetTimeModel,
 } from "@/lib/engineer-target-time";
 
@@ -1179,6 +1180,11 @@ function Dashboard() {
         <EngineerDialog
           engineerState={engineerState}
           currentUser={currentUser}
+          targetTimeModels={targetTimeModels}
+          onOpenWorkingTime={() => {
+            setShowEngineer(false);
+            setShowWorkingTimeDialog(true);
+          }}
           onClose={() => setShowEngineer(false)}
           onSave={(e, userPatch) => {
             setEngineer(e);
@@ -2753,18 +2759,41 @@ function ActivityDialog({
 function EngineerDialog({
   engineerState,
   currentUser,
+  targetTimeModels,
+  onOpenWorkingTime,
   onClose,
   onSave,
 }: {
   engineerState: Engineer;
   currentUser: UserProfile | null;
+  targetTimeModels: EngineerTargetTimeModel[];
+  onOpenWorkingTime: () => void;
   onClose: () => void;
   onSave: (
     e: Engineer,
     userPatch: { email: string; phone: string } | null,
   ) => void;
 }) {
-  const [form, setForm] = useState({ ...engineerState });
+  const now = new Date();
+  const activeModel = EngineerTargetTimeService.getActiveTargetTimeModel(
+    targetTimeModels,
+    now,
+    "self",
+  );
+  const derived = activeModel ? deriveCounterpart(activeModel, now) : null;
+
+  // Engineer-Felder werden – wenn ein aktives Arbeitszeitmodell existiert –
+  // aus dem Modell abgeleitet und im Formular gesperrt.
+  const initialForm: Engineer = derived
+    ? {
+        ...engineerState,
+        monthlyTargetHours: Math.round(derived.monthlyHours * 10) / 10,
+        weeklyTarget: Math.round(derived.weeklyHours * 10) / 10,
+        workloadPercent: 100,
+      }
+    : { ...engineerState };
+
+  const [form, setForm] = useState<Engineer>(initialForm);
   const [email, setEmail] = useState(currentUser?.email ?? "");
   const [phone, setPhone] = useState(currentUser?.phone ?? "");
   const valid =
@@ -2776,6 +2805,11 @@ function EngineerDialog({
       .join("")
       .toUpperCase()
       .slice(0, 2);
+
+  const locked = !!derived;
+  const lockedCls = locked
+    ? " cursor-not-allowed opacity-60"
+    : "";
 
   return (
     <Modal title="Engineer-Profil" onClose={onClose}>
@@ -2843,45 +2877,81 @@ function EngineerDialog({
             }
           />
         </label>
-        <label className="text-xs font-medium">
-          Wochenziel (h, legacy)
-          <input
-            type="number"
-            min={1}
-            className={`mt-1 ${inputCls}`}
-            value={form.weeklyTarget}
-            onChange={(e) => setForm({ ...form, weeklyTarget: Number(e.target.value) })}
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Monatssoll Vollzeit (h)
-          <input
-            type="number"
-            min={1}
-            className={`mt-1 ${inputCls}`}
-            value={form.monthlyTargetHours ?? 168}
-            onChange={(e) =>
-              setForm({ ...form, monthlyTargetHours: Number(e.target.value) || 168 })
-            }
-          />
-        </label>
-        <label className="text-xs font-medium">
-          Arbeitszeitmodell (%)
-          <input
-            type="number"
-            min={1}
-            max={100}
-            step={5}
-            className={`mt-1 ${inputCls}`}
-            value={form.workloadPercent ?? 100}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                workloadPercent: Math.max(1, Math.min(100, Number(e.target.value) || 100)),
-              })
-            }
-          />
-        </label>
+
+        <div className="col-span-1 sm:col-span-2 mt-2 rounded-md border border-border bg-secondary/30 p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Arbeitszeit
+            </div>
+            <button
+              type="button"
+              onClick={onOpenWorkingTime}
+              className="rounded-md border border-border bg-secondary/40 px-2.5 py-1 text-xs font-medium hover:bg-secondary"
+            >
+              Arbeitszeitmodell öffnen
+            </button>
+          </div>
+          {derived ? (
+            <p className="mb-3 text-[11px] text-muted-foreground">
+              Diese Werte stammen aus dem aktiven Arbeitszeitmodell
+              {activeModel?.description ? ` „${activeModel.description}"` : ""} und
+              sind hier nicht editierbar. Änderungen bitte über das
+              Arbeitszeitmodell vornehmen.
+            </p>
+          ) : (
+            <p className="mb-3 text-[11px] text-muted-foreground">
+              Kein aktives Arbeitszeitmodell hinterlegt – Eingaben werden auf das
+              Profil zurückgeschrieben. Empfehlung: Arbeitszeitmodell anlegen.
+            </p>
+          )}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <label className="text-xs font-medium">
+              Wochenziel (h, legacy)
+              <input
+                type="number"
+                min={1}
+                className={`mt-1 ${inputCls}${lockedCls}`}
+                value={form.weeklyTarget}
+                disabled={locked}
+                readOnly={locked}
+                onChange={(e) => setForm({ ...form, weeklyTarget: Number(e.target.value) })}
+              />
+            </label>
+            <label className="text-xs font-medium">
+              Monatssoll (h)
+              <input
+                type="number"
+                min={1}
+                className={`mt-1 ${inputCls}${lockedCls}`}
+                value={form.monthlyTargetHours ?? 168}
+                disabled={locked}
+                readOnly={locked}
+                onChange={(e) =>
+                  setForm({ ...form, monthlyTargetHours: Number(e.target.value) || 168 })
+                }
+              />
+            </label>
+            <label className="text-xs font-medium">
+              Arbeitszeitmodell (%)
+              <input
+                type="number"
+                min={1}
+                max={100}
+                step={5}
+                className={`mt-1 ${inputCls}${lockedCls}`}
+                value={form.workloadPercent ?? 100}
+                disabled={locked}
+                readOnly={locked}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    workloadPercent: Math.max(1, Math.min(100, Number(e.target.value) || 100)),
+                  })
+                }
+              />
+            </label>
+          </div>
+        </div>
       </div>
       <FormActions
         onCancel={onClose}
