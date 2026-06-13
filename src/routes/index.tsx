@@ -36,6 +36,14 @@ import { ExportDialog } from "@/components/ExportDialog";
 import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
 import { PerformanceReport } from "@/components/PerformanceReport";
 import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
+import { UserManagementDialog } from "@/components/UserManagementDialog";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import {
+  UserManagementService,
+  ROLE_LABEL,
+  initialsOf,
+  type UserProfile,
+} from "@/lib/user-management";
 import {
   TimePeriodService,
   getISOWeek,
