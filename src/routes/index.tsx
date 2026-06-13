@@ -261,6 +261,8 @@ function Dashboard() {
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [showEngineer, setShowEngineer] = useState(false);
   const [showWorkingTimeDialog, setShowWorkingTimeDialog] = useState(false);
+  const [showUserDialog, setShowUserDialog] = useState(false);
+  const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
