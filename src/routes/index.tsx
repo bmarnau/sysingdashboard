@@ -757,6 +757,14 @@ function Dashboard() {
           </div>
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => setShowManual(true)}
+              title="Hilfe zu dieser Seite"
+              aria-label="Hilfe zu dieser Seite"
+              className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
+            >
+              <HelpCircle className="size-4" />
+            </button>
             <div className="relative">
               <button
                 onClick={() => setShowServiceMenu((v) => !v)}
