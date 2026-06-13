@@ -796,9 +796,27 @@ function Dashboard() {
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
-                        setShowWorkingTimeDialog(true);
+                        setShowUserDialog(true);
                       }}
                       className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Server className="size-4 opacity-70" /> Benutzer & Profile…
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
+                        setShowEngineer(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Server className="size-4 opacity-70" /> Engineer-Stammdaten…
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
+                        setShowWorkingTimeDialog(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
                     >
                       <Clock className="size-4 opacity-70" /> Arbeitszeitmodell…
                     </button>
