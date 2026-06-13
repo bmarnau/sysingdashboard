@@ -852,18 +852,31 @@ function Dashboard() {
               )}
             </div>
             <button
-              onClick={() => setShowEngineer(true)}
+              onClick={() => setShowUserDialog(true)}
+              title="Benutzer & Profile"
               className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3 transition hover:bg-secondary"
             >
-              <div
-                className="grid size-8 place-items-center rounded-md font-mono text-sm font-bold text-primary-foreground"
-                style={{ background: "var(--gradient-primary)" }}
-              >
-                {engineerState.initials}
-              </div>
+              {currentUser?.profileImage ? (
+                <img
+                  src={currentUser.profileImage}
+                  alt=""
+                  className="size-8 rounded-md object-cover"
+                />
+              ) : (
+                <div
+                  className="grid size-8 place-items-center rounded-md font-mono text-sm font-bold text-primary-foreground"
+                  style={{ background: "var(--gradient-primary)" }}
+                >
+                  {currentUser ? initialsOf(currentUser) : engineerState.initials}
+                </div>
+              )}
               <div className="hidden text-left leading-tight sm:block">
-                <p className="text-sm font-semibold">{engineerState.name}</p>
-                <p className="text-xs text-muted-foreground">{engineerState.role}</p>
+                <p className="text-sm font-semibold">
+                  {currentUser?.displayName ?? engineerState.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {currentUser ? ROLE_LABEL[currentUser.role] : engineerState.role}
+                </p>
               </div>
             </button>
           </div>
