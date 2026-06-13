@@ -114,10 +114,14 @@ const billingStyles: Record<BillingStatus, string> = {
 
 /* ----------------------------- Persistence & utils ---------------------------- */
 
-const STORAGE_KEY = "northbit-dashboard-v2";
-const VIEWMODE_KEY = "northbit-dashboard-viewmode";
-const PERIOD_KEY = "northbit-dashboard-period";
-const PERF_REPORT_KEY = "northbit-dashboard-perf-report";
+const STORAGE_KEY_BASE = "northbit-dashboard-v2";
+const VIEWMODE_KEY_BASE = "northbit-dashboard-viewmode";
+const PERIOD_KEY_BASE = "northbit-dashboard-period";
+const PERF_REPORT_KEY_BASE = "northbit-dashboard-perf-report";
+const storageKey = () => UserManagementService.userScopedKey(STORAGE_KEY_BASE);
+const viewmodeKey = () => UserManagementService.userScopedKey(VIEWMODE_KEY_BASE);
+const periodKey = () => UserManagementService.userScopedKey(PERIOD_KEY_BASE);
+const perfReportKey = () => UserManagementService.userScopedKey(PERF_REPORT_KEY_BASE);
 
 type PersistedState = {
   engineer: Engineer;
@@ -129,7 +133,7 @@ type PersistedState = {
 function loadPersisted(): PersistedState | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(storageKey());
     if (!raw) return null;
     return JSON.parse(raw) as PersistedState;
   } catch {
