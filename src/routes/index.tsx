@@ -755,6 +755,37 @@ function Dashboard() {
               {activities.length} Tätigkeiten
             </p>
           </div>
+          <div className="flex items-center gap-2 no-print">
+            <div
+              role="tablist"
+              aria-label="Zeitraum"
+              className="inline-flex rounded-lg border border-border bg-secondary/40 p-1 text-sm"
+            >
+              <button
+                role="tab"
+                aria-selected={viewMode === "week"}
+                onClick={() => setViewMode("week")}
+                className={`rounded-md px-3 py-1.5 font-medium transition ${
+                  viewMode === "week"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Woche
+              </button>
+              <button
+                role="tab"
+                aria-selected={viewMode === "month"}
+                onClick={() => setViewMode("month")}
+                className={`rounded-md px-3 py-1.5 font-medium transition ${
+                  viewMode === "month"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Monat
+              </button>
+            </div>
           <div className="relative no-print">
             <button
               onClick={() => setShowNewMenu((v) => !v)}
