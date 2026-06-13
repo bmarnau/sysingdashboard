@@ -8,6 +8,8 @@ import {
   Clock,
   Download,
   Euro,
+  Eye,
+  EyeOff,
   FolderKanban,
   Layers,
   Pencil,
