@@ -32,6 +32,7 @@ import {
 } from "@/lib/dashboard-data";
 import { ExportDialog } from "@/components/ExportDialog";
 import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
+import { PerformanceReport } from "@/components/PerformanceReport";
 import {
   TimePeriodService,
   type DashboardViewMode,
