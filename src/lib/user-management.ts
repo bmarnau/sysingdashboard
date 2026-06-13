@@ -116,13 +116,29 @@ function safeParse<T>(raw: string | null, fallback: T): T {
 
 /* ------------------------------ Persistence ------------------------------- */
 
+// Cache, damit useSyncExternalStore-Snapshots referenz-stabil sind.
+// Sonst meldet React „getSnapshot should be cached" und re-rendert in Schleife.
+let usersCacheRaw: string | null = null;
+let usersCache: UserProfile[] = [];
+let activeIdCache: string | null = null;
+let activeUserCache: UserProfile | null = null;
+
+function invalidateCaches() {
+  usersCacheRaw = null;
+  activeIdCache = null;
+  activeUserCache = null;
+}
+
 export function loadUsers(): UserProfile[] {
   if (typeof window === "undefined") return [];
-  const list = safeParse<UserProfile[]>(
-    window.localStorage.getItem(USERS_KEY),
-    [],
-  );
-  return Array.isArray(list) ? list : [];
+  const raw = window.localStorage.getItem(USERS_KEY);
+  if (raw === usersCacheRaw) return usersCache;
+  const list = safeParse<UserProfile[]>(raw, []);
+  usersCacheRaw = raw;
+  usersCache = Array.isArray(list) ? list : [];
+  // Aktiver Benutzer hängt von der Liste ab → ebenfalls invalidieren.
+  activeUserCache = null;
+  return usersCache;
 }
 
 export function saveUsers(users: UserProfile[]): void {
@@ -132,6 +148,7 @@ export function saveUsers(users: UserProfile[]): void {
   } catch {
     /* quota */
   }
+  invalidateCaches();
   emit();
 }
 
@@ -143,13 +160,20 @@ export function getActiveUserId(): string | null {
 export function setActiveUserId(id: string): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(ACTIVE_USER_KEY, id);
+  invalidateCaches();
   emit();
 }
 
 export function getActiveUser(): UserProfile | null {
   const id = getActiveUserId();
   if (!id) return null;
-  return loadUsers().find((u) => u.id === id) ?? null;
+  const users = loadUsers();
+  if (id === activeIdCache && activeUserCache && users.includes(activeUserCache)) {
+    return activeUserCache;
+  }
+  activeIdCache = id;
+  activeUserCache = users.find((u) => u.id === id) ?? null;
+  return activeUserCache;
 }
 
 /** Erzeugt einen storage-key gescoped auf den aktiven Benutzer. */
