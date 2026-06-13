@@ -46,20 +46,12 @@ export function PdfPreviewDialog({
   }, [open, preview?.url]);
 
   const [saveOpen, setSaveOpen] = useState(false);
-  const [embedFailed, setEmbedFailed] = useState(false);
 
   useEffect(() => {
     if (!open) {
       setSaveOpen(false);
-      setEmbedFailed(false);
     }
   }, [open]);
-
-  // Manche Browser (insb. Chrome in eingebetteten Vorschau-Iframes) blockieren
-  // das interne PDF-Plugin in verschachtelten iframes. In diesem Fall bieten wir
-  // direkt einen „In neuem Tab öffnen"-Button an.
-  const isEmbeddedPreview =
-    typeof window !== "undefined" && window.top !== window.self;
 
   const openInNewTab = () => {
     if (!preview) return;
@@ -72,43 +64,30 @@ export function PdfPreviewDialog({
         <DialogHeader className="border-b border-border px-6 py-4">
           <DialogTitle>PDF Vorschau</DialogTitle>
           <DialogDescription>
-            Prüfe den Leistungsnachweis vor dem Download. Die Datei wird lokal erzeugt und nicht
-            versendet.
+            Vorschau über die integrierte Rendering-Engine (pdf.js). Funktioniert unabhängig vom
+            Browser-PDF-Plugin.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/30 px-6 py-2 text-xs">
-          <span className="text-muted-foreground">
-            Falls die Vorschau leer bleibt, kann sie in einem neuen Tab geöffnet werden.
-          </span>
-          <Button size="sm" variant="outline" onClick={openInNewTab} disabled={!preview}>
-            <ExternalLink className="mr-2 size-4" />
-            In neuem Tab öffnen
-          </Button>
-        </div>
-
         <div className="relative flex-1 overflow-hidden bg-secondary/40">
           {preview ? (
-            embedFailed ? (
-              <FallbackPanel onOpen={openInNewTab} />
-            ) : (
-              <object
-                key={preview.url}
-                data={`${preview.url}#view=FitH&toolbar=1`}
-                type="application/pdf"
-                aria-label={preview.fileName}
-                className="size-full"
-                onError={() => setEmbedFailed(true)}
-              >
-                <FallbackPanel onOpen={openInNewTab} />
-              </object>
-            )
+            <Suspense
+              fallback={
+                <div className="flex h-full items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="size-4 animate-spin" />
+                  Rendering-Engine wird geladen…
+                </div>
+              }
+            >
+              <PdfCanvasViewer blob={preview.blob} fileName={preview.fileName} />
+            </Suspense>
           ) : (
             <div className="grid h-full place-items-center text-sm text-muted-foreground">
               Keine Vorschau verfügbar.
             </div>
           )}
         </div>
+
 
         {preview && (
           <div className="grid grid-cols-1 gap-2 border-t border-border bg-background px-6 py-3 text-xs sm:grid-cols-4">
