@@ -121,7 +121,7 @@ function getISOWeek(date: Date): number {
   tmp.setHours(0, 0, 0, 0);
   tmp.setDate(tmp.getDate() + 4 - (tmp.getDay() || 7));
   const yearStart = new Date(tmp.getFullYear(), 0, 1);
-  return Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return Math.ceil(((tmp.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
 
 const WEEK_DAYS = ["Mo", "Di", "Mi", "Do", "Fr"] as const;
@@ -161,7 +161,11 @@ function fmtDate(s?: string) {
 }
 
 function fmtEuro(v: number) {
-  return v.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+  return v.toLocaleString("de-DE", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  });
 }
 
 /* ----------------------------- Validation & normalization ---------------------- */
@@ -184,7 +188,8 @@ export type ActivityErrors = {
 
 function validateActivity(a: Activity): ActivityErrors {
   const errs: ActivityErrors = {};
-  if (!a.title || a.title.trim().length < 2) errs.title = "Titel ist erforderlich (mind. 2 Zeichen).";
+  if (!a.title || a.title.trim().length < 2)
+    errs.title = "Titel ist erforderlich (mind. 2 Zeichen).";
   if (!isValidISODate(a.date)) errs.date = "Gültiges Datum erforderlich.";
   if (!(Number(a.duration) > 0)) errs.duration = "Dauer muss größer als 0 sein.";
   if (a.billable) {
@@ -217,8 +222,7 @@ function normalizeActivity(a: Activity, validWpIds: Set<string>): Activity {
       title: (a.title ?? "").trim() === "" ? a.title : a.title.trim(),
     };
   }
-  const billingStatus: BillingStatus =
-    a.billingStatus === "abgerechnet" ? "abgerechnet" : "offen";
+  const billingStatus: BillingStatus = a.billingStatus === "abgerechnet" ? "abgerechnet" : "offen";
   return {
     ...a,
     duration,
@@ -236,7 +240,6 @@ function normalizeWorkPackage(w: WorkPackage, validProjectIds: Set<string>): Wor
     projectId: w.projectId && validProjectIds.has(w.projectId) ? w.projectId : null,
   };
 }
-
 
 /* ---------------------------------- Component --------------------------------- */
 
@@ -315,7 +318,13 @@ function Dashboard() {
   };
 
   const exportData = () => {
-    const payload = { projects, workPackages, activities, engineer: engineerState, exportedAt: new Date().toISOString() };
+    const payload = {
+      projects,
+      workPackages,
+      activities,
+      engineer: engineerState,
+      exportedAt: new Date().toISOString(),
+    };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -331,7 +340,10 @@ function Dashboard() {
   /* ---------- Derived ---------- */
 
   const weekly = useMemo(
-    () => (now ? computeWeeklyHours(activities, now) : WEEK_DAYS.map((day) => ({ day, hours: 0, billable: 0 }))),
+    () =>
+      now
+        ? computeWeeklyHours(activities, now)
+        : WEEK_DAYS.map((day) => ({ day, hours: 0, billable: 0 })),
     [activities, now],
   );
   const weeklyLogged = weekly.reduce((s, d) => s + d.hours, 0);
@@ -440,7 +452,10 @@ function Dashboard() {
       <header className="app-header sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-xl no-print">
         <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 sm:px-6">
           <div className="flex items-center gap-2">
-            <div className="grid size-9 place-items-center rounded-lg" style={{ background: "var(--gradient-primary)" }}>
+            <div
+              className="grid size-9 place-items-center rounded-lg"
+              style={{ background: "var(--gradient-primary)" }}
+            >
               <Server className="size-5 text-primary-foreground" />
             </div>
             <div className="leading-tight">
@@ -457,14 +472,20 @@ function Dashboard() {
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={searchQ}
-                onChange={(e) => { setSearchQ(e.target.value); setSearchOpen(true); }}
+                onChange={(e) => {
+                  setSearchQ(e.target.value);
+                  setSearchOpen(true);
+                }}
                 onFocus={() => setSearchOpen(true)}
                 placeholder="Kunde, Tätigkeit, Arbeitspaket, Projekt…"
                 className="h-10 w-full rounded-lg border border-input bg-secondary/40 pl-9 pr-8 text-sm outline-none transition focus:border-ring"
               />
               {searchQ && (
                 <button
-                  onClick={() => { setSearchQ(""); setSearchOpen(false); }}
+                  onClick={() => {
+                    setSearchQ("");
+                    setSearchOpen(false);
+                  }}
                   className="absolute right-2 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded text-muted-foreground hover:bg-secondary hover:text-foreground"
                 >
                   ×
@@ -475,22 +496,53 @@ function Dashboard() {
               <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[70vh] overflow-hidden overflow-y-auto rounded-xl border border-border bg-background shadow-[var(--shadow-elevated)]">
                 {(() => {
                   const q = searchQ.toLowerCase().trim();
-                  const pRes = projects.filter(p => p.name.toLowerCase().includes(q) || p.client.toLowerCase().includes(q) || (p.description ?? "").toLowerCase().includes(q)).slice(0, 4);
-                  const wpRes = workPackages.filter(w => w.title.toLowerCase().includes(q) || (w.client ?? "").toLowerCase().includes(q) || (w.tags ?? []).some(t => t.toLowerCase().includes(q))).slice(0, 4);
-                  const aRes = activities.filter(a => a.title.toLowerCase().includes(q) || (a.client ?? "").toLowerCase().includes(q) || (a.description ?? "").toLowerCase().includes(q)).slice(0, 4);
+                  const pRes = projects
+                    .filter(
+                      (p) =>
+                        p.name.toLowerCase().includes(q) ||
+                        p.client.toLowerCase().includes(q) ||
+                        (p.description ?? "").toLowerCase().includes(q),
+                    )
+                    .slice(0, 4);
+                  const wpRes = workPackages
+                    .filter(
+                      (w) =>
+                        w.title.toLowerCase().includes(q) ||
+                        (w.client ?? "").toLowerCase().includes(q) ||
+                        (w.tags ?? []).some((t) => t.toLowerCase().includes(q)),
+                    )
+                    .slice(0, 4);
+                  const aRes = activities
+                    .filter(
+                      (a) =>
+                        a.title.toLowerCase().includes(q) ||
+                        (a.client ?? "").toLowerCase().includes(q) ||
+                        (a.description ?? "").toLowerCase().includes(q),
+                    )
+                    .slice(0, 4);
                   const hasAny = pRes.length + wpRes.length + aRes.length > 0;
-                  if (!hasAny) return (
-                    <div className="px-4 py-6 text-center text-sm text-muted-foreground">Keine Ergebnisse.</div>
-                  );
+                  if (!hasAny)
+                    return (
+                      <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+                        Keine Ergebnisse.
+                      </div>
+                    );
                   return (
                     <>
                       {pRes.length > 0 && (
                         <div className="px-3 py-2">
-                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Projekte</p>
-                          {pRes.map(p => (
+                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Projekte
+                          </p>
+                          {pRes.map((p) => (
                             <button
                               key={p.id}
-                              onClick={() => { setSearchQ(""); setSearchOpen(false); setTab("projekte"); setEditingProject(p); }}
+                              onClick={() => {
+                                setSearchQ("");
+                                setSearchOpen(false);
+                                setTab("projekte");
+                                setEditingProject(p);
+                              }}
                               className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
                             >
                               <FolderKanban className="size-4 text-primary opacity-70" />
@@ -504,19 +556,30 @@ function Dashboard() {
                       )}
                       {wpRes.length > 0 && (
                         <div className="border-t border-border px-3 py-2">
-                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Arbeitspakete</p>
-                          {wpRes.map(w => {
-                            const proj = w.projectId ? projects.find(p => p.id === w.projectId) : null;
+                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Arbeitspakete
+                          </p>
+                          {wpRes.map((w) => {
+                            const proj = w.projectId
+                              ? projects.find((p) => p.id === w.projectId)
+                              : null;
                             return (
                               <button
                                 key={w.id}
-                                onClick={() => { setSearchQ(""); setSearchOpen(false); setTab("arbeitspakete"); setEditingWP(w); }}
+                                onClick={() => {
+                                  setSearchQ("");
+                                  setSearchOpen(false);
+                                  setTab("arbeitspakete");
+                                  setEditingWP(w);
+                                }}
                                 className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
                               >
                                 <Layers className="size-4 text-info opacity-70" />
                                 <div className="min-w-0">
                                   <p className="truncate font-medium">{w.title}</p>
-                                  <p className="text-xs text-muted-foreground">{proj ? proj.name : "projektlos"} · {w.client ?? "—"}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {proj ? proj.name : "projektlos"} · {w.client ?? "—"}
+                                  </p>
                                 </div>
                               </button>
                             );
@@ -525,17 +588,26 @@ function Dashboard() {
                       )}
                       {aRes.length > 0 && (
                         <div className="border-t border-border px-3 py-2">
-                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tätigkeiten</p>
-                          {aRes.map(a => (
+                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Tätigkeiten
+                          </p>
+                          {aRes.map((a) => (
                             <button
                               key={a.id}
-                              onClick={() => { setSearchQ(""); setSearchOpen(false); setTab("taetigkeiten"); setEditingActivity(a); }}
+                              onClick={() => {
+                                setSearchQ("");
+                                setSearchOpen(false);
+                                setTab("taetigkeiten");
+                                setEditingActivity(a);
+                              }}
                               className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
                             >
                               <Clock className="size-4 text-success opacity-70" />
                               <div className="min-w-0">
                                 <p className="truncate font-medium">{a.title}</p>
-                                <p className="text-xs text-muted-foreground">{fmtDate(a.date)} · {a.client ?? "—"}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {fmtDate(a.date)} · {a.client ?? "—"}
+                                </p>
                               </div>
                             </button>
                           ))}
@@ -595,7 +667,6 @@ function Dashboard() {
                       <Printer className="size-4 opacity-70" /> Lokale Ablage…
                     </button>
                   </div>
-
                 </>
               )}
             </div>
@@ -715,16 +786,32 @@ function Dashboard() {
 
         {/* Tabs */}
         <div className="mb-4 flex flex-wrap gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-sm no-print">
-          <TabButton active={tab === "projekte"} onClick={() => setTab("projekte")} icon={<FolderKanban className="size-4" />}>
+          <TabButton
+            active={tab === "projekte"}
+            onClick={() => setTab("projekte")}
+            icon={<FolderKanban className="size-4" />}
+          >
             Projekte ({projects.length})
           </TabButton>
-          <TabButton active={tab === "arbeitspakete"} onClick={() => setTab("arbeitspakete")} icon={<Layers className="size-4" />}>
+          <TabButton
+            active={tab === "arbeitspakete"}
+            onClick={() => setTab("arbeitspakete")}
+            icon={<Layers className="size-4" />}
+          >
             Arbeitspakete ({workPackages.length})
           </TabButton>
-          <TabButton active={tab === "taetigkeiten"} onClick={() => setTab("taetigkeiten")} icon={<Clock className="size-4" />}>
+          <TabButton
+            active={tab === "taetigkeiten"}
+            onClick={() => setTab("taetigkeiten")}
+            icon={<Clock className="size-4" />}
+          >
             Tätigkeiten ({activities.length})
           </TabButton>
-          <TabButton active={tab === "abrechnung"} onClick={() => setTab("abrechnung")} icon={<Euro className="size-4" />}>
+          <TabButton
+            active={tab === "abrechnung"}
+            onClick={() => setTab("abrechnung")}
+            icon={<Euro className="size-4" />}
+          >
             Abrechnung
           </TabButton>
         </div>
@@ -835,7 +922,6 @@ function Dashboard() {
 
       <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
     </div>
-
   );
 }
 
@@ -908,7 +994,9 @@ function TabButton({
     <button
       onClick={onClick}
       className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 transition ${
-        active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+        active
+          ? "bg-primary text-primary-foreground"
+          : "text-muted-foreground hover:text-foreground"
       }`}
     >
       {icon}
@@ -1084,21 +1172,29 @@ function ProjectsView({
             <div key={p.id} className="group bg-card p-5 transition hover:bg-secondary/20">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{p.id}</p>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {p.id}
+                  </p>
                   <h3 className="mt-1 truncate font-semibold leading-tight">{p.name}</h3>
                   <p className="mt-1 text-xs text-muted-foreground">{p.client}</p>
                 </div>
-                <span className={`rounded-md border px-2 py-1 text-[11px] font-medium ${projectStatusStyles[p.status]}`}>
+                <span
+                  className={`rounded-md border px-2 py-1 text-[11px] font-medium ${projectStatusStyles[p.status]}`}
+                >
                   {projectStatusLabel[p.status]}
                 </span>
               </div>
 
-              {p.description && <p className="mt-3 line-clamp-2 text-xs text-muted-foreground">{p.description}</p>}
+              {p.description && (
+                <p className="mt-3 line-clamp-2 text-xs text-muted-foreground">{p.description}</p>
+              )}
 
               <div className="mt-4">
                 <div className="mb-1.5 flex items-baseline justify-between text-xs">
                   <span className="text-muted-foreground">Aufwand (aus Tätigkeiten)</span>
-                  <span className={`font-mono ${overBudget ? "text-destructive font-semibold" : ""}`}>
+                  <span
+                    className={`font-mono ${overBudget ? "text-destructive font-semibold" : ""}`}
+                  >
                     {spent.toFixed(1)} {budget ? `/ ${budget}` : ""} h
                   </span>
                 </div>
@@ -1107,7 +1203,11 @@ function ProjectsView({
                     className="h-full rounded-full"
                     style={{
                       width: `${Math.min(usage, 100)}%`,
-                      background: overBudget ? "var(--destructive)" : usage > 85 ? "var(--warning)" : "var(--gradient-primary)",
+                      background: overBudget
+                        ? "var(--destructive)"
+                        : usage > 85
+                          ? "var(--warning)"
+                          : "var(--gradient-primary)",
                     }}
                   />
                 </div>
@@ -1120,7 +1220,10 @@ function ProjectsView({
               <div className="mt-3 flex items-center justify-between">
                 <div className="flex -space-x-2">
                   {(p.team ?? []).map((m) => (
-                    <div key={m} className="grid size-7 place-items-center rounded-full border-2 border-card bg-secondary font-mono text-[10px] font-bold">
+                    <div
+                      key={m}
+                      className="grid size-7 place-items-center rounded-full border-2 border-card bg-secondary font-mono text-[10px] font-bold"
+                    >
                       {m}
                     </div>
                   ))}
@@ -1239,10 +1342,15 @@ function WorkPackagesView({
           const overrun = est > 0 && spent > est;
           const pct = est > 0 ? Math.min((spent / est) * 100, 100) : 0;
           return (
-            <div key={w.id} className="group grid grid-cols-12 items-center gap-3 px-4 py-4 transition hover:bg-secondary/30 sm:px-6">
+            <div
+              key={w.id}
+              className="group grid grid-cols-12 items-center gap-3 px-4 py-4 transition hover:bg-secondary/30 sm:px-6"
+            >
               <div className="col-span-12 md:col-span-5">
                 <div className="flex items-center gap-2">
-                  <span className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${priorityStyles[w.priority]}`}>
+                  <span
+                    className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${priorityStyles[w.priority]}`}
+                  >
                     {w.priority.toUpperCase()}
                   </span>
                   <span className="font-mono text-xs text-muted-foreground">{w.id}</span>
@@ -1259,7 +1367,10 @@ function WorkPackagesView({
                 {(w.tags?.length ?? 0) > 0 && (
                   <div className="mt-1 flex flex-wrap gap-1">
                     {w.tags!.map((t) => (
-                      <span key={t} className="rounded bg-secondary/60 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                      <span
+                        key={t}
+                        className="rounded bg-secondary/60 px-1.5 py-0.5 text-[10px] text-muted-foreground"
+                      >
                         {t}
                       </span>
                     ))}
@@ -1267,13 +1378,17 @@ function WorkPackagesView({
                 )}
               </div>
               <div className="col-span-6 md:col-span-2">
-                <span className={`inline-block rounded-md border px-2 py-1 text-xs font-medium ${wpStatusStyles[w.status]}`}>
+                <span
+                  className={`inline-block rounded-md border px-2 py-1 text-xs font-medium ${wpStatusStyles[w.status]}`}
+                >
                   {wpStatusLabel[w.status]}
                 </span>
               </div>
               <div className="col-span-6 md:col-span-3">
                 <div className="flex items-baseline gap-1 font-mono text-sm">
-                  <span className={overrun ? "text-destructive font-semibold" : ""}>{spent.toFixed(1)}</span>
+                  <span className={overrun ? "text-destructive font-semibold" : ""}>
+                    {spent.toFixed(1)}
+                  </span>
                   <span className="text-xs text-muted-foreground">/ {est || "—"} h</span>
                 </div>
                 {est > 0 && (
@@ -1304,7 +1419,9 @@ function WorkPackagesView({
           );
         })}
         {filtered.length === 0 && (
-          <p className="px-6 py-10 text-center text-sm text-muted-foreground">Keine Arbeitspakete in dieser Ansicht.</p>
+          <p className="px-6 py-10 text-center text-sm text-muted-foreground">
+            Keine Arbeitspakete in dieser Ansicht.
+          </p>
         )}
       </div>
     </Card>
@@ -1330,7 +1447,9 @@ function ActivitiesView({
 }) {
   const [q, setQ] = useState("");
   const [billing, setBilling] = useState<"alle" | BillingStatus>("alle");
-  const [scope, setScope] = useState<"alle" | "billable" | "non_billable" | "ohne_wp" | "projektlos">("alle");
+  const [scope, setScope] = useState<
+    "alle" | "billable" | "non_billable" | "ohne_wp" | "projektlos"
+  >("alle");
 
   const wpMap = new Map(workPackages.map((w) => [w.id, w]));
   const projMap = new Map(projects.map((p) => [p.id, p]));
@@ -1356,7 +1475,9 @@ function ActivitiesView({
   });
 
   // Sort by date desc
-  const sorted = [...filtered].sort((a, b) => (b.date + (b.time ?? "")).localeCompare(a.date + (a.time ?? "")));
+  const sorted = [...filtered].sort((a, b) =>
+    (b.date + (b.time ?? "")).localeCompare(a.date + (a.time ?? "")),
+  );
 
   return (
     <Card>
@@ -1428,7 +1549,9 @@ function ActivitiesView({
                   <td className="px-4 py-3">
                     <p className="font-medium">{a.title}</p>
                     <p className="text-xs text-muted-foreground">{a.client ?? "—"}</p>
-                    {a.description && <p className="mt-0.5 text-xs italic text-muted-foreground">{a.description}</p>}
+                    {a.description && (
+                      <p className="mt-0.5 text-xs italic text-muted-foreground">{a.description}</p>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-xs">
                     {wp ? (
@@ -1454,14 +1577,22 @@ function ActivitiesView({
                     {a.billable ? fmtEuro(a.hourlyRate) : "—"}
                   </td>
                   <td className="px-4 py-3 text-right font-mono font-semibold">
-                    {a.billable ? fmtEuro(amount) : <span className="text-muted-foreground">—</span>}
+                    {a.billable ? (
+                      fmtEuro(amount)
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block rounded-md border px-2 py-1 text-[11px] font-medium ${billingStyles[a.billingStatus]}`}>
+                    <span
+                      className={`inline-block rounded-md border px-2 py-1 text-[11px] font-medium ${billingStyles[a.billingStatus]}`}
+                    >
                       {billingLabel[a.billingStatus]}
                     </span>
                     {!a.billable && (
-                      <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">nicht abr.</p>
+                      <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                        nicht abr.
+                      </p>
                     )}
                   </td>
                   <td className="px-4 py-3 no-print">
@@ -1570,7 +1701,9 @@ function BillingView({
                           <span className="italic">ohne Arbeitspaket</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono font-semibold">{fmtEuro(a.duration * a.hourlyRate)}</td>
+                      <td className="px-4 py-3 text-right font-mono font-semibold">
+                        {fmtEuro(a.duration * a.hourlyRate)}
+                      </td>
                       <td className="px-4 py-3 no-print text-right">
                         <IconBtn onClick={() => onEdit(a)} title="Bearbeiten">
                           <Pencil className="size-3.5" />
@@ -1581,7 +1714,10 @@ function BillingView({
                 })}
                 {open.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-6 py-10 text-center text-sm text-muted-foreground">
+                    <td
+                      colSpan={6}
+                      className="px-6 py-10 text-center text-sm text-muted-foreground"
+                    >
                       Keine offenen Posten.
                     </td>
                   </tr>
@@ -1600,15 +1736,21 @@ function BillingView({
           <div className="space-y-3 px-6 py-5 text-sm">
             <div className="flex items-baseline justify-between">
               <span className="text-muted-foreground">Offen</span>
-              <span className="font-mono text-lg font-semibold text-warning">{fmtEuro(openSum)}</span>
+              <span className="font-mono text-lg font-semibold text-warning">
+                {fmtEuro(openSum)}
+              </span>
             </div>
             <div className="flex items-baseline justify-between">
               <span className="text-muted-foreground">Abgerechnet</span>
-              <span className="font-mono text-lg font-semibold text-success">{fmtEuro(billedSum)}</span>
+              <span className="font-mono text-lg font-semibold text-success">
+                {fmtEuro(billedSum)}
+              </span>
             </div>
             <div className="border-t border-border pt-3 flex items-baseline justify-between">
               <span className="font-medium">Gesamt</span>
-              <span className="font-mono text-lg font-semibold">{fmtEuro(openSum + billedSum)}</span>
+              <span className="font-mono text-lg font-semibold">
+                {fmtEuro(openSum + billedSum)}
+              </span>
             </div>
           </div>
         </Card>
@@ -1632,7 +1774,9 @@ function BillingView({
                 </li>
               ))}
             {byClient.size === 0 && (
-              <li className="px-6 py-6 text-center text-sm text-muted-foreground">Keine offenen Beträge.</li>
+              <li className="px-6 py-6 text-center text-sm text-muted-foreground">
+                Keine offenen Beträge.
+              </li>
             )}
           </ul>
         </Card>
@@ -1647,7 +1791,10 @@ function BillingView({
               {weekly.map((d) => (
                 <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
                   <div className="relative flex w-full flex-1 items-end">
-                    <div className="w-full rounded-t-md bg-secondary" style={{ height: `${(d.hours / maxHours) * 100}%` }} />
+                    <div
+                      className="w-full rounded-t-md bg-secondary"
+                      style={{ height: `${(d.hours / maxHours) * 100}%` }}
+                    />
                     <div
                       className="absolute bottom-0 w-full rounded-t-md"
                       style={{
@@ -1657,7 +1804,9 @@ function BillingView({
                     />
                   </div>
                   <p className="text-[10px] font-medium">{d.day}</p>
-                  <p className="font-mono text-[10px] text-muted-foreground">{d.hours.toFixed(1)}h</p>
+                  <p className="font-mono text-[10px] text-muted-foreground">
+                    {d.hours.toFixed(1)}h
+                  </p>
                 </div>
               ))}
             </div>
@@ -1673,7 +1822,15 @@ function BillingView({
 const inputCls =
   "h-10 w-full rounded-md border border-input bg-secondary/40 px-3 text-sm outline-none transition focus:border-ring";
 
-function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+function Modal({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-background/70 p-4 backdrop-blur-sm no-print"
@@ -1704,7 +1861,10 @@ function FormActions({
 }) {
   return (
     <div className="mt-5 flex justify-end gap-2">
-      <button onClick={onCancel} className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary">
+      <button
+        onClick={onCancel}
+        className="h-9 rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary"
+      >
         Abbrechen
       </button>
       <button
@@ -1736,35 +1896,72 @@ function ProjectDialog({
   const valid = form.name.trim().length > 1 && form.client.trim().length > 1;
 
   return (
-    <Modal title={isNew ? "Neues Projekt anlegen" : `Projekt bearbeiten – ${project.id}`} onClose={onClose}>
+    <Modal
+      title={isNew ? "Neues Projekt anlegen" : `Projekt bearbeiten – ${project.id}`}
+      onClose={onClose}
+    >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Projektname
-          <input className={`mt-1 ${inputCls}`} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="z. B. Datacenter Migration" />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="z. B. Datacenter Migration"
+          />
         </label>
         <label className="text-xs font-medium">
           Kunde
-          <input className={`mt-1 ${inputCls}`} value={form.client} onChange={(e) => setForm({ ...form, client: e.target.value })} />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.client}
+            onChange={(e) => setForm({ ...form, client: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Projektleitung
-          <input className={`mt-1 ${inputCls}`} value={form.lead ?? ""} onChange={(e) => setForm({ ...form, lead: e.target.value })} />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.lead ?? ""}
+            onChange={(e) => setForm({ ...form, lead: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Start
-          <input type="date" className={`mt-1 ${inputCls}`} value={form.start ?? ""} onChange={(e) => setForm({ ...form, start: e.target.value })} />
+          <input
+            type="date"
+            className={`mt-1 ${inputCls}`}
+            value={form.start ?? ""}
+            onChange={(e) => setForm({ ...form, start: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Deadline
-          <input type="date" className={`mt-1 ${inputCls}`} value={form.deadline ?? ""} onChange={(e) => setForm({ ...form, deadline: e.target.value })} />
+          <input
+            type="date"
+            className={`mt-1 ${inputCls}`}
+            value={form.deadline ?? ""}
+            onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Budget (h)
-          <input type="number" min="0" step="1" className={`mt-1 ${inputCls}`} value={form.budget ?? 0} onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })} />
+          <input
+            type="number"
+            min="0"
+            step="1"
+            className={`mt-1 ${inputCls}`}
+            value={form.budget ?? 0}
+            onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })}
+          />
         </label>
         <label className="text-xs font-medium">
           Status
-          <select className={`mt-1 ${inputCls}`} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as ProjectStatus })}>
+          <select
+            className={`mt-1 ${inputCls}`}
+            value={form.status}
+            onChange={(e) => setForm({ ...form, status: e.target.value as ProjectStatus })}
+          >
             {(["on_track", "at_risk", "delayed", "abgeschlossen"] as ProjectStatus[]).map((s) => (
               <option key={s} value={s} className="bg-background">
                 {projectStatusLabel[s]}
@@ -1774,11 +1971,21 @@ function ProjectDialog({
         </label>
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Team (Komma-getrennt)
-          <input className={`mt-1 ${inputCls}`} value={form.teamText} onChange={(e) => setForm({ ...form, teamText: e.target.value })} placeholder="AB, CD, EF" />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.teamText}
+            onChange={(e) => setForm({ ...form, teamText: e.target.value })}
+            placeholder="AB, CD, EF"
+          />
         </label>
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Beschreibung
-          <textarea rows={3} className={`mt-1 ${inputCls}`} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <textarea
+            rows={3}
+            className={`mt-1 ${inputCls}`}
+            value={form.description ?? ""}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
         </label>
       </div>
 
@@ -1820,11 +2027,18 @@ function WorkPackageDialog({
   const valid = form.title.trim().length > 1;
 
   return (
-    <Modal title={isNew ? "Neues Arbeitspaket" : `Arbeitspaket bearbeiten – ${wp.id}`} onClose={onClose}>
+    <Modal
+      title={isNew ? "Neues Arbeitspaket" : `Arbeitspaket bearbeiten – ${wp.id}`}
+      onClose={onClose}
+    >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Titel
-          <input className={`mt-1 ${inputCls}`} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Projekt (optional)
@@ -1843,11 +2057,19 @@ function WorkPackageDialog({
         </label>
         <label className="text-xs font-medium">
           Kunde
-          <input className={`mt-1 ${inputCls}`} value={form.client ?? ""} onChange={(e) => setForm({ ...form, client: e.target.value })} />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.client ?? ""}
+            onChange={(e) => setForm({ ...form, client: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Status
-          <select className={`mt-1 ${inputCls}`} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as WorkPackageStatus })}>
+          <select
+            className={`mt-1 ${inputCls}`}
+            value={form.status}
+            onChange={(e) => setForm({ ...form, status: e.target.value as WorkPackageStatus })}
+          >
             {(Object.keys(wpStatusLabel) as WorkPackageStatus[]).map((s) => (
               <option key={s} value={s} className="bg-background">
                 {wpStatusLabel[s]}
@@ -1857,7 +2079,11 @@ function WorkPackageDialog({
         </label>
         <label className="text-xs font-medium">
           Priorität
-          <select className={`mt-1 ${inputCls}`} value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value as Priority })}>
+          <select
+            className={`mt-1 ${inputCls}`}
+            value={form.priority}
+            onChange={(e) => setForm({ ...form, priority: e.target.value as Priority })}
+          >
             {(["niedrig", "mittel", "hoch", "kritisch"] as Priority[]).map((p) => (
               <option key={p} value={p} className="bg-background">
                 {p}
@@ -1867,23 +2093,48 @@ function WorkPackageDialog({
         </label>
         <label className="text-xs font-medium">
           Fällig
-          <input type="date" className={`mt-1 ${inputCls}`} value={form.due ?? ""} onChange={(e) => setForm({ ...form, due: e.target.value })} />
+          <input
+            type="date"
+            className={`mt-1 ${inputCls}`}
+            value={form.due ?? ""}
+            onChange={(e) => setForm({ ...form, due: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Geschätzt (h)
-          <input type="number" min="0" step="0.25" className={`mt-1 ${inputCls}`} value={form.estimated ?? 0} onChange={(e) => setForm({ ...form, estimated: Number(e.target.value) })} />
+          <input
+            type="number"
+            min="0"
+            step="0.25"
+            className={`mt-1 ${inputCls}`}
+            value={form.estimated ?? 0}
+            onChange={(e) => setForm({ ...form, estimated: Number(e.target.value) })}
+          />
         </label>
         <label className="text-xs font-medium">
           Zuständig
-          <input className={`mt-1 ${inputCls}`} value={form.assignee ?? ""} onChange={(e) => setForm({ ...form, assignee: e.target.value })} />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.assignee ?? ""}
+            onChange={(e) => setForm({ ...form, assignee: e.target.value })}
+          />
         </label>
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Tags (Komma-getrennt)
-          <input className={`mt-1 ${inputCls}`} value={form.tagsText} onChange={(e) => setForm({ ...form, tagsText: e.target.value })} />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.tagsText}
+            onChange={(e) => setForm({ ...form, tagsText: e.target.value })}
+          />
         </label>
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Beschreibung
-          <textarea rows={3} className={`mt-1 ${inputCls}`} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <textarea
+            rows={3}
+            className={`mt-1 ${inputCls}`}
+            value={form.description ?? ""}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
         </label>
       </div>
 
@@ -1930,9 +2181,13 @@ function ActivityDialog({
   const errCls = "mt-1 text-[11px] text-destructive";
 
   return (
-    <Modal title={isNew ? "Neue Tätigkeit erfassen" : `Tätigkeit bearbeiten – ${activity.id}`} onClose={onClose}>
+    <Modal
+      title={isNew ? "Neue Tätigkeit erfassen" : `Tätigkeit bearbeiten – ${activity.id}`}
+      onClose={onClose}
+    >
       <p className="mb-3 rounded-md border border-info/30 bg-info/10 px-3 py-2 text-[11px] text-info">
-        Abrechnung erfolgt ausschließlich auf Ebene der Tätigkeit. Zuordnung zu Arbeitspaket oder Projekt ist optional.
+        Abrechnung erfolgt ausschließlich auf Ebene der Tätigkeit. Zuordnung zu Arbeitspaket oder
+        Projekt ist optional.
       </p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
@@ -1983,7 +2238,11 @@ function ActivityDialog({
         </label>
         <label className="text-xs font-medium">
           Kunde
-          <input className={`mt-1 ${inputCls}`} value={form.client ?? ""} onChange={(e) => setForm({ ...form, client: e.target.value })} />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.client ?? ""}
+            onChange={(e) => setForm({ ...form, client: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Datum
@@ -1998,7 +2257,12 @@ function ActivityDialog({
         </label>
         <label className="text-xs font-medium">
           Uhrzeit
-          <input type="time" className={`mt-1 ${inputCls}`} value={form.time ?? ""} onChange={(e) => setForm({ ...form, time: e.target.value })} />
+          <input
+            type="time"
+            className={`mt-1 ${inputCls}`}
+            value={form.time ?? ""}
+            onChange={(e) => setForm({ ...form, time: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Dauer (h)
@@ -2025,9 +2289,13 @@ function ActivityDialog({
             onChange={(e) => setForm({ ...form, hourlyRate: Number(e.target.value) })}
             aria-invalid={!!errors.hourlyRate}
           />
-          {form.billable
-            ? errors.hourlyRate && <p className={errCls}>{errors.hourlyRate}</p>
-            : <p className="mt-1 text-[11px] text-muted-foreground">Nur für abrechenbare Tätigkeiten.</p>}
+          {form.billable ? (
+            errors.hourlyRate && <p className={errCls}>{errors.hourlyRate}</p>
+          ) : (
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Nur für abrechenbare Tätigkeiten.
+            </p>
+          )}
         </label>
         <label className="flex items-center gap-2 text-xs font-medium pt-5">
           <input
@@ -2075,7 +2343,12 @@ function ActivityDialog({
         </label>
         <label className="col-span-1 sm:col-span-2 text-xs font-medium">
           Beschreibung
-          <textarea rows={3} className={`mt-1 ${inputCls}`} value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <textarea
+            rows={3}
+            className={`mt-1 ${inputCls}`}
+            value={form.description ?? ""}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
         </label>
         <div className="col-span-1 sm:col-span-2 rounded-md border border-border bg-secondary/30 px-3 py-2 text-xs">
           Betrag:{" "}
@@ -2095,7 +2368,6 @@ function ActivityDialog({
   );
 }
 
-
 function EngineerDialog({
   engineerState,
   onClose,
@@ -2106,9 +2378,15 @@ function EngineerDialog({
   onSave: (e: Engineer) => void;
 }) {
   const [form, setForm] = useState({ ...engineerState });
-  const valid = form.name.trim().length > 1 && form.role.trim().length > 1 && form.company.trim().length > 1;
+  const valid =
+    form.name.trim().length > 1 && form.role.trim().length > 1 && form.company.trim().length > 1;
   const genInitials = (name: string) =>
-    name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+    name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
 
   return (
     <Modal title="Engineer-Profil" onClose={onClose}>
@@ -2118,24 +2396,47 @@ function EngineerDialog({
           <input
             className={`mt-1 ${inputCls}`}
             value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value, initials: genInitials(e.target.value) })}
+            onChange={(e) =>
+              setForm({ ...form, name: e.target.value, initials: genInitials(e.target.value) })
+            }
           />
         </label>
         <label className="text-xs font-medium">
           Rolle
-          <input className={`mt-1 ${inputCls}`} value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.role}
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Unternehmen
-          <input className={`mt-1 ${inputCls}`} value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.company}
+            onChange={(e) => setForm({ ...form, company: e.target.value })}
+          />
         </label>
         <label className="text-xs font-medium">
           Initialen
-          <input className={`mt-1 ${inputCls}`} value={form.initials} maxLength={2} onChange={(e) => setForm({ ...form, initials: e.target.value.toUpperCase().slice(0, 2) })} />
+          <input
+            className={`mt-1 ${inputCls}`}
+            value={form.initials}
+            maxLength={2}
+            onChange={(e) =>
+              setForm({ ...form, initials: e.target.value.toUpperCase().slice(0, 2) })
+            }
+          />
         </label>
         <label className="text-xs font-medium">
           Wochenziel (h)
-          <input type="number" min={1} className={`mt-1 ${inputCls}`} value={form.weeklyTarget} onChange={(e) => setForm({ ...form, weeklyTarget: Number(e.target.value) })} />
+          <input
+            type="number"
+            min={1}
+            className={`mt-1 ${inputCls}`}
+            value={form.weeklyTarget}
+            onChange={(e) => setForm({ ...form, weeklyTarget: Number(e.target.value) })}
+          />
         </label>
       </div>
       <FormActions onCancel={onClose} saveDisabled={!valid} onSave={() => onSave(form)} />

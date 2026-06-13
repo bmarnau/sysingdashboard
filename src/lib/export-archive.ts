@@ -57,7 +57,9 @@ export const ExportArchive = {
     return typeof indexedDB !== "undefined";
   },
 
-  async save(record: Omit<ArchivedRecord, "id" | "createdAt"> & { createdAt?: string }): Promise<ArchivedExport> {
+  async save(
+    record: Omit<ArchivedRecord, "id" | "createdAt"> & { createdAt?: string },
+  ): Promise<ArchivedExport> {
     const entry: ArchivedRecord = {
       id: crypto.randomUUID(),
       createdAt: record.createdAt ?? new Date().toISOString(),
@@ -74,14 +76,20 @@ export const ExportArchive = {
   },
 
   async list(): Promise<ArchivedExport[]> {
-    const all = await tx<ArchivedRecord[]>("readonly", (s) => s.getAll() as IDBRequest<ArchivedRecord[]>);
+    const all = await tx<ArchivedRecord[]>(
+      "readonly",
+      (s) => s.getAll() as IDBRequest<ArchivedRecord[]>,
+    );
     return all
       .map(({ blob: _b, ...meta }) => meta)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   },
 
   async get(id: string): Promise<ArchivedRecord | undefined> {
-    return tx<ArchivedRecord | undefined>("readonly", (s) => s.get(id) as IDBRequest<ArchivedRecord | undefined>);
+    return tx<ArchivedRecord | undefined>(
+      "readonly",
+      (s) => s.get(id) as IDBRequest<ArchivedRecord | undefined>,
+    );
   },
 
   async delete(id: string): Promise<void> {

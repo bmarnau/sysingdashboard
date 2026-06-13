@@ -43,8 +43,18 @@ export interface PdfExportContext {
 const DASHBOARD_VERSION = "1.0.0";
 
 const MONTH_NAMES_DE = [
-  "Januar", "Februar", "März", "April", "Mai", "Juni",
-  "Juli", "August", "September", "Oktober", "November", "Dezember",
+  "Januar",
+  "Februar",
+  "März",
+  "April",
+  "Mai",
+  "Juni",
+  "Juli",
+  "August",
+  "September",
+  "Oktober",
+  "November",
+  "Dezember",
 ];
 
 const GROUPING_LABEL: Record<GroupingId, string> = {
@@ -146,7 +156,9 @@ export const PdfExportService = {
     };
   },
 
-  async generatePdf(ctx: PdfExportContext): Promise<{ blob: Blob; pages: number; metadata: ReportMetadata }> {
+  async generatePdf(
+    ctx: PdfExportContext,
+  ): Promise<{ blob: Blob; pages: number; metadata: ReportMetadata }> {
     const { engineer, exportData } = ctx;
     const cfg = exportData.configuration;
 
@@ -248,7 +260,7 @@ export const PdfExportService = {
     const projectById = new Map(ctx.projects.map((p) => [p.id, p]));
 
     // Activities sorted by date for the flat table
-    const activityRows = [...ctx.exportData ? collectActivities(exportData.groups, ctx) : []]
+    const activityRows = [...(ctx.exportData ? collectActivities(exportData.groups, ctx) : [])]
       .sort((a, b) => (a.date || "").localeCompare(b.date || ""))
       .map((a) => {
         const wp = a.workPackageId ? wpById.get(a.workPackageId) : undefined;
@@ -267,7 +279,9 @@ export const PdfExportService = {
     autoTable(doc, {
       startY: margin + 14,
       margin: { left: margin, right: margin },
-      head: [["Datum", "Mitarbeiter", "Projekt", "Arbeitspaket", "Tätigkeit", "Stunden", "Kommentar"]],
+      head: [
+        ["Datum", "Mitarbeiter", "Projekt", "Arbeitspaket", "Tätigkeit", "Stunden", "Kommentar"],
+      ],
       body: activityRows.length
         ? activityRows
         : [["—", "—", "—", "—", "Keine Tätigkeiten im Zeitraum", "0 h", ""]],
@@ -285,7 +299,13 @@ export const PdfExportService = {
     doc.addPage();
     drawPageHeader(doc, "Gruppierte Auswertung", metadata.reportId, margin, pageW);
 
-    const groupRows: Array<{ depth: number; label: string; hours: number; amount: number; level: string }> = [];
+    const groupRows: Array<{
+      depth: number;
+      label: string;
+      hours: number;
+      amount: number;
+      level: string;
+    }> = [];
     const walk = (nodes: ExportGroupNode[], depth: number) => {
       for (const n of nodes) {
         groupRows.push({
@@ -332,7 +352,9 @@ export const PdfExportService = {
     });
 
     /* ------------------------ Zusammenfassung ----------------------- */
-    const lastY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? margin + 30;
+    const lastY =
+      (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ??
+      margin + 30;
     let sumY = lastY + 10;
     if (sumY > pageH - 70) {
       doc.addPage();
@@ -382,9 +404,13 @@ export const PdfExportService = {
   async createPreview(ctx: PdfExportContext): Promise<PdfPreview> {
     const { blob, pages, metadata } = await this.generatePdf(ctx);
     // Erzwinge korrekten MIME-Type — sonst zeigt Chrome im iframe ggf. nichts an.
-    const typedBlob = blob.type === "application/pdf" ? blob : new Blob([blob], { type: "application/pdf" });
+    const typedBlob =
+      blob.type === "application/pdf" ? blob : new Blob([blob], { type: "application/pdf" });
     const url = URL.createObjectURL(typedBlob);
-    const fileName = this.generateFileName(ctx.exportData.configuration, new Date(metadata.createdAt));
+    const fileName = this.generateFileName(
+      ctx.exportData.configuration,
+      new Date(metadata.createdAt),
+    );
     return { blob: typedBlob, url, fileName, pages, sizeBytes: typedBlob.size, metadata };
   },
 };
@@ -399,7 +425,13 @@ function drawSectionTitle(doc: jsPDF, title: string, x: number, y: number) {
   doc.setTextColor(0);
 }
 
-function drawPageHeader(doc: jsPDF, title: string, reportId: string, margin: number, pageW: number) {
+function drawPageHeader(
+  doc: jsPDF,
+  title: string,
+  reportId: string,
+  margin: number,
+  pageW: number,
+) {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.setTextColor(30, 64, 175);
@@ -431,10 +463,7 @@ function drawPageFooter(
 }
 
 /** Sammelt eindeutige Aktivitäten aus dem Gruppen-Baum. */
-function collectActivities(
-  groups: ExportGroupNode[],
-  ctx: PdfExportContext,
-): Activity[] {
+function collectActivities(groups: ExportGroupNode[], ctx: PdfExportContext): Activity[] {
   const ids = new Set<string>();
   const visit = (nodes: ExportGroupNode[]) => {
     for (const n of nodes) {
