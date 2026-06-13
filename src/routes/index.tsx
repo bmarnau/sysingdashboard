@@ -1121,6 +1121,13 @@ function Dashboard() {
           }}
         />
       )}
+      {showWorkingTimeDialog && (
+        <WorkingTimeModelsDialog
+          models={targetTimeModels}
+          onChange={setTargetTimeModels}
+          onClose={() => setShowWorkingTimeDialog(false)}
+        />
+      )}
 
       <ExportDialog
         open={showExportDialog}
