@@ -274,6 +274,7 @@ function Dashboard() {
   const searchRef = useRef<HTMLDivElement>(null);
 
   const [now, setNow] = useState<Date | null>(null);
+  const [viewMode, setViewMode] = useState<DashboardViewMode>("month");
 
   useEffect(() => {
     const p = loadPersisted();
@@ -289,8 +290,23 @@ function Dashboard() {
     setWorkPackages(normWPs);
     setActivities(normActs);
     setNow(new Date());
+    try {
+      const stored = window.localStorage.getItem(VIEWMODE_KEY);
+      if (stored === "week" || stored === "month") setViewMode(stored);
+    } catch {
+      /* ignore */
+    }
     setHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      window.localStorage.setItem(VIEWMODE_KEY, viewMode);
+    } catch {
+      /* ignore */
+    }
+  }, [hydrated, viewMode]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
