@@ -770,7 +770,7 @@ function Dashboard() {
               <button
                 role="tab"
                 aria-selected={viewMode === "week"}
-                onClick={() => setViewMode("week")}
+                onClick={() => switchView("week")}
                 className={`rounded-md px-3 py-1.5 font-medium transition ${
                   viewMode === "week"
                     ? "bg-background text-foreground shadow-sm"
@@ -782,7 +782,7 @@ function Dashboard() {
               <button
                 role="tab"
                 aria-selected={viewMode === "month"}
-                onClick={() => setViewMode("month")}
+                onClick={() => switchView("month")}
                 className={`rounded-md px-3 py-1.5 font-medium transition ${
                   viewMode === "month"
                     ? "bg-background text-foreground shadow-sm"
@@ -792,6 +792,36 @@ function Dashboard() {
                 Monat
               </button>
             </div>
+            <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-sm">
+              <button
+                onClick={() => shiftPeriod(-1)}
+                className="grid size-7 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+                aria-label={viewMode === "month" ? "Vorheriger Monat" : "Vorherige Woche"}
+              >
+                ◀
+              </button>
+              <button
+                onClick={resetPeriod}
+                disabled={periodOffset === 0}
+                className="rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground disabled:opacity-50"
+              >
+                Heute
+              </button>
+              <button
+                onClick={() => shiftPeriod(1)}
+                className="grid size-7 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+                aria-label={viewMode === "month" ? "Nächster Monat" : "Nächste Woche"}
+              >
+                ▶
+              </button>
+            </div>
+            {isSwitching && (
+              <span
+                role="status"
+                aria-label="Lädt"
+                className="inline-block size-3 animate-pulse rounded-full bg-primary"
+              />
+            )}
           <div className="relative no-print">
             <button
               onClick={() => setShowNewMenu((v) => !v)}
