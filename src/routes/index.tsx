@@ -369,12 +369,18 @@ function Dashboard() {
 
   /* ---------- Derived ---------- */
 
-  const targetCfg = useMemo(
-    () => ({
-      monthlyTargetHours: engineerState.monthlyTargetHours,
-      workloadPercent: engineerState.workloadPercent,
-    }),
-    [engineerState.monthlyTargetHours, engineerState.workloadPercent],
+  /** Tages-Sollzeit-Quelle: bevorzugt aktive Arbeitszeitmodelle, sonst Legacy-Profil. */
+  const targetSource = useMemo(
+    () =>
+      EngineerTargetTimeService.buildDailyTargetFnFromEngineer(
+        engineerState,
+        targetTimeModels,
+      ),
+    [
+      engineerState.monthlyTargetHours,
+      engineerState.workloadPercent,
+      targetTimeModels,
+    ],
   );
 
   /** Aktuell betrachteter Referenzzeitpunkt (heute + Offset im aktuellen Modus). */
@@ -388,8 +394,8 @@ function Dashboard() {
 
   const metrics = useMemo(() => {
     if (!periodRef) return null;
-    return TimePeriodService.computePeriodMetrics(activities, viewMode, periodRef, targetCfg);
-  }, [activities, periodRef, viewMode, targetCfg]);
+    return TimePeriodService.computePeriodMetrics(activities, viewMode, periodRef, targetSource);
+  }, [activities, periodRef, viewMode, targetSource]);
 
   const chartBuckets = useMemo<ChartBucket[]>(() => {
     if (!periodRef) return [];
