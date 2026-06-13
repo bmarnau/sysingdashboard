@@ -100,6 +100,18 @@
     font-family: var(--font-display);
     -webkit-font-smoothing: antialiased;
   }
+  .ipt {
+    height: 2.5rem;
+    width: 100%;
+    border-radius: 0.375rem;
+    border: 1px solid var(--color-input, var(--color-border));
+    background: color-mix(in oklab, var(--color-secondary) 40%, transparent);
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    font-size: 0.875rem;
+    outline: none;
+  }
+  .ipt:focus { border-color: var(--color-ring, var(--color-primary)); }
 }
 
 /* Print stylesheet for PDF output */

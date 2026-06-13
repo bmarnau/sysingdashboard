@@ -36,6 +36,14 @@ import { ExportDialog } from "@/components/ExportDialog";
 import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
 import { PerformanceReport } from "@/components/PerformanceReport";
 import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
+import { UserManagementDialog } from "@/components/UserManagementDialog";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import {
+  UserManagementService,
+  ROLE_LABEL,
+  initialsOf,
+  type UserProfile,
+} from "@/lib/user-management";
 import {
   TimePeriodService,
   getISOWeek,
@@ -106,10 +114,14 @@ const billingStyles: Record<BillingStatus, string> = {
 
 /* ----------------------------- Persistence & utils ---------------------------- */
 
-const STORAGE_KEY = "northbit-dashboard-v2";
-const VIEWMODE_KEY = "northbit-dashboard-viewmode";
-const PERIOD_KEY = "northbit-dashboard-period";
-const PERF_REPORT_KEY = "northbit-dashboard-perf-report";
+const STORAGE_KEY_BASE = "northbit-dashboard-v2";
+const VIEWMODE_KEY_BASE = "northbit-dashboard-viewmode";
+const PERIOD_KEY_BASE = "northbit-dashboard-period";
+const PERF_REPORT_KEY_BASE = "northbit-dashboard-perf-report";
+const storageKey = () => UserManagementService.userScopedKey(STORAGE_KEY_BASE);
+const viewmodeKey = () => UserManagementService.userScopedKey(VIEWMODE_KEY_BASE);
+const periodKey = () => UserManagementService.userScopedKey(PERIOD_KEY_BASE);
+const perfReportKey = () => UserManagementService.userScopedKey(PERF_REPORT_KEY_BASE);
 
 type PersistedState = {
   engineer: Engineer;
@@ -121,7 +133,7 @@ type PersistedState = {
 function loadPersisted(): PersistedState | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(storageKey());
     if (!raw) return null;
     return JSON.parse(raw) as PersistedState;
   } catch {
@@ -249,6 +261,8 @@ function Dashboard() {
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [showEngineer, setShowEngineer] = useState(false);
   const [showWorkingTimeDialog, setShowWorkingTimeDialog] = useState(false);
+  const [showUserDialog, setShowUserDialog] = useState(false);
+  const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -262,7 +276,7 @@ function Dashboard() {
   const [showPerfReport, setShowPerfReport] = useState(() => {
     if (typeof window === "undefined") return true;
     try {
-      const v = window.localStorage.getItem(PERF_REPORT_KEY);
+      const v = window.localStorage.getItem(perfReportKey());
       return v !== "false";
     } catch {
       return true;
@@ -270,6 +284,7 @@ function Dashboard() {
   });
 
   useEffect(() => {
+    UserManagementService.bootstrap();
     const p = loadPersisted();
     const rawProjects = p?.projects ?? dashboardData.projects;
     const rawWPs = p?.workPackages ?? dashboardData.workPackages;
@@ -284,14 +299,14 @@ function Dashboard() {
     setActivities(normActs);
     setNow(new Date());
     try {
-      const stored = window.localStorage.getItem(VIEWMODE_KEY);
+      const stored = window.localStorage.getItem(viewmodeKey());
       if (stored === "week" || stored === "month") setViewMode(stored);
-      const offRaw = window.localStorage.getItem(PERIOD_KEY);
+      const offRaw = window.localStorage.getItem(periodKey());
       if (offRaw) {
         const off = Number(offRaw);
         if (Number.isFinite(off)) setPeriodOffset(off);
       }
-      const prRaw = window.localStorage.getItem(PERF_REPORT_KEY);
+      const prRaw = window.localStorage.getItem(perfReportKey());
       if (prRaw === "false") setShowPerfReport(false);
     } catch {
       /* ignore */
@@ -303,9 +318,9 @@ function Dashboard() {
   useEffect(() => {
     if (!hydrated) return;
     try {
-      window.localStorage.setItem(VIEWMODE_KEY, viewMode);
-      window.localStorage.setItem(PERIOD_KEY, String(periodOffset));
-      window.localStorage.setItem(PERF_REPORT_KEY, String(showPerfReport));
+      window.localStorage.setItem(viewmodeKey(), viewMode);
+      window.localStorage.setItem(periodKey(), String(periodOffset));
+      window.localStorage.setItem(perfReportKey(), String(showPerfReport));
     } catch {
       /* ignore */
     }
@@ -325,7 +340,7 @@ function Dashboard() {
     if (!hydrated) return;
     try {
       window.localStorage.setItem(
-        STORAGE_KEY,
+        storageKey(),
         JSON.stringify({ engineer: engineerState, projects, workPackages, activities }),
       );
     } catch {
@@ -340,7 +355,7 @@ function Dashboard() {
 
   const resetData = () => {
     if (!confirm("Lokale Daten zurücksetzen?")) return;
-    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(storageKey());
     setEngineer(dashboardData.engineer);
     setProjects(dashboardData.projects);
     setWorkPackages(dashboardData.workPackages);
@@ -781,9 +796,27 @@ function Dashboard() {
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
-                        setShowWorkingTimeDialog(true);
+                        setShowUserDialog(true);
                       }}
                       className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Server className="size-4 opacity-70" /> Benutzer & Profile…
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
+                        setShowEngineer(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Server className="size-4 opacity-70" /> Engineer-Stammdaten…
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
+                        setShowWorkingTimeDialog(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
                     >
                       <Clock className="size-4 opacity-70" /> Arbeitszeitmodell…
                     </button>
@@ -819,18 +852,31 @@ function Dashboard() {
               )}
             </div>
             <button
-              onClick={() => setShowEngineer(true)}
+              onClick={() => setShowUserDialog(true)}
+              title="Benutzer & Profile"
               className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3 transition hover:bg-secondary"
             >
-              <div
-                className="grid size-8 place-items-center rounded-md font-mono text-sm font-bold text-primary-foreground"
-                style={{ background: "var(--gradient-primary)" }}
-              >
-                {engineerState.initials}
-              </div>
+              {currentUser?.profileImage ? (
+                <img
+                  src={currentUser.profileImage}
+                  alt=""
+                  className="size-8 rounded-md object-cover"
+                />
+              ) : (
+                <div
+                  className="grid size-8 place-items-center rounded-md font-mono text-sm font-bold text-primary-foreground"
+                  style={{ background: "var(--gradient-primary)" }}
+                >
+                  {currentUser ? initialsOf(currentUser) : engineerState.initials}
+                </div>
+              )}
               <div className="hidden text-left leading-tight sm:block">
-                <p className="text-sm font-semibold">{engineerState.name}</p>
-                <p className="text-xs text-muted-foreground">{engineerState.role}</p>
+                <p className="text-sm font-semibold">
+                  {currentUser?.displayName ?? engineerState.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {currentUser ? ROLE_LABEL[currentUser.role] : engineerState.role}
+                </p>
               </div>
             </button>
           </div>
@@ -843,7 +889,7 @@ function Dashboard() {
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">{dateLine}</p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-              Guten Tag, {engineerState.name.split(" ")[0]}.
+              Guten Tag, {(currentUser?.firstName || currentUser?.displayName || engineerState.name).split(" ")[0]}.
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
               {activeProjects} aktive Projekte · {openWPs} offene Arbeitspakete ·{" "}
@@ -1144,6 +1190,17 @@ function Dashboard() {
           models={targetTimeModels}
           onChange={setTargetTimeModels}
           onClose={() => setShowWorkingTimeDialog(false)}
+        />
+      )}
+      {showUserDialog && currentUser && (
+        <UserManagementDialog
+          open={showUserDialog}
+          onClose={() => setShowUserDialog(false)}
+          currentUser={currentUser}
+          onProfileSwitch={() => {
+            // Datenscope ist per-User; sicherster Weg: vollständiger Reload.
+            window.location.reload();
+          }}
         />
       )}
 
