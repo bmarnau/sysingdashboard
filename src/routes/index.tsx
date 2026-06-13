@@ -35,6 +35,7 @@ import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
 import { PerformanceReport } from "@/components/PerformanceReport";
 import {
   TimePeriodService,
+  getISOWeek,
   type DashboardViewMode,
   type ChartBucket,
 } from "@/lib/time-period";
@@ -131,7 +132,9 @@ function fmtDate(s?: string) {
   if (!s) return "—";
   const d = new Date(s);
   if (Number.isNaN(d.getTime())) return s;
-  return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "2-digit" });
+  const dateStr = d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "2-digit" });
+  const kw = getISOWeek(d);
+  return `${dateStr} · KW ${kw}`;
 }
 
 function fmtEuro(v: number) {
@@ -495,7 +498,13 @@ function Dashboard() {
       year: "numeric",
     });
     const suffix = periodOffset === 0 ? ` · ${today}` : "";
-    return `${metrics.range.label} · ${rStart} – ${rEnd}${suffix}`;
+    let kwInfo = "";
+    if (viewMode === "month") {
+      const kwStart = getISOWeek(metrics.range.start);
+      const kwEnd = getISOWeek(new Date(metrics.range.end.getTime() - 86400000));
+      kwInfo = kwStart === kwEnd ? ` · KW ${kwStart}` : ` · KW ${kwStart}–${kwEnd}`;
+    }
+    return `${metrics.range.label} · ${rStart} – ${rEnd}${kwInfo}${suffix}`;
   })();
 
   const switchView = (next: DashboardViewMode) =>

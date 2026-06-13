@@ -8,6 +8,7 @@ import type {
   SortKey,
 } from "@/lib/export-data";
 import type { Activity, Engineer, Project, WorkPackage } from "@/lib/dashboard-data";
+import { getISOWeek } from "@/lib/time-period";
 
 /* ------------------------------- Typen --------------------------------- */
 
@@ -102,7 +103,9 @@ const fmtCurrency = (n: number) => CURRENCY_FMT.format(n);
 const fmtDate = (iso: string) => {
   if (!iso) return "";
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : DATE_FMT.format(d);
+  if (Number.isNaN(d.getTime())) return iso;
+  const kw = getISOWeek(d);
+  return `${DATE_FMT.format(d)} · KW ${kw}`;
 };
 const fmtMonth = (m: string) => {
   const [y, mm] = m.split("-").map(Number);
