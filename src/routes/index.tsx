@@ -284,6 +284,8 @@ function Dashboard() {
         const off = Number(offRaw);
         if (Number.isFinite(off)) setPeriodOffset(off);
       }
+      const prRaw = window.localStorage.getItem(PERF_REPORT_KEY);
+      if (prRaw === "false") setShowPerfReport(false);
     } catch {
       /* ignore */
     }
