@@ -888,8 +888,9 @@ function Dashboard() {
             activities={activities}
             workPackages={workPackages}
             projects={projects}
-            weekly={weekly}
-            maxHours={maxHours}
+            buckets={chartBuckets}
+            chartMax={chartMax}
+            viewMode={viewMode}
             onEdit={setEditingActivity}
           />
         )}
