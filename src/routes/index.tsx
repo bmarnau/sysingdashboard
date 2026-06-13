@@ -680,18 +680,6 @@ function Dashboard() {
           </div>
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => window.print()}
-              className="hidden sm:inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium transition hover:bg-secondary"
-            >
-              <Printer className="size-4" /> PDF
-            </button>
-            <button
-              onClick={resetData}
-              className="hidden sm:inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium transition hover:bg-destructive/20 hover:text-destructive"
-            >
-              Reset
-            </button>
             <div className="relative">
               <button
                 onClick={() => setShowServiceMenu((v) => !v)}
@@ -724,6 +712,24 @@ function Dashboard() {
                       className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
                     >
                       <Printer className="size-4 opacity-70" /> Lokale Ablage…
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
+                        window.print();
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Printer className="size-4 opacity-70" /> PDF Drucken
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
+                        resetData();
+                      }}
+                      className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="size-4 opacity-70" /> Reset
                     </button>
                   </div>
                 </>
