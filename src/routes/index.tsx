@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   Activity as ActivityIcon,
   AlertTriangle,
@@ -100,6 +100,7 @@ const billingStyles: Record<BillingStatus, string> = {
 
 const STORAGE_KEY = "northbit-dashboard-v2";
 const VIEWMODE_KEY = "northbit-dashboard-viewmode";
+const PERIOD_KEY = "northbit-dashboard-period";
 
 type PersistedState = {
   engineer: Engineer;
@@ -242,6 +243,9 @@ function Dashboard() {
 
   const [now, setNow] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState<DashboardViewMode>("month");
+  /** Offset relativ zur aktuellen Periode (0 = aktuell, -1 = vorherige, +1 = nächste). */
+  const [periodOffset, setPeriodOffset] = useState(0);
+  const [isSwitching, startSwitch] = useTransition();
 
   useEffect(() => {
     const p = loadPersisted();
@@ -260,6 +264,11 @@ function Dashboard() {
     try {
       const stored = window.localStorage.getItem(VIEWMODE_KEY);
       if (stored === "week" || stored === "month") setViewMode(stored);
+      const offRaw = window.localStorage.getItem(PERIOD_KEY);
+      if (offRaw) {
+        const off = Number(offRaw);
+        if (Number.isFinite(off)) setPeriodOffset(off);
+      }
     } catch {
       /* ignore */
     }
@@ -270,10 +279,11 @@ function Dashboard() {
     if (!hydrated) return;
     try {
       window.localStorage.setItem(VIEWMODE_KEY, viewMode);
+      window.localStorage.setItem(PERIOD_KEY, String(periodOffset));
     } catch {
       /* ignore */
     }
-  }, [hydrated, viewMode]);
+  }, [hydrated, viewMode, periodOffset]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -336,15 +346,24 @@ function Dashboard() {
     [engineerState.monthlyTargetHours, engineerState.workloadPercent],
   );
 
-  const metrics = useMemo(() => {
+  /** Aktuell betrachteter Referenzzeitpunkt (heute + Offset im aktuellen Modus). */
+  const periodRef = useMemo(() => {
     if (!now) return null;
-    return TimePeriodService.computePeriodMetrics(activities, viewMode, now, targetCfg);
-  }, [activities, now, viewMode, targetCfg]);
+    const d = new Date(now);
+    if (viewMode === "month") d.setMonth(d.getMonth() + periodOffset);
+    else d.setDate(d.getDate() + periodOffset * 7);
+    return d;
+  }, [now, viewMode, periodOffset]);
+
+  const metrics = useMemo(() => {
+    if (!periodRef) return null;
+    return TimePeriodService.computePeriodMetrics(activities, viewMode, periodRef, targetCfg);
+  }, [activities, periodRef, viewMode, targetCfg]);
 
   const chartBuckets = useMemo<ChartBucket[]>(() => {
-    if (!now) return [];
-    return TimePeriodService.buildChartBuckets(activities, viewMode, now);
-  }, [activities, now, viewMode]);
+    if (!periodRef) return [];
+    return TimePeriodService.buildChartBuckets(activities, viewMode, periodRef);
+  }, [activities, periodRef, viewMode]);
 
   const chartMax = Math.max(10, ...chartBuckets.map((b) => b.hours));
   const periodActual = metrics?.actual ?? 0;
@@ -352,6 +371,17 @@ function Dashboard() {
   const periodTarget = metrics?.target ?? 0;
   const periodDiff = metrics?.diff ?? 0;
   const periodUtilization = metrics?.utilization ?? 0;
+
+  /** Tätigkeiten im aktuellen Periodenfenster. */
+  const periodActivities = useMemo(() => {
+    if (!metrics) return activities;
+    return activities.filter((a) => {
+      if (!a.date) return false;
+      const d = new Date(a.date);
+      if (Number.isNaN(d.getTime())) return false;
+      return d >= metrics.range.start && d < metrics.range.end;
+    });
+  }, [activities, metrics]);
 
   // Aufwand je Arbeitspaket aus Tätigkeiten
   const spentByWP = useMemo(() => {
@@ -448,12 +478,6 @@ function Dashboard() {
 
   const dateLine = (() => {
     if (!now || !metrics) return "…";
-    const dateStr = now.toLocaleDateString("de-DE", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
     const rStart = metrics.range.start.toLocaleDateString("de-DE", {
       day: "2-digit",
       month: "2-digit",
@@ -464,8 +488,23 @@ function Dashboard() {
       month: "2-digit",
       year: "numeric",
     });
-    return `${metrics.range.label} · ${rStart} – ${rEnd} · ${dateStr}`;
+    const today = now.toLocaleDateString("de-DE", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    const suffix = periodOffset === 0 ? ` · ${today}` : "";
+    return `${metrics.range.label} · ${rStart} – ${rEnd}${suffix}`;
   })();
+
+  const switchView = (next: DashboardViewMode) =>
+    startSwitch(() => {
+      setViewMode(next);
+      setPeriodOffset(0);
+    });
+  const shiftPeriod = (delta: number) => startSwitch(() => setPeriodOffset((p) => p + delta));
+  const resetPeriod = () => startSwitch(() => setPeriodOffset(0));
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -731,7 +770,7 @@ function Dashboard() {
               <button
                 role="tab"
                 aria-selected={viewMode === "week"}
-                onClick={() => setViewMode("week")}
+                onClick={() => switchView("week")}
                 className={`rounded-md px-3 py-1.5 font-medium transition ${
                   viewMode === "week"
                     ? "bg-background text-foreground shadow-sm"
@@ -743,7 +782,7 @@ function Dashboard() {
               <button
                 role="tab"
                 aria-selected={viewMode === "month"}
-                onClick={() => setViewMode("month")}
+                onClick={() => switchView("month")}
                 className={`rounded-md px-3 py-1.5 font-medium transition ${
                   viewMode === "month"
                     ? "bg-background text-foreground shadow-sm"
@@ -753,6 +792,36 @@ function Dashboard() {
                 Monat
               </button>
             </div>
+            <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-sm">
+              <button
+                onClick={() => shiftPeriod(-1)}
+                className="grid size-7 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+                aria-label={viewMode === "month" ? "Vorheriger Monat" : "Vorherige Woche"}
+              >
+                ◀
+              </button>
+              <button
+                onClick={resetPeriod}
+                disabled={periodOffset === 0}
+                className="rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground disabled:opacity-50"
+              >
+                Heute
+              </button>
+              <button
+                onClick={() => shiftPeriod(1)}
+                className="grid size-7 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+                aria-label={viewMode === "month" ? "Nächster Monat" : "Nächste Woche"}
+              >
+                ▶
+              </button>
+            </div>
+            {isSwitching && (
+              <span
+                role="status"
+                aria-label="Lädt"
+                className="inline-block size-3 animate-pulse rounded-full bg-primary"
+              />
+            )}
           <div className="relative no-print">
             <button
               onClick={() => setShowNewMenu((v) => !v)}
@@ -869,7 +938,7 @@ function Dashboard() {
             onClick={() => setTab("taetigkeiten")}
             icon={<Clock className="size-4" />}
           >
-            Tätigkeiten ({activities.length})
+            Tätigkeiten ({periodActivities.length}/{activities.length})
           </TabButton>
           <TabButton
             active={tab === "abrechnung"}
@@ -903,6 +972,8 @@ function Dashboard() {
         {tab === "taetigkeiten" && (
           <ActivitiesView
             activities={activities}
+            periodActivities={periodActivities}
+            periodLabel={metrics?.range.label ?? ""}
             workPackages={workPackages}
             projects={projects}
             onNew={() => setEditingActivity(emptyActivity())}
@@ -1497,6 +1568,8 @@ function WorkPackagesView({
 
 function ActivitiesView({
   activities,
+  periodActivities,
+  periodLabel,
   workPackages,
   projects,
   onNew,
@@ -1504,6 +1577,8 @@ function ActivitiesView({
   onDelete,
 }: {
   activities: Activity[];
+  periodActivities: Activity[];
+  periodLabel: string;
   workPackages: WorkPackage[];
   projects: Project[];
   onNew: () => void;
@@ -1515,11 +1590,13 @@ function ActivitiesView({
   const [scope, setScope] = useState<
     "alle" | "billable" | "non_billable" | "ohne_wp" | "projektlos"
   >("alle");
+  const [periodOnly, setPeriodOnly] = useState(true);
 
   const wpMap = new Map(workPackages.map((w) => [w.id, w]));
   const projMap = new Map(projects.map((p) => [p.id, p]));
 
-  const filtered = activities.filter((a) => {
+  const source = periodOnly ? periodActivities : activities;
+  const filtered = source.filter((a) => {
     if (billing !== "alle" && a.billingStatus !== billing) return false;
     if (scope === "billable" && !a.billable) return false;
     if (scope === "non_billable" && a.billable) return false;
@@ -1550,10 +1627,20 @@ function ActivitiesView({
         <div>
           <h2 className="text-lg font-semibold">Tätigkeiten</h2>
           <p className="text-xs text-muted-foreground">
-            Optional einem Arbeitspaket zugeordnet · Abrechnung erfolgt ausschließlich hier
+            {periodOnly ? `${periodLabel} · ${periodActivities.length} Einträge` : `Alle · ${activities.length} Einträge`}
+            {" · "}Abrechnung erfolgt ausschließlich hier
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <label className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary/40 px-2.5 py-1.5 text-xs">
+            <input
+              type="checkbox"
+              checked={periodOnly}
+              onChange={(e) => setPeriodOnly(e.target.checked)}
+              className="size-3.5"
+            />
+            Nur Zeitraum
+          </label>
           <SearchInput value={q} onChange={setQ} placeholder="Tätigkeiten suchen…" />
           <select
             value={scope}
