@@ -367,7 +367,7 @@ function MonthDetailDialog({
   activities: Activity[];
   workPackages: WorkPackage[];
   projects: Project[];
-  cfg: { monthlyTargetHours?: number; workloadPercent?: number };
+  cfg: import("@/lib/time-period").TargetInput;
   onClose: () => void;
 }) {
   const detail = useMemo(
