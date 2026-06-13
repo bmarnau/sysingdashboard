@@ -954,7 +954,7 @@ function Dashboard() {
         </section>
 
         {/* Persönlicher Leistungsreport */}
-        {now && (
+        {showPerfReport && now && (
           <PerformanceReport
             activities={activities}
             workPackages={workPackages}
