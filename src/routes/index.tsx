@@ -1343,6 +1343,8 @@ function ProjectsView({
   projects,
   workPackages,
   spentByProject,
+  periodProjectIds,
+  periodLabel,
   onNew,
   onEdit,
   onDelete,
@@ -1350,13 +1352,18 @@ function ProjectsView({
   projects: Project[];
   workPackages: WorkPackage[];
   spentByProject: Map<string, number>;
+  periodProjectIds: Set<string>;
+  periodLabel: string;
   onNew: () => void;
   onEdit: (p: Project) => void;
   onDelete: (id: string) => void;
 }) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"alle" | ProjectStatus>("alle");
+  const [periodOnly, setPeriodOnly] = useState(false);
+  const periodCount = projects.filter((p) => periodProjectIds.has(p.id)).length;
   const filtered = projects.filter((p) => {
+    if (periodOnly && !periodProjectIds.has(p.id)) return false;
     if (status !== "alle" && p.status !== status) return false;
     if (q) {
       const s = q.toLowerCase();
