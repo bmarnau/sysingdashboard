@@ -132,7 +132,9 @@ function fmtDate(s?: string) {
   if (!s) return "—";
   const d = new Date(s);
   if (Number.isNaN(d.getTime())) return s;
-  return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "2-digit" });
+  const dateStr = d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "2-digit" });
+  const kw = getISOWeek(d);
+  return `${dateStr} · KW ${kw}`;
 }
 
 function fmtEuro(v: number) {
