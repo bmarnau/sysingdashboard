@@ -6,6 +6,10 @@ import {
   type MonthlyPerformance,
   type RangePreset,
 } from "@/lib/engineer-performance";
+import {
+  EngineerTargetTimeService,
+  type EngineerTargetTimeModel,
+} from "@/lib/engineer-target-time";
 
 const PRESETS: { id: RangePreset; label: string }[] = [
   { id: "3m", label: "3 Monate" },
@@ -53,6 +57,8 @@ export interface PerformanceReportProps {
   projects: Project[];
   engineer: Engineer;
   reference?: Date;
+  /** Optional: aktive Arbeitszeitmodelle für tagesgenaue Soll-Berechnung. */
+  targetTimeModels?: EngineerTargetTimeModel[];
 }
 
 export function PerformanceReport({
@@ -61,17 +67,23 @@ export function PerformanceReport({
   projects,
   engineer,
   reference,
+  targetTimeModels,
 }: PerformanceReportProps) {
   const [preset, setPreset] = useState<RangePreset>(() => readStoredPreset());
   const [custom, setCustom] = useState(() => readStoredCustom());
   const [detailMonth, setDetailMonth] = useState<MonthlyPerformance | null>(null);
 
   const cfg = useMemo(
-    () => ({
-      monthlyTargetHours: engineer.monthlyTargetHours,
-      workloadPercent: engineer.workloadPercent,
-    }),
-    [engineer.monthlyTargetHours, engineer.workloadPercent],
+    () =>
+      EngineerTargetTimeService.buildDailyTargetFnFromEngineer(
+        engineer,
+        targetTimeModels ?? [],
+      ),
+    [
+      engineer.monthlyTargetHours,
+      engineer.workloadPercent,
+      targetTimeModels,
+    ],
   );
 
   const ref = reference ?? new Date();
