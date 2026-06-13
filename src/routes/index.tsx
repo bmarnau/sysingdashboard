@@ -32,6 +32,11 @@ import {
 } from "@/lib/dashboard-data";
 import { ExportDialog } from "@/components/ExportDialog";
 import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
+import {
+  TimePeriodService,
+  type DashboardViewMode,
+  type ChartBucket,
+} from "@/lib/time-period";
 
 export const Route = createFileRoute("/")({
   head: () => ({
