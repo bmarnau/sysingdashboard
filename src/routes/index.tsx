@@ -479,9 +479,26 @@ function Dashboard() {
 
   /* ---------- Render ---------- */
 
-  const dateLine = now
-    ? `KW ${getISOWeek(now)} · ${now.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}`
-    : "…";
+  const dateLine = (() => {
+    if (!now || !metrics) return "…";
+    const dateStr = now.toLocaleDateString("de-DE", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    const rStart = metrics.range.start.toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    const rEnd = new Date(metrics.range.end.getTime() - 86400000).toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    return `${metrics.range.label} · ${rStart} – ${rEnd} · ${dateStr}`;
+  })();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
