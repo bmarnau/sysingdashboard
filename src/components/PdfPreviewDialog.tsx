@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, ExternalLink, Settings2 } from "lucide-react";
+import { Download, ExternalLink, Loader2, Settings2 } from "lucide-react";
 import type { PdfPreview } from "@/lib/pdf-export";
 import { SaveTargetDialog } from "@/components/SaveTargetDialog";
+
+const PdfCanvasViewer = lazy(() =>
+  import("@/components/PdfCanvasViewer").then((m) => ({ default: m.PdfCanvasViewer })),
+);
 
 interface PdfPreviewDialogProps {
   open: boolean;
