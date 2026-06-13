@@ -333,6 +333,11 @@ function Dashboard() {
     }
   }, [hydrated, engineerState, projects, workPackages, activities]);
 
+  useEffect(() => {
+    if (!hydrated) return;
+    EngineerTargetTimeService.saveTargetTimeModels(targetTimeModels);
+  }, [hydrated, targetTimeModels]);
+
   const resetData = () => {
     if (!confirm("Lokale Daten zurücksetzen?")) return;
     window.localStorage.removeItem(STORAGE_KEY);
