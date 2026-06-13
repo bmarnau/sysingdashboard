@@ -1179,6 +1179,11 @@ function Dashboard() {
         <EngineerDialog
           engineerState={engineerState}
           currentUser={currentUser}
+          targetTimeModels={targetTimeModels}
+          onOpenWorkingTime={() => {
+            setShowEngineer(false);
+            setShowWorkingTimeDialog(true);
+          }}
           onClose={() => setShowEngineer(false)}
           onSave={(e, userPatch) => {
             setEngineer(e);
