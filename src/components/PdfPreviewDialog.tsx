@@ -127,12 +127,10 @@ export function PdfPreviewDialog({
                 Neu konfigurieren
               </Button>
             )}
-            {isEmbeddedPreview && (
-              <Button variant="secondary" onClick={openInNewTab} disabled={!preview}>
-                <ExternalLink className="mr-2 size-4" />
-                Im Tab öffnen
-              </Button>
-            )}
+            <Button variant="secondary" onClick={openInNewTab} disabled={!preview}>
+              <ExternalLink className="mr-2 size-4" />
+              Im Tab öffnen
+            </Button>
             <Button onClick={() => setSaveOpen(true)} disabled={!preview}>
               <Download className="mr-2 size-4" />
               Speichern…
