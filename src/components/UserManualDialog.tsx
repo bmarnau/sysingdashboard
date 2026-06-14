@@ -7,8 +7,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Menu as MenuIcon,
   Printer,
   Search as SearchIcon,
   X,
