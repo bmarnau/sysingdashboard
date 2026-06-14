@@ -468,6 +468,31 @@ function NavLink({
   );
 }
 
+function MobileNavLink({
+  label,
+  sub,
+  active,
+  onClick,
+}: {
+  label: string;
+  sub?: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`block w-full rounded-md px-3 py-3 text-left text-sm transition min-h-[44px] ${
+        active ? "bg-foreground/10 font-medium" : "active:bg-foreground/10 hover:bg-foreground/5"
+      }`}
+    >
+      {label}
+      {sub && <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{sub}</div>}
+    </button>
+  );
+}
+
 function SettingsChapter({
   settings,
 }: {
