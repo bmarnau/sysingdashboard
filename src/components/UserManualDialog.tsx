@@ -7,8 +7,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Menu as MenuIcon,
   Printer,
   Search as SearchIcon,
   X,
@@ -93,6 +95,7 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
 
   const [query, setQuery] = useState("");
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Initiales Topic bestimmen.
@@ -288,23 +291,87 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
           <main ref={contentRef} className="min-w-0 flex-1 overflow-y-auto p-5">
             {/* Mobile nav */}
             <div className="mb-4 md:hidden">
-              <select
-                value={activeId ?? ""}
-                onChange={(e) => setActiveId(e.target.value)}
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen((v) => !v)}
+                aria-expanded={mobileNavOpen}
+                aria-controls="manual-mobile-nav"
+                className="flex w-full items-center justify-between gap-2 rounded-md border border-border bg-secondary/40 px-3 py-3 text-left text-sm font-medium"
               >
-                {Object.entries(grouped).map(([cat, topics]) => (
-                  <optgroup key={cat} label={cat}>
-                    {topics.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.title}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-                <option value="__settings">Einstellungen im Überblick</option>
-              </select>
+                <span className="flex items-center gap-2">
+                  <MenuIcon className="size-4" />
+                  <span className="truncate">
+                    {activeId === "__settings"
+                      ? "Einstellungen im Überblick"
+                      : activeTopic?.title ?? "Kapitel wählen"}
+                  </span>
+                </span>
+                <ChevronDown
+                  className={`size-4 shrink-0 transition-transform ${mobileNavOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+              {mobileNavOpen && (
+                <div
+                  id="manual-mobile-nav"
+                  className="mt-2 max-h-[50vh] overflow-y-auto rounded-md border border-border bg-background p-2"
+                >
+                  {searchResults ? (
+                    <>
+                      <div className="px-2 pb-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                        Treffer ({searchResults.length})
+                      </div>
+                      {searchResults.length === 0 && (
+                        <div className="px-2 py-2 text-xs text-muted-foreground">
+                          Keine Treffer.
+                        </div>
+                      )}
+                      {searchResults.map((t) => (
+                        <MobileNavLink
+                          key={t.id}
+                          label={t.title}
+                          sub={t.category}
+                          active={activeId === t.id}
+                          onClick={() => {
+                            setActiveId(t.id);
+                            setMobileNavOpen(false);
+                          }}
+                        />
+                      ))}
+                    </>
+                  ) : (
+                    Object.entries(grouped).map(([cat, topics]) => (
+                      <div key={cat} className="mb-2">
+                        <div className="px-2 pb-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                          {cat}
+                        </div>
+                        {topics.map((t) => (
+                          <MobileNavLink
+                            key={t.id}
+                            label={t.title}
+                            active={activeId === t.id}
+                            onClick={() => {
+                              setActiveId(t.id);
+                              setMobileNavOpen(false);
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ))
+                  )}
+                  <div className="mt-1 border-t border-border pt-1">
+                    <MobileNavLink
+                      label="Einstellungen im Überblick"
+                      active={activeId === "__settings"}
+                      onClick={() => {
+                        setActiveId("__settings");
+                        setMobileNavOpen(false);
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
+
 
             {activeId === "__settings" ? (
               <SettingsChapter settings={settings} />
@@ -393,6 +460,31 @@ function NavLink({
       onClick={onClick}
       className={`block w-full rounded-md px-2 py-1.5 text-left text-sm transition ${
         active ? "bg-foreground/10 font-medium" : "hover:bg-foreground/5"
+      }`}
+    >
+      {label}
+      {sub && <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{sub}</div>}
+    </button>
+  );
+}
+
+function MobileNavLink({
+  label,
+  sub,
+  active,
+  onClick,
+}: {
+  label: string;
+  sub?: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`block w-full rounded-md px-3 py-3 text-left text-sm transition min-h-[44px] ${
+        active ? "bg-foreground/10 font-medium" : "active:bg-foreground/10 hover:bg-foreground/5"
       }`}
     >
       {label}
