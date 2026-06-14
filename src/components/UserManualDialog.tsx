@@ -95,6 +95,7 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
 
   const [query, setQuery] = useState("");
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Initiales Topic bestimmen.
