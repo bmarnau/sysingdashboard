@@ -115,9 +115,18 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  // Aktuelle Locale beim Start auf <html lang> spiegeln (Default: de).
+  if (typeof document !== "undefined") {
+    // Lazy import vermeidet SSR-Aufruf von localStorage.
+    import("@/lib/i18n/locale").then(({ getLocale }) => {
+      document.documentElement.lang = getLocale().split("-")[0];
+    });
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
     </QueryClientProvider>
   );
 }
+
