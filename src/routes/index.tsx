@@ -270,6 +270,7 @@ function Dashboard() {
   const [showWorkingTimeDialog, setShowWorkingTimeDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showManual, setShowManual] = useState(false);
+  const [showBackupDialog, setShowBackupDialog] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
