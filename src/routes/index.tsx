@@ -12,6 +12,7 @@ import {
   Eye,
   EyeOff,
   FolderKanban,
+  HardDrive,
   HelpCircle,
   Layers,
   Pencil,
@@ -40,6 +41,8 @@ import { PerformanceReport } from "@/components/PerformanceReport";
 import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
 import { UserManagementDialog } from "@/components/UserManagementDialog";
 import { UserManualDialog } from "@/components/UserManualDialog";
+import { BackupDialog } from "@/components/BackupDialog";
+import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
   UserManagementService,
@@ -267,6 +270,7 @@ function Dashboard() {
   const [showWorkingTimeDialog, setShowWorkingTimeDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showManual, setShowManual] = useState(false);
+  const [showBackupDialog, setShowBackupDialog] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
@@ -318,6 +322,8 @@ function Dashboard() {
     }
     setTargetTimeModels(EngineerTargetTimeService.loadTargetTimeModels());
     setHydrated(true);
+    // Tägliches automatisches Backup anstoßen (max. 1x pro Kalendertag).
+    BackupService.scheduleDaily();
   }, []);
 
   useEffect(() => {
@@ -845,6 +851,15 @@ function Dashboard() {
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
+                        setShowBackupDialog(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <HardDrive className="size-4 opacity-70" /> Backup…
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
                         window.print();
                       }}
                       className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
@@ -1240,6 +1255,8 @@ function Dashboard() {
         onClose={() => setShowManual(false)}
         initialRoute="/"
       />
+
+      <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
 
       <ExportDialog
         open={showExportDialog}
