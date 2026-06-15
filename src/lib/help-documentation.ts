@@ -40,9 +40,54 @@ export interface SettingDocumentation {
 }
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.0.0";
-/** App-Version, auf die sich das Handbuch bezieht. */
-export const DASHBOARD_VERSION_HINT = "Engineer Console";
+export const DOCUMENTATION_VERSION = "1.1.0";
+/** Aktuelle Dashboard-Version (semver). Bei Releases hochzählen. */
+export const DASHBOARD_VERSION = "1.9.0";
+/** Anzeigename des Dashboards für Handbuch-Footer. */
+export const DASHBOARD_VERSION_HINT = `Engineer Console ${DASHBOARD_VERSION}`;
+
+/* ----------------------------- Changelog ------------------------------ */
+
+export interface ChangelogEntry {
+  /** ISO-Datum (YYYY-MM-DD). */
+  date: string;
+  /** Semver des Dashboards. */
+  version: string;
+  /** Kurzbeschreibung der Änderung (eine Zeile). */
+  change: string;
+}
+
+/**
+ * Zentrale Änderungshistorie. Pflicht: bei jeder Dashboard-Änderung mit
+ * Nutzersichtbarkeit hier einen Eintrag ergänzen (neueste oben). Wird im
+ * Handbuch automatisch als Kapitel "Änderungshistorie" gerendert.
+ */
+export const CHANGELOG: ChangelogEntry[] = [
+  {
+    date: "2026-06-15",
+    version: "1.9.0",
+    change:
+      "Backup-Bereich: tägliches automatisches Daten-Backup, manueller Button, Download-Liste, ZIP-Validierung und Protokoll.",
+  },
+  {
+    date: "2026-06-15",
+    version: "1.8.1",
+    change:
+      "Mehrsprachigkeit (i18n) vorbereitet, Standardsprache Deutsch, HTML-lang auf de gesetzt.",
+  },
+  {
+    date: "2026-06-14",
+    version: "1.8.0",
+    change:
+      "Benutzerhandbuch im Servicebereich integriert (modal, suchbar, rollenabhängig, kontextbezogen).",
+  },
+  {
+    date: "2026-06-14",
+    version: "1.7.0",
+    change:
+      "Engineurprofil übernimmt Werte aus dem Arbeitszeitmodell; Zeit-/Stundenfelder gegen Eingabe gesperrt.",
+  },
+];
 
 /* ---------------------------- Built-in Topics ---------------------------- */
 
@@ -258,6 +303,7 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
 - Arbeitszeitmodell: Pflege der Modelle und Modellhistorie.
 - Lokale Ablage: Datenübertragung und Backup.
 - PDF Drucken: Druckdialog für die aktuelle Ansicht.
+- Backup: tägliches automatisches ZIP-Backup der Dashboard-Daten inkl. Downloadbereich und Protokoll.
 - Handbuch: dieses Benutzerhandbuch.
 - Reset: löscht alle benutzerbezogenen Daten.`,
   },
@@ -347,12 +393,67 @@ export function registerSettings(...items: SettingDocumentation[]): void {
   }
 }
 
-function allTopics(): HelpTopic[] {
+/* ---------------- Auto-generierte Topics ---------------- */
+
+/** Baut die Änderungshistorie als Markdown-Tabelle aus dem CHANGELOG. */
+function buildChangelogContent(): string {
+  const lines = [
+    "## Änderungshistorie",
+    "Die folgende Liste wird automatisch aus dem zentralen CHANGELOG erzeugt. Jede Dashboard-Änderung mit Nutzersichtbarkeit muss hier dokumentiert werden.",
+    "",
+    "| Datum | Version | Änderung |",
+    "| --- | --- | --- |",
+    ...CHANGELOG.map((e) => `| ${e.date} | ${e.version} | ${e.change} |`),
+  ];
+  return lines.join("\n");
+}
+
+const generatedTopics: HelpTopic[] = [
+  {
+    id: "changelog",
+    title: "Änderungshistorie",
+    category: "Service",
+    keywords: ["Changelog", "Historie", "Versionen", "Releases", "Änderungen"],
+    lastUpdated: CHANGELOG[0]?.date ?? new Date().toISOString().slice(0, 10),
+    content: buildChangelogContent(),
+  },
+  {
+    id: "backup",
+    title: "Backup",
+    category: "Service",
+    route: "/",
+    component: "BackupDialog",
+    keywords: ["Backup", "Sicherung", "ZIP", "Download", "Wiederherstellung", "Quellcode"],
+    lastUpdated: "2026-06-15",
+    content: `## Daten-Backup
+Das Dashboard erzeugt einmal pro Kalendertag automatisch ein vollständiges ZIP-Backup aller Dashboard-Daten (Engineure, Arbeitszeitmodelle, Benutzer, Einstellungen, Berichte, Export-Ablage-Index).
+
+## Manuelles Backup
+Über "Backup jetzt erstellen" wird sofort ein neues Backup erzeugt. Vor dem Packen läuft eine Konsistenzprüfung, nach dem Packen wird das ZIP testweise entpackt und validiert.
+
+## Downloadbereich
+Jedes Backup zeigt Dateiname, Erstellungsdatum, Größe und Prüfstatus. Über den Download-Button wird das ZIP heruntergeladen.
+
+## Backup-Protokoll
+Das einklappbare Protokoll zeigt alle Backup-Läufe inklusive Warnungen und Fehlern.
+
+## Quellcode
+Aus der Browser-App heraus kann der Projekt-Quellcode nicht gesichert werden. Den vollständigen Quellcode für einen eigenen Webserver erhalten Sie über Lovable (Code-Editor → Codebase herunterladen) oder die GitHub-Integration. Im ZIP liegt dazu eine Anleitung in INSTALL.md.
+
+## Sicherheit
+Schlüssel mit Hinweisen auf Passwörter, Tokens, API-Keys oder JWTs werden vor dem Packen ausgeschlossen und niemals ins ZIP geschrieben.`,
+  },
+];
+
+function allTopicsBase(): HelpTopic[] {
   const merged = new Map<string, HelpTopic>();
   for (const t of builtInTopics) merged.set(t.id, t);
+  for (const t of generatedTopics) merged.set(t.id, t);
   for (const t of dynamicTopics) merged.set(t.id, t);
   return [...merged.values()];
 }
+
+const allTopics = allTopicsBase;
 
 function topicVisible(t: HelpTopic, role: UserRole | null): boolean {
   if (!t.roles || t.roles.length === 0) return true;
@@ -412,6 +513,12 @@ export const HelpDocumentationService = {
   },
   getDocumentationVersion(): string {
     return DOCUMENTATION_VERSION;
+  },
+  getDashboardVersion(): string {
+    return DASHBOARD_VERSION;
+  },
+  getChangelog(): ChangelogEntry[] {
+    return [...CHANGELOG];
   },
   getAllSettings(): SettingDocumentation[] {
     const merged = new Map<string, SettingDocumentation>();
