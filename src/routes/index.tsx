@@ -322,6 +322,8 @@ function Dashboard() {
     }
     setTargetTimeModels(EngineerTargetTimeService.loadTargetTimeModels());
     setHydrated(true);
+    // Tägliches automatisches Backup anstoßen (max. 1x pro Kalendertag).
+    BackupService.scheduleDaily();
   }, []);
 
   useEffect(() => {
