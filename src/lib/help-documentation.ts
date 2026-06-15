@@ -514,6 +514,12 @@ export const HelpDocumentationService = {
   getDocumentationVersion(): string {
     return DOCUMENTATION_VERSION;
   },
+  getDashboardVersion(): string {
+    return DASHBOARD_VERSION;
+  },
+  getChangelog(): ChangelogEntry[] {
+    return [...CHANGELOG];
+  },
   getAllSettings(): SettingDocumentation[] {
     const merged = new Map<string, SettingDocumentation>();
     for (const s of builtInSettings) merged.set(s.id, s);
