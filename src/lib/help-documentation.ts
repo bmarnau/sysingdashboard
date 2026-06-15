@@ -393,6 +393,66 @@ export function registerSettings(...items: SettingDocumentation[]): void {
   }
 }
 
+/* ---------------- Auto-generierte Topics ---------------- */
+
+/** Baut die Änderungshistorie als Markdown-Tabelle aus dem CHANGELOG. */
+function buildChangelogContent(): string {
+  const lines = [
+    "## Änderungshistorie",
+    "Die folgende Liste wird automatisch aus dem zentralen CHANGELOG erzeugt. Jede Dashboard-Änderung mit Nutzersichtbarkeit muss hier dokumentiert werden.",
+    "",
+    "| Datum | Version | Änderung |",
+    "| --- | --- | --- |",
+    ...CHANGELOG.map((e) => `| ${e.date} | ${e.version} | ${e.change} |`),
+  ];
+  return lines.join("\n");
+}
+
+const generatedTopics: HelpTopic[] = [
+  {
+    id: "changelog",
+    title: "Änderungshistorie",
+    category: "Service",
+    keywords: ["Changelog", "Historie", "Versionen", "Releases", "Änderungen"],
+    lastUpdated: CHANGELOG[0]?.date ?? new Date().toISOString().slice(0, 10),
+    content: buildChangelogContent(),
+  },
+  {
+    id: "backup",
+    title: "Backup",
+    category: "Service",
+    route: "/",
+    component: "BackupDialog",
+    keywords: ["Backup", "Sicherung", "ZIP", "Download", "Wiederherstellung", "Quellcode"],
+    lastUpdated: "2026-06-15",
+    content: `## Daten-Backup
+Das Dashboard erzeugt einmal pro Kalendertag automatisch ein vollständiges ZIP-Backup aller Dashboard-Daten (Engineure, Arbeitszeitmodelle, Benutzer, Einstellungen, Berichte, Export-Ablage-Index).
+
+## Manuelles Backup
+Über "Backup jetzt erstellen" wird sofort ein neues Backup erzeugt. Vor dem Packen läuft eine Konsistenzprüfung, nach dem Packen wird das ZIP testweise entpackt und validiert.
+
+## Downloadbereich
+Jedes Backup zeigt Dateiname, Erstellungsdatum, Größe und Prüfstatus. Über den Download-Button wird das ZIP heruntergeladen.
+
+## Backup-Protokoll
+Das einklappbare Protokoll zeigt alle Backup-Läufe inklusive Warnungen und Fehlern.
+
+## Quellcode
+Aus der Browser-App heraus kann der Projekt-Quellcode nicht gesichert werden. Den vollständigen Quellcode für einen eigenen Webserver erhalten Sie über Lovable (Code-Editor → Codebase herunterladen) oder die GitHub-Integration. Im ZIP liegt dazu eine Anleitung in INSTALL.md.
+
+## Sicherheit
+Schlüssel mit Hinweisen auf Passwörter, Tokens, API-Keys oder JWTs werden vor dem Packen ausgeschlossen und niemals ins ZIP geschrieben.`,
+  },
+];
+
+function allTopicsBase(): HelpTopic[] {
+  const merged = new Map<string, HelpTopic>();
+  for (const t of builtInTopics) merged.set(t.id, t);
+  for (const t of generatedTopics) merged.set(t.id, t);
+  for (const t of dynamicTopics) merged.set(t.id, t);
+  return [...merged.values()];
+}
+
 function allTopics(): HelpTopic[] {
   const merged = new Map<string, HelpTopic>();
   for (const t of builtInTopics) merged.set(t.id, t);
