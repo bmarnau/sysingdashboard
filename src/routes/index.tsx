@@ -41,6 +41,8 @@ import { PerformanceReport } from "@/components/PerformanceReport";
 import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
 import { UserManagementDialog } from "@/components/UserManagementDialog";
 import { UserManualDialog } from "@/components/UserManualDialog";
+import { BackupDialog } from "@/components/BackupDialog";
+import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
   UserManagementService,
