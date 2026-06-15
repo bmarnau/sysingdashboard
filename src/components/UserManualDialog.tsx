@@ -18,6 +18,7 @@ import {
 import {
   HelpDocumentationService,
   DOCUMENTATION_VERSION,
+  DASHBOARD_VERSION,
   DASHBOARD_VERSION_HINT,
   type HelpTopic,
 } from "@/lib/help-documentation";
