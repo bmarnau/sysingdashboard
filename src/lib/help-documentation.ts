@@ -303,6 +303,7 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
 - Arbeitszeitmodell: Pflege der Modelle und Modellhistorie.
 - Lokale Ablage: Datenübertragung und Backup.
 - PDF Drucken: Druckdialog für die aktuelle Ansicht.
+- Backup: tägliches automatisches ZIP-Backup der Dashboard-Daten inkl. Downloadbereich und Protokoll.
 - Handbuch: dieses Benutzerhandbuch.
 - Reset: löscht alle benutzerbezogenen Daten.`,
   },
