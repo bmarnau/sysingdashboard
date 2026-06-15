@@ -165,7 +165,7 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
     `;
     const html = `<!doctype html><html><head><meta charset="utf-8"><title>Benutzerhandbuch</title><style>${css}</style></head><body>
       <h1>Benutzerhandbuch</h1>
-      <div class="meta">Version ${DOCUMENTATION_VERSION} · ${DASHBOARD_VERSION_HINT} · Stand: ${HelpDocumentationService.getLastUpdated()}</div>
+      <div class="meta">Dashboard ${DASHBOARD_VERSION} · Handbuch ${DOCUMENTATION_VERSION} · ${DASHBOARD_VERSION_HINT} · Letzte Aktualisierung: ${HelpDocumentationService.getLastUpdated()}</div>
       ${allTopics
         .map(
           (t) => `
