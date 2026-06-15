@@ -40,9 +40,54 @@ export interface SettingDocumentation {
 }
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.0.0";
-/** App-Version, auf die sich das Handbuch bezieht. */
-export const DASHBOARD_VERSION_HINT = "Engineer Console";
+export const DOCUMENTATION_VERSION = "1.1.0";
+/** Aktuelle Dashboard-Version (semver). Bei Releases hochzählen. */
+export const DASHBOARD_VERSION = "1.9.0";
+/** Anzeigename des Dashboards für Handbuch-Footer. */
+export const DASHBOARD_VERSION_HINT = `Engineer Console ${DASHBOARD_VERSION}`;
+
+/* ----------------------------- Changelog ------------------------------ */
+
+export interface ChangelogEntry {
+  /** ISO-Datum (YYYY-MM-DD). */
+  date: string;
+  /** Semver des Dashboards. */
+  version: string;
+  /** Kurzbeschreibung der Änderung (eine Zeile). */
+  change: string;
+}
+
+/**
+ * Zentrale Änderungshistorie. Pflicht: bei jeder Dashboard-Änderung mit
+ * Nutzersichtbarkeit hier einen Eintrag ergänzen (neueste oben). Wird im
+ * Handbuch automatisch als Kapitel "Änderungshistorie" gerendert.
+ */
+export const CHANGELOG: ChangelogEntry[] = [
+  {
+    date: "2026-06-15",
+    version: "1.9.0",
+    change:
+      "Backup-Bereich: tägliches automatisches Daten-Backup, manueller Button, Download-Liste, ZIP-Validierung und Protokoll.",
+  },
+  {
+    date: "2026-06-15",
+    version: "1.8.1",
+    change:
+      "Mehrsprachigkeit (i18n) vorbereitet, Standardsprache Deutsch, HTML-lang auf de gesetzt.",
+  },
+  {
+    date: "2026-06-14",
+    version: "1.8.0",
+    change:
+      "Benutzerhandbuch im Servicebereich integriert (modal, suchbar, rollenabhängig, kontextbezogen).",
+  },
+  {
+    date: "2026-06-14",
+    version: "1.7.0",
+    change:
+      "Engineurprofil übernimmt Werte aus dem Arbeitszeitmodell; Zeit-/Stundenfelder gegen Eingabe gesperrt.",
+  },
+];
 
 /* ---------------------------- Built-in Topics ---------------------------- */
 
