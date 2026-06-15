@@ -12,6 +12,7 @@ import {
   Eye,
   EyeOff,
   FolderKanban,
+  HardDrive,
   HelpCircle,
   Layers,
   Pencil,
