@@ -453,12 +453,7 @@ function allTopicsBase(): HelpTopic[] {
   return [...merged.values()];
 }
 
-function allTopics(): HelpTopic[] {
-  const merged = new Map<string, HelpTopic>();
-  for (const t of builtInTopics) merged.set(t.id, t);
-  for (const t of dynamicTopics) merged.set(t.id, t);
-  return [...merged.values()];
-}
+const allTopics = allTopicsBase;
 
 function topicVisible(t: HelpTopic, role: UserRole | null): boolean {
   if (!t.roles || t.roles.length === 0) return true;
