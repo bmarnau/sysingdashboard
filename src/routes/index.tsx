@@ -1256,6 +1256,8 @@ function Dashboard() {
         initialRoute="/"
       />
 
+      <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
+
       <ExportDialog
         open={showExportDialog}
         onOpenChange={setShowExportDialog}
