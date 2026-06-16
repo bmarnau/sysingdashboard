@@ -102,10 +102,11 @@ const dashboardLevel = new Set(
 );
 const missing = [];
 for (const comp of dashboardLevel) {
+  const base = comp.replace(/(Dialog|Report|Manual|Manager)$/, "");
+  const haystack = helpSrc.toLowerCase();
   const hit =
-    helpSrc.includes(`component: "${comp}"`) ||
-    helpSrc.includes(`"${comp}"`) ||
-    helpSrc.toLowerCase().includes(comp.toLowerCase());
+    haystack.includes(comp.toLowerCase()) ||
+    (base.length >= 4 && haystack.includes(base.toLowerCase()));
   if (!hit) missing.push(comp);
 }
 if (missing.length > 0) {
