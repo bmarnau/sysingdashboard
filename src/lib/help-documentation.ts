@@ -443,6 +443,33 @@ Aus der Browser-App heraus kann der Projekt-Quellcode nicht gesichert werden. De
 ## Sicherheit
 Schlüssel mit Hinweisen auf Passwörter, Tokens, API-Keys oder JWTs werden vor dem Packen ausgeschlossen und niemals ins ZIP geschrieben.`,
   },
+  {
+    id: "system-status",
+    title: "Systemstatus",
+    category: "Service",
+    route: "/",
+    component: "SystemStatusDialog",
+    keywords: ["Systemstatus", "GitHub", "Commit", "Branch", "Version", "CI", "Build"],
+    lastUpdated: "2026-06-16",
+    content: `## Was zeigt der Systemstatus?
+Der Dialog "Service → Systemstatus…" zeigt zur Laufzeit den aktuellen Stand von Code, Dokumentation und letzter Sicherung.
+
+## GitHub
+- Verbindung: ob das Projekt an ein GitHub-Repository angebunden ist.
+- Repository: owner/repo (Link öffnet GitHub).
+- Branch: derzeit gebauter Branch.
+- Letzter Commit: gekürzter SHA, Link öffnet den Commit auf GitHub.
+- Build-Zeit: Zeitpunkt des letzten Produktions-Builds.
+
+## Versionen
+- Dashboard-Version (aus CHANGELOG.md Top-Eintrag).
+- Handbuch-Version (DOCUMENTATION_VERSION).
+- Paketversion (package.json).
+- Letzte Handbuch-Aktualisierung (jüngstes lastUpdated der Topics).
+- Letztes automatisches Backup.
+
+## Verbindung herstellen
+Ist GitHub nicht verbunden, erscheint ein Hinweis. Verbinden über das Lovable-Plus-Menü → GitHub → Connect project. Details in docs/GITHUB.md.`,
 ];
 
 function allTopicsBase(): HelpTopic[] {
