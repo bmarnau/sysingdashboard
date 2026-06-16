@@ -42,13 +42,6 @@ export interface SettingDocumentation {
   affectedAreas: string[];
 }
 
-/** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.1.0";
-/** Aktuelle Dashboard-Version (semver). Bei Releases hochzählen. */
-export const DASHBOARD_VERSION = "1.9.0";
-/** Anzeigename des Dashboards für Handbuch-Footer. */
-export const DASHBOARD_VERSION_HINT = `Engineer Console ${DASHBOARD_VERSION}`;
-
 /* ----------------------------- Changelog ------------------------------ */
 
 export interface ChangelogEntry {
@@ -61,36 +54,40 @@ export interface ChangelogEntry {
 }
 
 /**
- * Zentrale Änderungshistorie. Pflicht: bei jeder Dashboard-Änderung mit
- * Nutzersichtbarkeit hier einen Eintrag ergänzen (neueste oben). Wird im
- * Handbuch automatisch als Kapitel "Änderungshistorie" gerendert.
+ * Parst die zentrale `CHANGELOG.md` (Format `## <version> - <date>` gefolgt
+ * von `- bullet`-Zeilen) in strukturierte Einträge. Mehrere Bullets pro
+ * Version werden zu einem mehrzeiligen `change` zusammengeführt.
  */
-export const CHANGELOG: ChangelogEntry[] = [
-  {
-    date: "2026-06-15",
-    version: "1.9.0",
-    change:
-      "Backup-Bereich: tägliches automatisches Daten-Backup, manueller Button, Download-Liste, ZIP-Validierung und Protokoll.",
-  },
-  {
-    date: "2026-06-15",
-    version: "1.8.1",
-    change:
-      "Mehrsprachigkeit (i18n) vorbereitet, Standardsprache Deutsch, HTML-lang auf de gesetzt.",
-  },
-  {
-    date: "2026-06-14",
-    version: "1.8.0",
-    change:
-      "Benutzerhandbuch im Servicebereich integriert (modal, suchbar, rollenabhängig, kontextbezogen).",
-  },
-  {
-    date: "2026-06-14",
-    version: "1.7.0",
-    change:
-      "Engineurprofil übernimmt Werte aus dem Arbeitszeitmodell; Zeit-/Stundenfelder gegen Eingabe gesperrt.",
-  },
-];
+function parseChangelog(src: string): ChangelogEntry[] {
+  const entries: ChangelogEntry[] = [];
+  const lines = src.split(/\r?\n/);
+  let current: ChangelogEntry | null = null;
+  const headerRe = /^##\s+([0-9][0-9A-Za-z.\-+]*)\s+-\s+(\d{4}-\d{2}-\d{2})\s*$/;
+  for (const line of lines) {
+    const m = headerRe.exec(line);
+    if (m) {
+      if (current) entries.push(current);
+      current = { version: m[1], date: m[2], change: "" };
+      continue;
+    }
+    if (current && /^\s*-\s+/.test(line)) {
+      const bullet = line.replace(/^\s*-\s+/, "").trim();
+      current.change = current.change ? `${current.change} ${bullet}` : bullet;
+    }
+  }
+  if (current) entries.push(current);
+  return entries;
+}
+
+/** Zentrale, aus `CHANGELOG.md` geparste Änderungshistorie (neueste zuerst). */
+export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
+
+/** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
+export const DOCUMENTATION_VERSION = "1.2.0";
+/** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
+export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
+/** Anzeigename des Dashboards für Handbuch-Footer. */
+export const DASHBOARD_VERSION_HINT = `Engineer Console ${DASHBOARD_VERSION}`;
 
 /* ---------------------------- Built-in Topics ---------------------------- */
 
