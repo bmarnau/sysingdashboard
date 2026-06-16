@@ -863,6 +863,15 @@ function Dashboard() {
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
+                        setShowSystemStatus(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Gauge className="size-4 opacity-70" /> Systemstatus…
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
                         window.print();
                       }}
                       className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
