@@ -12,6 +12,7 @@ import {
   Eye,
   EyeOff,
   FolderKanban,
+  Gauge,
   HardDrive,
   HelpCircle,
   Layers,
@@ -42,6 +43,7 @@ import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
 import { UserManagementDialog } from "@/components/UserManagementDialog";
 import { UserManualDialog } from "@/components/UserManualDialog";
 import { BackupDialog } from "@/components/BackupDialog";
+import { SystemStatusDialog } from "@/components/SystemStatusDialog";
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
@@ -271,6 +273,7 @@ function Dashboard() {
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showManual, setShowManual] = useState(false);
   const [showBackupDialog, setShowBackupDialog] = useState(false);
+  const [showSystemStatus, setShowSystemStatus] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
@@ -860,6 +863,15 @@ function Dashboard() {
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
+                        setShowSystemStatus(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Gauge className="size-4 opacity-70" /> Systemstatus…
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
                         window.print();
                       }}
                       className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
@@ -1257,6 +1269,8 @@ function Dashboard() {
       />
 
       <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
+
+      <SystemStatusDialog open={showSystemStatus} onOpenChange={setShowSystemStatus} />
 
       <ExportDialog
         open={showExportDialog}
