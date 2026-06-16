@@ -470,6 +470,7 @@ Der Dialog "Service → Systemstatus…" zeigt zur Laufzeit den aktuellen Stand 
 
 ## Verbindung herstellen
 Ist GitHub nicht verbunden, erscheint ein Hinweis. Verbinden über das Lovable-Plus-Menü → GitHub → Connect project. Details in docs/GITHUB.md.`,
+  },
 ];
 
 function allTopicsBase(): HelpTopic[] {
