@@ -12,6 +12,9 @@
  */
 
 import type { UserRole } from "@/lib/user-management";
+// Zentrale Änderungshistorie wird zur Build-Zeit eingelesen.
+// Vite stellt den Rohinhalt der Datei als String bereit.
+import changelogSource from "../../CHANGELOG.md?raw";
 
 export interface HelpTopic {
   id: string;
