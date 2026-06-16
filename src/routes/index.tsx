@@ -1270,6 +1270,8 @@ function Dashboard() {
 
       <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
 
+      <SystemStatusDialog open={showSystemStatus} onOpenChange={setShowSystemStatus} />
+
       <ExportDialog
         open={showExportDialog}
         onOpenChange={setShowExportDialog}
