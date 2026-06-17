@@ -303,6 +303,7 @@ export function ExportDialog({
 
     setPdfError(null);
     setLoading(true);
+    const periodLabel = formatMonthLabel(month);
     try {
       // jsPDF wird hier dynamisch nachgeladen — der initiale Dashboard-Bundle
       // bleibt damit frei von ~350 KB PDF-Code.
@@ -323,9 +324,47 @@ export function ExportDialog({
       setPdfPreview(preview);
       setPreviewOpen(true);
       onOpenChange(false);
+
+      // Im Downloadbereich registrieren
+      try {
+        await ExportDownloadService.addDownload({
+          fileName: preview.fileName,
+          format: "pdf",
+          period: periodLabel,
+          createdBy: engineer.name,
+          reportId: preview.metadata.reportId,
+          blob: preview.blob,
+          status: "ready",
+        });
+        window.dispatchEvent(new CustomEvent("export-downloads:changed"));
+        toast.success("PDF-Report wurde erstellt und steht im Downloadbereich bereit.");
+      } catch (archiveErr) {
+        console.warn("[Export] Download-Eintrag konnte nicht gespeichert werden:", archiveErr);
+      }
     } catch (err) {
       console.error("[Export] PDF-Erzeugung fehlgeschlagen:", err);
       setPdfError("PDF konnte nicht erzeugt werden.");
+      try {
+        await ExportDownloadService.addDownload({
+          fileName: buildFileName({
+            format: "pdf",
+            month,
+            client: exportData.configuration.filter.clientName,
+            project: exportData.configuration.filter.projectName,
+          }),
+          format: "pdf",
+          period: periodLabel,
+          createdBy: engineer.name,
+          reportId: `FAIL-${Date.now()}`,
+          blob: null,
+          status: "failed",
+          error: err instanceof Error ? err.message : "Unbekannter Fehler",
+        });
+        window.dispatchEvent(new CustomEvent("export-downloads:changed"));
+      } catch {
+        /* ignore */
+      }
+      toast.error("PDF-Report konnte nicht erstellt werden.");
     } finally {
       setLoading(false);
     }
