@@ -68,20 +68,38 @@ export const ExportArchive = {
   },
 
   async save(
-    record: Omit<ArchivedRecord, "id" | "createdAt"> & { createdAt?: string },
+    record: Omit<ArchivedRecord, "id" | "createdAt"> & { createdAt?: string; id?: string },
   ): Promise<ArchivedExport> {
     const entry: ArchivedRecord = {
-      id: crypto.randomUUID(),
+      id: record.id ?? crypto.randomUUID(),
       createdAt: record.createdAt ?? new Date().toISOString(),
       fileName: record.fileName,
       format: record.format,
       reportId: record.reportId,
       sizeBytes: record.sizeBytes,
+      period: record.period,
+      createdBy: record.createdBy,
+      status: record.status ?? "ready",
+      error: record.error,
       blob: record.blob,
     };
     await tx("readwrite", (s) => s.put(entry));
-    // Blob aus dem Listen-Result fernhalten
     const { blob: _b, ...meta } = entry;
+    return meta;
+  },
+
+  async update(
+    id: string,
+    patch: Partial<Omit<ArchivedRecord, "id">>,
+  ): Promise<ArchivedExport | null> {
+    const existing = await tx<ArchivedRecord | undefined>(
+      "readonly",
+      (s) => s.get(id) as IDBRequest<ArchivedRecord | undefined>,
+    );
+    if (!existing) return null;
+    const next: ArchivedRecord = { ...existing, ...patch, id };
+    await tx("readwrite", (s) => s.put(next));
+    const { blob: _b, ...meta } = next;
     return meta;
   },
 
