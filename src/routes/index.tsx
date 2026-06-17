@@ -1285,6 +1285,7 @@ function Dashboard() {
       />
 
       <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
+      <DownloadCenterDialog open={showDownloads} onOpenChange={setShowDownloads} />
     </div>
   );
 }
