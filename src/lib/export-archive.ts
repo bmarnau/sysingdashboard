@@ -5,6 +5,8 @@
  * Export-Workflow als optionales Speicherziel angeboten.
  */
 
+export type ArchivedStatus = "creating" | "ready" | "failed" | "expired";
+
 export interface ArchivedExport {
   id: string;
   fileName: string;
@@ -12,11 +14,19 @@ export interface ArchivedExport {
   reportId: string;
   createdAt: string; // ISO
   sizeBytes: number;
+  /** Zeitraum (z. B. "2026-06" oder "Juni 2026"). */
+  period?: string;
+  /** Anzeigename des Erstellers. */
+  createdBy?: string;
+  /** Verarbeitungsstatus. */
+  status?: ArchivedStatus;
+  /** Optionale Fehlermeldung bei status === "failed". */
+  error?: string;
   // Blob wird separat geladen; im List-Result kein Blob.
 }
 
 interface ArchivedRecord extends ArchivedExport {
-  blob: Blob;
+  blob: Blob | null;
 }
 
 const DB_NAME = "engineer-dashboard-exports";
