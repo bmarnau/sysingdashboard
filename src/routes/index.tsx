@@ -847,11 +847,11 @@ function Dashboard() {
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
-                        setShowArchiveDialog(true);
+                        setShowDownloads(true);
                       }}
                       className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
                     >
-                      <Printer className="size-4 opacity-70" /> Lokale Ablage…
+                      <Download className="size-4 opacity-70" /> Downloads…
                     </button>
                     <button
                       onClick={() => {
