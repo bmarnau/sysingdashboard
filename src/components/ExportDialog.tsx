@@ -20,6 +20,8 @@ import {
 } from "@/lib/export-data";
 import type { PdfPreview } from "@/lib/pdf-export";
 import { lazy, Suspense } from "react";
+import { ExportDownloadService } from "@/lib/export-download-service";
+import { toast } from "sonner";
 
 // jsPDF/autotable (~350 KB gz) und der Preview-Dialog werden erst on-demand geladen,
 // damit das Dashboard nicht durch den PDF-Stack ausgebremst wird.
