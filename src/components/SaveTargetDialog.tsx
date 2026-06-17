@@ -246,7 +246,7 @@ export function LocalArchiveDialog({ open, onOpenChange }: LocalArchiveDialogPro
 
   const handleDownload = async (id: string, fileName: string) => {
     const rec = await ExportArchive.get(id);
-    if (!rec) return;
+    if (!rec || !rec.blob) return;
     downloadBlob(rec.blob, fileName);
   };
 

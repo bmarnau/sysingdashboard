@@ -444,6 +444,43 @@ Aus der Browser-App heraus kann der Projekt-Quellcode nicht gesichert werden. De
 Schlüssel mit Hinweisen auf Passwörter, Tokens, API-Keys oder JWTs werden vor dem Packen ausgeschlossen und niemals ins ZIP geschrieben.`,
   },
   {
+    id: "downloads",
+    title: "Downloads",
+    category: "Service",
+    route: "/",
+    component: "DownloadCenterDialog",
+    keywords: [
+      "Downloads",
+      "Export-Downloads",
+      "PDF",
+      "Report",
+      "Datei",
+      "Herunterladen",
+      "Vorschau",
+      "Ablage",
+    ],
+    lastUpdated: "2026-06-17",
+    content: `## Downloadbereich
+Der Dialog "Service → Downloads…" zeigt alle erzeugten Export-Dateien (PDF, CSV, JSON, Azure Table) mit Dateiname, Format, Zeitraum, Erstellt am, Erstellt von, Dateigröße und Status.
+
+## Status
+- **In Erstellung** — der Export wird gerade erzeugt.
+- **Fertig** — Datei steht zum Download bereit.
+- **Fehlgeschlagen** — die Erzeugung wurde abgebrochen, eine Fehlermeldung wird angezeigt.
+- **Abgelaufen** — der lokale Ablauf der Datei wurde erreicht.
+
+## Aktionen pro Eintrag
+- **Herunterladen** — speichert die Datei in den Standard-Downloads-Ordner.
+- **Vorschau öffnen** — öffnet PDF-Reports erneut in der eingebauten Vorschau (pdf.js).
+- **Löschen** — entfernt den Eintrag aus dem Downloadbereich.
+
+## Verhalten nach PDF-Erstellung
+Nach erfolgreicher Erzeugung erscheint die Datei automatisch im Downloadbereich (Status "Fertig"). Ein Toast bestätigt: "PDF-Report wurde erstellt und steht im Downloadbereich bereit." Fehlgeschlagene Exporte werden mit Status "Fehlgeschlagen" und Fehlertext sichtbar gemacht.
+
+## Speicherort
+Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Manuelle Speicherorte (Datei-Dialog, Standard-Download) bleiben über den Speichern-Dialog der Vorschau weiterhin verfügbar.`,
+  },
+  {
     id: "system-status",
     title: "Systemstatus",
     category: "Service",

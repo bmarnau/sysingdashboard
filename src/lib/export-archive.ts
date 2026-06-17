@@ -5,6 +5,8 @@
  * Export-Workflow als optionales Speicherziel angeboten.
  */
 
+export type ArchivedStatus = "creating" | "ready" | "failed" | "expired";
+
 export interface ArchivedExport {
   id: string;
   fileName: string;
@@ -12,11 +14,19 @@ export interface ArchivedExport {
   reportId: string;
   createdAt: string; // ISO
   sizeBytes: number;
+  /** Zeitraum (z. B. "2026-06" oder "Juni 2026"). */
+  period?: string;
+  /** Anzeigename des Erstellers. */
+  createdBy?: string;
+  /** Verarbeitungsstatus. */
+  status?: ArchivedStatus;
+  /** Optionale Fehlermeldung bei status === "failed". */
+  error?: string;
   // Blob wird separat geladen; im List-Result kein Blob.
 }
 
 interface ArchivedRecord extends ArchivedExport {
-  blob: Blob;
+  blob: Blob | null;
 }
 
 const DB_NAME = "engineer-dashboard-exports";
@@ -58,20 +68,38 @@ export const ExportArchive = {
   },
 
   async save(
-    record: Omit<ArchivedRecord, "id" | "createdAt"> & { createdAt?: string },
+    record: Omit<ArchivedRecord, "id" | "createdAt"> & { createdAt?: string; id?: string },
   ): Promise<ArchivedExport> {
     const entry: ArchivedRecord = {
-      id: crypto.randomUUID(),
+      id: record.id ?? crypto.randomUUID(),
       createdAt: record.createdAt ?? new Date().toISOString(),
       fileName: record.fileName,
       format: record.format,
       reportId: record.reportId,
       sizeBytes: record.sizeBytes,
+      period: record.period,
+      createdBy: record.createdBy,
+      status: record.status ?? "ready",
+      error: record.error,
       blob: record.blob,
     };
     await tx("readwrite", (s) => s.put(entry));
-    // Blob aus dem Listen-Result fernhalten
     const { blob: _b, ...meta } = entry;
+    return meta;
+  },
+
+  async update(
+    id: string,
+    patch: Partial<Omit<ArchivedRecord, "id">>,
+  ): Promise<ArchivedExport | null> {
+    const existing = await tx<ArchivedRecord | undefined>(
+      "readonly",
+      (s) => s.get(id) as IDBRequest<ArchivedRecord | undefined>,
+    );
+    if (!existing) return null;
+    const next: ArchivedRecord = { ...existing, ...patch, id };
+    await tx("readwrite", (s) => s.put(next));
+    const { blob: _b, ...meta } = next;
     return meta;
   },
 

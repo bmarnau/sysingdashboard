@@ -20,6 +20,8 @@ import {
 } from "@/lib/export-data";
 import type { PdfPreview } from "@/lib/pdf-export";
 import { lazy, Suspense } from "react";
+import { ExportDownloadService } from "@/lib/export-download-service";
+import { toast } from "sonner";
 
 // jsPDF/autotable (~350 KB gz) und der Preview-Dialog werden erst on-demand geladen,
 // damit das Dashboard nicht durch den PDF-Stack ausgebremst wird.
@@ -301,6 +303,7 @@ export function ExportDialog({
 
     setPdfError(null);
     setLoading(true);
+    const periodLabel = formatMonthLabel(month);
     try {
       // jsPDF wird hier dynamisch nachgeladen — der initiale Dashboard-Bundle
       // bleibt damit frei von ~350 KB PDF-Code.
@@ -321,9 +324,47 @@ export function ExportDialog({
       setPdfPreview(preview);
       setPreviewOpen(true);
       onOpenChange(false);
+
+      // Im Downloadbereich registrieren
+      try {
+        await ExportDownloadService.addDownload({
+          fileName: preview.fileName,
+          format: "pdf",
+          period: periodLabel,
+          createdBy: engineer.name,
+          reportId: preview.metadata.reportId,
+          blob: preview.blob,
+          status: "ready",
+        });
+        window.dispatchEvent(new CustomEvent("export-downloads:changed"));
+        toast.success("PDF-Report wurde erstellt und steht im Downloadbereich bereit.");
+      } catch (archiveErr) {
+        console.warn("[Export] Download-Eintrag konnte nicht gespeichert werden:", archiveErr);
+      }
     } catch (err) {
       console.error("[Export] PDF-Erzeugung fehlgeschlagen:", err);
       setPdfError("PDF konnte nicht erzeugt werden.");
+      try {
+        await ExportDownloadService.addDownload({
+          fileName: buildFileName({
+            format: "pdf",
+            month,
+            client: exportData.configuration.filter.clientName ?? undefined,
+            project: exportData.configuration.filter.projectName ?? undefined,
+          }),
+          format: "pdf",
+          period: periodLabel,
+          createdBy: engineer.name,
+          reportId: `FAIL-${Date.now()}`,
+          blob: null,
+          status: "failed",
+          error: err instanceof Error ? err.message : "Unbekannter Fehler",
+        });
+        window.dispatchEvent(new CustomEvent("export-downloads:changed"));
+      } catch {
+        /* ignore */
+      }
+      toast.error("PDF-Report konnte nicht erstellt werden.");
     } finally {
       setLoading(false);
     }
