@@ -349,8 +349,8 @@ export function ExportDialog({
           fileName: buildFileName({
             format: "pdf",
             month,
-            client: exportData.configuration.filter.clientName,
-            project: exportData.configuration.filter.projectName,
+            client: exportData.configuration.filter.clientName ?? undefined,
+            project: exportData.configuration.filter.projectName ?? undefined,
           }),
           format: "pdf",
           period: periodLabel,
