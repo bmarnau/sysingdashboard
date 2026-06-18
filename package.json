@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "docs:check": "node scripts/check-docs-sync.mjs"
+    "docs:check": "node scripts/check-docs-sync.mjs",
+    "test:examples": "node scripts/test-example-files.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",

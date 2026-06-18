@@ -294,16 +294,18 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
     title: "Servicebereich",
     category: "Service",
     keywords: ["Service", "Menü", "Export", "Engineer", "Arbeitszeitmodell", "Reset"],
-    lastUpdated: "2026-06-13",
+    lastUpdated: "2026-06-18",
     content: `## Funktionen im Servicebereich
 - Export: öffnet den Exportdialog.
 - Leistungsreport: blendet den Report im Dashboard ein/aus.
 - Benutzer & Profile: Benutzerverwaltung.
 - Engineer-Stammdaten: Stammdaten des Engineers.
 - Arbeitszeitmodell: Pflege der Modelle und Modellhistorie.
-- Lokale Ablage: Datenübertragung und Backup.
-- PDF Drucken: Druckdialog für die aktuelle Ansicht.
+- Downloads: Übersicht aller erzeugten Exporte.
 - Backup: tägliches automatisches ZIP-Backup der Dashboard-Daten inkl. Downloadbereich und Protokoll.
+- Import / Export: strukturierter JSON-Austausch (Voll-/Teil-Export, Beispieldateien, Schema-Doku, JSON-Backup). Nur für Administrator/Teamleiter.
+- Systemstatus: GitHub-, Build- und Versionsinformationen.
+- PDF Drucken: Druckdialog für die aktuelle Ansicht.
 - Handbuch: dieses Benutzerhandbuch.
 - Reset: löscht alle benutzerbezogenen Daten.`,
   },
@@ -424,7 +426,7 @@ const generatedTopics: HelpTopic[] = [
     route: "/",
     component: "BackupDialog",
     keywords: ["Backup", "Sicherung", "ZIP", "Download", "Wiederherstellung", "Quellcode"],
-    lastUpdated: "2026-06-15",
+    lastUpdated: "2026-06-18",
     content: `## Daten-Backup
 Das Dashboard erzeugt einmal pro Kalendertag automatisch ein vollständiges ZIP-Backup aller Dashboard-Daten (Engineure, Arbeitszeitmodelle, Benutzer, Einstellungen, Berichte, Export-Ablage-Index).
 
@@ -441,7 +443,10 @@ Das einklappbare Protokoll zeigt alle Backup-Läufe inklusive Warnungen und Fehl
 Aus der Browser-App heraus kann der Projekt-Quellcode nicht gesichert werden. Den vollständigen Quellcode für einen eigenen Webserver erhalten Sie über Lovable (Code-Editor → Codebase herunterladen) oder die GitHub-Integration. Im ZIP liegt dazu eine Anleitung in INSTALL.md.
 
 ## Sicherheit
-Schlüssel mit Hinweisen auf Passwörter, Tokens, API-Keys oder JWTs werden vor dem Packen ausgeschlossen und niemals ins ZIP geschrieben.`,
+Schlüssel mit Hinweisen auf Passwörter, Tokens, API-Keys oder JWTs werden vor dem Packen ausgeschlossen und niemals ins ZIP geschrieben.
+
+## JSON-Komplett-Export (zusätzlich)
+Im Bereich „Service → Import / Export → Backup" steht zusätzlich ein JSON-Komplett-Export bereit (Dateiname \`dashboard-backup_YYYY-MM-DD_HHMMSS.json\`). Er nutzt Schema v1 und erscheint im Downloadbereich. Das tägliche automatische ZIP-Backup bleibt unverändert der Standard.`,
   },
   {
     id: "downloads",
@@ -507,6 +512,72 @@ Der Dialog "Service → Systemstatus…" zeigt zur Laufzeit den aktuellen Stand 
 
 ## Verbindung herstellen
 Ist GitHub nicht verbunden, erscheint ein Hinweis. Verbinden über das Lovable-Plus-Menü → GitHub → Connect project. Details in docs/GITHUB.md.`,
+  },
+  {
+    id: "import-export",
+    title: "Import / Export (JSON)",
+    category: "Service",
+    route: "/",
+    component: "ImportExportDialog",
+    keywords: [
+      "Import",
+      "Export",
+      "JSON",
+      "Schema",
+      "Backup",
+      "Migration",
+      "Testdaten",
+      "Beispieldateien",
+      "Schnittstelle",
+    ],
+    lastUpdated: "2026-06-18",
+    content: `## Zweck der JSON-Schnittstelle
+Die Schnittstelle erlaubt strukturiertes Sichern, Migrieren und Austauschen von Dashboard-Daten im JSON-Format (Schema v1). Sie ist Grundlage für Backup, Wiederherstellung, Testdaten, spätere API-Anbindung und Dokumentation der Datenstruktur.
+
+## Komplett-Export
+Eine einzige JSON-Datei enthält alle Bereiche (Benutzer, Kunden, Projekte, Arbeitspakete, Tätigkeiten, Zeitbuchungen, Arbeitszeitmodelle, Einstellungen, Handbuch-Metadaten). Dateiname: \`dashboard-backup_YYYY-MM-DD_HHMMSS.json\`.
+
+## Teil-Export
+Pro Domäne (z. B. nur Projekte oder nur Zeitbuchungen) wird eine eigene Datei erzeugt. Dateiname: \`dashboard-<scope>_YYYY-MM-DD_HHMMSS.json\`. Geeignet für gezielten Import oder Austausch.
+
+## Beispieldateien
+Im Tab „Beispieldateien" stehen sechs deterministische Beispiel-JSONs zum Download bereit (Voll-Export, Benutzer, Projekte+Arbeitspakete+Tätigkeiten, Zeitbuchungen, Einstellungen, Backup). Jede Datei kann live validiert werden.
+
+## Brückenfelder
+Heute ist das Datenmodell nicht alle Bereiche nativ abbildet, ergänzt das Schema zwei optionale Felder:
+- \`project.customerId\` — synthetische Kunden-ID, abgeleitet aus \`project.client\`.
+- \`activity.engineerId\` — Zuordnung einer Tätigkeit zu einem Benutzerprofil.
+
+Beim Export werden diese Felder befüllt; die bestehende UI ignoriert sie.
+
+## Schema-Versionierung
+Jede Datei enthält im Kopf:
+- \`schemaVersion\` (aktuell \`1.0.0\`)
+- \`exportType\` (\`full\` oder \`partial\`)
+- \`exportedAt\` (ISO-Datum/Zeit)
+- \`exportedBy\` (Benutzername / E-Mail)
+- \`dashboardVersion\` (aus CHANGELOG)
+
+## Sicherheitsregeln
+- Passwörter, Passwort-Hashes, MFA-Secrets, OAuth/Bearer-Token und API-Keys werden **niemals** exportiert.
+- Eine zentrale Denylist greift sowohl auf Storage-Keys als auch auf Feldnamen von Objekten.
+- Sichtbarkeit des Menüpunkts ist auf die Rollen „Administrator" und „Teamleiter" beschränkt.
+
+## Beispiel-JSON (gekürzt)
+\`\`\`
+{
+  "schemaVersion": "1.0.0",
+  "exportType": "full",
+  "exportedAt": "2026-06-15T14:30:00.000Z",
+  "exportedBy": "user-001",
+  "dashboardVersion": "1.12.0",
+  "customers": [{ "id": "cust-northbit", "name": "NorthBit Systems" }],
+  "projects":  [{ "id": "proj-001", "customerId": "cust-northbit", "name": "..." }]
+}
+\`\`\`
+
+## Hinweis
+Der Import-Pfad (Vorschau, Konfliktdialog, Benutzer-Mapping, Ausführung, Import-Protokoll) folgt in Stufe 2. Der Backup-Tab bietet bereits einen JSON-Komplett-Export — das tägliche ZIP-Backup bleibt unverändert der Standard für die automatische Sicherung.`,
   },
 ];
 

@@ -11,6 +11,7 @@ import {
   Euro,
   Eye,
   EyeOff,
+  FileJson,
   FolderKanban,
   Gauge,
   HardDrive,
@@ -45,6 +46,7 @@ import { UserManualDialog } from "@/components/UserManualDialog";
 import { BackupDialog } from "@/components/BackupDialog";
 import { SystemStatusDialog } from "@/components/SystemStatusDialog";
 import { DownloadCenterDialog } from "@/components/DownloadCenterDialog";
+import { ImportExportDialog } from "@/components/ImportExportDialog";
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
@@ -276,6 +278,7 @@ function Dashboard() {
   const [showBackupDialog, setShowBackupDialog] = useState(false);
   const [showSystemStatus, setShowSystemStatus] = useState(false);
   const [showDownloads, setShowDownloads] = useState(false);
+  const [showImportExport, setShowImportExport] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
@@ -862,6 +865,19 @@ function Dashboard() {
                     >
                       <HardDrive className="size-4 opacity-70" /> Backup…
                     </button>
+                    {(!currentUser ||
+                      currentUser.role === "administrator" ||
+                      currentUser.role === "teamlead") && (
+                      <button
+                        onClick={() => {
+                          setShowServiceMenu(false);
+                          setShowImportExport(true);
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                      >
+                        <FileJson className="size-4 opacity-70" /> Import / Export…
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
@@ -1286,6 +1302,14 @@ function Dashboard() {
 
       <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
       <DownloadCenterDialog open={showDownloads} onOpenChange={setShowDownloads} />
+      <ImportExportDialog
+        open={showImportExport}
+        onOpenChange={setShowImportExport}
+        onOpenBackup={() => {
+          setShowImportExport(false);
+          setShowBackupDialog(true);
+        }}
+      />
     </div>
   );
 }

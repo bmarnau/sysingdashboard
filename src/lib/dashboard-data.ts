@@ -9,6 +9,12 @@ export interface Project {
   id: string;
   name: string;
   client: string;
+  /**
+   * Brückenfeld für den JSON-Export (Schema v1): synthetische Kunden-ID,
+   * abgeleitet aus `client`. Wird ausschließlich vom Import/Export-Layer
+   * gesetzt; bestehendes UI ignoriert das Feld.
+   */
+  customerId?: string;
   description?: string;
   start?: string;
   deadline?: string;
@@ -36,6 +42,11 @@ export interface Activity {
   id: string;
   title: string;
   workPackageId?: string | null; // optional: kann ohne Arbeitspaket existieren
+  /**
+   * Brückenfeld für den JSON-Export (Schema v1): Zuordnung zu einem
+   * UserProfile. Heute optional und kosmetisch; Single-Engineer-Modus.
+   */
+  engineerId?: string;
   client?: string;
   date: string; // YYYY-MM-DD
   time?: string; // HH:MM
