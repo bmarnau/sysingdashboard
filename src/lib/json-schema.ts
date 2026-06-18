@@ -201,8 +201,13 @@ export const SENSITIVE_FIELD_SUBSTRINGS = [
   "access_token",
   "refresh_token",
   "bearer",
-  "mfa",
-  "otp",
+  // MFA/OTP nur in Kombination mit secret/code/seed — `mfaEnabled` (Boolean-Flag)
+  // ist KEIN Secret und muss exportierbar bleiben.
+  "mfa_secret",
+  "mfasecret",
+  "otp_secret",
+  "otpsecret",
+  "recovery_code",
 ];
 
 export function isSensitiveFieldName(name: string): boolean {
