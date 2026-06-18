@@ -116,11 +116,13 @@ export const TargetTimeModelSchema = z.object({
   engineerId: z.string().optional(),
   validFrom: z.string(),
   validUntil: z.string().nullable().optional(),
-  base: z.string(),
+  targetTimeBase: z.string(),
   monthlyTargetHours: z.number().optional(),
   weeklyTargetHours: z.number().optional(),
   workloadPercent: z.number().optional(),
-  note: z.string().optional(),
+  description: z.string().optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 export type TargetTimeModelExport = z.infer<typeof TargetTimeModelSchema>;
 
