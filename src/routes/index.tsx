@@ -45,6 +45,7 @@ import { UserManualDialog } from "@/components/UserManualDialog";
 import { BackupDialog } from "@/components/BackupDialog";
 import { SystemStatusDialog } from "@/components/SystemStatusDialog";
 import { DownloadCenterDialog } from "@/components/DownloadCenterDialog";
+import { ImportExportDialog } from "@/components/ImportExportDialog";
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
