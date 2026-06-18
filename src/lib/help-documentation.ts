@@ -294,16 +294,18 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
     title: "Servicebereich",
     category: "Service",
     keywords: ["Service", "Menü", "Export", "Engineer", "Arbeitszeitmodell", "Reset"],
-    lastUpdated: "2026-06-13",
+    lastUpdated: "2026-06-18",
     content: `## Funktionen im Servicebereich
 - Export: öffnet den Exportdialog.
 - Leistungsreport: blendet den Report im Dashboard ein/aus.
 - Benutzer & Profile: Benutzerverwaltung.
 - Engineer-Stammdaten: Stammdaten des Engineers.
 - Arbeitszeitmodell: Pflege der Modelle und Modellhistorie.
-- Lokale Ablage: Datenübertragung und Backup.
-- PDF Drucken: Druckdialog für die aktuelle Ansicht.
+- Downloads: Übersicht aller erzeugten Exporte.
 - Backup: tägliches automatisches ZIP-Backup der Dashboard-Daten inkl. Downloadbereich und Protokoll.
+- Import / Export: strukturierter JSON-Austausch (Voll-/Teil-Export, Beispieldateien, Schema-Doku, JSON-Backup). Nur für Administrator/Teamleiter.
+- Systemstatus: GitHub-, Build- und Versionsinformationen.
+- PDF Drucken: Druckdialog für die aktuelle Ansicht.
 - Handbuch: dieses Benutzerhandbuch.
 - Reset: löscht alle benutzerbezogenen Daten.`,
   },
