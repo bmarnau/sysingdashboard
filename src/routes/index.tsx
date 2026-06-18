@@ -11,6 +11,7 @@ import {
   Euro,
   Eye,
   EyeOff,
+  FileJson,
   FolderKanban,
   Gauge,
   HardDrive,
