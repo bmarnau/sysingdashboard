@@ -42,6 +42,11 @@ export interface Activity {
   id: string;
   title: string;
   workPackageId?: string | null; // optional: kann ohne Arbeitspaket existieren
+  /**
+   * Brückenfeld für den JSON-Export (Schema v1): Zuordnung zu einem
+   * UserProfile. Heute optional und kosmetisch; Single-Engineer-Modus.
+   */
+  engineerId?: string;
   client?: string;
   date: string; // YYYY-MM-DD
   time?: string; // HH:MM
