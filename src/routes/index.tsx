@@ -865,6 +865,19 @@ function Dashboard() {
                     >
                       <HardDrive className="size-4 opacity-70" /> Backup…
                     </button>
+                    {(!currentUser ||
+                      currentUser.role === "administrator" ||
+                      currentUser.role === "teamlead") && (
+                      <button
+                        onClick={() => {
+                          setShowServiceMenu(false);
+                          setShowImportExport(true);
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                      >
+                        <FileJson className="size-4 opacity-70" /> Import / Export…
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
