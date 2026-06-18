@@ -1302,6 +1302,14 @@ function Dashboard() {
 
       <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
       <DownloadCenterDialog open={showDownloads} onOpenChange={setShowDownloads} />
+      <ImportExportDialog
+        open={showImportExport}
+        onOpenChange={setShowImportExport}
+        onOpenBackup={() => {
+          setShowImportExport(false);
+          setShowBackupDialog(true);
+        }}
+      />
     </div>
   );
 }
