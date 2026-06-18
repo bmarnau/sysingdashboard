@@ -441,7 +441,10 @@ Das einklappbare Protokoll zeigt alle Backup-Läufe inklusive Warnungen und Fehl
 Aus der Browser-App heraus kann der Projekt-Quellcode nicht gesichert werden. Den vollständigen Quellcode für einen eigenen Webserver erhalten Sie über Lovable (Code-Editor → Codebase herunterladen) oder die GitHub-Integration. Im ZIP liegt dazu eine Anleitung in INSTALL.md.
 
 ## Sicherheit
-Schlüssel mit Hinweisen auf Passwörter, Tokens, API-Keys oder JWTs werden vor dem Packen ausgeschlossen und niemals ins ZIP geschrieben.`,
+Schlüssel mit Hinweisen auf Passwörter, Tokens, API-Keys oder JWTs werden vor dem Packen ausgeschlossen und niemals ins ZIP geschrieben.
+
+## JSON-Komplett-Export (zusätzlich)
+Im Bereich „Service → Import / Export → Backup" steht zusätzlich ein JSON-Komplett-Export bereit (Dateiname \`dashboard-backup_YYYY-MM-DD_HHMMSS.json\`). Er nutzt Schema v1 und erscheint im Downloadbereich. Das tägliche automatische ZIP-Backup bleibt unverändert der Standard.`,
   },
   {
     id: "downloads",
