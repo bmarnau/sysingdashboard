@@ -424,7 +424,7 @@ const generatedTopics: HelpTopic[] = [
     route: "/",
     component: "BackupDialog",
     keywords: ["Backup", "Sicherung", "ZIP", "Download", "Wiederherstellung", "Quellcode"],
-    lastUpdated: "2026-06-15",
+    lastUpdated: "2026-06-18",
     content: `## Daten-Backup
 Das Dashboard erzeugt einmal pro Kalendertag automatisch ein vollständiges ZIP-Backup aller Dashboard-Daten (Engineure, Arbeitszeitmodelle, Benutzer, Einstellungen, Berichte, Export-Ablage-Index).
 
