@@ -14,14 +14,14 @@ export interface ArchivedExport {
   reportId: string;
   createdAt: string; // ISO
   sizeBytes: number;
-  /** Zeitraum (z. B. "2026-06" oder "Juni 2026"). */
   period?: string;
-  /** Anzeigename des Erstellers. */
   createdBy?: string;
-  /** Verarbeitungsstatus. */
   status?: ArchivedStatus;
-  /** Optionale Fehlermeldung bei status === "failed". */
   error?: string;
+  /** Geplantes Ablaufdatum (ISO). Nach diesem Zeitpunkt wird der Status auf "expired" gesetzt. */
+  expiresAt?: string;
+  /** Aufbewahrungsdauer in Tagen, mit der dieser Eintrag angelegt wurde. */
+  retentionDays?: number;
   // Blob wird separat geladen; im List-Result kein Blob.
 }
 
