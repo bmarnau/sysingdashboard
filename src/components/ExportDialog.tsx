@@ -351,7 +351,6 @@ export function ExportDialog({
 
     setPdfError(null);
     setLoading(true);
-    const periodLabel = formatMonthLabel(month);
     try {
       // jsPDF wird hier dynamisch nachgeladen — der initiale Dashboard-Bundle
       // bleibt damit frei von ~350 KB PDF-Code.
