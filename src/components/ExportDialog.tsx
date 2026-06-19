@@ -21,6 +21,8 @@ import {
 import type { PdfPreview } from "@/lib/pdf-export";
 import { lazy, Suspense } from "react";
 import { ExportDownloadService } from "@/lib/export-download-service";
+import { buildTextExport, withReportIdInFileName } from "@/lib/text-export";
+import { downloadBlob } from "@/lib/export-archive";
 import { toast } from "sonner";
 
 // jsPDF/autotable (~350 KB gz) und der Preview-Dialog werden erst on-demand geladen,
