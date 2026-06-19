@@ -81,6 +81,8 @@ export const ExportArchive = {
       createdBy: record.createdBy,
       status: record.status ?? "ready",
       error: record.error,
+      expiresAt: record.expiresAt,
+      retentionDays: record.retentionDays,
       blob: record.blob,
     };
     await tx("readwrite", (s) => s.put(entry));
