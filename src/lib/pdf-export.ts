@@ -130,19 +130,20 @@ export const PdfExportService = {
     return `REP-${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
   },
 
-  generateFileName(cfg: ExportConfiguration, now: Date = new Date()): string {
+  generateFileName(cfg: ExportConfiguration, now: Date = new Date(), reportId?: string): string {
     const pad = (n: number) => String(n).padStart(2, "0");
     const ts = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
     const client = slugify(cfg.filter.clientName ?? "");
     const project = slugify(cfg.filter.projectName ?? "");
+    const idSuffix = reportId ? `_${reportId}` : "";
     const base =
       client && project
-        ? `${client}_${project}_${cfg.month}_leistungsnachweis_${ts}`
+        ? `${client}_${project}_${cfg.month}_leistungsnachweis_${ts}${idSuffix}`
         : client
-          ? `${client}_${cfg.month}_leistungsnachweis_${ts}`
+          ? `${client}_${cfg.month}_leistungsnachweis_${ts}${idSuffix}`
           : project
-            ? `${project}_${cfg.month}_leistungsnachweis_${ts}`
-            : `leistungsnachweis_${cfg.month}_${ts}`;
+            ? `${project}_${cfg.month}_leistungsnachweis_${ts}${idSuffix}`
+            : `leistungsnachweis_${cfg.month}_${ts}${idSuffix}`;
     return `${base}.pdf`;
   },
 
@@ -413,6 +414,7 @@ export const PdfExportService = {
     const fileName = this.generateFileName(
       ctx.exportData.configuration,
       new Date(metadata.createdAt),
+      metadata.reportId,
     );
     return { blob: typedBlob, url, fileName, pages, sizeBytes: typedBlob.size, metadata };
   },

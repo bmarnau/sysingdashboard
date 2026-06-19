@@ -464,26 +464,32 @@ Im Bereich „Service → Import / Export → Backup" steht zusätzlich ein JSON
       "Vorschau",
       "Ablage",
     ],
-    lastUpdated: "2026-06-17",
+    lastUpdated: "2026-06-19",
     content: `## Downloadbereich
-Der Dialog "Service → Downloads…" zeigt alle erzeugten Export-Dateien (PDF, CSV, JSON, Azure Table) mit Dateiname, Format, Zeitraum, Erstellt am, Erstellt von, Dateigröße und Status.
+Der Dialog "Service → Downloads…" zeigt alle erzeugten Export-Dateien (PDF, CSV, JSON, Azure Table) mit Dateiname, Format, Zeitraum, Erstellt am, Erstellt von, Dateigröße, Status und verbleibender Aufbewahrungszeit.
 
 ## Status
 - **In Erstellung** — der Export wird gerade erzeugt.
 - **Fertig** — Datei steht zum Download bereit.
 - **Fehlgeschlagen** — die Erzeugung wurde abgebrochen, eine Fehlermeldung wird angezeigt.
-- **Abgelaufen** — der lokale Ablauf der Datei wurde erreicht.
+- **Abgelaufen** — die Aufbewahrungsdauer ist erreicht; nach 7 Tagen Karenzzeit wird der Eintrag automatisch gelöscht.
 
 ## Aktionen pro Eintrag
 - **Herunterladen** — speichert die Datei in den Standard-Downloads-Ordner.
-- **Vorschau öffnen** — öffnet PDF-Reports erneut in der eingebauten Vorschau (pdf.js).
+- **Vorschau öffnen** — öffnet PDF-Reports in der pdf.js-Vorschau, CSV/JSON/Azure-Exporte in einer Monospace-Textvorschau (bis 256 KB).
 - **Löschen** — entfernt den Eintrag aus dem Downloadbereich.
 
-## Verhalten nach PDF-Erstellung
-Nach erfolgreicher Erzeugung erscheint die Datei automatisch im Downloadbereich (Status "Fertig"). Ein Toast bestätigt: "PDF-Report wurde erstellt und steht im Downloadbereich bereit." Fehlgeschlagene Exporte werden mit Status "Fehlgeschlagen" und Fehlertext sichtbar gemacht.
+## Aufbewahrung & automatischer Ablauf
+Pro neuem Export wird ein Ablaufdatum gesetzt (Default 30 Tage, einstellbar im Dialog zwischen 1 und 365 Tagen). Beim Öffnen des Dialogs werden überschrittene Einträge automatisch auf "Abgelaufen" markiert; nach weiteren 7 Tagen Karenz werden sie endgültig gelöscht. Mit der Schaltfläche „Abgelaufene jetzt löschen" lässt sich die Karenz manuell umgehen. Die Spalte „Ablauf" zeigt die Restzeit pro Eintrag.
+
+## Verhalten nach Export-Erstellung
+Nach erfolgreicher Erzeugung erscheint die Datei automatisch im Downloadbereich (Status "Fertig"). Ein Toast bestätigt: "<Format>-Report wurde erstellt und steht im Downloadbereich bereit." Fehlgeschlagene Exporte werden mit Status "Fehlgeschlagen" und Fehlertext sichtbar gemacht. Der Dateiname enthält die Report-ID (\`REP-YYYYMMDD-HHMMSS\`), wodurch gleichzeitige Exporte garantiert eindeutige Dateinamen erhalten.
+
+## Unterstützte Formate
+Alle vier Export-Pfade legen automatisch Download-Einträge an: **PDF** (Leistungsnachweis mit Vorschau), **CSV** (semikolongetrennt, UTF-8 mit BOM für Excel), **JSON** (Konfiguration + Summary + Tätigkeiten) und **Azure Table** (NDJSON, eine Entität pro Zeile, PartitionKey = Monat, RowKey = Activity-ID).
 
 ## Speicherort
-Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Manuelle Speicherorte (Datei-Dialog, Standard-Download) bleiben über den Speichern-Dialog der Vorschau weiterhin verfügbar.`,
+Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Manuelle Speicherorte (Datei-Dialog, Standard-Download) bleiben über den Speichern-Dialog der Vorschau weiterhin verfügbar. Eine optionale Cloud-Synchronisation ist im Service vorbereitet (Schema mit \`expiresAt\`, \`retentionDays\`, \`reportId\`), aber bewusst noch nicht aktiviert.`,
   },
   {
     id: "system-status",

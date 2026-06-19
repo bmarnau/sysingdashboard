@@ -21,6 +21,8 @@ import {
 import type { PdfPreview } from "@/lib/pdf-export";
 import { lazy, Suspense } from "react";
 import { ExportDownloadService } from "@/lib/export-download-service";
+import { buildTextExport, withReportIdInFileName } from "@/lib/text-export";
+import { downloadBlob } from "@/lib/export-archive";
 import { toast } from "sonner";
 
 // jsPDF/autotable (~350 KB gz) und der Preview-Dialog werden erst on-demand geladen,
@@ -287,12 +289,58 @@ export function ExportDialog({
 
   const handlePrepare = async () => {
     savePrefs({ format, month, clientId, projectId, grouping, sorting });
+    const periodLabel = formatMonthLabel(month);
 
     if (format !== "pdf") {
-      // CSV / JSON / Azure folgen in späteren Schritten
-
-      console.log("[Export] Format noch nicht implementiert:", format, exportData);
-      onOpenChange(false);
+      if (!hasData) {
+        setPdfError("Für den gewählten Zeitraum wurden keine Daten gefunden.");
+        return;
+      }
+      try {
+        const result = buildTextExport(format, {
+          engineer,
+          projects,
+          workPackages,
+          activities,
+          exportData,
+        });
+        const baseName = fileNameOverride?.trim() || autoFileName;
+        const finalName = withReportIdInFileName(baseName, result.reportId);
+        // Download direkt anstoßen + im Downloadbereich registrieren
+        downloadBlob(result.blob, finalName);
+        await ExportDownloadService.addDownload({
+          fileName: finalName,
+          format,
+          period: periodLabel,
+          createdBy: engineer.name,
+          reportId: result.reportId,
+          blob: result.blob,
+          status: "ready",
+        });
+        window.dispatchEvent(new CustomEvent("export-downloads:changed"));
+        toast.success(`${format.toUpperCase()}-Export wurde erstellt und steht im Downloadbereich bereit.`);
+        onOpenChange(false);
+      } catch (err) {
+        console.error("[Export] Erzeugung fehlgeschlagen:", err);
+        const msg = err instanceof Error ? err.message : "Unbekannter Fehler";
+        setPdfError(`Export konnte nicht erzeugt werden: ${msg}`);
+        try {
+          await ExportDownloadService.addDownload({
+            fileName: fileNameOverride?.trim() || autoFileName,
+            format,
+            period: periodLabel,
+            createdBy: engineer.name,
+            reportId: `FAIL-${Date.now()}`,
+            blob: null,
+            status: "failed",
+            error: msg,
+          });
+          window.dispatchEvent(new CustomEvent("export-downloads:changed"));
+        } catch {
+          /* ignore */
+        }
+        toast.error(`${format.toUpperCase()}-Export konnte nicht erstellt werden.`);
+      }
       return;
     }
 
@@ -303,7 +351,6 @@ export function ExportDialog({
 
     setPdfError(null);
     setLoading(true);
-    const periodLabel = formatMonthLabel(month);
     try {
       // jsPDF wird hier dynamisch nachgeladen — der initiale Dashboard-Bundle
       // bleibt damit frei von ~350 KB PDF-Code.
