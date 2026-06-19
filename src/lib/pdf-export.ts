@@ -414,6 +414,7 @@ export const PdfExportService = {
     const fileName = this.generateFileName(
       ctx.exportData.configuration,
       new Date(metadata.createdAt),
+      metadata.reportId,
     );
     return { blob: typedBlob, url, fileName, pages, sizeBytes: typedBlob.size, metadata };
   },
