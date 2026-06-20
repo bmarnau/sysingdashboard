@@ -2,9 +2,27 @@
  * Eigentliche Test-Logik — wird von `scripts/test-example-files.mjs` via
  * Bun gestartet. Dadurch können wir die TS-Module direkt importieren.
  */
+// Minimaler Browser-Shim für Module, die `window`/`localStorage`
+// referenzieren (json-import-service, user-management, target-time).
+// Reicht für reine Lese-/Diff-Operationen.
+if (typeof (globalThis as Record<string, unknown>).window === "undefined") {
+  const store = new Map<string, string>();
+  const ls = {
+    getItem: (k: string) => store.get(k) ?? null,
+    setItem: (k: string, v: string) => void store.set(k, v),
+    removeItem: (k: string) => void store.delete(k),
+    key: (i: number) => Array.from(store.keys())[i] ?? null,
+    get length() { return store.size; },
+    clear: () => store.clear(),
+  };
+  (globalThis as Record<string, unknown>).window = { localStorage: ls } as unknown;
+  (globalThis as Record<string, unknown>).localStorage = ls;
+}
+
 import { ExampleFileService } from "../src/lib/example-file-service";
 import { JsonSchemaValidationService } from "../src/lib/json-schema-validation-service";
 import { JSON_SCHEMA_VERSION, isSensitiveFieldName } from "../src/lib/json-schema";
+import { JsonImportService } from "../src/lib/json-import-service";
 
 let failures = 0;
 let total = 0;
@@ -98,6 +116,19 @@ for (const file of ExampleFileService.listFiles()) {
     const keys = [...deepCollectKeys(doc)];
     const bad = keys.filter((k) => isSensitiveFieldName(k));
     assert(bad.length === 0, `verbotene Feldnamen: ${bad.join(", ")}`);
+  });
+
+  test("Import-Plan baut konsistent (Round-Trip)", () => {
+    const plan = JsonImportService.buildPlan(doc, { strategy: "merge" });
+    assert(plan.schemaValid, "Schema ungültig im Import-Plan");
+    // Counts müssen mit Doc-Inhalt übereinstimmen
+    const expectedUsers = (doc.users ?? []).length;
+    const expectedProjects = (doc.projects ?? []).length;
+    assert(plan.diffs.users.length === expectedUsers, `users: erwartet ${expectedUsers}, erhalten ${plan.diffs.users.length}`);
+    assert(plan.diffs.projects.length === expectedProjects, `projects: erwartet ${expectedProjects}, erhalten ${plan.diffs.projects.length}`);
+    // Auf leerem Mock-State müssen alle Diffs „create" sein
+    for (const d of plan.diffs.users) assert(d.action === "create", `user ${d.id}: erwartet create`);
+    for (const d of plan.diffs.projects) assert(d.action === "create", `project ${d.id}: erwartet create`);
   });
 }
 
