@@ -270,13 +270,23 @@ export function ImportExportDialog({
             </TabsContent>
 
             {/* ---------------- IMPORT (Stufe 2) ---------------- */}
-            <TabsContent value="import" className="pt-4">
-              <PlaceholderCard
-                icon={<Upload className="size-5" />}
-                title="JSON-Import folgt in Stufe 2"
-                body="Datei auswählen → Schema prüfen → Import-Vorschau → Konflikt- und Benutzer-Mapping-Dialog → Ausführung mit Protokoll. Das Schema (json-schema.ts) und der Validierungs-Service stehen bereits bereit."
-              />
+            <TabsContent value="import" className="space-y-4 pt-4">
+              <div className="rounded-md border border-border p-4 text-sm">
+                <p className="mb-2 flex items-center gap-2 font-medium">
+                  <Upload className="size-4" /> JSON-Import
+                </p>
+                <p className="text-muted-foreground">
+                  Wizard: Datei → Vorschau (Diff & Konflikte) → Benutzer-/Kunden-Mapping → Ausführung mit Pre-Snapshot und automatischem Rollback bei Fehler. <strong>timeEntries</strong> ist die kanonische Quelle gegenüber <strong>activities</strong>.
+                </p>
+                <div className="mt-3">
+                  <Button onClick={() => setShowImportDialog(true)}>
+                    <Upload className="mr-2 size-4" /> Import starten
+                  </Button>
+                </div>
+              </div>
+              <ImportLogTable entries={logEntries} compact onChanged={refreshLog} />
             </TabsContent>
+
 
             {/* ---------------- BEISPIELDATEIEN ---------------- */}
             <TabsContent value="examples" className="pt-4">
