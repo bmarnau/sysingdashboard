@@ -416,9 +416,6 @@ function buildZip(snapshot: Snapshot): Uint8Array {
   // oder ungültig ist. Fehler hier brechen das ZIP NICHT — der
   // bestehende Backup-Pfad bleibt funktionsfähig.
   try {
-    // Lazy import, um Zyklen zu vermeiden und Schema-Drift abzufangen.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { JsonExportService } = require("./json-export-service") as typeof import("./json-export-service");
     const res = JsonExportService.exportFullJson({ exportedBy: "backup-service" });
     files["dashboard.json"] = strToU8(JSON.stringify(res.document, null, 2));
   } catch (err) {
