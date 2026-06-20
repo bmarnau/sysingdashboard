@@ -27,6 +27,7 @@
 
 import { unzipSync, zipSync, strToU8, strFromU8 } from "fflate";
 import { ExportArchive } from "./export-archive";
+import { JsonExportService } from "./json-export-service";
 
 /* ---------------------------------------------------------------------- */
 /*  Typen                                                                  */
