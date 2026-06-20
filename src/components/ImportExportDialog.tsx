@@ -403,7 +403,98 @@ export function ImportExportDialog({
         onClose={() => setShowManual(false)}
         initialRoute="/"
       />
+
+      <ImportPreviewDialog
+        open={showImportDialog}
+        onOpenChange={setShowImportDialog}
+        actor={exportedBy}
+        onCompleted={refreshLog}
+      />
     </>
+  );
+}
+
+function ImportLogTable({
+  entries,
+  compact,
+  onChanged,
+}: {
+  entries: ImportLogEntry[];
+  compact?: boolean;
+  onChanged?: () => void | Promise<void>;
+}) {
+  if (entries.length === 0) {
+    return (
+      <div className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+        Noch keine Import-Läufe protokolliert.
+      </div>
+    );
+  }
+  const handleRollback = async (e: ImportLogEntry) => {
+    if (!e.snapshotId) return;
+    const ok = JsonImportService.rollback(e.snapshotId);
+    if (ok) {
+      toast.success("Rollback ausgeführt", { description: e.fileName });
+      await onChanged?.();
+    } else {
+      toast.error("Rollback nicht möglich", { description: "Pre-Snapshot ist nicht mehr verfügbar (z. B. nach Seiten-Reload)." });
+    }
+  };
+  const handleDelete = async (e: ImportLogEntry) => {
+    await ImportLogService.delete(e.runId);
+    await onChanged?.();
+  };
+  return (
+    <div className="overflow-hidden rounded-md border border-border">
+      <table className="w-full text-sm">
+        <thead className="bg-secondary/40 text-xs uppercase text-muted-foreground">
+          <tr>
+            <th className="px-3 py-2 text-left">Zeit</th>
+            <th className="px-3 py-2 text-left">Datei</th>
+            <th className="px-3 py-2 text-left">Status</th>
+            <th className="px-3 py-2 text-left">Counts</th>
+            {!compact && <th className="px-3 py-2 text-left">Hinweise</th>}
+            <th className="px-3 py-2 text-right">Aktion</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border">
+          {entries.slice(0, compact ? 5 : 100).map((e) => (
+            <tr key={e.runId} className="align-top">
+              <td className="px-3 py-2 text-xs font-mono">{e.startedAt.slice(0, 19).replace("T", " ")}</td>
+              <td className="px-3 py-2 text-xs font-mono">{e.fileName}</td>
+              <td className="px-3 py-2 text-xs">
+                {e.ok ? (
+                  <span className="inline-flex items-center gap-1 text-success">
+                    <CheckCircle2 className="size-3" /> OK
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-destructive">
+                    <AlertTriangle className="size-3" /> {e.rollback ? "Rollback" : "Fehler"}
+                  </span>
+                )}
+              </td>
+              <td className="px-3 py-2 text-xs">
+                +{e.counts.created} / ~{e.counts.updated} / ⏭{e.counts.skipped}
+                {e.counts.errors > 0 && <> / ✗{e.counts.errors}</>}
+              </td>
+              {!compact && (
+                <td className="px-3 py-2 text-xs text-muted-foreground">
+                  {e.warnings.length > 0 && <div>⚠ {e.warnings.length} Warnung(en)</div>}
+                  {e.conflicts.length > 0 && <div>timeEntry-Konflikte: {e.conflicts.length}</div>}
+                  {e.errors.length > 0 && <div className="text-destructive">{e.errors[0]}</div>}
+                </td>
+              )}
+              <td className="px-3 py-2 text-right">
+                {e.snapshotId && e.ok && (
+                  <Button size="sm" variant="ghost" onClick={() => handleRollback(e)}>Rollback</Button>
+                )}
+                <Button size="sm" variant="ghost" onClick={() => handleDelete(e)}>Löschen</Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
