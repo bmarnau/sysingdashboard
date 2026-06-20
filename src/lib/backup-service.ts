@@ -409,8 +409,25 @@ function buildZip(snapshot: Snapshot): Uint8Array {
     files[`data/${safe}.json`] = strToU8(JSON.stringify(value, null, 2));
   }
 
+  // Kritischer Hinweis 4 aus Stufe 1: zusätzlich eine kanonische
+  // `dashboard.json` (Schema v1) einbetten. Restore bevorzugt sie,
+  // fällt nur dann auf die rohen Storage-Dumps zurück, wenn sie fehlt
+  // oder ungültig ist. Fehler hier brechen das ZIP NICHT — der
+  // bestehende Backup-Pfad bleibt funktionsfähig.
+  try {
+    // Lazy import, um Zyklen zu vermeiden und Schema-Drift abzufangen.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { JsonExportService } = require("./json-export-service") as typeof import("./json-export-service");
+    const res = JsonExportService.exportFullJson({ exportedBy: "backup-service" });
+    files["dashboard.json"] = strToU8(JSON.stringify(res.document, null, 2));
+  } catch (err) {
+    // Nicht eskalieren — Backup geht ohne dashboard.json weiter.
+    console.warn("[Backup] dashboard.json konnte nicht eingebettet werden:", err);
+  }
+
   return zipSync(files, { level: 6 });
 }
+
 
 /* ---------------------------------------------------------------------- */
 /*  ZIP validieren                                                         */
