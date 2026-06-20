@@ -536,7 +536,7 @@ Ist GitHub nicht verbunden, erscheint ein Hinweis. Verbinden über das Lovable-P
       "Beispieldateien",
       "Schnittstelle",
     ],
-    lastUpdated: "2026-06-18",
+    lastUpdated: "2026-06-20",
     content: `## Zweck der JSON-Schnittstelle
 Die Schnittstelle erlaubt strukturiertes Sichern, Migrieren und Austauschen von Dashboard-Daten im JSON-Format (Schema v1). Sie ist Grundlage für Backup, Wiederherstellung, Testdaten, spätere API-Anbindung und Dokumentation der Datenstruktur.
 
@@ -546,44 +546,44 @@ Eine einzige JSON-Datei enthält alle Bereiche (Benutzer, Kunden, Projekte, Arbe
 ## Teil-Export
 Pro Domäne (z. B. nur Projekte oder nur Zeitbuchungen) wird eine eigene Datei erzeugt. Dateiname: \`dashboard-<scope>_YYYY-MM-DD_HHMMSS.json\`. Geeignet für gezielten Import oder Austausch.
 
+## JSON-Import (Stufe 2)
+Wizard mit vier Schritten:
+1. Datei auswählen — JSON wird geparst, sensible Felder vor der Validierung entfernt, Schema-Version geprüft.
+2. Vorschau — pro Bereich (Benutzer, Projekte, Arbeitspakete, Tätigkeiten, Arbeitszeitmodelle, Einstellungen) Anzahl Neuanlagen, Aktualisierungen und Skips. Konflikt-Strategie wählen: Merge (Default, eingehende Felder kippen), Überschreiben (kompletter Datensatz) oder Behalten (nur Neuanlagen).
+3. Mapping — Benutzer-Mapping (engineerId → bestehender User / neu anlegen / überspringen) und Kunden-Mapping mit automatischer Vorschlagsliste für Verdachts-Duplikate (Levenshtein-Distanz ≤ 2 oder gleicher Normalize-Schlüssel).
+4. Ausführung — vor dem Schreiben wird ein Pre-Snapshot der betroffenen Storage-Keys erzeugt. Bei Fehler erfolgt automatischer Rollback; das Protokoll markiert den Lauf entsprechend.
+
+## Konfliktregel timeEntries vs. activities
+Sobald in derselben Datei sowohl \`activities\` als auch \`timeEntries\` für dieselbe Tätigkeit existieren, ist \`timeEntries\` die kanonische Quelle (Datum, Dauer, Stundensatz, Abrechnungsstatus, Beschreibung). Abweichungen erscheinen als Warnung im Import-Protokoll.
+
+## Single-Engineer-Modus
+Solange das Dashboard nur einen Benutzer kennt, ist \`activity.engineerId\` kosmetisch. Der Mapping-Schritt wird übersprungen, eingehende engineerIds werden dem aktiven Benutzer zugeordnet oder ignoriert (mit Hinweis im Protokoll).
+
+## Kunden-Normalisierung
+Kunden werden nicht als eigene Entität gespeichert, sondern als Freitext in \`project.client\` / \`workPackage.client\`. Der Import normalisiert Namen (trim + Whitespace + Casefold) und schlägt für jeden eingehenden Kunden den ähnlichsten bestehenden vor. Die Wahl wird beim Apply auf alle abhängigen Felder projiziert.
+
+## Import-Protokoll
+Jeder Lauf wird in IndexedDB persistiert: Zeitstempel, Dateiname, Auslöser, Zähler (Neu/Update/Skip/Fehler), Warnungen, Konflikte, Mapping-Entscheidungen und Pre-Snapshot-ID. Solange der Snapshot in derselben Session existiert, kann der Lauf mit einem Klick zurückgerollt werden. Standard-Aufbewahrung 90 Tage, konfigurierbar.
+
 ## Beispieldateien
-Im Tab „Beispieldateien" stehen sechs deterministische Beispiel-JSONs zum Download bereit (Voll-Export, Benutzer, Projekte+Arbeitspakete+Tätigkeiten, Zeitbuchungen, Einstellungen, Backup). Jede Datei kann live validiert werden.
+Im Tab „Beispieldateien" stehen sechs deterministische Beispiel-JSONs zum Download bereit. Jede Datei kann live validiert werden.
 
 ## Brückenfelder
 Heute ist das Datenmodell nicht alle Bereiche nativ abbildet, ergänzt das Schema zwei optionale Felder:
 - \`project.customerId\` — synthetische Kunden-ID, abgeleitet aus \`project.client\`.
 - \`activity.engineerId\` — Zuordnung einer Tätigkeit zu einem Benutzerprofil.
 
-Beim Export werden diese Felder befüllt; die bestehende UI ignoriert sie.
-
 ## Schema-Versionierung
-Jede Datei enthält im Kopf:
-- \`schemaVersion\` (aktuell \`1.0.0\`)
-- \`exportType\` (\`full\` oder \`partial\`)
-- \`exportedAt\` (ISO-Datum/Zeit)
-- \`exportedBy\` (Benutzername / E-Mail)
-- \`dashboardVersion\` (aus CHANGELOG)
+Jede Datei enthält im Kopf \`schemaVersion\` (aktuell \`1.0.0\`), \`exportType\`, \`exportedAt\`, \`exportedBy\` und \`dashboardVersion\`. Schema-Mismatches stoppen den Import vor dem Schreiben.
 
 ## Sicherheitsregeln
 - Passwörter, Passwort-Hashes, MFA-Secrets, OAuth/Bearer-Token und API-Keys werden **niemals** exportiert.
-- Eine zentrale Denylist greift sowohl auf Storage-Keys als auch auf Feldnamen von Objekten.
-- Sichtbarkeit des Menüpunkts ist auf die Rollen „Administrator" und „Teamleiter" beschränkt.
+- Beim Import werden dieselben Felder VOR der Validierung entfernt — auch wenn eine manipulierte Datei sie enthält.
+- Die zentrale Denylist greift sowohl auf Storage-Keys als auch auf Feldnamen von Objekten.
+- Sichtbarkeit der Menüpunkte ist auf die Rollen „Administrator" und „Teamleiter" beschränkt.
 
-## Beispiel-JSON (gekürzt)
-\`\`\`
-{
-  "schemaVersion": "1.0.0",
-  "exportType": "full",
-  "exportedAt": "2026-06-15T14:30:00.000Z",
-  "exportedBy": "user-001",
-  "dashboardVersion": "1.12.0",
-  "customers": [{ "id": "cust-northbit", "name": "NorthBit Systems" }],
-  "projects":  [{ "id": "proj-001", "customerId": "cust-northbit", "name": "..." }]
-}
-\`\`\`
-
-## Hinweis
-Der Import-Pfad (Vorschau, Konfliktdialog, Benutzer-Mapping, Ausführung, Import-Protokoll) folgt in Stufe 2. Der Backup-Tab bietet bereits einen JSON-Komplett-Export — das tägliche ZIP-Backup bleibt unverändert der Standard für die automatische Sicherung.`,
+## ZIP-Backup mit eingebetteter dashboard.json
+Backups ab Version 1.14 enthalten zusätzlich eine kanonische \`dashboard.json\` (Schema v1). Beim Restore wird sie bevorzugt; nur wenn sie fehlt oder ungültig ist, greift der Restore auf die rohen Storage-Dumps zurück. Alte ZIPs bleiben uneingeschränkt lesbar.`,
   },
 ];
 
