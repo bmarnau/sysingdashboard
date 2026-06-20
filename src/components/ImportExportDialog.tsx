@@ -557,22 +557,3 @@ function ValidationCard({ res }: { res: ValidationResult }) {
   );
 }
 
-function PlaceholderCard({
-  icon,
-  title,
-  body,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="rounded-md border border-dashed border-border p-6 text-sm">
-      <p className="mb-1 flex items-center gap-2 font-medium">
-        {icon}
-        {title}
-      </p>
-      <p className="text-muted-foreground">{body}</p>
-    </div>
-  );
-}
