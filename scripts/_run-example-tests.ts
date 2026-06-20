@@ -2,9 +2,27 @@
  * Eigentliche Test-Logik — wird von `scripts/test-example-files.mjs` via
  * Bun gestartet. Dadurch können wir die TS-Module direkt importieren.
  */
+// Minimaler Browser-Shim für Module, die `window`/`localStorage`
+// referenzieren (json-import-service, user-management, target-time).
+// Reicht für reine Lese-/Diff-Operationen.
+if (typeof (globalThis as Record<string, unknown>).window === "undefined") {
+  const store = new Map<string, string>();
+  const ls = {
+    getItem: (k: string) => store.get(k) ?? null,
+    setItem: (k: string, v: string) => void store.set(k, v),
+    removeItem: (k: string) => void store.delete(k),
+    key: (i: number) => Array.from(store.keys())[i] ?? null,
+    get length() { return store.size; },
+    clear: () => store.clear(),
+  };
+  (globalThis as Record<string, unknown>).window = { localStorage: ls } as unknown;
+  (globalThis as Record<string, unknown>).localStorage = ls;
+}
+
 import { ExampleFileService } from "../src/lib/example-file-service";
 import { JsonSchemaValidationService } from "../src/lib/json-schema-validation-service";
 import { JSON_SCHEMA_VERSION, isSensitiveFieldName } from "../src/lib/json-schema";
+import { JsonImportService } from "../src/lib/json-import-service";
 
 let failures = 0;
 let total = 0;
