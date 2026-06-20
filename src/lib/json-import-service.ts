@@ -391,7 +391,7 @@ export const JsonImportService = {
     const projectsIn: Project[] = (doc.projects ?? []).map((p) => ({
       id: p.id,
       name: p.name,
-      client: applyCustomerMapping(p.client, options.customerMapping),
+      client: applyCustomerMapping(p.client, options.customerMapping) ?? "",
       customerId: p.customerId,
       description: p.description,
       start: p.start,
