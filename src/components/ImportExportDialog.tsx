@@ -347,14 +347,11 @@ export function ImportExportDialog({
               </div>
             </TabsContent>
 
-            {/* ---------------- IMPORT-PROTOKOLL (Stufe 2) ---------------- */}
+            {/* ---------------- IMPORT-PROTOKOLL ---------------- */}
             <TabsContent value="log" className="pt-4">
-              <PlaceholderCard
-                icon={<ListChecks className="size-5" />}
-                title="Import-Protokoll folgt in Stufe 2"
-                body="Sobald der JSON-Import aktiv ist, wird hier jeder Lauf mit Zeitstempel, Dateiname, Konflikten und Ergebnis dokumentiert."
-              />
+              <ImportLogTable entries={logEntries} onChanged={refreshLog} />
             </TabsContent>
+
 
             {/* ---------------- BACKUP ---------------- */}
             <TabsContent value="backup" className="space-y-3 pt-4">
