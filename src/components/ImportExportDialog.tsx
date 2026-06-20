@@ -96,6 +96,22 @@ export function ImportExportDialog({
   const [busy, setBusy] = useState(false);
   const [showManual, setShowManual] = useState(false);
   const [exampleValidations, setExampleValidations] = useState<Record<string, ValidationResult>>({});
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [logEntries, setLogEntries] = useState<ImportLogEntry[]>([]);
+
+  const refreshLog = async () => {
+    try {
+      await ImportLogService.sweepExpired();
+      setLogEntries(await ImportLogService.list());
+    } catch {
+      /* IndexedDB nicht verfügbar */
+    }
+  };
+
+  // Beim Öffnen des Log-Tabs aktualisieren
+  useEffect(() => {
+    if (tab === "log" || tab === "import") void refreshLog();
+  }, [tab]);
 
   const exportedBy = currentUser?.email || currentUser?.displayName || "anonymous";
 
