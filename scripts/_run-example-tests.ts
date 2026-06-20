@@ -117,6 +117,19 @@ for (const file of ExampleFileService.listFiles()) {
     const bad = keys.filter((k) => isSensitiveFieldName(k));
     assert(bad.length === 0, `verbotene Feldnamen: ${bad.join(", ")}`);
   });
+
+  test("Import-Plan baut konsistent (Round-Trip)", () => {
+    const plan = JsonImportService.buildPlan(doc, { strategy: "merge" });
+    assert(plan.schemaValid, "Schema ungültig im Import-Plan");
+    // Counts müssen mit Doc-Inhalt übereinstimmen
+    const expectedUsers = (doc.users ?? []).length;
+    const expectedProjects = (doc.projects ?? []).length;
+    assert(plan.diffs.users.length === expectedUsers, `users: erwartet ${expectedUsers}, erhalten ${plan.diffs.users.length}`);
+    assert(plan.diffs.projects.length === expectedProjects, `projects: erwartet ${expectedProjects}, erhalten ${plan.diffs.projects.length}`);
+    // Auf leerem Mock-State müssen alle Diffs „create" sein
+    for (const d of plan.diffs.users) assert(d.action === "create", `user ${d.id}: erwartet create`);
+    for (const d of plan.diffs.projects) assert(d.action === "create", `project ${d.id}: erwartet create`);
+  });
 }
 
 console.log(`\n${total - failures}/${total} Tests grün.`);
