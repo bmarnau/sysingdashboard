@@ -10,7 +10,7 @@
  *  - Keine `console.log`-Aufrufe mit Werten.
  */
 
-const { isDev } = require("./env");
+const { isDev } = require("./env.cjs");
 
 const KNOWN = Object.freeze([
   "AZURE_SQL_CONNECTION",
