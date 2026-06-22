@@ -10,9 +10,9 @@
  * und Datenzugriff sowie für Node-only-Tests.
  */
 const http = require('http');
-const { handleSync } = require('./routes/sync.js');
-const { handleStatus } = require('./routes/status.js');
-const { getMode } = require('../config/env.js');
+const { handleSync } = require('./routes/sync.cjs');
+const { handleStatus } = require('./routes/status.cjs');
+const { getMode } = require('../config/env.cjs');
 
 const PORT = Number(process.env.PORT) || 8787;
 const HOST = process.env.HOST || '127.0.0.1';

@@ -5,8 +5,8 @@
  * Mock-Daten; nur in production darf eine echte Azure-Verbindung aufgebaut
  * werden (siehe config/env.js → assertAzureAllowed).
  */
-const { isDev, assertAzureAllowed } = require('../../config/env.js');
-const secrets = require('../../config/secretManager.js');
+const { isDev, assertAzureAllowed } = require('../../config/env.cjs');
+const secrets = require('../../config/secretManager.cjs');
 
 let lastRun = null;
 let lastError = null;

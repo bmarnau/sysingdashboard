@@ -3,7 +3,7 @@
  *
  * Liefert Betriebsstatus (Modus, Secret-Status maskiert, letzter Sync).
  */
-const { getStatus } = require('../services/statusService.js');
+const { getStatus } = require('../services/statusService.cjs');
 
 function handleStatus(req, res) {
   if (req.method !== 'GET') {

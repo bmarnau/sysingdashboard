@@ -4,9 +4,9 @@
  * Liefert den aktuellen Betriebszustand: Modus, Secret-Verfügbarkeit
  * (maskiert), letzter Sync-Lauf.
  */
-const { getMode, isDev } = require('../../config/env.js');
-const secrets = require('../../config/secretManager.js');
-const { getSyncMeta } = require('./syncService.js');
+const { getMode, isDev } = require('../../config/env.cjs');
+const secrets = require('../../config/secretManager.cjs');
+const { getSyncMeta } = require('./syncService.cjs');
 
 function getStatus() {
   return {

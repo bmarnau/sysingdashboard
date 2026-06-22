@@ -3,7 +3,7 @@
  *
  * Triggert einen Sync-Lauf. Body (optional): { "source": "manual" | "cron" }
  */
-const { runSync } = require('../services/syncService.js');
+const { runSync } = require('../services/syncService.cjs');
 
 async function readJson(req) {
   return new Promise((resolve, reject) => {
