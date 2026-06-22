@@ -1,27 +1,26 @@
 /**
- * Betriebsmodus-Konfiguration
- *
- * Liest NODE_ENV und stellt Helfer bereit, um zwischen
- * Development- und Production-Modus zu unterscheiden.
+ * Betriebsmodus-Konfiguration (ESM)
  *
  * Default: development (sicher für öffentliches GitHub-Repository).
  * Im Dev-Modus dürfen keine echten Azure-Verbindungen aufgebaut werden;
  * Datenservices liefern stattdessen Mock-Daten.
  */
 
-const RAW_MODE = (typeof process !== "undefined" && process.env && process.env.NODE_ENV) || "development";
+const RAW_MODE =
+  (typeof process !== "undefined" && process.env && process.env.NODE_ENV) ||
+  "development";
 
-const MODE = RAW_MODE === "production" ? "production" : "development";
+export const MODE = RAW_MODE === "production" ? "production" : "development";
 
-function isDev() {
+export function isDev() {
   return MODE !== "production";
 }
 
-function isProd() {
+export function isProd() {
   return MODE === "production";
 }
 
-function getMode() {
+export function getMode() {
   return MODE;
 }
 
@@ -29,7 +28,7 @@ function getMode() {
  * Wache: wirft im Dev-Modus, falls Code versucht,
  * eine echte Azure-Verbindung aufzubauen.
  */
-function assertAzureAllowed() {
+export function assertAzureAllowed() {
   if (isDev()) {
     throw new Error(
       "[env] Azure-Verbindungen sind im Development-Modus deaktiviert. " +
@@ -37,11 +36,3 @@ function assertAzureAllowed() {
     );
   }
 }
-
-module.exports = {
-  MODE,
-  isDev,
-  isProd,
-  getMode,
-  assertAzureAllowed,
-};

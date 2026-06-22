@@ -1,7 +1,6 @@
 /**
- * Secret Manager
+ * Secret Manager (ESM)
  *
- * Kapselt jeden Zugriff auf sensible Umgebungsvariablen.
  * Regeln:
  *  - Keine Defaultwerte für echte Verbindungen.
  *  - Öffentliche API gibt niemals Roh-Strings zurück, nur Booleans,
@@ -10,9 +9,9 @@
  *  - Keine `console.log`-Aufrufe mit Werten.
  */
 
-const { isDev } = require("./env.cjs");
+import { isDev } from "./env.mjs";
 
-const KNOWN = Object.freeze([
+export const KNOWN = Object.freeze([
   "AZURE_SQL_CONNECTION",
   "AZURE_TABLE_CONNECTION",
   "AZURE_STORAGE_SAS",
@@ -32,39 +31,30 @@ function assertKnown(name) {
   }
 }
 
-function has(name) {
+export function has(name) {
   assertKnown(name);
   return raw(name) !== undefined;
 }
 
-function mask(value) {
+export function mask(value) {
   if (!value) return "";
   const s = String(value);
   if (s.length <= 8) return "•".repeat(s.length);
   return `${s.slice(0, 2)}…${s.slice(-2)}`;
 }
 
-function preview(name) {
+export function preview(name) {
   assertKnown(name);
   return mask(raw(name));
 }
 
-/**
- * Status aller bekannten Secrets — nur Booleans, keine Werte.
- * Geeignet für Health-Checks und Diagnose-UIs.
- */
-function status() {
+export function status() {
   const out = {};
   for (const n of KNOWN) out[n] = has(n);
   return out;
 }
 
-/**
- * Einziger Weg an den Klartext eines Secrets.
- * Im Dev-Modus blockiert — verhindert versehentliche Azure-Aufrufe
- * gegen echte Endpunkte beim Entwickeln am öffentlichen Repo.
- */
-function consume(name) {
+export function consume(name) {
   assertKnown(name);
   if (isDev()) {
     throw new Error(
@@ -79,11 +69,4 @@ function consume(name) {
   return v;
 }
 
-module.exports = {
-  KNOWN,
-  has,
-  preview,
-  status,
-  consume,
-  mask,
-};
+export default { KNOWN, has, preview, status, consume, mask };
