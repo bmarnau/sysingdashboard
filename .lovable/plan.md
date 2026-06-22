@@ -1,93 +1,50 @@
 ## Ziel
-Sichere Handhabung von Azure-Secrets, kompatibel mit öffentlichem GitHub-Repo. Anwendung bleibt ohne gesetzte Werte lauffähig (Dev-Modus liefert Mocks, siehe `config/env.js`).
 
-## Änderungen
+`POST /api/sync` und `GET /api/status` auch im Lovable-/Cloudflare-Deployment erreichbar machen, ohne Logik zu duplizieren. Trennung UI ↔ Datenzugriff über klare Modulgrenzen statt eines separaten Prozesses.
 
-### 1. `.env.example` (neu, committed)
-```
-# Azure-Verbindungen — nur in Production benötigt.
-# Im Development-Modus (NODE_ENV != production) werden Mock-Daten verwendet.
-AZURE_SQL_CONNECTION=
-AZURE_TABLE_CONNECTION=
-AZURE_STORAGE_SAS=
-AZURE_CLIENT_ID=
-AZURE_TENANT_ID=
-```
+## Architektur
 
-### 2. `.gitignore` (erweitert)
-Ergänze expliziten Block, auch wenn `*.local` bereits viel abfängt:
-```
-# Secrets
-.env
-.env.*
-!.env.example
+```text
+backend/
+  services/        framework-frei, einzige Stelle mit Business-Logik
+    syncService    runSync(), getSyncMeta()
+    statusService  getStatus()
+  routes/          Node-HTTP-Adapter (lokaler Dev-Server, bleibt bestehen)
+  server.cjs       node backend/server.cjs  (nur lokal)
+src/routes/api/
+  sync.ts          TanStack-Server-Route → ruft services/syncService
+  status.ts        TanStack-Server-Route → ruft services/statusService
 ```
 
-### 3. `config/secretManager.js` (neu)
-Kapselt jeden ENV-Zugriff. Eigenschaften:
-- **Keine Defaultwerte** für echte Verbindungen — `undefined` bleibt `undefined`.
-- **Keine Roh-Strings nach außen**: öffentliche API gibt nur Booleans, maskierte Vorschauen (`"ab12…ef90"`, immer ≤ 8 sichtbare Zeichen) oder geprüfte Token-Handles zurück.
-- **Privilegierter Roh-Zugriff** nur über `consume(name)` — wirft im Dev-Modus (`isDev()` aus `config/env.js`), kennzeichnet im Production-Code die einzigen erlaubten Aufrufstellen (Azure-Client-Konstruktion).
-- **Logging-Schutz**: `toString`/`toJSON` der zurückgegebenen Handles geben `"[REDACTED]"`; Hilfsfunktion `mask(value)` für Diagnose-Ausgaben.
-- **Keine eigenen `console.log`-Aufrufe** mit Werten; nur Namen bekannter Variablen.
+Frontend ruft ausschließlich `/api/sync` und `/api/status` (relative URLs, gleiche Origin). Kein direkter Azure-Import im Client.
 
-Skizze:
-```js
-const { isDev } = require("./env");
+## Schritte
 
-const KNOWN = [
-  "AZURE_SQL_CONNECTION",
-  "AZURE_TABLE_CONNECTION",
-  "AZURE_STORAGE_SAS",
-  "AZURE_CLIENT_ID",
-  "AZURE_TENANT_ID",
-];
+1. **Services ESM-kompatibel machen.** TanStack-Server-Routes laufen im ESM-Bundle, können `.cjs` nicht statisch importieren. Lösung: Services in `backend/services/*.mjs` (ESM) umstellen und `backend/routes/*.cjs` + `backend/server.cjs` per dynamischem `import()` darauf zugreifen lassen. Dadurch:
+   - eine einzige Quelle für `runSync`/`getStatus`
+   - der lokale Node-Server läuft weiter (`node backend/server.cjs`)
+   - die TSS-Routes können die Services normal importieren
+   - `config/env.cjs` und `config/secretManager.cjs` werden parallel als `.mjs` bereitgestellt (gleicher Inhalt, ESM-Exports), damit beide Welten ohne Interop-Reibung importieren können.
 
-function raw(name) {
-  return (typeof process !== "undefined" && process.env && process.env[name]) || undefined;
-}
+2. **Server-Route `src/routes/api/status.ts`** — `GET`-Handler ruft `getStatus()` aus `backend/services/statusService.mjs`, antwortet JSON. CORS nicht nötig (same-origin).
 
-function has(name) { return Boolean(raw(name)); }
+3. **Server-Route `src/routes/api/sync.ts`** — `POST`-Handler liest JSON-Body (optional `{ source }`), validiert mit Zod, ruft `runSync()`. Fehler → generische 500-Antwort, keine Stacktraces an Clients. Kein `OPTIONS`-Handler (same-origin).
 
-function mask(value) {
-  if (!value) return "";
-  const s = String(value);
-  if (s.length <= 8) return "•".repeat(s.length);
-  return `${s.slice(0, 2)}…${s.slice(-2)} (len=${s.length})`;
-}
+4. **Modulgrenzen härten.** In `backend/services/syncService.mjs` bleibt der Azure-Pfad weiter durch `assertAzureAllowed()` und `secretManager.consume()` geschützt. Damit gilt auch in Production: ohne gesetzte Secrets wirft `runSync()` kontrolliert, der Worker liefert 500 ohne Secret-Leak.
 
-function preview(name) { return mask(raw(name)); }
+5. **Lebenszeichen-Test.** Nach Build die zwei Endpunkte über `invoke-server-function` aufrufen (`GET /api/status`, `POST /api/sync`) und Antworten verifizieren.
 
-function status() {
-  return Object.fromEntries(KNOWN.map((n) => [n, has(n)]));
-}
+6. **Doku-Sync** (Projekt-Pflicht):
+   - `CHANGELOG.md`: neuer Eintrag `1.16.0 - 2026-06-22`, beschreibt die Spiegelung als TSS-Server-Routes.
+   - `src/lib/help-documentation.ts`: Wenn ein passendes HelpTopic existiert (Backend/Architektur), `lastUpdated` aktualisieren; falls nicht, ein neues Topic „Backend-API" anlegen (kurz: Endpunkte, Dev vs. Prod, Sicherheitsregeln).
+   - `bun run docs:check` ausführen.
 
-// Einziger Weg an den Klartext — nur in Production erlaubt.
-function consume(name) {
-  if (isDev()) {
-    throw new Error(`[secretManager] consume('${name}') ist im Dev-Modus blockiert.`);
-  }
-  if (!KNOWN.includes(name)) {
-    throw new Error(`[secretManager] Unbekannter Secret-Name '${name}'.`);
-  }
-  const v = raw(name);
-  if (!v) throw new Error(`[secretManager] Secret '${name}' ist nicht gesetzt.`);
-  return v;
-}
+## Bewusst nicht im Umfang
 
-module.exports = { has, preview, status, consume, KNOWN };
-```
+- **Frontend-Refactor.** Es gibt aktuell keinen direkten Azure-Zugriff im Client (Dashboard arbeitet lokal/IndexedDB). Ich erzwinge die Regel „Frontend darf nur die API nutzen" nicht durch Refactor bestehender Services — das wäre ein eigener, größerer Schritt. Sobald echte Datenanbindung kommt, läuft sie über `fetch('/api/...')`.
+- **Auth auf den Routes.** `/api/*` ist in TSS standardmäßig öffentlich. Falls die Endpunkte später nicht öffentlich sein dürfen, separate Folgeaufgabe (Supabase-Auth-Middleware oder Webhook-Secret).
+- **Keine neuen Dependencies.** Weder Express noch ein HTTP-Framework — wir nutzen die bereits vorhandenen TSS-Server-Routes und die bestehende Node-`http`-Implementierung.
 
-### 4. README-Hinweis (optional, kurzer Abschnitt)
-- `.env.example` nach `.env` kopieren, leer lassen für Dev.
-- Production-Deployment setzt Variablen über Hosting-Secrets, nie commiten.
+## Kritischer Hinweis
 
-## Was NICHT getan wird
-- Keine `dotenv`-Abhängigkeit installiert — Lovable/Cloudflare-Workers nutzen eigene ENV-Injection; lokal kann `vite` mit `.env` arbeiten. Bei Bedarf später nachrüsten.
-- Keine Anpassung bestehender Services (es gibt aktuell keinen Azure-Client im Repo).
-
-## Kritisches Feedback / Alternativen
-1. **`.env` taugt im Cloudflare-Worker-Build dieses Projekts nur eingeschränkt.** Runtime-Secrets gehören in Lovable Cloud Secrets bzw. Wrangler-`.dev.vars` (bereits in `.gitignore`). Empfehlung: `.env` ausschließlich als Konvention für lokale Node-Skripte behandeln und im README klarstellen — sonst entsteht der Eindruck, ein `.env` würde im deployten Worker gelesen.
-2. **`config/secretManager.js` als CommonJS** passt zu `config/env.js`, ist aber für den App-Code (ESM/TS) umständlich. Alternative: zusätzliche `config/secretManager.d.ts` oder direkt eine `.ts`-Variante. Vorschlag bleibt CJS für Konsistenz mit dem bestehenden `env.js`; bei Wunsch auf TS umstelle.
-3. **Maskierung mit Längenangabe** (`len=…`) erleichtert Debugging, leakt aber Längen-Metadaten. Falls strenger gewünscht: nur `"[set]"`/`"[unset]"` via `status()` zurückgeben und `preview()` entfernen.
-4. **Echte Härtung** gegen versehentliches Logging erreicht man nicht in JS-Library-Code allein — ergänzend wäre ein Pre-Commit-Hook (`gitleaks`) oder ein CI-Scan sinnvoll. Kann als Folgeschritt eingeplant werden.
+Die Verlagerung auf TSS-Server-Routes ist der einzige Weg, der in eurem Cloudflare-Deployment tatsächlich live geht. Der separate `backend/server.cjs` bleibt nützlich für lokale Node-Tests und CI-Skripte, ist aber **nicht** der Production-Pfad. Wenn ihr später entscheidet, dass der Standalone-Server nicht mehr gebraucht wird, kann `backend/server.cjs` + `backend/routes/*.cjs` ersatzlos gelöscht werden — die Services wandern dann nach `src/lib/` und werden direkt von den TSS-Routes importiert. Sag Bescheid, falls ich diese Vereinfachung direkt mitmachen soll.

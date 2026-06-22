@@ -309,6 +309,26 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
 - Handbuch: dieses Benutzerhandbuch.
 - Reset: löscht alle benutzerbezogenen Daten.`,
   },
+  {
+    id: "backend-api",
+    title: "Backend-API",
+    category: "Service",
+    keywords: ["API", "Backend", "Sync", "Status", "Azure", "Endpunkt"],
+    lastUpdated: "2026-06-22",
+    content: `## Endpunkte
+- \`POST /api/sync\` — Body \`{ "source": "manual" }\`. Triggert einen Sync-Lauf. Im Development-Modus liefert er ausschließlich Mock-Daten; eine Azure-Verbindung wird nicht aufgebaut.
+- \`GET /api/status\` — Liefert Modus (\`development\`/\`production\`), Verfügbarkeit der Azure-Secrets (nur Boolean, keine Klartexte) und Metadaten des letzten Sync-Laufs.
+
+## Architektur
+- Frontend ruft ausschließlich \`/api/...\` (same-origin), kein direkter Azure-Zugriff im Browser.
+- TanStack-Server-Routes unter \`src/routes/api/\` sind der Production-Pfad (Cloudflare Workers).
+- Lokal kann zusätzlich \`node backend/server.mjs\` gestartet werden — beide Wege importieren dieselben framework-freien Services aus \`backend/services/\`.
+
+## Sicherheit
+- \`config/env.mjs\` blockiert Azure-Aufrufe im Dev-Modus (\`assertAzureAllowed\`).
+- \`config/secretManager.mjs\` gibt niemals Roh-Strings zurück; \`consume()\` ist im Dev-Modus blockiert.
+- Server antwortet bei Fehlern generisch (keine Stacktraces, keine Secrets im Body).`,
+  },
 ];
 
 /* ---------------------------- Settings catalog ---------------------------- */

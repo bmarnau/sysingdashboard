@@ -6,19 +6,19 @@ Lokaler Node-HTTP-Server zur Trennung von UI und Datenzugriff.
 
 ```
 backend/
-  server.cjs          # HTTP-Server (Node, keine Dependencies)
+  server.mjs          # HTTP-Server (Node, keine Dependencies)
   routes/
-    sync.cjs          # POST /api/sync
-    status.cjs        # GET  /api/status
+    sync.mjs          # POST /api/sync
+    status.mjs        # GET  /api/status
   services/
-    syncService.cjs   # Sync-Logik (Mock in dev, Azure in prod)
-    statusService.cjs # Status-Aggregation
+    syncService.mjs   # Sync-Logik (Mock in dev, Azure in prod)
+    statusService.mjs # Status-Aggregation
 ```
 
 ## Start
 
 ```bash
-node backend/server.cjs
+node backend/server.mjs
 # → http://127.0.0.1:8787
 ```
 
@@ -46,7 +46,7 @@ Secret-Werte werden **nie** im Klartext zurückgegeben — nur Boolean-Status.
 ## Wichtiger Hinweis zum Deployment
 
 Dieser Server läuft **nur lokal**. Das produktive Lovable-/Cloudflare-Deployment
-führt `backend/server.cjs` nicht aus. Wenn die API auch in Production unter
+führt `backend/server.mjs` nicht aus. Wenn die API auch in Production unter
 `/api/*` erreichbar sein soll, müssen die Handler zusätzlich als TanStack
 server routes unter `src/routes/api/sync.ts` und `src/routes/api/status.ts`
 gespiegelt werden — die `services/*` können dabei unverändert importiert werden.
