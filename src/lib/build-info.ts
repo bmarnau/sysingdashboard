@@ -3,6 +3,7 @@
  * injiziert. Bietet eine fail-safe Anzeige, wenn z. B. keine Git-Historie
  * verfügbar ist (Lovable-Sandbox ohne `git`).
  */
+import { PROJECT_INFO } from "./project-info";
 
 export interface BuildInfo {
   commit: string;
@@ -16,13 +17,10 @@ export interface BuildInfo {
 
 declare const __BUILD_INFO__: BuildInfo;
 
-import { PROJECT_INFO } from "./project-info";
-
-declare const __BUILD_INFO__: BuildInfo;
-
-import { PROJECT_INFO } from "./project-info";
-
-
+const fallback: BuildInfo = {
+  commit: "unknown",
+  commitFull: "unknown",
+  branch: PROJECT_INFO.github.defaultBranch,
   builtAt: new Date().toISOString(),
   packageVersion: "0.0.0",
   repoRemote: PROJECT_INFO.github.url,
@@ -65,4 +63,3 @@ export function commitUrl(): string | null {
   if (!hasBuildCommit()) return `https://github.com/${label}`;
   return `https://github.com/${label}/commit/${BUILD_INFO.commitFull}`;
 }
-
