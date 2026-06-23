@@ -1,50 +1,72 @@
-## Ziel
+## Kritische Befunde zum Systemstatus
 
-`POST /api/sync` und `GET /api/status` auch im Lovable-/Cloudflare-Deployment erreichbar machen, ohne Logik zu duplizieren. Trennung UI ↔ Datenzugriff über klare Modulgrenzen statt eines separaten Prozesses.
+`SystemStatusDialog` liest alle Felder ausschließlich aus `BUILD_INFO`, das in `vite.config.ts` per `safeGit()` zur Build-Zeit ermittelt wird. In der Lovable-Sandbox ist `git` und/oder `git remote` häufig nicht verfügbar, deshalb fallen `commit`, `branch` und `repoRemote` auf `"unknown"` zurück. Folge:
 
-## Architektur
+- `githubConnected` ist `false` → Anzeige „nicht verbunden", obwohl das Repo existiert.
+- „Repository", „Branch", „Letzter Commit" zeigen `—` bzw. `unknown`.
+- Es gibt kein Feld für den **Lovable-Publish-Pfad** (`https://sysingdashboard.lovable.app`) und kein Feld für die **Preview-URL**.
+- Es gibt keinen Lauf-zeitlichen Plausibilitätscheck — die Werte sind in einem statischen Build eingefroren, ohne Hinweis auf Veraltetheit.
 
-```text
-backend/
-  services/        framework-frei, einzige Stelle mit Business-Logik
-    syncService    runSync(), getSyncMeta()
-    statusService  getStatus()
-  routes/          Node-HTTP-Adapter (lokaler Dev-Server, bleibt bestehen)
-  server.cjs       node backend/server.cjs  (nur lokal)
-src/routes/api/
-  sync.ts          TanStack-Server-Route → ruft services/syncService
-  status.ts        TanStack-Server-Route → ruft services/statusService
+Zusätzlich: die letzten Prompts (Secrets/Env, Backend-API, ESM-Vereinheitlichung) sind im `CHANGELOG.md` und Handbuch ab 1.15.0/1.16.0 erfasst, aber der neue Systemstatus-Umbau fehlt noch.
+
+## Umsetzung
+
+### 1. Stabile Stammdaten als Single Source of Truth
+Neue Datei `src/lib/project-info.ts`:
+
+```ts
+export const PROJECT_INFO = {
+  github: {
+    owner: "bmarnau",
+    repo: "sysingdashboard",
+    url: "https://github.com/bmarnau/sysingdashboard",
+    defaultBranch: "main",
+  },
+  lovable: {
+    projectId: "3c209338-443a-40f8-8a16-7c3c1b51da0e",
+    publishedUrl: "https://sysingdashboard.lovable.app",
+    previewUrl: "https://id-preview--3c209338-443a-40f8-8a16-7c3c1b51da0e.lovable.app",
+    stablePreviewUrl: "https://project--3c209338-443a-40f8-8a16-7c3c1b51da0e-dev.lovable.app",
+    editorUrl: "https://lovable.dev/projects/3c209338-443a-40f8-8a16-7c3c1b51da0e",
+  },
+} as const;
 ```
 
-Frontend ruft ausschließlich `/api/sync` und `/api/status` (relative URLs, gleiche Origin). Kein direkter Azure-Import im Client.
+`build-info.ts` füllt fehlende Werte (`repoRemote`, `branch`) künftig aus `PROJECT_INFO`, statt `"unknown"` zu liefern. `repoLabel()` und `commitUrl()` bleiben kompatibel.
 
-## Schritte
+### 2. SystemStatusDialog reparieren und erweitern
+- GitHub-Sektion: Repository immer als `bmarnau/sysingdashboard` mit Link auf `https://github.com/bmarnau/sysingdashboard`. `githubConnected` = true, solange `PROJECT_INFO.github.url` gesetzt ist; Commit-Status separat als „Build-Commit verfügbar: ja/nein" anzeigen, damit der Sandbox-Fallback klar erkennbar bleibt.
+- Neue Sektion **„Lovable-Deployment"** mit Zeilen:
+  - Published URL → Link `https://sysingdashboard.lovable.app`
+  - Preview (stabil) → Link auf `project--<id>-dev.lovable.app`
+  - Editor → Link auf `lovable.dev/projects/<id>`
+  - Projekt-ID (monospace)
+- Versionssektion: zusätzlich „Backend-Modus" (dev/prod) und „Letzte Statusprüfung" (Zeitstempel).
 
-1. **Services ESM-kompatibel machen.** TanStack-Server-Routes laufen im ESM-Bundle, können `.cjs` nicht statisch importieren. Lösung: Services in `backend/services/*.mjs` (ESM) umstellen und `backend/routes/*.cjs` + `backend/server.cjs` per dynamischem `import()` darauf zugreifen lassen. Dadurch:
-   - eine einzige Quelle für `runSync`/`getStatus`
-   - der lokale Node-Server läuft weiter (`node backend/server.cjs`)
-   - die TSS-Routes können die Services normal importieren
-   - `config/env.cjs` und `config/secretManager.cjs` werden parallel als `.mjs` bereitgestellt (gleicher Inhalt, ESM-Exports), damit beide Welten ohne Interop-Reibung importieren können.
+### 3. Laufzeit-Aktualitätscheck beim Start
+Neuer Hook `useSystemStatusHealth()` (in `src/hooks/`), aufgerufen einmalig im Root oder beim Öffnen des Dialogs:
+- Fetch `GET /api/status` (bereits vorhanden), Timeout 3 s.
+- Vergleicht `result.mode` und Verfügbarkeit der API mit erwarteten Werten.
+- Schreibt `{ checkedAt, mode, apiReachable, lastError }` in einen In-Memory-Store (Zustand via `useSyncExternalStore`, kein localStorage — Status ist flüchtig).
+- Beim Start (Effect in `src/routes/__root.tsx`) wird der Check einmal getriggert. Der Dialog zeigt „Zuletzt geprüft: …" und einen „Jetzt prüfen"-Button.
+- Bei Abweichung (z. B. `mode=production` ohne Secrets, API nicht erreichbar, Build älter als 24 h) erscheint ein dezenter Warnhinweis im Dialog (kein Toast-Spam).
 
-2. **Server-Route `src/routes/api/status.ts`** — `GET`-Handler ruft `getStatus()` aus `backend/services/statusService.mjs`, antwortet JSON. CORS nicht nötig (same-origin).
+### 4. Doku-Sync
+- Neuer `HelpTopic` `system-status` in `src/lib/help-documentation.ts` (oder bestehendes Topic erweitern), mit Beschreibung GitHub-Link, Lovable-URLs, Start-Health-Check, `lastUpdated` auf heute.
+- `CHANGELOG.md` neuer Eintrag `## 1.17.0 - 2026-06-23`:
+  - Systemstatus zeigt feste GitHub-URL und Lovable-Publish-/Preview-/Editor-URLs.
+  - Laufzeit-Aktualitätscheck (`/api/status`) beim Start mit Anzeige „Zuletzt geprüft".
+  - `src/lib/project-info.ts` als Single Source of Truth für Repo- und Deploy-Pfade.
+- `bun run docs:check` ausführen.
 
-3. **Server-Route `src/routes/api/sync.ts`** — `POST`-Handler liest JSON-Body (optional `{ source }`), validiert mit Zod, ruft `runSync()`. Fehler → generische 500-Antwort, keine Stacktraces an Clients. Kein `OPTIONS`-Handler (same-origin).
+### 5. Nicht im Scope
+- Keine Änderung an Backend-Services oder Secret-Logik.
+- Kein automatischer Polling-Intervall (nur Start + manueller Refresh) — vermeidet unnötige Worker-Anfragen.
+- Keine Persistenz des Health-Status (bewusst flüchtig, sonst zeigt das Dashboard veraltete „OK"-Stände nach Deploy).
 
-4. **Modulgrenzen härten.** In `backend/services/syncService.mjs` bleibt der Azure-Pfad weiter durch `assertAzureAllowed()` und `secretManager.consume()` geschützt. Damit gilt auch in Production: ohne gesetzte Secrets wirft `runSync()` kontrolliert, der Worker liefert 500 ohne Secret-Leak.
+## Geänderte/neue Dateien (Vorschau)
+- neu: `src/lib/project-info.ts`, `src/hooks/useSystemStatusHealth.ts`
+- geändert: `src/lib/build-info.ts`, `src/components/SystemStatusDialog.tsx`, `src/routes/__root.tsx`, `src/lib/help-documentation.ts`, `CHANGELOG.md`
 
-5. **Lebenszeichen-Test.** Nach Build die zwei Endpunkte über `invoke-server-function` aufrufen (`GET /api/status`, `POST /api/sync`) und Antworten verifizieren.
-
-6. **Doku-Sync** (Projekt-Pflicht):
-   - `CHANGELOG.md`: neuer Eintrag `1.16.0 - 2026-06-22`, beschreibt die Spiegelung als TSS-Server-Routes.
-   - `src/lib/help-documentation.ts`: Wenn ein passendes HelpTopic existiert (Backend/Architektur), `lastUpdated` aktualisieren; falls nicht, ein neues Topic „Backend-API" anlegen (kurz: Endpunkte, Dev vs. Prod, Sicherheitsregeln).
-   - `bun run docs:check` ausführen.
-
-## Bewusst nicht im Umfang
-
-- **Frontend-Refactor.** Es gibt aktuell keinen direkten Azure-Zugriff im Client (Dashboard arbeitet lokal/IndexedDB). Ich erzwinge die Regel „Frontend darf nur die API nutzen" nicht durch Refactor bestehender Services — das wäre ein eigener, größerer Schritt. Sobald echte Datenanbindung kommt, läuft sie über `fetch('/api/...')`.
-- **Auth auf den Routes.** `/api/*` ist in TSS standardmäßig öffentlich. Falls die Endpunkte später nicht öffentlich sein dürfen, separate Folgeaufgabe (Supabase-Auth-Middleware oder Webhook-Secret).
-- **Keine neuen Dependencies.** Weder Express noch ein HTTP-Framework — wir nutzen die bereits vorhandenen TSS-Server-Routes und die bestehende Node-`http`-Implementierung.
-
-## Kritischer Hinweis
-
-Die Verlagerung auf TSS-Server-Routes ist der einzige Weg, der in eurem Cloudflare-Deployment tatsächlich live geht. Der separate `backend/server.cjs` bleibt nützlich für lokale Node-Tests und CI-Skripte, ist aber **nicht** der Production-Pfad. Wenn ihr später entscheidet, dass der Standalone-Server nicht mehr gebraucht wird, kann `backend/server.cjs` + `backend/routes/*.cjs` ersatzlos gelöscht werden — die Services wandern dann nach `src/lib/` und werden direkt von den TSS-Routes importiert. Sag Bescheid, falls ich diese Vereinfachung direkt mitmachen soll.
+## Alternativvorschlag (kritisch)
+Wenn das GitHub-Repo später umzieht, wird die hartcodierte URL zur Stolperfalle. Sauberer wäre, `VITE_PROJECT_GITHUB_URL` und `VITE_LOVABLE_PUBLISHED_URL` als Build-Env in `vite.config.ts` zu lesen und nur bei fehlendem Wert auf die Konstanten in `project-info.ts` zurückzufallen. Soll ich das gleich mit einbauen?
