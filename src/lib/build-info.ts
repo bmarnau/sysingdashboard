@@ -20,10 +20,9 @@ import { PROJECT_INFO } from "./project-info";
 
 declare const __BUILD_INFO__: BuildInfo;
 
-const fallback: BuildInfo = {
-  commit: "unknown",
-  commitFull: "unknown",
-  branch: PROJECT_INFO.github.defaultBranch,
+import { PROJECT_INFO } from "./project-info";
+
+
   builtAt: new Date().toISOString(),
   packageVersion: "0.0.0",
   repoRemote: PROJECT_INFO.github.url,
