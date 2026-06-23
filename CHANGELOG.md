@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.17.0 - 2026-06-23
+- Systemstatus repariert: Repository zeigt jetzt fest `bmarnau/sysingdashboard` mit Link auf https://github.com/bmarnau/sysingdashboard (statt "nicht verbunden" wegen fehlendem `git` in der Sandbox). Commit-SHA wird separat als optionales Feld geführt.
+- Neue Sektion "Lovable-Deployment" im Systemstatus mit Published-URL (https://sysingdashboard.lovable.app), stabiler Preview-URL, Editor-Link und Projekt-ID.
+- Laufzeit-Aktualitätscheck: `bootstrapSystemStatusCheck()` triggert beim Start einmalig `GET /api/status` (Timeout 3 s, flüchtig, kein Polling). Anzeige "Zuletzt geprüft" und "Jetzt prüfen"-Button im Dialog.
+- Neue Single Source of Truth `src/lib/project-info.ts` für Repo- und Deploy-Pfade (per `VITE_PROJECT_GITHUB_URL` / `VITE_LOVABLE_PUBLISHED_URL` / `VITE_LOVABLE_PROJECT_ID` überschreibbar).
+
 ## 1.16.0 - 2026-06-22
 - Backend-API jetzt auch im Lovable-/Cloudflare-Deployment erreichbar: TanStack-Server-Routes \`src/routes/api/sync.ts\` (POST) und \`src/routes/api/status.ts\` (GET) importieren dieselben framework-freien Services aus \`backend/services/\` wie der lokale Standalone-Server.
 - Module auf ESM vereinheitlicht: \`config/env.mjs\`, \`config/secretManager.mjs\`, \`backend/services/*.mjs\`, \`backend/routes/*.mjs\`, \`backend/server.mjs\`. Lokal weiterhin via \`node backend/server.mjs\` startbar. Eine Quelle für Sync-/Status-Logik.
