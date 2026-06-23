@@ -517,28 +517,34 @@ Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Ma
     category: "Service",
     route: "/",
     component: "SystemStatusDialog",
-    keywords: ["Systemstatus", "GitHub", "Commit", "Branch", "Version", "CI", "Build"],
-    lastUpdated: "2026-06-16",
+    keywords: ["Systemstatus", "GitHub", "Commit", "Branch", "Version", "Lovable", "Publish", "Preview", "Health"],
+    lastUpdated: "2026-06-23",
     content: `## Was zeigt der Systemstatus?
-Der Dialog "Service → Systemstatus…" zeigt zur Laufzeit den aktuellen Stand von Code, Dokumentation und letzter Sicherung.
+Der Dialog "Service → Systemstatus…" zeigt zur Laufzeit Code-Herkunft, Lovable-Deployment, Versionen und einen Health-Check der Backend-API.
 
 ## GitHub
-- Verbindung: ob das Projekt an ein GitHub-Repository angebunden ist.
-- Repository: owner/repo (Link öffnet GitHub).
-- Branch: derzeit gebauter Branch.
-- Letzter Commit: gekürzter SHA, Link öffnet den Commit auf GitHub.
-- Build-Zeit: Zeitpunkt des letzten Produktions-Builds.
+- Repository: fester Pfad \`bmarnau/sysingdashboard\` mit Link auf https://github.com/bmarnau/sysingdashboard. Quelle: \`src/lib/project-info.ts\` (überschreibbar via \`VITE_PROJECT_GITHUB_URL\`).
+- Branch: aus Build-Info, Fallback \`main\`.
+- Letzter Commit: nur sichtbar, wenn der Build einen Git-SHA mitliefert. In der Lovable-Sandbox ohne \`git\` erscheint "nicht im Build verfügbar" — das ist erwartbar und kein Fehler.
+- Build-Zeit: Zeitpunkt des letzten Builds.
 
-## Versionen
-- Dashboard-Version (aus CHANGELOG.md Top-Eintrag).
-- Handbuch-Version (DOCUMENTATION_VERSION).
-- Paketversion (package.json).
-- Letzte Handbuch-Aktualisierung (jüngstes lastUpdated der Topics).
-- Letztes automatisches Backup.
+## Lovable-Deployment
+- Published URL: https://sysingdashboard.lovable.app
+- Preview (stabil): \`project--<id>-dev.lovable.app\` — bleibt auch bei Projekt-Umbenennung gleich.
+- Editor: Link zum Lovable-Projekt.
+- Projekt-ID: zur eindeutigen Zuordnung.
 
-## Verbindung herstellen
-Ist GitHub nicht verbunden, erscheint ein Hinweis. Verbinden über das Lovable-Plus-Menü → GitHub → Connect project. Details in docs/GITHUB.md.`,
+## Versionen & Backend
+- Dashboard-, Handbuch-, Paketversion und letzter Handbuch-Stand.
+- Letztes automatisches Backup (lokaler IndexedDB-Stand).
+- Backend \`/api/status\`: Erreichbarkeit und Modus (development/production).
+- Azure-Zugriff erlaubt: spiegelt \`assertAzureAllowed()\` aus dem Backend.
+- Zuletzt geprüft: Zeitstempel des letzten Health-Checks.
+
+## Aktualitätsprüfung beim Start
+Beim Laden des Dashboards triggert \`bootstrapSystemStatusCheck()\` einmalig einen Fetch auf \`/api/status\` (Timeout 3 s). Der Status liegt flüchtig im Speicher; per "Jetzt prüfen" lässt er sich erneut anstoßen. Bewusst kein Polling und keine Persistenz — nach Reload zählt nur der aktuelle Build.`,
   },
+
   {
     id: "import-export",
     title: "Import / Export (JSON)",

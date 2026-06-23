@@ -122,6 +122,10 @@ function RootComponent() {
     import("@/lib/i18n/locale").then(({ getLocale }) => {
       document.documentElement.lang = getLocale().split("-")[0];
     });
+    // Aktualität der Systemstatus-Einträge beim Start einmal prüfen.
+    import("@/hooks/useSystemStatusHealth").then(({ bootstrapSystemStatusCheck }) => {
+      bootstrapSystemStatusCheck();
+    });
   }
 
   return (
@@ -131,4 +135,5 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
 
