@@ -1,72 +1,47 @@
-## Kritische Befunde zum Systemstatus
+## Ziel
+Den Systemstatus-Dialog so umbauen, dass er die verfügbare Breite voll nutzt, keine horizontalen Scrollbalken erzeugt und bei Bedarf maximierbar ist.
 
-`SystemStatusDialog` liest alle Felder ausschließlich aus `BUILD_INFO`, das in `vite.config.ts` per `safeGit()` zur Build-Zeit ermittelt wird. In der Lovable-Sandbox ist `git` und/oder `git remote` häufig nicht verfügbar, deshalb fallen `commit`, `branch` und `repoRemote` auf `"unknown"` zurück. Folge:
+## Umsetzung (nur `src/components/SystemStatusDialog.tsx`)
 
-- `githubConnected` ist `false` → Anzeige „nicht verbunden", obwohl das Repo existiert.
-- „Repository", „Branch", „Letzter Commit" zeigen `—` bzw. `unknown`.
-- Es gibt kein Feld für den **Lovable-Publish-Pfad** (`https://sysingdashboard.lovable.app`) und kein Feld für die **Preview-URL**.
-- Es gibt keinen Lauf-zeitlichen Plausibilitätscheck — die Werte sind in einem statischen Build eingefroren, ohne Hinweis auf Veraltetheit.
+1. **Responsives Label/Wert-Grid statt `flex justify-between`**
+   - `Row`-Komponente neu: `grid grid-cols-1 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)] gap-x-4 gap-y-1 items-start`
+   - Label linksbündig oben, Wert nimmt restliche Breite ein, kein leerer Mittelraum mehr.
+   - Wert-Container: `min-w-0 break-words [overflow-wrap:anywhere]`, Links mit `break-all`, damit Repository-URL/IDs umbrechen statt zu scrollen.
+   - Status-Icon (Check/Cross) als `shrink-0` neben dem Wert in einer inneren Flex-Zeile.
 
-Zusätzlich: die letzten Prompts (Secrets/Env, Backend-API, ESM-Vereinheitlichung) sind im `CHANGELOG.md` und Handbuch ab 1.15.0/1.16.0 erfasst, aber der neue Systemstatus-Umbau fehlt noch.
+2. **Sektionen & Container**
+   - Jede Sektion (`<section>`): `min-w-0`, Inhalte ohne `whitespace-nowrap`.
+   - Root-Wrapper im Dialog: `min-w-0 overflow-x-hidden`, vertikal weiter scrollbar (`overflow-y-auto`).
+   - Versions-Block (aktuell `flex flex-wrap` mit `<span>`-Chips) ebenfalls auf das Grid-Pattern oder ein `grid sm:grid-cols-2 lg:grid-cols-3` umstellen.
 
-## Umsetzung
+3. **Maximieren-Funktion**
+   - Lokaler State `expanded: boolean`.
+   - Im Header (neben dem bestehenden „Jetzt prüfen"-Bereich / DialogTitle) zwei Icon-Buttons aus `lucide-react`: `Maximize2` / `Minimize2` mit `aria-label` „Maximieren" / „Minimieren".
+   - `DialogContent`-Klassen abhängig von `expanded`:
+     - Standard: `max-w-2xl max-h-[85vh]`
+     - Maximiert: `max-w-[100vw] w-screen h-[100dvh] sm:max-w-[100vw] rounded-none p-4 sm:p-6`
+   - Kein echtes `requestFullscreen` (Dialog liegt im Portal, FS-API auf Dialog-Wrapper bricht Radix-Focus-Trap) — stattdessen Vollflächen-Modal, was die Anforderung erfüllt und konsistenter ist.
+   - State auf `false` zurücksetzen, wenn der Dialog schließt (`onOpenChange`).
 
-### 1. Stabile Stammdaten als Single Source of Truth
-Neue Datei `src/lib/project-info.ts`:
+4. **Responsive Breakpoints**
+   - Mobile (Default): einspaltig (`grid-cols-1`), Label oberhalb des Werts.
+   - ≥ `sm`: zweispaltig Label/Wert.
+   - Maximierte Ansicht zusätzlich ab `lg`: Sektionen in `lg:grid-cols-2`-Wrapper, damit der Platz auf großen Screens genutzt wird.
 
-```ts
-export const PROJECT_INFO = {
-  github: {
-    owner: "bmarnau",
-    repo: "sysingdashboard",
-    url: "https://github.com/bmarnau/sysingdashboard",
-    defaultBranch: "main",
-  },
-  lovable: {
-    projectId: "3c209338-443a-40f8-8a16-7c3c1b51da0e",
-    publishedUrl: "https://sysingdashboard.lovable.app",
-    previewUrl: "https://id-preview--3c209338-443a-40f8-8a16-7c3c1b51da0e.lovable.app",
-    stablePreviewUrl: "https://project--3c209338-443a-40f8-8a16-7c3c1b51da0e-dev.lovable.app",
-    editorUrl: "https://lovable.dev/projects/3c209338-443a-40f8-8a16-7c3c1b51da0e",
-  },
-} as const;
-```
+5. **Kleine Aufräumarbeiten**
+   - Repository-Zeile: URL als eigene Zeile unter dem Label, `font-mono text-xs break-all`.
+   - Lange Werte (Commit-SHA, Projekt-ID) ebenfalls `font-mono break-all`.
+   - Keine festen `min-w`-/`w-`-Werte mehr, die Overflow erzwingen.
 
-`build-info.ts` füllt fehlende Werte (`repoRemote`, `branch`) künftig aus `PROJECT_INFO`, statt `"unknown"` zu liefern. `repoLabel()` und `commitUrl()` bleiben kompatibel.
+## Nicht im Scope
+- Keine Änderungen an `/api/status`, Hook, Services, Build-Info, Doku-Inhalt.
+- Kein Design-Direction-Loop (rein funktional-strukturelles Layout-Fix).
+- Keine neue Route — der Systemstatus bleibt ein Dialog (kein eigener Page-Pfad), Maximieren-Modus ersetzt die geforderte „Vollbildseite".
 
-### 2. SystemStatusDialog reparieren und erweitern
-- GitHub-Sektion: Repository immer als `bmarnau/sysingdashboard` mit Link auf `https://github.com/bmarnau/sysingdashboard`. `githubConnected` = true, solange `PROJECT_INFO.github.url` gesetzt ist; Commit-Status separat als „Build-Commit verfügbar: ja/nein" anzeigen, damit der Sandbox-Fallback klar erkennbar bleibt.
-- Neue Sektion **„Lovable-Deployment"** mit Zeilen:
-  - Published URL → Link `https://sysingdashboard.lovable.app`
-  - Preview (stabil) → Link auf `project--<id>-dev.lovable.app`
-  - Editor → Link auf `lovable.dev/projects/<id>`
-  - Projekt-ID (monospace)
-- Versionssektion: zusätzlich „Backend-Modus" (dev/prod) und „Letzte Statusprüfung" (Zeitstempel).
+## Doku-Sync
+- `CHANGELOG.md`: neuer Eintrag `1.17.1` mit Bullet zu Layout-Fix & Maximieren.
+- `src/lib/help-documentation.ts`: HelpTopic „Systemstatus" um Absatz zu Maximieren-Button und Umbruchverhalten ergänzen, `lastUpdated` aktualisieren.
+- `bun run docs:check` vor Abschluss.
 
-### 3. Laufzeit-Aktualitätscheck beim Start
-Neuer Hook `useSystemStatusHealth()` (in `src/hooks/`), aufgerufen einmalig im Root oder beim Öffnen des Dialogs:
-- Fetch `GET /api/status` (bereits vorhanden), Timeout 3 s.
-- Vergleicht `result.mode` und Verfügbarkeit der API mit erwarteten Werten.
-- Schreibt `{ checkedAt, mode, apiReachable, lastError }` in einen In-Memory-Store (Zustand via `useSyncExternalStore`, kein localStorage — Status ist flüchtig).
-- Beim Start (Effect in `src/routes/__root.tsx`) wird der Check einmal getriggert. Der Dialog zeigt „Zuletzt geprüft: …" und einen „Jetzt prüfen"-Button.
-- Bei Abweichung (z. B. `mode=production` ohne Secrets, API nicht erreichbar, Build älter als 24 h) erscheint ein dezenter Warnhinweis im Dialog (kein Toast-Spam).
-
-### 4. Doku-Sync
-- Neuer `HelpTopic` `system-status` in `src/lib/help-documentation.ts` (oder bestehendes Topic erweitern), mit Beschreibung GitHub-Link, Lovable-URLs, Start-Health-Check, `lastUpdated` auf heute.
-- `CHANGELOG.md` neuer Eintrag `## 1.17.0 - 2026-06-23`:
-  - Systemstatus zeigt feste GitHub-URL und Lovable-Publish-/Preview-/Editor-URLs.
-  - Laufzeit-Aktualitätscheck (`/api/status`) beim Start mit Anzeige „Zuletzt geprüft".
-  - `src/lib/project-info.ts` als Single Source of Truth für Repo- und Deploy-Pfade.
-- `bun run docs:check` ausführen.
-
-### 5. Nicht im Scope
-- Keine Änderung an Backend-Services oder Secret-Logik.
-- Kein automatischer Polling-Intervall (nur Start + manueller Refresh) — vermeidet unnötige Worker-Anfragen.
-- Keine Persistenz des Health-Status (bewusst flüchtig, sonst zeigt das Dashboard veraltete „OK"-Stände nach Deploy).
-
-## Geänderte/neue Dateien (Vorschau)
-- neu: `src/lib/project-info.ts`, `src/hooks/useSystemStatusHealth.ts`
-- geändert: `src/lib/build-info.ts`, `src/components/SystemStatusDialog.tsx`, `src/routes/__root.tsx`, `src/lib/help-documentation.ts`, `CHANGELOG.md`
-
-## Alternativvorschlag (kritisch)
-Wenn das GitHub-Repo später umzieht, wird die hartcodierte URL zur Stolperfalle. Sauberer wäre, `VITE_PROJECT_GITHUB_URL` und `VITE_LOVABLE_PUBLISHED_URL` als Build-Env in `vite.config.ts` zu lesen und nur bei fehlendem Wert auf die Konstanten in `project-info.ts` zurückzufallen. Soll ich das gleich mit einbauen?
+## Kritische Anmerkung / Alternative
+Wenn der Systemstatus regelmäßig in voller Breite gebraucht wird, wäre eine eigene Route `/_authenticated/system-status` (statt Dialog) die sauberere Lösung — bookmarkbar, deep-linkbar, kein Modal-Layering. Der Maximieren-Toggle ist hier der kleinere Eingriff; sag Bescheid, wenn du stattdessen den Routen-Umbau willst.
