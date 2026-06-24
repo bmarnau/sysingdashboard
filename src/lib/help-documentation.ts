@@ -542,7 +542,10 @@ Der Dialog "Service → Systemstatus…" zeigt zur Laufzeit Code-Herkunft, Lovab
 - Zuletzt geprüft: Zeitstempel des letzten Health-Checks.
 
 ## Aktualitätsprüfung beim Start
-Beim Laden des Dashboards triggert \`bootstrapSystemStatusCheck()\` einmalig einen Fetch auf \`/api/status\` (Timeout 3 s). Der Status liegt flüchtig im Speicher; per "Jetzt prüfen" lässt er sich erneut anstoßen. Bewusst kein Polling und keine Persistenz — nach Reload zählt nur der aktuelle Build.`,
+Beim Laden des Dashboards triggert \`bootstrapSystemStatusCheck()\` einmalig einen Fetch auf \`/api/status\` (Timeout 3 s). Der Status liegt flüchtig im Speicher; per "Jetzt prüfen" lässt er sich erneut anstoßen. Bewusst kein Polling und keine Persistenz — nach Reload zählt nur der aktuelle Build.
+
+## Layout & Maximieren
+Label/Wert sind in einem responsiven Grid angeordnet (mobil einspaltig, ab \`sm\` zweispaltig). Lange Repository-URLs, Commit-SHAs und Projekt-IDs brechen automatisch um — kein horizontales Scrollen. Über das Symbol oben rechts im Dialog lässt sich die Ansicht maximieren (vollflächig, ab \`lg\` zweispaltige Sektionen) und wieder minimieren.`,
   },
 
   {
