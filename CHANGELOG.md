@@ -13,6 +13,10 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.17.1 - 2026-06-23
+- Systemstatus-Layout responsiv überarbeitet: Label/Wert als Grid (1 Spalte mobil, 2 Spalten ab `sm`), lange URLs/IDs brechen via `overflow-wrap: anywhere` um, kein horizontales Scrollen mehr.
+- Maximieren-/Minimieren-Button im Dialog-Header: schaltet auf vollflächige Ansicht (100vw/100dvh) mit zweispaltigem Sektions-Layout ab `lg`; Reset beim Schließen.
+
 ## 1.17.0 - 2026-06-23
 - Systemstatus repariert: Repository zeigt jetzt fest `bmarnau/sysingdashboard` mit Link auf https://github.com/bmarnau/sysingdashboard (statt "nicht verbunden" wegen fehlendem `git` in der Sandbox). Commit-SHA wird separat als optionales Feld geführt.
 - Neue Sektion "Lovable-Deployment" im Systemstatus mit Published-URL (https://sysingdashboard.lovable.app), stabiler Preview-URL, Editor-Link und Projekt-ID.
