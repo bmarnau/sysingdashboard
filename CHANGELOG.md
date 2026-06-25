@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.17.4 - 2026-06-24
+- CI-Security-Scan eingeführt: neuer Workflow `.github/workflows/security.yml` läuft bei Push/PR und montags 03:00 UTC. Erkennt Azure-AccountKeys/SAS-Tokens/Connection-Strings, AWS/Stripe/OpenAI/GitHub-Keys, Private-Key-Blöcke, JWT-Literale, gefährliche CORS-/CSP-/X-Frame-Header und dynamisches `dangerouslySetInnerHTML`. CRITICAL/HIGH blocken den Build.
+- Neuer Scanner `scripts/security-check.mjs` (plain Node, keine Dependency) + `bun run security:check`. Schreibt `security-report/findings.json` und `findings.md`, die als GitHub-Actions-Artefakt 30 Tage aufbewahrt werden. Inline-Allowlist via `// security-scan-allow: <regel-id>`.
+- Zweite Verteidigung: `gitleaks-action@v2` mit `.gitleaks.toml` (Allowlist für Doku/Lockfiles/Typdeklarationen).
+- PRs erhalten automatisch einen Sticky-Comment mit dem Markdown-Report.
+
 ## 1.17.3 - 2026-06-24
 - Sicherheits-Baseline (Check 1) durchgeführt; Ergebnisse in `.lovable/plan.md` dokumentiert. Keine Secrets/SAS-Tokens/Connection-Strings im Frontend, kein Azure-SDK im Client, generische Fehlerantworten an `/api/*`.
 - Logging gehärtet: `src/routes/__root.tsx`, `src/start.ts`, `src/server.ts` loggen nur noch gekürzte Error-Messages (max. 200–256 Zeichen) statt voller Error-Objekte oder Response-Bodies.
