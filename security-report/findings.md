@@ -1,16 +1,14 @@
 # Security-Scan-Report
 
-- **Generiert:** 2026-06-25T04:33:33.663Z
-- **Dateien geprüft:** 108
+- **Generiert:** 2026-06-25T04:34:08.987Z
+- **Dateien geprüft:** 107
 - **Regeln:** 22
-- **CRITICAL:** 1 · **HIGH:** 0 · **MEDIUM:** 1
-- **Build-Status:** ❌ FAIL (CRITICAL/HIGH)
+- **CRITICAL:** 0 · **HIGH:** 0 · **MEDIUM:** 1
+- **Build-Status:** ✅ PASS
 
-## CRITICAL (1)
+## CRITICAL
 
-| Regel | Fundstelle | Beschreibung | Snippet |
-| --- | --- | --- | --- |
-| `azure-account-key` | scripts/_smoke.mjs:1 | Azure Storage AccountKey-Literal im Code | `const k = "AccountKey=abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGH+="; export default k;` |
+_Keine Funde._
 
 ## HIGH
 
