@@ -143,7 +143,7 @@ function looksSensitive(key: string, value: string): boolean {
   const k = key.toLowerCase();
   if (SENSITIVE_SUBSTRINGS.some((s) => k.includes(s))) return true;
   // Werte mit sehr langem Zufallsstring + bekannten Keys absichern
-  if (/(eyJ[A-Za-z0-9_\-]{20,}\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+)/.test(value)) return true; // JWT
+  if (/(eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)/.test(value)) return true; // JWT
   return false;
 }
 
