@@ -1,0 +1,39 @@
+# gitleaks-Konfiguration für das Dashboard
+# Zweite Verteidigungslinie neben scripts/security-check.mjs.
+# Doku siehe https://github.com/gitleaks/gitleaks
+
+title = "sysingdashboard"
+
+[extend]
+# Erbt die offiziellen, gepflegten Default-Regeln (AWS, Azure, GCP, Slack, …).
+useDefault = true
+
+[allowlist]
+description = "Pfade & Dateien ohne echte Secrets (Doku, Lockfiles, Typdeklarationen)"
+
+paths = [
+  '''CHANGELOG\.md$''',
+  '''src/lib/help-documentation\.ts$''',
+  '''src/types/backend\.d\.ts$''',
+  '''\.gitleaks\.toml$''',
+  '''bun\.lock$''',
+  '''package-lock\.json$''',
+  '''yarn\.lock$''',
+  '''pnpm-lock\.yaml$''',
+  '''\.lovable/''',
+  '''security-report/''',
+  '''node_modules/''',
+  '''dist/''',
+  '''\.tanstack/''',
+  '''\.nitro/''',
+  '''\.output/''',
+  '''\.wrangler/''',
+  '''scripts/security-check\.mjs$''',
+  '''\.gitignore$''',
+]
+
+# Erlaubt es, einzelne Treffer per Inline-Kommentar zu unterdrücken:
+#   // security-scan-allow: <name>
+regexes = [
+  '''security-scan-allow''',
+]
