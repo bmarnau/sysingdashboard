@@ -314,9 +314,9 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
     title: "Backend-API",
     category: "Service",
     keywords: ["API", "Backend", "Sync", "Status", "Azure", "Endpunkt"],
-    lastUpdated: "2026-06-22",
+    lastUpdated: "2026-06-24",
     content: `## Endpunkte
-- \`POST /api/sync\` — Body \`{ "source": "manual" }\`. Triggert einen Sync-Lauf. Im Development-Modus liefert er ausschließlich Mock-Daten; eine Azure-Verbindung wird nicht aufgebaut.
+- \`POST /api/sync\` — Body \`{ "source": "manual" }\`. Triggert einen Sync-Lauf. Im Development-Modus liefert er ausschließlich Mock-Daten; eine Azure-Verbindung wird nicht aufgebaut. **In Production erfordert der Endpunkt einen \`X-Sync-Token\`-Header**, der dem Server-Secret \`SYNC_TRIGGER_TOKEN\` entspricht. Ist das Secret nicht gesetzt, antwortet der Endpunkt mit 503 ("Sync trigger disabled").
 - \`GET /api/status\` — Liefert Modus (\`development\`/\`production\`), Verfügbarkeit der Azure-Secrets (nur Boolean, keine Klartexte) und Metadaten des letzten Sync-Laufs.
 
 ## Architektur
@@ -327,7 +327,9 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
 ## Sicherheit
 - \`config/env.mjs\` blockiert Azure-Aufrufe im Dev-Modus (\`assertAzureAllowed\`).
 - \`config/secretManager.mjs\` gibt niemals Roh-Strings zurück; \`consume()\` ist im Dev-Modus blockiert.
-- Server antwortet bei Fehlern generisch (keine Stacktraces, keine Secrets im Body).`,
+- Server antwortet bei Fehlern generisch (keine Stacktraces, keine Secrets im Body).
+- Logging gehärtet: Worker und SSR-Middleware loggen nur gekürzte Error-Messages (≤ 256 Zeichen), niemals volle Error-Objekte oder Response-Bodies.
+- Import-Schemas (\`src/lib/json-schema.ts\`) erzwingen Längenlimits (IDs 128, Strings 255, Texte 2000 Zeichen) gegen unbounded Payloads.`,
   },
 ];
 
