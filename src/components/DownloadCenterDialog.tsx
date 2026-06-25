@@ -173,8 +173,8 @@ export function DownloadCenterDialog({ open, onOpenChange }: DownloadCenterDialo
           <DialogHeader>
             <DialogTitle>Downloads</DialogTitle>
             <DialogDescription>
-              Alle erzeugten Export-Dateien (PDF, CSV, JSON, Azure Table). Die Ablage liegt lokal
-              im Browser und verlässt Ihr Gerät nicht.
+              Alle erzeugten Export-Dateien (PDF, CSV, JSON, Azure Table). Die Ablage liegt lokal im
+              Browser und verlässt Ihr Gerät nicht.
             </DialogDescription>
           </DialogHeader>
 
@@ -242,9 +242,7 @@ export function DownloadCenterDialog({ open, onOpenChange }: DownloadCenterDialo
                           <td className="max-w-[260px] truncate px-3 py-2 font-mono text-xs">
                             {it.fileName}
                             {it.error && (
-                              <span className="block text-[11px] text-destructive">
-                                {it.error}
-                              </span>
+                              <span className="block text-[11px] text-destructive">{it.error}</span>
                             )}
                           </td>
                           <td className="px-3 py-2 uppercase">{it.format}</td>

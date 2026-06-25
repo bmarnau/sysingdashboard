@@ -335,16 +335,7 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
     id: "ci-security-scan",
     title: "CI-Security-Scan",
     category: "Service",
-    keywords: [
-      "CI",
-      "Security",
-      "Scan",
-      "Secrets",
-      "gitleaks",
-      "Azure",
-      "Header",
-      "Artefakt",
-    ],
+    keywords: ["CI", "Security", "Scan", "Secrets", "gitleaks", "Azure", "Header", "Artefakt"],
     lastUpdated: "2026-06-24",
     content: `## Zweck
 Automatischer Sicherheits-Scan bei jedem Push/PR auf \`main\`/\`develop\` und zusätzlich montags 03:00 UTC.
@@ -574,7 +565,17 @@ Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Ma
     category: "Service",
     route: "/",
     component: "SystemStatusDialog",
-    keywords: ["Systemstatus", "GitHub", "Commit", "Branch", "Version", "Lovable", "Publish", "Preview", "Health"],
+    keywords: [
+      "Systemstatus",
+      "GitHub",
+      "Commit",
+      "Branch",
+      "Version",
+      "Lovable",
+      "Publish",
+      "Preview",
+      "Health",
+    ],
     lastUpdated: "2026-06-23",
     content: `## Was zeigt der Systemstatus?
 Der Dialog "Service → Systemstatus…" zeigt zur Laufzeit Code-Herkunft, Lovable-Deployment, Versionen und einen Health-Check der Backend-API.
@@ -713,21 +714,12 @@ export const HelpDocumentationService = {
     if (!q) return HelpDocumentationService.getAllTopics(role);
     return allTopics().filter((t) => {
       if (!topicVisible(t, role)) return false;
-      const hay = [
-        t.title,
-        t.category,
-        t.content,
-        ...(t.keywords ?? []),
-      ]
-        .join(" ")
-        .toLowerCase();
+      const hay = [t.title, t.category, t.content, ...(t.keywords ?? [])].join(" ").toLowerCase();
       return hay.includes(q);
     });
   },
   getTopicsForRoute(route: string, role: UserRole | null = null): HelpTopic[] {
-    return allTopics().filter(
-      (t) => topicVisible(t, role) && t.route && route.startsWith(t.route),
-    );
+    return allTopics().filter((t) => topicVisible(t, role) && t.route && route.startsWith(t.route));
   },
   getTopicsForRole(role: UserRole): HelpTopic[] {
     return allTopics().filter((t) => topicVisible(t, role));

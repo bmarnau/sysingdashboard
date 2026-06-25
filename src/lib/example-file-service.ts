@@ -6,10 +6,7 @@
  * sie dienen als Vorlage für Import-Tests und als Doku-Beispiel.
  */
 
-import {
-  JSON_SCHEMA_VERSION,
-  type DashboardJsonExport,
-} from "@/lib/json-schema";
+import { JSON_SCHEMA_VERSION, type DashboardJsonExport } from "@/lib/json-schema";
 
 export interface ExampleFile {
   name: string;

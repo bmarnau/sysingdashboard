@@ -9,11 +9,7 @@
  */
 
 import type { Engineer } from "@/lib/dashboard-data";
-import {
-  getWorkingDaysOfMonth,
-  getWorkingDaysOfWeek,
-  germanHolidays,
-} from "@/lib/time-period";
+import { getWorkingDaysOfMonth, getWorkingDaysOfWeek, germanHolidays } from "@/lib/time-period";
 
 export type TargetTimeBase = "monthly" | "weekly";
 
@@ -128,10 +124,7 @@ export function getActiveTargetTimeModel(
 /* ------------------------------- Conversions ------------------------------ */
 
 /** Wochensollzeit aus einer Monatssollzeit für eine konkrete Referenzwoche. */
-export function calculateWeeklyTargetFromMonthly(
-  monthlyHours: number,
-  reference: Date,
-): number {
+export function calculateWeeklyTargetFromMonthly(monthlyHours: number, reference: Date): number {
   let sum = 0;
   const weekDays = getWorkingDaysOfWeek(reference);
   for (const d of weekDays) {
@@ -184,10 +177,7 @@ export function deriveCounterpart(
 /* ---------------------------- Daily target API ---------------------------- */
 
 /** Tagessoll laut Modell für einen konkreten Arbeitstag. */
-export function calculateDailyTargetHours(
-  model: EngineerTargetTimeModel,
-  date: Date,
-): number {
+export function calculateDailyTargetHours(model: EngineerTargetTimeModel, date: Date): number {
   if (!isWorkdayDate(date)) return 0;
   if (model.targetTimeBase === "monthly") {
     const monthDays = getWorkingDaysOfMonth(date.getFullYear(), date.getMonth());
@@ -209,8 +199,8 @@ export function buildDailyTargetFn(
   fallback?: { monthlyTargetHours?: number; workloadPercent?: number },
   engineerId = "self",
 ): DailyTargetFn {
-  const effective = (fallback?.monthlyTargetHours ?? 168) *
-    ((fallback?.workloadPercent ?? 100) / 100);
+  const effective =
+    (fallback?.monthlyTargetHours ?? 168) * ((fallback?.workloadPercent ?? 100) / 100);
   return (date: Date) => {
     if (!isWorkdayDate(date)) return 0;
     const active = getActiveTargetTimeModel(models, date, engineerId);
@@ -240,11 +230,7 @@ export function buildDailyTargetFnFromEngineer(
 
 /* -------------------------- Range aggregation API ------------------------- */
 
-export function sumTargetInRange(
-  source: DailyTargetFn,
-  startIncl: Date,
-  endExcl: Date,
-): number {
+export function sumTargetInRange(source: DailyTargetFn, startIncl: Date, endExcl: Date): number {
   let sum = 0;
   for (
     let d = new Date(startIncl.getFullYear(), startIncl.getMonth(), startIncl.getDate());
@@ -261,11 +247,7 @@ export function getTargetHoursForMonth(
   year: number,
   month0: number,
 ): number {
-  return sumTargetInRange(
-    source,
-    new Date(year, month0, 1),
-    new Date(year, month0 + 1, 1),
-  );
+  return sumTargetInRange(source, new Date(year, month0, 1), new Date(year, month0 + 1, 1));
 }
 
 export function getTargetHoursForWeek(source: DailyTargetFn, anyDateInWeek: Date): number {

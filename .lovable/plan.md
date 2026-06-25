@@ -11,6 +11,7 @@ Eigenständiger Node-Script (keine zusätzliche Dependency, nutzt `node:fs`/`nod
 Drei Regel-Kategorien mit Severity:
 
 **CRITICAL — bricht CI (Exit 1)**
+
 - `AccountKey=[A-Za-z0-9+/=]{40,}` (Azure Storage Connection)
 - `SharedAccessSignature=` mit Wert
 - `DefaultEndpointsProtocol=https;AccountName=...;AccountKey=`
@@ -22,6 +23,7 @@ Drei Regel-Kategorien mit Severity:
 - JWT-Literale mit Header `eyJ` und ≥ 2 Punkten und Länge > 100
 
 **HIGH — bricht CI (Exit 1)**
+
 - Direkter Azure-SDK-Import im **Frontend** (`src/**`, ohne `src/routes/api/`): `@azure/`, `mssql`, `tedious`, `@azure/storage-blob`, `@azure/data-tables`, `@azure/identity`.
 - `process.env.AZURE_*` oder `process.env.*CONNECTION*` außerhalb `backend/`, `config/`, `src/routes/api/`, `src/server.ts`, `src/start.ts`.
 - Gefährliche HTTP-Header-Literale in Server-Code:
@@ -31,12 +33,14 @@ Drei Regel-Kategorien mit Severity:
 - `dangerouslySetInnerHTML` mit dynamischem Input (Heuristik: `dangerouslySetInnerHTML={{__html: <Variable, kein String-Literal>}}`); Whitelist für `src/components/ui/chart.tsx`.
 
 **MEDIUM — Warnung, kein Fail**
+
 - `console.log\(.*error` / `console.error\(error\)` (volles Error-Objekt) außerhalb erlaubter Helper.
 - `eval\(`, `new Function\(`.
 - `Access-Control-Allow-Origin: *` alleine.
 - `fetch\(['"]https?://(?!localhost)` aus `src/**` außerhalb `src/routes/api/` (direkter Drittanbieter-Call aus Client).
 
 Optionen über CLI:
+
 - `--json <pfad>` schreibt strukturierten Report (`{summary, findings: [{severity, rule, file, line, snippet}]}`)
 - `--markdown <pfad>` schreibt menschenlesbaren Report mit Tabellen pro Severity.
 - `--baseline <pfad>` (optional, später): erlaubt Allowlist per Hash.
@@ -49,6 +53,7 @@ Output-Verzeichnis: `security-report/` (gitignored).
 ### Neue Datei: `.gitleaks.toml`
 
 Minimal-Config für `gitleaks` als zweite Verteidigungslinie (CVE-getrieben, ergänzt unsere Heuristiken). Allowlist für:
+
 - Dokumentation (`CHANGELOG.md`, `help-documentation.ts`, `**/*.md`) — Erwähnungen ohne Werte.
 - `bun.lock` (Integrity-Hashes).
 - `src/types/backend.d.ts` (Typ-Namen wie `azure`).

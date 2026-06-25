@@ -76,7 +76,10 @@ export default {
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
-      console.error("[Worker] fetch error:", String((error as Error)?.message ?? error).slice(0, 256));
+      console.error(
+        "[Worker] fetch error:",
+        String((error as Error)?.message ?? error).slice(0, 256),
+      );
       return brandedErrorResponse();
     }
   },

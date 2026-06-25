@@ -81,15 +81,8 @@ export function PerformanceReport({
 
   const cfg = useMemo(
     () =>
-      EngineerTargetTimeService.buildDailyTargetFnFromEngineer(
-        engineer,
-        targetTimeModels ?? [],
-      ),
-    [
-      engineer.monthlyTargetHours,
-      engineer.workloadPercent,
-      targetTimeModels,
-    ],
+      EngineerTargetTimeService.buildDailyTargetFnFromEngineer(engineer, targetTimeModels ?? []),
+    [engineer.monthlyTargetHours, engineer.workloadPercent, targetTimeModels],
   );
 
   const ref = reference ?? new Date();
@@ -143,7 +136,10 @@ export function PerformanceReport({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 no-print">
-          <div role="tablist" className="inline-flex rounded-lg border border-border bg-background p-1 text-xs">
+          <div
+            role="tablist"
+            className="inline-flex rounded-lg border border-border bg-background p-1 text-xs"
+          >
             {PRESETS.map((p) => (
               <button
                 key={p.id}
@@ -182,7 +178,11 @@ export function PerformanceReport({
 
       {/* KPIs */}
       <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-5">
-        <Stat label="Ø Auslastung" value={`${summary.avgUtilization.toFixed(1)} %`} tone="primary" />
+        <Stat
+          label="Ø Auslastung"
+          value={`${summary.avgUtilization.toFixed(1)} %`}
+          tone="primary"
+        />
         <Stat
           label="Ø Billable Quote"
           value={`${summary.avgBillableRatio.toFixed(1)} %`}
@@ -222,8 +222,16 @@ export function PerformanceReport({
               >
                 <div className="relative flex h-32 w-full items-end justify-center gap-0.5">
                   <Bar value={m.targetHours} max={chartMax} className="bg-muted-foreground/30" />
-                  <Bar value={m.actualHours} max={chartMax} className="bg-primary/80 group-hover:bg-primary" />
-                  <Bar value={m.billableHours} max={chartMax} className="bg-success/80 group-hover:bg-success" />
+                  <Bar
+                    value={m.actualHours}
+                    max={chartMax}
+                    className="bg-primary/80 group-hover:bg-primary"
+                  />
+                  <Bar
+                    value={m.billableHours}
+                    max={chartMax}
+                    className="bg-success/80 group-hover:bg-success"
+                  />
                 </div>
                 <span className="text-[10px] font-medium text-muted-foreground group-hover:text-foreground">
                   {m.label.replace(" ", "\u00A0")}
@@ -277,9 +285,7 @@ export function PerformanceReport({
                     {m.overtimeHours > 0 ? "+" : ""}
                     {m.overtimeHours.toFixed(1)}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-mono">
-                    {m.utilization.toFixed(1)} %
-                  </td>
+                  <td className="px-4 py-2.5 text-right font-mono">{m.utilization.toFixed(1)} %</td>
                 </tr>
               ))}
               {trend.length === 0 && (
@@ -432,11 +438,7 @@ function MonthDetailDialog({
               value={`${detail.performance.billableRatio.toFixed(1)} %`}
               tone="info"
             />
-            <Stat
-              label="Arbeitstage"
-              value={`${detail.performance.workingDays}`}
-              tone="muted"
-            />
+            <Stat label="Arbeitstage" value={`${detail.performance.workingDays}`} tone="muted" />
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
@@ -457,9 +459,7 @@ function MonthDetailDialog({
                   </li>
                 ))}
                 {detail.byProject.length === 0 && (
-                  <li className="px-4 py-4 text-center text-muted-foreground">
-                    Keine Projekte.
-                  </li>
+                  <li className="px-4 py-4 text-center text-muted-foreground">Keine Projekte.</li>
                 )}
               </ul>
             </div>
@@ -469,10 +469,7 @@ function MonthDetailDialog({
               </h4>
               <ul className="divide-y divide-border text-sm">
                 {detail.byClient.map((c) => (
-                  <li
-                    key={c.client}
-                    className="flex items-center justify-between gap-3 px-4 py-2"
-                  >
+                  <li key={c.client} className="flex items-center justify-between gap-3 px-4 py-2">
                     <span className="min-w-0 truncate">{c.client}</span>
                     <span className="font-mono text-xs text-muted-foreground">
                       {c.hours.toFixed(1)} h · {c.billable.toFixed(1)} bill.
@@ -480,9 +477,7 @@ function MonthDetailDialog({
                   </li>
                 ))}
                 {detail.byClient.length === 0 && (
-                  <li className="px-4 py-4 text-center text-muted-foreground">
-                    Keine Kunden.
-                  </li>
+                  <li className="px-4 py-4 text-center text-muted-foreground">Keine Kunden.</li>
                 )}
               </ul>
             </div>

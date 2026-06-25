@@ -12,12 +12,7 @@
 
 import { dashboardData } from "@/lib/dashboard-data";
 
-export type UserRole =
-  | "administrator"
-  | "teamlead"
-  | "engineer"
-  | "projectmanager"
-  | "customer";
+export type UserRole = "administrator" | "teamlead" | "engineer" | "projectmanager" | "customer";
 
 export type UserStatus = "active" | "inactive" | "locked" | "archived";
 
@@ -61,12 +56,7 @@ export const ALL_ROLES: UserRole[] = [
   "customer",
 ];
 
-export const ALL_STATUSES: UserStatus[] = [
-  "active",
-  "inactive",
-  "locked",
-  "archived",
-];
+export const ALL_STATUSES: UserStatus[] = ["active", "inactive", "locked", "archived"];
 
 const USERS_KEY = "northbit-users";
 const ACTIVE_USER_KEY = "northbit-active-user";
@@ -260,8 +250,7 @@ export function createUser(input: CreateUserInput): UserProfile {
     firstName: input.firstName.trim(),
     lastName: input.lastName.trim(),
     displayName:
-      (input.displayName ?? `${input.firstName} ${input.lastName}`).trim() ||
-      "Unbenannt",
+      (input.displayName ?? `${input.firstName} ${input.lastName}`).trim() || "Unbenannt",
     email: (input.email ?? "").trim(),
     phone: (input.phone ?? "").trim(),
     role: input.role,

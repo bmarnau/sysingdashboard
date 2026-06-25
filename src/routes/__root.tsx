@@ -77,17 +77,37 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Lovable App" },
-      { name: "description", content: "IT Task Hub is a dashboard for IT system engineers to manage projects, work packages, and activities." },
+      {
+        name: "description",
+        content:
+          "IT Task Hub is a dashboard for IT system engineers to manage projects, work packages, and activities.",
+      },
       { name: "author", content: "Lovable" },
       { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "IT Task Hub is a dashboard for IT system engineers to manage projects, work packages, and activities." },
+      {
+        property: "og:description",
+        content:
+          "IT Task Hub is a dashboard for IT system engineers to manage projects, work packages, and activities.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "IT Task Hub is a dashboard for IT system engineers to manage projects, work packages, and activities." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7fdae981-8b4f-4eb7-90f1-67c8b301b58d/id-preview-af13c77c--3c209338-443a-40f8-8a16-7c3c1b51da0e.lovable.app-1781327303221.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7fdae981-8b4f-4eb7-90f1-67c8b301b58d/id-preview-af13c77c--3c209338-443a-40f8-8a16-7c3c1b51da0e.lovable.app-1781327303221.png" },
+      {
+        name: "twitter:description",
+        content:
+          "IT Task Hub is a dashboard for IT system engineers to manage projects, work packages, and activities.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7fdae981-8b4f-4eb7-90f1-67c8b301b58d/id-preview-af13c77c--3c209338-443a-40f8-8a16-7c3c1b51da0e.lovable.app-1781327303221.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/7fdae981-8b4f-4eb7-90f1-67c8b301b58d/id-preview-af13c77c--3c209338-443a-40f8-8a16-7c3c1b51da0e.lovable.app-1781327303221.png",
+      },
     ],
     links: [
       {
@@ -138,5 +158,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-
-

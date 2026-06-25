@@ -318,7 +318,9 @@ export function ExportDialog({
           status: "ready",
         });
         window.dispatchEvent(new CustomEvent("export-downloads:changed"));
-        toast.success(`${format.toUpperCase()}-Export wurde erstellt und steht im Downloadbereich bereit.`);
+        toast.success(
+          `${format.toUpperCase()}-Export wurde erstellt und steht im Downloadbereich bereit.`,
+        );
         onOpenChange(false);
       } catch (err) {
         console.error("[Export] Erzeugung fehlgeschlagen:", err);

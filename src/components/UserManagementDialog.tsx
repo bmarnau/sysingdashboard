@@ -87,10 +87,7 @@ export function UserManagementDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-background/70 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} />
       <div className="relative z-10 flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-[var(--shadow-elevated)]">
         <header className="flex items-center justify-between border-b border-border px-5 py-3">
           <div className="flex items-center gap-2">
@@ -117,10 +114,7 @@ export function UserManagementDialog({
             Profil wechseln
           </TabBtn>
           {canAdmin && (
-            <TabBtn
-              active={tab === "verwaltung"}
-              onClick={() => setTab("verwaltung")}
-            >
+            <TabBtn active={tab === "verwaltung"} onClick={() => setTab("verwaltung")}>
               Benutzerverwaltung
             </TabBtn>
           )}
@@ -181,13 +175,7 @@ function TabBtn({
 
 /* ----------------------------- Mein Profil -------------------------------- */
 
-function ProfileEditor({
-  user,
-  onSaved,
-}: {
-  user: UserProfile;
-  onSaved: () => void;
-}) {
+function ProfileEditor({ user, onSaved }: { user: UserProfile; onSaved: () => void }) {
   const [form, setForm] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
@@ -242,9 +230,7 @@ function ProfileEditor({
     UserManagementService.updateUser(user.id, {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
-      displayName:
-        form.displayName.trim() ||
-        `${form.firstName.trim()} ${form.lastName.trim()}`,
+      displayName: form.displayName.trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
       email: form.email.trim(),
       phone: form.phone.trim(),
       profileImage: form.profileImage || undefined,
@@ -369,9 +355,9 @@ function ProfileEditor({
           <Lock className="size-3.5" /> Passwort & Multi-Faktor
         </p>
         <p className="mt-1">
-          Passwortverwaltung und MFA werden mit der Aktivierung der echten
-          Authentifizierung (Lovable Cloud, Microsoft Entra ID oder OAuth2)
-          freigeschaltet. Aktuell ist kein Login aktiv.
+          Passwortverwaltung und MFA werden mit der Aktivierung der echten Authentifizierung
+          (Lovable Cloud, Microsoft Entra ID oder OAuth2) freigeschaltet. Aktuell ist kein Login
+          aktiv.
         </p>
       </div>
 
@@ -411,9 +397,7 @@ function Field({
 }) {
   return (
     <label className={`block ${className ?? ""}`}>
-      <span className="mb-1 block text-xs font-medium text-muted-foreground">
-        {label}
-      </span>
+      <span className="mb-1 block text-xs font-medium text-muted-foreground">{label}</span>
       {children}
     </label>
   );
@@ -441,17 +425,15 @@ function ProfileSwitch({
   currentUserId: string;
   onSwitch: (id: string) => void;
 }) {
-  const usable = users.filter(
-    (u) => u.status === "active" || u.id === currentUserId,
-  );
+  const usable = users.filter((u) => u.status === "active" || u.id === currentUserId);
   return (
     <div className="space-y-3">
       <div className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 p-3 text-xs text-warning">
         <ShieldAlert className="mt-0.5 size-4 shrink-0" />
         <p>
-          Entwicklungs-Modus: das Wechseln zwischen Profilen ist nur möglich,
-          weil noch keine echte Anmeldung aktiv ist. Nach Aktivierung der
-          Authentifizierung wird dies zum Admin-Impersonate-Feature.
+          Entwicklungs-Modus: das Wechseln zwischen Profilen ist nur möglich, weil noch keine echte
+          Anmeldung aktiv ist. Nach Aktivierung der Authentifizierung wird dies zum
+          Admin-Impersonate-Feature.
         </p>
       </div>
       <ul className="space-y-2">
@@ -477,11 +459,7 @@ function ProfileSwitch({
                 }`}
               >
                 {u.profileImage ? (
-                  <img
-                    src={u.profileImage}
-                    alt=""
-                    className="size-10 rounded-full object-cover"
-                  />
+                  <img src={u.profileImage} alt="" className="size-10 rounded-full object-cover" />
                 ) : (
                   <div
                     className="grid size-10 place-items-center rounded-full font-mono text-xs font-bold text-primary-foreground"
@@ -491,9 +469,7 @@ function ProfileSwitch({
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">
-                    {u.displayName}
-                  </p>
+                  <p className="truncate text-sm font-semibold">{u.displayName}</p>
                   <p className="truncate text-xs text-muted-foreground">
                     {ROLE_LABEL[u.role]} · {u.email || "ohne E-Mail"}
                   </p>
@@ -514,13 +490,7 @@ function ProfileSwitch({
 
 /* ----------------------------- Verwaltung --------------------------------- */
 
-function UserAdmin({
-  users,
-  currentUserId,
-}: {
-  users: UserProfile[];
-  currentUserId: string;
-}) {
+function UserAdmin({ users, currentUserId }: { users: UserProfile[]; currentUserId: string }) {
   const [editing, setEditing] = useState<UserProfile | "new" | null>(null);
 
   return (
@@ -528,9 +498,9 @@ function UserAdmin({
       <div className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 p-3 text-xs text-warning">
         <ShieldAlert className="mt-0.5 size-4 shrink-0" />
         <p>
-          Hinweis: Rollen- und Sichtbarkeitsprüfungen sind aktuell reine
-          UI-Komfortfunktionen ohne Sicherheitsgarantie. Vertrauliche Daten erst
-          nach Aktivierung der echten Authentifizierung speichern.
+          Hinweis: Rollen- und Sichtbarkeitsprüfungen sind aktuell reine UI-Komfortfunktionen ohne
+          Sicherheitsgarantie. Vertrauliche Daten erst nach Aktivierung der echten Authentifizierung
+          speichern.
         </p>
       </div>
 
@@ -580,16 +550,12 @@ function UserAdmin({
                     <span className="font-medium">
                       {u.displayName}
                       {u.id === currentUserId && (
-                        <span className="ml-1.5 text-[10px] text-muted-foreground">
-                          (Sie)
-                        </span>
+                        <span className="ml-1.5 text-[10px] text-muted-foreground">(Sie)</span>
                       )}
                     </span>
                   </div>
                 </td>
-                <td className="px-3 py-2 text-xs text-muted-foreground">
-                  {u.email || "—"}
-                </td>
+                <td className="px-3 py-2 text-xs text-muted-foreground">{u.email || "—"}</td>
                 <td className="px-3 py-2">
                   <span
                     className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-semibold ${roleStyle(u.role)}`}
@@ -655,22 +621,13 @@ function UserAdmin({
       </div>
 
       {editing && (
-        <UserEditor
-          initial={editing === "new" ? null : editing}
-          onClose={() => setEditing(null)}
-        />
+        <UserEditor initial={editing === "new" ? null : editing} onClose={() => setEditing(null)} />
       )}
     </div>
   );
 }
 
-function UserEditor({
-  initial,
-  onClose,
-}: {
-  initial: UserProfile | null;
-  onClose: () => void;
-}) {
+function UserEditor({ initial, onClose }: { initial: UserProfile | null; onClose: () => void }) {
   const [form, setForm] = useState<CreateUserInput>(() => ({
     firstName: initial?.firstName ?? "",
     lastName: initial?.lastName ?? "",
@@ -691,8 +648,7 @@ function UserEditor({
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         displayName:
-          (form.displayName ?? "").trim() ||
-          `${form.firstName.trim()} ${form.lastName.trim()}`,
+          (form.displayName ?? "").trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
         email: (form.email ?? "").trim(),
         phone: (form.phone ?? "").trim(),
         role: form.role,
@@ -761,9 +717,7 @@ function UserEditor({
           <Field label="Rolle">
             <select
               value={form.role}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, role: e.target.value as UserRole }))
-              }
+              onChange={(e) => setForm((p) => ({ ...p, role: e.target.value as UserRole }))}
               className="ipt"
             >
               {ALL_ROLES.map((r) => (
@@ -776,9 +730,7 @@ function UserEditor({
           <Field label="Status">
             <select
               value={form.status ?? "active"}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, status: e.target.value as UserStatus }))
-              }
+              onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as UserStatus }))}
               className="ipt"
             >
               {ALL_STATUSES.map((s) => (

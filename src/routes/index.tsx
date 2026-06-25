@@ -157,14 +157,15 @@ function newId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
 
-
-
-
 function fmtDate(s?: string) {
   if (!s) return "—";
   const d = new Date(s);
   if (Number.isNaN(d.getTime())) return s;
-  const dateStr = d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "2-digit" });
+  const dateStr = d.toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "short",
+    year: "2-digit",
+  });
   const kw = getISOWeek(d);
   return `${dateStr} · KW ${kw}`;
 }
@@ -405,16 +406,8 @@ function Dashboard() {
 
   /** Tages-Sollzeit-Quelle: bevorzugt aktive Arbeitszeitmodelle, sonst Legacy-Profil. */
   const targetSource = useMemo(
-    () =>
-      EngineerTargetTimeService.buildDailyTargetFnFromEngineer(
-        engineerState,
-        targetTimeModels,
-      ),
-    [
-      engineerState.monthlyTargetHours,
-      engineerState.workloadPercent,
-      targetTimeModels,
-    ],
+    () => EngineerTargetTimeService.buildDailyTargetFnFromEngineer(engineerState, targetTimeModels),
+    [engineerState.monthlyTargetHours, engineerState.workloadPercent, targetTimeModels],
   );
 
   /** Aktuell betrachteter Referenzzeitpunkt (heute + Offset im aktuellen Modus). */
@@ -956,7 +949,13 @@ function Dashboard() {
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">{dateLine}</p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-              Guten Tag, {(currentUser?.firstName || currentUser?.displayName || engineerState.name).split(" ")[0]}.
+              Guten Tag,{" "}
+              {
+                (currentUser?.firstName || currentUser?.displayName || engineerState.name).split(
+                  " ",
+                )[0]
+              }
+              .
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
               {activeProjects} aktive Projekte · {openWPs} offene Arbeitspakete ·{" "}
@@ -1024,54 +1023,54 @@ function Dashboard() {
                 className="inline-block size-3 animate-pulse rounded-full bg-primary"
               />
             )}
-          <div className="relative no-print">
-            <button
-              onClick={() => setShowNewMenu((v) => !v)}
-              className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
-              style={{ background: "var(--gradient-primary)" }}
-            >
-              <Plus className="size-4" /> Neu
-              <ChevronDown className="size-4 opacity-80" />
-            </button>
-            {showNewMenu && (
-              <>
-                <button
-                  aria-label="Menü schließen"
-                  className="fixed inset-0 z-30 cursor-default"
-                  onClick={() => setShowNewMenu(false)}
-                />
-                <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
+            <div className="relative no-print">
+              <button
+                onClick={() => setShowNewMenu((v) => !v)}
+                className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
+                style={{ background: "var(--gradient-primary)" }}
+              >
+                <Plus className="size-4" /> Neu
+                <ChevronDown className="size-4 opacity-80" />
+              </button>
+              {showNewMenu && (
+                <>
                   <button
-                    onClick={() => {
-                      setShowNewMenu(false);
-                      setEditingActivity(emptyActivity());
-                    }}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                  >
-                    <Clock className="size-4 opacity-70" /> Neue Tätigkeit
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowNewMenu(false);
-                      setEditingWP(emptyWP());
-                    }}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                  >
-                    <CheckCircle2 className="size-4 opacity-70" /> Neues Arbeitspaket
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowNewMenu(false);
-                      setEditingProject(emptyProject());
-                    }}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                  >
-                    <FolderKanban className="size-4 opacity-70" /> Neues Projekt
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
+                    aria-label="Menü schließen"
+                    className="fixed inset-0 z-30 cursor-default"
+                    onClick={() => setShowNewMenu(false)}
+                  />
+                  <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
+                    <button
+                      onClick={() => {
+                        setShowNewMenu(false);
+                        setEditingActivity(emptyActivity());
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <Clock className="size-4 opacity-70" /> Neue Tätigkeit
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowNewMenu(false);
+                        setEditingWP(emptyWP());
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <CheckCircle2 className="size-4 opacity-70" /> Neues Arbeitspaket
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowNewMenu(false);
+                        setEditingProject(emptyProject());
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <FolderKanban className="size-4 opacity-70" /> Neues Projekt
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </section>
 
@@ -1280,11 +1279,7 @@ function Dashboard() {
         />
       )}
 
-      <UserManualDialog
-        open={showManual}
-        onClose={() => setShowManual(false)}
-        initialRoute="/"
-      />
+      <UserManualDialog open={showManual} onClose={() => setShowManual(false)} initialRoute="/" />
 
       <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
 
@@ -1944,7 +1939,9 @@ function ActivitiesView({
         <div>
           <h2 className="text-lg font-semibold">Tätigkeiten</h2>
           <p className="text-xs text-muted-foreground">
-            {periodOnly ? `${periodLabel} · ${periodActivities.length} Einträge` : `Alle · ${activities.length} Einträge`}
+            {periodOnly
+              ? `${periodLabel} · ${periodActivities.length} Einträge`
+              : `Alle · ${activities.length} Einträge`}
             {" · "}Abrechnung erfolgt ausschließlich hier
           </p>
         </div>
@@ -2854,10 +2851,7 @@ function EngineerDialog({
   targetTimeModels: EngineerTargetTimeModel[];
   onOpenWorkingTime: () => void;
   onClose: () => void;
-  onSave: (
-    e: Engineer,
-    userPatch: { email: string; phone: string } | null,
-  ) => void;
+  onSave: (e: Engineer, userPatch: { email: string; phone: string } | null) => void;
 }) {
   const now = new Date();
   const activeModel = EngineerTargetTimeService.getActiveTargetTimeModel(
@@ -2892,9 +2886,7 @@ function EngineerDialog({
       .slice(0, 2);
 
   const locked = !!derived;
-  const lockedCls = locked
-    ? " cursor-not-allowed opacity-60"
-    : "";
+  const lockedCls = locked ? " cursor-not-allowed opacity-60" : "";
 
   return (
     <Modal title="Engineer-Profil" onClose={onClose}>
@@ -2979,14 +2971,13 @@ function EngineerDialog({
           {derived ? (
             <p className="mb-3 text-[11px] text-muted-foreground">
               Diese Werte stammen aus dem aktiven Arbeitszeitmodell
-              {activeModel?.description ? ` „${activeModel.description}"` : ""} und
-              sind hier nicht editierbar. Änderungen bitte über das
-              Arbeitszeitmodell vornehmen.
+              {activeModel?.description ? ` „${activeModel.description}"` : ""} und sind hier nicht
+              editierbar. Änderungen bitte über das Arbeitszeitmodell vornehmen.
             </p>
           ) : (
             <p className="mb-3 text-[11px] text-muted-foreground">
-              Kein aktives Arbeitszeitmodell hinterlegt – Eingaben werden auf das
-              Profil zurückgeschrieben. Empfehlung: Arbeitszeitmodell anlegen.
+              Kein aktives Arbeitszeitmodell hinterlegt – Eingaben werden auf das Profil
+              zurückgeschrieben. Empfehlung: Arbeitszeitmodell anlegen.
             </p>
           )}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -3042,10 +3033,7 @@ function EngineerDialog({
         onCancel={onClose}
         saveDisabled={!valid}
         onSave={() =>
-          onSave(
-            form,
-            currentUser ? { email: email.trim(), phone: phone.trim() } : null,
-          )
+          onSave(form, currentUser ? { email: email.trim(), phone: phone.trim() } : null)
         }
       />
     </Modal>

@@ -331,7 +331,10 @@ for (const abs of candidateFiles) {
     if (rule.excludeFile && rule.excludeFile.test(rel)) continue;
 
     // Multiline pattern → auf ganzem Text suchen, dann Zeile berechnen.
-    const re = new RegExp(rule.pattern.source, rule.pattern.flags.includes("g") ? rule.pattern.flags : `${rule.pattern.flags}g`);
+    const re = new RegExp(
+      rule.pattern.source,
+      rule.pattern.flags.includes("g") ? rule.pattern.flags : `${rule.pattern.flags}g`,
+    );
     let m;
     while ((m = re.exec(text)) !== null) {
       const offset = m.index;

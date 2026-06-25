@@ -121,7 +121,9 @@ export function buildCsv(ctx: TextExportContext): TextExportResult {
       a.hourlyRate ?? 0,
       amount.toFixed(2),
       a.description ?? "",
-    ].map(csvEscape).join(";");
+    ]
+      .map(csvEscape)
+      .join(";");
   });
   const text = [header.join(";"), ...rows].join("\r\n") + "\r\n";
   const blob = new Blob(["\uFEFF" + text], { type: "text/csv;charset=utf-8" });

@@ -10,7 +10,9 @@ import { readFileSync } from "node:fs";
 
 function safeGit(cmd: string): string {
   try {
-    return execSync(cmd, { stdio: ["ignore", "pipe", "ignore"] }).toString().trim();
+    return execSync(cmd, { stdio: ["ignore", "pipe", "ignore"] })
+      .toString()
+      .trim();
   } catch {
     return "";
   }

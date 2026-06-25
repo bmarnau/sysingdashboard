@@ -23,6 +23,7 @@ node backend/server.mjs
 ```
 
 Umgebungsvariablen:
+
 - `PORT` (default 8787)
 - `HOST` (default 127.0.0.1)
 - `NODE_ENV` (`development` default — kein Azure-Zugriff)
@@ -30,10 +31,12 @@ Umgebungsvariablen:
 ## Endpunkte
 
 ### `POST /api/sync`
+
 Body (optional): `{ "source": "manual" | "cron" }`
 Antwort: `{ ok, mode, recordsProcessed, startedAt, durationMs }`
 
 ### `GET /api/status`
+
 Antwort: `{ mode, azure: { allowed, secrets }, sync: { lastRun, ... } }`
 Secret-Werte werden **nie** im Klartext zurückgegeben — nur Boolean-Status.
 

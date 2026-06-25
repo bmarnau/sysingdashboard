@@ -68,14 +68,14 @@ Die App ist anschließend unter `http://localhost:3000` erreichbar.
 
 ## Build- und Startbefehle
 
-| Befehl | Beschreibung |
-|--------|--------------|
-| `bun run dev` | Startet den Vite-Entwicklungsserver mit Hot-Reload |
-| `bun run build` | Erzeugt einen Production-Build (optimiert für Cloudflare Worker) |
-| `bun run build:dev` | Erzeugt einen Development-Build |
-| `bun run preview` | Startet einen lokalen Preview-Server für den Production-Build |
-| `bun run lint` | Führt ESLint über die gesamte Codebase aus |
-| `bun run format` | Formatiert alle Dateien mit Prettier |
+| Befehl              | Beschreibung                                                     |
+| ------------------- | ---------------------------------------------------------------- |
+| `bun run dev`       | Startet den Vite-Entwicklungsserver mit Hot-Reload               |
+| `bun run build`     | Erzeugt einen Production-Build (optimiert für Cloudflare Worker) |
+| `bun run build:dev` | Erzeugt einen Development-Build                                  |
+| `bun run preview`   | Startet einen lokalen Preview-Server für den Production-Build    |
+| `bun run lint`      | Führt ESLint über die gesamte Codebase aus                       |
+| `bun run format`    | Formatiert alle Dateien mit Prettier                             |
 
 > **Hinweis:** Das Projekt nutzt TanStack Start v1 mit SSR. Die Build-Ausgabe ist für den Einsatz auf einer Edge-Runtime (z. B. Cloudflare Workers) optimiert.
 

@@ -3,9 +3,7 @@ import { z } from "zod";
 import { runSync } from "../../../backend/services/syncService.mjs";
 import { isProd } from "../../../config/env.mjs";
 
-const BodySchema = z
-  .object({ source: z.string().min(1).max(64).optional() })
-  .partial();
+const BodySchema = z.object({ source: z.string().min(1).max(64).optional() }).partial();
 
 function jsonError(status: number, error: string): Response {
   return new Response(JSON.stringify({ ok: false, error }), {
@@ -23,15 +21,11 @@ function jsonError(status: number, error: string): Response {
  */
 function checkAuth(request: Request): Response | null {
   if (!isProd()) return null;
-  const expected =
-    (typeof process !== "undefined" && process.env?.SYNC_TRIGGER_TOKEN) || "";
+  const expected = (typeof process !== "undefined" && process.env?.SYNC_TRIGGER_TOKEN) || "";
   if (!expected) return jsonError(503, "Sync trigger disabled");
   const provided = request.headers.get("x-sync-token") ?? "";
   // Konstante Laufzeit: gleich lange Strings vergleichen.
-  if (
-    provided.length !== expected.length ||
-    provided !== expected
-  ) {
+  if (provided.length !== expected.length || provided !== expected) {
     return jsonError(401, "Unauthorized");
   }
   return null;
@@ -62,4 +56,3 @@ export const Route = createFileRoute("/api/sync")({
     },
   },
 });
-

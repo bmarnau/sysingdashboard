@@ -16,9 +16,9 @@ _Keine Funde._
 
 ## MEDIUM (1)
 
-| Regel | Fundstelle | Beschreibung | Snippet |
-| --- | --- | --- | --- |
-| `cors-wildcard-only` | backend/server.mjs:24 | CORS-Wildcard (Access-Control-Allow-Origin: *) | `res.setHeader("Access-Control-Allow-Origin", "*");` |
+| Regel                | Fundstelle            | Beschreibung                                    | Snippet                                              |
+| -------------------- | --------------------- | ----------------------------------------------- | ---------------------------------------------------- |
+| `cors-wildcard-only` | backend/server.mjs:24 | CORS-Wildcard (Access-Control-Allow-Origin: \*) | `res.setHeader("Access-Control-Allow-Origin", "*");` |
 
 ---
 
