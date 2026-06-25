@@ -62,7 +62,10 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
     return response;
   }
 
-  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
+  // Body auf 256 Zeichen kürzen, damit potenzielle Tokens/Secrets niemals
+  // ungewollt vollständig ins Server-Log gelangen.
+  const safeBody = body.slice(0, 256);
+  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${safeBody}`));
   return brandedErrorResponse();
 }
 
@@ -73,7 +76,7 @@ export default {
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
-      console.error(error);
+      console.error("[Worker] fetch error:", String((error as Error)?.message ?? error).slice(0, 256));
       return brandedErrorResponse();
     }
   },

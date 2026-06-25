@@ -1,47 +1,62 @@
-## Ziel
-Den Systemstatus-Dialog so umbauen, dass er die verfügbare Breite voll nutzt, keine horizontalen Scrollbalken erzeugt und bei Bedarf maximierbar ist.
+## Sicherheitsbaseline — Befund (kein Code geändert)
 
-## Umsetzung (nur `src/components/SystemStatusDialog.tsx`)
+### Geprüfter Umfang
+- `src/**` (Frontend + TanStack-Server-Routes), `backend/**`, `config/**`, `.github/workflows/**`.
+- Suchen nach: Azure-SDKs, Connection Strings, SAS-Tokens (`sv=`, `sig=`, `AccountKey=`), API-Keys, `fetch`-Ziele, `localStorage`, `dangerouslySetInnerHTML`, Fehler-/Stacktrace-Ausgaben, Eingabevalidierung.
 
-1. **Responsives Label/Wert-Grid statt `flex justify-between`**
-   - `Row`-Komponente neu: `grid grid-cols-1 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)] gap-x-4 gap-y-1 items-start`
-   - Label linksbündig oben, Wert nimmt restliche Breite ein, kein leerer Mittelraum mehr.
-   - Wert-Container: `min-w-0 break-words [overflow-wrap:anywhere]`, Links mit `break-all`, damit Repository-URL/IDs umbrechen statt zu scrollen.
-   - Status-Icon (Check/Cross) als `shrink-0` neben dem Wert in einer inneren Flex-Zeile.
+---
 
-2. **Sektionen & Container**
-   - Jede Sektion (`<section>`): `min-w-0`, Inhalte ohne `whitespace-nowrap`.
-   - Root-Wrapper im Dialog: `min-w-0 overflow-x-hidden`, vertikal weiter scrollbar (`overflow-y-auto`).
-   - Versions-Block (aktuell `flex flex-wrap` mit `<span>`-Chips) ebenfalls auf das Grid-Pattern oder ein `grid sm:grid-cols-2 lg:grid-cols-3` umstellen.
+### Check-1-Ergebnis
 
-3. **Maximieren-Funktion**
-   - Lokaler State `expanded: boolean`.
-   - Im Header (neben dem bestehenden „Jetzt prüfen"-Bereich / DialogTitle) zwei Icon-Buttons aus `lucide-react`: `Maximize2` / `Minimize2` mit `aria-label` „Maximieren" / „Minimieren".
-   - `DialogContent`-Klassen abhängig von `expanded`:
-     - Standard: `max-w-2xl max-h-[85vh]`
-     - Maximiert: `max-w-[100vw] w-screen h-[100dvh] sm:max-w-[100vw] rounded-none p-4 sm:p-6`
-   - Kein echtes `requestFullscreen` (Dialog liegt im Portal, FS-API auf Dialog-Wrapper bricht Radix-Focus-Trap) — stattdessen Vollflächen-Modal, was die Anforderung erfüllt und konsistenter ist.
-   - State auf `false` zurücksetzen, wenn der Dialog schließt (`onOpenChange`).
+| Punkt | Status | Beleg |
+|---|---|---|
+| Keine Secrets im Frontend | bestanden | Keine Treffer für `AccountKey`/`AZURE_*`-Werte in `src/`. `config/secretManager.mjs` läuft nur Server-seitig, `consume()` im Dev hart blockiert. |
+| Keine SAS-Tokens im Frontend | bestanden | Keine `sv=`/`sig=`/`?se=`-Strings im Bundle-Pfad. Variable `AZURE_STORAGE_SAS` existiert nur als Name in `secretManager.KNOWN` (kein Wert). |
+| Keine Connection Strings im Frontend | bestanden | Keine `Server=`/`Endpoint=`/`DefaultEndpointsProtocol`-Literale in `src/`. |
+| Keine direkte Azure-Nutzung im Client | bestanden | Frontend ruft ausschließlich `fetch("/api/status")` (`useSystemStatusHealth.ts:57`). Kein `@azure/*`-Import, kein `tedious`, kein `mssql`. „Azure" im Client ist nur ein Export-Format-Label (NDJSON). |
+| Keine Stacktraces/Secrets in Fehlerausgaben | bestanden mit Hinweis | `src/routes/api/sync.ts` und `status.ts` antworten generisch (`{ ok:false, error:"Sync failed" }`, Status 500), ohne `err.message`/`err.stack`. `console.error` läuft nur serverseitig (`src/server.ts`, `src/start.ts`) bzw. clientseitig mit eigenen, kurzen Labels — keine Roh-Errors an die UI. |
+| Dashboard ohne Azure lauffähig | bestanden | Kein Azure-Pfad im Render-Tree; `/api/sync` liefert im Dev nur Mock-Daten (`assertAzureAllowed()`). UI funktioniert vollständig ohne gesetzte Azure-Secrets. |
 
-4. **Responsive Breakpoints**
-   - Mobile (Default): einspaltig (`grid-cols-1`), Label oberhalb des Werts.
-   - ≥ `sm`: zweispaltig Label/Wert.
-   - Maximierte Ansicht zusätzlich ab `lg`: Sektionen in `lg:grid-cols-2`-Wrapper, damit der Platz auf großen Screens genutzt wird.
+---
 
-5. **Kleine Aufräumarbeiten**
-   - Repository-Zeile: URL als eigene Zeile unter dem Label, `font-mono text-xs break-all`.
-   - Lange Werte (Commit-SHA, Projekt-ID) ebenfalls `font-mono break-all`.
-   - Keine festen `min-w`-/`w-`-Werte mehr, die Overflow erzwingen.
+### Kritische Risiken
+Keine.
 
-## Nicht im Scope
-- Keine Änderungen an `/api/status`, Hook, Services, Build-Info, Doku-Inhalt.
-- Kein Design-Direction-Loop (rein funktional-strukturelles Layout-Fix).
-- Keine neue Route — der Systemstatus bleibt ein Dialog (kein eigener Page-Pfad), Maximieren-Modus ersetzt die geforderte „Vollbildseite".
+### Mittlere Risiken
+1. **`console.error(error)` in `src/routes/__root.tsx:37` und `src/start.ts:12`** geben das vollständige Error-Objekt aus. Im SSR landet das in Server-Logs (akzeptabel), im Client jedoch in DevTools — keine PII oder Secrets im aktuellen Code, aber als Muster fragil. Empfehlung: nur `error?.message` oder eine ID loggen.
+2. **`src/server.ts:65`** loggt `consumeLastCapturedError() ?? new Error("h3 swallowed SSR error: …")` mit komplettem Body. Serverlog, nicht clientseitig sichtbar — Restrisiko, wenn Body Tokens enthielte. Empfehlung: Body auf 256 Zeichen kürzen.
+3. **`src/components/ui/chart.tsx:73`** nutzt `dangerouslySetInnerHTML`. Inhalt ist Recharts-CSS aus statischer Config (kein User-Input). Niedrig-mittleres Restrisiko — als Konvention dokumentieren, dass dieser Slot nie User-Input bekommt.
 
-## Doku-Sync
-- `CHANGELOG.md`: neuer Eintrag `1.17.1` mit Bullet zu Layout-Fix & Maximieren.
-- `src/lib/help-documentation.ts`: HelpTopic „Systemstatus" um Absatz zu Maximieren-Button und Umbruchverhalten ergänzen, `lastUpdated` aktualisieren.
-- `bun run docs:check` vor Abschluss.
+### Niedrige Risiken
+4. **localStorage als Datenablage** (`user-management.ts`, `backup-service.ts`, `engineer-target-time.ts`, …): enthält keine Geheimnisse (Filter-Listen in `json-schema.ts`/`backup-service.ts` schließen `password`, `secret`, `token`, `apikey`, `mfa_secret`, `*_token` aktiv aus). Restrisiko: XSS würde Profile lesen können — aktuell aber keine XSS-Senken mit User-Input. Empfehlung: bei späterer Auth keine Session-Token in `localStorage`, sondern in HttpOnly-Cookies.
+5. **`/api/sync` ist unauthentifiziert**. Heute liefert es im Dev nur Mock-Daten, in Production triggert es einen Sync-Lauf. Empfehlung: vor Production-Modus eine simple Auth (signierte Header oder `_authenticated`-Layout) ergänzen, sonst kann jeder Besucher Syncs auslösen.
+6. **Zod-Schemata in `json-schema.ts`** validieren Typen, aber viele Felder ohne `max(...)`-Längenbegrenzung (`firstName`, `name`, …). Risiko: unbounded Import-Payloads. Empfehlung: einheitliches `max(255)`/`max(2000)` analog zu Input-Validation-Guidelines.
+7. **Workflow-Lint-Schritt** (`bun run lint || true`) verschluckt Lint-Fehler. Kein Security-Issue, aber verbirgt Regeln wie `no-eval`. Empfehlung: `|| true` entfernen.
 
-## Kritische Anmerkung / Alternative
-Wenn der Systemstatus regelmäßig in voller Breite gebraucht wird, wäre eine eigene Route `/_authenticated/system-status` (statt Dialog) die sauberere Lösung — bookmarkbar, deep-linkbar, kein Modal-Layering. Der Maximieren-Toggle ist hier der kleinere Eingriff; sag Bescheid, wenn du stattdessen den Routen-Umbau willst.
+---
+
+### Konkrete Maßnahmen nach Priorität
+
+**P1 — vor Production-Schalter**
+- `/api/sync` und ggf. `/api/status` mit Auth absichern (z. B. `requireSupabaseAuth`-Middleware oder Header-Token); aktuell anonym aufrufbar.
+- `src/routes/__root.tsx` und `src/start.ts`: nur `error.message` (gekürzt) loggen, keine vollen Objekte.
+
+**P2 — kurzfristig**
+- Längenlimits in allen `json-schema.ts`-Strings (`.max(...)`) ergänzen.
+- `src/server.ts:65` Body auf max. 256 Zeichen kürzen, bevor er ins Log geht.
+- `chart.tsx`-`dangerouslySetInnerHTML`-Slot mit Code-Kommentar gegen User-Input-Wiederverwendung absichern.
+
+**P3 — Hygiene**
+- `bun run lint || true` → `bun run lint` in `.github/workflows/ci.yml`.
+- Doku im Handbuch ergänzen: „Anonyme `/api/*`-Endpunkte sind nur für Dev-Mock zulässig" und Plan für spätere Auth.
+- Security-Memory aktualisieren: „Azure ist optional, nie im Browser-Bundle; `/api/sync` aktuell anonym und nur Mock; passwortlose User-Verwaltung in localStorage".
+
+---
+
+### Geplante nächste Schritte (Build-Mode-Bestätigung nötig)
+Wenn du grünes Licht gibst, würde ich in dieser Reihenfolge umsetzen:
+1. P1-Logging-Härtung (`__root.tsx`, `start.ts`, `server.ts`).
+2. Auth-Gate-Entscheidung für `/api/sync` — **brauche deinen Input**: a) Header-Token aus Build-Secret, b) `_authenticated`-Layout (Supabase aktivieren), oder c) nur in Dev erlaubt, in Production 401.
+3. Zod-`max()`-Limits, Lint-Workflow-Fix, Doku/Changelog-Update (1.17.3), Security-Memory aktualisieren.
+
+Keine Code-Änderung in diesem Schritt — der Plan ist die Lieferung.

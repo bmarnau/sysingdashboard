@@ -18,21 +18,28 @@ export const JSON_SCHEMA_VERSION = "1.0.0";
 
 /* ----------------------------- Primitive Schemas ---------------------------- */
 
-const isoDateTime = z.string().min(1);
+/**
+ * Hartlängen für Importpfade — verhindert unbounded Payloads (DoS / Speicher).
+ */
+const SHORT_ID = 128;
+const SHORT_STR = 255;
+const LONG_STR = 2000;
+
+const isoDateTime = z.string().min(1).max(64);
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/u, "YYYY-MM-DD erwartet");
 
 /* --------------------------------- Entities --------------------------------- */
 
 export const UserProfileSchema = z.object({
-  id: z.string().min(1),
-  firstName: z.string(),
-  lastName: z.string(),
-  displayName: z.string(),
-  email: z.string(),
-  phone: z.string().optional().default(""),
-  role: z.string(),
-  status: z.string(),
-  profileImage: z.string().optional(),
+  id: z.string().min(1).max(SHORT_ID),
+  firstName: z.string().max(SHORT_STR),
+  lastName: z.string().max(SHORT_STR),
+  displayName: z.string().max(SHORT_STR),
+  email: z.string().max(SHORT_STR),
+  phone: z.string().max(SHORT_STR).optional().default(""),
+  role: z.string().max(SHORT_STR),
+  status: z.string().max(SHORT_STR),
+  profileImage: z.string().max(LONG_STR).optional(),
   mfaEnabled: z.boolean().optional().default(false),
   createdAt: isoDateTime,
   updatedAt: isoDateTime,
@@ -40,55 +47,55 @@ export const UserProfileSchema = z.object({
 export type UserProfileExport = z.infer<typeof UserProfileSchema>;
 
 export const CustomerSchema = z.object({
-  id: z.string().min(1),
-  name: z.string().min(1),
+  id: z.string().min(1).max(SHORT_ID),
+  name: z.string().min(1).max(SHORT_STR),
   synthetic: z.boolean().optional(),
 });
 export type CustomerExport = z.infer<typeof CustomerSchema>;
 
 export const ProjectSchema = z.object({
-  id: z.string().min(1),
-  name: z.string(),
-  client: z.string(),
-  customerId: z.string().optional(),
-  description: z.string().optional(),
-  start: z.string().optional(),
-  deadline: z.string().optional(),
-  lead: z.string().optional(),
-  team: z.array(z.string()).optional(),
+  id: z.string().min(1).max(SHORT_ID),
+  name: z.string().max(SHORT_STR),
+  client: z.string().max(SHORT_STR),
+  customerId: z.string().max(SHORT_ID).optional(),
+  description: z.string().max(LONG_STR).optional(),
+  start: z.string().max(64).optional(),
+  deadline: z.string().max(64).optional(),
+  lead: z.string().max(SHORT_STR).optional(),
+  team: z.array(z.string().max(SHORT_ID)).max(500).optional(),
   budget: z.number().optional(),
-  status: z.string(),
+  status: z.string().max(SHORT_STR),
 });
 export type ProjectExport = z.infer<typeof ProjectSchema>;
 
 export const WorkPackageSchema = z.object({
-  id: z.string().min(1),
-  title: z.string(),
-  projectId: z.string().nullable().optional(),
-  client: z.string().optional(),
-  status: z.string(),
-  priority: z.string(),
-  due: z.string().optional(),
+  id: z.string().min(1).max(SHORT_ID),
+  title: z.string().max(SHORT_STR),
+  projectId: z.string().max(SHORT_ID).nullable().optional(),
+  client: z.string().max(SHORT_STR).optional(),
+  status: z.string().max(SHORT_STR),
+  priority: z.string().max(SHORT_STR),
+  due: z.string().max(64).optional(),
   estimated: z.number().optional(),
-  assignee: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  description: z.string().optional(),
+  assignee: z.string().max(SHORT_STR).optional(),
+  tags: z.array(z.string().max(SHORT_STR)).max(100).optional(),
+  description: z.string().max(LONG_STR).optional(),
 });
 export type WorkPackageExport = z.infer<typeof WorkPackageSchema>;
 
 export const ActivitySchema = z.object({
-  id: z.string().min(1),
-  title: z.string(),
-  workPackageId: z.string().nullable().optional(),
-  engineerId: z.string().optional(),
-  client: z.string().optional(),
+  id: z.string().min(1).max(SHORT_ID),
+  title: z.string().max(SHORT_STR),
+  workPackageId: z.string().max(SHORT_ID).nullable().optional(),
+  engineerId: z.string().max(SHORT_ID).optional(),
+  client: z.string().max(SHORT_STR).optional(),
   date: isoDate,
-  time: z.string().optional(),
+  time: z.string().max(16).optional(),
   duration: z.number(),
   hourlyRate: z.number(),
   billable: z.boolean(),
-  billingStatus: z.string(),
-  description: z.string().optional(),
+  billingStatus: z.string().max(SHORT_STR),
+  description: z.string().max(LONG_STR).optional(),
 });
 export type ActivityExport = z.infer<typeof ActivitySchema>;
 
@@ -99,30 +106,30 @@ export type ActivityExport = z.infer<typeof ActivitySchema>;
  * `timeEntries`, sofern vorhanden, sonst Fallback auf `activities`).
  */
 export const TimeEntrySchema = z.object({
-  id: z.string().min(1),
-  activityId: z.string(),
-  engineerId: z.string().optional(),
+  id: z.string().min(1).max(SHORT_ID),
+  activityId: z.string().max(SHORT_ID),
+  engineerId: z.string().max(SHORT_ID).optional(),
   date: isoDate,
   durationHours: z.number(),
   billable: z.boolean(),
-  billingStatus: z.string().optional(),
+  billingStatus: z.string().max(SHORT_STR).optional(),
   hourlyRate: z.number().optional(),
-  description: z.string().optional(),
+  description: z.string().max(LONG_STR).optional(),
 });
 export type TimeEntryExport = z.infer<typeof TimeEntrySchema>;
 
 export const TargetTimeModelSchema = z.object({
-  id: z.string().min(1),
-  engineerId: z.string().optional(),
-  validFrom: z.string(),
-  validUntil: z.string().nullable().optional(),
-  targetTimeBase: z.string(),
+  id: z.string().min(1).max(SHORT_ID),
+  engineerId: z.string().max(SHORT_ID).optional(),
+  validFrom: z.string().max(64),
+  validUntil: z.string().max(64).nullable().optional(),
+  targetTimeBase: z.string().max(SHORT_STR),
   monthlyTargetHours: z.number().optional(),
   weeklyTargetHours: z.number().optional(),
   workloadPercent: z.number().optional(),
-  description: z.string().optional(),
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  description: z.string().max(LONG_STR).optional(),
+  createdAt: z.string().max(64).optional(),
+  updatedAt: z.string().max(64).optional(),
 });
 export type TargetTimeModelExport = z.infer<typeof TargetTimeModelSchema>;
 
@@ -131,7 +138,7 @@ export type TargetTimeModelExport = z.infer<typeof TargetTimeModelSchema>;
  * Sensible Felder werden vorab durch `sanitizeSettings()` entfernt.
  */
 export const DashboardSettingsSchema = z.object({
-  key: z.string().min(1),
+  key: z.string().min(1).max(SHORT_ID),
   value: z.unknown(),
 });
 export type DashboardSettingsExport = z.infer<typeof DashboardSettingsSchema>;

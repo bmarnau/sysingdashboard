@@ -34,7 +34,10 @@ function NotFoundComponent() {
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+  // Niemals das volle Error-Objekt in den Client-DevTools loggen (könnte in
+  // Zukunft Tokens/PII in Messages enthalten). Nur eine gekürzte Message.
+  const msg = (error?.message ?? "Unbekannter Fehler").slice(0, 200);
+  console.error("[App] Render-Fehler:", msg);
   const router = useRouter();
 
   return (
