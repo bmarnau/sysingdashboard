@@ -1,0 +1,23 @@
+{
+  "summary": {
+    "generatedAt": "2026-06-25T04:33:26.911Z",
+    "filesScanned": 107,
+    "rulesEvaluated": 22,
+    "counts": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 1
+    },
+    "failed": false
+  },
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "rule": "cors-wildcard-only",
+      "title": "CORS-Wildcard (Access-Control-Allow-Origin: *)",
+      "file": "backend/server.mjs",
+      "line": 24,
+      "snippet": "res.setHeader(\"Access-Control-Allow-Origin\", \"*\");"
+    }
+  ]
+}
