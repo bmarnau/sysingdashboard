@@ -28,3 +28,11 @@ declare module "*/backend/services/statusService.mjs" {
     timestamp: string;
   };
 }
+
+declare module "*/config/env.mjs" {
+  export const MODE: "development" | "production";
+  export function isDev(): boolean;
+  export function isProd(): boolean;
+  export function getMode(): "development" | "production";
+  export function assertAzureAllowed(): void;
+}
