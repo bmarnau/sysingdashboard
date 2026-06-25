@@ -1,14 +1,14 @@
 {
   "summary": {
-    "generatedAt": "2026-06-25T04:33:26.911Z",
-    "filesScanned": 107,
+    "generatedAt": "2026-06-25T04:33:33.663Z",
+    "filesScanned": 108,
     "rulesEvaluated": 22,
     "counts": {
-      "CRITICAL": 0,
+      "CRITICAL": 1,
       "HIGH": 0,
       "MEDIUM": 1
     },
-    "failed": false
+    "failed": true
   },
   "findings": [
     {
@@ -18,6 +18,14 @@
       "file": "backend/server.mjs",
       "line": 24,
       "snippet": "res.setHeader(\"Access-Control-Allow-Origin\", \"*\");"
+    },
+    {
+      "severity": "CRITICAL",
+      "rule": "azure-account-key",
+      "title": "Azure Storage AccountKey-Literal im Code",
+      "file": "scripts/_smoke.mjs",
+      "line": 1,
+      "snippet": "const k = \"AccountKey=abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGH+=\"; export default k;"
     }
   ]
 }
