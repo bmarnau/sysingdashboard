@@ -70,6 +70,9 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 
   return (
     <style
+      // SECURITY: `__html` enthält ausschließlich aus `config` abgeleitete
+      // CSS-Variablen (Schlüsselnamen + Farb-Strings). Niemals User-Input in
+      // diesen Slot einspeisen — würde XSS ermöglichen.
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(

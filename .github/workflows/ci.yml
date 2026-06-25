@@ -30,7 +30,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Lint
-        run: bun run lint || true
+        run: bun run lint
 
       - name: Build (production)
         run: bun run build
