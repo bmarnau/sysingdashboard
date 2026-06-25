@@ -1,62 +1,149 @@
-## Sicherheitsbaseline — Befund (kein Code geändert)
+## Automatisierter Security-Check in CI
 
-### Geprüfter Umfang
-- `src/**` (Frontend + TanStack-Server-Routes), `backend/**`, `config/**`, `.github/workflows/**`.
-- Suchen nach: Azure-SDKs, Connection Strings, SAS-Tokens (`sv=`, `sig=`, `AccountKey=`), API-Keys, `fetch`-Ziele, `localStorage`, `dangerouslySetInnerHTML`, Fehler-/Stacktrace-Ausgaben, Eingabevalidierung.
+Ziel: Bei jedem Push/PR auf `main`/`develop` läuft ein Security-Scan, der Secrets, gefährliche HTTP-Header und unerlaubte Azure-/Connection-Strings im Frontend findet, das Ergebnis als GitHub-Actions-Artefakt ablegt und bei kritischen Funden den Build rot färbt.
 
 ---
 
-### Check-1-Ergebnis
+### Neue Datei: `scripts/security-check.mjs`
 
-| Punkt | Status | Beleg |
-|---|---|---|
-| Keine Secrets im Frontend | bestanden | Keine Treffer für `AccountKey`/`AZURE_*`-Werte in `src/`. `config/secretManager.mjs` läuft nur Server-seitig, `consume()` im Dev hart blockiert. |
-| Keine SAS-Tokens im Frontend | bestanden | Keine `sv=`/`sig=`/`?se=`-Strings im Bundle-Pfad. Variable `AZURE_STORAGE_SAS` existiert nur als Name in `secretManager.KNOWN` (kein Wert). |
-| Keine Connection Strings im Frontend | bestanden | Keine `Server=`/`Endpoint=`/`DefaultEndpointsProtocol`-Literale in `src/`. |
-| Keine direkte Azure-Nutzung im Client | bestanden | Frontend ruft ausschließlich `fetch("/api/status")` (`useSystemStatusHealth.ts:57`). Kein `@azure/*`-Import, kein `tedious`, kein `mssql`. „Azure" im Client ist nur ein Export-Format-Label (NDJSON). |
-| Keine Stacktraces/Secrets in Fehlerausgaben | bestanden mit Hinweis | `src/routes/api/sync.ts` und `status.ts` antworten generisch (`{ ok:false, error:"Sync failed" }`, Status 500), ohne `err.message`/`err.stack`. `console.error` läuft nur serverseitig (`src/server.ts`, `src/start.ts`) bzw. clientseitig mit eigenen, kurzen Labels — keine Roh-Errors an die UI. |
-| Dashboard ohne Azure lauffähig | bestanden | Kein Azure-Pfad im Render-Tree; `/api/sync` liefert im Dev nur Mock-Daten (`assertAzureAllowed()`). UI funktioniert vollständig ohne gesetzte Azure-Secrets. |
+Eigenständiger Node-Script (keine zusätzliche Dependency, nutzt `node:fs`/`node:path`). Scannt rekursiv `src/`, `backend/`, `config/`, `scripts/`, `app/`. Schließt `node_modules`, `.lovable`, `dist`, `build`, `routeTree.gen.ts`, lockfiles, der Scanner selbst und `CHANGELOG.md` / `help-documentation.ts` (Erwähnungen, keine Werte) per Ignore-Liste aus.
 
----
+Drei Regel-Kategorien mit Severity:
 
-### Kritische Risiken
-Keine.
+**CRITICAL — bricht CI (Exit 1)**
+- `AccountKey=[A-Za-z0-9+/=]{40,}` (Azure Storage Connection)
+- `SharedAccessSignature=` mit Wert
+- `DefaultEndpointsProtocol=https;AccountName=...;AccountKey=`
+- SAS-Tokens: `\?sv=20\d\d-\d\d-\d\d&.*sig=`
+- `Server=tcp:[^;]+;.*Password=` (Azure SQL)
+- AWS-Keys: `AKIA[0-9A-Z]{16}`
+- Generische API-Key-Literale: `sk_live_[A-Za-z0-9]{20,}`, `sk-[A-Za-z0-9]{32,}`, `ghp_[A-Za-z0-9]{36}`, `xox[baprs]-[A-Za-z0-9-]{10,}`
+- Private Keys: `-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----`
+- JWT-Literale mit Header `eyJ` und ≥ 2 Punkten und Länge > 100
 
-### Mittlere Risiken
-1. **`console.error(error)` in `src/routes/__root.tsx:37` und `src/start.ts:12`** geben das vollständige Error-Objekt aus. Im SSR landet das in Server-Logs (akzeptabel), im Client jedoch in DevTools — keine PII oder Secrets im aktuellen Code, aber als Muster fragil. Empfehlung: nur `error?.message` oder eine ID loggen.
-2. **`src/server.ts:65`** loggt `consumeLastCapturedError() ?? new Error("h3 swallowed SSR error: …")` mit komplettem Body. Serverlog, nicht clientseitig sichtbar — Restrisiko, wenn Body Tokens enthielte. Empfehlung: Body auf 256 Zeichen kürzen.
-3. **`src/components/ui/chart.tsx:73`** nutzt `dangerouslySetInnerHTML`. Inhalt ist Recharts-CSS aus statischer Config (kein User-Input). Niedrig-mittleres Restrisiko — als Konvention dokumentieren, dass dieser Slot nie User-Input bekommt.
+**HIGH — bricht CI (Exit 1)**
+- Direkter Azure-SDK-Import im **Frontend** (`src/**`, ohne `src/routes/api/`): `@azure/`, `mssql`, `tedious`, `@azure/storage-blob`, `@azure/data-tables`, `@azure/identity`.
+- `process.env.AZURE_*` oder `process.env.*CONNECTION*` außerhalb `backend/`, `config/`, `src/routes/api/`, `src/server.ts`, `src/start.ts`.
+- Gefährliche HTTP-Header-Literale in Server-Code:
+  - `Access-Control-Allow-Origin: *` **in Kombination mit** `Access-Control-Allow-Credentials: true`
+  - `X-Frame-Options: ALLOWALL`
+  - `Content-Security-Policy:.*unsafe-eval`
+- `dangerouslySetInnerHTML` mit dynamischem Input (Heuristik: `dangerouslySetInnerHTML={{__html: <Variable, kein String-Literal>}}`); Whitelist für `src/components/ui/chart.tsx`.
 
-### Niedrige Risiken
-4. **localStorage als Datenablage** (`user-management.ts`, `backup-service.ts`, `engineer-target-time.ts`, …): enthält keine Geheimnisse (Filter-Listen in `json-schema.ts`/`backup-service.ts` schließen `password`, `secret`, `token`, `apikey`, `mfa_secret`, `*_token` aktiv aus). Restrisiko: XSS würde Profile lesen können — aktuell aber keine XSS-Senken mit User-Input. Empfehlung: bei späterer Auth keine Session-Token in `localStorage`, sondern in HttpOnly-Cookies.
-5. **`/api/sync` ist unauthentifiziert**. Heute liefert es im Dev nur Mock-Daten, in Production triggert es einen Sync-Lauf. Empfehlung: vor Production-Modus eine simple Auth (signierte Header oder `_authenticated`-Layout) ergänzen, sonst kann jeder Besucher Syncs auslösen.
-6. **Zod-Schemata in `json-schema.ts`** validieren Typen, aber viele Felder ohne `max(...)`-Längenbegrenzung (`firstName`, `name`, …). Risiko: unbounded Import-Payloads. Empfehlung: einheitliches `max(255)`/`max(2000)` analog zu Input-Validation-Guidelines.
-7. **Workflow-Lint-Schritt** (`bun run lint || true`) verschluckt Lint-Fehler. Kein Security-Issue, aber verbirgt Regeln wie `no-eval`. Empfehlung: `|| true` entfernen.
+**MEDIUM — Warnung, kein Fail**
+- `console.log\(.*error` / `console.error\(error\)` (volles Error-Objekt) außerhalb erlaubter Helper.
+- `eval\(`, `new Function\(`.
+- `Access-Control-Allow-Origin: *` alleine.
+- `fetch\(['"]https?://(?!localhost)` aus `src/**` außerhalb `src/routes/api/` (direkter Drittanbieter-Call aus Client).
 
----
+Optionen über CLI:
+- `--json <pfad>` schreibt strukturierten Report (`{summary, findings: [{severity, rule, file, line, snippet}]}`)
+- `--markdown <pfad>` schreibt menschenlesbaren Report mit Tabellen pro Severity.
+- `--baseline <pfad>` (optional, später): erlaubt Allowlist per Hash.
+- Exit-Code: `0` bei nur MEDIUM/keinen Funden, `1` bei ≥ 1 HIGH/CRITICAL.
 
-### Konkrete Maßnahmen nach Priorität
-
-**P1 — vor Production-Schalter**
-- `/api/sync` und ggf. `/api/status` mit Auth absichern (z. B. `requireSupabaseAuth`-Middleware oder Header-Token); aktuell anonym aufrufbar.
-- `src/routes/__root.tsx` und `src/start.ts`: nur `error.message` (gekürzt) loggen, keine vollen Objekte.
-
-**P2 — kurzfristig**
-- Längenlimits in allen `json-schema.ts`-Strings (`.max(...)`) ergänzen.
-- `src/server.ts:65` Body auf max. 256 Zeichen kürzen, bevor er ins Log geht.
-- `chart.tsx`-`dangerouslySetInnerHTML`-Slot mit Code-Kommentar gegen User-Input-Wiederverwendung absichern.
-
-**P3 — Hygiene**
-- `bun run lint || true` → `bun run lint` in `.github/workflows/ci.yml`.
-- Doku im Handbuch ergänzen: „Anonyme `/api/*`-Endpunkte sind nur für Dev-Mock zulässig" und Plan für spätere Auth.
-- Security-Memory aktualisieren: „Azure ist optional, nie im Browser-Bundle; `/api/sync` aktuell anonym und nur Mock; passwortlose User-Verwaltung in localStorage".
+Output-Verzeichnis: `security-report/` (gitignored).
 
 ---
 
-### Geplante nächste Schritte (Build-Mode-Bestätigung nötig)
-Wenn du grünes Licht gibst, würde ich in dieser Reihenfolge umsetzen:
-1. P1-Logging-Härtung (`__root.tsx`, `start.ts`, `server.ts`).
-2. Auth-Gate-Entscheidung für `/api/sync` — **brauche deinen Input**: a) Header-Token aus Build-Secret, b) `_authenticated`-Layout (Supabase aktivieren), oder c) nur in Dev erlaubt, in Production 401.
-3. Zod-`max()`-Limits, Lint-Workflow-Fix, Doku/Changelog-Update (1.17.3), Security-Memory aktualisieren.
+### Neue Datei: `.gitleaks.toml`
 
-Keine Code-Änderung in diesem Schritt — der Plan ist die Lieferung.
+Minimal-Config für `gitleaks` als zweite Verteidigungslinie (CVE-getrieben, ergänzt unsere Heuristiken). Allowlist für:
+- Dokumentation (`CHANGELOG.md`, `help-documentation.ts`, `**/*.md`) — Erwähnungen ohne Werte.
+- `bun.lock` (Integrity-Hashes).
+- `src/types/backend.d.ts` (Typ-Namen wie `azure`).
+
+---
+
+### `package.json` (neuer Script-Eintrag)
+
+```json
+"security:check": "node scripts/security-check.mjs --json security-report/findings.json --markdown security-report/findings.md"
+```
+
+`docs:check`-Pattern bleibt unverändert. Keine neuen npm-Dependencies (Custom-Scanner ist plain Node; gitleaks läuft als Action).
+
+---
+
+### Neue Datei: `.github/workflows/security.yml`
+
+Separater Workflow (parallel zu `ci.yml`), damit Security-Funde auch bei grünem Lint/Build sichtbar sind und Artefakte sauber getrennt liegen.
+
+```text
+name: Security
+on:
+  push:    { branches: [main, develop] }
+  pull_request: { branches: [main, develop] }
+  schedule: [{ cron: '0 3 * * 1' }]   # zusätzlich montags 03:00 UTC
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - actions/checkout@v4 (fetch-depth: 0)
+      - oven-sh/setup-bun@v2
+      - bun install --frozen-lockfile
+      - run: mkdir -p security-report
+      - run: bun run security:check                # eigener Scanner
+        id: custom
+        continue-on-error: false                   # CRITICAL/HIGH → Fail
+      - uses: gitleaks/gitleaks-action@v2          # zweite Verteidigung
+        with: { config-path: .gitleaks.toml }
+        env:  { GITLEAKS_ENABLE_UPLOAD_ARTIFACT: true }
+        continue-on-error: true                    # Report kommt ins Artefakt, kein Hard-Fail
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-report-${{ github.run_id }}
+          path: |
+            security-report/
+            results.sarif
+          retention-days: 30
+      - name: PR-Kommentar (optional, nur PRs)
+        if: github.event_name == 'pull_request' && always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: security-report/findings.md
+```
+
+---
+
+### `.gitignore`
+
+`security-report/` ergänzen, damit lokale Läufe das Repo nicht verschmutzen.
+
+---
+
+### Dokumentation (Doku-Sync-Pflicht)
+
+- **`CHANGELOG.md`** → neue Version `1.17.4 - 2026-06-24` mit Eintrag „CI-Security-Scan (Secrets, Azure-Strings, Headers) + Artefakt".
+- **`src/lib/help-documentation.ts`** → Topic „Backend-API" um Abschnitt „CI-Security-Scan" ergänzen ODER neues Topic `ci-security-scan` (Kategorie „Service") mit:
+  - Welche Regeln in welcher Severity.
+  - Wie man Funde liest (Artefakt-Download, `security-report/findings.md`).
+  - Wie man legitime Treffer per Allowlist (`.gitleaks.toml`, Code-Kommentar `// security-scan-allow: <regel>`) markiert.
+  - `lastUpdated: "2026-06-24"`.
+- `bun run docs:check` muss grün laufen.
+
+---
+
+### Verifikation vor Abschluss
+
+1. `node scripts/security-check.mjs --json /tmp/findings.json --markdown /tmp/findings.md` lokal ausführen.
+2. Erwartung: aktueller Code → 0 CRITICAL/HIGH (Baseline ist sauber, siehe Plan 1.17.3). Eventuelle MEDIUM-Funde dokumentieren oder per Whitelist abdecken.
+3. Smoke-Test: temporär `const KEY = "AccountKey=abcdef0123456789..."` in eine wegwerf-Datei einfügen, Scanner laufen lassen, prüfen dass CRITICAL erkannt wird, Datei wieder entfernen.
+4. `bun run lint` und `bun run docs:check` grün.
+
+---
+
+### Bewusst NICHT im Scope (kritische Hinweise)
+
+- **Keine Laufzeit-Security-Tests** (DAST/ZAP). Wäre ein eigener Workflow gegen die Preview-URL — größere Aufgabe, nur sinnvoll wenn Auth steht.
+- **Keine `npm audit`/`bun audit`-Stufe.** Kann ich später als zweiten Job ergänzen, ist aber laut deinem aktuellen Auftrag (Secrets/Header/Azure) nicht gefordert.
+- **Keine Signatur-Prüfung gegen historische Commits** (`git log -p | gitleaks detect`). `gitleaks-action@v2` macht das automatisch mit `fetch-depth: 0`.
+- **Bessere Alternative zur Custom-Heuristik**: Statt eigenen Regex-Scanners könnte man **`trufflehog`** + **`semgrep`** kombinieren. Vorteil: gepflegte Regeln, weniger False Positives. Nachteil: zwei zusätzliche Actions, längere Laufzeit. **Meine Empfehlung**: starten mit Custom-Scanner + gitleaks (schnell, projektspezifisch); `semgrep` als optionalen dritten Job in einer Folgeversion, falls die False-Positive-Rate gut bleibt.
+
+---
+
+### Offene Frage (vor Implementierung)
+
+Soll der Scanner bei HIGH/CRITICAL den **CI-Build wirklich blocken** (Standardvorschlag) oder erst nur Warnungen + Artefakt liefern, damit das Team das Verhalten in Ruhe einspielen kann? Ohne Gegenanweisung setze ich blockierend um — das ist die sicherere Default-Variante.
