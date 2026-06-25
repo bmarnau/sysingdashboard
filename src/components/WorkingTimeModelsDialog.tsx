@@ -146,8 +146,8 @@ export function WorkingTimeModelsDialog({
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              Kein aktives Arbeitszeitmodell hinterlegt – es wird auf das Profil
-              (Monatssoll + Workload) zurückgegriffen.
+              Kein aktives Arbeitszeitmodell hinterlegt – es wird auf das Profil (Monatssoll +
+              Workload) zurückgegriffen.
             </p>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
@@ -299,8 +299,8 @@ function ModelForm({
     setForm((f) => ({
       ...f,
       targetTimeBase: b,
-      monthlyTargetHours: b === "monthly" ? f.monthlyTargetHours ?? 168 : undefined,
-      weeklyTargetHours: b === "weekly" ? f.weeklyTargetHours ?? 40 : undefined,
+      monthlyTargetHours: b === "monthly" ? (f.monthlyTargetHours ?? 168) : undefined,
+      weeklyTargetHours: b === "weekly" ? (f.weeklyTargetHours ?? 40) : undefined,
     }));
   };
 
@@ -364,9 +364,7 @@ function ModelForm({
               step={0.5}
               className={`mt-1 ${inputCls}`}
               value={form.weeklyTargetHours ?? ""}
-              onChange={(e) =>
-                setForm({ ...form, weeklyTargetHours: Number(e.target.value) || 0 })
-              }
+              onChange={(e) => setForm({ ...form, weeklyTargetHours: Number(e.target.value) || 0 })}
             />
             {errFor("weeklyTargetHours") && (
               <span className="text-destructive">{errFor("weeklyTargetHours")}</span>
@@ -395,9 +393,7 @@ function ModelForm({
             value={form.validFrom}
             onChange={(e) => setForm({ ...form, validFrom: e.target.value })}
           />
-          {errFor("validFrom") && (
-            <span className="text-destructive">{errFor("validFrom")}</span>
-          )}
+          {errFor("validFrom") && <span className="text-destructive">{errFor("validFrom")}</span>}
         </label>
 
         <label className="text-xs font-medium">
@@ -406,13 +402,9 @@ function ModelForm({
             type="date"
             className={`mt-1 ${inputCls}`}
             value={form.validUntil ?? ""}
-            onChange={(e) =>
-              setForm({ ...form, validUntil: e.target.value || undefined })
-            }
+            onChange={(e) => setForm({ ...form, validUntil: e.target.value || undefined })}
           />
-          {errFor("validUntil") && (
-            <span className="text-destructive">{errFor("validUntil")}</span>
-          )}
+          {errFor("validUntil") && <span className="text-destructive">{errFor("validUntil")}</span>}
         </label>
       </div>
 

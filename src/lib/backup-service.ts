@@ -143,7 +143,7 @@ function looksSensitive(key: string, value: string): boolean {
   const k = key.toLowerCase();
   if (SENSITIVE_SUBSTRINGS.some((s) => k.includes(s))) return true;
   // Werte mit sehr langem Zufallsstring + bekannten Keys absichern
-  if (/(eyJ[A-Za-z0-9_\-]{20,}\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+)/.test(value)) return true; // JWT
+  if (/(eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)/.test(value)) return true; // JWT
   return false;
 }
 
@@ -426,7 +426,6 @@ function buildZip(snapshot: Snapshot): Uint8Array {
   return zipSync(files, { level: 6 });
 }
 
-
 /* ---------------------------------------------------------------------- */
 /*  ZIP validieren                                                         */
 /* ---------------------------------------------------------------------- */
@@ -557,9 +556,7 @@ export const BackupService = {
       // 2. Vor-Validierung
       consistency = runConsistencyCheck(snapshot);
       if (consistency.status === "failed") {
-        throw new Error(
-          "Projektprüfung fehlgeschlagen: " + consistency.messages.join("; "),
-        );
+        throw new Error("Projektprüfung fehlgeschlagen: " + consistency.messages.join("; "));
       }
 
       // 3. ZIP bauen
@@ -570,16 +567,12 @@ export const BackupService = {
       // 4. ZIP validieren
       zipValidation = validateZip(bytes, snapshot);
       if (zipValidation.status === "failed") {
-        throw new Error(
-          "ZIP-Validierung fehlgeschlagen: " + zipValidation.messages.join("; "),
-        );
+        throw new Error("ZIP-Validierung fehlgeschlagen: " + zipValidation.messages.join("; "));
       }
 
       // 5. Persistieren
       const status: BackupCheckStatus =
-        consistency.status === "warning" || zipValidation.status === "warning"
-          ? "warning"
-          : "ok";
+        consistency.status === "warning" || zipValidation.status === "warning" ? "warning" : "ok";
 
       const record: BackupRecord = {
         id,

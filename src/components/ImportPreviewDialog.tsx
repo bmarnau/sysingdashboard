@@ -1,11 +1,23 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { AlertTriangle, CheckCircle2, FileJson, Upload, Users, UsersRound } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -56,7 +68,12 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
     try {
       const { doc, validation } = await JsonImportService.readFile(file);
       if (!validation.schemaValid || !doc) {
-        toast.error("Datei ungültig", { description: validation.issues.slice(0, 3).map((i) => i.message).join("; ") });
+        toast.error("Datei ungültig", {
+          description: validation.issues
+            .slice(0, 3)
+            .map((i) => i.message)
+            .join("; "),
+        });
         return;
       }
       if (doc.schemaVersion !== JsonImportService.SCHEMA_VERSION) {
@@ -134,7 +151,9 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
       await ImportLogService.add(entry);
       setResult(entry);
       setStep("done");
-      toast.error("Import fehlgeschlagen — Rollback ausgeführt", { description: (err as Error).message });
+      toast.error("Import fehlgeschlagen — Rollback ausgeführt", {
+        description: (err as Error).message,
+      });
     } finally {
       setBusy(false);
     }
@@ -156,13 +175,16 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
             <Upload className="size-5" /> JSON-Import
           </DialogTitle>
           <DialogDescription>
-            Datei → Vorschau → Mapping → Ausführung. Vor dem Schreiben wird ein Pre-Snapshot erzeugt; bei Fehler erfolgt automatischer Rollback.
+            Datei → Vorschau → Mapping → Ausführung. Vor dem Schreiben wird ein Pre-Snapshot
+            erzeugt; bei Fehler erfolgt automatischer Rollback.
           </DialogDescription>
         </DialogHeader>
 
         {step === "file" && (
           <div className="space-y-3">
-            <Label htmlFor="imp-file" className="text-sm">JSON-Datei auswählen</Label>
+            <Label htmlFor="imp-file" className="text-sm">
+              JSON-Datei auswählen
+            </Label>
             <input
               id="imp-file"
               type="file"
@@ -177,7 +199,8 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
             <Alert>
               <FileJson className="size-4" />
               <AlertDescription className="text-xs">
-                Sensible Felder (Passwörter, Tokens, MFA-Secrets) werden vor der Validierung entfernt — auch wenn sie in der Datei stehen.
+                Sensible Felder (Passwörter, Tokens, MFA-Secrets) werden vor der Validierung
+                entfernt — auch wenn sie in der Datei stehen.
               </AlertDescription>
             </Alert>
           </div>
@@ -187,7 +210,11 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
           <div className="space-y-4">
             <div className="rounded-md border border-border p-3 text-sm">
               <p className="mb-2 flex items-center gap-2 font-medium">
-                {plan.schemaValid ? <CheckCircle2 className="size-4 text-success" /> : <AlertTriangle className="size-4 text-destructive" />}
+                {plan.schemaValid ? (
+                  <CheckCircle2 className="size-4 text-success" />
+                ) : (
+                  <AlertTriangle className="size-4 text-destructive" />
+                )}
                 Datei: <span className="font-mono">{fileName}</span>
               </p>
               <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground">
@@ -198,7 +225,9 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
                   return (
                     <div key={k} className="rounded-sm bg-secondary/40 p-2">
                       <div className="font-medium text-foreground">{k}</div>
-                      <div>Neu: {creates} · Update: {updates} · Skip: {skips}</div>
+                      <div>
+                        Neu: {creates} · Update: {updates} · Skip: {skips}
+                      </div>
                     </div>
                   );
                 })}
@@ -207,10 +236,26 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
 
             <div className="rounded-md border border-border p-3 text-sm">
               <Label className="text-xs uppercase text-muted-foreground">Konflikt-Strategie</Label>
-              <RadioGroup value={strategy} onValueChange={(v) => setStrategy(v as ConflictStrategy)} className="mt-2 space-y-1">
-                <Row id="s-merge" value="merge" label="Merge — eingehende Felder überschreiben bestehende (Default)" />
-                <Row id="s-overwrite" value="overwrite" label="Überschreiben — kompletter Datensatz wird ersetzt" />
-                <Row id="s-keep" value="keep" label="Bestehende behalten — nur neue Datensätze anlegen" />
+              <RadioGroup
+                value={strategy}
+                onValueChange={(v) => setStrategy(v as ConflictStrategy)}
+                className="mt-2 space-y-1"
+              >
+                <Row
+                  id="s-merge"
+                  value="merge"
+                  label="Merge — eingehende Felder überschreiben bestehende (Default)"
+                />
+                <Row
+                  id="s-overwrite"
+                  value="overwrite"
+                  label="Überschreiben — kompletter Datensatz wird ersetzt"
+                />
+                <Row
+                  id="s-keep"
+                  value="keep"
+                  label="Bestehende behalten — nur neue Datensätze anlegen"
+                />
               </RadioGroup>
             </div>
 
@@ -218,14 +263,19 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
               <Alert>
                 <AlertTriangle className="size-4" />
                 <AlertDescription className="text-xs">
-                  <strong>timeEntries gewinnt:</strong> {plan.timeEntryConflicts.length} Differenz(en) zwischen
-                  <span className="font-mono"> activities</span> und <span className="font-mono">timeEntries</span> — die kanonische Quelle ist <span className="font-mono">timeEntries</span>.
+                  <strong>timeEntries gewinnt:</strong> {plan.timeEntryConflicts.length}{" "}
+                  Differenz(en) zwischen
+                  <span className="font-mono"> activities</span> und{" "}
+                  <span className="font-mono">timeEntries</span> — die kanonische Quelle ist{" "}
+                  <span className="font-mono">timeEntries</span>.
                 </AlertDescription>
               </Alert>
             )}
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setStep("file")}>Zurück</Button>
+              <Button variant="outline" onClick={() => setStep("file")}>
+                Zurück
+              </Button>
               <Button onClick={goMapping}>Weiter — Mapping</Button>
             </div>
           </div>
@@ -240,11 +290,15 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
               </p>
               {plan.singleEngineerMode ? (
                 <p className="text-xs text-muted-foreground">
-                  Single-Engineer-Modus erkannt — alle eingehenden engineerIds werden dem aktiven Benutzer zugeordnet bzw. ignoriert.
-                  {plan.engineerIdsInDoc.length > 0 && ` (${plan.engineerIdsInDoc.length} eingehende ID(s))`}
+                  Single-Engineer-Modus erkannt — alle eingehenden engineerIds werden dem aktiven
+                  Benutzer zugeordnet bzw. ignoriert.
+                  {plan.engineerIdsInDoc.length > 0 &&
+                    ` (${plan.engineerIdsInDoc.length} eingehende ID(s))`}
                 </p>
               ) : plan.engineerIdsInDoc.length === 0 ? (
-                <p className="text-xs text-muted-foreground">Keine engineerIds in der Datei — Mapping nicht nötig.</p>
+                <p className="text-xs text-muted-foreground">
+                  Keine engineerIds in der Datei — Mapping nicht nötig.
+                </p>
               ) : (
                 <div className="space-y-2">
                   {plan.engineerIdsInDoc.map((eid) => (
@@ -254,7 +308,9 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
                         value={engineerMapping[eid] ?? "__skip__"}
                         onValueChange={(v) => setEngineerMapping((m) => ({ ...m, [eid]: v }))}
                       >
-                        <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="w-64">
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="__skip__">— Überspringen —</SelectItem>
                           <SelectItem value="__create__">Neu anlegen</SelectItem>
@@ -287,17 +343,28 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
                         <div className="text-xs">
                           <div className="font-mono">{s.incomingName}</div>
                           <div className="text-muted-foreground">
-                            ähnlich zu <span className="font-mono">{s.suggestion}</span> (Distanz {s.distance})
+                            ähnlich zu <span className="font-mono">{s.suggestion}</span> (Distanz{" "}
+                            {s.distance})
                           </div>
                         </div>
                         <Select
                           value={current}
-                          onValueChange={(v) => setCustomerMapping((m) => ({ ...m, [s.normalized]: v }))}
+                          onValueChange={(v) =>
+                            setCustomerMapping((m) => ({ ...m, [s.normalized]: v }))
+                          }
                         >
-                          <SelectTrigger className="w-64"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="w-64">
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
-                            {s.suggestion && <SelectItem value={s.suggestion}>Bestehenden „{s.suggestion}" nutzen</SelectItem>}
-                            <SelectItem value={s.incomingName}>Neu „{s.incomingName}" anlegen</SelectItem>
+                            {s.suggestion && (
+                              <SelectItem value={s.suggestion}>
+                                Bestehenden „{s.suggestion}" nutzen
+                              </SelectItem>
+                            )}
+                            <SelectItem value={s.incomingName}>
+                              Neu „{s.incomingName}" anlegen
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -308,8 +375,12 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setStep("review")}>Zurück</Button>
-              <Button onClick={runImport} disabled={busy}>Import ausführen</Button>
+              <Button variant="outline" onClick={() => setStep("review")}>
+                Zurück
+              </Button>
+              <Button onClick={runImport} disabled={busy}>
+                Import ausführen
+              </Button>
             </div>
           </div>
         )}
@@ -323,9 +394,14 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
             <div className="rounded-md border border-border p-3 text-sm">
               <p className="mb-2 flex items-center gap-2 font-medium">
                 {result.ok ? (
-                  <><CheckCircle2 className="size-4 text-success" /> Import abgeschlossen</>
+                  <>
+                    <CheckCircle2 className="size-4 text-success" /> Import abgeschlossen
+                  </>
                 ) : (
-                  <><AlertTriangle className="size-4 text-destructive" /> Import fehlgeschlagen — Rollback ausgeführt</>
+                  <>
+                    <AlertTriangle className="size-4 text-destructive" /> Import fehlgeschlagen —
+                    Rollback ausgeführt
+                  </>
                 )}
               </p>
               <div className="grid grid-cols-4 gap-2 text-xs">
@@ -336,22 +412,29 @@ export function ImportPreviewDialog({ open, onOpenChange, actor, onCompleted }: 
               </div>
               {result.warnings.length > 0 && (
                 <ul className="mt-3 space-y-1 text-xs text-warning">
-                  {result.warnings.map((w, i) => <li key={i}>⚠ {w}</li>)}
+                  {result.warnings.map((w, i) => (
+                    <li key={i}>⚠ {w}</li>
+                  ))}
                 </ul>
               )}
               {result.errors.length > 0 && (
                 <ul className="mt-3 space-y-1 text-xs text-destructive">
-                  {result.errors.map((e, i) => <li key={i}>✗ {e}</li>)}
+                  {result.errors.map((e, i) => (
+                    <li key={i}>✗ {e}</li>
+                  ))}
                 </ul>
               )}
               {result.snapshotId && (
                 <p className="mt-3 text-xs text-muted-foreground">
-                  Pre-Snapshot: <span className="font-mono">{result.snapshotId}</span> — Rollback aus dem Import-Protokoll möglich.
+                  Pre-Snapshot: <span className="font-mono">{result.snapshotId}</span> — Rollback
+                  aus dem Import-Protokoll möglich.
                 </p>
               )}
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => reset()}>Weiteren Import starten</Button>
+              <Button variant="outline" onClick={() => reset()}>
+                Weiteren Import starten
+              </Button>
               <Button onClick={() => onOpenChange(false)}>Schließen</Button>
             </div>
           </div>
@@ -365,7 +448,9 @@ function Row({ id, value, label }: { id: string; value: string; label: string })
   return (
     <div className="flex items-center gap-2">
       <RadioGroupItem id={id} value={value} />
-      <Label htmlFor={id} className="font-normal">{label}</Label>
+      <Label htmlFor={id} className="font-normal">
+        {label}
+      </Label>
     </div>
   );
 }

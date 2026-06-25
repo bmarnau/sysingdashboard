@@ -84,14 +84,8 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
   const user = useCurrentUser();
   const role = user?.role ?? null;
 
-  const allTopics = useMemo(
-    () => HelpDocumentationService.getAllTopics(role),
-    [role, open],
-  );
-  const grouped = useMemo(
-    () => HelpDocumentationService.getTopicsByCategory(role),
-    [role, open],
-  );
+  const allTopics = useMemo(() => HelpDocumentationService.getAllTopics(role), [role, open]);
+  const grouped = useMemo(() => HelpDocumentationService.getTopicsByCategory(role), [role, open]);
   const settings = useMemo(() => HelpDocumentationService.getAllSettings(), [open]);
 
   const [query, setQuery] = useState("");
@@ -181,9 +175,10 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
         <ul>
           ${settings
             .map(
-              (s) => `<li><strong>${escapeHtml(s.name)}</strong> — ${escapeHtml(s.description)} (Default: ${escapeHtml(
-                s.defaultValue ?? "—",
-              )}; betrifft: ${s.affectedAreas.map(escapeHtml).join(", ")})</li>`,
+              (s) =>
+                `<li><strong>${escapeHtml(s.name)}</strong> — ${escapeHtml(s.description)} (Default: ${escapeHtml(
+                  s.defaultValue ?? "—",
+                )}; betrifft: ${s.affectedAreas.map(escapeHtml).join(", ")})</li>`,
             )
             .join("")}
         </ul>
@@ -258,9 +253,7 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
                   />
                 ))}
                 {searchResults.length === 0 && (
-                  <div className="px-2 text-xs text-muted-foreground">
-                    Keine Treffer.
-                  </div>
+                  <div className="px-2 text-xs text-muted-foreground">Keine Treffer.</div>
                 )}
               </>
             ) : (
@@ -305,7 +298,7 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
                   <span className="truncate">
                     {activeId === "__settings"
                       ? "Einstellungen im Überblick"
-                      : activeTopic?.title ?? "Kapitel wählen"}
+                      : (activeTopic?.title ?? "Kapitel wählen")}
                   </span>
                 </span>
                 <ChevronDown
@@ -374,7 +367,6 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
               )}
             </div>
 
-
             {activeId === "__settings" ? (
               <SettingsChapter settings={settings} />
             ) : activeTopic ? (
@@ -415,9 +407,7 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
                 )}
               </article>
             ) : (
-              <div className="text-sm text-muted-foreground">
-                Kein Kapitel ausgewählt.
-              </div>
+              <div className="text-sm text-muted-foreground">Kein Kapitel ausgewählt.</div>
             )}
 
             {/* Prev/Next */}
@@ -465,7 +455,9 @@ function NavLink({
       }`}
     >
       {label}
-      {sub && <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{sub}</div>}
+      {sub && (
+        <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{sub}</div>
+      )}
     </button>
   );
 }
@@ -490,7 +482,9 @@ function MobileNavLink({
       }`}
     >
       {label}
-      {sub && <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{sub}</div>}
+      {sub && (
+        <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{sub}</div>
+      )}
     </button>
   );
 }
@@ -505,10 +499,10 @@ function SettingsChapter({
       <div className="text-xs uppercase tracking-wide text-muted-foreground">Service</div>
       <h1 className="text-xl font-semibold">Einstellungen im Überblick</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Alle zentralen Einstellungen des Dashboards mit Standardwert und betroffenen
-        Bereichen. Neue Einstellungen werden über{" "}
-        <code className="rounded bg-secondary/60 px-1">registerSettings()</code> ergänzt
-        und erscheinen hier automatisch.
+        Alle zentralen Einstellungen des Dashboards mit Standardwert und betroffenen Bereichen. Neue
+        Einstellungen werden über{" "}
+        <code className="rounded bg-secondary/60 px-1">registerSettings()</code> ergänzt und
+        erscheinen hier automatisch.
       </p>
       <div className="mt-4 overflow-x-auto rounded-md border border-border">
         <table className="w-full text-sm">

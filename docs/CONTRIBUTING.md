@@ -19,12 +19,12 @@ CHANGELOG.md     Single Source of Truth der Dashboard-Version
 
 ## 2. Branch-Strategie
 
-| Branch        | Zweck                                               |
-| ------------- | --------------------------------------------------- |
-| `main`        | Produktionsstand. Nur gemergte Releases.            |
-| `develop`     | Integrationsbranch. Basis für Features.             |
-| `feature/<x>` | Neue Funktion. Mergt zurück nach `develop`.         |
-| `bugfix/<x>`  | Fehlerbehebung. Mergt zurück nach `develop`.        |
+| Branch        | Zweck                                                   |
+| ------------- | ------------------------------------------------------- |
+| `main`        | Produktionsstand. Nur gemergte Releases.                |
+| `develop`     | Integrationsbranch. Basis für Features.                 |
+| `feature/<x>` | Neue Funktion. Mergt zurück nach `develop`.             |
+| `bugfix/<x>`  | Fehlerbehebung. Mergt zurück nach `develop`.            |
 | `hotfix/<x>`  | Dringender Produktionsfix. Mergt nach `main`+`develop`. |
 
 Lovable arbeitet standardmäßig direkt auf `main`. Wer parallel lokal entwickelt,

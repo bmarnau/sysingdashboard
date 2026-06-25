@@ -23,12 +23,12 @@ import {
   Upload,
 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  JsonExportService,
-  type ExportOptions,
-} from "@/lib/json-export-service";
+import { JsonExportService, type ExportOptions } from "@/lib/json-export-service";
 import type { ExportScope } from "@/lib/json-schema";
-import { JsonSchemaValidationService, type ValidationResult } from "@/lib/json-schema-validation-service";
+import {
+  JsonSchemaValidationService,
+  type ValidationResult,
+} from "@/lib/json-schema-validation-service";
 import { ExampleFileService } from "@/lib/example-file-service";
 import { ExportDownloadService } from "@/lib/export-download-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -37,13 +37,7 @@ import { ImportPreviewDialog } from "@/components/ImportPreviewDialog";
 import { ImportLogService, type ImportLogEntry } from "@/lib/import-log-service";
 import { JsonImportService } from "@/lib/json-import-service";
 
-export type ImportExportTab =
-  | "export"
-  | "import"
-  | "examples"
-  | "log"
-  | "backup"
-  | "docs";
+export type ImportExportTab = "export" | "import" | "examples" | "log" | "backup" | "docs";
 
 interface ImportExportDialogProps {
   open: boolean;
@@ -95,7 +89,9 @@ export function ImportExportDialog({
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [showManual, setShowManual] = useState(false);
-  const [exampleValidations, setExampleValidations] = useState<Record<string, ValidationResult>>({});
+  const [exampleValidations, setExampleValidations] = useState<Record<string, ValidationResult>>(
+    {},
+  );
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [logEntries, setLogEntries] = useState<ImportLogEntry[]>([]);
 
@@ -276,7 +272,10 @@ export function ImportExportDialog({
                   <Upload className="size-4" /> JSON-Import
                 </p>
                 <p className="text-muted-foreground">
-                  Wizard: Datei → Vorschau (Diff & Konflikte) → Benutzer-/Kunden-Mapping → Ausführung mit Pre-Snapshot und automatischem Rollback bei Fehler. <strong>timeEntries</strong> ist die kanonische Quelle gegenüber <strong>activities</strong>.
+                  Wizard: Datei → Vorschau (Diff & Konflikte) → Benutzer-/Kunden-Mapping →
+                  Ausführung mit Pre-Snapshot und automatischem Rollback bei Fehler.{" "}
+                  <strong>timeEntries</strong> ist die kanonische Quelle gegenüber{" "}
+                  <strong>activities</strong>.
                 </p>
                 <div className="mt-3">
                   <Button onClick={() => setShowImportDialog(true)}>
@@ -286,7 +285,6 @@ export function ImportExportDialog({
               </div>
               <ImportLogTable entries={logEntries} compact onChanged={refreshLog} />
             </TabsContent>
-
 
             {/* ---------------- BEISPIELDATEIEN ---------------- */}
             <TabsContent value="examples" className="pt-4">
@@ -352,7 +350,6 @@ export function ImportExportDialog({
               <ImportLogTable entries={logEntries} onChanged={refreshLog} />
             </TabsContent>
 
-
             {/* ---------------- BACKUP ---------------- */}
             <TabsContent value="backup" className="space-y-3 pt-4">
               <div className="rounded-md border border-border p-4 text-sm">
@@ -384,8 +381,8 @@ export function ImportExportDialog({
                   <Info className="size-4" /> Schnittstellen-Dokumentation
                 </p>
                 <p className="text-muted-foreground">
-                  Das Handbuch enthält ein eigenes Kapitel zur JSON-Schnittstelle
-                  (Zweck, Schema-Versionierung, Sicherheitsregeln, Beispiel-JSON).
+                  Das Handbuch enthält ein eigenes Kapitel zur JSON-Schnittstelle (Zweck,
+                  Schema-Versionierung, Sicherheitsregeln, Beispiel-JSON).
                 </p>
                 <div className="mt-3">
                   <Button variant="outline" onClick={() => setShowManual(true)}>
@@ -398,11 +395,7 @@ export function ImportExportDialog({
         </DialogContent>
       </Dialog>
 
-      <UserManualDialog
-        open={showManual}
-        onClose={() => setShowManual(false)}
-        initialRoute="/"
-      />
+      <UserManualDialog open={showManual} onClose={() => setShowManual(false)} initialRoute="/" />
 
       <ImportPreviewDialog
         open={showImportDialog}
@@ -437,7 +430,9 @@ function ImportLogTable({
       toast.success("Rollback ausgeführt", { description: e.fileName });
       await onChanged?.();
     } else {
-      toast.error("Rollback nicht möglich", { description: "Pre-Snapshot ist nicht mehr verfügbar (z. B. nach Seiten-Reload)." });
+      toast.error("Rollback nicht möglich", {
+        description: "Pre-Snapshot ist nicht mehr verfügbar (z. B. nach Seiten-Reload).",
+      });
     }
   };
   const handleDelete = async (e: ImportLogEntry) => {
@@ -460,7 +455,9 @@ function ImportLogTable({
         <tbody className="divide-y divide-border">
           {entries.slice(0, compact ? 5 : 100).map((e) => (
             <tr key={e.runId} className="align-top">
-              <td className="px-3 py-2 text-xs font-mono">{e.startedAt.slice(0, 19).replace("T", " ")}</td>
+              <td className="px-3 py-2 text-xs font-mono">
+                {e.startedAt.slice(0, 19).replace("T", " ")}
+              </td>
               <td className="px-3 py-2 text-xs font-mono">{e.fileName}</td>
               <td className="px-3 py-2 text-xs">
                 {e.ok ? (
@@ -486,9 +483,13 @@ function ImportLogTable({
               )}
               <td className="px-3 py-2 text-right">
                 {e.snapshotId && e.ok && (
-                  <Button size="sm" variant="ghost" onClick={() => handleRollback(e)}>Rollback</Button>
+                  <Button size="sm" variant="ghost" onClick={() => handleRollback(e)}>
+                    Rollback
+                  </Button>
                 )}
-                <Button size="sm" variant="ghost" onClick={() => handleDelete(e)}>Löschen</Button>
+                <Button size="sm" variant="ghost" onClick={() => handleDelete(e)}>
+                  Löschen
+                </Button>
               </td>
             </tr>
           ))}
@@ -556,4 +557,3 @@ function ValidationCard({ res }: { res: ValidationResult }) {
     </div>
   );
 }
-

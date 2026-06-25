@@ -82,7 +82,10 @@ export const ImportLogService = {
 
   async list(): Promise<ImportLogEntry[]> {
     if (!this.isSupported()) return [];
-    const all = await tx<ImportLogEntry[]>("readonly", (s) => s.getAll() as IDBRequest<ImportLogEntry[]>);
+    const all = await tx<ImportLogEntry[]>(
+      "readonly",
+      (s) => s.getAll() as IDBRequest<ImportLogEntry[]>,
+    );
     return all.sort((a, b) => b.startedAt.localeCompare(a.startedAt));
   },
 

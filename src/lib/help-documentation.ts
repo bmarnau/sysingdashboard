@@ -331,6 +331,52 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
 - Logging gehärtet: Worker und SSR-Middleware loggen nur gekürzte Error-Messages (≤ 256 Zeichen), niemals volle Error-Objekte oder Response-Bodies.
 - Import-Schemas (\`src/lib/json-schema.ts\`) erzwingen Längenlimits (IDs 128, Strings 255, Texte 2000 Zeichen) gegen unbounded Payloads.`,
   },
+  {
+    id: "ci-security-scan",
+    title: "CI-Security-Scan",
+    category: "Service",
+    keywords: ["CI", "Security", "Scan", "Secrets", "gitleaks", "Azure", "Header", "Artefakt"],
+    lastUpdated: "2026-06-24",
+    content: `## Zweck
+Automatischer Sicherheits-Scan bei jedem Push/PR auf \`main\`/\`develop\` und zusätzlich montags 03:00 UTC.
+Findet Secrets, gefährliche HTTP-Header und unerlaubte Azure-/Connection-Strings im Code,
+bevor sie produktiv werden.
+
+## Komponenten
+- **\`scripts/security-check.mjs\`** — projektspezifischer Scanner (plain Node, keine Dependency).
+  Aufruf: \`bun run security:check\`. Schreibt \`security-report/findings.json\` und \`findings.md\`.
+- **gitleaks** — zweite Verteidigungslinie für bekannte Secret-Formate, Config \`.gitleaks.toml\`.
+- **\`.github/workflows/security.yml\`** — orchestriert beide Scanner und lädt den Report
+  als Artefakt \`security-report-<run-id>\` hoch (Aufbewahrung 30 Tage).
+- **PR-Kommentar** — \`marocchino/sticky-pull-request-comment\` postet \`findings.md\` in den PR.
+
+## Regel-Severities
+- **CRITICAL** (blockt Build): Azure AccountKey/SAS/Connection-String, Azure SQL Server=…;Password=,
+  AWS-Key (\`AKIA…\`), Stripe Live (\`sk_live_…\`), OpenAI (\`sk-…\`), GitHub PAT (\`ghp_…\`),
+  Slack Token, Private-Key-Block, JWT-Literal.
+- **HIGH** (blockt Build): Azure-SDK-Import im Frontend, \`process.env.AZURE_*\`/\`*CONNECTION*\`
+  außerhalb des Server-Scopes, CORS-Wildcard + Credentials, \`X-Frame-Options: ALLOWALL\`,
+  CSP mit \`unsafe-eval\`, \`dangerouslySetInnerHTML\` mit dynamischem Input.
+- **MEDIUM** (Warnung): \`console.error(error)\` mit komplettem Objekt, \`eval\`/\`new Function\`,
+  CORS-Wildcard ohne Credentials, direkter Fetch zu externer URL aus dem Frontend.
+
+## Funde lesen
+1. Im GitHub-Run das Artefakt \`security-report-<run-id>\` herunterladen.
+2. \`findings.md\` öffnet die Tabellen pro Severity mit Datei, Zeile und Snippet.
+3. \`findings.json\` für maschinelle Auswertung.
+
+## Treffer unterdrücken
+- **Pro Treffer:** Code-Kommentar in derselben Zeile oder direkt darüber:
+  \`// security-scan-allow: <regel-id>\` (z. B. \`security-scan-allow: cors-wildcard-only\`).
+- **Pro Datei (gitleaks):** Pfad in \`.gitleaks.toml\` → \`[allowlist] paths\` ergänzen.
+- **Globale Ausnahme:** \`IGNORE_FILES\` in \`scripts/security-check.mjs\` erweitern.
+
+## Lokal ausführen
+\`\`\`bash
+bun run security:check
+\`\`\`
+Exit-Code \`0\` heißt: keine CRITICAL/HIGH-Funde. \`1\` blockt CI.`,
+  },
 ];
 
 /* ---------------------------- Settings catalog ---------------------------- */
@@ -519,7 +565,17 @@ Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Ma
     category: "Service",
     route: "/",
     component: "SystemStatusDialog",
-    keywords: ["Systemstatus", "GitHub", "Commit", "Branch", "Version", "Lovable", "Publish", "Preview", "Health"],
+    keywords: [
+      "Systemstatus",
+      "GitHub",
+      "Commit",
+      "Branch",
+      "Version",
+      "Lovable",
+      "Publish",
+      "Preview",
+      "Health",
+    ],
     lastUpdated: "2026-06-23",
     content: `## Was zeigt der Systemstatus?
 Der Dialog "Service → Systemstatus…" zeigt zur Laufzeit Code-Herkunft, Lovable-Deployment, Versionen und einen Health-Check der Backend-API.
@@ -658,21 +714,12 @@ export const HelpDocumentationService = {
     if (!q) return HelpDocumentationService.getAllTopics(role);
     return allTopics().filter((t) => {
       if (!topicVisible(t, role)) return false;
-      const hay = [
-        t.title,
-        t.category,
-        t.content,
-        ...(t.keywords ?? []),
-      ]
-        .join(" ")
-        .toLowerCase();
+      const hay = [t.title, t.category, t.content, ...(t.keywords ?? [])].join(" ").toLowerCase();
       return hay.includes(q);
     });
   },
   getTopicsForRoute(route: string, role: UserRole | null = null): HelpTopic[] {
-    return allTopics().filter(
-      (t) => topicVisible(t, role) && t.route && route.startsWith(t.route),
-    );
+    return allTopics().filter((t) => topicVisible(t, role) && t.route && route.startsWith(t.route));
   },
   getTopicsForRole(role: UserRole): HelpTopic[] {
     return allTopics().filter((t) => topicVisible(t, role));

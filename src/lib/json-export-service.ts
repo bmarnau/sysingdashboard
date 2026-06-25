@@ -28,17 +28,9 @@ import {
   type ExportType,
   type TimeEntryExport,
 } from "@/lib/json-schema";
-import {
-  UserManagementService,
-  type UserProfile,
-} from "@/lib/user-management";
+import { UserManagementService, type UserProfile } from "@/lib/user-management";
 import { EngineerTargetTimeService } from "@/lib/engineer-target-time";
-import {
-  dashboardData,
-  type Activity,
-  type Project,
-  type WorkPackage,
-} from "@/lib/dashboard-data";
+import { dashboardData, type Activity, type Project, type WorkPackage } from "@/lib/dashboard-data";
 import {
   DASHBOARD_VERSION,
   DOCUMENTATION_VERSION,
@@ -70,20 +62,26 @@ function pad2(n: number): string {
   return n.toString().padStart(2, "0");
 }
 
-export function buildJsonFileName(type: ExportType, scope?: ExportScope, date = new Date()): string {
+export function buildJsonFileName(
+  type: ExportType,
+  scope?: ExportScope,
+  date = new Date(),
+): string {
   const stamp = `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}`;
   if (type === "full") return `dashboard-backup_${stamp}.json`;
   return `dashboard-${scope ?? "partial"}_${stamp}.json`;
 }
 
 function slugify(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 32) || "kunde";
+  return (
+    s
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 32) || "kunde"
+  );
 }
 
 function loadDashboardPersisted(): {
@@ -154,7 +152,10 @@ function collectSettings(): Array<{ key: string; value: unknown }> {
 
 /* ---------------------------- Daten-Pipelines ---------------------------- */
 
-function buildCustomers(projects: Project[]): { customers: CustomerExport[]; lookup: Map<string, string> } {
+function buildCustomers(projects: Project[]): {
+  customers: CustomerExport[];
+  lookup: Map<string, string>;
+} {
   const lookup = new Map<string, string>();
   const customers: CustomerExport[] = [];
   for (const p of projects) {
@@ -194,7 +195,11 @@ function sanitizeUsers(users: UserProfile[]): UserProfile[] {
   return stripSensitiveFields(users) as UserProfile[];
 }
 
-function buildEnvelopeBase(opts: Required<ExportOptions>, type: ExportType, scopes?: ExportScope[]) {
+function buildEnvelopeBase(
+  opts: Required<ExportOptions>,
+  type: ExportType,
+  scopes?: ExportScope[],
+) {
   return {
     schemaVersion: JSON_SCHEMA_VERSION,
     exportType: type,
@@ -220,7 +225,11 @@ export interface JsonExportResult {
   byteLength: number;
 }
 
-function finalizeExport(doc: DashboardJsonExport, type: ExportType, scope?: ExportScope): JsonExportResult {
+function finalizeExport(
+  doc: DashboardJsonExport,
+  type: ExportType,
+  scope?: ExportScope,
+): JsonExportResult {
   // Final-Sweep: nochmals durch stripSensitiveFields (Defense in depth).
   const safe = stripSensitiveFields(doc) as DashboardJsonExport;
   // Schema-Selbsttest — wirft, falls Drift entstanden ist (z. B. neue Felder).

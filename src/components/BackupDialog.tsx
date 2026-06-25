@@ -117,9 +117,8 @@ export function BackupDialog({ open, onOpenChange }: BackupDialogProps) {
             <HardDrive className="size-5" /> Backup
           </DialogTitle>
           <DialogDescription>
-            Tägliches automatisches Daten-Backup des Dashboards. Backups
-            werden lokal im Browser abgelegt und können als ZIP heruntergeladen
-            werden.
+            Tägliches automatisches Daten-Backup des Dashboards. Backups werden lokal im Browser
+            abgelegt und können als ZIP heruntergeladen werden.
           </DialogDescription>
         </DialogHeader>
 
@@ -129,13 +128,12 @@ export function BackupDialog({ open, onOpenChange }: BackupDialogProps) {
           <div className="space-y-1">
             <p className="font-medium">Hinweis zum Quellcode-Export</p>
             <p className="text-muted-foreground">
-              Das ZIP enthält alle Dashboard-Daten (Engineure, Arbeitszeitmodelle,
-              Benutzer, Einstellungen, Berichte). Der vollständige
-              Projekt-Quellcode für Ihren eigenen Webserver lässt sich aus der
-              Browser-App heraus nicht sichern — laden Sie ihn direkt über
-              Lovable (Code-Editor → <em>Codebase herunterladen</em>) oder per
-              GitHub-Integration herunter. Eine Anleitung dazu liegt in jedem
-              ZIP unter <code className="rounded bg-muted px-1">INSTALL.md</code>.
+              Das ZIP enthält alle Dashboard-Daten (Engineure, Arbeitszeitmodelle, Benutzer,
+              Einstellungen, Berichte). Der vollständige Projekt-Quellcode für Ihren eigenen
+              Webserver lässt sich aus der Browser-App heraus nicht sichern — laden Sie ihn direkt
+              über Lovable (Code-Editor → <em>Codebase herunterladen</em>) oder per
+              GitHub-Integration herunter. Eine Anleitung dazu liegt in jedem ZIP unter{" "}
+              <code className="rounded bg-muted px-1">INSTALL.md</code>.
             </p>
             <a
               href="https://docs.lovable.dev/integrations/github"
@@ -267,8 +265,7 @@ export function BackupDialog({ open, onOpenChange }: BackupDialogProps) {
                         />
                         <span className="font-mono">{entry.fileName}</span>
                         <span className="ml-auto text-muted-foreground">
-                          {formatDateTime(entry.timestamp)} ·{" "}
-                          {entry.manual ? "manuell" : "auto"}
+                          {formatDateTime(entry.timestamp)} · {entry.manual ? "manuell" : "auto"}
                         </span>
                       </div>
                       {(entry.consistency.messages.length > 0 ||

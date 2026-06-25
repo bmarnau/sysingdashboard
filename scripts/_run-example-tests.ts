@@ -12,7 +12,9 @@ if (typeof (globalThis as Record<string, unknown>).window === "undefined") {
     setItem: (k: string, v: string) => void store.set(k, v),
     removeItem: (k: string) => void store.delete(k),
     key: (i: number) => Array.from(store.keys())[i] ?? null,
-    get length() { return store.size; },
+    get length() {
+      return store.size;
+    },
     clear: () => store.clear(),
   };
   (globalThis as Record<string, unknown>).window = { localStorage: ls } as unknown;
@@ -69,7 +71,10 @@ for (const file of ExampleFileService.listFiles()) {
   });
 
   test("Schema-Version vorhanden und korrekt", () => {
-    assert(doc.schemaVersion === JSON_SCHEMA_VERSION, `erwartet ${JSON_SCHEMA_VERSION}, erhalten ${doc.schemaVersion}`);
+    assert(
+      doc.schemaVersion === JSON_SCHEMA_VERSION,
+      `erwartet ${JSON_SCHEMA_VERSION}, erhalten ${doc.schemaVersion}`,
+    );
   });
 
   test("Pflichtfelder vorhanden", () => {
@@ -83,7 +88,10 @@ for (const file of ExampleFileService.listFiles()) {
     const res = JsonSchemaValidationService.validate(doc);
     assert(res.schemaValid, `Schema ungültig: ${res.issues.map((i) => i.message).join("; ")}`);
     const errors = res.issues.filter((i) => i.severity === "error");
-    assert(errors.length === 0, `Fehler: ${errors.map((i) => `${i.path}:${i.message}`).join("; ")}`);
+    assert(
+      errors.length === 0,
+      `Fehler: ${errors.map((i) => `${i.path}:${i.message}`).join("; ")}`,
+    );
   });
 
   test("Benutzerzuordnung auf engineerId konsistent", () => {
@@ -124,11 +132,19 @@ for (const file of ExampleFileService.listFiles()) {
     // Counts müssen mit Doc-Inhalt übereinstimmen
     const expectedUsers = (doc.users ?? []).length;
     const expectedProjects = (doc.projects ?? []).length;
-    assert(plan.diffs.users.length === expectedUsers, `users: erwartet ${expectedUsers}, erhalten ${plan.diffs.users.length}`);
-    assert(plan.diffs.projects.length === expectedProjects, `projects: erwartet ${expectedProjects}, erhalten ${plan.diffs.projects.length}`);
+    assert(
+      plan.diffs.users.length === expectedUsers,
+      `users: erwartet ${expectedUsers}, erhalten ${plan.diffs.users.length}`,
+    );
+    assert(
+      plan.diffs.projects.length === expectedProjects,
+      `projects: erwartet ${expectedProjects}, erhalten ${plan.diffs.projects.length}`,
+    );
     // Auf leerem Mock-State müssen alle Diffs „create" sein
-    for (const d of plan.diffs.users) assert(d.action === "create", `user ${d.id}: erwartet create`);
-    for (const d of plan.diffs.projects) assert(d.action === "create", `project ${d.id}: erwartet create`);
+    for (const d of plan.diffs.users)
+      assert(d.action === "create", `user ${d.id}: erwartet create`);
+    for (const d of plan.diffs.projects)
+      assert(d.action === "create", `project ${d.id}: erwartet create`);
   });
 }
 

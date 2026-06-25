@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "docs:check": "node scripts/check-docs-sync.mjs",
+    "security:check": "node scripts/security-check.mjs --json security-report/findings.json --markdown security-report/findings.md",
     "test:examples": "node scripts/test-example-files.mjs"
   },
   "dependencies": {

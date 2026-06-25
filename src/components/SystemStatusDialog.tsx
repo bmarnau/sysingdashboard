@@ -99,9 +99,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
     ? "max-w-[100vw] sm:max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] rounded-none overflow-y-auto overflow-x-hidden p-4 sm:p-6"
     : "max-w-2xl max-h-[85vh] overflow-y-auto overflow-x-hidden";
 
-  const sectionsWrapper = expanded
-    ? "grid gap-3 lg:grid-cols-2"
-    : "flex flex-col gap-3";
+  const sectionsWrapper = expanded ? "grid gap-3 lg:grid-cols-2" : "flex flex-col gap-3";
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -151,9 +149,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
                   <span className="inline-flex flex-wrap items-center gap-1">
                     <GitCommit className="size-3 shrink-0" />
                     <span className="break-all">{BUILD_INFO.commit}</span>
-                    {BUILD_INFO.dirty && (
-                      <span className="text-warning">(uncommitted)</span>
-                    )}
+                    {BUILD_INFO.dirty && <span className="text-warning">(uncommitted)</span>}
                   </span>
                 ) : (
                   <span className="text-muted-foreground">nicht im Build verfügbar</span>
@@ -179,11 +175,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
               value={PROJECT_INFO.lovable.stablePreviewUrl.replace(/^https?:\/\//, "")}
               href={PROJECT_INFO.lovable.stablePreviewUrl}
             />
-            <Row
-              label="Editor"
-              value="lovable.dev"
-              href={PROJECT_INFO.lovable.editorUrl}
-            />
+            <Row label="Editor" value="lovable.dev" href={PROJECT_INFO.lovable.editorUrl} />
             <Row label="Projekt-ID" value={PROJECT_INFO.lovable.projectId} />
           </section>
 
@@ -229,11 +221,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
             <Row
               label="Zuletzt geprüft"
               mono={false}
-              value={
-                health.checkedAt
-                  ? new Date(health.checkedAt).toLocaleString("de-DE")
-                  : "—"
-              }
+              value={health.checkedAt ? new Date(health.checkedAt).toLocaleString("de-DE") : "—"}
             />
             {health.lastError && (
               <p className="mt-2 break-words text-xs text-destructive [overflow-wrap:anywhere]">
@@ -244,12 +232,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
         </div>
 
         <DialogFooter className="gap-2 sm:justify-between">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={health.refresh}
-            disabled={health.inFlight}
-          >
+          <Button variant="outline" size="sm" onClick={health.refresh} disabled={health.inFlight}>
             <RefreshCw className={`mr-2 size-4 ${health.inFlight ? "animate-spin" : ""}`} />
             Jetzt prüfen
           </Button>

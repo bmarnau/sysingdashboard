@@ -100,11 +100,7 @@ function calculateBillableHours(activities: Activity[], year: number, month0: nu
   return +sum.toFixed(2);
 }
 
-function calculateNonBillableHours(
-  activities: Activity[],
-  year: number,
-  month0: number,
-): number {
+function calculateNonBillableHours(activities: Activity[], year: number, month0: number): number {
   let sum = 0;
   for (const a of activities) {
     if (a.billable) continue;
@@ -227,7 +223,10 @@ function getMonthDetail(
   const projMap = new Map(projects.map((p) => [p.id, p]));
 
   const clientMap = new Map<string, { hours: number; billable: number; amount: number }>();
-  const projectMap = new Map<string, { projectId: string | null; projectName: string; hours: number; billable: number }>();
+  const projectMap = new Map<
+    string,
+    { projectId: string | null; projectName: string; hours: number; billable: number }
+  >();
 
   for (const a of monthActs) {
     const dur = Number(a.duration) || 0;
@@ -240,8 +239,8 @@ function getMonthDetail(
     }
     clientMap.set(client, c);
 
-    const projId = a.workPackageId ? wpToProj.get(a.workPackageId) ?? null : null;
-    const projName = projId ? projMap.get(projId)?.name ?? "Unbekannt" : "Ohne Projekt";
+    const projId = a.workPackageId ? (wpToProj.get(a.workPackageId) ?? null) : null;
+    const projName = projId ? (projMap.get(projId)?.name ?? "Unbekannt") : "Ohne Projekt";
     const pkey = projId ?? "__none__";
     const p = projectMap.get(pkey) ?? {
       projectId: projId,

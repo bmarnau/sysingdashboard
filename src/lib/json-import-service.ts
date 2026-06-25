@@ -44,12 +44,7 @@ import {
   saveTargetTimeModels,
   type EngineerTargetTimeModel,
 } from "@/lib/engineer-target-time";
-import {
-  dashboardData,
-  type Activity,
-  type Project,
-  type WorkPackage,
-} from "@/lib/dashboard-data";
+import { dashboardData, type Activity, type Project, type WorkPackage } from "@/lib/dashboard-data";
 import { isSensitiveFieldName } from "@/lib/json-schema";
 
 /* ------------------------------ Typen ------------------------------ */
@@ -104,7 +99,12 @@ export interface ImportPlan {
    * Konflikte zwischen `activities[*]` und `timeEntries[*]` mit gleicher
    * `activityId` — `timeEntries` gewinnt, Differenz wird protokolliert.
    */
-  timeEntryConflicts: Array<{ activityId: string; field: string; activityValue: unknown; timeEntryValue: unknown }>;
+  timeEntryConflicts: Array<{
+    activityId: string;
+    field: string;
+    activityValue: unknown;
+    timeEntryValue: unknown;
+  }>;
 }
 
 export interface ImportResult {
@@ -204,7 +204,10 @@ function shallowEqual(a: unknown, b: unknown): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function diffList<T extends { id: string }>(incoming: T[] = [], current: T[] = []): EntityDiff<T>[] {
+function diffList<T extends { id: string }>(
+  incoming: T[] = [],
+  current: T[] = [],
+): EntityDiff<T>[] {
   const byId = new Map(current.map((c) => [c.id, c]));
   return incoming.map((i) => {
     const cur = byId.get(i.id);
@@ -284,7 +287,9 @@ const snapshotRegistry = new Map<string, PreSnapshot>();
 export const JsonImportService = {
   SCHEMA_VERSION: JSON_SCHEMA_VERSION,
 
-  async readFile(file: File): Promise<{ raw: string; doc: DashboardJsonExport | null; validation: ValidationResult }> {
+  async readFile(
+    file: File,
+  ): Promise<{ raw: string; doc: DashboardJsonExport | null; validation: ValidationResult }> {
     const text = await file.text();
     let parsed: unknown;
     try {
@@ -297,7 +302,11 @@ export const JsonImportService = {
           ok: false,
           schemaValid: false,
           issues: [
-            { severity: "error", path: "(root)", message: `JSON konnte nicht geparst werden: ${(err as Error).message}` },
+            {
+              severity: "error",
+              path: "(root)",
+              message: `JSON konnte nicht geparst werden: ${(err as Error).message}`,
+            },
           ],
           counts: {},
         },
@@ -343,7 +352,12 @@ export const JsonImportService = {
       // Exakter Normalize-Match
       const exact = existingNorm.get(norm);
       if (exact && exact !== c.name) {
-        customerSuggestions.push({ incomingName: c.name, normalized: norm, suggestion: exact, distance: 0 });
+        customerSuggestions.push({
+          incomingName: c.name,
+          normalized: norm,
+          suggestion: exact,
+          distance: 0,
+        });
         continue;
       }
       if (exact) continue; // identisch
@@ -354,7 +368,12 @@ export const JsonImportService = {
         if (d <= 2 && (!best || d < best.d)) best = { name: existing, d };
       }
       if (best) {
-        customerSuggestions.push({ incomingName: c.name, normalized: norm, suggestion: best.name, distance: best.d });
+        customerSuggestions.push({
+          incomingName: c.name,
+          normalized: norm,
+          suggestion: best.name,
+          distance: best.d,
+        });
       }
     }
 
@@ -365,10 +384,20 @@ export const JsonImportService = {
       const act = actMap.get(te.activityId);
       if (!act) continue;
       if (act.date !== te.date) {
-        timeEntryConflicts.push({ activityId: te.activityId, field: "date", activityValue: act.date, timeEntryValue: te.date });
+        timeEntryConflicts.push({
+          activityId: te.activityId,
+          field: "date",
+          activityValue: act.date,
+          timeEntryValue: te.date,
+        });
       }
       if (act.duration !== te.durationHours) {
-        timeEntryConflicts.push({ activityId: te.activityId, field: "duration", activityValue: act.duration, timeEntryValue: te.durationHours });
+        timeEntryConflicts.push({
+          activityId: te.activityId,
+          field: "duration",
+          activityValue: act.duration,
+          timeEntryValue: te.durationHours,
+        });
       }
     }
 
@@ -450,17 +479,22 @@ export const JsonImportService = {
       updatedAt: t.updatedAt ?? new Date().toISOString(),
     }));
 
-    const settingsIn = (doc.settings ?? []).filter((s) => !isSensitiveFieldName(s.key)).map((s) => ({
-      id: s.key,
-      key: s.key,
-      value: s.value,
-    }));
-    const currentSettings = (typeof window !== "undefined")
-      ? settingsIn.map((s) => {
-          const v = window.localStorage.getItem(s.key);
-          return v ? { id: s.key, key: s.key, value: tryParse(v) } : undefined;
-        }).filter(Boolean) as Array<{ id: string; key: string; value: unknown }>
-      : [];
+    const settingsIn = (doc.settings ?? [])
+      .filter((s) => !isSensitiveFieldName(s.key))
+      .map((s) => ({
+        id: s.key,
+        key: s.key,
+        value: s.value,
+      }));
+    const currentSettings =
+      typeof window !== "undefined"
+        ? (settingsIn
+            .map((s) => {
+              const v = window.localStorage.getItem(s.key);
+              return v ? { id: s.key, key: s.key, value: tryParse(v) } : undefined;
+            })
+            .filter(Boolean) as Array<{ id: string; key: string; value: unknown }>)
+        : [];
 
     return {
       schemaValid: validation.schemaValid,
@@ -480,7 +514,10 @@ export const JsonImportService = {
     };
   },
 
-  applyPlan(plan: ImportPlan, options: ImportOptions): { snapshotId: string; counts: ImportResult["counts"]; warnings: string[] } {
+  applyPlan(
+    plan: ImportPlan,
+    options: ImportOptions,
+  ): { snapshotId: string; counts: ImportResult["counts"]; warnings: string[] } {
     const counts = { created: 0, updated: 0, skipped: 0, errors: 0 };
     const warnings: string[] = [];
 
@@ -528,7 +565,11 @@ export const JsonImportService = {
 
       // Schreiben
       if (plan.diffs.users.length > 0) saveUsers(usersNext);
-      writeDashboardState({ projects: projectsNext, workPackages: wpsNext, activities: activitiesNext });
+      writeDashboardState({
+        projects: projectsNext,
+        workPackages: wpsNext,
+        activities: activitiesNext,
+      });
       if (plan.diffs.targetTimeModels.length > 0) saveTargetTimeModels(targetsNext);
 
       // Settings einzeln schreiben
@@ -543,7 +584,10 @@ export const JsonImportService = {
             continue;
           }
           const v = d.incoming.value;
-          window.localStorage.setItem(d.incoming.key, typeof v === "string" ? v : JSON.stringify(v));
+          window.localStorage.setItem(
+            d.incoming.key,
+            typeof v === "string" ? v : JSON.stringify(v),
+          );
           if (d.action === "create") counts.created++;
           else counts.updated++;
         }
@@ -585,7 +629,10 @@ export const JsonImportService = {
 
 /* ---------------------- intern ---------------------- */
 
-function applyCustomerMapping(name: string | undefined, mapping?: Record<string, string>): string | undefined {
+function applyCustomerMapping(
+  name: string | undefined,
+  mapping?: Record<string, string>,
+): string | undefined {
   if (!name) return name;
   if (!mapping) return name;
   const norm = normalizeCustomerName(name);

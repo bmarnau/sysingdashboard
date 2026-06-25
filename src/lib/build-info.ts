@@ -27,8 +27,7 @@ const fallback: BuildInfo = {
   dirty: false,
 };
 
-const rawInfo: BuildInfo =
-  typeof __BUILD_INFO__ !== "undefined" ? __BUILD_INFO__ : fallback;
+const rawInfo: BuildInfo = typeof __BUILD_INFO__ !== "undefined" ? __BUILD_INFO__ : fallback;
 
 // In der Lovable-Sandbox fehlt `git` häufig — leere/unknown Werte
 // werden auf die Single-Source-of-Truth aus PROJECT_INFO gehoben.

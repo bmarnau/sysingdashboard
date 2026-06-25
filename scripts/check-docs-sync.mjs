@@ -44,18 +44,14 @@ if (changelog) {
     entries.push({ version: m[1], date: m[2] });
   }
   if (entries.length === 0) {
-    errors.push(
-      "CHANGELOG.md enthält keine Einträge im Format `## <version> - YYYY-MM-DD`.",
-    );
+    errors.push("CHANGELOG.md enthält keine Einträge im Format `## <version> - YYYY-MM-DD`.");
   }
 }
 
 // (2) DASHBOARD_VERSION wird aus CHANGELOG abgeleitet — kein Drift mehr möglich.
 // Hier prüfen wir nur noch, dass keine alte hartcodierte Konstante zurückkehrt.
 const helpSrc = read("src/lib/help-documentation.ts");
-const hardcoded = helpSrc.match(
-  /export const DASHBOARD_VERSION\s*=\s*"(\d+\.\d+\.\d+)"/,
-);
+const hardcoded = helpSrc.match(/export const DASHBOARD_VERSION\s*=\s*"(\d+\.\d+\.\d+)"/);
 if (hardcoded) {
   errors.push(
     `DASHBOARD_VERSION ist hartcodiert ("${hardcoded[1]}"). Stattdessen aus CHANGELOG[0].version ableiten.`,
