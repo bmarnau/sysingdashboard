@@ -13,7 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
-## 1.17.2 - 2026-06-24
+## 1.17.3 - 2026-06-24
+- Sicherheits-Baseline (Check 1) durchgeführt; Ergebnisse in `.lovable/plan.md` dokumentiert. Keine Secrets/SAS-Tokens/Connection-Strings im Frontend, kein Azure-SDK im Client, generische Fehlerantworten an `/api/*`.
+- Logging gehärtet: `src/routes/__root.tsx`, `src/start.ts`, `src/server.ts` loggen nur noch gekürzte Error-Messages (max. 200–256 Zeichen) statt voller Error-Objekte oder Response-Bodies.
+- `/api/sync` mit Auth-Gate: In Production erforderlich `X-Sync-Token`-Header gegen Server-Secret `SYNC_TRIGGER_TOKEN`; ohne Secret hart deaktiviert (503). Dev-Modus bleibt offen (nur Mock).
+- Zod-Längenlimits in `src/lib/json-schema.ts` (`SHORT_ID`/`SHORT_STR`/`LONG_STR`) gegen unbounded Import-Payloads.
+- `src/components/ui/chart.tsx`: Security-Kommentar an `dangerouslySetInnerHTML` (niemals User-Input).
+- CI: `bun run lint` ohne `|| true`, damit Lint-Fehler den Build wieder rot machen.
+
+
 - CI-Workflow (`.github/workflows/ci.yml`) auf Bun umgestellt: `oven-sh/setup-bun@v2` + `bun install --frozen-lockfile`, `bun run lint`, `bun run build`. Behebt den Fehler „Dependencies lock file is not found" beim Setup-Node-Schritt (Projekt nutzt `bun.lock`, keine `package-lock.json`).
 
 ## 1.17.1 - 2026-06-23
