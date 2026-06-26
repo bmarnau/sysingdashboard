@@ -332,6 +332,32 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
 - Import-Schemas (\`src/lib/json-schema.ts\`) erzwingen Längenlimits (IDs 128, Strings 255, Texte 2000 Zeichen) gegen unbounded Payloads.`,
   },
   {
+    id: "offline-mode",
+    title: "Offline-Betrieb",
+    category: "Service",
+    keywords: ["Offline", "localStorage", "Azure", "Sync", "Backend", "Ausfall"],
+    lastUpdated: "2026-06-26",
+    content: `## Garantien
+Das Dashboard ist offline-first und arbeitet ohne Backend vollständig im Browser.
+
+| Garantie | Umsetzung |
+| --- | --- |
+| Start ohne Azure-Konfiguration | \`config/env.mjs\` defaultet auf \`development\`; \`assertAzureAllowed()\` blockt jeden Azure-Zugriff. |
+| Projekte / Arbeitspakete / Tätigkeiten lokal | Persistenz in \`localStorage\` (user-scoped, \`UserManagementService.userScopedKey\`). |
+| localStorage bleibt aktiv | Alle Module (\`export-archive\`, \`backup-service\`, \`engineer-target-time\`, \`export-download-service\`) nutzen \`window.localStorage\`. |
+| Azure-Ausfall blockiert nichts | Einziger Startup-Call ist \`/api/status\` (read-only, 3 s Timeout) — Fehler landen flüchtig im State, UI bleibt nutzbar. |
+| Keine automatische Azure-Aktion | \`runSync\` wird nirgends automatisch getriggert; kein \`setInterval\`, kein Auto-Sync. |
+
+## Was lokal funktioniert
+Dashboard-Ansichten, Projekte, Arbeitspakete, Tätigkeiten, Leistungsreport, Export (PDF/CSV/JSON), Downloads, Backup-ZIP, Import/Export-Wizard, Handbuch, Systemstatus-Anzeige (ohne Live-Health).
+
+## Was Backend braucht
+Nur der manuell ausgelöste **Sync** über \`POST /api/sync\` (mit \`X-Sync-Token\` in Production). Ohne erreichbares Backend bleibt der Button im Dialog deaktivierbar — alle anderen Funktionen sind unberührt.
+
+## Erwartete Anzeige im Systemstatus
+Im reinen Static-Deploy ohne Backend meldet die Sektion „Versionen & Backend": \`Backend /api/status — nicht erreichbar\`. Das ist **kein Fehler**, sondern korrektes Verhalten: das Dashboard arbeitet vollständig lokal.`,
+  },
+  {
     id: "ci-security-scan",
     title: "CI-Security-Scan",
     category: "Service",

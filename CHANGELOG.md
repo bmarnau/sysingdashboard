@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.17.5 - 2026-06-26
+
+- Offline-Check (Check 2) bestanden: Dashboard startet ohne Azure-Konfiguration, Projekte/Arbeitspakete/Tätigkeiten laufen ausschließlich aus `localStorage`, kein automatischer Azure-Aufruf, `/api/status`-Ausfall blockiert nichts. Architektur unverändert — Bestätigung dokumentiert.
+- Neues Handbuch-Kapitel „Offline-Betrieb" mit den sieben Offline-Garantien und klarer Abgrenzung lokal/Backend.
+- Systemstatus-Dialog: neue Sektion „Security-Scan" listet Custom-Scanner, Gitleaks und CI-Workflow inkl. Trigger-Plan; Health-Block weist darauf hin, dass `/api/status`-„nicht erreichbar" im Static-Deploy erwartet ist und keinen Funktionsverlust bedeutet.
+
 ## 1.17.4 - 2026-06-24
 
 - CI-Security-Scan eingeführt: neuer Workflow `.github/workflows/security.yml` läuft bei Push/PR und montags 03:00 UTC. Erkennt Azure-AccountKeys/SAS-Tokens/Connection-Strings, AWS/Stripe/OpenAI/GitHub-Keys, Private-Key-Blöcke, JWT-Literale, gefährliche CORS-/CSP-/X-Frame-Header und dynamisches `dangerouslySetInnerHTML`. CRITICAL/HIGH blocken den Build.
