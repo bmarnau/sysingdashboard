@@ -358,6 +358,38 @@ Nur der manuell ausgelöste **Sync** über \`POST /api/sync\` (mit \`X-Sync-Toke
 Im reinen Static-Deploy ohne Backend meldet die Sektion „Versionen & Backend": \`Backend /api/status — nicht erreichbar\`. Das ist **kein Fehler**, sondern korrektes Verhalten: das Dashboard arbeitet vollständig lokal.`,
   },
   {
+    id: "env-validation",
+    title: "ENV-Validierung & Production-Gating",
+    category: "Service",
+    keywords: ["ENV", "Environment", "Azure", "Production", "Validierung", "Secrets", "Boot"],
+    lastUpdated: "2026-06-26",
+    content: `## Zweck
+Zentrale, sichere Prüfung aller produktionskritischen ENV-Variablen. Verhindert, dass der Backend-Server in Production ohne Pflicht-ENVs startet, hält aber den Development-Modus ohne Azure-Konfiguration lauffähig.
+
+## Datei
+\`config/envValidator.mjs\` (backend-only, niemals aus \`src/\` importieren).
+
+## API
+- \`isDev()\` / \`isProd()\` — Re-Export aus \`config/env.mjs\`.
+- \`getEnv(name, requiredInProd = true)\` — liest eine ENV; in PROD bei \`requiredInProd\` Throw, sonst Warnung + \`undefined\`.
+- \`validateEnv()\` — prüft Pflichtliste, gibt \`{ mode, missing, ok }\`.
+
+## Pflicht-ENVs (nur in PROD zwingend)
+- \`AZURE_SQL_CONNECTION\`
+- \`AZURE_TABLE_CONNECTION\`
+- \`AZURE_STORAGE_SAS\`
+- \`AZURE_CLIENT_ID\`
+- \`AZURE_TENANT_ID\`
+
+## Startpunkte
+- **Node-Backend** (\`backend/server.mjs\`): \`validateEnv()\` läuft vor \`server.listen(...)\`. Fehlt etwas in PROD → aggregierter Throw, Exit-Code ≠ 0.
+- **TanStack Server-Routes** (\`src/routes/api/*.ts\`): \`backend/services/ensure-env.mjs\` cached die Prüfung beim ersten Request. PROD-Fehler → generische 500-Antwort \`"Service not configured"\`.
+
+## Sicherheitsregeln
+- Niemals ENV-Werte loggen — nur Variablennamen.
+- Keine Defaults, keine Hardcoded Secrets, keine Fallback-Strings.
+- API-Fehlerantworten enthalten keine Variablennamen.`,
+  {
     id: "ci-security-scan",
     title: "CI-Security-Scan",
     category: "Service",
