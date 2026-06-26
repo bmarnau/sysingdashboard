@@ -11,6 +11,11 @@ import http from "node:http";
 import { handleSync } from "./routes/sync.mjs";
 import { handleStatus } from "./routes/status.mjs";
 import { getMode } from "../config/env.mjs";
+import { validateEnv } from "../config/envValidator.mjs";
+
+// Fail-Fast beim Boot: PROD ohne Pflicht-ENVs darf nicht starten.
+// DEV loggt nur Warnungen.
+validateEnv();
 
 const PORT = Number(process.env.PORT) || 8787;
 const HOST = process.env.HOST || "127.0.0.1";
