@@ -389,6 +389,7 @@ Zentrale, sichere Prüfung aller produktionskritischen ENV-Variablen. Verhindert
 - Niemals ENV-Werte loggen — nur Variablennamen.
 - Keine Defaults, keine Hardcoded Secrets, keine Fallback-Strings.
 - API-Fehlerantworten enthalten keine Variablennamen.`,
+  },
   {
     id: "ci-security-scan",
     title: "CI-Security-Scan",
