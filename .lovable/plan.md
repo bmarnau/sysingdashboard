@@ -1,46 +1,58 @@
+## Ziel
 
-## Ergebnis Offline-Check (Architektur)
+Eine zentrale, sichere Validierung aller Azure-bezogenen Environment Variables. PROD startet hart fehl bei fehlenden Pflicht-ENVs, DEV bleibt ohne Azure-ENVs lauffähig. Keine Werte im Log, keine Hardcoded Secrets, nur Backend-Nutzung.
 
-Der Code wurde gegen die 7 Kriterien geprüft. **Keine Architekturkorrektur nötig** — die Offline-Fähigkeit ist bereits konsequent umgesetzt:
+## Hinweis zur Dateiendung
 
-| Kriterium | Status | Beleg |
-| --- | --- | --- |
-| Start ohne Azure-Konfiguration | OK | `config/env.mjs` defaultet auf `development`; `assertAzureAllowed()` blockt jeden Azure-Zugriff in Dev. |
-| Projekte lokal | OK | `src/routes/index.tsx` lädt/persistiert `PersistedState` (Projekte, WPs, Tätigkeiten) ausschließlich aus `localStorage` (user-scoped). |
-| Arbeitspakete lokal | OK | gleicher Persisted-State, kein Remote-Call. |
-| Tätigkeiten lokal | OK | gleicher Persisted-State; `timeEntries` ebenfalls localStorage. |
-| localStorage bleibt aktiv | OK | `UserManagementService.userScopedKey` + alle Module (`export-archive`, `engineer-target-time`, `export-download-service`, `backup-service`) nutzen weiterhin `window.localStorage`. |
-| Azure-Ausfall blockiert nichts | OK | Einziger Startup-Call ist `/api/status` (read-only, kein Azure-Touch) mit 3 s Timeout in `useSystemStatusHealth.ts`; Fehler werden flüchtig in den State geschrieben, kein UI-Block. |
-| Keine automatische Azure-Aktion | OK | `runSync` wird nirgendwo automatisch getriggert — Suche nach `runSync`/`/api/sync` in `src/` liefert nur Routen-Definition und Dokumentation. Kein `setInterval`, kein Auto-Sync-Hook. |
+Das Projekt nutzt durchgängig ESM mit `.mjs` (`config/env.mjs`, `config/secretManager.mjs`, `backend/server.mjs`). Ich lege die Datei deshalb als **`config/envValidator.mjs`** an statt `.js`. Funktional identisch, aber konsistent mit dem bestehenden Code. Wenn du strikt `.js` willst, sag Bescheid.
 
-Einzige Schwachstelle ist kosmetisch: in einem reinen Static-Deploy ohne Backend liefert `/api/status` 404 und der Systemstatus zeigt "API nicht erreichbar". Das ist korrektes Verhalten und blockiert nichts — wird im Handbuch klargestellt.
+## Umsetzung
 
-## Geplante Änderungen (nur Dokumentation/UI, keine Logik)
+### 1. Neue Datei `config/envValidator.mjs`
 
-### 1. `src/components/SystemStatusDialog.tsx`
-Neue Sektion **"Security-Scan"** am Dialogende mit:
-- Anzeige der aktiven Scanner: Custom-Scanner (`scripts/security-check.mjs`), Gitleaks, GitHub Workflow (`.github/workflows/security.yml`).
-- Letzter Trigger: Push/PR + wöchentlich montags 03:00 UTC.
-- Link auf den Report-Pfad (`security-report/findings.md`) im aktuellen Branch.
-- Status-Pill "konfiguriert" (statisch, keine Live-Abfrage — Scan läuft in CI, nicht im Browser).
-- Hinweis: Findings werden im Lovable Security-Panel gepflegt.
+API:
+- `isDev()` / `isProd()` — re-export aus `config/env.mjs` (Single Source of Truth, kein doppeltes Mode-Parsing).
+- `getEnv(name, requiredInProd = true)` — Logik gemäß Spezifikation:
+  - vorhanden → Wert zurück
+  - fehlt + DEV → `warn("Missing ENV variable: <name> (dev, optional)")`, `undefined`
+  - fehlt + PROD + required → `throw new Error("Missing required ENV variable: <name>")`
+  - fehlt + PROD + !required → Warnung, `undefined`
+- `validateEnv()` — iteriert über die Pflichtliste:
+  ```
+  AZURE_SQL_CONNECTION
+  AZURE_TABLE_CONNECTION
+  AZURE_STORAGE_SAS
+  AZURE_CLIENT_ID
+  AZURE_TENANT_ID
+  ```
+  - In DEV: sammelt fehlende Namen, loggt eine einzelne `warn`-Zeile mit Namensliste, kein Throw.
+  - In PROD: sammelt alle fehlenden Namen, wirft am Ende **einen** aggregierten Error (`Missing required ENV variables: A, B, C`), damit der Operator alles auf einmal sieht statt Fix-by-Fix.
+  - Rückgabe: `{ mode, missing: string[], ok: boolean }`.
 
-Außerdem kleine Notiz unter dem bestehenden Health-Block: "API-Status 'nicht erreichbar' ist im reinen Frontend-Deploy ohne Backend erwartet — Dashboard arbeitet vollständig lokal."
+Sicherheitsregeln im Code:
+- Keine Defaults, keine Fallback-Strings.
+- `console.warn` / `console.error` nur mit Variablennamen, **nie** mit Werten. Eslint-Regel ist hier nicht durchsetzbar — Convention im Modul-Header dokumentieren.
+- Keine Imports aus `src/` → kein Risiko, dass Frontend-Bundles das Modul ziehen.
 
-### 2. `src/lib/help-documentation.ts`
-- Vorhandenes Topic **`ci-security-scan`** (bereits dokumentiert) wird im Kapitel "Systemstatus" verlinkt.
-- Neues Topic **`offline-betrieb`** (Slug `offline-mode`) mit den 7 Garantien aus der Tabelle oben, klar getrennt nach "Was lokal funktioniert" und "Was Backend braucht (Sync)".
-- Eintrag in `CHANGELOG.md` (Version-Bump Patch, z. B. `1.17.5`) — wird von `DASHBOARD_VERSION` automatisch übernommen.
+### 2. Backend-Startpunkte instrumentieren
 
-### 3. `bun run docs:check`
-Nach den Änderungen ausführen, um `CHANGELOG`/`builtInTopics`-Konsistenz zu verifizieren.
+- **`backend/server.mjs`**: `validateEnv()` direkt nach den Imports aufrufen, vor `server.listen(...)`. Bei PROD-Throw bricht Node mit Exit-Code != 0 ab → sicheres Fail-Fast.
+- **TanStack Server-Routes** (`src/routes/api/status.ts`, `src/routes/api/sync.ts`) sind der zweite „Startpunkt" im deployten Worker. Da hier kein klassischer Boot-Hook existiert, ergänze ich einen **lazy einmaligen Validation-Guard** in einem neuen Helper `backend/services/ensure-env.mjs`, der beim ersten Request `validateEnv()` ausführt und das Ergebnis cached. Im PROD-Worker führt eine fehlende Pflicht-ENV dann zu einem 500 mit generischer Fehlermeldung (kein Variablenwert im Body), im DEV-Worker nur zu einer Warnung. Beide bestehenden Route-Handler rufen diesen Guard als erste Zeile auf.
 
-## Bewusst NICHT geändert
+### 3. Frontend-Schutz
 
-- Keine Service-Worker / PWA-Offline-Schicht — Dashboard ist bereits SPA + localStorage. Ein SW würde den Lovable-Preview-Workflow brechen und ist laut PWA-Skill nur bei expliziter Offline-Anforderung erlaubt; localStorage-only ist hier ausreichend.
-- Kein Refactor von `useSystemStatusHealth` — Verhalten ist korrekt, nur die UI-Sektion fehlt.
-- Kein Eingriff in `runSync`/Backend-Services — Auth-Gate und Dev-Block bleiben unverändert.
+- `config/envValidator.mjs` enthält Kommentar-Header „Backend only — do not import from src/".
+- Keine Code-Änderung im Frontend.
+- Optional: Eintrag in `scripts/security-check.mjs`, der ein `import .* from .*envValidator` unter `src/**` als Finding meldet. Wenn du das willst, ergänze ich es; ansonsten lasse ich es weg, um den Scope klein zu halten.
 
-## Kritische Anmerkung
+### 4. Doku-Sync (Pflicht laut Memory)
 
-Der `bootstrapSystemStatusCheck` feuert `fetch('/api/status')` 250 ms nach Mount. Im offline-getrennten Browser erzeugt das einen `TypeError: Failed to fetch` in der Konsole. Funktional unkritisch (catch greift), aber kosmetisch unsauber. **Optionaler Folge-Patch**: vor dem Fetch `navigator.onLine` prüfen und bei `false` direkt `apiReachable: false, lastError: "offline"` setzen. In diesem Plan nicht enthalten — bei Bedarf separat anfordern.
+- `CHANGELOG.md`: neuer Eintrag `## 1.17.6 - 2026-06-26` mit Stichpunkten zur ENV-Validierung.
+- `src/lib/help-documentation.ts`: bestehendes Kapitel „Offline-Betrieb" / neuer HelpTopic „ENV-Validierung & Production-Gating" mit `lastUpdated`.
+- `bun run docs:check` zur Verifikation.
+
+## Bewusst NICHT enthalten (kritisches Feedback)
+
+- **Keine Verschmelzung mit `secretManager.mjs`.** Sinnvoller wäre langfristig EIN Modul, das Secrets sowohl validiert als auch maskiert ausgibt — Aufteilung in `envValidator` + `secretManager` erzeugt zwei Quellen für „welche ENVs gibt es?". Wenn du willst, refaktoriere ich das in einem Folge-Schritt zu `secretManager.validate()` und entferne `envValidator` wieder.
+- **Kein Zod-Schema.** Für 5 String-Variablen Overkill, würde nur Bundle und Komplexität erhöhen.
+- **Kein Auto-Validate-on-Import.** Validierung läuft explizit beim Server-Boot bzw. beim ersten API-Request — sonst würden Build-Tools/Tests beim bloßen Import schon werfen.
