@@ -229,6 +229,50 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
                 Fehler: {health.lastError}
               </p>
             )}
+            {health.apiReachable === false && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Hinweis: „nicht erreichbar" ist im reinen Frontend-Deploy ohne Backend erwartet —
+                das Dashboard arbeitet vollständig lokal (siehe Handbuch → Offline-Betrieb).
+              </p>
+            )}
+          </section>
+
+          <section className="min-w-0 rounded-md border border-border p-3 lg:col-span-2">
+            <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
+              <ShieldCheck className="size-4 shrink-0" /> Security-Scan
+            </h3>
+            <Row
+              label="Custom-Scanner"
+              ok
+              mono={false}
+              value="scripts/security-check.mjs (bun run security:check)"
+            />
+            <Row label="Sekundär" ok mono={false} value="gitleaks (.gitleaks.toml)" />
+            <Row
+              label="CI-Workflow"
+              ok
+              value=".github/workflows/security.yml"
+              href={`${PROJECT_INFO.github.url}/actions/workflows/security.yml`}
+            />
+            <Row
+              label="Trigger"
+              mono={false}
+              value="Push & PR auf main/develop · wöchentlich montags 03:00 UTC"
+            />
+            <Row
+              label="Report-Artefakt"
+              mono={false}
+              value="security-report/findings.md & .json (30 Tage Aufbewahrung)"
+            />
+            <Row
+              label="PR-Kommentar"
+              mono={false}
+              value="Sticky-Comment mit Markdown-Report"
+            />
+            <p className="mt-2 text-xs text-muted-foreground">
+              Findings werden im Lovable Security-Panel gepflegt. CRITICAL/HIGH-Funde blocken den
+              Build. Details: Handbuch → CI-Security-Scan.
+            </p>
           </section>
         </div>
 
