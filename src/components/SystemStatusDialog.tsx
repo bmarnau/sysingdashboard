@@ -20,6 +20,7 @@ import {
   Minimize2,
   RefreshCw,
   Server,
+  ShieldCheck,
   XCircle,
 } from "lucide-react";
 import { BUILD_INFO, commitUrl, hasBuildCommit, repoLabel } from "@/lib/build-info";
