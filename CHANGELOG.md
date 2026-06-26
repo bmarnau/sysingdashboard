@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.17.6 - 2026-06-26
+
+- Zentrale ENV-Validierung: neue Datei `config/envValidator.mjs` mit `isDev()`, `isProd()`, `getEnv(name, requiredInProd)` und `validateEnv()`. Pflicht-ENVs (`AZURE_SQL_CONNECTION`, `AZURE_TABLE_CONNECTION`, `AZURE_STORAGE_SAS`, `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`) sind nur in PROD zwingend; DEV läuft mit Warnung weiter.
+- PROD-Fail-Fast: `backend/server.mjs` ruft `validateEnv()` vor `server.listen(...)`; fehlende Pflicht-ENVs werfen aggregiert und stoppen den Boot. TanStack Server-Routes (`/api/status`, `/api/sync`) nutzen den lazy Guard `backend/services/ensure-env.mjs` und antworten generisch mit 500 „Service not configured" — keine Variablennamen/Werte im Body.
+- Logging-Regel: ausschließlich Variablennamen werden geloggt, niemals Werte. Modul ist backend-only und wird nicht aus `src/` importiert.
+
 ## 1.17.5 - 2026-06-26
 
 - Offline-Check (Check 2) bestanden: Dashboard startet ohne Azure-Konfiguration, Projekte/Arbeitspakete/Tätigkeiten laufen ausschließlich aus `localStorage`, kein automatischer Azure-Aufruf, `/api/status`-Ausfall blockiert nichts. Architektur unverändert — Bestätigung dokumentiert.

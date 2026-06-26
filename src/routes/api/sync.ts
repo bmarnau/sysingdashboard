@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { runSync } from "../../../backend/services/syncService.mjs";
 import { isProd } from "../../../config/env.mjs";
+import { ensureEnv } from "../../../backend/services/ensure-env.mjs";
 
 const BodySchema = z.object({ source: z.string().min(1).max(64).optional() }).partial();
 
@@ -35,8 +36,15 @@ export const Route = createFileRoute("/api/sync")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        try {
+          ensureEnv();
+        } catch {
+          return jsonError(500, "Service not configured");
+        }
         const denied = checkAuth(request);
         if (denied) return denied;
+
+
 
         let parsed: { source?: string } = {};
         try {

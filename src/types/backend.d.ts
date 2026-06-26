@@ -36,3 +36,23 @@ declare module "*/config/env.mjs" {
   export function getMode(): "development" | "production";
   export function assertAzureAllowed(): void;
 }
+
+declare module "*/config/envValidator.mjs" {
+  export const REQUIRED_IN_PROD: readonly string[];
+  export function isDev(): boolean;
+  export function isProd(): boolean;
+  export function getEnv(name: string, requiredInProd?: boolean): string | undefined;
+  export function validateEnv(): {
+    mode: "development" | "production";
+    missing: string[];
+    ok: boolean;
+  };
+}
+
+declare module "*/backend/services/ensure-env.mjs" {
+  export function ensureEnv(): {
+    mode: "development" | "production";
+    missing: string[];
+    ok: boolean;
+  };
+}
