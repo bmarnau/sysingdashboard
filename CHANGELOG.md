@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.17.7 - 2026-06-27
+
+- Konsolidierung: `config/envValidator.mjs` entfernt; Validierung wandert als `validate()` in `config/secretManager.mjs`. Single Source of Truth für die Liste der Azure-Pflicht-ENVs (`KNOWN` / `REQUIRED_IN_PROD`).
+- Aufrufer (`backend/server.mjs`, `backend/services/ensure-env.mjs`) importieren jetzt `validate` aus `secretManager`. Verhalten unverändert: PROD-Fail-Fast, DEV-Warnung, keine Werte im Log.
+- Handbuch-Kapitel „ENV-Validierung & Production-Gating" und Backend-Typen aktualisiert.
+
 ## 1.17.6 - 2026-06-26
 
 - Zentrale ENV-Validierung: neue Datei `config/envValidator.mjs` mit `isDev()`, `isProd()`, `getEnv(name, requiredInProd)` und `validateEnv()`. Pflicht-ENVs (`AZURE_SQL_CONNECTION`, `AZURE_TABLE_CONNECTION`, `AZURE_STORAGE_SAS`, `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`) sind nur in PROD zwingend; DEV läuft mit Warnung weiter.

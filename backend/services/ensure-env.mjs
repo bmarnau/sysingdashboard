@@ -7,7 +7,7 @@
  * in eine generische 500-Antwort übersetzt). In DEV nur Warnung.
  */
 
-import { validateEnv } from "../../config/envValidator.mjs";
+import { validate as validateEnv } from "../../config/secretManager.mjs";
 
 let cached = null;
 

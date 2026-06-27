@@ -37,12 +37,18 @@ declare module "*/config/env.mjs" {
   export function assertAzureAllowed(): void;
 }
 
-declare module "*/config/envValidator.mjs" {
+declare module "*/config/secretManager.mjs" {
+  export const KNOWN: readonly string[];
   export const REQUIRED_IN_PROD: readonly string[];
   export function isDev(): boolean;
   export function isProd(): boolean;
+  export function has(name: string): boolean;
+  export function mask(value: string | undefined | null): string;
+  export function preview(name: string): string;
+  export function status(): Record<string, boolean>;
+  export function consume(name: string): string;
   export function getEnv(name: string, requiredInProd?: boolean): string | undefined;
-  export function validateEnv(): {
+  export function validate(): {
     mode: "development" | "production";
     missing: string[];
     ok: boolean;
