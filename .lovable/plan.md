@@ -1,58 +1,35 @@
 ## Ziel
 
-Eine zentrale, sichere Validierung aller Azure-bezogenen Environment Variables. PROD startet hart fehl bei fehlenden Pflicht-ENVs, DEV bleibt ohne Azure-ENVs lauffähig. Keine Werte im Log, keine Hardcoded Secrets, nur Backend-Nutzung.
+Single Source of Truth für Azure-ENV-Namen: `envValidator.mjs` wird in `secretManager.mjs` aufgelöst, `validateEnv()` wandert als `secretManager.validate()` dorthin. Alle Aufrufer werden umgestellt, die Datei `config/envValidator.mjs` entfernt.
 
-## Hinweis zur Dateiendung
+## Änderungen
 
-Das Projekt nutzt durchgängig ESM mit `.mjs` (`config/env.mjs`, `config/secretManager.mjs`, `backend/server.mjs`). Ich lege die Datei deshalb als **`config/envValidator.mjs`** an statt `.js`. Funktional identisch, aber konsistent mit dem bestehenden Code. Wenn du strikt `.js` willst, sag Bescheid.
+### 1. `config/secretManager.mjs` erweitern
+- Neue Funktion `validate()` mit identischer Semantik wie bisheriges `validateEnv()`:
+  - iteriert über die bereits vorhandene `KNOWN`-Liste (= Pflicht-ENVs in PROD),
+  - PROD: aggregierter Throw `Missing required ENV variables: A, B, C`,
+  - DEV: einzelne Warn-Zeile mit Namen, kein Throw,
+  - Rückgabe `{ mode, missing, ok }`.
+- Neue Funktion `getEnv(name, requiredInProd = true)` analog der bisherigen Logik (vorhanden → Wert; fehlt+PROD+required → Throw; sonst Warnung+undefined). Akzeptiert auch unbekannte Namen (für künftige Nicht-Azure-Variablen), prüft aber niemand-loggen-Regel.
+- Re-Export `isDev`, `isProd` aus `config/env.mjs` zur bequemen Nutzung.
+- Header-Kommentar: „Backend only — do not import from src/".
 
-## Umsetzung
+### 2. Aufrufer umstellen
+- `backend/server.mjs`: Import `validateEnv` → `import { validate as validateEnv } from "../config/secretManager.mjs"` (Aufrufseite unverändert).
+- `backend/services/ensure-env.mjs`: gleicher Import-Swap.
+- `src/types/backend.d.ts`: Modul-Deklaration `*/config/envValidator.mjs` entfernen; `*/config/secretManager.mjs` ergänzen (inkl. neuer `validate`/`getEnv`-Signaturen plus bestehender `has`/`preview`/`status`/`consume`/`mask`/`KNOWN`).
 
-### 1. Neue Datei `config/envValidator.mjs`
+### 3. Cleanup
+- `config/envValidator.mjs` löschen (`rm`).
+- Suche im Repo nach Restreferenzen (`rg envValidator`) und ggf. nachziehen.
 
-API:
-- `isDev()` / `isProd()` — re-export aus `config/env.mjs` (Single Source of Truth, kein doppeltes Mode-Parsing).
-- `getEnv(name, requiredInProd = true)` — Logik gemäß Spezifikation:
-  - vorhanden → Wert zurück
-  - fehlt + DEV → `warn("Missing ENV variable: <name> (dev, optional)")`, `undefined`
-  - fehlt + PROD + required → `throw new Error("Missing required ENV variable: <name>")`
-  - fehlt + PROD + !required → Warnung, `undefined`
-- `validateEnv()` — iteriert über die Pflichtliste:
-  ```
-  AZURE_SQL_CONNECTION
-  AZURE_TABLE_CONNECTION
-  AZURE_STORAGE_SAS
-  AZURE_CLIENT_ID
-  AZURE_TENANT_ID
-  ```
-  - In DEV: sammelt fehlende Namen, loggt eine einzelne `warn`-Zeile mit Namensliste, kein Throw.
-  - In PROD: sammelt alle fehlenden Namen, wirft am Ende **einen** aggregierten Error (`Missing required ENV variables: A, B, C`), damit der Operator alles auf einmal sieht statt Fix-by-Fix.
-  - Rückgabe: `{ mode, missing: string[], ok: boolean }`.
-
-Sicherheitsregeln im Code:
-- Keine Defaults, keine Fallback-Strings.
-- `console.warn` / `console.error` nur mit Variablennamen, **nie** mit Werten. Eslint-Regel ist hier nicht durchsetzbar — Convention im Modul-Header dokumentieren.
-- Keine Imports aus `src/` → kein Risiko, dass Frontend-Bundles das Modul ziehen.
-
-### 2. Backend-Startpunkte instrumentieren
-
-- **`backend/server.mjs`**: `validateEnv()` direkt nach den Imports aufrufen, vor `server.listen(...)`. Bei PROD-Throw bricht Node mit Exit-Code != 0 ab → sicheres Fail-Fast.
-- **TanStack Server-Routes** (`src/routes/api/status.ts`, `src/routes/api/sync.ts`) sind der zweite „Startpunkt" im deployten Worker. Da hier kein klassischer Boot-Hook existiert, ergänze ich einen **lazy einmaligen Validation-Guard** in einem neuen Helper `backend/services/ensure-env.mjs`, der beim ersten Request `validateEnv()` ausführt und das Ergebnis cached. Im PROD-Worker führt eine fehlende Pflicht-ENV dann zu einem 500 mit generischer Fehlermeldung (kein Variablenwert im Body), im DEV-Worker nur zu einer Warnung. Beide bestehenden Route-Handler rufen diesen Guard als erste Zeile auf.
-
-### 3. Frontend-Schutz
-
-- `config/envValidator.mjs` enthält Kommentar-Header „Backend only — do not import from src/".
-- Keine Code-Änderung im Frontend.
-- Optional: Eintrag in `scripts/security-check.mjs`, der ein `import .* from .*envValidator` unter `src/**` als Finding meldet. Wenn du das willst, ergänze ich es; ansonsten lasse ich es weg, um den Scope klein zu halten.
-
-### 4. Doku-Sync (Pflicht laut Memory)
-
-- `CHANGELOG.md`: neuer Eintrag `## 1.17.6 - 2026-06-26` mit Stichpunkten zur ENV-Validierung.
-- `src/lib/help-documentation.ts`: bestehendes Kapitel „Offline-Betrieb" / neuer HelpTopic „ENV-Validierung & Production-Gating" mit `lastUpdated`.
+### 4. Doku-Sync (Pflicht)
+- `CHANGELOG.md`: neuer Eintrag `## 1.17.7 - 2026-06-27` mit Hinweis auf Konsolidierung (keine funktionale Änderung, reine Architektur).
+- `src/lib/help-documentation.ts`: Kapitel „ENV-Validierung & Production-Gating" aktualisieren — Pfad/Funktionsname auf `secretManager.validate()` setzen, `lastUpdated` anheben.
 - `bun run docs:check` zur Verifikation.
 
-## Bewusst NICHT enthalten (kritisches Feedback)
+## Bewusst NICHT enthalten
 
-- **Keine Verschmelzung mit `secretManager.mjs`.** Sinnvoller wäre langfristig EIN Modul, das Secrets sowohl validiert als auch maskiert ausgibt — Aufteilung in `envValidator` + `secretManager` erzeugt zwei Quellen für „welche ENVs gibt es?". Wenn du willst, refaktoriere ich das in einem Folge-Schritt zu `secretManager.validate()` und entferne `envValidator` wieder.
-- **Kein Zod-Schema.** Für 5 String-Variablen Overkill, würde nur Bundle und Komplexität erhöhen.
-- **Kein Auto-Validate-on-Import.** Validierung läuft explizit beim Server-Boot bzw. beim ersten API-Request — sonst würden Build-Tools/Tests beim bloßen Import schon werfen.
+- Keine Verhaltens-/Semantik-Änderung an Validierung, Masking oder `consume()`.
+- Kein Schema-Wechsel (Zod o.ä.).
+- Keine zusätzliche `requiredInProd=false`-Liste — bleibt bei den 5 bekannten Azure-Pflicht-ENVs.

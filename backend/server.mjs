@@ -11,7 +11,7 @@ import http from "node:http";
 import { handleSync } from "./routes/sync.mjs";
 import { handleStatus } from "./routes/status.mjs";
 import { getMode } from "../config/env.mjs";
-import { validateEnv } from "../config/envValidator.mjs";
+import { validate as validateEnv } from "../config/secretManager.mjs";
 
 // Fail-Fast beim Boot: PROD ohne Pflicht-ENVs darf nicht starten.
 // DEV loggt nur Warnungen.

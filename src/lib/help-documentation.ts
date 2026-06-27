@@ -362,17 +362,18 @@ Im reinen Static-Deploy ohne Backend meldet die Sektion „Versionen & Backend":
     title: "ENV-Validierung & Production-Gating",
     category: "Service",
     keywords: ["ENV", "Environment", "Azure", "Production", "Validierung", "Secrets", "Boot"],
-    lastUpdated: "2026-06-26",
+    lastUpdated: "2026-06-27",
     content: `## Zweck
 Zentrale, sichere Prüfung aller produktionskritischen ENV-Variablen. Verhindert, dass der Backend-Server in Production ohne Pflicht-ENVs startet, hält aber den Development-Modus ohne Azure-Konfiguration lauffähig.
 
 ## Datei
-\`config/envValidator.mjs\` (backend-only, niemals aus \`src/\` importieren).
+\`config/secretManager.mjs\` (backend-only, niemals aus \`src/\` importieren). Validierung und Secret-Zugriff liegen in einem Modul — Single Source of Truth für die Liste der Azure-ENVs.
 
 ## API
 - \`isDev()\` / \`isProd()\` — Re-Export aus \`config/env.mjs\`.
 - \`getEnv(name, requiredInProd = true)\` — liest eine ENV; in PROD bei \`requiredInProd\` Throw, sonst Warnung + \`undefined\`.
-- \`validateEnv()\` — prüft Pflichtliste, gibt \`{ mode, missing, ok }\`.
+- \`validate()\` — prüft Pflichtliste, gibt \`{ mode, missing, ok }\`.
+- \`has()\` / \`preview()\` / \`status()\` / \`consume()\` — bekannte Secret-Helfer (maskiert; \`consume()\` nur in PROD).
 
 ## Pflicht-ENVs (nur in PROD zwingend)
 - \`AZURE_SQL_CONNECTION\`
@@ -382,7 +383,7 @@ Zentrale, sichere Prüfung aller produktionskritischen ENV-Variablen. Verhindert
 - \`AZURE_TENANT_ID\`
 
 ## Startpunkte
-- **Node-Backend** (\`backend/server.mjs\`): \`validateEnv()\` läuft vor \`server.listen(...)\`. Fehlt etwas in PROD → aggregierter Throw, Exit-Code ≠ 0.
+- **Node-Backend** (\`backend/server.mjs\`): \`secretManager.validate()\` läuft vor \`server.listen(...)\`. Fehlt etwas in PROD → aggregierter Throw, Exit-Code ≠ 0.
 - **TanStack Server-Routes** (\`src/routes/api/*.ts\`): \`backend/services/ensure-env.mjs\` cached die Prüfung beim ersten Request. PROD-Fehler → generische 500-Antwort \`"Service not configured"\`.
 
 ## Sicherheitsregeln
