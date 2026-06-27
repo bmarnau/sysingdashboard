@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { runSync } from "../../../backend/services/syncService.mjs";
 import { isProd } from "../../../config/env.mjs";
+import { getEnv } from "../../../config/secretManager.mjs";
 import { ensureEnv } from "../../../backend/services/ensure-env.mjs";
 
 const BodySchema = z.object({ source: z.string().min(1).max(64).optional() }).partial();
@@ -22,7 +23,7 @@ function jsonError(status: number, error: string): Response {
  */
 function checkAuth(request: Request): Response | null {
   if (!isProd()) return null;
-  const expected = (typeof process !== "undefined" && process.env?.SYNC_TRIGGER_TOKEN) || "";
+  const expected = getEnv("SYNC_TRIGGER_TOKEN", false) ?? "";
   if (!expected) return jsonError(503, "Sync trigger disabled");
   const provided = request.headers.get("x-sync-token") ?? "";
   // Konstante Laufzeit: gleich lange Strings vergleichen.
