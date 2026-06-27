@@ -389,7 +389,13 @@ Zentrale, sichere Prüfung aller produktionskritischen ENV-Variablen. Verhindert
 ## Sicherheitsregeln
 - Niemals ENV-Werte loggen — nur Variablennamen.
 - Keine Defaults, keine Hardcoded Secrets, keine Fallback-Strings.
-- API-Fehlerantworten enthalten keine Variablennamen.`,
+- API-Fehlerantworten enthalten keine Variablennamen.
+- Frontend-Bundle (\`src/\`) importiert weder \`secretManager\` noch \`envValidator\`/\`keyVault\`.
+
+## Key-Vault-Readiness
+- \`config/keyVault.mjs\` ist als Platzhalter angelegt (\`isKeyVaultConfigured()\`, \`resolveSecret()\`).
+- Aktivierung später: \`AZURE_KEY_VAULT_URL\` setzen, \`@azure/identity\` + \`@azure/keyvault-secrets\` installieren, \`resolveSecret\` implementieren. Managed Identity bevorzugt vor Client-Secret.
+- \`config/envValidator.mjs\` existiert als Kompatibilitäts-Fassade (Re-Export aus \`secretManager\`); kein doppelter Code.`,
   },
   {
     id: "ci-security-scan",

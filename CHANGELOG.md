@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.17.8 - 2026-06-27
+
+- Secret-Management-Check (Check 4) bestanden: alle ENV-Zugriffe laufen über `config/secretManager.mjs`; `src/routes/api/sync.ts` nutzt jetzt `getEnv("SYNC_TRIGGER_TOKEN", false)` statt direktem `process.env`-Zugriff. Kein Secret im Frontend-Bundle, keine Werte in Logs/Responses.
+- `config/envValidator.mjs` wieder eingeführt als reine Kompatibilitäts-Fassade (Re-Export aus `secretManager`) — semantischer Name, ohne Duplikate.
+- `config/keyVault.mjs` als Architektur-Platzhalter hinzugefügt (`isKeyVaultConfigured`, `resolveSecret`). Aktivierung benötigt später nur `AZURE_KEY_VAULT_URL` plus Azure-Pakete; ENV-Pfad bleibt Default-Fallback.
+
 ## 1.17.7 - 2026-06-27
 
 - Konsolidierung: `config/envValidator.mjs` entfernt; Validierung wandert als `validate()` in `config/secretManager.mjs`. Single Source of Truth für die Liste der Azure-Pflicht-ENVs (`KNOWN` / `REQUIRED_IN_PROD`).
