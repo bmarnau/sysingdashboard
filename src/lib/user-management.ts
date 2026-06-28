@@ -313,6 +313,13 @@ export function createUser(input: CreateUserInput): UserProfile {
   return user;
 }
 
+/** Zählt aktive Systemadministratoren (ohne `excludeId`). Schutz vor Lockout. */
+function activeSysAdminCount(users: UserProfile[], excludeId?: string): number {
+  return users.filter(
+    (u) => u.role === "systemadministrator" && u.status === "active" && u.id !== excludeId,
+  ).length;
+}
+
 export function updateUser(
   id: string,
   patch: Partial<Omit<UserProfile, "id" | "createdAt">>,
@@ -320,11 +327,23 @@ export function updateUser(
   const users = loadUsers();
   const idx = users.findIndex((u) => u.id === id);
   if (idx < 0) return null;
+  const current = users[idx];
+  const nextRole = (patch.role ?? current.role) as UserRole;
+  const nextStatus = (patch.status ?? current.status) as UserStatus;
+  const wasActiveSysAdmin =
+    current.role === "systemadministrator" && current.status === "active";
+  const stillActiveSysAdmin = nextRole === "systemadministrator" && nextStatus === "active";
+  if (wasActiveSysAdmin && !stillActiveSysAdmin) {
+    if (activeSysAdminCount(users, id) === 0) {
+      // Letzter aktiver SysAdmin darf nicht degradiert/deaktiviert werden.
+      return null;
+    }
+  }
   const next: UserProfile = {
-    ...users[idx],
+    ...current,
     ...patch,
-    id: users[idx].id,
-    createdAt: users[idx].createdAt,
+    id: current.id,
+    createdAt: current.createdAt,
     updatedAt: nowIso(),
   };
   const copy = users.slice();
@@ -333,13 +352,22 @@ export function updateUser(
   return next;
 }
 
-/** Hard-Delete inklusive aller gescopten Daten. Letzten Admin nicht löschen. */
+/** Hard-Delete inklusive aller gescopten Daten. Letzten SysAdmin nicht löschen. */
 export function deleteUser(id: string): { ok: boolean; reason?: string } {
   const users = loadUsers();
   const target = users.find((u) => u.id === id);
   if (!target) return { ok: false, reason: "Benutzer nicht gefunden." };
+  if (target.role === "systemadministrator" && activeSysAdminCount(users, id) === 0) {
+    return {
+      ok: false,
+      reason: "Letzter aktiver System-Administrator kann nicht gelöscht werden.",
+    };
+  }
   const adminsLeft = users.filter(
-    (u) => u.role === "administrator" && u.status === "active" && u.id !== id,
+    (u) =>
+      (u.role === "administrator" || u.role === "systemadministrator") &&
+      u.status === "active" &&
+      u.id !== id,
   );
   if (target.role === "administrator" && adminsLeft.length === 0) {
     return {
@@ -381,8 +409,13 @@ export function hasRole(user: UserProfile | null, ...roles: UserRole[]): boolean
   return roles.includes(user.role);
 }
 
+/** Wahr für `administrator` UND `systemadministrator`. */
 export function isAdmin(user: UserProfile | null): boolean {
-  return hasRole(user, "administrator");
+  return hasRole(user, "administrator", "systemadministrator");
+}
+
+export function isSystemAdmin(user: UserProfile | null): boolean {
+  return hasRole(user, "systemadministrator");
 }
 
 /** Initialen aus Vor-/Nachname (Fallback: Anzeigename). */
