@@ -35,7 +35,8 @@ if (objStart < 0) {
 }
 const frontendMatrix = {};
 for (const role of ALL_ROLES) {
-  const re = new RegExp(`${role}\\s*:\\s*\\[([\\s\\S]*?)\\]`, "m");
+  // \\b allein reicht nicht (administrator ⊂ systemadministrator) — daher (^|[^a-z]) Lookbehind-Surrogat.
+  const re = new RegExp(`(?:^|[^a-zA-Z])${role}\\s*:\\s*\\[([\\s\\S]*?)\\]`, "m");
   const m = src.slice(objStart).match(re);
   if (!m) {
     fail(`Rolle ${role} fehlt im Frontend`);
