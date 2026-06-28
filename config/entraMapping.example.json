@@ -1,0 +1,8 @@
+{
+  "_comment": "Beispielmapping Entra-Group-ID → interne Rolle. Aktivierung erfolgt in einem späteren Prompt zusammen mit der Entra-ID-Anbindung. Achtung: systemadministrator und administrator werden vom Resolver IGNORIERT, wenn sie hier auftauchen — diese Rollen werden ausschließlich über internalUsers gesetzt.",
+  "00000000-0000-0000-0000-000000000001": "teamlead",
+  "00000000-0000-0000-0000-000000000002": "projectmanager",
+  "00000000-0000-0000-0000-000000000003": "engineer",
+  "00000000-0000-0000-0000-000000000004": "customer",
+  "00000000-0000-0000-0000-000000000005": "viewer"
+}
