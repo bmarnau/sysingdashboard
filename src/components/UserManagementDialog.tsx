@@ -37,7 +37,7 @@ export interface UserManagementDialogProps {
   onProfileSwitch?: (newUserId: string) => void;
 }
 
-const isAdmin = (u: UserProfile | null) => !!u && u.role === "administrator";
+import { can, ROLE_PRIORITY } from "@/lib/rbac/permissions";
 
 function statusStyle(s: UserStatus): string {
   switch (s) {
@@ -54,6 +54,8 @@ function statusStyle(s: UserStatus): string {
 
 function roleStyle(r: UserRole): string {
   switch (r) {
+    case "systemadministrator":
+      return "bg-destructive/15 text-destructive border-destructive/30";
     case "administrator":
       return "bg-primary/15 text-primary border-primary/30";
     case "teamlead":
@@ -64,6 +66,8 @@ function roleStyle(r: UserRole): string {
       return "bg-warning/15 text-warning border-warning/30";
     case "customer":
       return "bg-muted text-muted-foreground border-border";
+    case "viewer":
+      return "bg-secondary text-muted-foreground border-border";
   }
 }
 
