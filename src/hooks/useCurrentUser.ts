@@ -1,30 +1,32 @@
-import { useEffect, useState, useSyncExternalStore } from "react";
-import {
-  UserManagementService,
-  subscribeUserChanges,
-  type UserProfile,
-} from "@/lib/user-management";
+import { useEffect, useState } from "react";
+import { UserManagementService, type UserProfile } from "@/lib/user-management";
 
-/** Liefert die aktuelle Liste aller Benutzer reaktiv. */
-export function useUsers(): UserProfile[] {
-  return useSyncExternalStore(
-    (cb) => subscribeUserChanges(cb),
-    () => UserManagementService.loadUsers(),
-    () => [],
-  );
-}
-
-/** Liefert den aktiven Benutzer reaktiv. Bootstrappt clientseitig idempotent. */
+/**
+ * Reaktiver Zugriff auf den aktuell aktiven Benutzer.
+ * Re-rendert bei Wechsel des aktiven Benutzers oder bei Storage-Events
+ * aus anderen Tabs.
+ */
 export function useCurrentUser(): UserProfile | null {
-  const [ready, setReady] = useState(false);
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      return UserManagementService.bootstrap();
+    } catch {
+      return null;
+    }
+  });
+
   useEffect(() => {
-    UserManagementService.bootstrap();
-    setReady(true);
+    if (typeof window === "undefined") return;
+    const sync = () => setUser(UserManagementService.getActiveUser());
+    window.addEventListener("storage", sync);
+    // Custom event für tab-internen Wechsel (vom UserManagementDialog ausgelöst).
+    window.addEventListener("northbit:user-switched", sync);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("northbit:user-switched", sync);
+    };
   }, []);
-  const user = useSyncExternalStore(
-    (cb) => subscribeUserChanges(cb),
-    () => UserManagementService.getActiveUser(),
-    () => null,
-  );
-  return ready ? user : null;
+
+  return user;
 }

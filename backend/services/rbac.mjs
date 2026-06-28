@@ -1,12 +1,13 @@
 /**
- * RBAC — Backend-Spiegel der Frontend-Matrix.
+ * Backend-RBAC — gespiegelte Matrix.
  *
- * MUSS zeichengenau identisch zu `src/lib/rbac/permissions.ts` (Felder
- * ROLE_PERMISSIONS + ROLE_PRIORITY) bleiben. `scripts/check-rbac.mjs`
- * erzwingt das in CI.
+ * Single Source of Truth bleibt `src/lib/rbac/permissions.ts` (Frontend).
+ * Dieses Modul mirror't die Matrix bewusst manuell, weil Frontend-TS nicht
+ * direkt aus Node-ESM importierbar ist. `scripts/check-rbac.mjs` vergleicht
+ * beide Quellen bei jedem CI-Lauf und failed bei Drift.
  */
 
-export const ALL_ROLES = [
+export const ALL_ROLES = Object.freeze([
   "systemadministrator",
   "administrator",
   "teamlead",
@@ -14,9 +15,9 @@ export const ALL_ROLES = [
   "engineer",
   "customer",
   "viewer",
-];
+]);
 
-export const ALL_PERMISSIONS = [
+export const ALL_PERMISSIONS = Object.freeze([
   "dashboard.view",
   "documentation.view",
   "systemstatus.view",
@@ -31,9 +32,9 @@ export const ALL_PERMISSIONS = [
   "users.manage",
   "roles.manage",
   "auditlog.view",
-];
+]);
 
-export const ROLE_PERMISSIONS = {
+export const ROLE_PERMISSIONS = Object.freeze({
   systemadministrator: [
     "dashboard.view",
     "documentation.view",
@@ -81,36 +82,27 @@ export const ROLE_PERMISSIONS = {
     "activity.edit",
     "azure.export",
   ],
-  engineer: [
-    "dashboard.view",
-    "documentation.view",
-    "workpackage.edit",
-    "activity.edit",
-  ],
+  engineer: ["dashboard.view", "documentation.view", "workpackage.edit", "activity.edit"],
   customer: ["dashboard.view", "documentation.view"],
   viewer: ["dashboard.view", "documentation.view"],
-};
+});
 
-export const ROLE_PRIORITY = [
-  "systemadministrator",
-  "administrator",
-  "teamlead",
-  "projectmanager",
-  "engineer",
-  "customer",
-  "viewer",
-];
-
-export function can(role, perm) {
-  if (!role) return false;
-  const perms = ROLE_PERMISSIONS[role];
-  return Array.isArray(perms) && perms.includes(perm);
+/** Prüft, ob die Rolle eine bestimmte Permission besitzt. */
+export function roleCan(role, perm) {
+  const list = ROLE_PERMISSIONS[role];
+  return Array.isArray(list) && list.includes(perm);
 }
 
+/** Generisches Guard für Server Route Handler. Wirft 403-ähnlichen Fehler. */
 export function requirePermission(role, perm) {
-  if (!can(role, perm)) {
+  if (!roleCan(role, perm)) {
     const err = new Error(`Permission denied: ${perm}`);
-    err.code = "PERMISSION_DENIED";
+    err.status = 403;
     throw err;
   }
+}
+
+/** Liefert sortierte Permission-Liste der Rolle (oder leer). */
+export function permissionsOf(role) {
+  return [...(ROLE_PERMISSIONS[role] ?? [])];
 }
