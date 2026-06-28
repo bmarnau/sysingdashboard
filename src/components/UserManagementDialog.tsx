@@ -672,19 +672,27 @@ function UserEditor({
       alert("Vor- und Nachname sind erforderlich.");
       return;
     }
+    // Defensive: Rollenänderung nur mit roles.manage; sonst Originalrolle behalten.
+    const effectiveRole: UserRole = canManageRoles ? form.role : (initial?.role ?? form.role);
     if (initial) {
-      UserManagementService.updateUser(initial.id, {
+      const res = UserManagementService.updateUser(initial.id, {
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         displayName:
           (form.displayName ?? "").trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
         email: (form.email ?? "").trim(),
         phone: (form.phone ?? "").trim(),
-        role: form.role,
+        role: effectiveRole,
         status: form.status ?? "active",
       });
+      if (!res) {
+        alert(
+          "Aktion blockiert: Der letzte aktive System-Administrator darf nicht degradiert oder deaktiviert werden.",
+        );
+        return;
+      }
     } else {
-      UserManagementService.createUser(form);
+      UserManagementService.createUser({ ...form, role: effectiveRole });
     }
     onClose();
   };
