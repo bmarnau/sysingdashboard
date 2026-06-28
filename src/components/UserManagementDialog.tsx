@@ -499,7 +499,15 @@ function ProfileSwitch({
 
 /* ----------------------------- Verwaltung --------------------------------- */
 
-function UserAdmin({ users, currentUserId }: { users: UserProfile[]; currentUserId: string }) {
+function UserAdmin({
+  users,
+  currentUserId,
+  canManageRoles,
+}: {
+  users: UserProfile[];
+  currentUserId: string;
+  canManageRoles: boolean;
+}) {
   const [editing, setEditing] = useState<UserProfile | "new" | null>(null);
 
   return (
