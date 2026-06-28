@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { UserManagementService, type UserProfile } from "@/lib/user-management";
+import {
+  UserManagementService,
+  subscribeUserChanges,
+  type UserProfile,
+} from "@/lib/user-management";
 
-/**
- * Reaktiver Zugriff auf den aktuell aktiven Benutzer.
- * Re-rendert bei Wechsel des aktiven Benutzers oder bei Storage-Events
- * aus anderen Tabs.
- */
+/** Reaktiver Zugriff auf den aktuell aktiven Benutzer. */
 export function useCurrentUser(): UserProfile | null {
   const [user, setUser] = useState<UserProfile | null>(() => {
     if (typeof window === "undefined") return null;
@@ -19,19 +19,19 @@ export function useCurrentUser(): UserProfile | null {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const sync = () => setUser(UserManagementService.getActiveUser());
+    sync();
+    const unsub = subscribeUserChanges(sync);
     window.addEventListener("storage", sync);
-    // Custom event für tab-internen Wechsel (vom UserManagementDialog ausgelöst).
-    window.addEventListener("northbit:user-switched", sync);
     return () => {
+      unsub();
       window.removeEventListener("storage", sync);
-      window.removeEventListener("northbit:user-switched", sync);
     };
   }, []);
 
   return user;
 }
 
-/** Reaktive Liste aller Benutzer. Re-rendert bei Storage-Änderungen oder Wechsel. */
+/** Reaktive Liste aller Benutzer. */
 export function useUsers(): UserProfile[] {
   const [users, setUsers] = useState<UserProfile[]>(() => {
     if (typeof window === "undefined") return [];
@@ -45,13 +45,12 @@ export function useUsers(): UserProfile[] {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const sync = () => setUsers(UserManagementService.loadUsers());
+    sync();
+    const unsub = subscribeUserChanges(sync);
     window.addEventListener("storage", sync);
-    window.addEventListener("northbit:user-switched", sync);
-    window.addEventListener("northbit:users-changed", sync);
     return () => {
+      unsub();
       window.removeEventListener("storage", sync);
-      window.removeEventListener("northbit:user-switched", sync);
-      window.removeEventListener("northbit:users-changed", sync);
     };
   }, []);
 
