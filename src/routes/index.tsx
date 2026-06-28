@@ -850,18 +850,18 @@ function Dashboard() {
                     >
                       <Download className="size-4 opacity-70" /> Downloads…
                     </button>
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        setShowBackupDialog(true);
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <HardDrive className="size-4 opacity-70" /> Backup…
-                    </button>
-                    {(!currentUser ||
-                      currentUser.role === "administrator" ||
-                      currentUser.role === "teamlead") && (
+                    {can(currentUser, "backup.restore") && (
+                      <button
+                        onClick={() => {
+                          setShowServiceMenu(false);
+                          setShowBackupDialog(true);
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                      >
+                        <HardDrive className="size-4 opacity-70" /> Backup…
+                      </button>
+                    )}
+                    {can(currentUser, "azure.export") && (
                       <button
                         onClick={() => {
                           setShowServiceMenu(false);
@@ -872,15 +872,17 @@ function Dashboard() {
                         <FileJson className="size-4 opacity-70" /> Import / Export…
                       </button>
                     )}
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        setShowSystemStatus(true);
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <Gauge className="size-4 opacity-70" /> Systemstatus…
-                    </button>
+                    {can(currentUser, "systemstatus.view") && (
+                      <button
+                        onClick={() => {
+                          setShowServiceMenu(false);
+                          setShowSystemStatus(true);
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                      >
+                        <Gauge className="size-4 opacity-70" /> Systemstatus…
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
