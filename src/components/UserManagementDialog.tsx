@@ -145,7 +145,11 @@ export function UserManagementDialog({
             />
           )}
           {tab === "verwaltung" && canAdmin && (
-            <UserAdmin users={users} currentUserId={currentUser.id} />
+            <UserAdmin
+              users={users}
+              currentUserId={currentUser.id}
+              canManageRoles={canManageRoles}
+            />
           )}
         </div>
       </div>
