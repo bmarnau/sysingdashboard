@@ -638,13 +638,6 @@ function UserAdmin({
       </div>
 
       {editing && (
-        <UserEditor initial={editing === "new" ? null : editing} onClose={() => setEditing(null)} />
-      )}
-    </div>
-  );
-}
-
-      {editing && (
         <UserEditor
           initial={editing === "new" ? null : editing}
           canManageRoles={canManageRoles}
