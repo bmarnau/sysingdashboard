@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.2.0";
+export const DOCUMENTATION_VERSION = "1.3.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -737,6 +737,50 @@ Jede Datei enthält im Kopf \`schemaVersion\` (aktuell \`1.0.0\`), \`exportType\
 
 ## ZIP-Backup mit eingebetteter dashboard.json
 Backups ab Version 1.14 enthalten zusätzlich eine kanonische \`dashboard.json\` (Schema v1). Beim Restore wird sie bevorzugt; nur wenn sie fehlt oder ungültig ist, greift der Restore auf die rohen Storage-Dumps zurück. Alte ZIPs bleiben uneingeschränkt lesbar.`,
+  },
+  {
+    id: "rbac-rollen-berechtigungen",
+    title: "Rollen & Berechtigungen (RBAC)",
+    category: "Sicherheit",
+    route: "/",
+    component: "RBAC",
+    keywords: ["RBAC", "Rollen", "Berechtigungen", "Permissions", "Entra", "Administrator", "Viewer"],
+    lastUpdated: "2026-06-28",
+    content: `## Rollen
+Sieben Rollen mit klarer Privileg-Reihenfolge (hoch → niedrig):
+1. **System-Administrator** — darf alles. Einzige Rolle für Datenbankaufbau (\`azure.database.build\`) und Rollenverwaltung (\`roles.manage\`).
+2. **Administrator** — Tagesbetrieb inkl. Benutzerverwaltung, Audit Logs, Backup-Restore, Azure-Export/Import. Kein Datenbankaufbau, keine Rollenverwaltung.
+3. **Teamleiter** — bearbeitet Projekte / Arbeitspakete / Tätigkeiten und darf nach Azure exportieren. Kein Import.
+4. **Projektmanager** — wie Teamleiter, aber ohne Systemstatus-Einsicht.
+5. **Systemingenieur** — bearbeitet Arbeitspakete und Tätigkeiten.
+6. **Kunde** — sieht Dashboard und Dokumentation, sonst nichts. Keine Admin- oder Statusansichten.
+7. **Viewer** — read-only.
+
+## Permission-Matrix (14 atomare Rechte)
+\`dashboard.view\`, \`documentation.view\`, \`systemstatus.view\`, \`project.edit\`, \`workpackage.edit\`, \`activity.edit\`, \`azure.connection.test\`, \`azure.export\`, \`azure.import\`, \`azure.database.build\`, \`backup.restore\`, \`users.manage\`, \`roles.manage\`, \`auditlog.view\`.
+
+Single Source of Truth: \`src/lib/rbac/permissions.ts\` (Frontend) mit identischem Mirror in \`backend/services/rbac.mjs\` (Server). Der CI-Check \`bun run rbac:check\` (Script \`scripts/check-rbac.mjs\`) vergleicht beide Matrizen und failed bei Drift.
+
+## Garantierte Invarianten
+- \`azure.database.build\` ⊆ {System-Administrator}
+- \`azure.import\` ⊆ {System-Administrator, Administrator}
+- Träger(\`azure.import\`) ⊆ Träger(\`azure.export\`) — Import ist strikter als Export.
+- \`roles.manage\` ⊆ {System-Administrator}
+- \`users.manage\`, \`auditlog.view\`, \`backup.restore\` nur für Admins.
+- Viewer hat keine Edit-/Azure-/Manage-/Backup-Permission.
+- Kunde sieht keinen Systemstatus.
+
+## Schutz vor Self-Lockout
+Der letzte aktive System-Administrator kann nicht degradiert, deaktiviert oder gelöscht werden. Im Benutzer-Editor ist die Rollen-Auswahl ohne \`roles.manage\` gesperrt und die SysAdmin-Rolle ausgeblendet.
+
+## Migration
+Bestehende Default-Administratoren werden beim Start einmalig auf \`systemadministrator\` angehoben (Flag \`northbit-rbac-migrated-v1\`). Nachfolgende Starts ändern nichts mehr.
+
+## Entra-ID-Readiness
+\`config/roleResolver.mjs\` enthält \`resolveRoleFromGroups(groupIds, mapping)\`. Mehrere Treffer ergeben die höchstprivilegierte Rolle, kein Treffer ergibt \`viewer\` (Least-Privilege-Fallback). Beispielmapping: \`config/entraMapping.example.json\`. Entra liefert nur Identität — die interne Permission-Matrix bleibt die einzige Autorität für Aktionen.
+
+## UI-Gating vs. Server-Guard
+\`PermissionGate\` und \`usePermission()\` blenden UI rein lokal. Sobald serverseitige Auth aktiv ist, muss jede schreibende Server-Route zusätzlich \`requirePermission()\` aus \`backend/services/rbac.mjs\` aufrufen — UI-Gating ist niemals der einzige Schutz.`,
   },
 ];
 

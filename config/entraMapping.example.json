@@ -1,0 +1,10 @@
+{
+  "_comment": "Beispielmapping Entra-Gruppen-Object-ID → interne Rolle. Datei NICHT mit echten Werten committen.",
+  "00000000-0000-0000-0000-000000000001": "systemadministrator",
+  "00000000-0000-0000-0000-000000000002": "administrator",
+  "00000000-0000-0000-0000-000000000003": "teamlead",
+  "00000000-0000-0000-0000-000000000004": "projectmanager",
+  "00000000-0000-0000-0000-000000000005": "engineer",
+  "00000000-0000-0000-0000-000000000006": "customer",
+  "00000000-0000-0000-0000-000000000007": "viewer"
+}

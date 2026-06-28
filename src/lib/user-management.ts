@@ -12,7 +12,14 @@
 
 import { dashboardData } from "@/lib/dashboard-data";
 
-export type UserRole = "administrator" | "teamlead" | "engineer" | "projectmanager" | "customer";
+export type UserRole =
+  | "systemadministrator"
+  | "administrator"
+  | "teamlead"
+  | "engineer"
+  | "projectmanager"
+  | "customer"
+  | "viewer";
 
 export type UserStatus = "active" | "inactive" | "locked" | "archived";
 
@@ -34,11 +41,13 @@ export interface UserProfile {
 }
 
 export const ROLE_LABEL: Record<UserRole, string> = {
+  systemadministrator: "System-Administrator",
   administrator: "Administrator",
   teamlead: "Teamleiter",
   engineer: "Systemingenieur",
   projectmanager: "Projektmanager",
   customer: "Kunde",
+  viewer: "Viewer",
 };
 
 export const STATUS_LABEL: Record<UserStatus, string> = {
@@ -48,12 +57,15 @@ export const STATUS_LABEL: Record<UserStatus, string> = {
   archived: "Archiviert",
 };
 
+/** Reihenfolge entspricht der Privilegabstufung (hoch → niedrig). */
 export const ALL_ROLES: UserRole[] = [
+  "systemadministrator",
   "administrator",
   "teamlead",
-  "engineer",
   "projectmanager",
+  "engineer",
   "customer",
+  "viewer",
 ];
 
 export const ALL_STATUSES: UserStatus[] = ["active", "inactive", "locked", "archived"];
@@ -174,6 +186,33 @@ export function userScopedKey(baseKey: string): string {
 
 /* -------------------------------- Bootstrap ------------------------------- */
 
+/** Einmalige Migration auf das erweiterte RBAC-Modell (Prompt 7).
+ *  Hebt den bisherigen Default-Administrator auf `systemadministrator` an,
+ *  sofern kein SysAdmin existiert. Idempotent über Flag-Key. */
+const RBAC_MIGRATION_KEY = "northbit-rbac-migrated-v1";
+function migrateToRbacV1(users: UserProfile[]): UserProfile[] {
+  if (typeof window === "undefined") return users;
+  if (window.localStorage.getItem(RBAC_MIGRATION_KEY) === "1") return users;
+  const hasSysAdmin = users.some((u) => u.role === "systemadministrator");
+  let next = users;
+  if (!hasSysAdmin) {
+    const firstAdmin = users.find(
+      (u) => u.role === "administrator" && u.status === "active",
+    );
+    if (firstAdmin) {
+      next = users.map((u) =>
+        u.id === firstAdmin.id ? { ...u, role: "systemadministrator", updatedAt: nowIso() } : u,
+      );
+    }
+  }
+  try {
+    window.localStorage.setItem(RBAC_MIGRATION_KEY, "1");
+  } catch {
+    /* quota */
+  }
+  return next;
+}
+
 /** Beim ersten Start: legt einen Default-Admin auf Basis des Engineer-Stamms an
  *  und migriert vorhandene Legacy-Storage-Keys auf dessen Scope. Idempotent. */
 export function bootstrap(): UserProfile {
@@ -198,8 +237,18 @@ export function bootstrap(): UserProfile {
         }
       }
     }
+    try {
+      window.localStorage.setItem(RBAC_MIGRATION_KEY, "1");
+    } catch {
+      /* quota */
+    }
     setActiveUserId(admin.id);
     return admin;
+  }
+  const migrated = migrateToRbacV1(users);
+  if (migrated !== users) {
+    saveUsers(migrated);
+    users = migrated;
   }
   const activeId = getActiveUserId();
   if (!activeId || !users.find((u) => u.id === activeId)) {
@@ -222,7 +271,7 @@ function makeDefaultAdmin(id: string): UserProfile {
     displayName: fullName,
     email: "",
     phone: "",
-    role: "administrator",
+    role: "systemadministrator",
     status: "active",
     mfaEnabled: false,
     createdAt: nowIso(),
@@ -264,6 +313,13 @@ export function createUser(input: CreateUserInput): UserProfile {
   return user;
 }
 
+/** Zählt aktive Systemadministratoren (ohne `excludeId`). Schutz vor Lockout. */
+function activeSysAdminCount(users: UserProfile[], excludeId?: string): number {
+  return users.filter(
+    (u) => u.role === "systemadministrator" && u.status === "active" && u.id !== excludeId,
+  ).length;
+}
+
 export function updateUser(
   id: string,
   patch: Partial<Omit<UserProfile, "id" | "createdAt">>,
@@ -271,11 +327,23 @@ export function updateUser(
   const users = loadUsers();
   const idx = users.findIndex((u) => u.id === id);
   if (idx < 0) return null;
+  const current = users[idx];
+  const nextRole = (patch.role ?? current.role) as UserRole;
+  const nextStatus = (patch.status ?? current.status) as UserStatus;
+  const wasActiveSysAdmin =
+    current.role === "systemadministrator" && current.status === "active";
+  const stillActiveSysAdmin = nextRole === "systemadministrator" && nextStatus === "active";
+  if (wasActiveSysAdmin && !stillActiveSysAdmin) {
+    if (activeSysAdminCount(users, id) === 0) {
+      // Letzter aktiver SysAdmin darf nicht degradiert/deaktiviert werden.
+      return null;
+    }
+  }
   const next: UserProfile = {
-    ...users[idx],
+    ...current,
     ...patch,
-    id: users[idx].id,
-    createdAt: users[idx].createdAt,
+    id: current.id,
+    createdAt: current.createdAt,
     updatedAt: nowIso(),
   };
   const copy = users.slice();
@@ -284,13 +352,22 @@ export function updateUser(
   return next;
 }
 
-/** Hard-Delete inklusive aller gescopten Daten. Letzten Admin nicht löschen. */
+/** Hard-Delete inklusive aller gescopten Daten. Letzten SysAdmin nicht löschen. */
 export function deleteUser(id: string): { ok: boolean; reason?: string } {
   const users = loadUsers();
   const target = users.find((u) => u.id === id);
   if (!target) return { ok: false, reason: "Benutzer nicht gefunden." };
+  if (target.role === "systemadministrator" && activeSysAdminCount(users, id) === 0) {
+    return {
+      ok: false,
+      reason: "Letzter aktiver System-Administrator kann nicht gelöscht werden.",
+    };
+  }
   const adminsLeft = users.filter(
-    (u) => u.role === "administrator" && u.status === "active" && u.id !== id,
+    (u) =>
+      (u.role === "administrator" || u.role === "systemadministrator") &&
+      u.status === "active" &&
+      u.id !== id,
   );
   if (target.role === "administrator" && adminsLeft.length === 0) {
     return {
@@ -332,8 +409,13 @@ export function hasRole(user: UserProfile | null, ...roles: UserRole[]): boolean
   return roles.includes(user.role);
 }
 
+/** Wahr für `administrator` UND `systemadministrator`. */
 export function isAdmin(user: UserProfile | null): boolean {
-  return hasRole(user, "administrator");
+  return hasRole(user, "administrator", "systemadministrator");
+}
+
+export function isSystemAdmin(user: UserProfile | null): boolean {
+  return hasRole(user, "systemadministrator");
 }
 
 /** Initialen aus Vor-/Nachname (Fallback: Anzeigename). */

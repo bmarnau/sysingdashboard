@@ -32,5 +32,8 @@ jobs:
       - name: Lint
         run: bun run lint
 
+      - name: RBAC matrix check
+        run: bun run rbac:check
+
       - name: Build (production)
         run: bun run build

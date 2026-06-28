@@ -1,35 +1,46 @@
-## Ziel
+# Prompt 7 — RBAC Architektur (Implementierung)
 
-Single Source of Truth für Azure-ENV-Namen: `envValidator.mjs` wird in `secretManager.mjs` aufgelöst, `validateEnv()` wandert als `secretManager.validate()` dorthin. Alle Aufrufer werden umgestellt, die Datei `config/envValidator.mjs` entfernt.
+Wechsel in Build-Mode bitte über „Implement plan". Anschließend werden in einer Iteration folgende Dateien angelegt/geändert:
 
-## Änderungen
+## Neue Dateien
+- `src/lib/rbac/permissions.ts` — `Permission`-Union (14), `ROLE_PERMISSIONS`-Matrix, `ROLE_PRIORITY`, `can/canAny/canAll/requirePermission/permissionsOf`. Single Source of Truth.
+- `src/hooks/usePermission.ts` — `usePermission(perm)`, `useAnyPermission(perms)` reaktiv über `useCurrentUser`.
+- `src/components/PermissionGate.tsx` — JSX-Wrapper mit `permission` + `fallback`.
+- `backend/services/rbac.mjs` — identische Matrix als ESM, `can(role, perm)`, `requirePermission(role, perm)`.
+- `config/roleResolver.mjs` — Entra-Readiness-Stub: `resolveInternalRole({entraOid, groupIds, internalUsers, mapping})`, Least-Privilege-Fallback `viewer`, niemals Auto-Promotion zu `administrator`/`systemadministrator`.
+- `config/entraMapping.example.json` — Beispiel-Mapping `entra-group-id → interne Rolle`.
+- `scripts/check-rbac.mjs` — prüft Matrix-Invarianten **und** verifiziert, dass Frontend- (`src/lib/rbac/permissions.ts`) und Backend-Matrix (`backend/services/rbac.mjs`) zeichengenau übereinstimmen. Exit 1 bei Verstoß.
 
-### 1. `config/secretManager.mjs` erweitern
-- Neue Funktion `validate()` mit identischer Semantik wie bisheriges `validateEnv()`:
-  - iteriert über die bereits vorhandene `KNOWN`-Liste (= Pflicht-ENVs in PROD),
-  - PROD: aggregierter Throw `Missing required ENV variables: A, B, C`,
-  - DEV: einzelne Warn-Zeile mit Namen, kein Throw,
-  - Rückgabe `{ mode, missing, ok }`.
-- Neue Funktion `getEnv(name, requiredInProd = true)` analog der bisherigen Logik (vorhanden → Wert; fehlt+PROD+required → Throw; sonst Warnung+undefined). Akzeptiert auch unbekannte Namen (für künftige Nicht-Azure-Variablen), prüft aber niemand-loggen-Regel.
-- Re-Export `isDev`, `isProd` aus `config/env.mjs` zur bequemen Nutzung.
-- Header-Kommentar: „Backend only — do not import from src/".
+## Geänderte Dateien
+- `src/lib/user-management.ts` — `UserRole` um `systemadministrator | viewer` erweitern; `ROLE_LABEL`, `ALL_ROLES` ergänzen; `isAdmin()` deckt beide Admin-Typen ab; einmalige Migration im `bootstrap` (Flag `northbit-rbac-migrated-v1`): bestehender Default-Admin wird `systemadministrator`; Schutz „letzter aktiver Systemadministrator" in `updateUser`/`setUserRole`/`deleteUser`.
+- `src/routes/index.tsx` — Servicemenü-Einträge gaten:
+  - Benutzer & Profile → `users.manage`
+  - Backup → `backup.restore`
+  - Import / Export → `azure.import` (Import) bzw. `azure.export` (Export); kombiniert per `canAny`
+  - Systemstatus → `systemstatus.view`
+  - Engineer-Stammdaten / Arbeitszeitmodell → `users.manage` (Stammdaten-Pflege)
+  - Customer/Viewer: kein Service-Menü-Button sichtbar, nur Handbuch + Downloads (read-only Pfade)
+- `src/components/UserManagementDialog.tsx` — `isAdmin` durch `can(user, 'users.manage')` ersetzen; Rollenauswahl im `UserEditor` filtert `administrator`/`systemadministrator` aus, wenn der aktive Benutzer kein `systemadministrator` ist; `roleStyle` exhaustiv für neue Rollen; Löschen/Degradieren des letzten Systemadministrators sperren.
+- `src/components/BackupDialog.tsx`, `src/components/ImportExportDialog.tsx` — destruktive Aktionen (Restore / Import) zusätzlich defensiv via `requirePermission` absichern (Belt-and-Suspenders).
+- `src/routes/api/sync.ts` — optionaler RBAC-Check: wenn Request-Header `X-User-Role` vorhanden, prüft `requirePermission(role, 'azure.export')` und antwortet 403 bei Verstoß. Bestehender `X-Sync-Token`-Gate bleibt unverändert.
+- `src/types/backend.d.ts` — Typdecl für `backend/services/rbac.mjs` und `config/roleResolver.mjs`.
+- `src/lib/help-documentation.ts` — neues Kapitel „Rollen & Berechtigungen" mit vollständiger Matrix-Tabelle, Entra-Mapping-Hinweis und Sicherheitsdisclaimer; `lastUpdated: "2026-06-28"`.
+- `CHANGELOG.md` — `## 1.18.0 - 2026-06-28` mit den oben genannten Bullets.
+- `package.json` — Script `"rbac:check": "node scripts/check-rbac.mjs"`.
+- `.github/workflows/ci.yml` — Step „RBAC check" nach Lint, vor Build.
 
-### 2. Aufrufer umstellen
-- `backend/server.mjs`: Import `validateEnv` → `import { validate as validateEnv } from "../config/secretManager.mjs"` (Aufrufseite unverändert).
-- `backend/services/ensure-env.mjs`: gleicher Import-Swap.
-- `src/types/backend.d.ts`: Modul-Deklaration `*/config/envValidator.mjs` entfernen; `*/config/secretManager.mjs` ergänzen (inkl. neuer `validate`/`getEnv`-Signaturen plus bestehender `has`/`preview`/`status`/`consume`/`mask`/`KNOWN`).
+## Check 7 — Abdeckung
+- ✅ Jede Azure-Aktion: eigene Permission (`azure.connection.test/.export/.import/.database.build`).
+- ✅ `azure.import` ⊊ Träger(`azure.export`) — durch Matrix + Test erzwungen.
+- ✅ `azure.database.build` ausschließlich `systemadministrator`.
+- ✅ `users.manage` und `roles.manage` admin-only (Letzteres SysAdmin-only).
+- ✅ Customer/Viewer sehen kein Servicemenü-Admin-Item.
+- ✅ Viewer ist read-only (keine `*.edit`/`azure.*`/`*.manage`).
+- ✅ Entra ersetzt nicht das interne Rollenmodell (`roleResolver` mappt, Override durch interne Tabelle, keine Auto-Promotion).
 
-### 3. Cleanup
-- `config/envValidator.mjs` löschen (`rm`).
-- Suche im Repo nach Restreferenzen (`rg envValidator`) und ggf. nachziehen.
+## Kritische Hinweise — umgesetzt
+- **Permissions statt Rollen-Checks**: alle UI-Gates rufen `can()`/`PermissionGate`, kein `user.role === '…'` in Komponenten.
+- **Ownership-Vertrag für `engineer`**: in `permissions.ts` als JSDoc dokumentiert, Schema-Feld `ownerId` auf Activities/WorkPackages bleibt unverändert nutzbar — Server-Check folgt mit Auth-Aktivierung.
+- **Sicherheitsdisclaimer**: Handbuch + JSDoc in `permissions.ts` weisen explizit aus, dass RBAC ohne echte Auth UI-Komfort ist.
 
-### 4. Doku-Sync (Pflicht)
-- `CHANGELOG.md`: neuer Eintrag `## 1.17.7 - 2026-06-27` mit Hinweis auf Konsolidierung (keine funktionale Änderung, reine Architektur).
-- `src/lib/help-documentation.ts`: Kapitel „ENV-Validierung & Production-Gating" aktualisieren — Pfad/Funktionsname auf `secretManager.validate()` setzen, `lastUpdated` anheben.
-- `bun run docs:check` zur Verifikation.
-
-## Bewusst NICHT enthalten
-
-- Keine Verhaltens-/Semantik-Änderung an Validierung, Masking oder `consume()`.
-- Kein Schema-Wechsel (Zod o.ä.).
-- Keine zusätzliche `requiredInProd=false`-Liste — bleibt bei den 5 bekannten Azure-Pflicht-ENVs.
+Sage „ok" / drücke Implement plan, dann lege ich los.

@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.18.0 - 2026-06-28
+
+- RBAC-Modell eingeführt (Prompt 7): 7 Rollen (System-Administrator, Administrator, Teamleiter, Projektmanager, Systemingenieur, Kunde, Viewer) und 14 atomare Permissions (`dashboard.view`, `documentation.view`, `systemstatus.view`, `project.edit`, `workpackage.edit`, `activity.edit`, `azure.connection.test`, `azure.export`, `azure.import`, `azure.database.build`, `backup.restore`, `users.manage`, `roles.manage`, `auditlog.view`).
+- Frontend-Matrix `src/lib/rbac/permissions.ts` (Single Source of Truth) + Hook `usePermission` + UI-Komponente `PermissionGate`. Backend-Mirror in `backend/services/rbac.mjs` für spätere Server-Guards.
+- Invarianten (Check 7): `azure.database.build` nur System-Administrator; `azure.import` ⊆ {sysadmin, admin}; Import-Träger ⊆ Export-Träger; `roles.manage` nur sysadmin; `viewer` read-only; `customer` ohne Admin-/Status-Zugriff. CI-Skript `scripts/check-rbac.mjs` (npm script `rbac:check`) vergleicht Frontend- und Backend-Matrix und verifiziert alle Invarianten.
+- Sicherheits-Härtung User-Management: letzter aktiver System-Administrator kann nicht degradiert, deaktiviert oder gelöscht werden; Rollen-Select im UserEditor ist außerhalb `roles.manage` gesperrt und blendet die SysAdmin-Rolle aus.
+- Einmalige Migration: bestehender Default-Administrator wird beim Start auf `systemadministrator` angehoben (Flag `northbit-rbac-migrated-v1`).
+- Entra-ID-Readiness: `config/roleResolver.mjs` mit `resolveRoleFromGroups()` (Least-Privilege-Fallback `viewer`) plus Beispiel-Mapping `config/entraMapping.example.json`. Entra liefert nur Identität; die interne Matrix bleibt autoritativ.
+
 ## 1.17.8 - 2026-06-27
 
 - Secret-Management-Check (Check 4) bestanden: alle ENV-Zugriffe laufen über `config/secretManager.mjs`; `src/routes/api/sync.ts` nutzt jetzt `getEnv("SYNC_TRIGGER_TOKEN", false)` statt direktem `process.env`-Zugriff. Kein Secret im Frontend-Bundle, keine Werte in Logs/Responses.

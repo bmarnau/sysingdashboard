@@ -37,7 +37,7 @@ export interface UserManagementDialogProps {
   onProfileSwitch?: (newUserId: string) => void;
 }
 
-const isAdmin = (u: UserProfile | null) => !!u && u.role === "administrator";
+import { can, ROLE_PRIORITY } from "@/lib/rbac/permissions";
 
 function statusStyle(s: UserStatus): string {
   switch (s) {
@@ -54,6 +54,8 @@ function statusStyle(s: UserStatus): string {
 
 function roleStyle(r: UserRole): string {
   switch (r) {
+    case "systemadministrator":
+      return "bg-destructive/15 text-destructive border-destructive/30";
     case "administrator":
       return "bg-primary/15 text-primary border-primary/30";
     case "teamlead":
@@ -64,6 +66,8 @@ function roleStyle(r: UserRole): string {
       return "bg-warning/15 text-warning border-warning/30";
     case "customer":
       return "bg-muted text-muted-foreground border-border";
+    case "viewer":
+      return "bg-secondary text-muted-foreground border-border";
   }
 }
 
@@ -83,7 +87,8 @@ export function UserManagementDialog({
 
   if (!open) return null;
 
-  const canAdmin = isAdmin(currentUser);
+  const canAdmin = can(currentUser, "users.manage");
+  const canManageRoles = can(currentUser, "roles.manage");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -140,7 +145,11 @@ export function UserManagementDialog({
             />
           )}
           {tab === "verwaltung" && canAdmin && (
-            <UserAdmin users={users} currentUserId={currentUser.id} />
+            <UserAdmin
+              users={users}
+              currentUserId={currentUser.id}
+              canManageRoles={canManageRoles}
+            />
           )}
         </div>
       </div>
@@ -490,7 +499,15 @@ function ProfileSwitch({
 
 /* ----------------------------- Verwaltung --------------------------------- */
 
-function UserAdmin({ users, currentUserId }: { users: UserProfile[]; currentUserId: string }) {
+function UserAdmin({
+  users,
+  currentUserId,
+  canManageRoles,
+}: {
+  users: UserProfile[];
+  currentUserId: string;
+  canManageRoles: boolean;
+}) {
   const [editing, setEditing] = useState<UserProfile | "new" | null>(null);
 
   return (
@@ -621,13 +638,25 @@ function UserAdmin({ users, currentUserId }: { users: UserProfile[]; currentUser
       </div>
 
       {editing && (
-        <UserEditor initial={editing === "new" ? null : editing} onClose={() => setEditing(null)} />
+        <UserEditor
+          initial={editing === "new" ? null : editing}
+          canManageRoles={canManageRoles}
+          onClose={() => setEditing(null)}
+        />
       )}
     </div>
   );
 }
 
-function UserEditor({ initial, onClose }: { initial: UserProfile | null; onClose: () => void }) {
+function UserEditor({
+  initial,
+  canManageRoles,
+  onClose,
+}: {
+  initial: UserProfile | null;
+  canManageRoles: boolean;
+  onClose: () => void;
+}) {
   const [form, setForm] = useState<CreateUserInput>(() => ({
     firstName: initial?.firstName ?? "",
     lastName: initial?.lastName ?? "",
@@ -643,19 +672,27 @@ function UserEditor({ initial, onClose }: { initial: UserProfile | null; onClose
       alert("Vor- und Nachname sind erforderlich.");
       return;
     }
+    // Defensive: Rollenänderung nur mit roles.manage; sonst Originalrolle behalten.
+    const effectiveRole: UserRole = canManageRoles ? form.role : (initial?.role ?? form.role);
     if (initial) {
-      UserManagementService.updateUser(initial.id, {
+      const res = UserManagementService.updateUser(initial.id, {
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         displayName:
           (form.displayName ?? "").trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
         email: (form.email ?? "").trim(),
         phone: (form.phone ?? "").trim(),
-        role: form.role,
+        role: effectiveRole,
         status: form.status ?? "active",
       });
+      if (!res) {
+        alert(
+          "Aktion blockiert: Der letzte aktive System-Administrator darf nicht degradiert oder deaktiviert werden.",
+        );
+        return;
+      }
     } else {
-      UserManagementService.createUser(form);
+      UserManagementService.createUser({ ...form, role: effectiveRole });
     }
     onClose();
   };
@@ -717,15 +754,22 @@ function UserEditor({ initial, onClose }: { initial: UserProfile | null; onClose
           <Field label="Rolle">
             <select
               value={form.role}
+              disabled={!canManageRoles}
               onChange={(e) => setForm((p) => ({ ...p, role: e.target.value as UserRole }))}
-              className="ipt"
+              className="ipt disabled:opacity-60"
+              title={canManageRoles ? undefined : "Nur System-Administratoren dürfen Rollen ändern."}
             >
-              {ALL_ROLES.map((r) => (
+              {ALL_ROLES.filter((r) => canManageRoles || r !== "systemadministrator").map((r) => (
                 <option key={r} value={r}>
                   {ROLE_LABEL[r]}
                 </option>
               ))}
             </select>
+            {!canManageRoles && (
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                Rollenwechsel auf/aus „System-Administrator" ist reserviert.
+              </p>
+            )}
           </Field>
           <Field label="Status">
             <select

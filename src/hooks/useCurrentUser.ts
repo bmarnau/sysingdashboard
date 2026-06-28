@@ -1,30 +1,58 @@
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import {
   UserManagementService,
   subscribeUserChanges,
   type UserProfile,
 } from "@/lib/user-management";
 
-/** Liefert die aktuelle Liste aller Benutzer reaktiv. */
-export function useUsers(): UserProfile[] {
-  return useSyncExternalStore(
-    (cb) => subscribeUserChanges(cb),
-    () => UserManagementService.loadUsers(),
-    () => [],
-  );
+/** Reaktiver Zugriff auf den aktuell aktiven Benutzer. */
+export function useCurrentUser(): UserProfile | null {
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      return UserManagementService.bootstrap();
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sync = () => setUser(UserManagementService.getActiveUser());
+    sync();
+    const unsub = subscribeUserChanges(sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      unsub();
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
+
+  return user;
 }
 
-/** Liefert den aktiven Benutzer reaktiv. Bootstrappt clientseitig idempotent. */
-export function useCurrentUser(): UserProfile | null {
-  const [ready, setReady] = useState(false);
+/** Reaktive Liste aller Benutzer. */
+export function useUsers(): UserProfile[] {
+  const [users, setUsers] = useState<UserProfile[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      return UserManagementService.loadUsers();
+    } catch {
+      return [];
+    }
+  });
+
   useEffect(() => {
-    UserManagementService.bootstrap();
-    setReady(true);
+    if (typeof window === "undefined") return;
+    const sync = () => setUsers(UserManagementService.loadUsers());
+    sync();
+    const unsub = subscribeUserChanges(sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      unsub();
+      window.removeEventListener("storage", sync);
+    };
   }, []);
-  const user = useSyncExternalStore(
-    (cb) => subscribeUserChanges(cb),
-    () => UserManagementService.getActiveUser(),
-    () => null,
-  );
-  return ready ? user : null;
+
+  return users;
 }
