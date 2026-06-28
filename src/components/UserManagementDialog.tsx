@@ -746,15 +746,22 @@ function UserEditor({
           <Field label="Rolle">
             <select
               value={form.role}
+              disabled={!canManageRoles}
               onChange={(e) => setForm((p) => ({ ...p, role: e.target.value as UserRole }))}
-              className="ipt"
+              className="ipt disabled:opacity-60"
+              title={canManageRoles ? undefined : "Nur System-Administratoren dürfen Rollen ändern."}
             >
-              {ALL_ROLES.map((r) => (
+              {ALL_ROLES.filter((r) => canManageRoles || r !== "systemadministrator").map((r) => (
                 <option key={r} value={r}>
                   {ROLE_LABEL[r]}
                 </option>
               ))}
             </select>
+            {!canManageRoles && (
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                Rollenwechsel auf/aus „System-Administrator" ist reserviert.
+              </p>
+            )}
           </Field>
           <Field label="Status">
             <select
