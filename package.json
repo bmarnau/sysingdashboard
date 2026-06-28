@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "docs:check": "node scripts/check-docs-sync.mjs",
     "security:check": "node scripts/security-check.mjs --json security-report/findings.json --markdown security-report/findings.md",
-    "test:examples": "node scripts/test-example-files.mjs"
+    "test:examples": "node scripts/test-example-files.mjs",
+    "rbac:check": "node scripts/check-rbac.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.42.3",
