@@ -87,7 +87,8 @@ export function UserManagementDialog({
 
   if (!open) return null;
 
-  const canAdmin = isAdmin(currentUser);
+  const canAdmin = can(currentUser, "users.manage");
+  const canManageRoles = can(currentUser, "roles.manage");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
