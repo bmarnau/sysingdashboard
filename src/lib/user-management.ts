@@ -186,6 +186,33 @@ export function userScopedKey(baseKey: string): string {
 
 /* -------------------------------- Bootstrap ------------------------------- */
 
+/** Einmalige Migration auf das erweiterte RBAC-Modell (Prompt 7).
+ *  Hebt den bisherigen Default-Administrator auf `systemadministrator` an,
+ *  sofern kein SysAdmin existiert. Idempotent über Flag-Key. */
+const RBAC_MIGRATION_KEY = "northbit-rbac-migrated-v1";
+function migrateToRbacV1(users: UserProfile[]): UserProfile[] {
+  if (typeof window === "undefined") return users;
+  if (window.localStorage.getItem(RBAC_MIGRATION_KEY) === "1") return users;
+  const hasSysAdmin = users.some((u) => u.role === "systemadministrator");
+  let next = users;
+  if (!hasSysAdmin) {
+    const firstAdmin = users.find(
+      (u) => u.role === "administrator" && u.status === "active",
+    );
+    if (firstAdmin) {
+      next = users.map((u) =>
+        u.id === firstAdmin.id ? { ...u, role: "systemadministrator", updatedAt: nowIso() } : u,
+      );
+    }
+  }
+  try {
+    window.localStorage.setItem(RBAC_MIGRATION_KEY, "1");
+  } catch {
+    /* quota */
+  }
+  return next;
+}
+
 /** Beim ersten Start: legt einen Default-Admin auf Basis des Engineer-Stamms an
  *  und migriert vorhandene Legacy-Storage-Keys auf dessen Scope. Idempotent. */
 export function bootstrap(): UserProfile {
@@ -210,8 +237,18 @@ export function bootstrap(): UserProfile {
         }
       }
     }
+    try {
+      window.localStorage.setItem(RBAC_MIGRATION_KEY, "1");
+    } catch {
+      /* quota */
+    }
     setActiveUserId(admin.id);
     return admin;
+  }
+  const migrated = migrateToRbacV1(users);
+  if (migrated !== users) {
+    saveUsers(migrated);
+    users = migrated;
   }
   const activeId = getActiveUserId();
   if (!activeId || !users.find((u) => u.id === activeId)) {
@@ -234,7 +271,7 @@ function makeDefaultAdmin(id: string): UserProfile {
     displayName: fullName,
     email: "",
     phone: "",
-    role: "administrator",
+    role: "systemadministrator",
     status: "active",
     mfaEnabled: false,
     createdAt: nowIso(),
