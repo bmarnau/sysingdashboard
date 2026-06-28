@@ -644,7 +644,26 @@ function UserAdmin({
   );
 }
 
-function UserEditor({ initial, onClose }: { initial: UserProfile | null; onClose: () => void }) {
+      {editing && (
+        <UserEditor
+          initial={editing === "new" ? null : editing}
+          canManageRoles={canManageRoles}
+          onClose={() => setEditing(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function UserEditor({
+  initial,
+  canManageRoles,
+  onClose,
+}: {
+  initial: UserProfile | null;
+  canManageRoles: boolean;
+  onClose: () => void;
+}) {
   const [form, setForm] = useState<CreateUserInput>(() => ({
     firstName: initial?.firstName ?? "",
     lastName: initial?.lastName ?? "",
