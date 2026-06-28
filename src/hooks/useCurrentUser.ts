@@ -30,3 +30,30 @@ export function useCurrentUser(): UserProfile | null {
 
   return user;
 }
+
+/** Reaktive Liste aller Benutzer. Re-rendert bei Storage-Änderungen oder Wechsel. */
+export function useUsers(): UserProfile[] {
+  const [users, setUsers] = useState<UserProfile[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      return UserManagementService.loadUsers();
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sync = () => setUsers(UserManagementService.loadUsers());
+    window.addEventListener("storage", sync);
+    window.addEventListener("northbit:user-switched", sync);
+    window.addEventListener("northbit:users-changed", sync);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("northbit:user-switched", sync);
+      window.removeEventListener("northbit:users-changed", sync);
+    };
+  }, []);
+
+  return users;
+}
