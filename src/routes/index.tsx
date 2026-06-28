@@ -55,6 +55,7 @@ import {
   initialsOf,
   type UserProfile,
 } from "@/lib/user-management";
+import { can } from "@/lib/rbac/permissions";
 import {
   TimePeriodService,
   getISOWeek,
