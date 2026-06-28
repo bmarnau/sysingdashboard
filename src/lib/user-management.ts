@@ -12,7 +12,14 @@
 
 import { dashboardData } from "@/lib/dashboard-data";
 
-export type UserRole = "administrator" | "teamlead" | "engineer" | "projectmanager" | "customer";
+export type UserRole =
+  | "systemadministrator"
+  | "administrator"
+  | "teamlead"
+  | "engineer"
+  | "projectmanager"
+  | "customer"
+  | "viewer";
 
 export type UserStatus = "active" | "inactive" | "locked" | "archived";
 
@@ -34,11 +41,13 @@ export interface UserProfile {
 }
 
 export const ROLE_LABEL: Record<UserRole, string> = {
+  systemadministrator: "System-Administrator",
   administrator: "Administrator",
   teamlead: "Teamleiter",
   engineer: "Systemingenieur",
   projectmanager: "Projektmanager",
   customer: "Kunde",
+  viewer: "Viewer",
 };
 
 export const STATUS_LABEL: Record<UserStatus, string> = {
@@ -48,12 +57,15 @@ export const STATUS_LABEL: Record<UserStatus, string> = {
   archived: "Archiviert",
 };
 
+/** Reihenfolge entspricht der Privilegabstufung (hoch → niedrig). */
 export const ALL_ROLES: UserRole[] = [
+  "systemadministrator",
   "administrator",
   "teamlead",
-  "engineer",
   "projectmanager",
+  "engineer",
   "customer",
+  "viewer",
 ];
 
 export const ALL_STATUSES: UserStatus[] = ["active", "inactive", "locked", "archived"];
