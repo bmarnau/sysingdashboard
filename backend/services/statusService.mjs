@@ -14,7 +14,7 @@ import {
 } from "../../config/secretManager.mjs";
 import { isKeyVaultConfigured } from "../../config/keyVault.mjs";
 import { getSyncMeta } from "./syncService.mjs";
-import { ROLES, PERMISSIONS } from "./rbac.mjs";
+import { ALL_ROLES, ALL_PERMISSIONS } from "./rbac.mjs";
 
 const BOOT_AT = new Date().toISOString();
 
@@ -90,8 +90,8 @@ export function getStatus() {
       authMode: envOrNull("AUTH_PROVIDER") || "local",
       rbac: {
         enabled: true,
-        rolesCount: ROLES.length,
-        permissionsCount: PERMISSIONS.length,
+        rolesCount: ALL_ROLES.length,
+        permissionsCount: ALL_PERMISSIONS.length,
       },
       secretManager: { enabled: true, missing: envValidation.missing },
       envValidation: { ok: envValidation.ok, missing: envValidation.missing },
