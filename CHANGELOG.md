@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.18.1 - 2026-06-29
+
+- Systemstatus (Check 8) auf sieben strukturierte Sektionen umgebaut: **Application**, **GitHub**, **Lovable**, **Azure**, **Security**, **Data**, **Documentation** — exakt gemäß Anforderung.
+- `/api/status` (`backend/services/statusService.mjs`) liefert jetzt ein vollständiges, **secret-freies** Payload (nur Booleans, ENV-Namen, Metadaten). Quellen: `secretManager.status()`/`validate()`, `keyVault.isKeyVaultConfigured()`, RBAC-Mirror, `syncService.getSyncMeta()`. Niemals `consume()` — keine Werte, keine Connection-Strings, keine SAS-Tokens, keine Stacktraces im Body.
+- Fehlende Felder werden defensiv als "Not configured" angezeigt; fehlt das Backend, bleibt der Dialog dank lokaler Fallbacks (Version, Build, Backup, PROJECT_INFO) voll bedienbar.
+- Fehlende ENV-Variablen werden in Sektion 4 und 5 ausschließlich mit **Namen** als Chips dargestellt — keine Werte, keine Previews.
+- `useSystemStatusHealth` gibt das komplette Payload typisiert weiter (`SystemStatusPayload`); Startvalidierung (`bootstrapSystemStatusCheck`) und 3-s-Timeout bleiben unverändert.
+- Handbuch-Kapitel „Systemstatus" auf neue 7-Sektionen-Struktur aktualisiert (`lastUpdated: 2026-06-29`).
+
 ## 1.18.0 - 2026-06-28
 
 - RBAC-Modell eingeführt (Prompt 7): 7 Rollen (System-Administrator, Administrator, Teamleiter, Projektmanager, Systemingenieur, Kunde, Viewer) und 14 atomare Permissions (`dashboard.view`, `documentation.view`, `systemstatus.view`, `project.edit`, `workpackage.edit`, `activity.edit`, `azure.connection.test`, `azure.export`, `azure.import`, `azure.database.build`, `backup.restore`, `users.manage`, `roles.manage`, `auditlog.view`).
