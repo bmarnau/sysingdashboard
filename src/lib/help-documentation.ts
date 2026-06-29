@@ -642,34 +642,38 @@ Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Ma
       "Preview",
       "Health",
     ],
-    lastUpdated: "2026-06-23",
+    lastUpdated: "2026-06-29",
     content: `## Was zeigt der Systemstatus?
-Der Dialog "Service → Systemstatus…" zeigt zur Laufzeit Code-Herkunft, Lovable-Deployment, Versionen und einen Health-Check der Backend-API.
+Der Dialog "Service → Systemstatus…" ist in **sieben Sektionen** gegliedert und zeigt ausschließlich Booleans, Status und ENV-Variablen­**namen**. Werte, Secrets, Connection Strings und SAS-Tokens werden **niemals** angezeigt.
 
-## GitHub
-- Repository: fester Pfad \`bmarnau/sysingdashboard\` mit Link auf https://github.com/bmarnau/sysingdashboard. Quelle: \`src/lib/project-info.ts\` (überschreibbar via \`VITE_PROJECT_GITHUB_URL\`).
-- Branch: aus Build-Info, Fallback \`main\`.
-- Letzter Commit: nur sichtbar, wenn der Build einen Git-SHA mitliefert. In der Lovable-Sandbox ohne \`git\` erscheint "nicht im Build verfügbar" — das ist erwartbar und kein Fehler.
-- Build-Zeit: Zeitpunkt des letzten Builds.
+## 1. Application
+Application-Name, Version (\`DASHBOARD_VERSION\` aus \`CHANGELOG.md\`), Build-Date und Runtime-Mode (\`development\`/\`production\` vom Backend).
 
-## Lovable-Deployment
-- Published URL: https://sysingdashboard.lovable.app
-- Preview (stabil): \`project--<id>-dev.lovable.app\` — bleibt auch bei Projekt-Umbenennung gleich.
-- Editor: Link zum Lovable-Projekt.
-- Projekt-ID: zur eindeutigen Zuordnung.
+## 2. GitHub
+Repository-URL (Single Source \`src/lib/project-info.ts\`, in CI über \`GITHUB_REPOSITORY\` überschreibbar), Current Branch und Commit-Hash. Fehlt der Commit (z. B. in der Lovable-Sandbox ohne \`git\`), erscheint "Not configured".
 
-## Versionen & Backend
-- Dashboard-, Handbuch-, Paketversion und letzter Handbuch-Stand.
-- Letztes automatisches Backup (lokaler IndexedDB-Stand).
-- Backend \`/api/status\`: Erreichbarkeit und Modus (development/production).
-- Azure-Zugriff erlaubt: spiegelt \`assertAzureAllowed()\` aus dem Backend.
-- Zuletzt geprüft: Zeitstempel des letzten Health-Checks.
+## 3. Lovable
+Current Publish URL, Deployment-Status, Last Deployment, Project-ID. Ohne ENV-Konfiguration: "Not configured".
 
-## Aktualitätsprüfung beim Start
-Beim Laden des Dashboards triggert \`bootstrapSystemStatusCheck()\` einmalig einen Fetch auf \`/api/status\` (Timeout 3 s). Der Status liegt flüchtig im Speicher; per "Jetzt prüfen" lässt er sich erneut anstoßen. Bewusst kein Polling und keine Persistenz — nach Reload zählt nur der aktuelle Build.
+## 4. Azure
+Azure-Access (allowed/blocked), SQL/Table/Storage je als configured-Badge, Auth-Mode (managed-identity / client-secret / none), Last Connection Test und **Missing ENV Variables** als reine Namensliste. Quelle: \`secretManager.has()\` und \`validate()\` — niemals \`consume()\`.
 
-## Layout & Maximieren
-Label/Wert sind in einem responsiven Grid angeordnet (mobil einspaltig, ab \`sm\` zweispaltig). Lange Repository-URLs, Commit-SHAs und Projekt-IDs brechen automatisch um — kein horizontales Scrollen. Über das Symbol oben rechts im Dialog lässt sich die Ansicht maximieren (vollflächig, ab \`lg\` zweispaltige Sektionen) und wieder minimieren.`,
+## 5. Security
+Authentication-Mode, RBAC-Status (Anzahl Rollen × Permissions), Secret-Manager-Status, ENV-Validation (ok/failed plus fehlende Namen) und Key-Vault-Readiness (\`config/keyVault.isKeyVaultConfigured()\`).
+
+## 6. Data
+Local Storage (immer aktiv), Last Local Backup (\`BackupService.lastAuto\`), Last Azure Export/Import. Fehlende Werte → "Not configured".
+
+## 7. Documentation
+User-Manual-Version, Management-Overview-Status, Last Documentation Update.
+
+## Startvalidierung
+Beim Laden des Dashboards triggert \`bootstrapSystemStatusCheck()\` einmalig einen Fetch auf \`/api/status\` (Timeout 3 s). Das Backend ruft \`secretManager.validate()\` pro Request auf (PROD-Fail-Fast, DEV-Warn). Frontend rendert defensiv: fehlt eine Antwort, bleiben lokale Werte (Version, Build, Backup) sichtbar und alle Server-Felder erscheinen als "Not configured".
+
+## Sicherheitsregeln
+- Frontend importiert weder \`secretManager\` noch \`envValidator\`/\`keyVault\`.
+- \`/api/status\`-Payload enthält ausschließlich Booleans, Variablennamen und Metadaten.
+- Fehlende Werte brechen die Anzeige nie — pro Feld Fallback "Not configured".`,
   },
 
   {

@@ -5,8 +5,58 @@
  * (in `__root.tsx`) einmal getriggert und kann aus dem
  * `SystemStatusDialog` manuell erneut ausgelöst werden. Bewusst keine
  * Persistenz — nach Reload zählt nur der aktuelle Build.
+ *
+ * Sicherheit: das Frontend liest niemals ENV. Alle ENV-/Secret-/Azure-
+ * Informationen kommen ausschließlich aus dem secret-freien Payload
+ * von `/api/status` (nur Booleans und Variablennamen).
  */
 import { useCallback, useEffect, useSyncExternalStore } from "react";
+
+export interface AzureComponentStatus {
+  configured: boolean;
+}
+
+export interface SystemStatusPayload {
+  application?: {
+    name?: string | null;
+    mode?: "development" | "production" | null;
+    startedAt?: string | null;
+  };
+  github?: {
+    repositoryUrl?: string | null;
+    branch?: string | null;
+    commit?: string | null;
+  };
+  lovable?: {
+    projectId?: string | null;
+    publishedUrl?: string | null;
+    lastDeploymentAt?: string | null;
+    status?: "configured" | "not_configured" | null;
+  };
+  azure?: {
+    allowed?: boolean | null;
+    authMode?: string | null;
+    sql?: AzureComponentStatus | null;
+    table?: AzureComponentStatus | null;
+    storage?: AzureComponentStatus | null;
+    lastConnectionTestAt?: string | null;
+    missingEnv?: string[] | null;
+  };
+  security?: {
+    authMode?: string | null;
+    rbac?: { enabled?: boolean; rolesCount?: number; permissionsCount?: number } | null;
+    secretManager?: { enabled?: boolean; missing?: string[] } | null;
+    envValidation?: { ok?: boolean; missing?: string[] } | null;
+    keyVault?: { configured?: boolean } | null;
+  };
+  data?: {
+    lastAzureExportAt?: string | null;
+    lastAzureImportAt?: string | null;
+  };
+  sync?: { lastRun?: string | null; lastError?: string | null } | null;
+  mode?: "development" | "production" | null;
+  timestamp?: string | null;
+}
 
 export interface SystemStatusHealth {
   checkedAt: string | null;
@@ -15,6 +65,7 @@ export interface SystemStatusHealth {
   azureAllowed: boolean | null;
   lastError: string | null;
   inFlight: boolean;
+  payload: SystemStatusPayload | null;
 }
 
 const initial: SystemStatusHealth = {
@@ -24,6 +75,7 @@ const initial: SystemStatusHealth = {
   azureAllowed: null,
   lastError: null,
   inFlight: false,
+  payload: null,
 };
 
 let state: SystemStatusHealth = initial;
@@ -56,23 +108,21 @@ export async function runSystemStatusCheck(): Promise<void> {
   try {
     const res = await fetch("/api/status", { signal: ctrl.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = (await res.json()) as {
-      mode?: "development" | "production";
-      azure?: { allowed?: boolean };
-    };
+    const json = (await res.json()) as SystemStatusPayload;
     setState({
       checkedAt: new Date().toISOString(),
       apiReachable: true,
-      mode: json.mode ?? null,
+      mode: json.application?.mode ?? json.mode ?? null,
       azureAllowed: json.azure?.allowed ?? null,
       lastError: null,
       inFlight: false,
+      payload: json,
     });
   } catch (err) {
     setState({
       checkedAt: new Date().toISOString(),
       apiReachable: false,
-      lastError: err instanceof Error ? err.message : String(err),
+      lastError: err instanceof Error ? err.message.slice(0, 200) : String(err).slice(0, 200),
       inFlight: false,
     });
   } finally {
@@ -84,7 +134,6 @@ let bootstrapped = false;
 export function bootstrapSystemStatusCheck(): void {
   if (bootstrapped || typeof window === "undefined") return;
   bootstrapped = true;
-  // Nicht blockierend, nach dem Mount triggern.
   setTimeout(() => {
     void runSystemStatusCheck();
   }, 250);
