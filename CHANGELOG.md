@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.18.2 - 2026-06-30
+
+- Benutzerhandbuch erweitert um die Kapitel **Lokaler Betrieb ohne Azure**, **Azure Servicebereich**, **Azure Datenbank aufbauen**, **Azure Verbindung testen**, **Nach Azure exportieren**, **Aus Azure importieren**, **Konflikthandling beim Import**, **Backup vor Import**, **Sicherheitsprinzipien** und **Was bei Azure-Ausfall passiert**. Neue Kategorien „Azure", „Betrieb" und „Sicherheit" im Navigationsbaum.
+- Import-/Datenbank-/Azure-Kapitel mit klaren Warnhinweisen bei Überschreiben und Import; rollenbasierte Sichtbarkeit (`azure-database-build` und `azure-import` nur für berechtigte Rollen). Keine Secrets/Connection-Strings/SAS-Tokens dokumentiert.
+- `DOCUMENTATION_VERSION` auf `1.4.0` angehoben; `lastUpdated` aller neuen Kapitel auf 2026-06-30 gesetzt.
+
 ## 1.18.1 - 2026-06-29
 
 - Systemstatus (Check 8) auf sieben strukturierte Sektionen umgebaut: **Application**, **GitHub**, **Lovable**, **Azure**, **Security**, **Data**, **Documentation** — exakt gemäß Anforderung.

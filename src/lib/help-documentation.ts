@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.3.0";
+export const DOCUMENTATION_VERSION = "1.4.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -785,6 +785,285 @@ Bestehende Default-Administratoren werden beim Start einmalig auf \`systemadmini
 
 ## UI-Gating vs. Server-Guard
 \`PermissionGate\` und \`usePermission()\` blenden UI rein lokal. Sobald serverseitige Auth aktiv ist, muss jede schreibende Server-Route zusätzlich \`requirePermission()\` aus \`backend/services/rbac.mjs\` aufrufen — UI-Gating ist niemals der einzige Schutz.`,
+  },
+  {
+    id: "local-operation",
+    title: "Lokaler Betrieb ohne Azure",
+    category: "Betrieb",
+    keywords: ["lokal", "offline", "Azure", "Standalone", "Browser", "localStorage"],
+    lastUpdated: "2026-06-30",
+    content: `## Worum geht es?
+Das Dashboard funktioniert vollständig ohne Azure und ohne Backend. Alle Daten liegen lokal im Browser (localStorage / IndexedDB) und verlassen das Gerät nur, wenn Sie es aktiv anstoßen (Export, Backup-Download, Sync).
+
+## Was lokal funktioniert
+- Anlage und Pflege von Projekten, Arbeitspaketen und Tätigkeiten
+- Wochen- und Monatsansicht inkl. Leistungsreport
+- PDF-, CSV- und JSON-Export
+- Tägliches ZIP-Backup, Downloadbereich
+- Import/Export-Wizard
+- Benutzerhandbuch, Systemstatus-Anzeige
+- Benutzerverwaltung und Rollen-Wechsel
+
+## Was zusätzlich Azure braucht
+- Aktiver Sync nach Azure SQL / Table Storage
+- Datenbankaufbau in Azure
+- Cloud-übergreifender Datenaustausch zwischen mehreren Geräten
+
+## Empfehlung
+Wenn Sie das Dashboard nur als Einzelplatz nutzen, ist keine Azure-Konfiguration nötig. Die Sektion "Azure" im Systemstatus bleibt dann auf "Not configured" — das ist beabsichtigt.`,
+    relatedTopics: ["offline-mode", "azure-service-area"],
+  },
+  {
+    id: "azure-service-area",
+    title: "Azure Servicebereich",
+    category: "Azure",
+    keywords: ["Azure", "Service", "SQL", "Table", "Storage", "Sync"],
+    lastUpdated: "2026-06-30",
+    content: `## Überblick
+Der Azure-Servicebereich bündelt alle Cloud-Funktionen: Datenbankaufbau, Verbindungstest, Export nach Azure und Import aus Azure. Sichtbarkeit und Ausführung sind über Rollen abgesichert.
+
+## Voraussetzungen
+- Runtime-Mode \`production\` oder ein Backend, das Azure-Aufrufe erlaubt
+- Vollständig konfigurierte ENV-Variablen (siehe Kapitel "ENV-Validierung")
+- Erfolgreicher Verbindungstest
+
+## Berechtigungen (Kurzform)
+- **Verbindung testen**: System-Administrator, Administrator, Teamleiter
+- **Nach Azure exportieren**: System-Administrator, Administrator, Teamleiter, Projektmanager
+- **Aus Azure importieren**: System-Administrator, Administrator
+- **Datenbank aufbauen**: ausschließlich System-Administrator
+
+## Sicherheit
+Alle Azure-Aufrufe laufen serverseitig. Das Browser-Bundle enthält weder Connection-Strings noch SAS-Tokens. Im Development-Modus sind Azure-Aufrufe grundsätzlich blockiert (\`assertAzureAllowed\`).`,
+    relatedTopics: [
+      "azure-database-build",
+      "azure-connection-test",
+      "azure-export",
+      "azure-import",
+      "env-validation",
+    ],
+  },
+  {
+    id: "azure-database-build",
+    title: "Azure Datenbank aufbauen",
+    category: "Azure",
+    roles: ["systemadministrator"],
+    keywords: ["Azure", "Datenbank", "Schema", "Aufbau", "SQL", "Migration"],
+    lastUpdated: "2026-06-30",
+    content: `## Zweck
+Initialer Aufbau der Azure-Datenbank inklusive aller Tabellen, Indizes und Berechtigungen. Wird einmalig bei der Inbetriebnahme oder gezielt bei Schema-Updates ausgeführt.
+
+## Voraussetzungen
+- Rolle **System-Administrator** (einzige Rolle mit \`azure.database.build\`)
+- Gültige Verbindung (vorher "Verbindung testen" erfolgreich)
+- ENV-Validierung "ok"
+
+## Ablauf
+1. Service → Azure → "Datenbank aufbauen" öffnen.
+2. Zielumgebung bestätigen (Anzeige des Ziel-Hosts ohne Credentials).
+3. Schema-Version prüfen.
+4. Aufbau starten. Fortschritt und Logs erscheinen direkt im Dialog.
+
+## Warnhinweise
+> ⚠️ **Achtung:** Der Datenbankaufbau kann bestehende Strukturen verändern oder neu anlegen. Führen Sie vorher ein vollständiges Backup aus (Service → Backup → "Backup jetzt erstellen").
+> ⚠️ Niemals ohne Rücksprache in einer produktiven Umgebung ausführen.
+> ⚠️ Es werden **keine** Secrets oder Connection-Strings angezeigt oder geloggt — nur Tabellen-/Schema-Operationen.`,
+    relatedTopics: ["azure-connection-test", "backup-before-import", "rbac-rollen-berechtigungen"],
+  },
+  {
+    id: "azure-connection-test",
+    title: "Azure Verbindung testen",
+    category: "Azure",
+    keywords: ["Azure", "Test", "Verbindung", "Health", "Connection"],
+    lastUpdated: "2026-06-30",
+    content: `## Zweck
+Prüft, ob die hinterlegten Azure-ENVs gültig sind und die Zielressourcen (SQL, Table Storage) erreichbar sind. Ergebnis: ok / fehlgeschlagen samt Zeitstempel.
+
+## Ablauf
+1. Service → Azure → "Verbindung testen" öffnen.
+2. Test starten. Der Aufruf läuft serverseitig.
+3. Ergebnis erscheint im Dialog und im Systemstatus (Sektion Azure → "Last Connection Test").
+
+## Was angezeigt wird
+- Ergebnis (ok / fehlgeschlagen)
+- Zeitstempel
+- Bei Fehler: generische Fehlerklasse (z. B. "Authentifizierung fehlgeschlagen", "Timeout"), **niemals** Roh-Fehler, Secrets oder Stacktraces.
+
+## Bei Fehlschlag
+- Prüfen Sie im Systemstatus die Sektion Azure: "Missing ENV Variables" listet fehlende Namen.
+- Prüfen Sie den Auth-Mode (managed-identity / client-secret / none).
+- Bei "Timeout" liegt häufig eine Firewall-Regel auf Azure-Seite vor.`,
+    relatedTopics: ["env-validation", "system-status"],
+  },
+  {
+    id: "azure-export",
+    title: "Nach Azure exportieren",
+    category: "Azure",
+    keywords: ["Azure", "Export", "Sync", "Upload", "Cloud"],
+    lastUpdated: "2026-06-30",
+    content: `## Zweck
+Überträgt lokale Dashboard-Daten in die konfigurierte Azure-Zielumgebung. Standardziel ist Azure Table Storage; die SQL-Pipeline ist optional aktivierbar.
+
+## Voraussetzungen
+- Erfolgreicher Verbindungstest
+- Rolle mit \`azure.export\` (System-Administrator, Administrator, Teamleiter, Projektmanager)
+
+## Ablauf
+1. Service → Azure → "Nach Azure exportieren" öffnen.
+2. Zeitraum und Bereiche wählen (z. B. nur Tätigkeiten).
+3. Vorschau prüfen: Anzahl Neuanlagen und Aktualisierungen pro Bereich.
+4. Export starten. Fortschritt und Ergebnis erscheinen im Dialog und im Downloadbereich (als JSON-Snapshot).
+
+## Sicherheit
+- Passwörter, MFA-Secrets, Tokens und API-Keys werden **niemals** mitgesendet.
+- Der Export läuft serverseitig; das Browser-Bundle erhält keinen Direktzugriff auf Azure.
+- Jeder Lauf wird in der Sync-Historie (Systemstatus → Data) protokolliert.`,
+    relatedTopics: ["azure-connection-test", "azure-conflict-handling", "downloads"],
+  },
+  {
+    id: "azure-import",
+    title: "Aus Azure importieren",
+    category: "Azure",
+    roles: ["systemadministrator", "administrator"],
+    keywords: ["Azure", "Import", "Download", "Cloud", "Restore"],
+    lastUpdated: "2026-06-30",
+    content: `## Zweck
+Holt Daten aus der konfigurierten Azure-Quelle ins lokale Dashboard. Bewusst restriktiver als der Export, weil Importe lokale Daten überschreiben können.
+
+## Voraussetzungen
+- Rolle **System-Administrator** oder **Administrator** (\`azure.import\`)
+- Erfolgreicher Verbindungstest
+- **Pflicht:** Aktuelles lokales Backup (siehe Kapitel "Backup vor Import")
+
+## Ablauf
+1. Service → Azure → "Aus Azure importieren".
+2. Bereich und Zeitraum wählen.
+3. Vorschau und Konflikt-Strategie wählen (Merge / Überschreiben / Behalten) — siehe Kapitel "Konflikthandling".
+4. Vor der Ausführung erzeugt das Dashboard automatisch einen **Pre-Snapshot** der betroffenen Storage-Keys (Rollback-Punkt).
+5. Import starten. Bei Fehler wird automatisch zurückgerollt.
+
+## Warnhinweise
+> ⚠️ **Überschreibungs-Risiko:** Mit der Strategie "Überschreiben" gehen lokale Änderungen ohne Vorwarnung verloren. Standard ist deshalb "Merge".
+> ⚠️ Führen Sie vor jedem Import ein vollständiges Backup aus.
+> ⚠️ Importe können nicht teilweise rückgängig gemacht werden, sobald der Pre-Snapshot verworfen ist.`,
+    relatedTopics: ["azure-conflict-handling", "backup-before-import", "azure-export"],
+  },
+  {
+    id: "azure-conflict-handling",
+    title: "Konflikthandling beim Import",
+    category: "Azure",
+    keywords: ["Konflikt", "Merge", "Überschreiben", "Behalten", "Strategie", "Duplikate"],
+    lastUpdated: "2026-06-30",
+    content: `## Wann tritt ein Konflikt auf?
+Ein Konflikt entsteht, sobald ein eingehender Datensatz dieselbe ID oder denselben Schlüssel hat wie ein lokaler Datensatz.
+
+## Strategien
+- **Merge (Default)** — eingehende Felder kippen lokale Werte feldweise. Fehlende Felder bleiben unverändert. Geeignet für Routine-Updates.
+- **Überschreiben** — der eingehende Datensatz ersetzt den lokalen Datensatz komplett. Lokale Ergänzungen gehen verloren.
+- **Behalten** — bestehende Datensätze werden nicht angefasst; nur Neuanlagen werden geschrieben.
+
+## Spezialregel: timeEntries vs. activities
+Sind beide Listen für dieselbe Tätigkeit enthalten, gilt \`timeEntries\` als kanonische Quelle. Abweichungen erscheinen als Warnung im Import-Protokoll.
+
+## Duplikatprüfung bei Kunden
+Eingehende Kundennamen werden normalisiert (trim + Whitespace + Casefold) und per Levenshtein-Distanz mit bestehenden Namen verglichen. Verdachts-Duplikate (Distanz ≤ 2 oder gleicher Normalize-Schlüssel) werden zur manuellen Bestätigung vorgeschlagen.
+
+## Warnhinweise
+> ⚠️ Die Strategie "Überschreiben" lässt sich nur über den Pre-Snapshot zurücknehmen — solange die Session offen ist.
+> ⚠️ Jede Konflikt-Entscheidung wird im Import-Protokoll dauerhaft festgehalten.`,
+    relatedTopics: ["azure-import", "backup-before-import", "import-export"],
+  },
+  {
+    id: "backup-before-import",
+    title: "Backup vor Import",
+    category: "Sicherheit",
+    keywords: ["Backup", "Import", "Snapshot", "Rollback", "Restore"],
+    lastUpdated: "2026-06-30",
+    content: `## Zwei Schutzebenen
+1. **Manuelles ZIP-Backup** (empfohlen vor jedem Import). Service → Backup → "Backup jetzt erstellen". Das ZIP enthält den vollständigen Datenstand und kann jederzeit wieder eingespielt werden.
+2. **Automatischer Pre-Snapshot** beim Import. Vor dem ersten Schreibvorgang werden alle betroffenen Storage-Keys gesichert. Bei Fehler erfolgt automatischer Rollback. Solange die Session offen ist, kann der Lauf zusätzlich manuell zurückgerollt werden.
+
+## Empfohlener Ablauf
+1. Backup erzeugen (ZIP herunterladen und an einem sicheren Ort ablegen).
+2. Import-Wizard starten.
+3. Vorschau und Konflikt-Strategie prüfen.
+4. Importieren.
+5. Ergebnis im Import-Protokoll prüfen.
+
+## Warnhinweise
+> ⚠️ Ohne aktuelles Backup ist ein Import ein riskanter Vorgang. Der Pre-Snapshot deckt nur die laufende Session ab.
+> ⚠️ Das ZIP-Backup enthält **keine** Passwörter, Tokens oder API-Keys — diese Felder werden vor dem Packen aktiv entfernt.
+> ⚠️ Bewahren Sie ZIP-Backups verschlüsselt auf, wenn sie das Gerät verlassen.`,
+    relatedTopics: ["backup", "azure-import", "import-export"],
+  },
+  {
+    id: "security-principles",
+    title: "Sicherheitsprinzipien",
+    category: "Sicherheit",
+    keywords: [
+      "Sicherheit",
+      "Prinzipien",
+      "Secrets",
+      "RBAC",
+      "Least Privilege",
+      "ENV",
+      "Logging",
+    ],
+    lastUpdated: "2026-06-30",
+    content: `## Leitlinien
+- **Least Privilege** — jede Rolle erhält nur die für ihre Aufgabe nötigen Permissions. Importe sind strikter als Exporte; Datenbankaufbau und Rollenverwaltung nur für System-Administratoren.
+- **Defense in Depth** — UI-Gating (\`PermissionGate\`) plus serverseitige Guards (\`requirePermission\`) plus RLS/Provider-seitige Prüfungen.
+- **Secret-Freiheit des Frontends** — das Browser-Bundle enthält weder Connection-Strings noch SAS-Tokens noch Service-Keys. ENV-Zugriff ausschließlich über \`config/secretManager.mjs\` im Backend.
+- **No Plain Logs** — Error-Logs sind auf 256 Zeichen begrenzt; keine vollständigen Error-Objekte, keine Response-Bodies, keine Secrets.
+- **Sichere Defaults** — Development-Modus blockiert Azure-Aufrufe; \`/api/sync\` erfordert in Production einen \`X-Sync-Token\`.
+- **Schema-Härtung** — Importe werden gegen Zod-Schemas mit Längenlimits validiert (IDs 128, Strings 255, Texte 2000 Zeichen).
+- **Sensible Felder entfernen** — Passwörter, Hashes, MFA-Secrets, Tokens und API-Keys werden vor Export und Import aktiv entfernt (Denylist auf Storage-Keys und Feldnamen).
+- **Audit** — Importe, Konflikt-Entscheidungen und Sync-Läufe werden protokolliert.
+- **CI-Security** — \`scripts/security-check.mjs\` plus gitleaks blockieren CRITICAL/HIGH-Funde vor dem Merge.
+
+## Verantwortung der Anwender
+- ZIP-Backups verschlüsselt aufbewahren.
+- Keine produktiven Secrets in Test-/Dev-Umgebungen verwenden.
+- Bei Verdacht auf Kompromittierung umgehend Secrets rotieren und Audit-Logs prüfen.`,
+    relatedTopics: [
+      "rbac-rollen-berechtigungen",
+      "env-validation",
+      "ci-security-scan",
+      "backup-before-import",
+    ],
+  },
+  {
+    id: "azure-outage",
+    title: "Was bei Azure-Ausfall passiert",
+    category: "Betrieb",
+    keywords: ["Azure", "Ausfall", "Outage", "Offline", "Fallback", "Resilienz"],
+    lastUpdated: "2026-06-30",
+    content: `## Kurzfassung
+Ein Azure-Ausfall beeinträchtigt **keine** lokalen Funktionen. Das Dashboard bleibt voll bedienbar.
+
+## Was weiter funktioniert
+- Anlage und Pflege von Projekten, Arbeitspaketen, Tätigkeiten
+- Wochen- und Monatsansicht, Leistungsreport
+- PDF-/CSV-/JSON-Export, Downloadbereich
+- Tägliches Backup, Wiederherstellung aus ZIP
+- Benutzerhandbuch, Systemstatus (lokale Werte)
+
+## Was nicht funktioniert
+- Sync nach Azure SQL / Table Storage
+- Aus Azure importieren
+- Verbindungstest endet mit "fehlgeschlagen"
+- Sektion Azure im Systemstatus zeigt "Last Connection Test: fehlgeschlagen"
+
+## Anzeige
+- Systemstatus → Azure: "Last Connection Test" zeigt das letzte Ergebnis und den Zeitstempel.
+- Systemstatus → Versionen & Backend: \`Backend /api/status — nicht erreichbar\` ist möglich, wenn auch das Backend betroffen ist. Lokale Felder bleiben gefüllt.
+- Sync-Buttons sind deaktiviert oder melden generisch "Service nicht erreichbar".
+
+## Empfehlung
+- Sync später wiederholen, sobald der Verbindungstest wieder "ok" liefert.
+- In der Zwischenzeit lokal weiterarbeiten; alle Änderungen werden beim nächsten erfolgreichen Sync übertragen.
+- Bei längerem Ausfall ein ZIP-Backup zur Sicherheit erzeugen.`,
+    relatedTopics: ["offline-mode", "local-operation", "system-status"],
   },
 ];
 
