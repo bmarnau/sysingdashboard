@@ -277,6 +277,28 @@ function Dashboard() {
   const [showWorkingTimeDialog, setShowWorkingTimeDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showManual, setShowManual] = useState(false);
+  const [manualTopicId, setManualTopicId] = useState<string | undefined>(undefined);
+  const [showHelpMenu, setShowHelpMenu] = useState(false);
+  const openManualTopic = (topicId?: string) => {
+    setManualTopicId(topicId);
+    setShowHelpMenu(false);
+    setShowManual(true);
+  };
+  const HELP_QUICKLINKS: { id: string; label: string }[] = [
+    { id: "local-operation", label: "Lokaler Betrieb ohne Azure" },
+    { id: "azure-service-area", label: "Azure Servicebereich" },
+    { id: "azure-database-build", label: "Azure Datenbank aufbauen" },
+    { id: "azure-connection-test", label: "Azure Verbindung testen" },
+    { id: "azure-export", label: "Nach Azure exportieren" },
+    { id: "azure-import", label: "Aus Azure importieren" },
+    { id: "azure-conflict-handling", label: "Konflikthandling" },
+    { id: "backup-before-import", label: "Backup vor Import" },
+    { id: "rbac-rollen-berechtigungen", label: "Rollen & Berechtigungen" },
+    { id: "system-status", label: "Systemstatus" },
+    { id: "env-validation", label: "ENV-Validierung" },
+    { id: "security-principles", label: "Sicherheitsprinzipien" },
+    { id: "azure-outage", label: "Was bei Azure-Ausfall passiert" },
+  ];
   const [showBackupDialog, setShowBackupDialog] = useState(false);
   const [showSystemStatus, setShowSystemStatus] = useState(false);
   const [showDownloads, setShowDownloads] = useState(false);
