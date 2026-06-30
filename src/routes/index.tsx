@@ -277,6 +277,28 @@ function Dashboard() {
   const [showWorkingTimeDialog, setShowWorkingTimeDialog] = useState(false);
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showManual, setShowManual] = useState(false);
+  const [manualTopicId, setManualTopicId] = useState<string | undefined>(undefined);
+  const [showHelpMenu, setShowHelpMenu] = useState(false);
+  const openManualTopic = (topicId?: string) => {
+    setManualTopicId(topicId);
+    setShowHelpMenu(false);
+    setShowManual(true);
+  };
+  const HELP_QUICKLINKS: { id: string; label: string }[] = [
+    { id: "local-operation", label: "Lokaler Betrieb ohne Azure" },
+    { id: "azure-service-area", label: "Azure Servicebereich" },
+    { id: "azure-database-build", label: "Azure Datenbank aufbauen" },
+    { id: "azure-connection-test", label: "Azure Verbindung testen" },
+    { id: "azure-export", label: "Nach Azure exportieren" },
+    { id: "azure-import", label: "Aus Azure importieren" },
+    { id: "azure-conflict-handling", label: "Konflikthandling" },
+    { id: "backup-before-import", label: "Backup vor Import" },
+    { id: "rbac-rollen-berechtigungen", label: "Rollen & Berechtigungen" },
+    { id: "system-status", label: "Systemstatus" },
+    { id: "env-validation", label: "ENV-Validierung" },
+    { id: "security-principles", label: "Sicherheitsprinzipien" },
+    { id: "azure-outage", label: "Was bei Azure-Ausfall passiert" },
+  ];
   const [showBackupDialog, setShowBackupDialog] = useState(false);
   const [showSystemStatus, setShowSystemStatus] = useState(false);
   const [showDownloads, setShowDownloads] = useState(false);
@@ -765,14 +787,46 @@ function Dashboard() {
           </div>
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => setShowManual(true)}
-              title="Hilfe zu dieser Seite"
-              aria-label="Hilfe zu dieser Seite"
-              className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
-            >
-              <HelpCircle className="size-4" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowHelpMenu((v) => !v)}
+                title="Hilfe zu dieser Seite"
+                aria-label="Hilfe zu dieser Seite"
+                aria-expanded={showHelpMenu}
+                className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
+              >
+                <HelpCircle className="size-4" />
+              </button>
+              {showHelpMenu && (
+                <>
+                  <button
+                    aria-label="Hilfe-Menü schließen"
+                    className="fixed inset-0 z-30 cursor-default"
+                    onClick={() => setShowHelpMenu(false)}
+                  />
+                  <div className="absolute right-0 z-40 mt-2 max-h-[70vh] w-72 overflow-y-auto rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
+                    <button
+                      onClick={() => openManualTopic(undefined)}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-medium hover:bg-secondary/60"
+                    >
+                      Handbuch öffnen
+                    </button>
+                    <div className="border-t border-border px-4 pb-1 pt-2 text-[11px] uppercase tracking-wide text-muted-foreground">
+                      Kapitel direkt öffnen
+                    </div>
+                    {HELP_QUICKLINKS.map((q) => (
+                      <button
+                        key={q.id}
+                        onClick={() => openManualTopic(q.id)}
+                        className="block w-full px-4 py-2 text-left text-sm hover:bg-secondary/60"
+                      >
+                        {q.label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
             <div className="relative">
               <button
                 onClick={() => setShowServiceMenu((v) => !v)}
@@ -1282,7 +1336,15 @@ function Dashboard() {
         />
       )}
 
-      <UserManualDialog open={showManual} onClose={() => setShowManual(false)} initialRoute="/" />
+      <UserManualDialog
+        open={showManual}
+        onClose={() => {
+          setShowManual(false);
+          setManualTopicId(undefined);
+        }}
+        initialRoute="/"
+        initialTopicId={manualTopicId}
+      />
 
       <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
 
