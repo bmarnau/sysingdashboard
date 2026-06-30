@@ -1336,7 +1336,15 @@ function Dashboard() {
         />
       )}
 
-      <UserManualDialog open={showManual} onClose={() => setShowManual(false)} initialRoute="/" />
+      <UserManualDialog
+        open={showManual}
+        onClose={() => {
+          setShowManual(false);
+          setManualTopicId(undefined);
+        }}
+        initialRoute="/"
+        initialTopicId={manualTopicId}
+      />
 
       <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
 
