@@ -1,107 +1,58 @@
 ## Ziel
 
-Den `SystemStatusDialog` zu einer vollständigen Statusübersicht ausbauen, die exakt die in Check 8 geforderten Garantien erfüllt: nie Werte, nur Namen/Booleans, kein Crash bei fehlenden Daten, ohne Azure lauffähig.
+Managementübersicht als eigenständiges, für Entscheider verständliches Dokument bereitstellen, Doku-Version/lastUpdated sichtbar machen und Handbuch-Check (Check 9) abschließen.
 
-## Architektur-Hinweis (kritisches Feedback)
+## Ist-Stand (nach Prüfung)
 
-Die Vorgabe „beim Start validieren" ist im Frontend prinzipiell schwach: alle wirklich sensiblen Prüfungen (ENV, Secrets, Key Vault) müssen serverseitig passieren. Das Frontend darf nur das **Ergebnis** anzeigen, niemals selbst ENV lesen. Aktuell macht `secretManager`/`envValidator` das bereits richtig — wir erweitern nur `/api/status` um ein verdichtetes, **secret-freies** Statusobjekt und konsumieren es im Dialog. Eine zweite client-seitige Validierung wäre Doppelung und Risiko (Bundle-Leak). → Single Source bleibt der Server.
-
-Hydration-Mismatch im Header (Rolle „Senior Systems Engineer" vs. „System-Administrator") ist ein separater SSR-Bug in `useCurrentUser`, **nicht** Teil dieses Plans. Bei Bedarf separat adressieren.
+- `SystemStatusDialog` zeigt bereits `DOCUMENTATION_VERSION` und `Last documentation update`, listet aber „Management overview: not configured".
+- Handbuch (`src/lib/help-documentation.ts`) enthält bereits alle geforderten Kapitel: Azure-Servicebereich, Offline-Betrieb, Import/Export, Konflikthandling, RBAC, ENV-Validierung, Systemstatus, Sicherheitsprinzipien, Azure-Ausfall.
+- Keine Management-Übersicht vorhanden (`docs/` enthält nur CONTRIBUTING.md, GITHUB.md).
+- Keine Secrets in bestehender Doku (Stichprobenprüfung ok).
 
 ## Änderungen
 
-### 1) `backend/services/statusService.mjs` — erweitern
+### 1. Neu: `docs/MANAGEMENT_OVERVIEW.md`
+Kompakte, nicht-technische Darstellung mit folgender Gliederung (kurze Absätze, keine Codeschnipsel, keine Secrets):
+1. Zielbild — Lokales Dashboard, optionale Azure-Anbindung
+2. Sicherheitsarchitektur (Least Privilege, keine Klartext-Secrets, RBAC, Security-Scan in CI)
+3. ENV-Validierung — Fail-Fast in Produktion
+4. Kein Production-Start ohne notwendige ENV-Variablen
+5. DEV-Betrieb ohne Azure-ENV (blockierter Azure-Zugriff)
+6. Kein automatischer Sync — nur manuelle Auslösung
+7. Lokaler Betrieb bleibt führend — Azure ist Spiegel
+8. Rollenmodell (7 Rollen, RBAC-Matrix, kein Admin-Lockout)
+9. Export-/Import-Prozess (JSON-Schema, Vorschau, Backup vor Import)
+10. Konflikthandling (Dublettenprüfung, Snapshot, Rollback)
+11. Systemstatus (Sektionen: Application, GitHub, Lovable, Azure, Security, Data, Documentation)
+12. Roadmap Entra ID (geplante Auth-Integration)
+13. Roadmap Key Vault (secretManager → keyVault Fassade)
+14. Risiken und Gegenmaßnahmen (Tabelle: Risiko → Maßnahme)
 
-Liefert ein flaches, secret-freies Payload mit allen Feldern, die der Dialog anzeigt:
+Kopf enthält `Stand: YYYY-MM-DD` und `Dashboard-Version: x.y.z`.
 
-```text
-{
-  application: { name, version, builtAt, mode },
-  github:      { repositoryUrl, branch, commit | null },
-  lovable:     { publishedUrl | null, projectId | null, status: "configured"|"not_configured", lastDeploymentAt | null },
-  azure:       {
-    allowed: boolean,                     // !isDev()
-    sql:   { configured: boolean },       // has('AZURE_SQL_CONNECTION')
-    table: { configured: boolean },       // has('AZURE_TABLE_CONNECTION')
-    storage: { configured: boolean },     // has('AZURE_STORAGE_SAS')
-    authMode: "managed-identity" | "client-secret" | "none",
-    lastConnectionTestAt: string | null,
-    missingEnv: string[]                  // NUR Namen aus secretManager.validate()
-  },
-  security:    {
-    authMode: "local" | "entra" | "none",
-    rbac: { enabled: true, rolesCount, permissionsCount },
-    secretManager: { enabled: true, missing: string[] },
-    envValidation: { ok: boolean, missing: string[] },
-    keyVault: { configured: boolean }      // keyVault.isKeyVaultConfigured()
-  },
-  data:        { lastAzureExportAt: string|null, lastAzureImportAt: string|null }, // vom syncService bzw. null
-  documentation: { dashboardVersion, documentationVersion, lastUpdated },           // bereits in src/lib/help-documentation
-  timestamp
-}
-```
+### 2. `src/lib/help-documentation.ts`
+- Neues `HelpTopic` `management-overview` (Kategorie „Betrieb"), Kurzfassung + Verweis auf `docs/MANAGEMENT_OVERVIEW.md` (relative Pfad-Erwähnung, kein Link-Rendering nötig). Rolle: alle Lese-Rollen.
+- `DOCUMENTATION_VERSION` auf `1.5.0` anheben (größerer Doku-Zuwachs).
+- `lastUpdated` neuer/geänderter Kapitel auf heutiges Datum.
 
-Quellen:
-- `application.*` aus `package.json` + `process.env.NODE_ENV` + Build-Time (vorhandene `vite.config` Injektion bleibt für Frontend; Backend liefert `process.env.npm_package_version` und Startzeit).
-- `github.*` aus ENV (`GITHUB_REPOSITORY`, `GITHUB_SHA`, `GITHUB_REF_NAME`) — falls leer: feste URL aus `PROJECT_INFO`-Pendant via neuer Konstante in `backend/services/projectInfo.mjs` (Single Source mit `src/lib/project-info.ts`).
-- `lovable.*` aus ENV (`LOVABLE_PROJECT_ID`, `LOVABLE_PUBLISHED_URL`) → sonst `"not_configured"`.
-- `azure.missingEnv` aus `secretManager.validate().missing` (nur Namen).
-- `security.keyVault` aus `config/keyVault.isKeyVaultConfigured()`.
-- `data.*` aus `syncService.getSyncMeta()` (vorhandenes `lastRun` als Export-Timestamp; Import bleibt vorerst `null`).
+### 3. `src/components/SystemStatusDialog.tsx`
+- Zeile 367: „Management overview" → `available — docs/MANAGEMENT_OVERVIEW.md` mit `ok`.
 
-Sicherheitsregel: nie `consume()` aufrufen; nur `has()`/`status()`/`isKeyVaultConfigured()`/`validate()`. Keine Maskierung im Payload — bereits Booleans/Namen.
+### 4. `CHANGELOG.md`
+- Neuer Eintrag `## 1.18.3 - 2026-07-01` mit Bullets:
+  - Managementübersicht `docs/MANAGEMENT_OVERVIEW.md` ergänzt (14 Sektionen, für Entscheider).
+  - Handbuch-Kapitel „Managementübersicht" verlinkt.
+  - Systemstatus zeigt Managementübersicht als vorhanden an.
+  - Doku-Version 1.5.0.
 
-### 2) `src/hooks/useSystemStatusHealth.ts` — Payload erweitern
+### 5. Verifikation
+- `bun run docs:check` (Konsistenz Version/CHANGELOG/Doku).
+- Sichtprüfung SystemStatusDialog + Handbuch-Dropdown.
+- Grep auf verbotene Secret-Muster in `docs/MANAGEMENT_OVERVIEW.md`.
 
-`SystemStatusHealth` um die neuen Felder ergänzen (alle optional, `null`-tolerant). Fetch bleibt unverändert (`/api/status`), Timeout 3 s. Frontend fasst lokale Werte (`BackupService.lastAuto`, `HelpDocumentationService.getLastUpdated`, `DASHBOARD_VERSION`) **clientseitig** zusammen und merged mit Serverdaten — Server bleibt Single Source für alles ENV-/Azure-Bezogene.
+## Nicht enthalten
+- Keine funktionalen Code-Änderungen an Azure/RBAC/Import-Export.
+- Kein Übersetzen ins Englische (Management-Doku bleibt Deutsch, konsistent zum Handbuch).
 
-### 3) `src/components/SystemStatusDialog.tsx` — 7 Sektionen
-
-Bestehende Sektionen ersetzen durch genau die 7 geforderten Blöcke in dieser Reihenfolge:
-
-1. **Application** — Name, Version (`DASHBOARD_VERSION`), Build-Date (`BUILD_INFO.builtAt`), Runtime-Mode (vom Server: `mode`).
-2. **GitHub** — Repository-URL (fix `PROJECT_INFO.github.url`, klickbar), Branch (`BUILD_INFO.branch`), Commit (`BUILD_INFO.commit` oder „Not configured").
-3. **Lovable** — Publish-URL oder „Not configured", Deployment-Status (`configured`/`not_configured`), Last-Deployment (Server oder „Not configured").
-4. **Azure** — SQL/Table/Storage je `configured: boolean` (Badge ✓/✗), Auth-Mode, Last-Connection-Test oder „Not configured", **Missing ENV** als reine Namensliste (Chips), nie Werte.
-5. **Security** — Auth-Mode, RBAC enabled (+ Counts aus `permissions.ts`), Secret-Manager enabled, ENV-Validation `ok`-Badge + Liste fehlender Namen, Key-Vault `configured`/`not_configured`.
-6. **Data** — Local-Storage (immer „active"), Last-Local-Backup (`BackupService.lastAuto`), Last-Azure-Export (Server), Last-Azure-Import (Server oder „Not configured").
-7. **Documentation** — User-Manual-Status („available", `DOCUMENTATION_VERSION`), Management-Overview-Status (vorhanden/„Not configured"), Last-Documentation-Update.
-
-UI:
-- Bestehende `<Row>`-Komponente wiederverwenden; neue `<Chip>`-Sub-Komponente für ENV-Namenslisten.
-- Jede Sektion rendert defensiv: fehlt ein Feld → „Not configured" (Konstante).
-- Bestehender Security-Scan-Block bleibt am Ende (separat, bereits korrekt).
-- Refresh-Button und Expand/Collapse bleiben.
-
-### 4) Startvalidierung
-
-Bereits vorhanden via `bootstrapSystemStatusCheck()` in `__root.tsx` (250 ms nach Mount → `/api/status`). Beibehalten. Backend ruft `secretManager.validate()` weiterhin in `ensureEnv()` pro Request auf — Fail-Fast in PROD, Warn in DEV.
-
-### 5) Kein neuer ENV-Zugriff im Frontend
-
-`src/` importiert weder `secretManager.mjs` noch `envValidator.mjs` noch `keyVault.mjs`. Alle Werte kommen ausschließlich aus dem `/api/status`-Response.
-
-### 6) Dokumentation & Changelog
-
-- `CHANGELOG.md`: neuer Eintrag `## 1.18.1 - 2026-06-29` mit Stichpunkten.
-- `src/lib/help-documentation.ts`: Kapitel „Systemstatus" auf neue 7-Sektionen-Struktur aktualisieren, `lastUpdated` setzen.
-- `bun run docs:check` lokal grün.
-
-## Check-8-Mapping
-
-| Anforderung | Erfüllt durch |
-|---|---|
-| GitHub-URL sichtbar | Sektion 2, fix aus `PROJECT_INFO` |
-| Lovable-Publish-URL oder „Not configured" | Sektion 3, defensive Anzeige |
-| ENV-Validation-Status | Sektion 5, `envValidation.ok` Badge |
-| Fehlende ENV nur Namen | Sektion 4 + 5, Chip-Liste aus `validate().missing` |
-| Keine ENV-Werte / Secrets / SAS / Connection-Strings | Payload enthält ausschließlich Booleans + Namen; `consume()` nie aufgerufen |
-| Fehlende Werte brechen Anzeige nicht | „Not configured"-Konstante in jeder Row |
-| Funktioniert ohne Azure / ohne Backend | Frontend rendert auch ohne `/api/status`-Response (lokale Werte + „Not configured") |
-| Startvalidierung | `bootstrapSystemStatusCheck` + Backend `ensureEnv` |
-
-## Out of Scope
-
-- Hydration-Mismatch im Header (separate Aufgabe).
-- Echte Azure-Connection-Tests (heutiger Stand: Stub; Last-Connection-Test bleibt `null` bis echter Test implementiert ist).
-- Entra-ID-Auth (Readiness-Stub bleibt).
+## Kritisches Feedback / Alternative
+Alternativ könnte die Managementübersicht komplett als HelpTopic im UI leben (kein separates `.md`). Empfehlung: **beides** — MD-Datei als versionierbare Single Source of Truth (für Repo-Review durch Entscheider ohne App-Start), HelpTopic als Kurzfassung im Handbuch. So bleibt der Systemstatus-Check trivial (Datei existiert) und Entscheider haben einen Renderpfad ohne Dashboard.
