@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.4.0";
+export const DOCUMENTATION_VERSION = "1.5.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -1064,6 +1064,51 @@ Ein Azure-Ausfall beeinträchtigt **keine** lokalen Funktionen. Das Dashboard bl
 - In der Zwischenzeit lokal weiterarbeiten; alle Änderungen werden beim nächsten erfolgreichen Sync übertragen.
 - Bei längerem Ausfall ein ZIP-Backup zur Sicherheit erzeugen.`,
     relatedTopics: ["offline-mode", "local-operation", "system-status"],
+  },
+  {
+    id: "management-overview",
+    title: "Managementübersicht",
+    category: "Betrieb",
+    keywords: [
+      "Management",
+      "Übersicht",
+      "Entscheider",
+      "Architektur",
+      "Roadmap",
+      "Risiken",
+      "Zielbild",
+    ],
+    lastUpdated: "2026-07-01",
+    content: `## Zweck
+Kompakte Darstellung von Zielbild, Sicherheitsarchitektur, Betriebsmodell, Rollen, Datenaustausch, Roadmap sowie Risiken und Gegenmaßnahmen — geschrieben für nicht-technische Entscheider. Enthält keine Secrets oder Konfigurationswerte.
+
+## Kerninhalte
+- **Zielbild** — Lokal betreibbares Dashboard, Azure optional als Spiegel.
+- **Sicherheitsarchitektur** — Least Privilege, RBAC, maskierte Secrets, CI-Security-Scan.
+- **ENV-Validierung** — Zentraler Check aller Pflichtvariablen beim Start.
+- **Kein Production-Start ohne notwendige ENV** — Fail-Fast in Produktion.
+- **DEV-Betrieb ohne Azure-ENV** — Azure-Zugriffe im Development-Modus blockiert.
+- **Kein automatischer Sync** — Datenaustausch wird immer manuell ausgelöst.
+- **Lokaler Betrieb bleibt führend** — Azure dient nur der Konsolidierung.
+- **Rollenmodell** — 7 Rollen, RBAC-Matrix, Admin-Lockout-Schutz.
+- **Export-/Import-Prozess** — JSON-Schema, Vorschau, Snapshot vor Import.
+- **Konflikthandling** — Dublettenerkennung, protokollierte Entscheidungen.
+- **Systemstatus** — 7 Sektionen plus Backend-Health, nur secret-freie Metadaten.
+- **Roadmap Entra ID** — Vorbereitet für zentrales SSO und Rollenmapping.
+- **Roadmap Azure Key Vault** — Fassade vorhanden, transparent aktivierbar.
+- **Risiken und Gegenmaßnahmen** — Tabellarische Übersicht.
+
+## Fundstelle
+Vollständiges Dokument: \`docs/MANAGEMENT_OVERVIEW.md\` im Projekt-Root. Wird
+im Repository versioniert und ist ohne Dashboard-Start prüfbar (z. B. für
+Audits oder Managementreviews).`,
+    relatedTopics: [
+      "security-principles",
+      "env-validation",
+      "system-status",
+      "rbac-rollen-berechtigungen",
+      "azure-outage",
+    ],
   },
 ];
 

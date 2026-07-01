@@ -364,7 +364,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
           {/* 7) Documentation */}
           <Section icon={<BookOpen className="size-4 shrink-0" />} title="7. Documentation">
             <Row label="User manual" value={`available — v${DOCUMENTATION_VERSION}`} ok />
-            <Row label="Management overview" value={NOT_CONFIGURED} />
+            <Row label="Management overview" value="available — docs/MANAGEMENT_OVERVIEW.md" ok />
             <Row label="Last documentation update" value={lastUpdated || NOT_CONFIGURED} />
           </Section>
 

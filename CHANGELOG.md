@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.18.3 - 2026-07-01
+
+- Neue **Managementübersicht** (`docs/MANAGEMENT_OVERVIEW.md`) mit 14 Sektionen für nicht-technische Entscheider: Zielbild, Sicherheitsarchitektur, ENV-Validierung, Fail-Fast in Produktion, DEV ohne Azure, kein automatischer Sync, lokaler Betrieb bleibt führend, Rollenmodell, Export-/Import, Konflikthandling, Systemstatus, Entra-ID- und Key-Vault-Roadmap, Risiken und Gegenmaßnahmen.
+- Handbuch-Kapitel **Managementübersicht** ergänzt (Kategorie „Betrieb"), verweist auf die versionierte MD-Datei.
+- Systemstatus (Sektion „Documentation") zeigt Managementübersicht jetzt als vorhanden statt „not configured".
+- `DOCUMENTATION_VERSION` auf `1.5.0` angehoben.
+
 ## 1.18.2 - 2026-06-30
 
 - Benutzerhandbuch erweitert um die Kapitel **Lokaler Betrieb ohne Azure**, **Azure Servicebereich**, **Azure Datenbank aufbauen**, **Azure Verbindung testen**, **Nach Azure exportieren**, **Aus Azure importieren**, **Konflikthandling beim Import**, **Backup vor Import**, **Sicherheitsprinzipien** und **Was bei Azure-Ausfall passiert**. Neue Kategorien „Azure", „Betrieb" und „Sicherheit" im Navigationsbaum.
