@@ -43,6 +43,7 @@ import { PerformanceReport } from "@/components/PerformanceReport";
 import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
 import { UserManagementDialog } from "@/components/UserManagementDialog";
 import { UserManualDialog } from "@/components/UserManualDialog";
+import { HelpDocumentationService } from "@/lib/help-documentation";
 import { BackupDialog } from "@/components/BackupDialog";
 import { SystemStatusDialog } from "@/components/SystemStatusDialog";
 import { DownloadCenterDialog } from "@/components/DownloadCenterDialog";
@@ -278,9 +279,11 @@ function Dashboard() {
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showManual, setShowManual] = useState(false);
   const [manualTopicId, setManualTopicId] = useState<string | undefined>(undefined);
+  const [manualQuery, setManualQuery] = useState<string | undefined>(undefined);
   const [showHelpMenu, setShowHelpMenu] = useState(false);
-  const openManualTopic = (topicId?: string) => {
+  const openManualTopic = (topicId?: string, q?: string) => {
     setManualTopicId(topicId);
+    setManualQuery(q);
     setShowHelpMenu(false);
     setShowManual(true);
   };
@@ -686,7 +689,11 @@ function Dashboard() {
                         (a.description ?? "").toLowerCase().includes(q),
                     )
                     .slice(0, 4);
-                  const hasAny = pRes.length + wpRes.length + aRes.length > 0;
+                  const hRes = HelpDocumentationService.searchTopics(
+                    q,
+                    currentUser?.role ?? null,
+                  ).slice(0, 4);
+                  const hasAny = pRes.length + wpRes.length + aRes.length + hRes.length > 0;
                   if (!hasAny)
                     return (
                       <div className="px-4 py-6 text-center text-sm text-muted-foreground">
@@ -774,6 +781,31 @@ function Dashboard() {
                                 <p className="text-xs text-muted-foreground">
                                   {fmtDate(a.date)} · {a.client ?? "—"}
                                 </p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {hRes.length > 0 && (
+                        <div className="border-t border-border px-3 py-2">
+                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Handbuch
+                          </p>
+                          {hRes.map((h) => (
+                            <button
+                              key={h.id}
+                              onClick={() => {
+                                const qNow = searchQ;
+                                setSearchQ("");
+                                setSearchOpen(false);
+                                openManualTopic(h.id, qNow);
+                              }}
+                              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
+                            >
+                              <BookOpen className="size-4 text-primary opacity-70" />
+                              <div className="min-w-0">
+                                <p className="truncate font-medium">{h.title}</p>
+                                <p className="text-xs text-muted-foreground">{h.category}</p>
                               </div>
                             </button>
                           ))}
@@ -1341,9 +1373,11 @@ function Dashboard() {
         onClose={() => {
           setShowManual(false);
           setManualTopicId(undefined);
+          setManualQuery(undefined);
         }}
         initialRoute="/"
         initialTopicId={manualTopicId}
+        initialQuery={manualQuery}
       />
 
       <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />

@@ -5,8 +5,10 @@
  * `HelpDocumentationService`.
  */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
+  ArrowDown,
+  ArrowUp,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -31,12 +33,46 @@ interface Props {
   initialTopicId?: string;
   /** Optional Route, um passendes Topic automatisch zu wählen. */
   initialRoute?: string;
+  /** Optionaler Suchbegriff, der beim Öffnen ins Suchfeld übernommen wird. */
+  initialQuery?: string;
 }
 
-function renderContent(md: string): React.ReactNode {
+/** Escape regex meta characters. */
+function escRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Split text into alternating plain/highlight nodes based on `hl` (case-insensitive). */
+function highlightText(text: string, hl: string, keyPrefix: string): React.ReactNode {
+  const term = hl.trim();
+  if (!term) return text;
+  const re = new RegExp(escRe(term), "gi");
+  const parts: React.ReactNode[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let i = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    parts.push(
+      <mark
+        key={`${keyPrefix}-m-${i++}`}
+        data-hl-match
+        className="rounded-sm bg-yellow-300/70 px-0.5 text-inherit dark:bg-yellow-500/40"
+      >
+        {m[0]}
+      </mark>,
+    );
+    last = m.index + m[0].length;
+    if (m[0].length === 0) re.lastIndex++;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts;
+}
+
+function renderContent(md: string, hl = ""): React.ReactNode {
   // Minimaler Markdown-Subset-Renderer: Überschriften (## …), Listen (- …),
   // Absätze. Bewusst ohne fremde Bibliothek und ohne innerHTML, um Risiken zu
-  // vermeiden.
+  // vermeiden. Optional werden Treffer via <mark data-hl-match> hervorgehoben.
   const blocks: React.ReactNode[] = [];
   const lines = md.split(/\r?\n/);
   let listBuf: string[] = [];
@@ -47,7 +83,7 @@ function renderContent(md: string): React.ReactNode {
     blocks.push(
       <ul key={`ul-${key++}`} className="my-2 ml-5 list-disc space-y-1 text-sm">
         {listBuf.map((item, i) => (
-          <li key={i}>{item}</li>
+          <li key={i}>{highlightText(item, hl, `li-${key}-${i}`)}</li>
         ))}
       </ul>,
     );
@@ -60,7 +96,7 @@ function renderContent(md: string): React.ReactNode {
       flushList();
       blocks.push(
         <h3 key={`h-${key++}`} className="mt-4 text-base font-semibold">
-          {line.slice(3)}
+          {highlightText(line.slice(3), hl, `h-${key}`)}
         </h3>,
       );
     } else if (line.startsWith("- ")) {
@@ -71,7 +107,7 @@ function renderContent(md: string): React.ReactNode {
       flushList();
       blocks.push(
         <p key={`p-${key++}`} className="my-2 text-sm leading-relaxed">
-          {line}
+          {highlightText(line, hl, `p-${key}`)}
         </p>,
       );
     }
@@ -80,7 +116,13 @@ function renderContent(md: string): React.ReactNode {
   return blocks;
 }
 
-export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }: Props) {
+export function UserManualDialog({
+  open,
+  onClose,
+  initialTopicId,
+  initialRoute,
+  initialQuery,
+}: Props) {
   const user = useCurrentUser();
   const role = user?.role ?? null;
 
@@ -91,11 +133,26 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
   const [query, setQuery] = useState("");
   const [activeId, setActiveId] = useState<string | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [matchIndex, setMatchIndex] = useState(0);
+  const [matchCount, setMatchCount] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Initiales Topic bestimmen.
+  // Initiales Topic & Query bestimmen (auch aus URL ?help=&hq=).
   useEffect(() => {
     if (!open) return;
+    // URL hat Vorrang über props, damit deep-linkable.
+    let urlHelp: string | null = null;
+    let urlQ: string | null = null;
+    if (typeof window !== "undefined") {
+      const sp = new URLSearchParams(window.location.search);
+      urlHelp = sp.get("help");
+      urlQ = sp.get("hq");
+    }
+    setQuery(urlQ ?? initialQuery ?? "");
+    if (urlHelp) {
+      setActiveId(urlHelp);
+      return;
+    }
     if (initialTopicId) {
       setActiveId(initialTopicId);
       return;
@@ -108,7 +165,7 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
       }
     }
     setActiveId((curr) => curr ?? allTopics[0]?.id ?? null);
-  }, [open, initialTopicId, initialRoute, role, allTopics]);
+  }, [open, initialTopicId, initialRoute, initialQuery, role, allTopics]);
 
   // ESC schließt.
   useEffect(() => {
@@ -139,6 +196,62 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
   useEffect(() => {
     contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeId]);
+
+  // URL sync: ?help=<topic>&hq=<query>. Beim Schließen wieder entfernen.
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (activeId) url.searchParams.set("help", activeId);
+    else url.searchParams.delete("help");
+    if (query.trim()) url.searchParams.set("hq", query.trim());
+    else url.searchParams.delete("hq");
+    window.history.replaceState(null, "", url.toString());
+  }, [open, activeId, query]);
+
+  useEffect(() => {
+    if (open || typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("help") || url.searchParams.has("hq")) {
+      url.searchParams.delete("help");
+      url.searchParams.delete("hq");
+      window.history.replaceState(null, "", url.toString());
+    }
+  }, [open]);
+
+  // Nach Render Treffer im Inhalt zählen und aktuellen Treffer hervorheben.
+  useLayoutEffect(() => {
+    if (!open) return;
+    const root = contentRef.current;
+    if (!root) {
+      setMatchCount(0);
+      return;
+    }
+    const marks = root.querySelectorAll<HTMLElement>("mark[data-hl-match]");
+    setMatchCount(marks.length);
+    setMatchIndex((idx) => (marks.length === 0 ? 0 : Math.min(idx, marks.length - 1)));
+  }, [open, activeId, query]);
+
+  useEffect(() => {
+    const root = contentRef.current;
+    if (!root) return;
+    const marks = root.querySelectorAll<HTMLElement>("mark[data-hl-match]");
+    marks.forEach((m, i) => {
+      if (i === matchIndex) {
+        m.classList.add("ring-2", "ring-yellow-500");
+        m.scrollIntoView({ block: "center", behavior: "smooth" });
+      } else {
+        m.classList.remove("ring-2", "ring-yellow-500");
+      }
+    });
+  }, [matchIndex, matchCount]);
+
+  const gotoMatch = useCallback(
+    (dir: 1 | -1) => {
+      if (matchCount === 0) return;
+      setMatchIndex((idx) => (idx + dir + matchCount) % matchCount);
+    },
+    [matchCount],
+  );
 
   if (!open) return null;
 
@@ -223,16 +336,57 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
 
         {/* Search */}
         <div className="border-b border-border px-5 py-3">
-          <div className="relative">
-            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 opacity-60" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Suche im Handbuch (Titel, Inhalt, Schlagworte) …"
-              className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-3 text-sm outline-none focus:border-foreground/40"
-            />
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 opacity-60" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    gotoMatch(e.shiftKey ? -1 : 1);
+                  }
+                }}
+                placeholder="Suche im Handbuch (Titel, Inhalt, Schlagworte) … [Enter = nächster Treffer]"
+                className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-8 text-sm outline-none focus:border-foreground/40"
+              />
+              {query && (
+                <button
+                  aria-label="Suche leeren"
+                  onClick={() => setQuery("")}
+                  className="absolute right-2 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded text-muted-foreground hover:bg-secondary hover:text-foreground"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            {query.trim() && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <span className="tabular-nums">
+                  {matchCount === 0 ? "0" : `${matchIndex + 1} / ${matchCount}`}
+                </span>
+                <button
+                  aria-label="Vorheriger Treffer"
+                  disabled={matchCount === 0}
+                  onClick={() => gotoMatch(-1)}
+                  className="grid size-7 place-items-center rounded border border-border hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ArrowUp className="size-3.5" />
+                </button>
+                <button
+                  aria-label="Nächster Treffer"
+                  disabled={matchCount === 0}
+                  onClick={() => gotoMatch(1)}
+                  className="grid size-7 place-items-center rounded border border-border hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ArrowDown className="size-3.5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
+
 
         {/* Body */}
         <div className="flex min-h-0 flex-1">
@@ -380,7 +534,7 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
                   {activeTopic.route ? ` · Route: ${activeTopic.route}` : ""}
                   {activeTopic.component ? ` · Komponente: ${activeTopic.component}` : ""}
                 </div>
-                <div className="mt-3">{renderContent(activeTopic.content)}</div>
+                <div className="mt-3">{renderContent(activeTopic.content, query)}</div>
 
                 {activeTopic.relatedTopics && activeTopic.relatedTopics.length > 0 && (
                   <div className="mt-6 rounded-md border border-border bg-secondary/30 p-3">
