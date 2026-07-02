@@ -69,10 +69,10 @@ function highlightText(text: string, hl: string, keyPrefix: string): React.React
   return parts;
 }
 
-function renderContent(md: string): React.ReactNode {
+function renderContent(md: string, hl = ""): React.ReactNode {
   // Minimaler Markdown-Subset-Renderer: Überschriften (## …), Listen (- …),
   // Absätze. Bewusst ohne fremde Bibliothek und ohne innerHTML, um Risiken zu
-  // vermeiden.
+  // vermeiden. Optional werden Treffer via <mark data-hl-match> hervorgehoben.
   const blocks: React.ReactNode[] = [];
   const lines = md.split(/\r?\n/);
   let listBuf: string[] = [];
@@ -83,7 +83,7 @@ function renderContent(md: string): React.ReactNode {
     blocks.push(
       <ul key={`ul-${key++}`} className="my-2 ml-5 list-disc space-y-1 text-sm">
         {listBuf.map((item, i) => (
-          <li key={i}>{item}</li>
+          <li key={i}>{highlightText(item, hl, `li-${key}-${i}`)}</li>
         ))}
       </ul>,
     );
@@ -96,7 +96,7 @@ function renderContent(md: string): React.ReactNode {
       flushList();
       blocks.push(
         <h3 key={`h-${key++}`} className="mt-4 text-base font-semibold">
-          {line.slice(3)}
+          {highlightText(line.slice(3), hl, `h-${key}`)}
         </h3>,
       );
     } else if (line.startsWith("- ")) {
@@ -107,7 +107,7 @@ function renderContent(md: string): React.ReactNode {
       flushList();
       blocks.push(
         <p key={`p-${key++}`} className="my-2 text-sm leading-relaxed">
-          {line}
+          {highlightText(line, hl, `p-${key}`)}
         </p>,
       );
     }
@@ -116,7 +116,13 @@ function renderContent(md: string): React.ReactNode {
   return blocks;
 }
 
-export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }: Props) {
+export function UserManualDialog({
+  open,
+  onClose,
+  initialTopicId,
+  initialRoute,
+  initialQuery,
+}: Props) {
   const user = useCurrentUser();
   const role = user?.role ?? null;
 
@@ -127,11 +133,26 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
   const [query, setQuery] = useState("");
   const [activeId, setActiveId] = useState<string | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [matchIndex, setMatchIndex] = useState(0);
+  const [matchCount, setMatchCount] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Initiales Topic bestimmen.
+  // Initiales Topic & Query bestimmen (auch aus URL ?help=&hq=).
   useEffect(() => {
     if (!open) return;
+    // URL hat Vorrang über props, damit deep-linkable.
+    let urlHelp: string | null = null;
+    let urlQ: string | null = null;
+    if (typeof window !== "undefined") {
+      const sp = new URLSearchParams(window.location.search);
+      urlHelp = sp.get("help");
+      urlQ = sp.get("hq");
+    }
+    setQuery(urlQ ?? initialQuery ?? "");
+    if (urlHelp) {
+      setActiveId(urlHelp);
+      return;
+    }
     if (initialTopicId) {
       setActiveId(initialTopicId);
       return;
@@ -144,7 +165,7 @@ export function UserManualDialog({ open, onClose, initialTopicId, initialRoute }
       }
     }
     setActiveId((curr) => curr ?? allTopics[0]?.id ?? null);
-  }, [open, initialTopicId, initialRoute, role, allTopics]);
+  }, [open, initialTopicId, initialRoute, initialQuery, role, allTopics]);
 
   // ESC schließt.
   useEffect(() => {
