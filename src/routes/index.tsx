@@ -689,7 +689,11 @@ function Dashboard() {
                         (a.description ?? "").toLowerCase().includes(q),
                     )
                     .slice(0, 4);
-                  const hasAny = pRes.length + wpRes.length + aRes.length > 0;
+                  const hRes = HelpDocumentationService.searchTopics(
+                    q,
+                    currentUser?.role ?? null,
+                  ).slice(0, 4);
+                  const hasAny = pRes.length + wpRes.length + aRes.length + hRes.length > 0;
                   if (!hasAny)
                     return (
                       <div className="px-4 py-6 text-center text-sm text-muted-foreground">
