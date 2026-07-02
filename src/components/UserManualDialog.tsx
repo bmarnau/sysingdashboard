@@ -197,6 +197,62 @@ export function UserManualDialog({
     contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeId]);
 
+  // URL sync: ?help=<topic>&hq=<query>. Beim Schließen wieder entfernen.
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (activeId) url.searchParams.set("help", activeId);
+    else url.searchParams.delete("help");
+    if (query.trim()) url.searchParams.set("hq", query.trim());
+    else url.searchParams.delete("hq");
+    window.history.replaceState(null, "", url.toString());
+  }, [open, activeId, query]);
+
+  useEffect(() => {
+    if (open || typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("help") || url.searchParams.has("hq")) {
+      url.searchParams.delete("help");
+      url.searchParams.delete("hq");
+      window.history.replaceState(null, "", url.toString());
+    }
+  }, [open]);
+
+  // Nach Render Treffer im Inhalt zählen und aktuellen Treffer hervorheben.
+  useLayoutEffect(() => {
+    if (!open) return;
+    const root = contentRef.current;
+    if (!root) {
+      setMatchCount(0);
+      return;
+    }
+    const marks = root.querySelectorAll<HTMLElement>("mark[data-hl-match]");
+    setMatchCount(marks.length);
+    setMatchIndex((idx) => (marks.length === 0 ? 0 : Math.min(idx, marks.length - 1)));
+  }, [open, activeId, query]);
+
+  useEffect(() => {
+    const root = contentRef.current;
+    if (!root) return;
+    const marks = root.querySelectorAll<HTMLElement>("mark[data-hl-match]");
+    marks.forEach((m, i) => {
+      if (i === matchIndex) {
+        m.classList.add("ring-2", "ring-yellow-500");
+        m.scrollIntoView({ block: "center", behavior: "smooth" });
+      } else {
+        m.classList.remove("ring-2", "ring-yellow-500");
+      }
+    });
+  }, [matchIndex, matchCount]);
+
+  const gotoMatch = useCallback(
+    (dir: 1 | -1) => {
+      if (matchCount === 0) return;
+      setMatchIndex((idx) => (idx + dir + matchCount) % matchCount);
+    },
+    [matchCount],
+  );
+
   if (!open) return null;
 
   const printAll = () => {
