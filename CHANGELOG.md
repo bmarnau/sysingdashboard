@@ -13,7 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.18.4 - 2026-07-01
+
+- Handbuch-Suche erweitert: globale Header-Suche findet jetzt auch Handbuch-Kapitel (Sektion „Handbuch"); Klick öffnet das passende Kapitel mit übernommenem Suchbegriff.
+- Im Benutzerhandbuch werden Treffer im Kapiteltext gelb hervorgehoben; Trefferzähler (`n / total`) und Sprung zum nächsten/vorherigen Treffer via Pfeilbuttons oder Enter/Shift+Enter.
+- Deep-linkable Suche: aktive Kapitel-ID und Suchbegriff werden als `?help=<id>&hq=<query>` in der URL persistiert und beim Öffnen des Dialogs wieder eingelesen; beim Schließen entfernt.
+
 ## 1.18.3 - 2026-07-01
+
 
 - Neue **Managementübersicht** (`docs/MANAGEMENT_OVERVIEW.md`) mit 14 Sektionen für nicht-technische Entscheider: Zielbild, Sicherheitsarchitektur, ENV-Validierung, Fail-Fast in Produktion, DEV ohne Azure, kein automatischer Sync, lokaler Betrieb bleibt führend, Rollenmodell, Export-/Import, Konflikthandling, Systemstatus, Entra-ID- und Key-Vault-Roadmap, Risiken und Gegenmaßnahmen.
 - Handbuch-Kapitel **Managementübersicht** ergänzt (Kategorie „Betrieb"), verweist auf die versionierte MD-Datei.
