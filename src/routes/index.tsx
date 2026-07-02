@@ -43,6 +43,7 @@ import { PerformanceReport } from "@/components/PerformanceReport";
 import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
 import { UserManagementDialog } from "@/components/UserManagementDialog";
 import { UserManualDialog } from "@/components/UserManualDialog";
+import { HelpDocumentationService } from "@/lib/help-documentation";
 import { BackupDialog } from "@/components/BackupDialog";
 import { SystemStatusDialog } from "@/components/SystemStatusDialog";
 import { DownloadCenterDialog } from "@/components/DownloadCenterDialog";
