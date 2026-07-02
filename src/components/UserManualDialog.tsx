@@ -5,8 +5,10 @@
  * `HelpDocumentationService`.
  */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
+  ArrowDown,
+  ArrowUp,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -31,6 +33,40 @@ interface Props {
   initialTopicId?: string;
   /** Optional Route, um passendes Topic automatisch zu wählen. */
   initialRoute?: string;
+  /** Optionaler Suchbegriff, der beim Öffnen ins Suchfeld übernommen wird. */
+  initialQuery?: string;
+}
+
+/** Escape regex meta characters. */
+function escRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Split text into alternating plain/highlight nodes based on `hl` (case-insensitive). */
+function highlightText(text: string, hl: string, keyPrefix: string): React.ReactNode {
+  const term = hl.trim();
+  if (!term) return text;
+  const re = new RegExp(escRe(term), "gi");
+  const parts: React.ReactNode[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let i = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    parts.push(
+      <mark
+        key={`${keyPrefix}-m-${i++}`}
+        data-hl-match
+        className="rounded-sm bg-yellow-300/70 px-0.5 text-inherit dark:bg-yellow-500/40"
+      >
+        {m[0]}
+      </mark>,
+    );
+    last = m.index + m[0].length;
+    if (m[0].length === 0) re.lastIndex++;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts;
 }
 
 function renderContent(md: string): React.ReactNode {
