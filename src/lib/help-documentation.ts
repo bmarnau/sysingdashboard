@@ -1110,7 +1110,45 @@ Audits oder Managementreviews).`,
       "azure-outage",
     ],
   },
+  {
+    id: "handbuch-suche",
+    title: "Handbuch durchsuchen",
+    category: "Service",
+    keywords: [
+      "Suche",
+      "Handbuch",
+      "Volltext",
+      "Highlight",
+      "Treffer",
+      "Deep-Link",
+      "URL",
+    ],
+    lastUpdated: "2026-07-01",
+    content: `## Ziel
+Handbuchinhalte schnell auffindbar machen — sowohl aus dem Dashboard heraus als auch beim direkten Öffnen eines Kapitels.
+
+## Suche im Handbuch
+- Suchfeld oben im Handbuch-Dialog durchsucht Titel, Kategorien, Inhalte und Schlagworte aller sichtbaren Kapitel.
+- Treffer werden in der Seitennavigation als „Treffer (n)" gruppiert.
+- Im geöffneten Kapitel werden alle Fundstellen gelb hervorgehoben.
+- Trefferzähler zeigt „aktueller / gesamt" an. Mit den Pfeiltasten oder Enter (Shift+Enter rückwärts) springt die Ansicht zum jeweils nächsten Treffer.
+
+## Globale Header-Suche
+- Das Suchfeld in der Dashboard-Kopfzeile durchsucht Projekte, Arbeitspakete, Tätigkeiten und jetzt auch Handbuch-Kapitel.
+- Ein Klick auf ein Handbuch-Ergebnis öffnet das Handbuch direkt am passenden Kapitel und übernimmt den Suchbegriff für die Trefferhervorhebung.
+
+## Deep-Links
+- Aktive Kapitel-ID und Suchbegriff werden in der URL persistiert (\`?help=<id>&hq=<query>\`).
+- Der Link kann geteilt oder als Bookmark abgelegt werden — beim Öffnen des Dialogs werden Kapitel und Suchbegriff wieder eingelesen.
+- Beim Schließen des Handbuch-Dialogs werden die Parameter automatisch aus der URL entfernt.
+
+## Hinweise
+- Die Sichtbarkeit der Kapitel richtet sich nach der Rolle des angemeldeten Benutzers (RBAC).
+- Für Volltextsuche über nicht sichtbare Kapitel muss die entsprechende Rolle vorhanden sein.`,
+    relatedTopics: ["rbac-rollen-berechtigungen"],
+  },
 ];
+
 
 function allTopicsBase(): HelpTopic[] {
   const merged = new Map<string, HelpTopic>();
