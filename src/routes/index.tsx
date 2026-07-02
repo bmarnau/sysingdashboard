@@ -278,9 +278,11 @@ function Dashboard() {
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [showManual, setShowManual] = useState(false);
   const [manualTopicId, setManualTopicId] = useState<string | undefined>(undefined);
+  const [manualQuery, setManualQuery] = useState<string | undefined>(undefined);
   const [showHelpMenu, setShowHelpMenu] = useState(false);
-  const openManualTopic = (topicId?: string) => {
+  const openManualTopic = (topicId?: string, q?: string) => {
     setManualTopicId(topicId);
+    setManualQuery(q);
     setShowHelpMenu(false);
     setShowManual(true);
   };
