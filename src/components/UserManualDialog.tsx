@@ -534,7 +534,7 @@ export function UserManualDialog({
                   {activeTopic.route ? ` · Route: ${activeTopic.route}` : ""}
                   {activeTopic.component ? ` · Komponente: ${activeTopic.component}` : ""}
                 </div>
-                <div className="mt-3">{renderContent(activeTopic.content)}</div>
+                <div className="mt-3">{renderContent(activeTopic.content, query)}</div>
 
                 {activeTopic.relatedTopics && activeTopic.relatedTopics.length > 0 && (
                   <div className="mt-6 rounded-md border border-border bg-secondary/30 p-3">
