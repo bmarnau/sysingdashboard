@@ -336,16 +336,57 @@ export function UserManualDialog({
 
         {/* Search */}
         <div className="border-b border-border px-5 py-3">
-          <div className="relative">
-            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 opacity-60" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Suche im Handbuch (Titel, Inhalt, Schlagworte) …"
-              className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-3 text-sm outline-none focus:border-foreground/40"
-            />
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 opacity-60" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    gotoMatch(e.shiftKey ? -1 : 1);
+                  }
+                }}
+                placeholder="Suche im Handbuch (Titel, Inhalt, Schlagworte) … [Enter = nächster Treffer]"
+                className="w-full rounded-md border border-border bg-background py-2 pl-9 pr-8 text-sm outline-none focus:border-foreground/40"
+              />
+              {query && (
+                <button
+                  aria-label="Suche leeren"
+                  onClick={() => setQuery("")}
+                  className="absolute right-2 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded text-muted-foreground hover:bg-secondary hover:text-foreground"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            {query.trim() && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <span className="tabular-nums">
+                  {matchCount === 0 ? "0" : `${matchIndex + 1} / ${matchCount}`}
+                </span>
+                <button
+                  aria-label="Vorheriger Treffer"
+                  disabled={matchCount === 0}
+                  onClick={() => gotoMatch(-1)}
+                  className="grid size-7 place-items-center rounded border border-border hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ArrowUp className="size-3.5" />
+                </button>
+                <button
+                  aria-label="Nächster Treffer"
+                  disabled={matchCount === 0}
+                  onClick={() => gotoMatch(1)}
+                  className="grid size-7 place-items-center rounded border border-border hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ArrowDown className="size-3.5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
+
 
         {/* Body */}
         <div className="flex min-h-0 flex-1">
