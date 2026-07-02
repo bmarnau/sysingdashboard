@@ -1373,9 +1373,11 @@ function Dashboard() {
         onClose={() => {
           setShowManual(false);
           setManualTopicId(undefined);
+          setManualQuery(undefined);
         }}
         initialRoute="/"
         initialTopicId={manualTopicId}
+        initialQuery={manualQuery}
       />
 
       <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
