@@ -29,7 +29,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
  */
 export function AzureActionsPanel() {
   const user = useCurrentUser();
-  const actor = user?.name ?? user?.role ?? "unknown";
+  const actor = user?.displayName ?? user?.role ?? "unknown";
   const health = useSystemStatusHealth();
   const azureAllowed = health.payload?.azure?.allowed === true;
   const disabledReason = azureAllowed
