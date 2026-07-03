@@ -48,6 +48,7 @@ import { BackupDialog } from "@/components/BackupDialog";
 import { SystemStatusDialog } from "@/components/SystemStatusDialog";
 import { DownloadCenterDialog } from "@/components/DownloadCenterDialog";
 import { ImportExportDialog } from "@/components/ImportExportDialog";
+import { AzureDataDialog } from "@/components/azure/AzureDataDialog";
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
@@ -306,6 +307,7 @@ function Dashboard() {
   const [showSystemStatus, setShowSystemStatus] = useState(false);
   const [showDownloads, setShowDownloads] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
+  const [showAzureData, setShowAzureData] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
