@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.19.0 - 2026-07-02
+
+- Neuer Servicebereich **Azure Daten** (Service → „Azure Daten…") mit drei Tabs: **Status**, **Aktionen** und **Historie**. UI- und Service-Fassade fertig, Backend-Anbindung folgt später (Stubs antworten `not implemented`, ohne zu werfen).
+- Alle Azure-Aktionen laufen ausschließlich manuell per Button: **Verbindung testen**, **Datenbank aufbauen** (Textbestätigung `AUFBAUEN`, nur Systemadministrator), **Nach Azure exportieren** (Bestätigung), **Aus Azure importieren** (Pflicht-Vorschau + Pflicht-Backup + Textbestätigung `IMPORTIEREN`), **Lokale Historie leeren**.
+- Buttons werden per `PermissionGate` nur bei vorhandener RBAC-Berechtigung angezeigt; bei fehlender Azure-Konfiguration (DEV) sind ausführende Buttons deaktiviert und der Status zeigt „Not configured". Ein ErrorBoundary im Dialog sorgt dafür, dass ein Azure-Ausfall das Dashboard nicht beeinträchtigt.
+- Lokale, secret-freie Anzeige-Historie (`AzureHistoryStore` in `localStorage`) für Verbindungstests, Exporte und Importe.
+- Handbuch-Kapitel **„Azure Daten – Servicegebiet"** ergänzt, `DOCUMENTATION_VERSION` auf `1.6.0` angehoben.
+
 ## 1.18.4 - 2026-07-01
 
 - Handbuch-Suche erweitert: globale Header-Suche findet jetzt auch Handbuch-Kapitel (Sektion „Handbuch"); Klick öffnet das passende Kapitel mit übernommenem Suchbegriff.
