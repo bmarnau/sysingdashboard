@@ -1,58 +1,119 @@
-## Ziel
+# Plan — Azure-Servicebereich „Azure Daten" (Konzept, ohne Backend-Logik)
 
-Managementübersicht als eigenständiges, für Entscheider verständliches Dokument bereitstellen, Doku-Version/lastUpdated sichtbar machen und Handbuch-Check (Check 9) abschließen.
+Ziel: Ein neuer, klar abgegrenzter Bereich im bestehenden Servicebereich, in dem alle Azure-Interaktionen ausschließlich manuell per Button ausgelöst werden. Es entsteht das UI- und Service-Interface-Gerüst — echte Azure-Aufrufe folgen in einem späteren Prompt.
 
-## Ist-Stand (nach Prüfung)
+## 1. Einstiegspunkt im Dashboard
 
-- `SystemStatusDialog` zeigt bereits `DOCUMENTATION_VERSION` und `Last documentation update`, listet aber „Management overview: not configured".
-- Handbuch (`src/lib/help-documentation.ts`) enthält bereits alle geforderten Kapitel: Azure-Servicebereich, Offline-Betrieb, Import/Export, Konflikthandling, RBAC, ENV-Validierung, Systemstatus, Sicherheitsprinzipien, Azure-Ausfall.
-- Keine Management-Übersicht vorhanden (`docs/` enthält nur CONTRIBUTING.md, GITHUB.md).
-- Keine Secrets in bestehender Doku (Stichprobenprüfung ok).
+- Header-Bereich „Service" (`src/routes/index.tsx`) bekommt einen zusätzlichen Button **„Azure Daten"** (nur sichtbar, wenn `can(user, 'systemstatus.view')` oder eine der Azure-Permissions vorhanden).
+- Öffnet neuen Dialog `AzureDataDialog` (analoges Muster zu `SystemStatusDialog`, `ImportExportDialog`).
+- Fällt Azure/`/api/status` aus, bleibt der Rest des Dashboards unberührt: der Dialog rendert Fehler-/Not-configured-Zustände, wirft aber keine Errors nach oben (ErrorBoundary + defensiver Fetch).
 
-## Änderungen
+## 2. Neue Datei-Struktur
 
-### 1. Neu: `docs/MANAGEMENT_OVERVIEW.md`
-Kompakte, nicht-technische Darstellung mit folgender Gliederung (kurze Absätze, keine Codeschnipsel, keine Secrets):
-1. Zielbild — Lokales Dashboard, optionale Azure-Anbindung
-2. Sicherheitsarchitektur (Least Privilege, keine Klartext-Secrets, RBAC, Security-Scan in CI)
-3. ENV-Validierung — Fail-Fast in Produktion
-4. Kein Production-Start ohne notwendige ENV-Variablen
-5. DEV-Betrieb ohne Azure-ENV (blockierter Azure-Zugriff)
-6. Kein automatischer Sync — nur manuelle Auslösung
-7. Lokaler Betrieb bleibt führend — Azure ist Spiegel
-8. Rollenmodell (7 Rollen, RBAC-Matrix, kein Admin-Lockout)
-9. Export-/Import-Prozess (JSON-Schema, Vorschau, Backup vor Import)
-10. Konflikthandling (Dublettenprüfung, Snapshot, Rollback)
-11. Systemstatus (Sektionen: Application, GitHub, Lovable, Azure, Security, Data, Documentation)
-12. Roadmap Entra ID (geplante Auth-Integration)
-13. Roadmap Key Vault (secretManager → keyVault Fassade)
-14. Risiken und Gegenmaßnahmen (Tabelle: Risiko → Maßnahme)
+```text
+src/components/azure/
+  AzureDataDialog.tsx          # Container mit Tabs
+  AzureStatusPanel.tsx         # Status + ENV-Validation (read-only)
+  AzureActionsPanel.tsx        # 5 Aktions-Buttons + Bestätigungen
+  AzureHistoryPanel.tsx        # Tabs: Verbindungstests | Exporte | Importe
+  AzureImportPreviewDialog.tsx # Vorschau vor Import
+  AzureConfirmDialog.tsx       # generischer Confirm mit Warnhinweis
+src/lib/azure/
+  azure-service.ts             # Frontend-Service-Fassade (Stubs, keine echten Calls)
+  azure-history-store.ts       # lokale Historie (in-memory + localStorage, secret-frei)
+  types.ts                     # AzureActionResult, HistoryEntry, ImportPreview...
+```
 
-Kopf enthält `Stand: YYYY-MM-DD` und `Dashboard-Version: x.y.z`.
+Neue Permissions sind schon in `backend/services/rbac.mjs` vorhanden (`azure.connection.test`, `azure.export`, `azure.import`, `azure.database.build`, `backup.restore`). Falls sie in `src/lib/rbac/permissions.ts` noch fehlen, werden sie dort ergänzt (`check-rbac.mjs` erzwingt Parität).
 
-### 2. `src/lib/help-documentation.ts`
-- Neues `HelpTopic` `management-overview` (Kategorie „Betrieb"), Kurzfassung + Verweis auf `docs/MANAGEMENT_OVERVIEW.md` (relative Pfad-Erwähnung, kein Link-Rendering nötig). Rolle: alle Lese-Rollen.
-- `DOCUMENTATION_VERSION` auf `1.5.0` anheben (größerer Doku-Zuwachs).
-- `lastUpdated` neuer/geänderter Kapitel auf heutiges Datum.
+## 3. Dialog-Aufbau (Tabs)
 
-### 3. `src/components/SystemStatusDialog.tsx`
-- Zeile 367: „Management overview" → `available — docs/MANAGEMENT_OVERVIEW.md` mit `ok`.
+**Tab 1 — Status**
+- Azure erlaubt? (`azure.allowed`)
+- Auth-Modus (`azure.authMode`)
+- SQL / Table / Storage konfiguriert (Badges: „Konfiguriert" / „Not configured")
+- ENV-Validation (`security.envValidation`): OK-Badge oder Liste fehlender Variablennamen (keine Werte)
+- Letzter Verbindungstest / letzter Export / letzter Import (Zeitstempel)
+- Button **„Status aktualisieren"** → ruft `runSystemStatusCheck()`
 
-### 4. `CHANGELOG.md`
-- Neuer Eintrag `## 1.18.3 - 2026-07-01` mit Bullets:
-  - Managementübersicht `docs/MANAGEMENT_OVERVIEW.md` ergänzt (14 Sektionen, für Entscheider).
-  - Handbuch-Kapitel „Managementübersicht" verlinkt.
-  - Systemstatus zeigt Managementübersicht als vorhanden an.
-  - Doku-Version 1.5.0.
+**Tab 2 — Aktionen** (alle Buttons manuell, mit RBAC-Gate über `<PermissionGate>`)
 
-### 5. Verifikation
-- `bun run docs:check` (Konsistenz Version/CHANGELOG/Doku).
-- Sichtprüfung SystemStatusDialog + Handbuch-Dropdown.
-- Grep auf verbotene Secret-Muster in `docs/MANAGEMENT_OVERVIEW.md`.
+| Button                    | Permission                | Bestätigung | Zusatz |
+|---------------------------|---------------------------|-------------|--------|
+| Verbindung testen         | `azure.connection.test`   | nein        | — |
+| Datenbank aufbauen        | `azure.database.build`    | **ja**, Text-Eingabe „AUFBAUEN"| Warnung: erstellt/aktualisiert Schema |
+| Nach Azure exportieren    | `azure.export`            | ja          | Hinweis „überschreibt Azure-Daten" |
+| Aus Azure importieren     | `azure.import` + `backup.restore` | **ja, mehrstufig** | Erzwingt Vorschau + Backup |
+| Historie leeren (lokal)   | `azure.connection.test`   | ja          | löscht nur lokale Anzeige-Historie |
 
-## Nicht enthalten
-- Keine funktionalen Code-Änderungen an Azure/RBAC/Import-Export.
-- Kein Übersetzen ins Englische (Management-Doku bleibt Deutsch, konsistent zum Handbuch).
+Regeln pro Button:
+- Ohne Permission: Button **nicht sichtbar** (nicht nur disabled) — via `<PermissionGate>`.
+- `azure.allowed === false` (DEV / fehlende ENV): Buttons für „Datenbank aufbauen / Export / Import / Verbindung testen" sind sichtbar aber **disabled** mit Tooltip „Azure ist in diesem Modus nicht verfügbar – siehe Status".
+- Jede Aktion ist idempotent gestartet: kein Auto-Retry, kein Polling, keine Intervalle. Erst nach Klick.
 
-## Kritisches Feedback / Alternative
-Alternativ könnte die Managementübersicht komplett als HelpTopic im UI leben (kein separates `.md`). Empfehlung: **beides** — MD-Datei als versionierbare Single Source of Truth (für Repo-Review durch Entscheider ohne App-Start), HelpTopic als Kurzfassung im Handbuch. So bleibt der Systemstatus-Check trivial (Datei existiert) und Entscheider haben einen Renderpfad ohne Dashboard.
+**Tab 3 — Historie**
+- Drei Unter-Tabs: Verbindungstests / Exporte / Importe
+- Tabelle: Zeitpunkt, Auslöser (User), Ergebnis (ok/failed), Dauer, Kurzmeldung
+- Quelle: `azure-history-store` (lokal, secret-frei). Später ersetzbar durch `/api/status`-Daten.
+
+## 4. Import-Flow (verpflichtend Vorschau + Backup)
+
+```text
+Klick „Aus Azure importieren"
+  → 1. Confirm-Dialog: Warnung „überschreibt lokale Daten"
+  → 2. `azureService.fetchImportPreview()` (Stub liefert Beispiel-Diff)
+  → 3. AzureImportPreviewDialog zeigt: Anzahl neu/aktualisiert/gelöscht, Konfliktliste
+  → 4. Pflicht-Checkbox „Ich habe die Vorschau geprüft"
+  → 5. Automatisch `BackupService.createBackup('pre-azure-import')` (bestehender Service)
+       → Anzeige „Backup erstellt: <id>"
+  → 6. Zweiter Confirm mit Textbestätigung „IMPORTIEREN"
+  → 7. `azureService.runImport()` (Stub) → Ergebnis in Historie
+```
+Bricht der Nutzer irgendwo ab, passiert nichts. Kein Schritt läuft automatisch ohne vorherigen Klick.
+
+## 5. Service-Fassade `src/lib/azure/azure-service.ts`
+
+Reine Frontend-Fassade — ruft später `/api/azure/*`. Jetzt nur Typen + Stubs, die klar mit `NotImplementedError` oder Mock-Daten antworten, damit die UI vollständig testbar ist:
+
+```ts
+export const azureService = {
+  getStatus(): Promise<AzureStatus>            // proxied auf /api/status Payload
+  testConnection(): Promise<AzureActionResult> // Stub: „not implemented"
+  buildDatabase(): Promise<AzureActionResult>
+  runExport(): Promise<AzureActionResult>
+  fetchImportPreview(): Promise<ImportPreview>
+  runImport(opts:{backupId:string}): Promise<AzureActionResult>
+};
+```
+
+Alle Methoden fangen Fehler intern und geben `{ ok:false, message }` zurück — kein throw ins UI, damit Azure-Ausfall das Dashboard nie crasht.
+
+## 6. Sichtbarkeit / Robustheit
+
+- Der neue Bereich lebt komplett in einem lazy geladenen Dialog; ein Fehler beim Import der Azure-Komponenten wird per `ErrorBoundary` in einer Not-configured-Kachel gefangen.
+- Kein `useEffect`-Auto-Fetch außer einmaligem Statuslesen beim Dialog-Öffnen (kein Intervall).
+- Keine Secrets im UI, keine ENV-Werte, nur Booleans/Namen (analog `SystemStatusPayload`).
+
+## 7. Dokumentation & Changelog (Pflicht laut Core-Memory)
+
+- Neuer HelpTopic `azure-daten-service` in `src/lib/help-documentation.ts` (Kategorie „Betrieb", RBAC: alle Rollen mit `systemstatus.view`), `lastUpdated` aktualisiert.
+- Bestehende Topics „Azure Servicebereich" / „Azure Verbindung testen" / „Nach Azure exportieren" / „Aus Azure importieren" / „Konflikthandling" / „Backup vor Import" bekommen einen Verweis auf den neuen Dialog.
+- `CHANGELOG.md`: neue Version mit Bullet „Azure-Daten-Servicebereich (UI + Service-Fassade, keine Backend-Logik)".
+- `bun run docs:check` wird nach der Umsetzung ausgeführt.
+
+## 8. Check-10 Selbstprüfung (erfüllt durch obiges)
+
+- Keine Auto-Aktion: alle Aufrufe hinter Buttons, kein Interval/Polling.
+- ENV-Status: Tab „Status" zeigt `envValidation` + fehlende Namen.
+- Import: Vorschau + Pflicht-Backup + doppelte Bestätigung.
+- RBAC: `<PermissionGate>` pro Button, unsichtbar ohne Permission.
+- Dashboard-Resilienz: Lazy Dialog + ErrorBoundary + defensiver Service.
+- Fehlende Azure-Config: klare „Not configured"-Badges statt Fehler.
+
+## 9. Kritisches Feedback / Alternativen
+
+- **Alternative A (empfohlen langfristig):** eigener Route `/service/azure` statt Dialog — bessere Deep-Links, sauberere URL, einfachere Tests. Für den jetzigen Rahmen (Servicebereich = Header-Dialoge) bleibt der Dialog konsistent; Migration zur Route ist später ein 1:1-Umzug der Panels.
+- **Alternative B:** Historie serverseitig via `/api/azure/history` statt localStorage. Sauberer, aber erfordert Backend-Arbeit — bewusst zurückgestellt bis zur echten Anbindung.
+- **Warnung:** „Datenbank aufbauen" ist potenziell destruktiv. Sollte in einer späteren Iteration in „Schema anwenden (idempotent)" umbenannt und mit Dry-Run-Vorschau versehen werden.
+
+Umfang dieses Prompts: **UI + Service-Fassade + Doku**, keine echte Azure-Kommunikation.
