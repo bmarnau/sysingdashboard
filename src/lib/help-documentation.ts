@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.5.0";
+export const DOCUMENTATION_VERSION = "1.6.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -972,6 +972,50 @@ Eingehende Kundennamen werden normalisiert (trim + Whitespace + Casefold) und pe
 > ⚠️ Die Strategie "Überschreiben" lässt sich nur über den Pre-Snapshot zurücknehmen — solange die Session offen ist.
 > ⚠️ Jede Konflikt-Entscheidung wird im Import-Protokoll dauerhaft festgehalten.`,
     relatedTopics: ["azure-import", "backup-before-import", "import-export"],
+  },
+  {
+    id: "azure-data-service-area",
+    title: "Azure Daten – Servicebereich",
+    category: "Azure",
+    keywords: ["Azure", "Service", "Aktionen", "Historie", "Vorschau", "Backup"],
+    lastUpdated: "2026-07-02",
+    content: `## Überblick
+Der neue Servicebereich **Azure Daten** bündelt alle Azure-Interaktionen in einem Dialog mit drei Tabs: **Status**, **Aktionen** und **Historie**. Öffnen über Service → „Azure Daten…".
+
+## Regeln
+- Jede Aktion wird ausschließlich per Button gestartet.
+- Es läuft **nichts automatisch** – kein Polling, kein Auto-Sync.
+- Buttons werden nur angezeigt, wenn die passende RBAC-Berechtigung vorhanden ist.
+- Fehlt die Azure-Konfiguration (z. B. im DEV-Modus), bleibt der Bereich sichtbar und zeigt „Not configured". Ausführende Buttons sind dann deaktiviert.
+- Fällt Azure oder der Statusdienst aus, bleibt das übrige Dashboard uneingeschränkt nutzbar.
+
+## Tab „Status"
+- Azure erlaubt, Auth-Modus, SQL/Table/Storage konfiguriert
+- ENV-Validierung mit Liste fehlender Variablennamen (nur Namen, niemals Werte)
+- Letzter Verbindungstest / letzter Export / letzter Import
+- Button **„Status aktualisieren"** – einziger manueller Refresh
+
+## Tab „Aktionen"
+- **Verbindung testen** – einfacher Klick
+- **Datenbank aufbauen** – nur Systemadministrator, mit Text-Bestätigung (\`AUFBAUEN\`)
+- **Nach Azure exportieren** – mit Bestätigungsdialog
+- **Aus Azure importieren** – erzwingt Vorschau **und** Pflicht-Backup, anschließend zweite Text-Bestätigung (\`IMPORTIEREN\`)
+- **Lokale Historie leeren** – löscht nur die Browser-Anzeige
+
+## Tab „Historie"
+Zeigt die letzten Verbindungstests, Exporte und Importe (lokal, secret-frei).
+
+## Sicherheit
+Das Frontend liest nie ENV. Alle Azure-Aufrufe werden später serverseitig ausgeführt; das Browser-Bundle enthält keine Connection-Strings oder SAS-Tokens.`,
+    relatedTopics: [
+      "azure-service-area",
+      "azure-connection-test",
+      "azure-export",
+      "azure-import",
+      "azure-conflict-handling",
+      "backup-before-import",
+      "env-validation",
+    ],
   },
   {
     id: "backup-before-import",
