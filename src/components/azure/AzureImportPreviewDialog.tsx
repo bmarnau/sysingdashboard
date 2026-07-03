@@ -71,6 +71,9 @@ export function AzureImportPreviewDialog({
     setBackupError(null);
     try {
       const res = await BackupService.createBackup({ manual: true });
+      if (!res.ok || !res.record) {
+        throw new Error(res.log?.errors?.[0] ?? "Backup fehlgeschlagen.");
+      }
       setBackupId(res.record.id);
     } catch (err) {
       setBackupError((err as Error).message || "Backup fehlgeschlagen.");
