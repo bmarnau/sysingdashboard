@@ -18,11 +18,12 @@ import { makeUser } from "../fixtures/users";
 
 beforeEach(() => {
   window.localStorage.clear();
-  // Modul-Cache in user-management explizit leeren – nach `invalidateCaches`
-  // ist `usersCacheRaw` `null` und würde ohne dieses `saveUsers([])` weiterhin
-  // die stale `usersCache`-Referenz aus dem vorherigen Test liefern.
+  // `saveUsers([])` schreibt "[]" in localStorage UND ruft `invalidateCaches`,
+  // sodass der Modul-Cache (`usersCacheRaw`/`usersCache`) auf einen bekannten
+  // leeren Zustand gebracht wird. NICHT danach nochmal clearen, sonst würde
+  // der nächste `loadUsers()`-Aufruf (raw=null === usersCacheRaw=null) den
+  // stale `usersCache` aus einem vorherigen Test zurückgeben.
   saveUsers([]);
-  window.localStorage.clear();
 });
 
 describe("hasRole / isAdmin / isSystemAdmin", () => {
