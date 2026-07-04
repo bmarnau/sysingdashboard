@@ -1191,6 +1191,39 @@ Handbuchinhalte schnell auffindbar machen — sowohl aus dem Dashboard heraus al
 - Für Volltextsuche über nicht sichtbare Kapitel muss die entsprechende Rolle vorhanden sein.`,
     relatedTopics: ["rbac-rollen-berechtigungen"],
   },
+  {
+    id: "tests-qualitaetssicherung",
+    title: "Tests & Qualitätssicherung",
+    category: "Betrieb",
+    keywords: ["Tests", "Vitest", "Testing Library", "CI", "Coverage", "Qualität"],
+    lastUpdated: "2026-07-04",
+    content: `## Test-Infrastruktur
+Das Dashboard nutzt **Vitest** mit **@testing-library/react** und **jsdom** für Unit- und Integrationstests. Die Konfiguration liegt in \`vitest.config.ts\`, Testdateien unter \`src/__tests__/\`.
+
+## Skripte
+- \`bun run test\` — einmaliger Lauf (CI-Modus).
+- \`bun run test:watch\` — interaktiver Watch-Modus während der Entwicklung.
+- \`bun run test:ui\` — Vitest UI im Browser.
+- \`bun run test:coverage\` — Coverage-Report unter \`coverage/\` (v8-Provider).
+
+## Abgedeckte Bereiche
+- **Geschäftslogik**: \`time-period\` (Feiertage, Werktage, Sollstunden, Auslastung), \`export-data\` (Filter, Summen, Gruppierung), \`user-management\` (RBAC-Guards, Lifecycle, Scoped Storage).
+- **Sicherheit**: \`rbac\` — Matrix-Invarianten (z. B. \`azure.database.build\` ausschließlich Systemadministrator, \`azure.import ⊆ azure.export\`, Viewer/Customer ohne Edit- und Azure-Rechte).
+- **Integrationspfade**: JSON-Export-Round-Trip und Schema-Validation für Import-Payloads.
+- **UI**: \`PermissionGate\` als deterministisches Beispiel; komplexere Route-Tests folgen als Playwright-Smoke.
+
+## Regeln
+- Namenskonvention: \`should_<verhalten>_when_<kontext>\`.
+- Arrange-Act-Assert-Kommentare in jedem Test.
+- Deterministische Fixtures (kein Zufall) für reproduzierbare Feiertags-/Datumsberechnungen.
+- Keine echten API-Calls — Services werden per \`vi.mock\` gemockt.
+
+## Coverage-Gate
+Nur \`src/lib/time-period.ts\` hat einen harten Threshold (≥ 80 %). Globale Gates werden bewusst vermieden, um wartungsintensive Rot-Zustände ohne Sicherheitsgewinn zu verhindern.
+
+## CI
+Die GitHub-Actions-Pipeline (\`.github/workflows/ci.yml\`) führt \`bun run test:coverage\` nach Lint/RBAC und vor dem Build aus. Der Coverage-Report wird als Artifact hochgeladen. Ein rot geschlagener Test blockiert den Merge (Branch-Protection in GitHub-Settings aktivieren).`,
+  },
 ];
 
 

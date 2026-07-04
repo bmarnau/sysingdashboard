@@ -1,119 +1,127 @@
-# Plan — Azure-Servicebereich „Azure Daten" (Konzept, ohne Backend-Logik)
 
-Ziel: Ein neuer, klar abgegrenzter Bereich im bestehenden Servicebereich, in dem alle Azure-Interaktionen ausschließlich manuell per Button ausgelöst werden. Es entsteht das UI- und Service-Interface-Gerüst — echte Azure-Aufrufe folgen in einem späteren Prompt.
+# Testing-Infrastruktur (Vitest + Testing Library) — inkl. Alternativvorschläge
 
-## 1. Einstiegspunkt im Dashboard
+Fokus **Geschäftslogik & Sicherheit zuerst**. UI-Tests bewusst minimal, keine fragilen Route-Snapshots.
 
-- Header-Bereich „Service" (`src/routes/index.tsx`) bekommt einen zusätzlichen Button **„Azure Daten"** (nur sichtbar, wenn `can(user, 'systemstatus.view')` oder eine der Azure-Permissions vorhanden).
-- Öffnet neuen Dialog `AzureDataDialog` (analoges Muster zu `SystemStatusDialog`, `ImportExportDialog`).
-- Fällt Azure/`/api/status` aus, bleibt der Rest des Dashboards unberührt: der Dialog rendert Fehler-/Not-configured-Zustände, wirft aber keine Errors nach oben (ErrorBoundary + defensiver Fetch).
+## 1. Dependencies (dev)
 
-## 2. Neue Datei-Struktur
-
-```text
-src/components/azure/
-  AzureDataDialog.tsx          # Container mit Tabs
-  AzureStatusPanel.tsx         # Status + ENV-Validation (read-only)
-  AzureActionsPanel.tsx        # 5 Aktions-Buttons + Bestätigungen
-  AzureHistoryPanel.tsx        # Tabs: Verbindungstests | Exporte | Importe
-  AzureImportPreviewDialog.tsx # Vorschau vor Import
-  AzureConfirmDialog.tsx       # generischer Confirm mit Warnhinweis
-src/lib/azure/
-  azure-service.ts             # Frontend-Service-Fassade (Stubs, keine echten Calls)
-  azure-history-store.ts       # lokale Historie (in-memory + localStorage, secret-frei)
-  types.ts                     # AzureActionResult, HistoryEntry, ImportPreview...
+```
+vitest @vitest/coverage-v8 @vitest/ui
+@testing-library/react @testing-library/user-event @testing-library/jest-dom
+jsdom
 ```
 
-Neue Permissions sind schon in `backend/services/rbac.mjs` vorhanden (`azure.connection.test`, `azure.export`, `azure.import`, `azure.database.build`, `backup.restore`). Falls sie in `src/lib/rbac/permissions.ts` noch fehlen, werden sie dort ergänzt (`check-rbac.mjs` erzwingt Parität).
+## 2. Konfiguration
 
-## 3. Dialog-Aufbau (Tabs)
+**`vitest.config.ts`** (eigenständig, damit Cloudflare-Plugin nicht in Tests lädt):
+- `plugins: [react(), tsconfigPaths()]`
+- `test.environment = 'jsdom'`, `globals: true`
+- `setupFiles: ['src/__tests__/setup.ts']`
+- `include: ['src/__tests__/**/*.{test,spec}.{ts,tsx}']`
+- `coverage: { provider: 'v8', reporter: ['text','html','lcov'], include: ['src/lib/**','src/hooks/**'], exclude: ['**/*.d.ts','src/routeTree.gen.ts'] }`
+- **Per-File-Threshold** für `src/lib/time-period.ts` ≥ 80 % (keine globalen Gates → siehe Kritik).
 
-**Tab 1 — Status**
-- Azure erlaubt? (`azure.allowed`)
-- Auth-Modus (`azure.authMode`)
-- SQL / Table / Storage konfiguriert (Badges: „Konfiguriert" / „Not configured")
-- ENV-Validation (`security.envValidation`): OK-Badge oder Liste fehlender Variablennamen (keine Werte)
-- Letzter Verbindungstest / letzter Export / letzter Import (Zeitstempel)
-- Button **„Status aktualisieren"** → ruft `runSystemStatusCheck()`
+**`src/__tests__/setup.ts`**: `@testing-library/jest-dom/vitest`, `matchMedia`-/`ResizeObserver`-Stubs, `afterEach(cleanup)`.
 
-**Tab 2 — Aktionen** (alle Buttons manuell, mit RBAC-Gate über `<PermissionGate>`)
+**`tsconfig.json`** ergänzen: `types: ["vite/client","vitest/globals","@testing-library/jest-dom"]`.
 
-| Button                    | Permission                | Bestätigung | Zusatz |
-|---------------------------|---------------------------|-------------|--------|
-| Verbindung testen         | `azure.connection.test`   | nein        | — |
-| Datenbank aufbauen        | `azure.database.build`    | **ja**, Text-Eingabe „AUFBAUEN"| Warnung: erstellt/aktualisiert Schema |
-| Nach Azure exportieren    | `azure.export`            | ja          | Hinweis „überschreibt Azure-Daten" |
-| Aus Azure importieren     | `azure.import` + `backup.restore` | **ja, mehrstufig** | Erzwingt Vorschau + Backup |
-| Historie leeren (lokal)   | `azure.connection.test`   | ja          | löscht nur lokale Anzeige-Historie |
+## 3. Struktur
 
-Regeln pro Button:
-- Ohne Permission: Button **nicht sichtbar** (nicht nur disabled) — via `<PermissionGate>`.
-- `azure.allowed === false` (DEV / fehlende ENV): Buttons für „Datenbank aufbauen / Export / Import / Verbindung testen" sind sichtbar aber **disabled** mit Tooltip „Azure ist in diesem Modus nicht verfügbar – siehe Status".
-- Jede Aktion ist idempotent gestartet: kein Auto-Retry, kein Polling, keine Intervalle. Erst nach Klick.
-
-**Tab 3 — Historie**
-- Drei Unter-Tabs: Verbindungstests / Exporte / Importe
-- Tabelle: Zeitpunkt, Auslöser (User), Ergebnis (ok/failed), Dauer, Kurzmeldung
-- Quelle: `azure-history-store` (lokal, secret-frei). Später ersetzbar durch `/api/status`-Daten.
-
-## 4. Import-Flow (verpflichtend Vorschau + Backup)
-
-```text
-Klick „Aus Azure importieren"
-  → 1. Confirm-Dialog: Warnung „überschreibt lokale Daten"
-  → 2. `azureService.fetchImportPreview()` (Stub liefert Beispiel-Diff)
-  → 3. AzureImportPreviewDialog zeigt: Anzahl neu/aktualisiert/gelöscht, Konfliktliste
-  → 4. Pflicht-Checkbox „Ich habe die Vorschau geprüft"
-  → 5. Automatisch `BackupService.createBackup('pre-azure-import')` (bestehender Service)
-       → Anzeige „Backup erstellt: <id>"
-  → 6. Zweiter Confirm mit Textbestätigung „IMPORTIEREN"
-  → 7. `azureService.runImport()` (Stub) → Ergebnis in Historie
 ```
-Bricht der Nutzer irgendwo ab, passiert nichts. Kein Schritt läuft automatisch ohne vorherigen Klick.
-
-## 5. Service-Fassade `src/lib/azure/azure-service.ts`
-
-Reine Frontend-Fassade — ruft später `/api/azure/*`. Jetzt nur Typen + Stubs, die klar mit `NotImplementedError` oder Mock-Daten antworten, damit die UI vollständig testbar ist:
-
-```ts
-export const azureService = {
-  getStatus(): Promise<AzureStatus>            // proxied auf /api/status Payload
-  testConnection(): Promise<AzureActionResult> // Stub: „not implemented"
-  buildDatabase(): Promise<AzureActionResult>
-  runExport(): Promise<AzureActionResult>
-  fetchImportPreview(): Promise<ImportPreview>
-  runImport(opts:{backupId:string}): Promise<AzureActionResult>
-};
+src/__tests__/
+  setup.ts
+  fixtures/
+    activities.ts        // makeActivity(overrides)
+    users.ts             // makeUser(role)
+  lib/
+    time-period.test.ts
+    rbac.test.ts
+    export-data.test.ts
+    user-management.test.ts
+  components/
+    PermissionGate.test.tsx      // statt Dashboard/TaskEditor
+  integration/
+    exports.test.ts              // json-export round-trip
+    import.test.ts               // json-import + Schema-Validation
 ```
 
-Alle Methoden fangen Fehler intern und geben `{ ok:false, message }` zurück — kein throw ins UI, damit Azure-Ausfall das Dashboard nie crasht.
+**Alternative umgesetzt:**
+- **kein** `Dashboard.test.tsx` / `TaskEditor.test.tsx` (TaskEditor existiert nicht; Dashboard-Route braucht Router/Query/Portal-Setup → hoher Wartungsaufwand, geringer Nutzen). Ersatz: `PermissionGate.test.tsx` als sauberer, deterministischer UI-Einstieg.
+- E2E-Smoke (Playwright, bereits im Sandbox verfügbar) als **Folge-Iteration** vorgemerkt, nicht Teil dieses Prompts.
 
-## 6. Sichtbarkeit / Robustheit
+## 4. Tests (≥ 20)
 
-- Der neue Bereich lebt komplett in einem lazy geladenen Dialog; ein Fehler beim Import der Azure-Komponenten wird per `ErrorBoundary` in einer Not-configured-Kachel gefangen.
-- Kein `useEffect`-Auto-Fetch außer einmaligem Statuslesen beim Dialog-Öffnen (kein Intervall).
-- Keine Secrets im UI, keine ENV-Werte, nur Booleans/Namen (analog `SystemStatusPayload`).
+**time-period.test.ts** (Ziel ≥ 80 % Coverage):
+- `getWorkingDaysOfMonth`: Standardmonat, Mai (1.5. Feiertag), Dezember (25./26.), Feb 2024 (Schaltjahr, 29 Tage), Feb 2025 (28).
+- `germanHolidays`: Karfreitag 2025 = 18.4., Ostermontag 2024 = 1.4., Christi Himmelfahrt 2025 = 29.5.
+- `calculateMonthlyTargetHours`: Vollzeit 168 h, Teilzeit 50 %, custom `DailyTargetFn`.
+- `calculateWeeklyTargetHours`: normale KW und KW mit Feiertag.
+- `calculateUtilization`: Target 0 → 0 %, Overload > 100 %.
+- `sumActivitiesInRange`, `buildChartBuckets` Woche & Monat, `periodKey`/`getPeriodRangeByKey` Round-Trip.
 
-## 7. Dokumentation & Changelog (Pflicht laut Core-Memory)
+**rbac.test.ts**:
+- `can(null,…)` → false.
+- Matrix-Invarianten: `azure.database.build` ⊆ {systemadministrator}; `azure.import ⊆ azure.export`; `viewer`/`customer` ohne `*.edit`/`azure.*`.
+- `requirePermission` wirft, `canAny`/`canAll`.
 
-- Neuer HelpTopic `azure-daten-service` in `src/lib/help-documentation.ts` (Kategorie „Betrieb", RBAC: alle Rollen mit `systemstatus.view`), `lastUpdated` aktualisiert.
-- Bestehende Topics „Azure Servicebereich" / „Azure Verbindung testen" / „Nach Azure exportieren" / „Aus Azure importieren" / „Konflikthandling" / „Backup vor Import" bekommen einen Verweis auf den neuen Dialog.
-- `CHANGELOG.md`: neue Version mit Bullet „Azure-Daten-Servicebereich (UI + Service-Fassade, keine Backend-Logik)".
-- `bun run docs:check` wird nach der Umsetzung ausgeführt.
+**export-data.test.ts** / **user-management.test.ts**: Serialize→Parse Round-Trip, Rollen-Defaults, Validierungen.
 
-## 8. Check-10 Selbstprüfung (erfüllt durch obiges)
+**integration/exports.test.ts**, **integration/import.test.ts**: JSON-Export/Import Pipeline, gültige & ungültige Payloads, fehlende Pflichtfelder → Fehlerpfad.
 
-- Keine Auto-Aktion: alle Aufrufe hinter Buttons, kein Interval/Polling.
-- ENV-Status: Tab „Status" zeigt `envValidation` + fehlende Namen.
-- Import: Vorschau + Pflicht-Backup + doppelte Bestätigung.
-- RBAC: `<PermissionGate>` pro Button, unsichtbar ohne Permission.
-- Dashboard-Resilienz: Lazy Dialog + ErrorBoundary + defensiver Service.
-- Fehlende Azure-Config: klare „Not configured"-Badges statt Fehler.
+**PermissionGate.test.tsx**: Kinder gerendert bei erlaubter Permission, `fallback` sonst — `useCurrentUser` gemockt.
 
-## 9. Kritisches Feedback / Alternativen
+Konvention: `should_<verhalten>_when_<kontext>`, AAA-Kommentare, deterministische Fixtures (kein Faker/Zufall).
 
-- **Alternative A (empfohlen langfristig):** eigener Route `/service/azure` statt Dialog — bessere Deep-Links, sauberere URL, einfachere Tests. Für den jetzigen Rahmen (Servicebereich = Header-Dialoge) bleibt der Dialog konsistent; Migration zur Route ist später ein 1:1-Umzug der Panels.
-- **Alternative B:** Historie serverseitig via `/api/azure/history` statt localStorage. Sauberer, aber erfordert Backend-Arbeit — bewusst zurückgestellt bis zur echten Anbindung.
-- **Warnung:** „Datenbank aufbauen" ist potenziell destruktiv. Sollte in einer späteren Iteration in „Schema anwenden (idempotent)" umbenannt und mit Dry-Run-Vorschau versehen werden.
+## 5. Scripts
 
-Umfang dieses Prompts: **UI + Service-Fassade + Doku**, keine echte Azure-Kommunikation.
+```json
+"test": "vitest run",
+"test:watch": "vitest",
+"test:ui": "vitest --ui",
+"test:coverage": "vitest run --coverage"
+```
+
+`test` läuft im Run-Mode (CI-tauglich, kein Watch-Hang). `test:watch` liefert das interaktive Verhalten.
+
+## 6. CI (`.github/workflows/ci.yml`)
+
+Neuer Step nach Lint, vor Build:
+
+```yaml
+- name: Test
+  run: bun run test:coverage
+- name: Upload coverage
+  if: always()
+  uses: actions/upload-artifact@v4
+  with:
+    name: coverage
+    path: coverage/
+```
+
+Codecov bewusst weggelassen (Token/Account-Setup Nutzer-Freigabe nötig; auf Zuruf nachrüstbar).
+
+## 7. Doku-Sync-Pflicht
+
+- Neuer HelpTopic „Tests & Qualitätssicherung" in `src/lib/help-documentation.ts` (`lastUpdated` gesetzt).
+- `CHANGELOG.md`-Eintrag (neue Minor-Version) mit Bullet zur Test-Infrastruktur.
+- `bun run docs:check` grün.
+
+## 8. Umgesetzte Alternativvorschläge (aus letzter Runde)
+
+1. **Kein Dashboard-/TaskEditor-Snapshot** → PermissionGate-Test + geplante Playwright-Smoke.
+2. **`vitest run` statt `vitest`** als `test`-Script (CI-safe).
+3. **Nur per-File-Threshold** für `time-period.ts` statt globaler 80 %-Gate (verhindert Rot-CI ohne Sicherheitsgewinn).
+4. **jsdom** beibehalten (Radix/Portale robuster als happy-dom).
+5. **Deterministische Fixture-Factories** statt Zufallsdaten.
+6. **Mocks bei Bedarf** (`vi.mock` für `azure-service`/`syncService`) — erst wenn Integrationstests sie berühren, Iteration 1 mock-frei.
+
+## 9. Done-Kriterien
+
+- `bun run test` grün, ≥ 20 Tests.
+- `bun run test:coverage` erzeugt Report; `time-period.ts` ≥ 80 %.
+- CI-Job „Test" blockt bei Rot (Branch-Protection aktiviert der Nutzer in GitHub-Settings).
+- Handbuch + CHANGELOG aktualisiert, `docs:check` grün.
+
+## 10. Nicht enthalten (bewusst)
+
+Playwright/E2E, MSW, Visual Regression, Mutation Testing — separate Iterationen.

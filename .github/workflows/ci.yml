@@ -35,5 +35,15 @@ jobs:
       - name: RBAC matrix check
         run: bun run rbac:check
 
+      - name: Test (with coverage)
+        run: bun run test:coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
       - name: Build (production)
         run: bun run build
