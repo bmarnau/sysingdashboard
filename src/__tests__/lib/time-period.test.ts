@@ -55,7 +55,7 @@ describe("getWorkingDaysOfMonth", () => {
     expect(isoDates).not.toContain("2025-05-29");
     expect(isoDates).not.toContain("2025-05-03"); // Samstag
     expect(isoDates).not.toContain("2025-05-04"); // Sonntag
-    expect(days.length).toBe(19);
+    expect(days.length).toBe(20);
   });
 
   it("should_handleLeapYear_when_february2024", () => {
