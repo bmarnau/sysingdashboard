@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.20.0 - 2026-07-04
+
+- Test-Infrastruktur eingeführt: **Vitest + @testing-library/react** mit jsdom, `@testing-library/jest-dom` und v8-Coverage. Neue Skripte `test`, `test:watch`, `test:ui`, `test:coverage`.
+- Neue Test-Struktur unter `src/__tests__/` mit deterministischen Fixture-Factories (Activities, Users) und **61 Tests** in 7 Dateien: `time-period` (20), `rbac` (13), `user-management` (13), `export-data` (5), `PermissionGate` (4), Integrationstests für Export (2) und Import-Schema-Validation (4).
+- Per-File-Coverage-Threshold für `src/lib/time-period.ts` (≥ 80 %) — bewusst kein globaler Gate.
+- CI-Pipeline (`.github/workflows/ci.yml`) erweitert: Tests laufen nach Lint/RBAC und vor Build; Coverage-Report wird als Artifact hochgeladen. Merge blockiert, wenn Tests rot sind.
+- Neues Handbuch-Kapitel **„Tests & Qualitätssicherung"** ergänzt.
+
 ## 1.19.0 - 2026-07-02
 
 - Neuer Servicebereich **Azure Daten** (Service → „Azure Daten…") mit drei Tabs: **Status**, **Aktionen** und **Historie**. UI- und Service-Fassade fertig, Backend-Anbindung folgt später (Stubs antworten `not implemented`, ohne zu werfen).
