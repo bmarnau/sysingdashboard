@@ -607,7 +607,7 @@ export const BackupService = {
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       errors.push(message);
-      console.error("[Backup] fehlgeschlagen:", err);
+      logger.error("Backup failed", new BackupError("BACKUP_FAILED", message, { cause: err, context: { manual, fileName } }), { manual, fileName });
 
       const logEntry: BackupLogEntry = {
         id,
@@ -634,7 +634,7 @@ export const BackupService = {
         .map(({ blob: _b, ...meta }) => meta)
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     } catch (err) {
-      console.error("[Backup] Liste konnte nicht geladen werden:", err);
+      logger.error("Backup list could not be loaded", err);
       return [];
     }
   },
@@ -682,7 +682,7 @@ export const BackupService = {
       if (lastDay === today) return;
       // Nicht blockierend
       void this.createBackup({ manual: false }).catch((err) => {
-        console.error("[Backup] geplanter Lauf fehlgeschlagen:", err);
+        logger.error("Scheduled backup failed", err, { manual: false });
       });
     };
 
