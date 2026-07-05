@@ -554,6 +554,45 @@ const generatedTopics: HelpTopic[] = [
     content: buildChangelogContent(),
   },
   {
+    id: "fehlerbehandlung-logging",
+    title: "Fehlerbehandlung & Logging",
+    category: "Sicherheit",
+    keywords: [
+      "Logger",
+      "Logging",
+      "Fehler",
+      "Error",
+      "DashboardError",
+      "SyncError",
+      "ImportError",
+      "BackupError",
+      "IndexedDB",
+      "DevTools",
+    ],
+    lastUpdated: "2026-07-05",
+    content: `## Zentrale Fehlerbehandlung
+Alle kritischen Services (Sync, Import/Export, Backup, Azure) werfen ausschließlich Instanzen von \`DashboardError\` (bzw. den Subklassen \`SyncError\`, \`ValidationError\`, \`ImportError\`, \`ExportError\`, \`AzureError\`, \`BackupError\`, \`RbacError\`). Jeder Fehler trägt einen stabilen \`code\` (z. B. \`SYNC_MISSING_SECRETS\`, \`BACKUP_FAILED\`) sowie einen strukturierten \`context\`.
+
+## Logger
+\`src/lib/logger.ts\` ist die einzige Stelle im Frontend, an der \`console.*\` erlaubt ist. Alle anderen Services rufen \`logger.debug\` / \`.info\` / \`.warn\` / \`.error\` — das wird durch \`bun run lint:no-console\` in der CI geprüft.
+
+- **DEV**: schreibt in die Browser-Console.
+- **PROD**: hält die letzten 500 Einträge im Speicher-Ringpuffer und spiegelt sie asynchron in IndexedDB (\`dashboard-logs\`, Rotation nach 1000 Zeilen / 7 Tagen).
+- **Secret-Redaction**: Keys mit Namen wie \`token\`, \`secret\`, \`password\`, \`authorization\`, \`bearer\`, \`apikey\` sowie JWT-ähnliche Strings werden vor dem Sink-Write als \`[REDACTED]\` maskiert.
+
+## Backend-Logger
+\`backend/services/logger.mjs\` bietet die gleiche API (nur Console-Sink) für Node/Worker. \`syncService.mjs\` nutzt ihn ausschließlich.
+
+## useSafeAsync-Hook
+\`src/hooks/useSafeAsync.ts\` kapselt Ad-hoc-Async-Handler in Komponenten. Er fängt Fehler, loggt automatisch \`logger.error\` und stellt \`{ data, error, isError, isLoading, execute, reset }\` bereit — Ersatz für rohe \`try/catch\`-Blöcke in Buttons.
+
+## Zugriff auf Logs (Entwickler)
+In DEV liegen alle Einträge zusätzlich unter \`window.__dashboardLogger.getRecent()\` — nützlich zum Debuggen ohne Netzwerkzugriff.
+
+## Tests
+Fehler- und Logging-Verhalten ist in \`src/__tests__/lib/errors.test.ts\`, \`logger.test.ts\` und \`src/__tests__/hooks/useSafeAsync.test.tsx\` abgesichert (Redaction, Ringpuffer-Rotation, Subklassen-Guards).`,
+  },
+  {
     id: "backup",
     title: "Backup",
     category: "Service",

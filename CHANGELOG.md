@@ -13,6 +13,16 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.21.0 - 2026-07-05
+
+- Zentraler **Logger** (`src/lib/logger.ts`) mit Level `debug|info|warn|error`, In-Memory-Ringpuffer (500 Einträge), asynchronem IndexedDB-Sink (`dashboard-logs`, Rotation nach 1000 Zeilen / 7 Tagen) und automatischer Secret-Redaction (Token/Password/Authorization/Bearer/API-Key, JWT-ähnliche Strings). ESM-Pendant `backend/services/logger.mjs` für Node/Worker.
+- Neue **Error-Klassen** (`src/lib/errors.ts`): `DashboardError` + `SyncError`, `ValidationError`, `ImportError`, `ExportError`, `AzureError`, `BackupError`, `RbacError` mit stabilen `code`-Feldern und `toJSON()` für sicheres Logging.
+- Kritische Services umgestellt: `backend/services/syncService.mjs` wirft `SyncError` mit Codes, `src/lib/backup-service.ts` nutzt `logger.*` + `BackupError`, `src/lib/azure/azure-service.ts` loggt Stub-Aufrufe.
+- Neuer Hook **`useSafeAsync`** (`src/hooks/useSafeAsync.ts`) für Ad-hoc-Async-Handler in Komponenten mit automatischem Logging.
+- CI-Guard **`lint:no-console`** (`scripts/check-no-console.mjs`) blockiert direkte `console.*`-Aufrufe in `src/lib/backup-service.ts`, `src/lib/json-import-service.ts`, `src/lib/azure/**` und `backend/services/**`. Nur die drei Logger-Dateien sind ausgenommen.
+- 14 zusätzliche Tests (`errors.test.ts`, `logger.test.ts`, `useSafeAsync.test.tsx`) — Testsumme ≥ 75.
+- Neues Handbuch-Kapitel **„Fehlerbehandlung & Logging"**.
+
 ## 1.20.0 - 2026-07-04
 
 - Test-Infrastruktur eingeführt: **Vitest + @testing-library/react** mit jsdom, `@testing-library/jest-dom` und v8-Coverage. Neue Skripte `test`, `test:watch`, `test:ui`, `test:coverage`.
