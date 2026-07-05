@@ -17,7 +17,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:examples": "node scripts/test-example-files.mjs",
-    "rbac:check": "node scripts/check-rbac.mjs"
+    "rbac:check": "node scripts/check-rbac.mjs",
+    "lint:no-console": "node scripts/check-no-console.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.42.3",
