@@ -1,127 +1,99 @@
+## Ziel
 
-# Testing-Infrastruktur (Vitest + Testing Library) — inkl. Alternativvorschläge
+Einheitlicher Logger + Error-Class-Layer, in kritische Services eingezogen, mit Tests, DevTools-Zugriff und aktualisiertem Handbuch/CI.
 
-Fokus **Geschäftslogik & Sicherheit zuerst**. UI-Tests bewusst minimal, keine fragilen Route-Snapshots.
+## 1. Logger (`src/lib/logger.ts`)
 
-## 1. Dependencies (dev)
+- Levels: `debug | info | warn | error`, jeweils mit `context?: Record<string, unknown>`.
+- Sinks:
+  - **DEV** (`import.meta.env.DEV`): `console.debug/info/warn/error` mit Stack.
+  - **PROD**: Ringpuffer im Speicher (max 500 Einträge) + persistiert in **IndexedDB** (Store `logs`, Rotation nach 1000 Zeilen / 7 Tagen). Fallback auf `localStorage`, wenn IndexedDB fehlt (SSR / Worker → No-Op).
+- SSR-safe: Sink wird lazy initialisiert, im Worker/SSR nur `console`.
+- **Secret-Redaction**: gemeinsame Utility `redact(context)` maskiert Keys mit `/token|secret|key|password|authorization|bearer/i` als `"[REDACTED]"`; wird vor jedem Sink-Write aufgerufen.
+- Öffentliche API zusätzlich:
+  - `logger.getRecent(level?)` → Buffer-Read für DevTools
+  - `logger.clear()` → wipe (nur DEV oder mit RBAC `system.debug`)
+  - Bei App-Start `window.__dashboardLogger = logger` nur wenn `import.meta.env.DEV`.
 
-```
-vitest @vitest/coverage-v8 @vitest/ui
-@testing-library/react @testing-library/user-event @testing-library/jest-dom
-jsdom
-```
+## 2. Error-Klassen (`src/lib/errors.ts`)
 
-## 2. Konfiguration
+- `DashboardError extends Error { code: string; context?: Record<string, unknown>; cause?: unknown }` mit `name = 'DashboardError'` und `toJSON()` für Logs.
+- Subklassen: `SyncError`, `ValidationError`, `ImportError`, `ExportError`, `AzureError`, `BackupError`, `RbacError`.
+- Helper `isDashboardError(x)`, `wrapError(code, message, cause, ctx)`.
 
-**`vitest.config.ts`** (eigenständig, damit Cloudflare-Plugin nicht in Tests lädt):
-- `plugins: [react(), tsconfigPaths()]`
-- `test.environment = 'jsdom'`, `globals: true`
-- `setupFiles: ['src/__tests__/setup.ts']`
-- `include: ['src/__tests__/**/*.{test,spec}.{ts,tsx}']`
-- `coverage: { provider: 'v8', reporter: ['text','html','lcov'], include: ['src/lib/**','src/hooks/**'], exclude: ['**/*.d.ts','src/routeTree.gen.ts'] }`
-- **Per-File-Threshold** für `src/lib/time-period.ts` ≥ 80 % (keine globalen Gates → siehe Kritik).
+## 3. Service-Integration
 
-**`src/__tests__/setup.ts`**: `@testing-library/jest-dom/vitest`, `matchMedia`-/`ResizeObserver`-Stubs, `afterEach(cleanup)`.
+Pattern überall: try → `logger.info` bei Erfolg mit Zähler/IDs, catch → `logger.error(msg, err, ctx)` + `throw new XxxError(CODE, msg, { cause, ...ctx })`. Keine `console.*` mehr, keine Secrets im Context.
 
-**`tsconfig.json`** ergänzen: `types: ["vite/client","vitest/globals","@testing-library/jest-dom"]`.
+Betroffene Dateien:
+- `backend/services/syncService.mjs` — ESM-Variante des Loggers (`backend/services/logger.mjs`, gleiche API, nur Console-Sink, da Worker/Node). `runSync` gibt strukturierte Fehler zurück; `SyncError`-Äquivalent via `code`-Feld.
+- `src/lib/json-import-service.ts` — Wrap in `ImportError` / `ValidationError` je nach Schritt (Parse / Schema / Merge).
+- `src/lib/backup-service.ts` — `BackupError` (create/restore/list), Kontext: `manual`, `recordId`.
+- `src/lib/azure/azure-service.ts` — bereits kanonisch für Aktionen → auf `AzureError` + Logger umstellen (Historie-Einträge behalten).
 
-## 3. Struktur
+Nicht angefasst: reine UI-Komponenten, `time-period.ts` (pur), Tests.
 
-```
-src/__tests__/
-  setup.ts
-  fixtures/
-    activities.ts        // makeActivity(overrides)
-    users.ts             // makeUser(role)
-  lib/
-    time-period.test.ts
-    rbac.test.ts
-    export-data.test.ts
-    user-management.test.ts
-  components/
-    PermissionGate.test.tsx      // statt Dashboard/TaskEditor
-  integration/
-    exports.test.ts              // json-export round-trip
-    import.test.ts               // json-import + Schema-Validation
-```
+## 4. React-Hook (`src/hooks/useSafeAsync.ts`)
 
-**Alternative umgesetzt:**
-- **kein** `Dashboard.test.tsx` / `TaskEditor.test.tsx` (TaskEditor existiert nicht; Dashboard-Route braucht Router/Query/Portal-Setup → hoher Wartungsaufwand, geringer Nutzen). Ersatz: `PermissionGate.test.tsx` als sauberer, deterministischer UI-Einstieg.
-- E2E-Smoke (Playwright, bereits im Sandbox verfügbar) als **Folge-Iteration** vorgemerkt, nicht Teil dieses Prompts.
+- `useSafeAsync<T>(fn)` → `{ execute, data, error, isError, isLoading, reset }`.
+- Setzt `error` als `Error`; loggt mit `logger.error('useSafeAsync failed', err, { fn: fn.name })`.
+- Nicht als Ersatz für TanStack Query gedacht — nur für Ad-hoc-Handler (z. B. Azure-Panel-Buttons).
 
-## 4. Tests (≥ 20)
+## 5. DevTools
 
-**time-period.test.ts** (Ziel ≥ 80 % Coverage):
-- `getWorkingDaysOfMonth`: Standardmonat, Mai (1.5. Feiertag), Dezember (25./26.), Feb 2024 (Schaltjahr, 29 Tage), Feb 2025 (28).
-- `germanHolidays`: Karfreitag 2025 = 18.4., Ostermontag 2024 = 1.4., Christi Himmelfahrt 2025 = 29.5.
-- `calculateMonthlyTargetHours`: Vollzeit 168 h, Teilzeit 50 %, custom `DailyTargetFn`.
-- `calculateWeeklyTargetHours`: normale KW und KW mit Feiertag.
-- `calculateUtilization`: Target 0 → 0 %, Overload > 100 %.
-- `sumActivitiesInRange`, `buildChartBuckets` Woche & Monat, `periodKey`/`getPeriodRangeByKey` Round-Trip.
+- Neuer Reiter im bestehenden `SystemStatusDialog`: **„Logs“** (nur mit Permission `system.debug`, sonst versteckt). Zeigt `logger.getRecent()`, Filter nach Level, Copy-JSON, „Löschen“-Button.
+- Kein neuer Dialog, keine neue Route.
 
-**rbac.test.ts**:
-- `can(null,…)` → false.
-- Matrix-Invarianten: `azure.database.build` ⊆ {systemadministrator}; `azure.import ⊆ azure.export`; `viewer`/`customer` ohne `*.edit`/`azure.*`.
-- `requirePermission` wirft, `canAny`/`canAll`.
+## 6. Tests (`src/__tests__/lib/`)
 
-**export-data.test.ts** / **user-management.test.ts**: Serialize→Parse Round-Trip, Rollen-Defaults, Validierungen.
+- `logger.test.ts`: Level-Filter, Redaction (Token/Password/Bearer), Ringpuffer-Rotation, No-Op im SSR-Fall (kein `window`).
+- `errors.test.ts`: `DashboardError` erhält `code`/`context`/`cause`, `toJSON` ohne Secret-Leak, `isDashboardError` guard.
+- `useSafeAsync.test.tsx`: Erfolg setzt `data`, Wurf setzt `error` und ruft Logger (via `vi.spyOn`), `reset()` leert State.
+- Erweiterung `import.test.ts` / `exports.test.ts`: Fehlerpfade werfen jetzt `ImportError`/`ExportError` mit erwartetem `code`.
+- Erwartete Test-Anzahl steigt von 61 auf ≥ 75.
 
-**integration/exports.test.ts**, **integration/import.test.ts**: JSON-Export/Import Pipeline, gültige & ungültige Payloads, fehlende Pflichtfelder → Fehlerpfad.
+## 7. CI (`.github/workflows/ci.yml`)
 
-**PermissionGate.test.tsx**: Kinder gerendert bei erlaubter Permission, `fallback` sonst — `useCurrentUser` gemockt.
+- Neuer Step nach `test:coverage`: `bun run lint:no-console` — kleiner Node-Skript-Check `scripts/check-no-console.mjs`, der in `src/lib/**` und `backend/services/**` (außer `logger.*`) keine `console.log/info/warn/error/debug` erlaubt. Fails red.
+- `package.json` bekommt Script `lint:no-console`.
+- Bestehende `docs:check` bleibt.
 
-Konvention: `should_<verhalten>_when_<kontext>`, AAA-Kommentare, deterministische Fixtures (kein Faker/Zufall).
+## 8. Handbuch + CHANGELOG (Pflicht)
 
-## 5. Scripts
-
-```json
-"test": "vitest run",
-"test:watch": "vitest",
-"test:ui": "vitest --ui",
-"test:coverage": "vitest run --coverage"
-```
-
-`test` läuft im Run-Mode (CI-tauglich, kein Watch-Hang). `test:watch` liefert das interaktive Verhalten.
-
-## 6. CI (`.github/workflows/ci.yml`)
-
-Neuer Step nach Lint, vor Build:
-
-```yaml
-- name: Test
-  run: bun run test:coverage
-- name: Upload coverage
-  if: always()
-  uses: actions/upload-artifact@v4
-  with:
-    name: coverage
-    path: coverage/
-```
-
-Codecov bewusst weggelassen (Token/Account-Setup Nutzer-Freigabe nötig; auf Zuruf nachrüstbar).
-
-## 7. Doku-Sync-Pflicht
-
-- Neuer HelpTopic „Tests & Qualitätssicherung" in `src/lib/help-documentation.ts` (`lastUpdated` gesetzt).
-- `CHANGELOG.md`-Eintrag (neue Minor-Version) mit Bullet zur Test-Infrastruktur.
+- Neuer HelpTopic **`fehlerbehandlung-logging`** in `src/lib/help-documentation.ts` (was Logger loggt, wie DevTools-Reiter benutzt wird, welche Error-Codes es gibt).
+- Erweitere Topic `tests-qualitaetssicherung` um Hinweis auf Error-Tests.
+- `CHANGELOG.md`: neue Version `1.21.0 - 2026-07-05` mit Bullets.
 - `bun run docs:check` grün.
 
-## 8. Umgesetzte Alternativvorschläge (aus letzter Runde)
+## Technische Details
 
-1. **Kein Dashboard-/TaskEditor-Snapshot** → PermissionGate-Test + geplante Playwright-Smoke.
-2. **`vitest run` statt `vitest`** als `test`-Script (CI-safe).
-3. **Nur per-File-Threshold** für `time-period.ts` statt globaler 80 %-Gate (verhindert Rot-CI ohne Sicherheitsgewinn).
-4. **jsdom** beibehalten (Radix/Portale robuster als happy-dom).
-5. **Deterministische Fixture-Factories** statt Zufallsdaten.
-6. **Mocks bei Bedarf** (`vi.mock` für `azure-service`/`syncService`) — erst wenn Integrationstests sie berühren, Iteration 1 mock-frei.
+```text
+src/lib/
+  logger.ts            (neu)  Sink-Wahl, Redaction, IndexedDB-Adapter
+  errors.ts            (neu)  DashboardError + Subklassen
+  logger.indexeddb.ts  (neu)  isolierter IDB-Adapter (dynamisch importiert)
+backend/services/
+  logger.mjs           (neu)  ESM-Pendant (nur Console + Redaction)
+src/hooks/
+  useSafeAsync.ts      (neu)
+src/__tests__/lib/
+  logger.test.ts       (neu)
+  errors.test.ts       (neu)
+src/__tests__/hooks/
+  useSafeAsync.test.tsx (neu)
+scripts/
+  check-no-console.mjs (neu)
+```
 
-## 9. Done-Kriterien
+- Keine neuen Runtime-Dependencies.
+- IndexedDB-Zugriff via nativer `indexedDB`-API (Cloudflare-Worker-safe, weil Aufrufe nur clientseitig laufen — Guard `typeof indexedDB !== 'undefined'`).
+- Bestehendes `src/lib/error-capture.ts` bleibt (SSR-Kanal), Logger wird lediglich zusätzlich aufgerufen.
 
-- `bun run test` grün, ≥ 20 Tests.
-- `bun run test:coverage` erzeugt Report; `time-period.ts` ≥ 80 %.
-- CI-Job „Test" blockt bei Rot (Branch-Protection aktiviert der Nutzer in GitHub-Settings).
-- Handbuch + CHANGELOG aktualisiert, `docs:check` grün.
+## Done Criteria
 
-## 10. Nicht enthalten (bewusst)
-
-Playwright/E2E, MSW, Visual Regression, Mutation Testing — separate Iterationen.
+- Alle in §3 genannten Services rufen ausschließlich `logger.*` und werfen `DashboardError`-Subklassen.
+- `bun run test` grün, ≥ 75 Tests, neue Testdateien enthalten.
+- `bun run lint:no-console` grün und in CI verdrahtet.
+- DevTools-Reiter „Logs“ sichtbar für Rolle mit `system.debug`.
+- HelpTopic + CHANGELOG-Eintrag vorhanden, `bun run docs:check` grün.
+- Keine Secrets in geloggtem Context (durch Redaction + Test abgesichert).

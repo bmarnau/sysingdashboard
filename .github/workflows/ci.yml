@@ -35,6 +35,9 @@ jobs:
       - name: RBAC matrix check
         run: bun run rbac:check
 
+      - name: No-console guard
+        run: bun run lint:no-console
+
       - name: Test (with coverage)
         run: bun run test:coverage
 
