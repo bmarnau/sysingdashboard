@@ -17,6 +17,7 @@ import type {
   AzureActionResult,
   AzureImportPreview,
 } from "./types";
+import { logger } from "@/lib/logger";
 
 const NOT_IMPLEMENTED =
   "Azure-Backend ist in dieser Version noch nicht angebunden. Ausführung wurde nicht gestartet.";
@@ -45,6 +46,7 @@ function record({ actor, kind }: RunOpts, result: AzureActionResult): AzureActio
 
 function stub(kind: AzureActionKind, actor: string, message = NOT_IMPLEMENTED): AzureActionResult {
   const at = new Date().toISOString();
+  logger.warn("Azure action skipped (stub)", { kind, actor, reason: "not-implemented" });
   return record({ actor, kind }, { ok: false, message, at, durationMs: 0 });
 }
 
