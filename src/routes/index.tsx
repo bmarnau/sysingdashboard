@@ -341,18 +341,20 @@ function Dashboard() {
 
   useEffect(() => {
     UserManagementService.bootstrap();
-    const p = loadPersisted();
-    const rawProjects = p?.projects ?? dashboardData.projects;
-    const rawWPs = p?.workPackages ?? dashboardData.workPackages;
-    const rawActs = p?.activities ?? dashboardData.activities;
-    const projectIds = new Set(rawProjects.map((x) => x.id));
-    const normWPs = rawWPs.map((w) => normalizeWorkPackage(w, projectIds));
-    const wpIds = new Set(normWPs.map((w) => w.id));
-    const normActs = rawActs.map((a) => normalizeActivity(a, wpIds));
-    setEngineer(p?.engineer ?? dashboardData.engineer);
-    setProjects(rawProjects);
-    setWorkPackages(normWPs);
-    setActivities(normActs);
+    // Store einmalig hydratisieren (liest user-scoped Blob, storage-Event, User-Wechsel).
+    initDashboardPersistence();
+    // Nach Hydration: Referenzielle Integrität sicherstellen und normalisiert zurückschreiben.
+    const s = dashboardStore.getState();
+    const projectIds = new Set<string>(s.projects.map((x) => x.id));
+    const normWPs = s.workPackages.map((w) => normalizeWorkPackage(w, projectIds));
+    const wpIds = new Set<string>(normWPs.map((w) => w.id));
+    const normActs = s.activities.map((a) => normalizeActivity(a, wpIds));
+    dashboardStore.replaceAll({
+      engineer: s.engineer,
+      projects: s.projects,
+      workPackages: normWPs,
+      activities: normActs,
+    });
     setNow(new Date());
     try {
       const stored = window.localStorage.getItem(viewmodeKey());
@@ -383,6 +385,7 @@ function Dashboard() {
       /* ignore */
     }
   }, [hydrated, viewMode, periodOffset, showPerfReport]);
+
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
