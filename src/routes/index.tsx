@@ -251,11 +251,29 @@ function normalizeWorkPackage(w: WorkPackage, validProjectIds: Set<string>): Wor
 type Tab = "projekte" | "arbeitspakete" | "taetigkeiten" | "abrechnung";
 
 function Dashboard() {
-  const [projects, setProjects] = useState<Project[]>(dashboardData.projects);
-  const [workPackages, setWorkPackages] = useState<WorkPackage[]>(dashboardData.workPackages);
-  const [activities, setActivities] = useState<Activity[]>(dashboardData.activities);
-  const [engineerState, setEngineer] = useState<Engineer>(dashboardData.engineer);
+  // Domain-State kommt aus dem zentralen dashboardStore (useSyncExternalStore).
+  // UI-State (Dialoge, Suche, Menüs) bleibt bewusst lokal.
+  const projects = useProjects();
+  const workPackages = useWorkPackages();
+  const activities = useActivities();
+  const engineerState = useEngineer();
+
+  // Wrapper mit der gewohnten setState-Signatur (Wert oder Updater-Fn).
+  // Ziel: alle bestehenden Call-Sites bleiben unverändert.
+  type Updater<T> = T | ((prev: T) => T);
+  const applyUpdater = <T,>(u: Updater<T>, prev: T): T =>
+    typeof u === "function" ? (u as (p: T) => T)(prev) : u;
+  const setProjects = (u: Updater<Project[]>) =>
+    dashboardStore.setProjects(applyUpdater(u, dashboardStore.getState().projects));
+  const setWorkPackages = (u: Updater<WorkPackage[]>) =>
+    dashboardStore.setWorkPackages(applyUpdater(u, dashboardStore.getState().workPackages));
+  const setActivities = (u: Updater<Activity[]>) =>
+    dashboardStore.setActivities(applyUpdater(u, dashboardStore.getState().activities));
+  const setEngineer = (u: Updater<Engineer>) =>
+    dashboardStore.setEngineer(applyUpdater(u, dashboardStore.getState().engineer));
+
   const [hydrated, setHydrated] = useState(false);
+
 
   const [tab, setTab] = useState<Tab>("projekte");
   const [showNewMenu, setShowNewMenu] = useState(false);
