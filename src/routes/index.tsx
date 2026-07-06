@@ -147,27 +147,10 @@ const viewmodeKey = () => UserManagementService.userScopedKey(VIEWMODE_KEY_BASE)
 const periodKey = () => UserManagementService.userScopedKey(PERIOD_KEY_BASE);
 const perfReportKey = () => UserManagementService.userScopedKey(PERF_REPORT_KEY_BASE);
 
-type PersistedState = {
-  engineer: Engineer;
-  projects: Project[];
-  workPackages: WorkPackage[];
-  activities: Activity[];
-};
-
-function loadPersisted(): PersistedState | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(storageKey());
-    if (!raw) return null;
-    return JSON.parse(raw) as PersistedState;
-  } catch {
-    return null;
-  }
-}
-
 function newId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
+
 
 function fmtDate(s?: string) {
   if (!s) return "—";
