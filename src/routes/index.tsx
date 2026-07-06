@@ -397,17 +397,7 @@ function Dashboard() {
     return () => document.removeEventListener("mousedown", onDocClick);
   }, []);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      window.localStorage.setItem(
-        storageKey(),
-        JSON.stringify({ engineer: engineerState, projects, workPackages, activities }),
-      );
-    } catch {
-      /* ignore */
-    }
-  }, [hydrated, engineerState, projects, workPackages, activities]);
+  // (Domain-Persistenz übernimmt initDashboardPersistence() — debounced, kein Full-Blob-Write pro Keystroke mehr.)
 
   useEffect(() => {
     if (!hydrated) return;
@@ -417,11 +407,9 @@ function Dashboard() {
   const resetData = () => {
     if (!confirm("Lokale Daten zurücksetzen?")) return;
     window.localStorage.removeItem(storageKey());
-    setEngineer(dashboardData.engineer);
-    setProjects(dashboardData.projects);
-    setWorkPackages(dashboardData.workPackages);
-    setActivities(dashboardData.activities);
+    dashboardStore.reset();
   };
+
 
   const exportData = () => {
     const payload = {
