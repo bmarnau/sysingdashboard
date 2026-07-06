@@ -13,7 +13,17 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.22.0 - 2026-07-06
+
+- Zentraler **Dashboard-Store** (`src/lib/store/dashboard-store.ts`) für Domain-State (Projekte, Arbeitspakete, Tätigkeiten, Engineer) als Modul-Singleton mit Pub-Sub, ohne neue Runtime-Dependency (keine Zustand-/Redux-Bibliothek).
+- React-Bindings via `useSyncExternalStore` (`src/lib/store/useDashboardStore.ts`): selektor-basierte Hooks `useProjects`, `useWorkPackages`, `useActivities`, `useEngineer` — Consumer rendern nur bei Änderung ihres Slices.
+- **Persistenz-Layer** (`src/lib/store/dashboard-persistence.ts`) mit Debounce (300 ms) statt Full-Blob-Write bei jedem Tastendruck, `storage`-Event-Sync zwischen Tabs, Rehydrate bei Benutzerwechsel; Backwards-compatible zum bestehenden Storage-Key `northbit-dashboard-v2`.
+- `src/routes/index.tsx` liest jetzt aus dem Store; UI-State (Dialoge, Suche, Menüs) bleibt bewusst lokal. Prop-Interfaces zu Kind-Komponenten unverändert (Direct-Read-Migration folgt profilergesteuert).
+- 16 neue Tests (`dashboard-store`, `dashboard-persistence`, `useDashboardStore`) — Gesamt: 78 → 94.
+- Neues Handbuch-Kapitel `state-management` erläutert Store, Persistenz und DevTools-Zugriff (`window.__dashboardStore` nur im DEV-Build).
+
 ## 1.21.0 - 2026-07-05
+
 
 - Zentraler **Logger** (`src/lib/logger.ts`) mit Level `debug|info|warn|error`, In-Memory-Ringpuffer (500 Einträge), asynchronem IndexedDB-Sink (`dashboard-logs`, Rotation nach 1000 Zeilen / 7 Tagen) und automatischer Secret-Redaction (Token/Password/Authorization/Bearer/API-Key, JWT-ähnliche Strings). ESM-Pendant `backend/services/logger.mjs` für Node/Worker.
 - Neue **Error-Klassen** (`src/lib/errors.ts`): `DashboardError` + `SyncError`, `ValidationError`, `ImportError`, `ExportError`, `AzureError`, `BackupError`, `RbacError` mit stabilen `code`-Feldern und `toJSON()` für sicheres Logging.

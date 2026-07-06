@@ -69,6 +69,15 @@ import {
   deriveCounterpart,
   type EngineerTargetTimeModel,
 } from "@/lib/engineer-target-time";
+import { dashboardStore } from "@/lib/store/dashboard-store";
+import {
+  useActivities,
+  useEngineer,
+  useProjects,
+  useWorkPackages,
+} from "@/lib/store/useDashboardStore";
+import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -138,27 +147,10 @@ const viewmodeKey = () => UserManagementService.userScopedKey(VIEWMODE_KEY_BASE)
 const periodKey = () => UserManagementService.userScopedKey(PERIOD_KEY_BASE);
 const perfReportKey = () => UserManagementService.userScopedKey(PERF_REPORT_KEY_BASE);
 
-type PersistedState = {
-  engineer: Engineer;
-  projects: Project[];
-  workPackages: WorkPackage[];
-  activities: Activity[];
-};
-
-function loadPersisted(): PersistedState | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(storageKey());
-    if (!raw) return null;
-    return JSON.parse(raw) as PersistedState;
-  } catch {
-    return null;
-  }
-}
-
 function newId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
+
 
 function fmtDate(s?: string) {
   if (!s) return "—";
@@ -259,11 +251,29 @@ function normalizeWorkPackage(w: WorkPackage, validProjectIds: Set<string>): Wor
 type Tab = "projekte" | "arbeitspakete" | "taetigkeiten" | "abrechnung";
 
 function Dashboard() {
-  const [projects, setProjects] = useState<Project[]>(dashboardData.projects);
-  const [workPackages, setWorkPackages] = useState<WorkPackage[]>(dashboardData.workPackages);
-  const [activities, setActivities] = useState<Activity[]>(dashboardData.activities);
-  const [engineerState, setEngineer] = useState<Engineer>(dashboardData.engineer);
+  // Domain-State kommt aus dem zentralen dashboardStore (useSyncExternalStore).
+  // UI-State (Dialoge, Suche, Menüs) bleibt bewusst lokal.
+  const projects = useProjects();
+  const workPackages = useWorkPackages();
+  const activities = useActivities();
+  const engineerState = useEngineer();
+
+  // Wrapper mit der gewohnten setState-Signatur (Wert oder Updater-Fn).
+  // Ziel: alle bestehenden Call-Sites bleiben unverändert.
+  type Updater<T> = T | ((prev: T) => T);
+  const applyUpdater = <T,>(u: Updater<T>, prev: T): T =>
+    typeof u === "function" ? (u as (p: T) => T)(prev) : u;
+  const setProjects = (u: Updater<Project[]>) =>
+    dashboardStore.setProjects(applyUpdater(u, dashboardStore.getState().projects));
+  const setWorkPackages = (u: Updater<WorkPackage[]>) =>
+    dashboardStore.setWorkPackages(applyUpdater(u, dashboardStore.getState().workPackages));
+  const setActivities = (u: Updater<Activity[]>) =>
+    dashboardStore.setActivities(applyUpdater(u, dashboardStore.getState().activities));
+  const setEngineer = (u: Updater<Engineer>) =>
+    dashboardStore.setEngineer(applyUpdater(u, dashboardStore.getState().engineer));
+
   const [hydrated, setHydrated] = useState(false);
+
 
   const [tab, setTab] = useState<Tab>("projekte");
   const [showNewMenu, setShowNewMenu] = useState(false);
@@ -331,18 +341,20 @@ function Dashboard() {
 
   useEffect(() => {
     UserManagementService.bootstrap();
-    const p = loadPersisted();
-    const rawProjects = p?.projects ?? dashboardData.projects;
-    const rawWPs = p?.workPackages ?? dashboardData.workPackages;
-    const rawActs = p?.activities ?? dashboardData.activities;
-    const projectIds = new Set(rawProjects.map((x) => x.id));
-    const normWPs = rawWPs.map((w) => normalizeWorkPackage(w, projectIds));
-    const wpIds = new Set(normWPs.map((w) => w.id));
-    const normActs = rawActs.map((a) => normalizeActivity(a, wpIds));
-    setEngineer(p?.engineer ?? dashboardData.engineer);
-    setProjects(rawProjects);
-    setWorkPackages(normWPs);
-    setActivities(normActs);
+    // Store einmalig hydratisieren (liest user-scoped Blob, storage-Event, User-Wechsel).
+    initDashboardPersistence();
+    // Nach Hydration: Referenzielle Integrität sicherstellen und normalisiert zurückschreiben.
+    const s = dashboardStore.getState();
+    const projectIds = new Set<string>(s.projects.map((x) => x.id));
+    const normWPs = s.workPackages.map((w) => normalizeWorkPackage(w, projectIds));
+    const wpIds = new Set<string>(normWPs.map((w) => w.id));
+    const normActs = s.activities.map((a) => normalizeActivity(a, wpIds));
+    dashboardStore.replaceAll({
+      engineer: s.engineer,
+      projects: s.projects,
+      workPackages: normWPs,
+      activities: normActs,
+    });
     setNow(new Date());
     try {
       const stored = window.localStorage.getItem(viewmodeKey());
@@ -374,6 +386,7 @@ function Dashboard() {
     }
   }, [hydrated, viewMode, periodOffset, showPerfReport]);
 
+
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -384,17 +397,7 @@ function Dashboard() {
     return () => document.removeEventListener("mousedown", onDocClick);
   }, []);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      window.localStorage.setItem(
-        storageKey(),
-        JSON.stringify({ engineer: engineerState, projects, workPackages, activities }),
-      );
-    } catch {
-      /* ignore */
-    }
-  }, [hydrated, engineerState, projects, workPackages, activities]);
+  // (Domain-Persistenz übernimmt initDashboardPersistence() — debounced, kein Full-Blob-Write pro Keystroke mehr.)
 
   useEffect(() => {
     if (!hydrated) return;
@@ -404,11 +407,9 @@ function Dashboard() {
   const resetData = () => {
     if (!confirm("Lokale Daten zurücksetzen?")) return;
     window.localStorage.removeItem(storageKey());
-    setEngineer(dashboardData.engineer);
-    setProjects(dashboardData.projects);
-    setWorkPackages(dashboardData.workPackages);
-    setActivities(dashboardData.activities);
+    dashboardStore.reset();
   };
+
 
   const exportData = () => {
     const payload = {

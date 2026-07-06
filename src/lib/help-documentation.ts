@@ -593,6 +593,49 @@ In DEV liegen alle Einträge zusätzlich unter \`window.__dashboardLogger.getRec
 Fehler- und Logging-Verhalten ist in \`src/__tests__/lib/errors.test.ts\`, \`logger.test.ts\` und \`src/__tests__/hooks/useSafeAsync.test.tsx\` abgesichert (Redaction, Ringpuffer-Rotation, Subklassen-Guards).`,
   },
   {
+    id: "state-management",
+    title: "Zentrales State-Management",
+    category: "Technik",
+    keywords: [
+      "State",
+      "Store",
+      "Dashboard-Store",
+      "Persistenz",
+      "localStorage",
+      "useSyncExternalStore",
+      "Selektoren",
+      "Performance",
+    ],
+    lastUpdated: "2026-07-06",
+    content: `## Warum ein Store
+Der Domain-State (Projekte, Arbeitspakete, Tätigkeiten, Engineer-Profil) lebt zentral im \`dashboardStore\` (\`src/lib/store/dashboard-store.ts\`) — als Modul-Singleton mit Pub-Sub, ohne zusätzliche Bibliothek (kein Zustand, kein Redux). Damit verschwinden Prop-Drilling und der zuvor teure Full-Blob-Write pro Tastendruck.
+
+## Was NICHT im Store liegt
+UI-State (offene Dialoge, Suchtext, Menüs, ausgewählter Tab, Periodenoffset) bleibt bewusst lokal in den Komponenten. Nur echter Anwendungsdaten-Zustand wandert in den Store.
+
+## React-Bindings
+Komponenten binden über selektor-basierte Hooks an:
+- \`useProjects()\`, \`useWorkPackages()\`, \`useActivities()\`, \`useEngineer()\`
+- \`useProjectById(id)\`, \`useWorkPackageById(id)\`
+- \`useDashboardStore(selector)\` für eigene Selektoren.
+
+Intern nutzt jede Bindung \`useSyncExternalStore\`. Consumer rendern nur neu, wenn sich IHR Slice ändert — im Gegensatz zu naivem React-Context.
+
+## Persistenz
+\`src/lib/store/dashboard-persistence.ts\` sorgt für:
+- Einmalige Hydration beim App-Start (kompatibel zum bestehenden Storage-Key \`northbit-dashboard-v2\`, user-scoped).
+- Debounced Write (300 ms) statt Full-Blob-Effect bei jedem Zeichen.
+- Rehydrate bei Benutzerwechsel (\`subscribeUserChanges\`) und bei Änderungen aus anderen Tabs (\`storage\`-Event).
+- Fallback auf Fixture + \`logger.warn\` bei korruptem JSON.
+
+## DevTools-Zugriff
+Nur im DEV-Build ist der Store unter \`window.__dashboardStore\` erreichbar (getState / replaceAll / reset). In PROD ist der globale Verweis nicht gesetzt.
+
+## Tests
+\`src/__tests__/lib/store/\` deckt Store-Mutatoren, Referenz-Gleichheit unveränderter Slices, Persistenz-Debounce, Fallback-Verhalten und selektor-basierte Re-Render-Vermeidung ab.`,
+  },
+
+  {
     id: "backup",
     title: "Backup",
     category: "Service",
