@@ -69,6 +69,15 @@ import {
   deriveCounterpart,
   type EngineerTargetTimeModel,
 } from "@/lib/engineer-target-time";
+import { dashboardStore } from "@/lib/store/dashboard-store";
+import {
+  useActivities,
+  useEngineer,
+  useProjects,
+  useWorkPackages,
+} from "@/lib/store/useDashboardStore";
+import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
