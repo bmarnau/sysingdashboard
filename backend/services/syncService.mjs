@@ -42,11 +42,10 @@ export async function runSync({ source = "manual" } = {}) {
     } else {
       assertAzureAllowed();
       if (!has("AZURE_SQL_CONNECTION") || !has("AZURE_TABLE_CONNECTION")) {
-        throw new SyncError(
-          "SYNC_MISSING_SECRETS",
-          "Required Azure secrets are not configured",
-          { source, missing: ["AZURE_SQL_CONNECTION", "AZURE_TABLE_CONNECTION"] },
-        );
+        throw new SyncError("SYNC_MISSING_SECRETS", "Required Azure secrets are not configured", {
+          source,
+          missing: ["AZURE_SQL_CONNECTION", "AZURE_TABLE_CONNECTION"],
+        });
       }
       // TODO: echte Sync-Implementierung anbinden
       result = { mode: "live", recordsProcessed: 0, source };

@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createExportDTO, type ExportConfiguration } from "@/lib/export-data";
-import {
-  makeActivity,
-  makeEngineer,
-  makeProject,
-  makeWorkPackage,
-} from "../fixtures/activities";
+import { makeActivity, makeEngineer, makeProject, makeWorkPackage } from "../fixtures/activities";
 
 /**
  * Integration: Activities → DTO → JSON.stringify → JSON.parse

@@ -25,12 +25,7 @@ export function AzureStatusPanel() {
             Aggregiert aus dem Systemstatus (secret-frei). Keine automatischen Abfragen.
           </p>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={health.refresh}
-          disabled={health.inFlight}
-        >
+        <Button size="sm" variant="outline" onClick={health.refresh} disabled={health.inFlight}>
           <RefreshCw className={`size-4 ${health.inFlight ? "animate-spin" : ""}`} />
           Status aktualisieren
         </Button>
@@ -91,9 +86,7 @@ export function AzureStatusPanel() {
       <section className="rounded-md border border-border bg-muted/30 p-3">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Letzte Ereignisse</p>
         <ul className="mt-1 space-y-0.5">
-          <li>
-            Letzter Verbindungstest: {fmt(azure?.lastConnectionTestAt)}
-          </li>
+          <li>Letzter Verbindungstest: {fmt(azure?.lastConnectionTestAt)}</li>
           <li>Letzter Export nach Azure: {fmt(health.payload?.data?.lastAzureExportAt)}</li>
           <li>Letzter Import aus Azure: {fmt(health.payload?.data?.lastAzureImportAt)}</li>
         </ul>
@@ -102,15 +95,7 @@ export function AzureStatusPanel() {
   );
 }
 
-function StatusRow({
-  label,
-  ok,
-  value,
-}: {
-  label: string;
-  ok: boolean;
-  value?: string;
-}) {
+function StatusRow({ label, ok, value }: { label: string; ok: boolean; value?: string }) {
   return (
     <div className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2">
       <span className="text-muted-foreground">{label}</span>

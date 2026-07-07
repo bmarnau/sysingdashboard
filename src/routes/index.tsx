@@ -78,7 +78,6 @@ import {
 } from "@/lib/store/useDashboardStore";
 import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
 
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -150,7 +149,6 @@ const perfReportKey = () => UserManagementService.userScopedKey(PERF_REPORT_KEY_
 function newId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
-
 
 function fmtDate(s?: string) {
   if (!s) return "—";
@@ -274,7 +272,6 @@ function Dashboard() {
 
   const [hydrated, setHydrated] = useState(false);
 
-
   const [tab, setTab] = useState<Tab>("projekte");
   const [showNewMenu, setShowNewMenu] = useState(false);
   const [showServiceMenu, setShowServiceMenu] = useState(false);
@@ -386,7 +383,6 @@ function Dashboard() {
     }
   }, [hydrated, viewMode, periodOffset, showPerfReport]);
 
-
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -409,7 +405,6 @@ function Dashboard() {
     window.localStorage.removeItem(storageKey());
     dashboardStore.reset();
   };
-
 
   const exportData = () => {
     const payload = {
@@ -620,7 +615,7 @@ function Dashboard() {
   const resetPeriod = () => startSwitch(() => setPeriodOffset(0));
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground" suppressHydrationWarning>
       <header className="app-header sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-xl no-print">
         <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 sm:px-6">
           <div className="flex items-center gap-2">
@@ -650,10 +645,15 @@ function Dashboard() {
                 }}
                 onFocus={() => setSearchOpen(true)}
                 placeholder="Kunde, Tätigkeit, Arbeitspaket, Projekt…"
+                aria-label="Globale Suche"
+                type="search"
+                suppressHydrationWarning
                 className="h-10 w-full rounded-lg border border-input bg-secondary/40 pl-9 pr-8 text-sm outline-none transition focus:border-ring"
               />
               {searchQ && (
                 <button
+                  type="button"
+                  aria-label="Suche zurücksetzen"
                   onClick={() => {
                     setSearchQ("");
                     setSearchOpen(false);
@@ -824,13 +824,15 @@ function Dashboard() {
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setShowHelpMenu((v) => !v)}
                 title="Hilfe zu dieser Seite"
                 aria-label="Hilfe zu dieser Seite"
                 aria-expanded={showHelpMenu}
+                suppressHydrationWarning
                 className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
               >
-                <HelpCircle className="size-4" />
+                <HelpCircle className="size-4" aria-hidden="true" />
               </button>
               {showHelpMenu && (
                 <>
@@ -864,10 +866,15 @@ function Dashboard() {
             </div>
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setShowServiceMenu((v) => !v)}
+                aria-label="Einstellungen und Services"
+                aria-expanded={showServiceMenu}
+                title="Einstellungen"
+                suppressHydrationWarning
                 className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
               >
-                <Settings className="size-4" />
+                <Settings className="size-4" aria-hidden="true" />
               </button>
               {showServiceMenu && (
                 <>
@@ -1015,8 +1022,11 @@ function Dashboard() {
               )}
             </div>
             <button
+              type="button"
               onClick={() => setShowUserDialog(true)}
               title="Benutzer & Profile"
+              aria-label="Benutzer & Profile öffnen"
+              suppressHydrationWarning
               className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3 transition hover:bg-secondary"
             >
               {currentUser?.profileImage ? (

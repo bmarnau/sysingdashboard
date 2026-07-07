@@ -11,11 +11,7 @@
  * auch ohne `window` (SSR-sicher, No-Op im Server).
  */
 
-import type {
-  AzureActionKind,
-  AzureHistoryEntry,
-  AzureHistorySnapshot,
-} from "./types";
+import type { AzureActionKind, AzureHistoryEntry, AzureHistorySnapshot } from "./types";
 
 const STORAGE_KEY = "azure:history:v1";
 const MAX_PER_KIND = 50;

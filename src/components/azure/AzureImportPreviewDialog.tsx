@@ -93,8 +93,8 @@ export function AzureImportPreviewDialog({
             Import-Vorschau
           </DialogTitle>
           <DialogDescription className="text-warning">
-            Ein Import kann lokale Daten überschreiben. Bitte Vorschau prüfen und vor dem Weiter
-            ein Backup erstellen.
+            Ein Import kann lokale Daten überschreiben. Bitte Vorschau prüfen und vor dem Weiter ein
+            Backup erstellen.
           </DialogDescription>
         </DialogHeader>
 
@@ -112,7 +112,8 @@ export function AzureImportPreviewDialog({
                 <PreviewStat label="Löschen" value={preview.counts.toDelete} />
                 <PreviewStat label="Konflikte" value={preview.counts.conflicts} tone="warning" />
                 <p className="col-span-full text-xs text-muted-foreground">
-                  Bereich: {preview.scope} · erstellt {new Date(preview.generatedAt).toLocaleString("de-DE")}
+                  Bereich: {preview.scope} · erstellt{" "}
+                  {new Date(preview.generatedAt).toLocaleString("de-DE")}
                 </p>
                 {preview.conflictSamples.length > 0 ? (
                   <ul className="col-span-full list-disc pl-5 text-xs text-warning">
@@ -169,9 +170,7 @@ export function AzureImportPreviewDialog({
             {backupId ? (
               <p className="mt-2 font-mono text-xs text-success">Backup-ID: {backupId}</p>
             ) : null}
-            {backupError ? (
-              <p className="mt-2 text-xs text-destructive">{backupError}</p>
-            ) : null}
+            {backupError ? <p className="mt-2 text-xs text-destructive">{backupError}</p> : null}
           </section>
         </div>
 

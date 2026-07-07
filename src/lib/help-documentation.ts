@@ -634,6 +634,49 @@ Nur im DEV-Build ist der Store unter \`window.__dashboardStore\` erreichbar (get
 ## Tests
 \`src/__tests__/lib/store/\` deckt Store-Mutatoren, Referenz-Gleichheit unveränderter Slices, Persistenz-Debounce, Fallback-Verhalten und selektor-basierte Re-Render-Vermeidung ab.`,
   },
+  {
+    id: "barrierefreiheit",
+    title: "Barrierefreiheit (WCAG 2.1 AA)",
+    category: "Technik",
+    keywords: [
+      "A11y",
+      "Barrierefreiheit",
+      "WCAG",
+      "Accessibility",
+      "Tastatur",
+      "Screenreader",
+      "Kontrast",
+      "ARIA",
+    ],
+    lastUpdated: "2026-07-07",
+    content: `## Anspruch
+Das Dashboard richtet sich nach **WCAG 2.1 AA**. Grundlage sind shadcn/ui-Komponenten (Radix UI) — Fokus-Management, ARIA-Rollen und Tastaturbedienung sind dort korrekt implementiert. Eigene Komponenten müssen dieses Niveau halten.
+
+## Automatisiert getestet (CI)
+- **vitest-axe** prüft im Test-Suite jedes gerenderte Panel auf axe-core-Violations.
+  - \`src/__tests__/a11y/smoke.test.tsx\` — kritische Panels/Dialoge.
+  - \`src/__tests__/a11y/keyboard.test.tsx\` — ESC schließt Dialoge, Fokus-Reihenfolge.
+- Axe deckt herstellerseitig ca. 57 % der WCAG-Kriterien automatisiert ab. Der Rest ist manuell.
+
+## Manuell zu prüfen
+- **Tastaturbedienung**: Alle Aktionen müssen mit Tab / Shift+Tab / Enter / Space / Esc erreichbar sein. Kein Handler nur auf \`onClick\` eines \`<div>\`.
+- **Screenreader** (NVDA / VoiceOver): Formulare, Toasts, Dialoge und Import-/Export-Feedback müssen angesagt werden. Toaster (\`sonner\`) setzt \`aria-live\` selbst.
+- **Kontrast**: Design-Tokens sind AA-konform. Keine ad-hoc \`text-gray-*\`/\`text-muted-foreground/50\` einführen — Skill-Guide-Regel.
+- **Zoom / 200 %**: Layout muss ohne horizontales Scrollen weiter nutzbar bleiben.
+
+## Bekannte Einschränkung: PDF-Export
+Der PDF-Export via jsPDF erzeugt **kein PDF/UA-konformes Structure-Tree**. Für strikt barrierefreie Ausgabe steht der **TXT-Export** bzw. **JSON-Export** zur Verfügung — beide Formate sind screenreader-freundlich und werden im Export-Dialog empfohlen.
+
+## Konventionen für neue Komponenten
+- **Icon-only Buttons** brauchen immer \`aria-label\` (Lucide-Icons zusätzlich \`aria-hidden="true"\`).
+- **Formulare**: sichtbares \`<label>\` oder \`aria-label\`.
+- **Dynamische Meldungen**: \`role="status" aria-live="polite"\` für nicht-kritische Updates.
+- **Semantisches HTML** vor ARIA: \`<button>\`, \`<table>\`, \`<nav>\` statt \`role="…"\` auf \`<div>\`.
+- **Fokus-Indikator** nicht per \`outline: none\` deaktivieren — Tailwind \`focus-visible:ring\` reicht.
+
+## Browser-Extensions
+Manche Extensions (Dashlane, LastPass, Grammarly) injizieren \`data-*\`-Attribute in Inputs und Buttons und lösen dadurch React-Hydration-Mismatches aus. Auf betroffenen Feldern setzen wir \`suppressHydrationWarning\` — das ist ein Extension-Workaround, kein Verzicht auf A11y.`,
+  },
 
   {
     id: "backup",
@@ -830,7 +873,15 @@ Backups ab Version 1.14 enthalten zusätzlich eine kanonische \`dashboard.json\`
     category: "Sicherheit",
     route: "/",
     component: "RBAC",
-    keywords: ["RBAC", "Rollen", "Berechtigungen", "Permissions", "Entra", "Administrator", "Viewer"],
+    keywords: [
+      "RBAC",
+      "Rollen",
+      "Berechtigungen",
+      "Permissions",
+      "Entra",
+      "Administrator",
+      "Viewer",
+    ],
     lastUpdated: "2026-06-28",
     content: `## Rollen
 Sieben Rollen mit klarer Privileg-Reihenfolge (hoch → niedrig):
@@ -1126,15 +1177,7 @@ Das Frontend liest nie ENV. Alle Azure-Aufrufe werden später serverseitig ausge
     id: "security-principles",
     title: "Sicherheitsprinzipien",
     category: "Sicherheit",
-    keywords: [
-      "Sicherheit",
-      "Prinzipien",
-      "Secrets",
-      "RBAC",
-      "Least Privilege",
-      "ENV",
-      "Logging",
-    ],
+    keywords: ["Sicherheit", "Prinzipien", "Secrets", "RBAC", "Least Privilege", "ENV", "Logging"],
     lastUpdated: "2026-06-30",
     content: `## Leitlinien
 - **Least Privilege** — jede Rolle erhält nur die für ihre Aufgabe nötigen Permissions. Importe sind strikter als Exporte; Datenbankaufbau und Rollenverwaltung nur für System-Administratoren.
@@ -1240,15 +1283,7 @@ Audits oder Managementreviews).`,
     id: "handbuch-suche",
     title: "Handbuch durchsuchen",
     category: "Service",
-    keywords: [
-      "Suche",
-      "Handbuch",
-      "Volltext",
-      "Highlight",
-      "Treffer",
-      "Deep-Link",
-      "URL",
-    ],
+    keywords: ["Suche", "Handbuch", "Volltext", "Highlight", "Treffer", "Deep-Link", "URL"],
     lastUpdated: "2026-07-01",
     content: `## Ziel
 Handbuchinhalte schnell auffindbar machen — sowohl aus dem Dashboard heraus als auch beim direkten Öffnen eines Kapitels.
@@ -1307,7 +1342,6 @@ Nur \`src/lib/time-period.ts\` hat einen harten Threshold (≥ 80 %). Globale Ga
 Die GitHub-Actions-Pipeline (\`.github/workflows/ci.yml\`) führt \`bun run test:coverage\` nach Lint/RBAC und vor dem Build aus. Der Coverage-Report wird als Artifact hochgeladen. Ein rot geschlagener Test blockiert den Merge (Branch-Protection in GitHub-Settings aktivieren).`,
   },
 ];
-
 
 function allTopicsBase(): HelpTopic[] {
   const merged = new Map<string, HelpTopic>();

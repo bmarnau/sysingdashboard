@@ -130,12 +130,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "activity.edit",
     "azure.export",
   ],
-  engineer: [
-    "dashboard.view",
-    "documentation.view",
-    "workpackage.edit",
-    "activity.edit",
-  ],
+  engineer: ["dashboard.view", "documentation.view", "workpackage.edit", "activity.edit"],
   customer: ["dashboard.view", "documentation.view"],
   viewer: ["dashboard.view", "documentation.view"],
 };

@@ -11,11 +11,7 @@
  * Zählwerte, generische Meldungen.
  */
 
-export type AzureActionKind =
-  | "connection-test"
-  | "database-build"
-  | "export"
-  | "import";
+export type AzureActionKind = "connection-test" | "database-build" | "export" | "import";
 
 export interface AzureActionResult {
   ok: boolean;

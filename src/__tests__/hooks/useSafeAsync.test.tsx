@@ -18,9 +18,12 @@ describe("useSafeAsync", () => {
   it("should_captureError_and_logIt_when_fnThrows", async () => {
     const spy = vi.spyOn(logger, "error").mockImplementation(() => {});
     const { result } = renderHook(() =>
-      useSafeAsync(async () => {
-        throw new Error("kaboom");
-      }, { label: "boomOp" }),
+      useSafeAsync(
+        async () => {
+          throw new Error("kaboom");
+        },
+        { label: "boomOp" },
+      ),
     );
     await act(async () => {
       await result.current.execute();

@@ -196,9 +196,7 @@ function migrateToRbacV1(users: UserProfile[]): UserProfile[] {
   const hasSysAdmin = users.some((u) => u.role === "systemadministrator");
   let next = users;
   if (!hasSysAdmin) {
-    const firstAdmin = users.find(
-      (u) => u.role === "administrator" && u.status === "active",
-    );
+    const firstAdmin = users.find((u) => u.role === "administrator" && u.status === "active");
     if (firstAdmin) {
       next = users.map((u) =>
         u.id === firstAdmin.id ? { ...u, role: "systemadministrator", updatedAt: nowIso() } : u,
@@ -330,8 +328,7 @@ export function updateUser(
   const current = users[idx];
   const nextRole = (patch.role ?? current.role) as UserRole;
   const nextStatus = (patch.status ?? current.status) as UserStatus;
-  const wasActiveSysAdmin =
-    current.role === "systemadministrator" && current.status === "active";
+  const wasActiveSysAdmin = current.role === "systemadministrator" && current.status === "active";
   const stillActiveSysAdmin = nextRole === "systemadministrator" && nextStatus === "active";
   if (wasActiveSysAdmin && !stillActiveSysAdmin) {
     if (activeSysAdminCount(users, id) === 0) {

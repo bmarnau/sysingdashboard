@@ -1,11 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { dashboardStore } from "@/lib/store/dashboard-store";
-import {
-  useActivities,
-  useDashboardStore,
-  useProjects,
-} from "@/lib/store/useDashboardStore";
+import { useActivities, useDashboardStore, useProjects } from "@/lib/store/useDashboardStore";
 
 describe("useDashboardStore bindings", () => {
   beforeEach(() => {

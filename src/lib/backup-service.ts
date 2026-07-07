@@ -422,7 +422,9 @@ function buildZip(snapshot: Snapshot): Uint8Array {
     files["dashboard.json"] = strToU8(JSON.stringify(res.document, null, 2));
   } catch (err) {
     // Nicht eskalieren — Backup geht ohne dashboard.json weiter.
-    logger.warn("Backup: dashboard.json konnte nicht eingebettet werden", { reason: (err as Error)?.message });
+    logger.warn("Backup: dashboard.json konnte nicht eingebettet werden", {
+      reason: (err as Error)?.message,
+    });
   }
 
   return zipSync(files, { level: 6 });
@@ -607,7 +609,11 @@ export const BackupService = {
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       errors.push(message);
-      logger.error("Backup failed", new BackupError("BACKUP_FAILED", message, { cause: err, context: { manual, fileName } }), { manual, fileName });
+      logger.error(
+        "Backup failed",
+        new BackupError("BACKUP_FAILED", message, { cause: err, context: { manual, fileName } }),
+        { manual, fileName },
+      );
 
       const logEntry: BackupLogEntry = {
         id,
