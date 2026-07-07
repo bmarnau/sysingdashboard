@@ -620,7 +620,7 @@ function Dashboard() {
   const resetPeriod = () => startSwitch(() => setPeriodOffset(0));
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground" suppressHydrationWarning>
       <header className="app-header sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-xl no-print">
         <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 sm:px-6">
           <div className="flex items-center gap-2">
