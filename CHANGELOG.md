@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.23.0 - 2026-07-07
+
+- **Barrierefreiheit (WCAG 2.1 AA)**: Automatisierte A11y-Tests mit `vitest-axe` (`src/__tests__/a11y/smoke.test.tsx`, `keyboard.test.tsx`) — laufen im bestehenden CI-Test-Schritt. Kritisches Feedback zur ursprünglichen Vorlage: bewusst `vitest-axe` statt `jest-axe` (Vitest-Projekt) und **kein Lighthouse in CI** (Overkill, flaky) — statt dessen dokumentierte Empfehlung für lokales Audit.
+- Icon-only Header-Buttons (Suche zurücksetzen, Einstellungen, Hilfe, Benutzerprofil) erhalten `aria-label` + `aria-expanded` / `type="button"` + `aria-hidden` an Lucide-Icons.
+- Suchfeld erhält `aria-label="Globale Suche"` und `type="search"`.
+- `suppressHydrationWarning` auf den vom Dashlane/LastPass/Grammarly-Injektions-Angriff betroffenen Inputs/Buttons — beseitigt die Hydration-Mismatch-Runtime-Errors (kein A11y-Regress, nur Extension-Workaround).
+- Neues Handbuch-Kapitel `barrierefreiheit`: Prüfabdeckung (axe automatisch, Screenreader/Tastatur manuell), Konventionen, bekannte Einschränkung PDF-Export (jsPDF ≠ PDF/UA — Empfehlung: TXT-/JSON-Export für strikte A11y).
+- Tests: 94 → 98.
+
 ## 1.22.0 - 2026-07-06
 
 - Zentraler **Dashboard-Store** (`src/lib/store/dashboard-store.ts`) für Domain-State (Projekte, Arbeitspakete, Tätigkeiten, Engineer) als Modul-Singleton mit Pub-Sub, ohne neue Runtime-Dependency (keine Zustand-/Redux-Bibliothek).
