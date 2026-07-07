@@ -58,8 +58,7 @@ function mergeWithFixture(persisted: PersistedShape | null): DashboardDomainStat
   return {
     engineer: persisted?.engineer ?? { ...dashboardData.engineer },
     projects: persisted?.projects ?? dashboardData.projects.map((p) => ({ ...p })),
-    workPackages:
-      persisted?.workPackages ?? dashboardData.workPackages.map((w) => ({ ...w })),
+    workPackages: persisted?.workPackages ?? dashboardData.workPackages.map((w) => ({ ...w })),
     activities: persisted?.activities ?? dashboardData.activities.map((a) => ({ ...a })),
   };
 }

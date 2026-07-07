@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  Database,
-  DownloadCloud,
-  PlugZap,
-  Trash2,
-  UploadCloud,
-} from "lucide-react";
+import { Database, DownloadCloud, PlugZap, Trash2, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PermissionGate } from "@/components/PermissionGate";
 import type { Permission } from "@/lib/rbac/permissions";

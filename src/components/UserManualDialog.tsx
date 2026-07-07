@@ -387,7 +387,6 @@ export function UserManualDialog({
           </div>
         </div>
 
-
         {/* Body */}
         <div className="flex min-h-0 flex-1">
           {/* Nav */}

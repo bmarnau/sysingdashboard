@@ -678,8 +678,6 @@ Der PDF-Export via jsPDF erzeugt **kein PDF/UA-konformes Structure-Tree**. Für 
 Manche Extensions (Dashlane, LastPass, Grammarly) injizieren \`data-*\`-Attribute in Inputs und Buttons und lösen dadurch React-Hydration-Mismatches aus. Auf betroffenen Feldern setzen wir \`suppressHydrationWarning\` — das ist ein Extension-Workaround, kein Verzicht auf A11y.`,
   },
 
-
-
   {
     id: "backup",
     title: "Backup",
@@ -875,7 +873,15 @@ Backups ab Version 1.14 enthalten zusätzlich eine kanonische \`dashboard.json\`
     category: "Sicherheit",
     route: "/",
     component: "RBAC",
-    keywords: ["RBAC", "Rollen", "Berechtigungen", "Permissions", "Entra", "Administrator", "Viewer"],
+    keywords: [
+      "RBAC",
+      "Rollen",
+      "Berechtigungen",
+      "Permissions",
+      "Entra",
+      "Administrator",
+      "Viewer",
+    ],
     lastUpdated: "2026-06-28",
     content: `## Rollen
 Sieben Rollen mit klarer Privileg-Reihenfolge (hoch → niedrig):
@@ -1171,15 +1177,7 @@ Das Frontend liest nie ENV. Alle Azure-Aufrufe werden später serverseitig ausge
     id: "security-principles",
     title: "Sicherheitsprinzipien",
     category: "Sicherheit",
-    keywords: [
-      "Sicherheit",
-      "Prinzipien",
-      "Secrets",
-      "RBAC",
-      "Least Privilege",
-      "ENV",
-      "Logging",
-    ],
+    keywords: ["Sicherheit", "Prinzipien", "Secrets", "RBAC", "Least Privilege", "ENV", "Logging"],
     lastUpdated: "2026-06-30",
     content: `## Leitlinien
 - **Least Privilege** — jede Rolle erhält nur die für ihre Aufgabe nötigen Permissions. Importe sind strikter als Exporte; Datenbankaufbau und Rollenverwaltung nur für System-Administratoren.
@@ -1285,15 +1283,7 @@ Audits oder Managementreviews).`,
     id: "handbuch-suche",
     title: "Handbuch durchsuchen",
     category: "Service",
-    keywords: [
-      "Suche",
-      "Handbuch",
-      "Volltext",
-      "Highlight",
-      "Treffer",
-      "Deep-Link",
-      "URL",
-    ],
+    keywords: ["Suche", "Handbuch", "Volltext", "Highlight", "Treffer", "Deep-Link", "URL"],
     lastUpdated: "2026-07-01",
     content: `## Ziel
 Handbuchinhalte schnell auffindbar machen — sowohl aus dem Dashboard heraus als auch beim direkten Öffnen eines Kapitels.
@@ -1352,7 +1342,6 @@ Nur \`src/lib/time-period.ts\` hat einen harten Threshold (≥ 80 %). Globale Ga
 Die GitHub-Actions-Pipeline (\`.github/workflows/ci.yml\`) führt \`bun run test:coverage\` nach Lint/RBAC und vor dem Build aus. Der Coverage-Report wird als Artifact hochgeladen. Ein rot geschlagener Test blockiert den Merge (Branch-Protection in GitHub-Settings aktivieren).`,
   },
 ];
-
 
 function allTopicsBase(): HelpTopic[] {
   const merged = new Map<string, HelpTopic>();

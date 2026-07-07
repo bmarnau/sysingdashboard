@@ -15,7 +15,9 @@ const identity = (s: DashboardDomainState) => s;
 
 export function useDashboardStore(): DashboardDomainState;
 export function useDashboardStore<T>(selector: (s: DashboardDomainState) => T): T;
-export function useDashboardStore<T>(selector?: (s: DashboardDomainState) => T): T | DashboardDomainState {
+export function useDashboardStore<T>(
+  selector?: (s: DashboardDomainState) => T,
+): T | DashboardDomainState {
   const select = selector ?? (identity as unknown as (s: DashboardDomainState) => T);
   return useSyncExternalStore(
     dashboardStore.subscribe,
@@ -30,7 +32,7 @@ export const useWorkPackages = (): WorkPackage[] => useDashboardStore((s) => s.w
 export const useEngineer = (): Engineer => useDashboardStore((s) => s.engineer);
 
 export const useProjectById = (id: string | null | undefined): Project | null =>
-  useDashboardStore((s) => (id ? s.projects.find((p) => p.id === id) ?? null : null));
+  useDashboardStore((s) => (id ? (s.projects.find((p) => p.id === id) ?? null) : null));
 
 export const useWorkPackageById = (id: string | null | undefined): WorkPackage | null =>
-  useDashboardStore((s) => (id ? s.workPackages.find((w) => w.id === id) ?? null : null));
+  useDashboardStore((s) => (id ? (s.workPackages.find((w) => w.id === id) ?? null) : null));

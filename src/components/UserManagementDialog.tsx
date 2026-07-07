@@ -757,7 +757,9 @@ function UserEditor({
               disabled={!canManageRoles}
               onChange={(e) => setForm((p) => ({ ...p, role: e.target.value as UserRole }))}
               className="ipt disabled:opacity-60"
-              title={canManageRoles ? undefined : "Nur System-Administratoren dürfen Rollen ändern."}
+              title={
+                canManageRoles ? undefined : "Nur System-Administratoren dürfen Rollen ändern."
+              }
             >
               {ALL_ROLES.filter((r) => canManageRoles || r !== "systemadministrator").map((r) => (
                 <option key={r} value={r}>

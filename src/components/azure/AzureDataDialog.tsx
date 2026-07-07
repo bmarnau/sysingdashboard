@@ -77,8 +77,7 @@ class AzureBoundary extends Component<{ children: ReactNode }, { error: Error | 
         <div className="rounded-md border border-warning/40 bg-warning/10 p-4 text-sm text-warning">
           <p className="font-semibold">Azure-Bereich derzeit nicht verfügbar.</p>
           <p className="text-xs">
-            Das übrige Dashboard bleibt uneingeschränkt nutzbar. Details:{" "}
-            {this.state.error.message}
+            Das übrige Dashboard bleibt uneingeschränkt nutzbar. Details: {this.state.error.message}
           </p>
         </div>
       );

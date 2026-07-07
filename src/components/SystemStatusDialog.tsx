@@ -52,7 +52,11 @@ function fmtText(value: string | null | undefined): string {
   return value && value.length > 0 ? value : NOT_CONFIGURED;
 }
 
-function BoolBadge({ ok, labelOk = "configured", labelNo = NOT_CONFIGURED }: {
+function BoolBadge({
+  ok,
+  labelOk = "configured",
+  labelNo = NOT_CONFIGURED,
+}: {
   ok: boolean;
   labelOk?: string;
   labelNo?: string;
@@ -70,7 +74,11 @@ function BoolBadge({ ok, labelOk = "configured", labelNo = NOT_CONFIGURED }: {
 
 function EnvChips({ names }: { names: string[] }) {
   if (!names || names.length === 0) {
-    return <span className="text-success inline-flex items-center gap-1"><CheckCircle2 className="size-4" /> alle gesetzt</span>;
+    return (
+      <span className="text-success inline-flex items-center gap-1">
+        <CheckCircle2 className="size-4" /> alle gesetzt
+      </span>
+    );
   }
   return (
     <div className="flex flex-wrap gap-1">
@@ -137,7 +145,9 @@ function Section({
   span2?: boolean;
 }) {
   return (
-    <section className={`min-w-0 rounded-md border border-border p-3 ${span2 ? "lg:col-span-2" : ""}`}>
+    <section
+      className={`min-w-0 rounded-md border border-border p-3 ${span2 ? "lg:col-span-2" : ""}`}
+    >
       <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold">
         {icon}
         {title}
@@ -239,7 +249,10 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
         <div className={sectionsWrapper}>
           {/* 1) Application */}
           <Section icon={<AppWindow className="size-4 shrink-0" />} title="1. Application">
-            <Row label="Application name" value={fmtText(p.application?.name) || "Engineer Console"} />
+            <Row
+              label="Application name"
+              value={fmtText(p.application?.name) || "Engineer Console"}
+            />
             <Row label="Version" value={DASHBOARD_VERSION} mono />
             <Row label="Build date" value={builtAt.toLocaleString("de-DE")} />
             <Row
@@ -300,7 +313,13 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
           <Section icon={<Cloud className="size-4 shrink-0" />} title="4. Azure">
             <Row
               label="Azure access"
-              value={azAllowed === null ? NOT_CONFIGURED : azAllowed ? "allowed (production)" : "blocked (development)"}
+              value={
+                azAllowed === null
+                  ? NOT_CONFIGURED
+                  : azAllowed
+                    ? "allowed (production)"
+                    : "blocked (development)"
+              }
               ok={azAllowed ?? undefined}
             />
             <Row label="Azure SQL" value={<BoolBadge ok={azSql} />} />
@@ -317,7 +336,11 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
 
           {/* 5) Security */}
           <Section icon={<ShieldCheck className="size-4 shrink-0" />} title="5. Security" span2>
-            <Row label="Authentication mode" value={fmtText(sec.authMode)} ok={Boolean(sec.authMode)} />
+            <Row
+              label="Authentication mode"
+              value={fmtText(sec.authMode)}
+              ok={Boolean(sec.authMode)}
+            />
             <Row
               label="RBAC status"
               ok={Boolean(sec.rbac?.enabled)}
@@ -398,7 +421,11 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
           </Section>
 
           <Section icon={<ShieldCheck className="size-4 shrink-0" />} title="Security-Scan" span2>
-            <Row label="Custom-Scanner" ok value="scripts/security-check.mjs (bun run security:check)" />
+            <Row
+              label="Custom-Scanner"
+              ok
+              value="scripts/security-check.mjs (bun run security:check)"
+            />
             <Row label="Sekundär" ok value="gitleaks (.gitleaks.toml)" />
             <Row
               label="CI-Workflow"

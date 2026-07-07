@@ -16,10 +16,7 @@ import { AzureConfirmDialog } from "@/components/azure/AzureConfirmDialog";
 describe("A11y – Smoke", () => {
   it("PermissionGate mit Fallback: keine Violations", async () => {
     const { container } = render(
-      <PermissionGate
-        permission="roles.manage"
-        fallback={<p>Nicht berechtigt.</p>}
-      >
+      <PermissionGate permission="roles.manage" fallback={<p>Nicht berechtigt.</p>}>
         <p>Inhalt</p>
       </PermissionGate>,
     );

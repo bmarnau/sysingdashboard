@@ -37,7 +37,8 @@ export interface LogEntry {
 const LEVEL_ORDER: Record<LogLevel, number> = { debug: 10, info: 20, warn: 30, error: 40 };
 const RING_MAX = 500;
 
-const SECRET_KEY_RE = /(token|secret|password|passwd|authorization|bearer|api[_-]?key|credential|private[_-]?key)/i;
+const SECRET_KEY_RE =
+  /(token|secret|password|passwd|authorization|bearer|api[_-]?key|credential|private[_-]?key)/i;
 const JWT_RE = /^eyJ[A-Za-z0-9_-]+?\.[A-Za-z0-9_-]+?\.[A-Za-z0-9_-]+$/;
 
 function isDev(): boolean {
@@ -58,7 +59,9 @@ function redactValue(value: unknown): unknown {
   return value;
 }
 
-export function redact(context: Record<string, unknown> | undefined): Record<string, unknown> | undefined {
+export function redact(
+  context: Record<string, unknown> | undefined,
+): Record<string, unknown> | undefined {
   if (!context) return context;
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(context)) {
@@ -112,7 +115,12 @@ function getIdbSink(): Promise<((entry: LogEntry) => void) | null> {
 
 /* ------------------------------ Kern-API -------------------------------- */
 
-function emit(level: LogLevel, message: string, error: unknown, ctx?: Record<string, unknown>): void {
+function emit(
+  level: LogLevel,
+  message: string,
+  error: unknown,
+  ctx?: Record<string, unknown>,
+): void {
   const entry: LogEntry = {
     ts: new Date().toISOString(),
     level,

@@ -45,8 +45,6 @@ export const Route = createFileRoute("/api/sync")({
         const denied = checkAuth(request);
         if (denied) return denied;
 
-
-
         let parsed: { source?: string } = {};
         try {
           const text = await request.text();

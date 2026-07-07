@@ -78,7 +78,6 @@ import {
 } from "@/lib/store/useDashboardStore";
 import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
 
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -150,7 +149,6 @@ const perfReportKey = () => UserManagementService.userScopedKey(PERF_REPORT_KEY_
 function newId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 }
-
 
 function fmtDate(s?: string) {
   if (!s) return "—";
@@ -274,7 +272,6 @@ function Dashboard() {
 
   const [hydrated, setHydrated] = useState(false);
 
-
   const [tab, setTab] = useState<Tab>("projekte");
   const [showNewMenu, setShowNewMenu] = useState(false);
   const [showServiceMenu, setShowServiceMenu] = useState(false);
@@ -386,7 +383,6 @@ function Dashboard() {
     }
   }, [hydrated, viewMode, periodOffset, showPerfReport]);
 
-
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -409,7 +405,6 @@ function Dashboard() {
     window.localStorage.removeItem(storageKey());
     dashboardStore.reset();
   };
-
 
   const exportData = () => {
     const payload = {

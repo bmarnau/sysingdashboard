@@ -12,11 +12,7 @@
  */
 
 import { AzureHistoryStore, newHistoryId } from "./azure-history-store";
-import type {
-  AzureActionKind,
-  AzureActionResult,
-  AzureImportPreview,
-} from "./types";
+import type { AzureActionKind, AzureActionResult, AzureImportPreview } from "./types";
 import { logger } from "@/lib/logger";
 
 const NOT_IMPLEMENTED =
