@@ -1027,8 +1027,11 @@ function Dashboard() {
               )}
             </div>
             <button
+              type="button"
               onClick={() => setShowUserDialog(true)}
               title="Benutzer & Profile"
+              aria-label="Benutzer & Profile öffnen"
+              suppressHydrationWarning
               className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3 transition hover:bg-secondary"
             >
               {currentUser?.profileImage ? (
