@@ -13,7 +13,11 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { ROLE_PERMISSIONS as BACKEND_MATRIX, ALL_ROLES, ALL_PERMISSIONS } from "../backend/services/rbac.mjs";
+import {
+  ROLE_PERMISSIONS as BACKEND_MATRIX,
+  ALL_ROLES,
+  ALL_PERMISSIONS,
+} from "../backend/services/rbac.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FRONTEND_PATH = resolve(__dirname, "../src/lib/rbac/permissions.ts");
