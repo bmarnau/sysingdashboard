@@ -1,8 +1,10 @@
 import "@testing-library/jest-dom/vitest";
-// vitest-axe: aktiviert Matcher `toHaveNoViolations` + globales Type-Augment.
-import "vitest-axe/extend-expect";
-import { afterEach, vi } from "vitest";
+import { afterEach, expect, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
+import * as axeMatchers from "vitest-axe/matchers";
+
+// vitest-axe: `toHaveNoViolations` als Vitest-Matcher registrieren.
+expect.extend(axeMatchers);
 
 // React-Testing-Library-DOM zwischen Tests aufräumen.
 afterEach(() => {
