@@ -634,6 +634,51 @@ Nur im DEV-Build ist der Store unter \`window.__dashboardStore\` erreichbar (get
 ## Tests
 \`src/__tests__/lib/store/\` deckt Store-Mutatoren, Referenz-Gleichheit unveränderter Slices, Persistenz-Debounce, Fallback-Verhalten und selektor-basierte Re-Render-Vermeidung ab.`,
   },
+  {
+    id: "barrierefreiheit",
+    title: "Barrierefreiheit (WCAG 2.1 AA)",
+    category: "Technik",
+    keywords: [
+      "A11y",
+      "Barrierefreiheit",
+      "WCAG",
+      "Accessibility",
+      "Tastatur",
+      "Screenreader",
+      "Kontrast",
+      "ARIA",
+    ],
+    lastUpdated: "2026-07-07",
+    content: `## Anspruch
+Das Dashboard richtet sich nach **WCAG 2.1 AA**. Grundlage sind shadcn/ui-Komponenten (Radix UI) — Fokus-Management, ARIA-Rollen und Tastaturbedienung sind dort korrekt implementiert. Eigene Komponenten müssen dieses Niveau halten.
+
+## Automatisiert getestet (CI)
+- **vitest-axe** prüft im Test-Suite jedes gerenderte Panel auf axe-core-Violations.
+  - \`src/__tests__/a11y/smoke.test.tsx\` — kritische Panels/Dialoge.
+  - \`src/__tests__/a11y/keyboard.test.tsx\` — ESC schließt Dialoge, Fokus-Reihenfolge.
+- Axe deckt herstellerseitig ca. 57 % der WCAG-Kriterien automatisiert ab. Der Rest ist manuell.
+
+## Manuell zu prüfen
+- **Tastaturbedienung**: Alle Aktionen müssen mit Tab / Shift+Tab / Enter / Space / Esc erreichbar sein. Kein Handler nur auf \`onClick\` eines \`<div>\`.
+- **Screenreader** (NVDA / VoiceOver): Formulare, Toasts, Dialoge und Import-/Export-Feedback müssen angesagt werden. Toaster (\`sonner\`) setzt \`aria-live\` selbst.
+- **Kontrast**: Design-Tokens sind AA-konform. Keine ad-hoc \`text-gray-*\`/\`text-muted-foreground/50\` einführen — Skill-Guide-Regel.
+- **Zoom / 200 %**: Layout muss ohne horizontales Scrollen weiter nutzbar bleiben.
+
+## Bekannte Einschränkung: PDF-Export
+Der PDF-Export via jsPDF erzeugt **kein PDF/UA-konformes Structure-Tree**. Für strikt barrierefreie Ausgabe steht der **TXT-Export** bzw. **JSON-Export** zur Verfügung — beide Formate sind screenreader-freundlich und werden im Export-Dialog empfohlen.
+
+## Konventionen für neue Komponenten
+- **Icon-only Buttons** brauchen immer \`aria-label\` (Lucide-Icons zusätzlich \`aria-hidden="true"\`).
+- **Formulare**: sichtbares \`<label>\` oder \`aria-label\`.
+- **Dynamische Meldungen**: \`role="status" aria-live="polite"\` für nicht-kritische Updates.
+- **Semantisches HTML** vor ARIA: \`<button>\`, \`<table>\`, \`<nav>\` statt \`role="…"\` auf \`<div>\`.
+- **Fokus-Indikator** nicht per \`outline: none\` deaktivieren — Tailwind \`focus-visible:ring\` reicht.
+
+## Browser-Extensions
+Manche Extensions (Dashlane, LastPass, Grammarly) injizieren \`data-*\`-Attribute in Inputs und Buttons und lösen dadurch React-Hydration-Mismatches aus. Auf betroffenen Feldern setzen wir \`suppressHydrationWarning\` — das ist ein Extension-Workaround, kein Verzicht auf A11y.`,
+  },
+
+
 
   {
     id: "backup",
