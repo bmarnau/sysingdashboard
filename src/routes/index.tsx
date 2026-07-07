@@ -829,13 +829,15 @@ function Dashboard() {
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setShowHelpMenu((v) => !v)}
                 title="Hilfe zu dieser Seite"
                 aria-label="Hilfe zu dieser Seite"
                 aria-expanded={showHelpMenu}
+                suppressHydrationWarning
                 className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
               >
-                <HelpCircle className="size-4" />
+                <HelpCircle className="size-4" aria-hidden="true" />
               </button>
               {showHelpMenu && (
                 <>
