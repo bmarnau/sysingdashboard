@@ -650,10 +650,15 @@ function Dashboard() {
                 }}
                 onFocus={() => setSearchOpen(true)}
                 placeholder="Kunde, Tätigkeit, Arbeitspaket, Projekt…"
+                aria-label="Globale Suche"
+                type="search"
+                suppressHydrationWarning
                 className="h-10 w-full rounded-lg border border-input bg-secondary/40 pl-9 pr-8 text-sm outline-none transition focus:border-ring"
               />
               {searchQ && (
                 <button
+                  type="button"
+                  aria-label="Suche zurücksetzen"
                   onClick={() => {
                     setSearchQ("");
                     setSearchOpen(false);
