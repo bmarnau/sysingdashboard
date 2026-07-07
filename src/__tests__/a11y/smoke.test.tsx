@@ -5,6 +5,7 @@
  * damit gefundene Violations lokalisierbar bleiben und die Testlaufzeit
  * beherrschbar ist. Detaillierte Begründung: siehe `.lovable/plan.md`.
  */
+/// <reference types="vitest-axe/extend-expect" />
 import { describe, expect, it } from "vitest";
 import { render } from "@testing-library/react";
 import { axe } from "vitest-axe";
@@ -16,14 +17,13 @@ describe("A11y – Smoke", () => {
   it("PermissionGate mit Fallback: keine Violations", async () => {
     const { container } = render(
       <PermissionGate
-        permission={"admin.impersonate"}
+        permission="roles.manage"
         fallback={<p>Nicht berechtigt.</p>}
       >
         <p>Inhalt</p>
       </PermissionGate>,
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(await axe(container)).toHaveNoViolations() as any;
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("AzureConfirmDialog (offen, mit Token): keine Violations", async () => {
@@ -39,7 +39,6 @@ describe("A11y – Smoke", () => {
       />,
     );
     // Radix portal-mountet in document.body → baseElement statt container.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(await axe(baseElement)).toHaveNoViolations() as any;
+    expect(await axe(baseElement)).toHaveNoViolations();
   });
 });
