@@ -869,10 +869,15 @@ function Dashboard() {
             </div>
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setShowServiceMenu((v) => !v)}
+                aria-label="Einstellungen und Services"
+                aria-expanded={showServiceMenu}
+                title="Einstellungen"
+                suppressHydrationWarning
                 className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
               >
-                <Settings className="size-4" />
+                <Settings className="size-4" aria-hidden="true" />
               </button>
               {showServiceMenu && (
                 <>
