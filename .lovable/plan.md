@@ -1,95 +1,68 @@
-# Accessibility Compliance (WCAG 2.1 AA) — v1.23.0
+# Plan: Architecture Decision Records & Architektur-Doku
 
-## Kritisches Feedback zur Vorlage
+## Kritisches Feedback zum Original-Prompt
 
-Die Vorlage ist inhaltlich richtig, aber mehrere Punkte passen nicht 1:1 zu diesem Projekt. Ich weiche bewusst ab:
+Bevor ich losschreibe, drei Punkte, die ich anders machen möchte als vorgeschlagen — sag Bescheid, wenn du eins davon trotzdem so haben willst:
 
-1. **`jest-axe` ist die falsche Bibliothek.** Wir nutzen Vitest, nicht Jest. `jest-axe` funktioniert zwar unter Vitest, bringt aber Jest-Typings mit und verwirrt Wartende. **Alternative:** `vitest-axe` — API-kompatibel (`toHaveNoViolations`, `axe`), aber mit Vitest-Matchern und -Typen.
-2. **`@axe-core/react` ist überflüssig.** Das ist ein DEV-Runtime-Hook, der Violations in die Browser-Console loggt — redundant, weil wir bereits CI-Tests haben und einen Logger. Wir installieren nur `axe-core` (transitiv über `vitest-axe`).
-3. **Lighthouse in CI ist Overkill und flaky.** Für ein serverseitig gerendertes B2B-Dashboard ohne öffentlichen Deploy-Preview aus dem CI heraus braucht Lighthouse-CI einen laufenden Server + Chromium + stabile Netzwerklatenz. Das kostet 60–90 s pro Lauf und produziert falsch-negative Reports bei jedem Renderer-Update. **Alternative:** Axe-Tests decken ~57 % der WCAG-Kriterien automatisiert ab (Deque-Zahl); der Rest ist manuell (Tastatur, Screenreader, Kontext). Lighthouse als **optionaler `bun run a11y:lighthouse`-Script** lokal, nicht in CI.
-4. **`role="table"` auf `<table>` ist redundantes ARIA** (ESLint-Regel `no-redundant-roles`). Semantisches HTML reicht. Streiche diesen Punkt.
-5. **PDF-Tagging via jsPDF** ist mit den vorhandenen Mitteln praktisch nicht in AA-Qualität hinzubekommen (jsPDF unterstützt PDF/UA nur rudimentär, kein Structure-Tree). Ehrliche Lösung: PDF-Export als **„nicht barrierefrei, nutzen Sie den TXT-/JSON-Export"** kennzeichnen (Hinweis im Export-Dialog) und den bereits vorhandenen `text-export.ts` als A11y-konforme Alternative bewerben. Alles andere wäre Feigenblatt.
-6. **Runtime-Hydration-Fehler zuerst.** Die Runtime-Errors zeigen Hydration-Mismatches durch die Dashlane-Browser-Extension (`data-dashlane-rid`). Das ist **kein Bug in unserem Code**, aber wir setzen `suppressHydrationWarning` auf die betroffenen `<input>`/`<button>`-Elemente, sonst überschattet der Log jede echte A11y-Warnung. Kleiner Fix, gehört inhaltlich mit rein.
+1. **`CONTRIBUTING.md` existiert bereits** (`docs/CONTRIBUTING.md`, gut gepflegt, mit Doku-Sync-Pflicht und CI-Regeln). Ich ersetze sie **nicht**, sondern verlinke sie aus `README` und `ARCHITECTURE.md`. Der Prompt-Vorschlag ist deutlich dünner als das Bestehende.
+2. **`docs/DATA-SCHEMA.md` doppelt `src/lib/json-schema.ts`** — die einzige Wahrheit ist heute der TS-Typ + JSON-Schema-Datei. Ich schreibe stattdessen eine **kurze `DATA-SCHEMA.md`, die auf `src/lib/json-schema.ts` verweist** und nur die Versionierungs-Policy + Migrationsregeln dokumentiert (sonst driftet die Doku garantiert).
+3. **ADR-Nummerierung**: Ich lege 5 ADRs an (nicht 3), inklusive der zwei „stillen" Entscheidungen, die in bisherigen Prompts implizit getroffen wurden — Pub-Sub-Store statt Zustand/Redux und Frontend-Logger statt Sentry. Sonst tauchen die nie in der ADR-Historie auf, obwohl sie klar reviewbedürftig sind.
 
-## Umsetzung
+Kein LLM-Buzz, keine Diagramme aus dem Nichts — nur Ist-Zustand + Begründung.
 
-### Wave A — Testing-Infrastruktur (in diesem PR)
+## Deliverables
 
-**Neue Dev-Deps**
-- `vitest-axe` (bringt `axe-core` transitiv)
+### Neu
+- `docs/ARCHITECTURE.md` — System-Übersicht, Modulgrenzen, Datenfluss (ASCII), Runtime-Grenzen (Cloudflare Worker + nodejs_compat), Trust-Boundaries
+- `docs/ADR/README.md` — Index + Template (Format: Kontext / Entscheidung / Konsequenzen / Status)
+- `docs/ADR/0001-tanstack-start.md` — TanStack Start v1 statt Next.js/Remix
+- `docs/ADR/0002-frontend-rbac-mirrored.md` — RBAC im Frontend gespiegelt (aktueller Zustand: kein echter Auth-Layer, `can()` = UI-Komfort; `check-rbac.mjs` garantiert Parity zu `backend/services/rbac.mjs`)
+- `docs/ADR/0003-local-first-localstorage.md` — localStorage + Dashboard-Store, user-scoped Keys, kein IndexedDB (außer Logger)
+- `docs/ADR/0004-pubsub-store-no-zustand.md` — eigener Pub-Sub + `useSyncExternalStore` statt Zustand/Redux (Zero-Dep, Referenz-Stabilität)
+- `docs/ADR/0005-frontend-logger-no-sentry.md` — Logger + IndexedDB-Ringbuffer statt Sentry/Datadog (Privacy, Kosten, PII-Kontrolle)
+- `docs/API.md` — nur die zwei realen Endpoints: `GET /api/status` und `POST /api/sync` mit Request/Response-Schema und Auth-Status („aktuell keine Auth")
+- `docs/DEPLOYMENT.md` — Cloudflare Worker (wrangler.jsonc), ENV-Variablen aus `.env.example`, GitHub-Actions-Workflow-Übersicht, Rollback via CHANGELOG-Version
+- `docs/DATA-SCHEMA.md` — Verweis auf `src/lib/json-schema.ts` + Versionierungs-/Migrationsregeln
 
-**Neue/geänderte Dateien**
-- `src/__tests__/setup.ts` — `expect.extend(matchers)` aus `vitest-axe/matchers`
-- `src/__tests__/a11y/smoke.test.tsx` — Smoke-Test für die kritischsten Render-Pfade:
-  - Dashboard-Header (isoliert, ohne kompletten `<Dashboard/>`, um Test-Runtime beherrschbar zu halten)
-  - `ExportDialog` (open)
-  - `UserManagementDialog` (open)
-  - `AzureDataDialog` (open)
-  - `PermissionGate` (denied state)
-- `src/__tests__/a11y/keyboard.test.tsx` — expliziter Tab-Reihenfolge-Test für Header und einen Dialog (`userEvent.tab()`).
+### Geändert
+- `README.md` — neue Sektion „Weiterführende Dokumentation" mit Links auf alle obigen Dateien + `docs/CONTRIBUTING.md`
+- `src/lib/help-documentation.ts` — neuer Handbuch-Topic `architektur` mit Kurzfassung + Verlinkung auf `docs/`, `lastUpdated` gesetzt
+- `CHANGELOG.md` — neuer Eintrag `## 1.24.0 - 2026-07-08` mit ADR-Auflistung
+- `scripts/check-docs-sync.mjs` — falls es ADR-Dateien scanned: sicherstellen, dass es die neuen Files akzeptiert (nur wenn nötig, sonst unverändert)
 
-**Warum nicht `<Dashboard/>` komplett?** `src/routes/index.tsx` rendert ~3000 Zeilen mit Router/Query-Kontext. Ein vollständiger Render dauert im Test 3–5 s und produziert Violations, die zu Handler-Komponenten gehören und nicht zum Layout — nicht lokalisierbar. Isolierte Smoke-Tests pro Panel sind aussagekräftiger.
+### Bewusst NICHT gemacht
+- Keine Mermaid-/PlantUML-Diagramme (Repo hat keinen Renderer; ASCII reicht und diffed sauber)
+- Kein separates `CONTRIBUTING.md`-Rewrite
+- Kein Copy-Paste des `json-schema.ts` in Markdown
 
-### Wave A — Fixes für bekannte Violations
+## Umfang & Format der ADRs
 
-Vorab identifiziert (Sichtprüfung + Skill-Guide):
-- **Icon-only Buttons ohne `aria-label`**: Suchergebnisse, Header-Icons, Azure-History-Row-Actions. Fix: `aria-label` ergänzen.
-- **`h-screen` → `h-dvh`** in vollhöhen-Layouts (Mobile-Viewport-Bug).
-- **`suppressHydrationWarning` für Extension-Attribute** auf `<input>` (Search-Feld) und Top-Level Header-Buttons.
-- **Live-Region für Toaster**: `sonner` setzt `aria-live` selbst; nichts zu tun. Aber Import/Sync-Status-Meldungen in `AzureStatusPanel` bekommen `role="status" aria-live="polite"`.
-- **Kontrast**: Skill-Guide-Regel bereits erfüllt (Design-Tokens). Ich prüfe ausschließlich, ob irgendwo `text-muted-foreground/50` oder ähnliche Verdünnungen stehen.
+Jedes ADR ~40–80 Zeilen, striktes Format:
 
-### Wave A — CI
+```text
+# ADR-000X: <Titel>
+Status: Accepted | Datum: YYYY-MM-DD
 
-`.github/workflows/ci.yml`: Kein neuer Job — die a11y-Tests laufen im bestehenden `test:coverage`-Schritt automatisch mit, weil sie unter `src/__tests__/` liegen. Ein separater Step wäre reine Kosmetik.
+## Kontext
+Was war das Problem, welche Constraints galten.
 
-### Wave A — Dokumentation
+## Entscheidung
+Was wurde gewählt, klar und knapp.
 
-- Neues Handbuch-Topic `barrierefreiheit` mit:
-  - Testabdeckung (was ist automatisiert, was manuell)
-  - Bekannte Einschränkungen (PDF-Export siehe oben)
-  - Tastaturkürzel-Liste (aus bestehenden Handlern extrahieren)
-- `CHANGELOG.md` v1.23.0-Eintrag.
-- `src/lib/help-documentation.ts` `lastUpdated` setzen.
+## Alternativen
+Was wurde verworfen, mit Ein-Satz-Begründung je Option.
 
-### Nicht in diesem PR (bewusst ausgeschlossen)
+## Konsequenzen
+Positive + negative, inkl. bekannter Trade-offs.
 
-- Lighthouse-CI-Integration (Overkill, siehe oben) — nur lokal als optionales `bun run a11y:lighthouse` (nutzt bestehendes `lighthouse`-CLI, kein package.json-Zwang).
-- Full-Dashboard-`axe(<Dashboard/>)`-Test (siehe oben).
-- PDF-Tagging (siehe oben — dokumentierte Einschränkung stattdessen).
-- Screen-Reader-Manual-QA-Skript — nicht automatisierbar; im Handbuch dokumentiert, wo NVDA/VoiceOver-Checks nötig sind.
-
-## Erwartete Ergebnisse
-
-- 94 → ~104 Tests (10 neue A11y-Tests), grün
-- Keine `console.error` mehr durch Hydration-Mismatches
-- `docs:check` grün
-- Alle Icon-only Buttons haben Accessible Name
-
-## Technische Details
-
-**vitest-axe Setup-Ergänzung**
-```ts
-// src/__tests__/setup.ts (Ergänzung)
-import * as axeMatchers from "vitest-axe/matchers";
-import { expect } from "vitest";
-expect.extend(axeMatchers);
+## Trust-Boundary / Security-Note (nur wo relevant)
 ```
 
-**Test-Pattern**
-```tsx
-import { axe } from "vitest-axe";
-it("ExportDialog: keine A11y-Violations", async () => {
-  const { container } = render(<ExportDialog open onOpenChange={() => {}} />);
-  expect(await axe(container)).toHaveNoViolations();
-});
-```
+## Nach der Implementation
+- `bun run docs:check` grün
+- `bun run lint` grün
+- Keine neuen Tests nötig (reine Doku)
 
-**Hydration-Fix**
-```tsx
-<input suppressHydrationWarning ... />
-```
-
-## Offene Frage
-
-Willst du wirklich Lighthouse als optionalen lokalen Script (`bun run a11y:lighthouse`) drin haben, oder ganz weglassen? Ich tendiere zum Weglassen — die Dev-Dep wiegt 300+ MB.
+## Offene Fragen
+1. **ADR-0002 (Frontend-RBAC)**: Soll ich den aktuellen Zustand („keine echte Auth, RBAC ist UI-Komfort") explizit als **Risk** im ADR markieren, oder milder als „Interim-Zustand bis Entra ID"? Ich tendiere zu explizit — das ist ehrlicher gegenüber neuen Entwicklern.
+2. **Sprache**: Alles auf **Deutsch** (Rest der Doku ist Deutsch) — okay?
