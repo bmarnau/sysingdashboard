@@ -671,7 +671,7 @@ Jede signifikante Architekturentscheidung liegt als eigenes ADR unter \`docs/ADR
 
 Neue Entscheidungen bekommen ein **neues** ADR (nicht bestehende überschreiben). Template in \`docs/ADR/README.md\`.`,
   },
-
+  {
     id: "barrierefreiheit",
     title: "Barrierefreiheit (WCAG 2.1 AA)",
     category: "Technik",
