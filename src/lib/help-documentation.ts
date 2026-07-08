@@ -635,6 +635,43 @@ Nur im DEV-Build ist der Store unter \`window.__dashboardStore\` erreichbar (get
 \`src/__tests__/lib/store/\` deckt Store-Mutatoren, Referenz-Gleichheit unveränderter Slices, Persistenz-Debounce, Fallback-Verhalten und selektor-basierte Re-Render-Vermeidung ab.`,
   },
   {
+    id: "architektur",
+    title: "Architektur & Entscheidungshistorie",
+    category: "Technik",
+    keywords: [
+      "Architektur",
+      "ADR",
+      "Architecture Decision Record",
+      "TanStack",
+      "Cloudflare",
+      "RBAC",
+      "Local-First",
+      "Store",
+      "Logger",
+    ],
+    lastUpdated: "2026-07-08",
+    content: `## Übersicht
+Das Dashboard ist eine **TanStack Start v1**-Anwendung (React 19, Vite 7), die als **Cloudflare Worker** (mit \`nodejs_compat\`) läuft. State wird lokal-first in \`localStorage\` gehalten und über einen eigenen Pub-Sub-Store (\`src/lib/store/\`) mit React 18 \`useSyncExternalStore\` an die UI gebunden.
+
+## Wo steht was?
+Die vollständige Doku liegt im Repository unter \`docs/\`:
+- \`docs/ARCHITECTURE.md\` — Modulgrenzen, Datenfluss, Runtime-Grenzen, Trust-Boundaries.
+- \`docs/API.md\` — Server-Routen (\`GET /api/status\`, \`POST /api/sync\`).
+- \`docs/DEPLOYMENT.md\` — Build, ENV, CI, Cloudflare-Deploy, Rollback.
+- \`docs/DATA-SCHEMA.md\` — Export-/Import-Format + Migrationsregeln (Wahrheit: \`src/lib/json-schema.ts\`).
+- \`docs/CONTRIBUTING.md\` — Branch-Strategie, Commit-Konvention, Doku-Sync-Pflicht.
+
+## Entscheidungshistorie (ADRs)
+Jede signifikante Architekturentscheidung liegt als eigenes ADR unter \`docs/ADR/\`:
+- **ADR-0001** — TanStack Start v1 statt Next.js/Remix (SSR + Worker-Kompatibilität).
+- **ADR-0002** — RBAC im Frontend gespiegelt zum Backend; **derzeit UX-Komfort, keine Trust-Boundary** — bis echte Auth aktiv ist.
+- **ADR-0003** — Local-First mit \`localStorage\` (user-scoped), Azure-Sync nur manuell.
+- **ADR-0004** — Eigener Pub-Sub-Store statt Zustand/Redux/Jotai (Zero-Dep, Referenz-Stabilität).
+- **ADR-0005** — Frontend-Logger + IndexedDB-Ringbuffer statt Sentry (Privacy, Kosten).
+
+Neue Entscheidungen bekommen ein **neues** ADR (nicht bestehende überschreiben). Template in \`docs/ADR/README.md\`.`,
+  },
+
     id: "barrierefreiheit",
     title: "Barrierefreiheit (WCAG 2.1 AA)",
     category: "Technik",
