@@ -148,6 +148,18 @@ Alternativ über die Browser-DevTools:
 
 ---
 
+## Weiterführende Dokumentation
+
+- [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — Systemübersicht, Modulgrenzen, Datenfluss
+- [`docs/ADR/`](./docs/ADR/) — Architecture Decision Records (Entscheidungshistorie)
+- [`docs/API.md`](./docs/API.md) — Server-Routen (`/api/status`, `/api/sync`)
+- [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) — Build, Cloudflare Worker, ENV, CI
+- [`docs/DATA-SCHEMA.md`](./docs/DATA-SCHEMA.md) — Export-Format & Migrationsregeln
+- [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md) — Dev-Workflow, Branch-Strategie, Doku-Sync-Pflicht
+- [`CHANGELOG.md`](./CHANGELOG.md) — Single Source of Truth der Dashboard-Version
+
+---
+
 ## Lizenz
 
 Privat / Intern – NorthBit IT-Systemhaus GmbH
