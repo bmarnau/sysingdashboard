@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.24.0 - 2026-07-08
+
+- **Architekturdokumentation**: Neue `docs/ARCHITECTURE.md` (Systemübersicht, Modulgrenzen, Datenfluss, Runtime-Grenzen, Trust-Boundaries), `docs/API.md` (`/api/status`, `/api/sync`), `docs/DEPLOYMENT.md` (Cloudflare-Worker-Deploy, ENV, CI) und `docs/DATA-SCHEMA.md` (verweist auf `src/lib/json-schema.ts` + Migrationsregeln, kein Doppelbestand).
+- **Architecture Decision Records** unter `docs/ADR/` mit Index und Template: ADR-0001 (TanStack Start), ADR-0002 (Frontend-RBAC gespiegelt — mit expliziter Trust-Boundary-Warnung), ADR-0003 (Local-First localStorage), ADR-0004 (Pub-Sub-Store statt Zustand/Redux), ADR-0005 (Frontend-Logger statt Sentry).
+- **README** verlinkt die neue Doku-Sektion; neues Handbuch-Kapitel `architektur` mit Kurzfassung und Verlinkung.
+- Kritisches Feedback zur ursprünglichen Vorlage: `docs/CONTRIBUTING.md` **nicht** überschrieben (das Bestehende ist gepflegter), Datenmodell **nicht** in Prosa dupliziert (driftet garantiert), zwei zusätzliche ADRs (Store, Logger) für bislang „stille" Entscheidungen.
+
 ## 1.23.0 - 2026-07-07
 
 - **Barrierefreiheit (WCAG 2.1 AA)**: Automatisierte A11y-Tests mit `vitest-axe` (`src/__tests__/a11y/smoke.test.tsx`, `keyboard.test.tsx`) — laufen im bestehenden CI-Test-Schritt. Kritisches Feedback zur ursprünglichen Vorlage: bewusst `vitest-axe` statt `jest-axe` (Vitest-Projekt) und **kein Lighthouse in CI** (Overkill, flaky) — statt dessen dokumentierte Empfehlung für lokales Audit.
