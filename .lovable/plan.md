@@ -1,68 +1,69 @@
-# Plan: Architecture Decision Records & Architektur-Doku
+# Performance-Optimierung (v1.25.0)
 
-## Kritisches Feedback zum Original-Prompt
+## Kritische Einordnung vorab
 
-Bevor ich losschreibe, drei Punkte, die ich anders machen möchte als vorgeschlagen — sag Bescheid, wenn du eins davon trotzdem so haben willst:
+Der Prompt schlägt einige Maßnahmen vor, die für diese Codebasis **nicht sinnvoll** sind. Ich weiche bewusst ab und begründe:
 
-1. **`CONTRIBUTING.md` existiert bereits** (`docs/CONTRIBUTING.md`, gut gepflegt, mit Doku-Sync-Pflicht und CI-Regeln). Ich ersetze sie **nicht**, sondern verlinke sie aus `README` und `ARCHITECTURE.md`. Der Prompt-Vorschlag ist deutlich dünner als das Bestehende.
-2. **`docs/DATA-SCHEMA.md` doppelt `src/lib/json-schema.ts`** — die einzige Wahrheit ist heute der TS-Typ + JSON-Schema-Datei. Ich schreibe stattdessen eine **kurze `DATA-SCHEMA.md`, die auf `src/lib/json-schema.ts` verweist** und nur die Versionierungs-Policy + Migrationsregeln dokumentiert (sonst driftet die Doku garantiert).
-3. **ADR-Nummerierung**: Ich lege 5 ADRs an (nicht 3), inklusive der zwei „stillen" Entscheidungen, die in bisherigen Prompts implizit getroffen wurden — Pub-Sub-Store statt Zustand/Redux und Frontend-Logger statt Sentry. Sonst tauchen die nie in der ADR-Historie auf, obwohl sie klar reviewbedürftig sind.
+- **Virtual Scrolling / `@tanstack/react-virtual`** — **nicht jetzt**. Ich habe nichts gefunden, was regelmäßig >100 sichtbare DOM-Zeilen produziert (Engineers/Projects/Work-Packages sind in der Regel <100). Ohne Messnachweis wäre das Overhead + neue Dependency ohne Nutzen. Aufnahme in ADR als "verworfen bis Messung".
+- **`memo` + Custom Equality-Function pauschal** — der ursprüngliche Vorschlag `(prev, next) => prev.task.id === next.task.id` ist **fehlerhaft**: Updates am selben Task würden nie neu rendern. `memo` gezielt nur dort, wo Selector-Hooks bereits Referenzstabilität liefern (Pub-Sub-Store liefert das, ADR-0004).
+- **Bundle-Plugin**: `vite-plugin-visualizer` existiert nicht — richtig heißt es **`rollup-plugin-visualizer`** (funktioniert mit Vite). Nur als Dev-Dep + optionales `bun run analyze`-Script, kein Default-Build-Overhead.
+- **Lighthouse ≥ 85 als Done-Criteria** — messe ich lokal einmal und dokumentiere den Wert im CHANGELOG. Kein CI-Gate (siehe frühere A11y-Entscheidung: Chrome-Download in CI zu teuer/flaky).
 
-Kein LLM-Buzz, keine Diagramme aus dem Nichts — nur Ist-Zustand + Begründung.
+## 1. Lazy-Loading der schweren Dialoge (Haupthebel)
 
-## Deliverables
+`src/routes/index.tsx` importiert **11 Dialoge eager** (~5000 LOC + `jspdf`, `jspdf-autotable`, `recharts` über `PerformanceReport`). Alle sind hinter Buttons versteckt und werden von den meisten Sessions nie geöffnet.
 
-### Neu
-- `docs/ARCHITECTURE.md` — System-Übersicht, Modulgrenzen, Datenfluss (ASCII), Runtime-Grenzen (Cloudflare Worker + nodejs_compat), Trust-Boundaries
-- `docs/ADR/README.md` — Index + Template (Format: Kontext / Entscheidung / Konsequenzen / Status)
-- `docs/ADR/0001-tanstack-start.md` — TanStack Start v1 statt Next.js/Remix
-- `docs/ADR/0002-frontend-rbac-mirrored.md` — RBAC im Frontend gespiegelt (aktueller Zustand: kein echter Auth-Layer, `can()` = UI-Komfort; `check-rbac.mjs` garantiert Parity zu `backend/services/rbac.mjs`)
-- `docs/ADR/0003-local-first-localstorage.md` — localStorage + Dashboard-Store, user-scoped Keys, kein IndexedDB (außer Logger)
-- `docs/ADR/0004-pubsub-store-no-zustand.md` — eigener Pub-Sub + `useSyncExternalStore` statt Zustand/Redux (Zero-Dep, Referenz-Stabilität)
-- `docs/ADR/0005-frontend-logger-no-sentry.md` — Logger + IndexedDB-Ringbuffer statt Sentry/Datadog (Privacy, Kosten, PII-Kontrolle)
-- `docs/API.md` — nur die zwei realen Endpoints: `GET /api/status` und `POST /api/sync` mit Request/Response-Schema und Auth-Status („aktuell keine Auth")
-- `docs/DEPLOYMENT.md` — Cloudflare Worker (wrangler.jsonc), ENV-Variablen aus `.env.example`, GitHub-Actions-Workflow-Übersicht, Rollback via CHANGELOG-Version
-- `docs/DATA-SCHEMA.md` — Verweis auf `src/lib/json-schema.ts` + Versionierungs-/Migrationsregeln
+Umbau auf `React.lazy` + `<Suspense fallback={null}>`:
+- `ExportDialog`, `LocalArchiveDialog`, `PerformanceReport`, `WorkingTimeModelsDialog`, `UserManagementDialog`, `UserManualDialog`, `BackupDialog`, `SystemStatusDialog`, `DownloadCenterDialog`, `ImportExportDialog`, `AzureDataDialog`
 
-### Geändert
-- `README.md` — neue Sektion „Weiterführende Dokumentation" mit Links auf alle obigen Dateien + `docs/CONTRIBUTING.md`
-- `src/lib/help-documentation.ts` — neuer Handbuch-Topic `architektur` mit Kurzfassung + Verlinkung auf `docs/`, `lastUpdated` gesetzt
-- `CHANGELOG.md` — neuer Eintrag `## 1.24.0 - 2026-07-08` mit ADR-Auflistung
-- `scripts/check-docs-sync.mjs` — falls es ADR-Dateien scanned: sicherstellen, dass es die neuen Files akzeptiert (nur wenn nötig, sonst unverändert)
+Rendering-Muster: Suspense-Wrapper **um jeden Dialog einzeln**, damit ein spät geladener Chunk andere Dialoge nicht blockiert. `fallback={null}` genügt — Dialog ist zu = keine UI sichtbar.
 
-### Bewusst NICHT gemacht
-- Keine Mermaid-/PlantUML-Diagramme (Repo hat keinen Renderer; ASCII reicht und diffed sauber)
-- Kein separates `CONTRIBUTING.md`-Rewrite
-- Kein Copy-Paste des `json-schema.ts` in Markdown
+Erwartung: Initial-Bundle sinkt spürbar (`jspdf` + `recharts` verlassen den Main-Chunk).
 
-## Umfang & Format der ADRs
+## 2. Bundle-Analyse-Script (opt-in)
 
-Jedes ADR ~40–80 Zeilen, striktes Format:
+- `bun add -D rollup-plugin-visualizer`
+- `vite.config.ts`: Plugin nur aktiv wenn `process.env.ANALYZE === "1"`, Output nach `dist/stats.html` (gitignored)
+- `package.json`: `"analyze": "ANALYZE=1 bun run build"`
+- Kurze Notiz in `docs/ARCHITECTURE.md` § Performance
 
-```text
-# ADR-000X: <Titel>
-Status: Accepted | Datum: YYYY-MM-DD
+## 3. Gezielte Memoisierung — nur mit Messnachweis
 
-## Kontext
-Was war das Problem, welche Constraints galten.
+Ich profile **erst** mit React DevTools (via `bun run dev` + kurzem Playwright-Skript, das die häufigsten Interaktionen anfährt und Render-Counts loggt). Konkrete `memo`-/`useCallback`-Anwendungen erst nach Fund. Keine spekulativen Wraps — die verschlechtern oft mehr, als sie helfen.
 
-## Entscheidung
-Was wurde gewählt, klar und knapp.
+**Falls** die Profile-Ergebnisse keine Hotspots zeigen: transparent im CHANGELOG dokumentieren ("keine relevanten Re-Renders gefunden, keine Änderung").
 
-## Alternativen
-Was wurde verworfen, mit Ein-Satz-Begründung je Option.
+## 4. Nicht-Ziele (explizit ausgeschlossen)
 
-## Konsequenzen
-Positive + negative, inkl. bekannter Trade-offs.
+- Kein `@tanstack/react-virtual` (siehe oben)
+- Keine Icon-Optimierung (Lucide ist bereits tree-shaked)
+- Keine PDF-Bildkompression (aktueller Export enthält keine Rasterbilder)
+- Kein `React.lazy` für Route-Komponenten — nur eine Haupt-Route existiert, TanStack macht Route-Splitting bereits automatisch
 
-## Trust-Boundary / Security-Note (nur wo relevant)
-```
+## 5. Nebenbei-Fix (Hydration-Error)
 
-## Nach der Implementation
-- `bun run docs:check` grün
-- `bun run lint` grün
-- Keine neuen Tests nötig (reine Doku)
+Der Runtime-Fehler `System-Administrator` vs. `Senior Systems Engineer` in `src/routes/index.tsx:761` ist ein SSR/CSR-Mismatch beim User-Titel — vermutlich `getActiveUser()` liest localStorage bei SSR nicht. Fix: den User-Block in einen client-only Read (via `useHydrated()`-Muster oder `useEffect`-init) verlagern. Ich mache das mit, weil Hydration-Errors React zwingen, den Subtree client-seitig neu zu rendern — das kostet exakt die Performance, die wir optimieren wollen.
 
-## Offene Fragen
-1. **ADR-0002 (Frontend-RBAC)**: Soll ich den aktuellen Zustand („keine echte Auth, RBAC ist UI-Komfort") explizit als **Risk** im ADR markieren, oder milder als „Interim-Zustand bis Entra ID"? Ich tendiere zu explizit — das ist ehrlicher gegenüber neuen Entwicklern.
-2. **Sprache**: Alles auf **Deutsch** (Rest der Doku ist Deutsch) — okay?
+## Done Criteria
+
+- ✅ Alle 11 Dashboard-Dialoge lazy geladen
+- ✅ `bun run analyze` funktioniert, `stats.html` gitignored
+- ✅ Hydration-Mismatch weg (Console clean)
+- ✅ Vorher/Nachher Bundle-Größen im CHANGELOG (Main-Chunk kB)
+- ✅ Lighthouse-Score lokal einmal gemessen und im CHANGELOG notiert
+- ✅ Handbuch-Kapitel `architektur` + `changelog` aktualisiert, `bun run docs:check` grün
+- ❌ **Kein** Lighthouse-Gate in CI, **kein** Virtual-Scrolling, **kein** spekulatives `memo`
+
+## Geänderte/neue Dateien (grob)
+
+- `src/routes/index.tsx` — Lazy-Imports + Suspense-Wrapper + Hydration-Fix
+- `vite.config.ts` — optionaler Visualizer
+- `package.json` — `analyze`-Script + `rollup-plugin-visualizer` (dev)
+- `.gitignore` — `dist/stats.html`
+- `docs/ARCHITECTURE.md` — Performance-Abschnitt (Lazy-Strategie, Analyze-Script)
+- `docs/ADR/0006-no-virtual-scrolling.md` — Kurz-ADR "verworfen bis Messung"
+- `docs/ADR/README.md` — Index-Eintrag
+- `CHANGELOG.md` v1.25.0
+- `src/lib/help-documentation.ts` — `architektur.lastUpdated`
+
+Sag Bescheid, ob (a) der Umfang passt, (b) ich das ADR-0006 wirklich schreiben soll oder ob eine Zeile in ARCHITECTURE.md reicht, (c) der Hydration-Fix mit rein soll oder als eigener Turn.

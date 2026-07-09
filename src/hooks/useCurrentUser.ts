@@ -7,19 +7,19 @@ import {
 
 /** Reaktiver Zugriff auf den aktuell aktiven Benutzer. */
 export function useCurrentUser(): UserProfile | null {
-  const [user, setUser] = useState<UserProfile | null>(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      return UserManagementService.bootstrap();
-    } catch {
-      return null;
-    }
-  });
+  // Immer mit `null` starten, damit Server- und erster Client-Render identisch
+  // sind. Die Auflösung passiert in useEffect nach der Hydration — verhindert
+  // Hydration-Mismatch (SSR hat kein localStorage, Client hatte einen Wert).
+  const [user, setUser] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    try {
+      setUser(UserManagementService.bootstrap());
+    } catch {
+      setUser(null);
+    }
     const sync = () => setUser(UserManagementService.getActiveUser());
-    sync();
     const unsub = subscribeUserChanges(sync);
     window.addEventListener("storage", sync);
     return () => {
@@ -33,14 +33,8 @@ export function useCurrentUser(): UserProfile | null {
 
 /** Reaktive Liste aller Benutzer. */
 export function useUsers(): UserProfile[] {
-  const [users, setUsers] = useState<UserProfile[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      return UserManagementService.loadUsers();
-    } catch {
-      return [];
-    }
-  });
+  // Gleiches Muster wie useCurrentUser — SSR-safe leere Liste, Auflösung in useEffect.
+  const [users, setUsers] = useState<UserProfile[]>([]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;

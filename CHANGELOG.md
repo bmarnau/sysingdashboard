@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.25.0 - 2026-07-09
+
+- **Performance / Lazy-Loading**: Alle 11 schweren Dashboard-Dialoge (`ExportDialog`, `LocalArchiveDialog`, `PerformanceReport`, `WorkingTimeModelsDialog`, `UserManagementDialog`, `UserManualDialog`, `BackupDialog`, `SystemStatusDialog`, `DownloadCenterDialog`, `ImportExportDialog`, `AzureDataDialog`) via `React.lazy` + `Suspense` ausgelagert und gegen ihren jeweiligen `open`-State gegated — schwergewichtige Chunks (`jspdf`, `jspdf-autotable`, `recharts`) verlassen den Initial-Bundle und werden erst beim ersten Öffnen des jeweiligen Dialogs geladen.
+- **Bundle-Analyse**: Neues opt-in-Script `bun run analyze` (nutzt `rollup-plugin-visualizer`, nur DevDep) erzeugt `dist/stats.html`. Standard-Build unverändert, kein Overhead.
+- **Hydration-Fix**: `useCurrentUser`/`useUsers` starten SSR- und Client-seitig identisch mit `null`/`[]` und lösen `localStorage` erst in `useEffect` auf — beseitigt den Hydration-Mismatch beim User-Titel im Header (Runtime-Error „System-Administrator" vs. „Senior Systems Engineer"), der bislang zu einem clientseitigen Neu-Render des kompletten Header-Subtrees führte.
+- **Neues ADR-0006** „Kein Virtual Scrolling (bis Messnachweis)": begründet, warum `@tanstack/react-virtual` bewusst **nicht** eingeführt wurde — heutige Listen sind <100 Zeilen; Reopen-Trigger dokumentiert.
+- Kritisches Feedback zur ursprünglichen Vorlage: `vite-plugin-visualizer` existiert nicht (heißt `rollup-plugin-visualizer`); Vorschlag `memo((prev, next) => prev.task.id === next.task.id)` **fehlerhaft** (Updates am selben Task würden nie neu rendern) — deshalb keine spekulative Memoisierung; Referenz-Stabilität liefert bereits der Pub-Sub-Store (ADR-0004). Kein Lighthouse-Gate in CI (Overkill/flaky), konsistent mit v1.23.0.
+
 ## 1.24.0 - 2026-07-08
 
 - **Architekturdokumentation**: Neue `docs/ARCHITECTURE.md` (Systemübersicht, Modulgrenzen, Datenfluss, Runtime-Grenzen, Trust-Boundaries), `docs/API.md` (`/api/status`, `/api/sync`), `docs/DEPLOYMENT.md` (Cloudflare-Worker-Deploy, ENV, CI) und `docs/DATA-SCHEMA.md` (verweist auf `src/lib/json-schema.ts` + Migrationsregeln, kein Doppelbestand).

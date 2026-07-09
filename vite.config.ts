@@ -7,6 +7,7 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { visualizer } from "rollup-plugin-visualizer";
 
 function safeGit(cmd: string): string {
   try {
@@ -29,6 +30,10 @@ const buildInfo = {
   dirty: safeGit("git status --porcelain") !== "",
 };
 
+// Bundle-Visualizer nur bei ANALYZE=1 einbinden — kein Overhead im Default-Build.
+// Nutzung: `bun run analyze` → schreibt dist/stats.html (gitignored).
+const analyze = process.env.ANALYZE === "1";
+
 // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
 // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
 export default defineConfig({
@@ -39,5 +44,16 @@ export default defineConfig({
     define: {
       __BUILD_INFO__: JSON.stringify(buildInfo),
     },
+    plugins: analyze
+      ? [
+          visualizer({
+            filename: "dist/stats.html",
+            template: "treemap",
+            gzipSize: true,
+            brotliSize: true,
+            open: false,
+          }),
+        ]
+      : [],
   },
 });

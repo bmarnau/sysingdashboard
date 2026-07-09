@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   Activity as ActivityIcon,
   AlertTriangle,
@@ -37,18 +37,47 @@ import {
   type WorkPackage,
   type WorkPackageStatus,
 } from "@/lib/dashboard-data";
-import { ExportDialog } from "@/components/ExportDialog";
-import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
-import { PerformanceReport } from "@/components/PerformanceReport";
-import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
-import { UserManagementDialog } from "@/components/UserManagementDialog";
-import { UserManualDialog } from "@/components/UserManualDialog";
+// Schwere Dashboard-Dialoge werden lazy geladen, damit `jspdf`, `jspdf-autotable`,
+// `recharts` und ~5.000 LOC Dialog-Code den Initial-Chunk verlassen. Jeder Dialog
+// hat einen eigenen Suspense-Wrapper — ein langsam ladender Chunk blockiert keinen
+// anderen. Rendering ist gegen den jeweiligen `open`-State gegated, damit der
+// Chunk erst beim ersten Öffnen geladen wird (nicht beim Dashboard-Mount).
+const ExportDialog = lazy(() =>
+  import("@/components/ExportDialog").then((m) => ({ default: m.ExportDialog })),
+);
+const LocalArchiveDialog = lazy(() =>
+  import("@/components/SaveTargetDialog").then((m) => ({ default: m.LocalArchiveDialog })),
+);
+const PerformanceReport = lazy(() =>
+  import("@/components/PerformanceReport").then((m) => ({ default: m.PerformanceReport })),
+);
+const WorkingTimeModelsDialog = lazy(() =>
+  import("@/components/WorkingTimeModelsDialog").then((m) => ({
+    default: m.WorkingTimeModelsDialog,
+  })),
+);
+const UserManagementDialog = lazy(() =>
+  import("@/components/UserManagementDialog").then((m) => ({ default: m.UserManagementDialog })),
+);
+const UserManualDialog = lazy(() =>
+  import("@/components/UserManualDialog").then((m) => ({ default: m.UserManualDialog })),
+);
+const BackupDialog = lazy(() =>
+  import("@/components/BackupDialog").then((m) => ({ default: m.BackupDialog })),
+);
+const SystemStatusDialog = lazy(() =>
+  import("@/components/SystemStatusDialog").then((m) => ({ default: m.SystemStatusDialog })),
+);
+const DownloadCenterDialog = lazy(() =>
+  import("@/components/DownloadCenterDialog").then((m) => ({ default: m.DownloadCenterDialog })),
+);
+const ImportExportDialog = lazy(() =>
+  import("@/components/ImportExportDialog").then((m) => ({ default: m.ImportExportDialog })),
+);
+const AzureDataDialog = lazy(() =>
+  import("@/components/azure/AzureDataDialog").then((m) => ({ default: m.AzureDataDialog })),
+);
 import { HelpDocumentationService } from "@/lib/help-documentation";
-import { BackupDialog } from "@/components/BackupDialog";
-import { SystemStatusDialog } from "@/components/SystemStatusDialog";
-import { DownloadCenterDialog } from "@/components/DownloadCenterDialog";
-import { ImportExportDialog } from "@/components/ImportExportDialog";
-import { AzureDataDialog } from "@/components/azure/AzureDataDialog";
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
@@ -1220,16 +1249,18 @@ function Dashboard() {
           />
         </section>
 
-        {/* Persönlicher Leistungsreport */}
+        {/* Persönlicher Leistungsreport (lazy — recharts-Chunk lädt on-demand) */}
         {showPerfReport && now && (
-          <PerformanceReport
-            activities={activities}
-            workPackages={workPackages}
-            projects={projects}
-            engineer={engineerState}
-            reference={now}
-            targetTimeModels={targetTimeModels}
-          />
+          <Suspense fallback={null}>
+            <PerformanceReport
+              activities={activities}
+              workPackages={workPackages}
+              projects={projects}
+              engineer={engineerState}
+              reference={now}
+              targetTimeModels={targetTimeModels}
+            />
+          </Suspense>
         )}
 
         {/* Tabs */}
@@ -1374,61 +1405,99 @@ function Dashboard() {
         />
       )}
       {showWorkingTimeDialog && (
-        <WorkingTimeModelsDialog
-          models={targetTimeModels}
-          onChange={setTargetTimeModels}
-          onClose={() => setShowWorkingTimeDialog(false)}
-        />
+        <Suspense fallback={null}>
+          <WorkingTimeModelsDialog
+            models={targetTimeModels}
+            onChange={setTargetTimeModels}
+            onClose={() => setShowWorkingTimeDialog(false)}
+          />
+        </Suspense>
       )}
       {showUserDialog && currentUser && (
-        <UserManagementDialog
-          open={showUserDialog}
-          onClose={() => setShowUserDialog(false)}
-          currentUser={currentUser}
-          onProfileSwitch={() => {
-            // Datenscope ist per-User; sicherster Weg: vollständiger Reload.
-            window.location.reload();
-          }}
-        />
+        <Suspense fallback={null}>
+          <UserManagementDialog
+            open={showUserDialog}
+            onClose={() => setShowUserDialog(false)}
+            currentUser={currentUser}
+            onProfileSwitch={() => {
+              // Datenscope ist per-User; sicherster Weg: vollständiger Reload.
+              window.location.reload();
+            }}
+          />
+        </Suspense>
       )}
 
-      <UserManualDialog
-        open={showManual}
-        onClose={() => {
-          setShowManual(false);
-          setManualTopicId(undefined);
-          setManualQuery(undefined);
-        }}
-        initialRoute="/"
-        initialTopicId={manualTopicId}
-        initialQuery={manualQuery}
-      />
+      {/* Alle folgenden Dialoge sind gegen ihren open-State gegated, damit der
+          Lazy-Chunk erst beim ersten Öffnen geladen wird (nicht bei Route-Mount). */}
+      {showManual && (
+        <Suspense fallback={null}>
+          <UserManualDialog
+            open={showManual}
+            onClose={() => {
+              setShowManual(false);
+              setManualTopicId(undefined);
+              setManualQuery(undefined);
+            }}
+            initialRoute="/"
+            initialTopicId={manualTopicId}
+            initialQuery={manualQuery}
+          />
+        </Suspense>
+      )}
 
-      <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
+      {showBackupDialog && (
+        <Suspense fallback={null}>
+          <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
+        </Suspense>
+      )}
 
-      <SystemStatusDialog open={showSystemStatus} onOpenChange={setShowSystemStatus} />
+      {showSystemStatus && (
+        <Suspense fallback={null}>
+          <SystemStatusDialog open={showSystemStatus} onOpenChange={setShowSystemStatus} />
+        </Suspense>
+      )}
 
-      <ExportDialog
-        open={showExportDialog}
-        onOpenChange={setShowExportDialog}
-        projects={projects}
-        workPackages={workPackages}
-        activities={activities}
-        engineer={engineerState}
-        onJsonBackup={exportData}
-      />
+      {showExportDialog && (
+        <Suspense fallback={null}>
+          <ExportDialog
+            open={showExportDialog}
+            onOpenChange={setShowExportDialog}
+            projects={projects}
+            workPackages={workPackages}
+            activities={activities}
+            engineer={engineerState}
+            onJsonBackup={exportData}
+          />
+        </Suspense>
+      )}
 
-      <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
-      <DownloadCenterDialog open={showDownloads} onOpenChange={setShowDownloads} />
-      <ImportExportDialog
-        open={showImportExport}
-        onOpenChange={setShowImportExport}
-        onOpenBackup={() => {
-          setShowImportExport(false);
-          setShowBackupDialog(true);
-        }}
-      />
-      <AzureDataDialog open={showAzureData} onOpenChange={setShowAzureData} />
+      {showArchiveDialog && (
+        <Suspense fallback={null}>
+          <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
+        </Suspense>
+      )}
+      {showDownloads && (
+        <Suspense fallback={null}>
+          <DownloadCenterDialog open={showDownloads} onOpenChange={setShowDownloads} />
+        </Suspense>
+      )}
+      {showImportExport && (
+        <Suspense fallback={null}>
+          <ImportExportDialog
+            open={showImportExport}
+            onOpenChange={setShowImportExport}
+            onOpenBackup={() => {
+              setShowImportExport(false);
+              setShowBackupDialog(true);
+            }}
+          />
+        </Suspense>
+      )}
+      {showAzureData && (
+        <Suspense fallback={null}>
+          <AzureDataDialog open={showAzureData} onOpenChange={setShowAzureData} />
+        </Suspense>
+      )}
     </div>
   );
 }
