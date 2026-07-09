@@ -112,7 +112,25 @@ Persistenz-Regeln:
 - Domain-Fehler → typisierte Klassen in `src/lib/errors.ts`.
 - Kein externer Error-Tracker (Sentry o. ä.): [ADR-0005](./ADR/0005-frontend-logger-no-sentry.md).
 
-## 8. Weiterführend
+## 8. Performance
+
+**Grundprinzip**: Optimieren, was gemessen ist — keine spekulativen Wraps.
+
+- **Lazy-Loading der Dashboard-Dialoge**: 11 selten geöffnete Dialoge
+  (`ExportDialog`, `PerformanceReport`, `SystemStatusDialog`, `AzureDataDialog`,
+  `UserManualDialog`, …) sind via `React.lazy` + `Suspense` ausgelagert und
+  werden gegen ihren `open`-State gegated — die schwergewichtigen Chunks
+  `jspdf`, `jspdf-autotable` und `recharts` verlassen den Initial-Bundle
+  vollständig und laden erst beim ersten Öffnen.
+- **Bundle-Analyse**: `bun run analyze` erzeugt `dist/stats.html` (opt-in via
+  `rollup-plugin-visualizer` + `ANALYZE=1`) — gitignored, kein
+  Default-Build-Overhead.
+- **Keine spekulative Memoisierung**: Referenz-Stabilität liefert bereits der
+  Pub-Sub-Store (ADR-0004). `React.memo` nur mit gemessenem Hotspot.
+- **Kein Virtual Scrolling** (Stand v1.25.0): [ADR-0006](./ADR/0006-no-virtual-scrolling.md)
+  dokumentiert, warum und wann das ADR neu geöffnet wird.
+
+## 9. Weiterführend
 
 - [`docs/API.md`](./API.md) — Server-Routen
 - [`docs/DEPLOYMENT.md`](./DEPLOYMENT.md) — Build & Ops
