@@ -77,6 +77,7 @@ const ImportExportDialog = lazy(() =>
 const AzureDataDialog = lazy(() =>
   import("@/components/azure/AzureDataDialog").then((m) => ({ default: m.AzureDataDialog })),
 );
+import { HelpDocumentationService } from "@/lib/help-documentation";
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
