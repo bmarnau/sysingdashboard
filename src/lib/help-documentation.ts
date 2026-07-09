@@ -649,13 +649,13 @@ Nur im DEV-Build ist der Store unter \`window.__dashboardStore\` erreichbar (get
       "Store",
       "Logger",
     ],
-    lastUpdated: "2026-07-08",
+    lastUpdated: "2026-07-09",
     content: `## Übersicht
 Das Dashboard ist eine **TanStack Start v1**-Anwendung (React 19, Vite 7), die als **Cloudflare Worker** (mit \`nodejs_compat\`) läuft. State wird lokal-first in \`localStorage\` gehalten und über einen eigenen Pub-Sub-Store (\`src/lib/store/\`) mit React 18 \`useSyncExternalStore\` an die UI gebunden.
 
 ## Wo steht was?
 Die vollständige Doku liegt im Repository unter \`docs/\`:
-- \`docs/ARCHITECTURE.md\` — Modulgrenzen, Datenfluss, Runtime-Grenzen, Trust-Boundaries.
+- \`docs/ARCHITECTURE.md\` — Modulgrenzen, Datenfluss, Runtime-Grenzen, Trust-Boundaries, Performance-Strategie.
 - \`docs/API.md\` — Server-Routen (\`GET /api/status\`, \`POST /api/sync\`).
 - \`docs/DEPLOYMENT.md\` — Build, ENV, CI, Cloudflare-Deploy, Rollback.
 - \`docs/DATA-SCHEMA.md\` — Export-/Import-Format + Migrationsregeln (Wahrheit: \`src/lib/json-schema.ts\`).
@@ -668,8 +668,14 @@ Jede signifikante Architekturentscheidung liegt als eigenes ADR unter \`docs/ADR
 - **ADR-0003** — Local-First mit \`localStorage\` (user-scoped), Azure-Sync nur manuell.
 - **ADR-0004** — Eigener Pub-Sub-Store statt Zustand/Redux/Jotai (Zero-Dep, Referenz-Stabilität).
 - **ADR-0005** — Frontend-Logger + IndexedDB-Ringbuffer statt Sentry (Privacy, Kosten).
+- **ADR-0006** — Kein Virtual Scrolling (aktuelle Listen zu klein, Aufnahme erst mit Messnachweis).
 
-Neue Entscheidungen bekommen ein **neues** ADR (nicht bestehende überschreiben). Template in \`docs/ADR/README.md\`.`,
+Neue Entscheidungen bekommen ein **neues** ADR (nicht bestehende überschreiben). Template in \`docs/ADR/README.md\`.
+
+## Performance
+- **Lazy-Loading**: 11 schwere Dashboard-Dialoge (Export, Backup, Systemstatus, Azure, PerformanceReport mit recharts, PDF-Export mit jsPDF …) sind via \`React.lazy\` + \`Suspense\` ausgelagert und werden erst beim ersten Öffnen geladen.
+- **Bundle-Analyse**: \`bun run analyze\` erzeugt \`dist/stats.html\` (rollup-plugin-visualizer, gitignored) — nur opt-in, kein Default-Overhead.
+- Kein spekulatives \`React.memo\` — Referenz-Stabilität liefert bereits der Pub-Sub-Store (ADR-0004).`,
   },
   {
     id: "barrierefreiheit",
