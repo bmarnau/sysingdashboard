@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   Activity as ActivityIcon,
   AlertTriangle,
@@ -37,18 +37,46 @@ import {
   type WorkPackage,
   type WorkPackageStatus,
 } from "@/lib/dashboard-data";
-import { ExportDialog } from "@/components/ExportDialog";
-import { LocalArchiveDialog } from "@/components/SaveTargetDialog";
-import { PerformanceReport } from "@/components/PerformanceReport";
-import { WorkingTimeModelsDialog } from "@/components/WorkingTimeModelsDialog";
-import { UserManagementDialog } from "@/components/UserManagementDialog";
-import { UserManualDialog } from "@/components/UserManualDialog";
-import { HelpDocumentationService } from "@/lib/help-documentation";
-import { BackupDialog } from "@/components/BackupDialog";
-import { SystemStatusDialog } from "@/components/SystemStatusDialog";
-import { DownloadCenterDialog } from "@/components/DownloadCenterDialog";
-import { ImportExportDialog } from "@/components/ImportExportDialog";
-import { AzureDataDialog } from "@/components/azure/AzureDataDialog";
+// Schwere Dashboard-Dialoge werden lazy geladen, damit `jspdf`, `jspdf-autotable`,
+// `recharts` und ~5.000 LOC Dialog-Code den Initial-Chunk verlassen. Jeder Dialog
+// hat einen eigenen Suspense-Wrapper — ein langsam ladender Chunk blockiert keinen
+// anderen. Rendering ist gegen den jeweiligen `open`-State gegated, damit der
+// Chunk erst beim ersten Öffnen geladen wird (nicht beim Dashboard-Mount).
+const ExportDialog = lazy(() =>
+  import("@/components/ExportDialog").then((m) => ({ default: m.ExportDialog })),
+);
+const LocalArchiveDialog = lazy(() =>
+  import("@/components/SaveTargetDialog").then((m) => ({ default: m.LocalArchiveDialog })),
+);
+const PerformanceReport = lazy(() =>
+  import("@/components/PerformanceReport").then((m) => ({ default: m.PerformanceReport })),
+);
+const WorkingTimeModelsDialog = lazy(() =>
+  import("@/components/WorkingTimeModelsDialog").then((m) => ({
+    default: m.WorkingTimeModelsDialog,
+  })),
+);
+const UserManagementDialog = lazy(() =>
+  import("@/components/UserManagementDialog").then((m) => ({ default: m.UserManagementDialog })),
+);
+const UserManualDialog = lazy(() =>
+  import("@/components/UserManualDialog").then((m) => ({ default: m.UserManualDialog })),
+);
+const BackupDialog = lazy(() =>
+  import("@/components/BackupDialog").then((m) => ({ default: m.BackupDialog })),
+);
+const SystemStatusDialog = lazy(() =>
+  import("@/components/SystemStatusDialog").then((m) => ({ default: m.SystemStatusDialog })),
+);
+const DownloadCenterDialog = lazy(() =>
+  import("@/components/DownloadCenterDialog").then((m) => ({ default: m.DownloadCenterDialog })),
+);
+const ImportExportDialog = lazy(() =>
+  import("@/components/ImportExportDialog").then((m) => ({ default: m.ImportExportDialog })),
+);
+const AzureDataDialog = lazy(() =>
+  import("@/components/azure/AzureDataDialog").then((m) => ({ default: m.AzureDataDialog })),
+);
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import {
