@@ -1405,61 +1405,99 @@ function Dashboard() {
         />
       )}
       {showWorkingTimeDialog && (
-        <WorkingTimeModelsDialog
-          models={targetTimeModels}
-          onChange={setTargetTimeModels}
-          onClose={() => setShowWorkingTimeDialog(false)}
-        />
+        <Suspense fallback={null}>
+          <WorkingTimeModelsDialog
+            models={targetTimeModels}
+            onChange={setTargetTimeModels}
+            onClose={() => setShowWorkingTimeDialog(false)}
+          />
+        </Suspense>
       )}
       {showUserDialog && currentUser && (
-        <UserManagementDialog
-          open={showUserDialog}
-          onClose={() => setShowUserDialog(false)}
-          currentUser={currentUser}
-          onProfileSwitch={() => {
-            // Datenscope ist per-User; sicherster Weg: vollständiger Reload.
-            window.location.reload();
-          }}
-        />
+        <Suspense fallback={null}>
+          <UserManagementDialog
+            open={showUserDialog}
+            onClose={() => setShowUserDialog(false)}
+            currentUser={currentUser}
+            onProfileSwitch={() => {
+              // Datenscope ist per-User; sicherster Weg: vollständiger Reload.
+              window.location.reload();
+            }}
+          />
+        </Suspense>
       )}
 
-      <UserManualDialog
-        open={showManual}
-        onClose={() => {
-          setShowManual(false);
-          setManualTopicId(undefined);
-          setManualQuery(undefined);
-        }}
-        initialRoute="/"
-        initialTopicId={manualTopicId}
-        initialQuery={manualQuery}
-      />
+      {/* Alle folgenden Dialoge sind gegen ihren open-State gegated, damit der
+          Lazy-Chunk erst beim ersten Öffnen geladen wird (nicht bei Route-Mount). */}
+      {showManual && (
+        <Suspense fallback={null}>
+          <UserManualDialog
+            open={showManual}
+            onClose={() => {
+              setShowManual(false);
+              setManualTopicId(undefined);
+              setManualQuery(undefined);
+            }}
+            initialRoute="/"
+            initialTopicId={manualTopicId}
+            initialQuery={manualQuery}
+          />
+        </Suspense>
+      )}
 
-      <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
+      {showBackupDialog && (
+        <Suspense fallback={null}>
+          <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
+        </Suspense>
+      )}
 
-      <SystemStatusDialog open={showSystemStatus} onOpenChange={setShowSystemStatus} />
+      {showSystemStatus && (
+        <Suspense fallback={null}>
+          <SystemStatusDialog open={showSystemStatus} onOpenChange={setShowSystemStatus} />
+        </Suspense>
+      )}
 
-      <ExportDialog
-        open={showExportDialog}
-        onOpenChange={setShowExportDialog}
-        projects={projects}
-        workPackages={workPackages}
-        activities={activities}
-        engineer={engineerState}
-        onJsonBackup={exportData}
-      />
+      {showExportDialog && (
+        <Suspense fallback={null}>
+          <ExportDialog
+            open={showExportDialog}
+            onOpenChange={setShowExportDialog}
+            projects={projects}
+            workPackages={workPackages}
+            activities={activities}
+            engineer={engineerState}
+            onJsonBackup={exportData}
+          />
+        </Suspense>
+      )}
 
-      <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
-      <DownloadCenterDialog open={showDownloads} onOpenChange={setShowDownloads} />
-      <ImportExportDialog
-        open={showImportExport}
-        onOpenChange={setShowImportExport}
-        onOpenBackup={() => {
-          setShowImportExport(false);
-          setShowBackupDialog(true);
-        }}
-      />
-      <AzureDataDialog open={showAzureData} onOpenChange={setShowAzureData} />
+      {showArchiveDialog && (
+        <Suspense fallback={null}>
+          <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
+        </Suspense>
+      )}
+      {showDownloads && (
+        <Suspense fallback={null}>
+          <DownloadCenterDialog open={showDownloads} onOpenChange={setShowDownloads} />
+        </Suspense>
+      )}
+      {showImportExport && (
+        <Suspense fallback={null}>
+          <ImportExportDialog
+            open={showImportExport}
+            onOpenChange={setShowImportExport}
+            onOpenBackup={() => {
+              setShowImportExport(false);
+              setShowBackupDialog(true);
+            }}
+          />
+        </Suspense>
+      )}
+      {showAzureData && (
+        <Suspense fallback={null}>
+          <AzureDataDialog open={showAzureData} onOpenChange={setShowAzureData} />
+        </Suspense>
+      )}
     </div>
   );
 }
