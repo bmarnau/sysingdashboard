@@ -1249,16 +1249,18 @@ function Dashboard() {
           />
         </section>
 
-        {/* Persönlicher Leistungsreport */}
+        {/* Persönlicher Leistungsreport (lazy — recharts-Chunk lädt on-demand) */}
         {showPerfReport && now && (
-          <PerformanceReport
-            activities={activities}
-            workPackages={workPackages}
-            projects={projects}
-            engineer={engineerState}
-            reference={now}
-            targetTimeModels={targetTimeModels}
-          />
+          <Suspense fallback={null}>
+            <PerformanceReport
+              activities={activities}
+              workPackages={workPackages}
+              projects={projects}
+              engineer={engineerState}
+              reference={now}
+              targetTimeModels={targetTimeModels}
+            />
+          </Suspense>
         )}
 
         {/* Tabs */}
