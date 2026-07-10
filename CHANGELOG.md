@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.26.0 - 2026-07-10
+
+- **Log Viewer im Servicemenü**: Neuer Menüpunkt „Log Viewer…" macht die bestehende Logger-Infrastruktur sichtbar (`src/components/LogViewerDialog.tsx`). Führt In-Memory-Ringpuffer und persistierten IndexedDB-Sink (`dashboard-logs`) zusammen, deduziert pro `ts|level|message` und sortiert absteigend.
+- **Read-only Reader**: Neue `src/lib/logger.indexeddb-reader.ts` (`readAllLogs`, `clearAllLogs`) — bewusst getrennt vom Write-Sink (`logger.indexeddb.ts`), damit der Logger-Hot-Path unverändert bleibt. Kein Schema-Change, kein neuer Store.
+- **Filter & Detail**: Level-Checkboxen, Zeitraum-Preset (15 min / 1 h / 24 h / 7 d / alle), Quellen-Multi-Select aus `context.{label,module,operation,component}`, Volltextsuche mit `useDeferredValue`, Detail-Sheet mit vollständigem JSON-Kontext, optionalem Stacktrace, „Als JSON kopieren", JSON-Export der gefilterten Einträge, Auto-Refresh (5 s).
+- **Grenzen dokumentiert**: Anzeige-Limit 1000 Zeilen (konsistent mit ADR-0006 „No Virtual Scrolling"), Secrets bereits im Logger maskiert (keine doppelte Verarbeitung). Neues Handbuch-Kapitel `log-viewer` (Kategorie „Service"), verweist auf `fehlerbehandlung-logging`.
+- Kritisches Feedback zur ursprünglichen Vorlage: bewusst **kein** neuer Log-Endpoint / kein Server-Upload (widerspräche ADR-0005), **kein** RBAC-Gate (Logs sind lokal im Browser, kein Fremd-Datenzugriff), **kein** eigener Download-Center-Eintrag (Logs sind Debug-Artefakt, kein Report).
+
 ## 1.25.0 - 2026-07-09
 
 - **Performance / Lazy-Loading**: Alle 11 schweren Dashboard-Dialoge (`ExportDialog`, `LocalArchiveDialog`, `PerformanceReport`, `WorkingTimeModelsDialog`, `UserManagementDialog`, `UserManualDialog`, `BackupDialog`, `SystemStatusDialog`, `DownloadCenterDialog`, `ImportExportDialog`, `AzureDataDialog`) via `React.lazy` + `Suspense` ausgelagert und gegen ihren jeweiligen `open`-State gegated — schwergewichtige Chunks (`jspdf`, `jspdf-autotable`, `recharts`) verlassen den Initial-Bundle und werden erst beim ersten Öffnen des jeweiligen Dialogs geladen.
