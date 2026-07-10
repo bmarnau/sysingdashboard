@@ -1,69 +1,129 @@
-# Performance-Optimierung (v1.25.0)
 
-## Kritische Einordnung vorab
+## Ziel
 
-Der Prompt schlägt einige Maßnahmen vor, die für diese Codebasis **nicht sinnvoll** sind. Ich weiche bewusst ab und begründe:
+Neuer Menüpunkt „Log Viewer" im Servicemenü, der die bestehenden Logs
+(`src/lib/logger.ts` Ringbuffer + IndexedDB-Sink) sichtbar und
+durchsuchbar macht — **ohne** neue Log-Infrastruktur, ohne Änderung
+bestehender Fachlogik.
 
-- **Virtual Scrolling / `@tanstack/react-virtual`** — **nicht jetzt**. Ich habe nichts gefunden, was regelmäßig >100 sichtbare DOM-Zeilen produziert (Engineers/Projects/Work-Packages sind in der Regel <100). Ohne Messnachweis wäre das Overhead + neue Dependency ohne Nutzen. Aufnahme in ADR als "verworfen bis Messung".
-- **`memo` + Custom Equality-Function pauschal** — der ursprüngliche Vorschlag `(prev, next) => prev.task.id === next.task.id` ist **fehlerhaft**: Updates am selben Task würden nie neu rendern. `memo` gezielt nur dort, wo Selector-Hooks bereits Referenzstabilität liefern (Pub-Sub-Store liefert das, ADR-0004).
-- **Bundle-Plugin**: `vite-plugin-visualizer` existiert nicht — richtig heißt es **`rollup-plugin-visualizer`** (funktioniert mit Vite). Nur als Dev-Dep + optionales `bun run analyze`-Script, kein Default-Build-Overhead.
-- **Lighthouse ≥ 85 als Done-Criteria** — messe ich lokal einmal und dokumentiere den Wert im CHANGELOG. Kein CI-Gate (siehe frühere A11y-Entscheidung: Chrome-Download in CI zu teuer/flaky).
+## Umsetzung
 
-## 1. Lazy-Loading der schweren Dialoge (Haupthebel)
+### 1. Nur-lesende Query-API am IndexedDB-Sink
 
-`src/routes/index.tsx` importiert **11 Dialoge eager** (~5000 LOC + `jspdf`, `jspdf-autotable`, `recharts` über `PerformanceReport`). Alle sind hinter Buttons versteckt und werden von den meisten Sessions nie geöffnet.
+Neu: `src/lib/logger.indexeddb-reader.ts` (bewusst getrennt von
+`logger.indexeddb.ts`, damit der Write-Sink weiter minimal bleibt).
 
-Umbau auf `React.lazy` + `<Suspense fallback={null}>`:
-- `ExportDialog`, `LocalArchiveDialog`, `PerformanceReport`, `WorkingTimeModelsDialog`, `UserManagementDialog`, `UserManualDialog`, `BackupDialog`, `SystemStatusDialog`, `DownloadCenterDialog`, `ImportExportDialog`, `AzureDataDialog`
+- `readAllLogs(): Promise<LogEntry[]>` — öffnet dieselbe DB
+  (`dashboard-logs` / Store `entries`), liest per Cursor absteigend nach
+  `ts`-Index. Kein Schema-Change, kein neuer Store.
+- `clearAllLogs(): Promise<void>` — optional, nur über explizite
+  Nutzeraktion (mit Bestätigung).
+- Fällt sauber zurück, wenn IndexedDB fehlt (SSR/Worker) → `[]`.
 
-Rendering-Muster: Suspense-Wrapper **um jeden Dialog einzeln**, damit ein spät geladener Chunk andere Dialoge nicht blockiert. `fallback={null}` genügt — Dialog ist zu = keine UI sichtbar.
+Ergänzung an `logger.ts`: kleine Hilfsmethode `getSources()` — extrahiert
+distinct `context.label` / `context.module` / `context.operation` aus dem
+In-Memory-Ring (für den Quellen-Filter). Kein Persistenz-Change.
 
-Erwartung: Initial-Bundle sinkt spürbar (`jspdf` + `recharts` verlassen den Main-Chunk).
+### 2. UI-Komponente `src/components/LogViewerDialog.tsx`
 
-## 2. Bundle-Analyse-Script (opt-in)
+Modaler Dialog (konsistent mit `SystemStatusDialog` / `BackupDialog`).
 
-- `bun add -D rollup-plugin-visualizer`
-- `vite.config.ts`: Plugin nur aktiv wenn `process.env.ANALYZE === "1"`, Output nach `dist/stats.html` (gitignored)
-- `package.json`: `"analyze": "ANALYZE=1 bun run build"`
-- Kurze Notiz in `docs/ARCHITECTURE.md` § Performance
+Layout:
+- Desktop ≥ md: 2-spaltiges Grid `grid-cols-[260px_minmax(0,1fr)]`,
+  Filter links (sticky), Logliste rechts.
+- Mobile: Filter in `<Collapsible>` oberhalb der Liste, standardmäßig
+  eingeklappt.
 
-## 3. Gezielte Memoisierung — nur mit Messnachweis
+Filter (alle kombinierbar):
+- Level-Checkboxen: debug / info / warn / error (default alle an).
+- Zeitraum: Preset-Select „Letzte 15 min / 1 h / 24 h / 7 Tage /
+  Benutzerdefiniert" (Custom = 2 datetime-local Felder).
+- Quelle: Multi-Select aus `getSources()` (nur angezeigt, wenn ≥ 1
+  Quelle vorhanden).
+- Volltext-Input (mit `useDeferredValue`) — sucht in `message`,
+  `error.message`, JSON-stringified `context`.
 
-Ich profile **erst** mit React DevTools (via `bun run dev` + kurzem Playwright-Skript, das die häufigsten Interaktionen anfährt und Render-Counts loggt). Konkrete `memo`-/`useCallback`-Anwendungen erst nach Fund. Keine spekulativen Wraps — die verschlechtern oft mehr, als sie helfen.
+Datenquelle:
+- Beim Öffnen einmalig aus IndexedDB laden, mit In-Memory-Ring
+  mergen und deduplizieren nach `ts+message`.
+- „Aktualisieren"-Button → neu laden.
+- „Auto-Refresh"-Toggle (5 s Intervall via `setInterval` in Effect,
+  clear on close).
 
-**Falls** die Profile-Ergebnisse keine Hotspots zeigen: transparent im CHANGELOG dokumentieren ("keine relevanten Re-Renders gefunden, keine Änderung").
+Liste:
+- Virtualisiert nicht — bewusst begrenzt auf 1000 Zeilen (siehe
+  ADR-0006 „No Virtual Scrolling"). Wenn mehr Treffer als 1000: Banner
+  „X weitere gefiltert — verfeinere die Filter".
+- Zeile: Timestamp (relativ + absolut im Tooltip), Level-Badge farbig,
+  Message (truncate), kleine Quelle-Chip. Klick → Detail-Sheet öffnet.
 
-## 4. Nicht-Ziele (explizit ausgeschlossen)
+Detail-Sheet (rechts, `<Sheet>`):
+- Vollständige Message, ISO-Timestamp, Level, Quelle.
+- `context` als formatiertes JSON (`<pre>` mit `whitespace-pre-wrap`).
+- Stacktrace nur wenn `error.stack` vorhanden.
+- Buttons: „Als JSON kopieren" (via `navigator.clipboard`), „Schließen".
 
-- Kein `@tanstack/react-virtual` (siehe oben)
-- Keine Icon-Optimierung (Lucide ist bereits tree-shaked)
-- Keine PDF-Bildkompression (aktueller Export enthält keine Rasterbilder)
-- Kein `React.lazy` für Route-Komponenten — nur eine Haupt-Route existiert, TanStack macht Route-Splitting bereits automatisch
+Aktionen (Kopf-Toolbar):
+- „Gefiltert exportieren": erzeugt JSON-Blob aus aktuell gefilterten
+  Einträgen und triggert Download `logs-YYYYMMDD-HHmm.json`.
+- „Alle Logs löschen" (mit `confirm()`): ruft `clearAllLogs()` +
+  `logger.clear()`.
 
-## 5. Nebenbei-Fix (Hydration-Error)
+Leere/Fehler-States:
+- Keine Logs vorhanden: freundlicher Hinweis + Erklärung, dass in DEV
+  in die Console geloggt wird.
+- Fehler beim IndexedDB-Read: Alert-Panel mit Fehlermeldung, Fallback
+  auf In-Memory-Ring.
 
-Der Runtime-Fehler `System-Administrator` vs. `Senior Systems Engineer` in `src/routes/index.tsx:761` ist ein SSR/CSR-Mismatch beim User-Titel — vermutlich `getActiveUser()` liest localStorage bei SSR nicht. Fix: den User-Block in einen client-only Read (via `useHydrated()`-Muster oder `useEffect`-init) verlagern. Ich mache das mit, weil Hydration-Errors React zwingen, den Subtree client-seitig neu zu rendern — das kostet exakt die Performance, die wir optimieren wollen.
+Secrets: bereits durch `logger.ts` redigiert — keine zusätzliche
+Verarbeitung nötig. Kein Feld wird umgangen.
 
-## Done Criteria
+### 3. Menü-Integration `src/routes/index.tsx`
 
-- ✅ Alle 11 Dashboard-Dialoge lazy geladen
-- ✅ `bun run analyze` funktioniert, `stats.html` gitignored
-- ✅ Hydration-Mismatch weg (Console clean)
-- ✅ Vorher/Nachher Bundle-Größen im CHANGELOG (Main-Chunk kB)
-- ✅ Lighthouse-Score lokal einmal gemessen und im CHANGELOG notiert
-- ✅ Handbuch-Kapitel `architektur` + `changelog` aktualisiert, `bun run docs:check` grün
-- ❌ **Kein** Lighthouse-Gate in CI, **kein** Virtual-Scrolling, **kein** spekulatives `memo`
+- `LogViewerDialog` lazy-import analog zu `BackupDialog`.
+- Neuer State `showLogViewer`.
+- Menüeintrag im Service-Dropdown direkt nach „Backup…":
+  `<FileText className="size-4 opacity-70" /> Log Viewer…`.
+- Rendering mit Suspense + open-Gating.
 
-## Geänderte/neue Dateien (grob)
+Kein RBAC-Gate (Logs sind lokal im Browser, keine Fremd-Daten).
 
-- `src/routes/index.tsx` — Lazy-Imports + Suspense-Wrapper + Hydration-Fix
-- `vite.config.ts` — optionaler Visualizer
-- `package.json` — `analyze`-Script + `rollup-plugin-visualizer` (dev)
-- `.gitignore` — `dist/stats.html`
-- `docs/ARCHITECTURE.md` — Performance-Abschnitt (Lazy-Strategie, Analyze-Script)
-- `docs/ADR/0006-no-virtual-scrolling.md` — Kurz-ADR "verworfen bis Messung"
-- `docs/ADR/README.md` — Index-Eintrag
-- `CHANGELOG.md` v1.25.0
-- `src/lib/help-documentation.ts` — `architektur.lastUpdated`
+### 4. Handbuch + CHANGELOG
 
-Sag Bescheid, ob (a) der Umfang passt, (b) ich das ADR-0006 wirklich schreiben soll oder ob eine Zeile in ARCHITECTURE.md reicht, (c) der Hydration-Fix mit rein soll oder als eigener Turn.
+- Neues HelpTopic `log-viewer` in Kategorie „Service"
+  (`src/lib/help-documentation.ts`): Zweck, Filter, Datenquelle,
+  Retention (1000 Einträge / 7 Tage, aus IDB-Sink), Export, Secret-
+  Redaction. `lastUpdated` setzen.
+- `CHANGELOG.md`: neue Version `1.26.0` — Feature „Log Viewer im
+  Servicemenü".
+- `docs:check` grün.
+
+### 5. Tests
+
+- `src/__tests__/lib/logger.indexeddb-reader.test.ts` — mock
+  `indexedDB` via `fake-indexeddb` (falls nicht vorhanden: einfacher
+  In-Memory-Stub) und teste `readAllLogs` (sortiert desc), leere DB,
+  `clearAllLogs`.
+- `src/__tests__/components/LogViewerDialog.test.tsx`
+  (`@testing-library/react`): rendert Dialog mit Fake-Logs, prüft
+  Level-Filter, Volltextsuche, Detail-Öffnen, „Kopieren"-Button
+  (Clipboard-Mock), Export-Button (URL.createObjectURL-Mock).
+- A11y-Smoketest über bestehendes `axe`-Setup ergänzen.
+
+## Technische Details
+
+- Keine neue Abhängigkeit; für Tests ggf. `fake-indexeddb` als devDep,
+  wenn nicht schon vorhanden — sonst manueller Stub.
+- Performance: Filterung als reines `useMemo(() => logs.filter(...))`;
+  bei 1000 Zeilen kein Bottleneck. `useDeferredValue` für Suchbegriff.
+- Export nutzt bestehendes Muster aus `export-download-service.ts` —
+  aber bewusst ohne Persistenz im Download-Center (Logs sind
+  Debug-Artefakt, kein Report).
+
+## Nicht enthalten
+
+- Kein Server-Side-Log-Upload, kein neuer Backend-Endpoint.
+- Keine Änderung am `logger.ts`-Sink-Verhalten außer der additiven
+  `getSources()`-Methode.
+- Kein RBAC (kann später ergänzt werden, wenn Rollen-Anforderung
+  entsteht).
