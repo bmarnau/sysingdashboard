@@ -1384,6 +1384,47 @@ Nur \`src/lib/time-period.ts\` hat einen harten Threshold (≥ 80 %). Globale Ga
 ## CI
 Die GitHub-Actions-Pipeline (\`.github/workflows/ci.yml\`) führt \`bun run test:coverage\` nach Lint/RBAC und vor dem Build aus. Der Coverage-Report wird als Artifact hochgeladen. Ein rot geschlagener Test blockiert den Merge (Branch-Protection in GitHub-Settings aktivieren).`,
   },
+  {
+    id: "log-viewer",
+    title: "Log Viewer",
+    category: "Service",
+    component: "LogViewerDialog",
+    keywords: [
+      "Log",
+      "Logs",
+      "Logger",
+      "IndexedDB",
+      "Debug",
+      "Fehleranalyse",
+      "Service",
+      "Diagnose",
+    ],
+    lastUpdated: "2026-07-10",
+    content: `## Zweck
+Der Log Viewer (Servicemenü → *Log Viewer…*) macht die vorhandene Logger-Infrastruktur (\`src/lib/logger.ts\`) sichtbar. Er führt zwei Quellen zusammen: den In-Memory-Ringpuffer (letzte 500 Einträge der aktuellen Session) und den persistierten IndexedDB-Sink (\`dashboard-logs\`, Rotation nach 1000 Zeilen / 7 Tagen). Es wird **keine** neue Log-Infrastruktur eingeführt.
+
+## Filter
+- **Level**: debug / info / warn / error — beliebig kombinierbar.
+- **Zeitraum**: Letzte 15 min, 1 h, 24 h, 7 Tage oder alle.
+- **Quelle**: Multi-Select aus \`context.label\` / \`.module\` / \`.operation\` / \`.component\`, sofern gesetzt.
+- **Volltextsuche**: durchsucht Message, Fehler und den JSON-serialisierten Kontext.
+
+## Detailansicht
+Klick auf eine Zeile öffnet ein Seiten-Sheet mit ISO-Timestamp, vollständigem Kontext-JSON und (falls vorhanden) Stacktrace. Der Eintrag lässt sich als JSON in die Zwischenablage kopieren.
+
+## Aktionen
+- **Aktualisieren** / **Auto (5 s)**: erneut lesen bzw. periodisch pollen.
+- **Export**: lädt die aktuell gefilterten Einträge als \`logs-YYYY-MM-DD-HHmm.json\` herunter.
+- **Löschen**: leert Ringpuffer und IndexedDB-Sink (bestätigt via Browser-Dialog).
+
+## Sicherheit
+Secrets sind bereits im Logger maskiert (Keys wie \`token\`, \`password\`, \`authorization\` sowie JWT-artige Strings → \`[REDACTED]\`). Der Log Viewer verarbeitet die Daten unverändert weiter — es findet **kein** Upload statt, alles bleibt lokal im Browser.
+
+## Grenzen
+- Anzeige ist auf 1000 Zeilen begrenzt (bewusst kein Virtual Scrolling, siehe ADR-0006). Bei mehr Treffern erscheint ein Hinweis „N weitere gefiltert".
+- In DEV schreibt der Logger zusätzlich in die Browser-Console; IndexedDB-Persistenz greift erst im PROD-Build.`,
+    relatedTopics: ["fehlerbehandlung-logging"],
+  },
 ];
 
 function allTopicsBase(): HelpTopic[] {

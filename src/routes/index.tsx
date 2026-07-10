@@ -20,6 +20,7 @@ import {
   Pencil,
   Plus,
   Printer,
+  ScrollText,
   Search,
   Server,
   Settings,
@@ -76,6 +77,9 @@ const ImportExportDialog = lazy(() =>
 );
 const AzureDataDialog = lazy(() =>
   import("@/components/azure/AzureDataDialog").then((m) => ({ default: m.AzureDataDialog })),
+);
+const LogViewerDialog = lazy(() =>
+  import("@/components/LogViewerDialog").then((m) => ({ default: m.LogViewerDialog })),
 );
 import { HelpDocumentationService } from "@/lib/help-documentation";
 import { BackupService } from "@/lib/backup-service";
@@ -344,6 +348,7 @@ function Dashboard() {
   const [showDownloads, setShowDownloads] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
   const [showAzureData, setShowAzureData] = useState(false);
+  const [showLogViewer, setShowLogViewer] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
@@ -986,6 +991,15 @@ function Dashboard() {
                         <HardDrive className="size-4 opacity-70" /> Backup…
                       </button>
                     )}
+                    <button
+                      onClick={() => {
+                        setShowServiceMenu(false);
+                        setShowLogViewer(true);
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                    >
+                      <ScrollText className="size-4 opacity-70" /> Log Viewer…
+                    </button>
                     {can(currentUser, "azure.export") && (
                       <button
                         onClick={() => {
@@ -1496,6 +1510,11 @@ function Dashboard() {
       {showAzureData && (
         <Suspense fallback={null}>
           <AzureDataDialog open={showAzureData} onOpenChange={setShowAzureData} />
+        </Suspense>
+      )}
+      {showLogViewer && (
+        <Suspense fallback={null}>
+          <LogViewerDialog open={showLogViewer} onOpenChange={setShowLogViewer} />
         </Suspense>
       )}
     </div>
