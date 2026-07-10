@@ -20,6 +20,7 @@ import {
   Pencil,
   Plus,
   Printer,
+  ScrollText,
   Search,
   Server,
   Settings,
@@ -76,6 +77,9 @@ const ImportExportDialog = lazy(() =>
 );
 const AzureDataDialog = lazy(() =>
   import("@/components/azure/AzureDataDialog").then((m) => ({ default: m.AzureDataDialog })),
+);
+const LogViewerDialog = lazy(() =>
+  import("@/components/LogViewerDialog").then((m) => ({ default: m.LogViewerDialog })),
 );
 import { HelpDocumentationService } from "@/lib/help-documentation";
 import { BackupService } from "@/lib/backup-service";
@@ -344,6 +348,7 @@ function Dashboard() {
   const [showDownloads, setShowDownloads] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
   const [showAzureData, setShowAzureData] = useState(false);
+  const [showLogViewer, setShowLogViewer] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
   const [searchQ, setSearchQ] = useState("");
