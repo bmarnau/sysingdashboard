@@ -1,129 +1,51 @@
-
 ## Ziel
+Einheitliches Logging über bestehende `logger`-API (`src/lib/logger.ts` bzw. `backend/services/logger.mjs`). Keine neue Infrastruktur, keine direkten `console.*`.
 
-Neuer Menüpunkt „Log Viewer" im Servicemenü, der die bestehenden Logs
-(`src/lib/logger.ts` Ringbuffer + IndexedDB-Sink) sichtbar und
-durchsuchbar macht — **ohne** neue Log-Infrastruktur, ohne Änderung
-bestehender Fachlogik.
+## Umfang der Änderungen
 
-## Umsetzung
+### 1. Frontend-Services mit Logger erweitern
+- **`src/lib/json-import-service.ts`**: `info` bei Start/Ende Import (counts, warnings, snapshotId), `warn` bei Duplikaten/Mapping-Gaps, `error` in beiden `catch`-Blöcken (Parse-Fehler und Rollback), `debug` beim Snapshot-Erstellen/Rollback.
+- **`src/lib/json-export-service.ts`**: `info` bei erfolgreichem Export (Format, Counts), `error` bei Fehler.
+- **`src/lib/export-download-service.ts`**: `debug` bei Registrierung, `info` bei Löschung durch Retention, `error` bei IndexedDB-Fehlern.
+- **`src/lib/azure/azure-service.ts`**: `info` für gestartete Aktionen (kind, actor), `warn` bei Stub-Skip (bereits vorhanden), `error` bei Fehlschlägen; Verbindungsstrings/Keys niemals loggen — nur `endpoint` gehasht oder Hostname.
+- **`src/lib/azure/azure-history-store.ts`**: `warn` bei Parse-/Quota-Fehlern in `localStorage`.
+- **`src/lib/user-management.ts`**: `info` bei Create/Update/Delete/Role-Change (userId, role, action — kein Passwort/E-Mail-Body), `warn` bei blockierten Admin-Lockouts, `error` bei Validierungsfehlern.
+- **`src/lib/project-info.ts`**: `warn` bei fehlgeschlagenem `/api/status`-Fetch, `debug` bei erfolgreichem Refresh.
 
-### 1. Nur-lesende Query-API am IndexedDB-Sink
+### 2. Service-Dialoge: `console.*` entfernen
+- `src/components/ExportDialog.tsx` (3 Stellen), `src/components/SaveTargetDialog.tsx` (1), `src/components/azure/AzureDataDialog.tsx` (ErrorBoundary onError) → `logger.error/warn` mit `{ module: "ExportDialog", action, userId }`.
 
-Neu: `src/lib/logger.indexeddb-reader.ts` (bewusst getrennt von
-`logger.indexeddb.ts`, damit der Write-Sink weiter minimal bleibt).
+### 3. Backend
+- **`backend/services/syncService.mjs`** und **`statusService.mjs`**: `logger.info` bei Aufruf, `logger.error` bei Fehler (bereits teilweise vorhanden — nur ergänzen falls Lücken).
+- **`backend/server.mjs`**: Die zwei Startup-`console.log` durch `logger.info` ersetzen (Datei nicht in `check-no-console` TARGETS, aber Konsistenz).
 
-- `readAllLogs(): Promise<LogEntry[]>` — öffnet dieselbe DB
-  (`dashboard-logs` / Store `entries`), liest per Cursor absteigend nach
-  `ts`-Index. Kein Schema-Change, kein neuer Store.
-- `clearAllLogs(): Promise<void>` — optional, nur über explizite
-  Nutzeraktion (mit Bestätigung).
-- Fällt sauber zurück, wenn IndexedDB fehlt (SSR/Worker) → `[]`.
+### 4. Kontext-Konvention
+Alle neuen `logger.*`-Aufrufe erhalten einheitlichen Kontext:
+```
+{ module: "BackupService" | "ImportService" | ..., action: "create" | "rollback" | ..., userId?, code?, counts? }
+```
+Bestehende Redaction in `logger.ts` fängt `token/secret/password/authorization/apikey/…` ab — für Azure zusätzlich Connection-Strings/Endpoints als `endpoint: hostname(url)` reduzieren (kein Query-String, kein SAS-Token).
 
-Ergänzung an `logger.ts`: kleine Hilfsmethode `getSources()` — extrahiert
-distinct `context.label` / `context.module` / `context.operation` aus dem
-In-Memory-Ring (für den Quellen-Filter). Kein Persistenz-Change.
+### 5. Guard erweitern
+`scripts/check-no-console.mjs` — TARGETS um `src/lib/json-import-service.ts`, `src/lib/json-export-service.ts`, `src/lib/export-download-service.ts`, `src/lib/user-management.ts`, `src/lib/project-info.ts`, `src/components/ExportDialog.tsx`, `src/components/SaveTargetDialog.tsx`, `src/components/azure/AzureDataDialog.tsx` ergänzen. Backend-Server bewusst außen vor lassen (Bootstrap-Ausgabe erlaubt).
 
-### 2. UI-Komponente `src/components/LogViewerDialog.tsx`
+### 6. Tests
+Neue Datei `src/__tests__/lib/logger-integration.test.ts`:
+- `should_logSuccess_when_userCreated` (user-management)
+- `should_logError_when_jsonImportParseFails`
+- `should_redactAzureConnectionString_when_loggedAsSecret`
+- `should_notLeakTokens_when_exportDialogFails` (via `logger.getRecent()`)
 
-Modaler Dialog (konsistent mit `SystemStatusDialog` / `BackupDialog`).
+Bestehende Tests bleiben unverändert lauffähig.
 
-Layout:
-- Desktop ≥ md: 2-spaltiges Grid `grid-cols-[260px_minmax(0,1fr)]`,
-  Filter links (sticky), Logliste rechts.
-- Mobile: Filter in `<Collapsible>` oberhalb der Liste, standardmäßig
-  eingeklappt.
-
-Filter (alle kombinierbar):
-- Level-Checkboxen: debug / info / warn / error (default alle an).
-- Zeitraum: Preset-Select „Letzte 15 min / 1 h / 24 h / 7 Tage /
-  Benutzerdefiniert" (Custom = 2 datetime-local Felder).
-- Quelle: Multi-Select aus `getSources()` (nur angezeigt, wenn ≥ 1
-  Quelle vorhanden).
-- Volltext-Input (mit `useDeferredValue`) — sucht in `message`,
-  `error.message`, JSON-stringified `context`.
-
-Datenquelle:
-- Beim Öffnen einmalig aus IndexedDB laden, mit In-Memory-Ring
-  mergen und deduplizieren nach `ts+message`.
-- „Aktualisieren"-Button → neu laden.
-- „Auto-Refresh"-Toggle (5 s Intervall via `setInterval` in Effect,
-  clear on close).
-
-Liste:
-- Virtualisiert nicht — bewusst begrenzt auf 1000 Zeilen (siehe
-  ADR-0006 „No Virtual Scrolling"). Wenn mehr Treffer als 1000: Banner
-  „X weitere gefiltert — verfeinere die Filter".
-- Zeile: Timestamp (relativ + absolut im Tooltip), Level-Badge farbig,
-  Message (truncate), kleine Quelle-Chip. Klick → Detail-Sheet öffnet.
-
-Detail-Sheet (rechts, `<Sheet>`):
-- Vollständige Message, ISO-Timestamp, Level, Quelle.
-- `context` als formatiertes JSON (`<pre>` mit `whitespace-pre-wrap`).
-- Stacktrace nur wenn `error.stack` vorhanden.
-- Buttons: „Als JSON kopieren" (via `navigator.clipboard`), „Schließen".
-
-Aktionen (Kopf-Toolbar):
-- „Gefiltert exportieren": erzeugt JSON-Blob aus aktuell gefilterten
-  Einträgen und triggert Download `logs-YYYYMMDD-HHmm.json`.
-- „Alle Logs löschen" (mit `confirm()`): ruft `clearAllLogs()` +
-  `logger.clear()`.
-
-Leere/Fehler-States:
-- Keine Logs vorhanden: freundlicher Hinweis + Erklärung, dass in DEV
-  in die Console geloggt wird.
-- Fehler beim IndexedDB-Read: Alert-Panel mit Fehlermeldung, Fallback
-  auf In-Memory-Ring.
-
-Secrets: bereits durch `logger.ts` redigiert — keine zusätzliche
-Verarbeitung nötig. Kein Feld wird umgangen.
-
-### 3. Menü-Integration `src/routes/index.tsx`
-
-- `LogViewerDialog` lazy-import analog zu `BackupDialog`.
-- Neuer State `showLogViewer`.
-- Menüeintrag im Service-Dropdown direkt nach „Backup…":
-  `<FileText className="size-4 opacity-70" /> Log Viewer…`.
-- Rendering mit Suspense + open-Gating.
-
-Kein RBAC-Gate (Logs sind lokal im Browser, keine Fremd-Daten).
-
-### 4. Handbuch + CHANGELOG
-
-- Neues HelpTopic `log-viewer` in Kategorie „Service"
-  (`src/lib/help-documentation.ts`): Zweck, Filter, Datenquelle,
-  Retention (1000 Einträge / 7 Tage, aus IDB-Sink), Export, Secret-
-  Redaction. `lastUpdated` setzen.
-- `CHANGELOG.md`: neue Version `1.26.0` — Feature „Log Viewer im
-  Servicemenü".
-- `docs:check` grün.
-
-### 5. Tests
-
-- `src/__tests__/lib/logger.indexeddb-reader.test.ts` — mock
-  `indexedDB` via `fake-indexeddb` (falls nicht vorhanden: einfacher
-  In-Memory-Stub) und teste `readAllLogs` (sortiert desc), leere DB,
-  `clearAllLogs`.
-- `src/__tests__/components/LogViewerDialog.test.tsx`
-  (`@testing-library/react`): rendert Dialog mit Fake-Logs, prüft
-  Level-Filter, Volltextsuche, Detail-Öffnen, „Kopieren"-Button
-  (Clipboard-Mock), Export-Button (URL.createObjectURL-Mock).
-- A11y-Smoketest über bestehendes `axe`-Setup ergänzen.
-
-## Technische Details
-
-- Keine neue Abhängigkeit; für Tests ggf. `fake-indexeddb` als devDep,
-  wenn nicht schon vorhanden — sonst manueller Stub.
-- Performance: Filterung als reines `useMemo(() => logs.filter(...))`;
-  bei 1000 Zeilen kein Bottleneck. `useDeferredValue` für Suchbegriff.
-- Export nutzt bestehendes Muster aus `export-download-service.ts` —
-  aber bewusst ohne Persistenz im Download-Center (Logs sind
-  Debug-Artefakt, kein Report).
+### 7. Doku
+- `CHANGELOG.md`: neuer Eintrag `## 1.27.0 - 2026-07-11` mit Bullet-Zusammenfassung.
+- `src/lib/help-documentation.ts`: bestehendes Kapitel „Log Viewer" um Absatz „Was wird geloggt" erweitern; `lastUpdated` aktualisieren.
 
 ## Nicht enthalten
+- Kein neuer Log-Sink, kein Upload, keine neue UI.
+- Kein Refactor der Redaction-Regeln (existierende JWT/Secret-Regex bleibt).
+- Kein Umbau bestehender Logging-Aufrufe (`BackupService` bereits konform).
 
-- Kein Server-Side-Log-Upload, kein neuer Backend-Endpoint.
-- Keine Änderung am `logger.ts`-Sink-Verhalten außer der additiven
-  `getSources()`-Methode.
-- Kein RBAC (kann später ergänzt werden, wenn Rollen-Anforderung
-  entsteht).
+## Kritischer Hinweis
+Für Azure sollte mittelfristig ein dedizierter Redactor für Connection-Strings (`AccountKey=…`, `SharedAccessSignature=…`) direkt in `logger.ts` ergänzt werden. Für diesen Schritt wird das über die Aufrufer-Disziplin gelöst (nur Hostname loggen); Empfehlung im Handbuch-Kapitel dokumentiert.
