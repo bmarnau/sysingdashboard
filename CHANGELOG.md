@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.26.1 - 2026-07-11
+
+- **Einheitliches Logging in Servicefunktionen**: Alle verbliebenen `console.*`-Aufrufe in `ExportDialog`, `SaveTargetDialog`, `AzureDataDialog` sowie `backend/server.mjs` durch den zentralen Logger ersetzt. Neue strukturierte `info/warn/error`-Meldungen mit `module`/`action`-Kontext in `json-export-service`, `json-import-service`, `export-download-service`, `azure/azure-service`, `azure/azure-history-store`, `user-management`. Aufrufe im Log Viewer sichtbar, Secret-Redaction weiter aktiv.
+- **RBAC-Audit-Trail**: Erfolgreiche und blockierte Rollen-/Statuswechsel sowie SysAdmin/Admin-Lockouts werden mit Code (`SYSADMIN_LOCKOUT`, `ADMIN_LOCKOUT`) und Ziel-`userId` protokolliert.
+- **Erweiterter No-Console-Guard**: `scripts/check-no-console.mjs` deckt jetzt zusätzlich `json-export-service`, `export-download-service`, `user-management`, `ExportDialog`, `SaveTargetDialog`, `components/azure/`, `backend/routes` und `backend/server.mjs` ab.
+
 ## 1.26.0 - 2026-07-10
 
 - **Log Viewer im Servicemenü**: Neuer Menüpunkt „Log Viewer…" macht die bestehende Logger-Infrastruktur sichtbar (`src/components/LogViewerDialog.tsx`). Führt In-Memory-Ringpuffer und persistierten IndexedDB-Sink (`dashboard-logs`) zusammen, deduziert pro `ts|level|message` und sortiert absteigend.
