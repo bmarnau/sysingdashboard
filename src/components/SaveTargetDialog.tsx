@@ -19,6 +19,7 @@ import {
   type ArchivedExport,
   type SaveTarget,
 } from "@/lib/export-archive";
+import { logger } from "@/lib/logger";
 
 interface SaveTargetDialogProps {
   open: boolean;
@@ -117,7 +118,11 @@ export function SaveTargetDialog({
       }
       onOpenChange(false);
     } catch (err) {
-      console.error("[Export] Speichern fehlgeschlagen:", err);
+      logger.error("Save target failed", err, {
+        module: "SaveTargetDialog",
+        action: "save",
+        format,
+      });
       setError("Speichern fehlgeschlagen. Bitte erneut versuchen.");
       setBusy(false);
     }

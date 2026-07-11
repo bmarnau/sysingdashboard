@@ -46,6 +46,7 @@ import {
 } from "@/lib/engineer-target-time";
 import { dashboardData, type Activity, type Project, type WorkPackage } from "@/lib/dashboard-data";
 import { isSensitiveFieldName } from "@/lib/json-schema";
+import { logger } from "@/lib/logger";
 
 /* ------------------------------ Typen ------------------------------ */
 
@@ -295,6 +296,13 @@ export const JsonImportService = {
     try {
       parsed = JSON.parse(text);
     } catch (err) {
+      logger.error("JsonImport: parse failed", err, {
+        module: "JsonImportService",
+        action: "readFile",
+        code: "JSON_PARSE",
+        fileName: file.name,
+        byteLength: text.length,
+      });
       return {
         raw: text,
         doc: null,
@@ -610,19 +618,47 @@ export const JsonImportService = {
         );
       }
 
+      logger.info("JsonImport applied", {
+        module: "JsonImportService",
+        action: "apply",
+        snapshotId: snap.id,
+        actor: options.actor,
+        strategy: options.strategy,
+        counts,
+        warnings: warnings.length,
+      });
       return { snapshotId: snap.id, counts, warnings };
     } catch (err) {
       // Rollback
       restoreSnapshot(snap);
       counts.errors++;
+      logger.error("JsonImport failed — snapshot restored", err, {
+        module: "JsonImportService",
+        action: "apply",
+        code: "IMPORT_APPLY",
+        snapshotId: snap.id,
+        actor: options.actor,
+      });
       throw err;
     }
   },
 
   rollback(snapshotId: string): boolean {
     const snap = snapshotRegistry.get(snapshotId);
-    if (!snap) return false;
+    if (!snap) {
+      logger.warn("JsonImport rollback: snapshot not found", {
+        module: "JsonImportService",
+        action: "rollback",
+        snapshotId,
+      });
+      return false;
+    }
     restoreSnapshot(snap);
+    logger.info("JsonImport rolled back", {
+      module: "JsonImportService",
+      action: "rollback",
+      snapshotId,
+    });
     return true;
   },
 };

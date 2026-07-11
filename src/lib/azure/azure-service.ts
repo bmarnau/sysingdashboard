@@ -46,11 +46,16 @@ function stub(kind: AzureActionKind, actor: string, message = NOT_IMPLEMENTED): 
   return record({ actor, kind }, { ok: false, message, at, durationMs: 0 });
 }
 
+function begin(kind: AzureActionKind, actor: string): void {
+  logger.info("Azure action requested", { module: "AzureService", action: kind, actor });
+}
+
 export const azureService = {
   /**
    * Verbindungstest — Stub. Aufruf ist manuell und läuft nicht automatisch.
    */
   async testConnection(actor: string): Promise<AzureActionResult> {
+    begin("connection-test", actor);
     return stub("connection-test", actor);
   },
 
@@ -58,6 +63,7 @@ export const azureService = {
    * Datenbank aufbauen — Stub. Nur Systemadministrator; Bestätigung im UI.
    */
   async buildDatabase(actor: string): Promise<AzureActionResult> {
+    begin("database-build", actor);
     return stub("database-build", actor);
   },
 
@@ -65,6 +71,7 @@ export const azureService = {
    * Nach Azure exportieren — Stub. Manuelle Aktion mit Bestätigung.
    */
   async runExport(actor: string): Promise<AzureActionResult> {
+    begin("export", actor);
     return stub("export", actor);
   },
 
@@ -73,6 +80,7 @@ export const azureService = {
    * Zählwerte, damit die UI-Vorschau vollständig testbar ist.
    */
   async fetchImportPreview(): Promise<AzureImportPreview> {
+    logger.debug("Azure import preview requested", { module: "AzureService", action: "preview" });
     return {
       scope: "Alle Bereiche (Beispiel)",
       counts: { toCreate: 0, toUpdate: 0, toDelete: 0, conflicts: 0 },
@@ -86,7 +94,13 @@ export const azureService = {
    * gezeigt und ein Backup erstellt hat (siehe `AzureImportPreviewDialog`).
    */
   async runImport(actor: string, opts: { backupId: string }): Promise<AzureActionResult> {
+    begin("import", actor);
     if (!opts.backupId) {
+      logger.warn("Azure import aborted: missing backup reference", {
+        module: "AzureService",
+        action: "import",
+        actor,
+      });
       return stub("import", actor, "Import abgebrochen: kein Backup-Referenz übergeben.");
     }
     return stub("import", actor);
