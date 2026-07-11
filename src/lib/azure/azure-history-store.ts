@@ -12,6 +12,7 @@
  */
 
 import type { AzureActionKind, AzureHistoryEntry, AzureHistorySnapshot } from "./types";
+import { logger } from "@/lib/logger";
 
 const STORAGE_KEY = "azure:history:v1";
 const MAX_PER_KIND = 50;
@@ -34,7 +35,12 @@ function readAll(): AzureHistorySnapshot {
       exports: Array.isArray(parsed.exports) ? parsed.exports : [],
       imports: Array.isArray(parsed.imports) ? parsed.imports : [],
     };
-  } catch {
+  } catch (err) {
+    logger.warn("AzureHistoryStore: read failed", {
+      module: "AzureHistoryStore",
+      action: "read",
+      error: err instanceof Error ? err.message : String(err),
+    });
     return emptySnapshot();
   }
 }
@@ -43,8 +49,12 @@ function writeAll(snap: AzureHistorySnapshot): void {
   if (!hasStorage()) return;
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(snap));
-  } catch {
-    // Quota o.ä. — bewusst schlucken.
+  } catch (err) {
+    logger.warn("AzureHistoryStore: write failed (quota?)", {
+      module: "AzureHistoryStore",
+      action: "write",
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
   for (const l of listeners) l();
 }

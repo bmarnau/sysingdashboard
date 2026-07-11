@@ -13,6 +13,7 @@ import {
   type ArchivedExport,
   type ArchivedStatus,
 } from "@/lib/export-archive";
+import { logger } from "@/lib/logger";
 
 export type ExportDownloadStatus = ArchivedStatus;
 
@@ -128,22 +129,40 @@ export const ExportDownloadService = {
     const createdAt = new Date().toISOString();
     const retentionDays = clampRetention(input.retentionDays ?? this.getRetentionDays());
     const expiresAt = this.computeExpiresAt(createdAt, retentionDays);
-    const saved = await ExportArchive.save({
-      id: input.id,
-      createdAt,
-      fileName: input.fileName,
-      format: input.format,
-      reportId: input.reportId,
-      period: input.period,
-      createdBy: input.createdBy,
-      status: input.status ?? (input.blob ? "ready" : "creating"),
-      error: input.error,
-      sizeBytes: input.blob?.size ?? 0,
-      blob: input.blob,
-      expiresAt,
-      retentionDays,
-    });
-    return toItem(saved);
+    try {
+      const saved = await ExportArchive.save({
+        id: input.id,
+        createdAt,
+        fileName: input.fileName,
+        format: input.format,
+        reportId: input.reportId,
+        period: input.period,
+        createdBy: input.createdBy,
+        status: input.status ?? (input.blob ? "ready" : "creating"),
+        error: input.error,
+        sizeBytes: input.blob?.size ?? 0,
+        blob: input.blob,
+        expiresAt,
+        retentionDays,
+      });
+      logger.debug("Download registered", {
+        module: "ExportDownloadService",
+        action: "addDownload",
+        id: saved.id,
+        format: input.format,
+        status: saved.status,
+        sizeBytes: saved.sizeBytes,
+      });
+      return toItem(saved);
+    } catch (err) {
+      logger.error("Download registration failed", err, {
+        module: "ExportDownloadService",
+        action: "addDownload",
+        fileName: input.fileName,
+        format: input.format,
+      });
+      throw err;
+    }
   },
 
   async updateDownloadStatus(
@@ -214,6 +233,14 @@ export const ExportDownloadService = {
         purged++;
       }
     }
+    if (marked > 0 || purged > 0) {
+      logger.info("Download retention sweep", {
+        module: "ExportDownloadService",
+        action: "sweepExpired",
+        marked,
+        purged,
+      });
+    }
     return { marked, purged };
   },
 
@@ -227,6 +254,11 @@ export const ExportDownloadService = {
         n++;
       }
     }
+    logger.info("Downloads purged", {
+      module: "ExportDownloadService",
+      action: "purgeExpiredNow",
+      purged: n,
+    });
     return n;
   },
 };

@@ -11,6 +11,7 @@
  */
 
 import { dashboardData } from "@/lib/dashboard-data";
+import { logger } from "@/lib/logger";
 
 export type UserRole =
   | "systemadministrator"
@@ -308,6 +309,13 @@ export function createUser(input: CreateUserInput): UserProfile {
     updatedAt: nowIso(),
   };
   saveUsers([...users, user]);
+  logger.info("User created", {
+    module: "UserManagement",
+    action: "createUser",
+    userId: user.id,
+    role: user.role,
+    status: user.status,
+  });
   return user;
 }
 
@@ -324,7 +332,14 @@ export function updateUser(
 ): UserProfile | null {
   const users = loadUsers();
   const idx = users.findIndex((u) => u.id === id);
-  if (idx < 0) return null;
+  if (idx < 0) {
+    logger.warn("User update skipped: user not found", {
+      module: "UserManagement",
+      action: "updateUser",
+      userId: id,
+    });
+    return null;
+  }
   const current = users[idx];
   const nextRole = (patch.role ?? current.role) as UserRole;
   const nextStatus = (patch.status ?? current.status) as UserStatus;
@@ -333,6 +348,12 @@ export function updateUser(
   if (wasActiveSysAdmin && !stillActiveSysAdmin) {
     if (activeSysAdminCount(users, id) === 0) {
       // Letzter aktiver SysAdmin darf nicht degradiert/deaktiviert werden.
+      logger.warn("User update blocked: last active systemadministrator", {
+        module: "UserManagement",
+        action: "updateUser",
+        code: "SYSADMIN_LOCKOUT",
+        userId: id,
+      });
       return null;
     }
   }
@@ -346,6 +367,14 @@ export function updateUser(
   const copy = users.slice();
   copy[idx] = next;
   saveUsers(copy);
+  logger.info("User updated", {
+    module: "UserManagement",
+    action: "updateUser",
+    userId: next.id,
+    role: next.role,
+    status: next.status,
+    changedFields: Object.keys(patch),
+  });
   return next;
 }
 
@@ -353,8 +382,21 @@ export function updateUser(
 export function deleteUser(id: string): { ok: boolean; reason?: string } {
   const users = loadUsers();
   const target = users.find((u) => u.id === id);
-  if (!target) return { ok: false, reason: "Benutzer nicht gefunden." };
+  if (!target) {
+    logger.warn("User delete skipped: not found", {
+      module: "UserManagement",
+      action: "deleteUser",
+      userId: id,
+    });
+    return { ok: false, reason: "Benutzer nicht gefunden." };
+  }
   if (target.role === "systemadministrator" && activeSysAdminCount(users, id) === 0) {
+    logger.warn("User delete blocked: last active systemadministrator", {
+      module: "UserManagement",
+      action: "deleteUser",
+      code: "SYSADMIN_LOCKOUT",
+      userId: id,
+    });
     return {
       ok: false,
       reason: "Letzter aktiver System-Administrator kann nicht gelöscht werden.",
@@ -367,6 +409,12 @@ export function deleteUser(id: string): { ok: boolean; reason?: string } {
       u.id !== id,
   );
   if (target.role === "administrator" && adminsLeft.length === 0) {
+    logger.warn("User delete blocked: last active administrator", {
+      module: "UserManagement",
+      action: "deleteUser",
+      code: "ADMIN_LOCKOUT",
+      userId: id,
+    });
     return {
       ok: false,
       reason: "Letzter aktiver Administrator kann nicht gelöscht werden.",
@@ -388,6 +436,12 @@ export function deleteUser(id: string): { ok: boolean; reason?: string } {
     const fallback = next.find((u) => u.status === "active") ?? next[0];
     if (fallback) setActiveUserId(fallback.id);
   }
+  logger.info("User deleted", {
+    module: "UserManagement",
+    action: "deleteUser",
+    userId: id,
+    role: target.role,
+  });
   return { ok: true };
 }
 

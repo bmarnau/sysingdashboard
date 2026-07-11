@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AzureStatusPanel } from "./AzureStatusPanel";
 import { AzureActionsPanel } from "./AzureActionsPanel";
 import { AzureHistoryPanel } from "./AzureHistoryPanel";
+import { logger } from "@/lib/logger";
 
 interface AzureDataDialogProps {
   open: boolean;
@@ -68,8 +69,12 @@ class AzureBoundary extends Component<{ children: ReactNode }, { error: Error | 
     return { error };
   }
   componentDidCatch(error: Error, info: ErrorInfo) {
-    // Bewusst nur console — kein Rethrow, damit das restliche Dashboard läuft.
-    console.error("[AzureDataDialog]", error, info.componentStack);
+    // Kein Rethrow, damit das restliche Dashboard läuft.
+    logger.error("AzureDataDialog boundary caught", error, {
+      module: "AzureDataDialog",
+      action: "boundary",
+      componentStack: info.componentStack,
+    });
   }
   render() {
     if (this.state.error) {

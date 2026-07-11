@@ -24,6 +24,7 @@ import { ExportDownloadService } from "@/lib/export-download-service";
 import { buildTextExport, withReportIdInFileName } from "@/lib/text-export";
 import { downloadBlob } from "@/lib/export-archive";
 import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 // jsPDF/autotable (~350 KB gz) und der Preview-Dialog werden erst on-demand geladen,
 // damit das Dashboard nicht durch den PDF-Stack ausgebremst wird.
@@ -323,7 +324,11 @@ export function ExportDialog({
         );
         onOpenChange(false);
       } catch (err) {
-        console.error("[Export] Erzeugung fehlgeschlagen:", err);
+        logger.error("Text export failed", err, {
+          module: "ExportDialog",
+          action: "textExport",
+          format,
+        });
         const msg = err instanceof Error ? err.message : "Unbekannter Fehler";
         setPdfError(`Export konnte nicht erzeugt werden: ${msg}`);
         try {
@@ -388,10 +393,17 @@ export function ExportDialog({
         window.dispatchEvent(new CustomEvent("export-downloads:changed"));
         toast.success("PDF-Report wurde erstellt und steht im Downloadbereich bereit.");
       } catch (archiveErr) {
-        console.warn("[Export] Download-Eintrag konnte nicht gespeichert werden:", archiveErr);
+        logger.warn("Export archive entry could not be saved", {
+          module: "ExportDialog",
+          action: "registerDownload",
+          error: archiveErr instanceof Error ? archiveErr.message : String(archiveErr),
+        });
       }
     } catch (err) {
-      console.error("[Export] PDF-Erzeugung fehlgeschlagen:", err);
+      logger.error("PDF export failed", err, {
+        module: "ExportDialog",
+        action: "pdfExport",
+      });
       setPdfError("PDF konnte nicht erzeugt werden.");
       try {
         await ExportDownloadService.addDownload({

@@ -22,8 +22,16 @@ const ROOT = resolve(new URL("..", import.meta.url).pathname);
 const TARGETS = [
   "src/lib/backup-service.ts",
   "src/lib/json-import-service.ts",
+  "src/lib/json-export-service.ts",
+  "src/lib/export-download-service.ts",
+  "src/lib/user-management.ts",
   "src/lib/azure",
+  "src/components/ExportDialog.tsx",
+  "src/components/SaveTargetDialog.tsx",
+  "src/components/azure",
   "backend/services",
+  "backend/routes",
+  "backend/server.mjs",
 ];
 
 const ALLOW = new Set([

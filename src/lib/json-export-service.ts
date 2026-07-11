@@ -36,6 +36,7 @@ import {
   DOCUMENTATION_VERSION,
   HelpDocumentationService,
 } from "@/lib/help-documentation";
+import { logger } from "@/lib/logger";
 
 /* ------------------------------- Optionen ------------------------------- */
 
@@ -230,18 +231,40 @@ function finalizeExport(
   type: ExportType,
   scope?: ExportScope,
 ): JsonExportResult {
-  // Final-Sweep: nochmals durch stripSensitiveFields (Defense in depth).
-  const safe = stripSensitiveFields(doc) as DashboardJsonExport;
-  // Schema-Selbsttest — wirft, falls Drift entstanden ist (z. B. neue Felder).
-  DashboardJsonExportSchema.parse(safe);
-  const text = JSON.stringify(safe, null, 2);
-  const blob = new Blob([text], { type: "application/json" });
-  return {
-    blob,
-    fileName: buildJsonFileName(type, scope),
-    document: safe,
-    byteLength: blob.size,
-  };
+  try {
+    // Final-Sweep: nochmals durch stripSensitiveFields (Defense in depth).
+    const safe = stripSensitiveFields(doc) as DashboardJsonExport;
+    // Schema-Selbsttest — wirft, falls Drift entstanden ist (z. B. neue Felder).
+    DashboardJsonExportSchema.parse(safe);
+    const text = JSON.stringify(safe, null, 2);
+    const blob = new Blob([text], { type: "application/json" });
+    const fileName = buildJsonFileName(type, scope);
+    logger.info("JsonExport built", {
+      module: "JsonExportService",
+      action: "export",
+      type,
+      scope,
+      fileName,
+      byteLength: blob.size,
+      counts: {
+        users: safe.users?.length ?? 0,
+        customers: safe.customers?.length ?? 0,
+        projects: safe.projects?.length ?? 0,
+        workPackages: safe.workPackages?.length ?? 0,
+        activities: safe.activities?.length ?? 0,
+        timeEntries: safe.timeEntries?.length ?? 0,
+      },
+    });
+    return { blob, fileName, document: safe, byteLength: blob.size };
+  } catch (err) {
+    logger.error("JsonExport failed", err, {
+      module: "JsonExportService",
+      action: "export",
+      type,
+      scope,
+    });
+    throw err;
+  }
 }
 
 export const JsonExportService = {

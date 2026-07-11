@@ -12,6 +12,7 @@ import { handleSync } from "./routes/sync.mjs";
 import { handleStatus } from "./routes/status.mjs";
 import { getMode } from "../config/env.mjs";
 import { validate as validateEnv } from "../config/secretManager.mjs";
+import { logger } from "./services/logger.mjs";
 
 // Fail-Fast beim Boot: PROD ohne Pflicht-ENVs darf nicht starten.
 // DEV loggt nur Warnungen.
@@ -51,7 +52,8 @@ export const server = http.createServer(async (req, res) => {
 
   try {
     await handler(req, res);
-  } catch {
+  } catch (err) {
+    logger.error("Backend route failed", err, { module: "backend/server", route: key });
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ ok: false, error: "Internal Server Error" }));
   }
@@ -60,7 +62,12 @@ export const server = http.createServer(async (req, res) => {
 // Direktstart: node backend/server.mjs
 if (import.meta.url === `file://${process.argv[1]}`) {
   server.listen(PORT, HOST, () => {
-    console.log(`[backend] mode=${getMode()} listening on http://${HOST}:${PORT}`);
-    for (const k of Object.keys(ROUTES)) console.log(`  - ${k}`);
+    logger.info("Backend listening", {
+      module: "backend/server",
+      mode: getMode(),
+      host: HOST,
+      port: PORT,
+      routes: Object.keys(ROUTES),
+    });
   });
 }
