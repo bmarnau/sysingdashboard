@@ -251,14 +251,19 @@ function ProfileEditor({
       alert("Vor- und Nachname sind erforderlich.");
       return;
     }
-    UserManagementService.updateUser(user.id, {
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
-      displayName: form.displayName.trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
-      email: form.email.trim(),
-      phone: form.phone.trim(),
-      profileImage: form.profileImage || undefined,
-    });
+    UserManagementService.updateUser(
+      user.id,
+      {
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        displayName: form.displayName.trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        profileImage: form.profileImage || undefined,
+      },
+      actor,
+    );
+
     setDirty(false);
     setSaved(true);
     onSaved();
