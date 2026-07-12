@@ -523,11 +523,14 @@ function UserAdmin({
   users,
   currentUserId,
   canManageRoles,
+  actor,
 }: {
   users: UserProfile[];
   currentUserId: string;
   canManageRoles: boolean;
+  actor: ActorContext;
 }) {
+
   const [editing, setEditing] = useState<UserProfile | "new" | null>(null);
 
   return (
