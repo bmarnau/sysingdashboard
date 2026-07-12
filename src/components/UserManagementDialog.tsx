@@ -622,9 +622,9 @@ function UserAdmin({
                     <button
                       onClick={() => {
                         if (u.status === "archived") {
-                          UserManagementService.setUserStatus(u.id, "active");
+                          UserManagementService.setUserStatus(u.id, "active", actor);
                         } else {
-                          UserManagementService.setUserStatus(u.id, "archived");
+                          UserManagementService.setUserStatus(u.id, "archived", actor);
                         }
                       }}
                       title={u.status === "archived" ? "Reaktivieren" : "Archivieren"}
@@ -644,7 +644,7 @@ function UserAdmin({
                           )
                         )
                           return;
-                        const res = UserManagementService.deleteUser(u.id);
+                        const res = UserManagementService.deleteUser(u.id, actor);
                         if (!res.ok) alert(res.reason ?? "Löschen nicht möglich.");
                       }}
                       title="Löschen"
@@ -664,12 +664,14 @@ function UserAdmin({
         <UserEditor
           initial={editing === "new" ? null : editing}
           canManageRoles={canManageRoles}
+          actor={actor}
           onClose={() => setEditing(null)}
         />
       )}
     </div>
   );
 }
+
 
 function UserEditor({
   initial,
