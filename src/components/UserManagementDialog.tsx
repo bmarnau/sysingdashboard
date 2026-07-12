@@ -190,7 +190,16 @@ function TabBtn({
 
 /* ----------------------------- Mein Profil -------------------------------- */
 
-function ProfileEditor({ user, onSaved }: { user: UserProfile; onSaved: () => void }) {
+function ProfileEditor({
+  user,
+  actor,
+  onSaved,
+}: {
+  user: UserProfile;
+  actor: ActorContext;
+  onSaved: () => void;
+}) {
+
   const [form, setForm] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
