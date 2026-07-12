@@ -91,6 +91,7 @@ export function UserManagementDialog({
 
   const canAdmin = can(currentUser, "users.manage");
   const canManageRoles = can(currentUser, "roles.manage");
+  const actor: ActorContext = { actorId: currentUser.id, actorRole: currentUser.role };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -131,6 +132,7 @@ export function UserManagementDialog({
           {tab === "profil" && (
             <ProfileEditor
               user={currentUser}
+              actor={actor}
               onSaved={() => {
                 /* no-op, store push triggers re-render */
               }}
@@ -151,6 +153,7 @@ export function UserManagementDialog({
               users={users}
               currentUserId={currentUser.id}
               canManageRoles={canManageRoles}
+              actor={actor}
             />
           )}
         </div>
@@ -158,6 +161,7 @@ export function UserManagementDialog({
     </div>
   );
 }
+
 
 function TabBtn({
   active,
