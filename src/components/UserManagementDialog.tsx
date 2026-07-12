@@ -676,10 +676,12 @@ function UserAdmin({
 function UserEditor({
   initial,
   canManageRoles,
+  actor,
   onClose,
 }: {
   initial: UserProfile | null;
   canManageRoles: boolean;
+  actor: ActorContext;
   onClose: () => void;
 }) {
   const [form, setForm] = useState<CreateUserInput>(() => ({
@@ -700,16 +702,20 @@ function UserEditor({
     // Defensive: Rollenänderung nur mit roles.manage; sonst Originalrolle behalten.
     const effectiveRole: UserRole = canManageRoles ? form.role : (initial?.role ?? form.role);
     if (initial) {
-      const res = UserManagementService.updateUser(initial.id, {
-        firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
-        displayName:
-          (form.displayName ?? "").trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
-        email: (form.email ?? "").trim(),
-        phone: (form.phone ?? "").trim(),
-        role: effectiveRole,
-        status: form.status ?? "active",
-      });
+      const res = UserManagementService.updateUser(
+        initial.id,
+        {
+          firstName: form.firstName.trim(),
+          lastName: form.lastName.trim(),
+          displayName:
+            (form.displayName ?? "").trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
+          email: (form.email ?? "").trim(),
+          phone: (form.phone ?? "").trim(),
+          role: effectiveRole,
+          status: form.status ?? "active",
+        },
+        actor,
+      );
       if (!res) {
         alert(
           "Aktion blockiert: Der letzte aktive System-Administrator darf nicht degradiert oder deaktiviert werden.",
@@ -717,9 +723,10 @@ function UserEditor({
         return;
       }
     } else {
-      UserManagementService.createUser({ ...form, role: effectiveRole });
+      UserManagementService.createUser({ ...form, role: effectiveRole }, actor);
     }
     onClose();
+
   };
 
   return (
