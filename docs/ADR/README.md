@@ -14,6 +14,7 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 | 0004 | [Pub-Sub-Store statt Zustand/Redux](./0004-pubsub-store-no-zustand.md) | Accepted |
 | 0005 | [Frontend-Logger statt Sentry](./0005-frontend-logger-no-sentry.md)   | Accepted |
 | 0006 | [Kein Virtual Scrolling (bis Messnachweis)](./0006-no-virtual-scrolling.md) | Accepted |
+| 0007 | [RBAC v2 — Resource Types, Scopes und Permission Groups](./0007-rbac-v2-scopes-and-resources.md) | Accepted |
 
 ## Template
 

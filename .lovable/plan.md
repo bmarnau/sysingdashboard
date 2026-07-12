@@ -1,51 +1,112 @@
-## Ziel
-Einheitliches Logging über bestehende `logger`-API (`src/lib/logger.ts` bzw. `backend/services/logger.mjs`). Keine neue Infrastruktur, keine direkten `console.*`.
+# Plan: Actor-ID Audit + zukunftssichere RBAC-Architektur v2
 
-## Umfang der Änderungen
+Zwei zusammenhängende Bausteine für Prompt v1.27.0:
 
-### 1. Frontend-Services mit Logger erweitern
-- **`src/lib/json-import-service.ts`**: `info` bei Start/Ende Import (counts, warnings, snapshotId), `warn` bei Duplikaten/Mapping-Gaps, `error` in beiden `catch`-Blöcken (Parse-Fehler und Rollback), `debug` beim Snapshot-Erstellen/Rollback.
-- **`src/lib/json-export-service.ts`**: `info` bei erfolgreichem Export (Format, Counts), `error` bei Fehler.
-- **`src/lib/export-download-service.ts`**: `debug` bei Registrierung, `info` bei Löschung durch Retention, `error` bei IndexedDB-Fehlern.
-- **`src/lib/azure/azure-service.ts`**: `info` für gestartete Aktionen (kind, actor), `warn` bei Stub-Skip (bereits vorhanden), `error` bei Fehlschlägen; Verbindungsstrings/Keys niemals loggen — nur `endpoint` gehasht oder Hostname.
-- **`src/lib/azure/azure-history-store.ts`**: `warn` bei Parse-/Quota-Fehlern in `localStorage`.
-- **`src/lib/user-management.ts`**: `info` bei Create/Update/Delete/Role-Change (userId, role, action — kein Passwort/E-Mail-Body), `warn` bei blockierten Admin-Lockouts, `error` bei Validierungsfehlern.
-- **`src/lib/project-info.ts`**: `warn` bei fehlgeschlagenem `/api/status`-Fetch, `debug` bei erfolgreichem Refresh.
+## Teil A — Actor-ID im User-Management (forensische Audit-Logs)
 
-### 2. Service-Dialoge: `console.*` entfernen
-- `src/components/ExportDialog.tsx` (3 Stellen), `src/components/SaveTargetDialog.tsx` (1), `src/components/azure/AzureDataDialog.tsx` (ErrorBoundary onError) → `logger.error/warn` mit `{ module: "ExportDialog", action, userId }`.
+Ziel: Jede Änderung im User-Management protokolliert **wer** (actor) **wen** (target) geändert hat.
 
-### 3. Backend
-- **`backend/services/syncService.mjs`** und **`statusService.mjs`**: `logger.info` bei Aufruf, `logger.error` bei Fehler (bereits teilweise vorhanden — nur ergänzen falls Lücken).
-- **`backend/server.mjs`**: Die zwei Startup-`console.log` durch `logger.info` ersetzen (Datei nicht in `check-no-console` TARGETS, aber Konsistenz).
+### Änderungen `src/lib/user-management.ts`
 
-### 4. Kontext-Konvention
-Alle neuen `logger.*`-Aufrufe erhalten einheitlichen Kontext:
+- Neuer optionaler `ActorContext`-Parameter:
+  ```ts
+  export interface ActorContext {
+    actorId: string;         // id des ausführenden Users, "system" für automatisierte Pfade
+    actorRole?: UserRole;    // Snapshot der Rolle zum Zeitpunkt der Aktion
+    reason?: string;         // freitext (z.B. "bulk deactivation")
+  }
+  ```
+- Signaturen erweitern (rückwärtskompatibel, actor optional):
+  - `createUser(input, actor?)`
+  - `updateUser(id, patch, actor?)`
+  - `deleteUser(id, actor?)`
+  - `setUserStatus(id, status, actor?)` / `setUserRole(id, role, actor?)` reichen durch.
+- Alle `logger.info/warn`-Aufrufe in diesen Funktionen erweitern um:
+  ```ts
+  actorId: actor?.actorId ?? "unknown",
+  actorRole: actor?.actorRole,
+  reason: actor?.reason,
+  ```
+- Default-Fallback `"unknown"` wird beim Log als Warnung markiert (level `warn` statt `info`, wenn kein actor gesetzt), damit fehlende Actor-Attribution im Log-Viewer sichtbar wird.
+
+### Aufrufseite `src/components/UserManagementDialog.tsx`
+
+- Aktiven Benutzer via `useCurrentUser()` holen und als `actor` an alle Mutations-Aufrufe weiterreichen.
+
+### Tests `src/__tests__/lib/user-management.test.ts`
+
+- Zusätzliche Cases: `should_logActorId_when_updateUserCalledWithActor`, `should_logUnknownActor_when_actorOmitted`.
+
+## Teil B — RBAC-Architektur v2 (Vorbereitung Entra ID / Multi-Customer / Azure Resources)
+
+Ziel: Bestehende flache Matrix (Role → Permission) erweitern zu einem **skalierbaren Modell mit Resource Types, Scopes und Permission Groups**, ohne Breaking Changes am heutigen `can()`-API.
+
+### Konzeptuelle Erweiterungen
+
+**Rollen** (unverändert 7):
+`systemadministrator`, `administrator`, `teamlead`, `projectmanager`, `engineer`, `customer`, `viewer`.
+
+**Resource Types** (neu):
+- `tenant` — Multi-Customer Root (Mandant)
+- `customer` — einzelner Kunde innerhalb eines Tenants
+- `project` — Projekt eines Kunden
+- `workpackage` — Arbeitspaket eines Projekts
+- `activity` — Tätigkeit eines Arbeitspakets
+- `azure.subscription` — Azure Subscription (später)
+- `azure.resourceGroup` — Azure Ressourcengruppe (später)
+- `system` — globale Systemobjekte (Users, Roles, Settings, Audit)
+
+**Scope-Modell**:
 ```
-{ module: "BackupService" | "ImportService" | ..., action: "create" | "rollback" | ..., userId?, code?, counts? }
+tenant:{id}/customer:{id}/project:{id}/workpackage:{id}/activity:{id}
 ```
-Bestehende Redaction in `logger.ts` fängt `token/secret/password/authorization/apikey/…` ab — für Azure zusätzlich Connection-Strings/Endpoints als `endpoint: hostname(url)` reduzieren (kein Query-String, kein SAS-Token).
+Wildcards (`*`) und Vererbung (höherer Scope gewährt Zugriff auf Kinder).
 
-### 5. Guard erweitern
-`scripts/check-no-console.mjs` — TARGETS um `src/lib/json-import-service.ts`, `src/lib/json-export-service.ts`, `src/lib/export-download-service.ts`, `src/lib/user-management.ts`, `src/lib/project-info.ts`, `src/components/ExportDialog.tsx`, `src/components/SaveTargetDialog.tsx`, `src/components/azure/AzureDataDialog.tsx` ergänzen. Backend-Server bewusst außen vor lassen (Bootstrap-Ausgabe erlaubt).
+**Permission Groups** (Bündel für UI + Entra Mapping):
+- `readonly.basic`, `project.manage`, `azure.readonly`, `azure.operate`, `admin.users`, `admin.system`.
 
-### 6. Tests
-Neue Datei `src/__tests__/lib/logger-integration.test.ts`:
-- `should_logSuccess_when_userCreated` (user-management)
-- `should_logError_when_jsonImportParseFails`
-- `should_redactAzureConnectionString_when_loggedAsSecret`
-- `should_notLeakTokens_when_exportDialogFails` (via `logger.getRecent()`)
+**Assignment-Modell**:
+```
+RoleAssignment {
+  principalId: string,        // User-ID oder (später) Entra ObjectId
+  principalType: "user" | "group" | "service",
+  role: UserRole,
+  scope: ResourceScope,
+  source: "local" | "entra",  // Herkunft
+  grantedAt, grantedBy, expiresAt?
+}
+```
 
-Bestehende Tests bleiben unverändert lauffähig.
+### Neue Dateien
 
-### 7. Doku
-- `CHANGELOG.md`: neuer Eintrag `## 1.27.0 - 2026-07-11` mit Bullet-Zusammenfassung.
-- `src/lib/help-documentation.ts`: bestehendes Kapitel „Log Viewer" um Absatz „Was wird geloggt" erweitern; `lastUpdated` aktualisieren.
+1. **`src/lib/rbac/types.ts`** — TypeScript Interfaces (`ResourceType`, `ResourceScope`, `Permission` mit `resource:action`-Format, `PermissionGroup`, `RoleAssignment`, `AccessContext`).
+2. **`src/lib/rbac/permission-groups.ts`** — Definition der Permission Groups + Mapping Rolle → Groups.
+3. **`src/lib/rbac/scope.ts`** — Pure-Utils: `parseScope`, `scopeIncludes`, `narrowestScope`.
+4. **`src/lib/rbac/access.ts`** — `evaluateAccess(user, permission, resourceScope)` als zukünftiger Ersatz für `can()`. Heute delegiert es zurück an die flache Matrix, wenn kein Scope gesetzt ist → **kein Breaking Change**.
+5. **`docs/ADR/0007-rbac-v2-scopes-and-resources.md`** — Kontext, Entscheidung, Alternativen, Migrationspfad, Trust-Boundary, Entra-Mapping-Regeln.
+6. **`docs/RBAC-MATRIX.md`** — Menschenlesbare Matrix Role × Permission × ResourceType inkl. Beispiel-Assignments.
+7. **`src/__tests__/lib/rbac/scope.test.ts`** und **`access.test.ts`** — Invarianten (Vererbung, Wildcard, Deny-by-Default).
 
-## Nicht enthalten
-- Kein neuer Log-Sink, kein Upload, keine neue UI.
-- Kein Refactor der Redaction-Regeln (existierende JWT/Secret-Regex bleibt).
-- Kein Umbau bestehender Logging-Aufrufe (`BackupService` bereits konform).
+### Bestehendes bleibt
 
-## Kritischer Hinweis
-Für Azure sollte mittelfristig ein dedizierter Redactor für Connection-Strings (`AccountKey=…`, `SharedAccessSignature=…`) direkt in `logger.ts` ergänzt werden. Für diesen Schritt wird das über die Aufrufer-Disziplin gelöst (nur Hostname loggen); Empfehlung im Handbuch-Kapitel dokumentiert.
+- `src/lib/rbac/permissions.ts` (v1-Matrix) bleibt Single Source of Truth für die *flache* Prüfung und `can()`.
+- `backend/services/rbac.mjs` bleibt gespiegelt. `check-rbac.mjs` unverändert grün.
+- v2 ist rein additiv — kein Aufruf-Site-Umbau in dieser Iteration.
+
+### Doku & CI
+
+- `CHANGELOG.md`: neue Version `1.27.0` mit beiden Teilen.
+- `src/lib/help-documentation.ts`: neues Kapitel „Actor-Audit im Benutzer-Management" + Update „Rollen und Berechtigungen" (Ausblick RBAC v2). `DOCUMENTATION_VERSION` → 1.5.0.
+- `bun run docs:check`, `bun run test`, `bun run check:rbac` müssen grün sein.
+
+## Technische Details
+
+- `ActorContext` bewusst nicht als Middleware-Global — explizit übergeben macht Aufrufpfade im Code lesbar und lässt sich später leicht durch AsyncLocalStorage/Request-Context ersetzen.
+- Log-Feld heißt konsistent `actorId` (nicht `changedBy`), passend zum späteren Entra-`oid`.
+- Permission-Format-Migration (`azure.import` → `azure.subscription:import`) ist **explizit nicht Teil dieses Prompts** — nur die Typen und ADR bereiten sie vor, damit v3 sie durchzieht ohne v1-Aufrufe zu brechen.
+
+## Nicht enthalten (bewusst)
+
+- Server-seitige Auth-Middleware (folgt mit echter Entra-Anbindung).
+- Backend-Mirror der v2-Typen (`backend/services/rbac.mjs` bleibt v1 bis der Server tatsächlich Scope prüft).
+- UI zum Verwalten von RoleAssignments (Datenmodell nur, Admin-UI folgt später).

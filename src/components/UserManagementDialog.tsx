@@ -19,12 +19,14 @@ import {
   STATUS_LABEL,
   UserManagementService,
   initialsOf,
+  type ActorContext,
   type CreateUserInput,
   type UserProfile,
   type UserRole,
   type UserStatus,
 } from "@/lib/user-management";
 import { useUsers } from "@/hooks/useCurrentUser";
+
 
 type TabKey = "profil" | "wechseln" | "verwaltung";
 
@@ -89,6 +91,7 @@ export function UserManagementDialog({
 
   const canAdmin = can(currentUser, "users.manage");
   const canManageRoles = can(currentUser, "roles.manage");
+  const actor: ActorContext = { actorId: currentUser.id, actorRole: currentUser.role };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -129,6 +132,7 @@ export function UserManagementDialog({
           {tab === "profil" && (
             <ProfileEditor
               user={currentUser}
+              actor={actor}
               onSaved={() => {
                 /* no-op, store push triggers re-render */
               }}
@@ -149,6 +153,7 @@ export function UserManagementDialog({
               users={users}
               currentUserId={currentUser.id}
               canManageRoles={canManageRoles}
+              actor={actor}
             />
           )}
         </div>
@@ -156,6 +161,7 @@ export function UserManagementDialog({
     </div>
   );
 }
+
 
 function TabBtn({
   active,
@@ -184,7 +190,16 @@ function TabBtn({
 
 /* ----------------------------- Mein Profil -------------------------------- */
 
-function ProfileEditor({ user, onSaved }: { user: UserProfile; onSaved: () => void }) {
+function ProfileEditor({
+  user,
+  actor,
+  onSaved,
+}: {
+  user: UserProfile;
+  actor: ActorContext;
+  onSaved: () => void;
+}) {
+
   const [form, setForm] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
@@ -236,14 +251,19 @@ function ProfileEditor({ user, onSaved }: { user: UserProfile; onSaved: () => vo
       alert("Vor- und Nachname sind erforderlich.");
       return;
     }
-    UserManagementService.updateUser(user.id, {
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
-      displayName: form.displayName.trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
-      email: form.email.trim(),
-      phone: form.phone.trim(),
-      profileImage: form.profileImage || undefined,
-    });
+    UserManagementService.updateUser(
+      user.id,
+      {
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        displayName: form.displayName.trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        profileImage: form.profileImage || undefined,
+      },
+      actor,
+    );
+
     setDirty(false);
     setSaved(true);
     onSaved();
@@ -503,11 +523,14 @@ function UserAdmin({
   users,
   currentUserId,
   canManageRoles,
+  actor,
 }: {
   users: UserProfile[];
   currentUserId: string;
   canManageRoles: boolean;
+  actor: ActorContext;
 }) {
+
   const [editing, setEditing] = useState<UserProfile | "new" | null>(null);
 
   return (
@@ -599,9 +622,9 @@ function UserAdmin({
                     <button
                       onClick={() => {
                         if (u.status === "archived") {
-                          UserManagementService.setUserStatus(u.id, "active");
+                          UserManagementService.setUserStatus(u.id, "active", actor);
                         } else {
-                          UserManagementService.setUserStatus(u.id, "archived");
+                          UserManagementService.setUserStatus(u.id, "archived", actor);
                         }
                       }}
                       title={u.status === "archived" ? "Reaktivieren" : "Archivieren"}
@@ -621,7 +644,7 @@ function UserAdmin({
                           )
                         )
                           return;
-                        const res = UserManagementService.deleteUser(u.id);
+                        const res = UserManagementService.deleteUser(u.id, actor);
                         if (!res.ok) alert(res.reason ?? "Löschen nicht möglich.");
                       }}
                       title="Löschen"
@@ -641,6 +664,7 @@ function UserAdmin({
         <UserEditor
           initial={editing === "new" ? null : editing}
           canManageRoles={canManageRoles}
+          actor={actor}
           onClose={() => setEditing(null)}
         />
       )}
@@ -648,13 +672,16 @@ function UserAdmin({
   );
 }
 
+
 function UserEditor({
   initial,
   canManageRoles,
+  actor,
   onClose,
 }: {
   initial: UserProfile | null;
   canManageRoles: boolean;
+  actor: ActorContext;
   onClose: () => void;
 }) {
   const [form, setForm] = useState<CreateUserInput>(() => ({
@@ -675,16 +702,20 @@ function UserEditor({
     // Defensive: Rollenänderung nur mit roles.manage; sonst Originalrolle behalten.
     const effectiveRole: UserRole = canManageRoles ? form.role : (initial?.role ?? form.role);
     if (initial) {
-      const res = UserManagementService.updateUser(initial.id, {
-        firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
-        displayName:
-          (form.displayName ?? "").trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
-        email: (form.email ?? "").trim(),
-        phone: (form.phone ?? "").trim(),
-        role: effectiveRole,
-        status: form.status ?? "active",
-      });
+      const res = UserManagementService.updateUser(
+        initial.id,
+        {
+          firstName: form.firstName.trim(),
+          lastName: form.lastName.trim(),
+          displayName:
+            (form.displayName ?? "").trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
+          email: (form.email ?? "").trim(),
+          phone: (form.phone ?? "").trim(),
+          role: effectiveRole,
+          status: form.status ?? "active",
+        },
+        actor,
+      );
       if (!res) {
         alert(
           "Aktion blockiert: Der letzte aktive System-Administrator darf nicht degradiert oder deaktiviert werden.",
@@ -692,9 +723,10 @@ function UserEditor({
         return;
       }
     } else {
-      UserManagementService.createUser({ ...form, role: effectiveRole });
+      UserManagementService.createUser({ ...form, role: effectiveRole }, actor);
     }
     onClose();
+
   };
 
   return (
