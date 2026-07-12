@@ -491,13 +491,22 @@ export function deleteUser(id: string, actor?: ActorContext): { ok: boolean; rea
 }
 
 
-export function setUserStatus(id: string, status: UserStatus): UserProfile | null {
-  return updateUser(id, { status });
+export function setUserStatus(
+  id: string,
+  status: UserStatus,
+  actor?: ActorContext,
+): UserProfile | null {
+  return updateUser(id, { status }, actor);
 }
 
-export function setUserRole(id: string, role: UserRole): UserProfile | null {
-  return updateUser(id, { role });
+export function setUserRole(
+  id: string,
+  role: UserRole,
+  actor?: ActorContext,
+): UserProfile | null {
+  return updateUser(id, { role }, actor);
 }
+
 
 /* ------------------------------ Auth Helpers ------------------------------ */
 
