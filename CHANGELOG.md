@@ -13,6 +13,11 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.27.0 - 2026-07-12
+
+- **Forensischer Actor-Kontext**: `UserManagementService.createUser/updateUser/deleteUser/setUserStatus/setUserRole` akzeptieren jetzt einen optionalen `ActorContext` (`actorId`, `actorRole`, `reason`). Audit-Log-Einträge enthalten damit sowohl Ziel- als auch Ausführer-Id. Fehlt der Actor, loggt der Service bewusst auf `warn`, damit der Log Viewer forensische Lücken sichtbar macht. `UserManagementDialog` reicht den aktiven Benutzer automatisch als Actor durch.
+- **RBAC v2 – Datenmodell vorbereitet** (additiv, kein Breaking Change): Neue Typen für `ResourceType`, hierarchische `ResourceScope`, `PermissionV2` (`resource:action`), `PermissionGroup` und `RoleAssignment` in `src/lib/rbac/types.ts`. Scope-Utilities (`parseScope`, `scopeIncludes`, `narrowestScope`) und `evaluateAccess()` mit v1-Fallback in `src/lib/rbac/{scope,access,permission-groups}.ts`. Dokumentiert in ADR-0007 und `docs/RBAC-MATRIX.md`.
+
 ## 1.26.1 - 2026-07-11
 
 - **Einheitliches Logging in Servicefunktionen**: Alle verbliebenen `console.*`-Aufrufe in `ExportDialog`, `SaveTargetDialog`, `AzureDataDialog` sowie `backend/server.mjs` durch den zentralen Logger ersetzt. Neue strukturierte `info/warn/error`-Meldungen mit `module`/`action`-Kontext in `json-export-service`, `json-import-service`, `export-download-service`, `azure/azure-service`, `azure/azure-history-store`, `user-management`. Aufrufe im Log Viewer sichtbar, Secret-Redaction weiter aktiv.
