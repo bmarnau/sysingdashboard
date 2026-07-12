@@ -278,6 +278,43 @@ function makeDefaultAdmin(id: string): UserProfile {
   };
 }
 
+/* ----------------------------- Actor Context ------------------------------ */
+
+/**
+ * ActorContext — beschreibt, **wer** eine Mutation ausführt.
+ *
+ * Bewusst als expliziter Parameter statt Ambient/Global: macht Aufrufpfade im
+ * Code lesbar und lässt sich später leicht durch AsyncLocalStorage /
+ * Request-Context ersetzen, sobald echte Auth aktiv ist. Feldname `actorId`
+ * (statt `changedBy`) passt zum späteren Entra-`oid`.
+ */
+export interface ActorContext {
+  /** Id des ausführenden Users. `"system"` für automatisierte Pfade. */
+  actorId: string;
+  /** Snapshot der Rolle zum Zeitpunkt der Aktion. */
+  actorRole?: UserRole;
+  /** Optionaler Freitext (z. B. "bulk deactivation"). */
+  reason?: string;
+}
+
+/** Baut das Actor-Feld-Set für Log-Contexte. Fehlender Actor → `"unknown"`. */
+function actorFields(actor?: ActorContext): Record<string, unknown> {
+  return {
+    actorId: actor?.actorId ?? "unknown",
+    actorRole: actor?.actorRole,
+    reason: actor?.reason,
+  };
+}
+
+/**
+ * Wählt das Log-Level für erfolgreiche Mutationen. Ohne Actor-Attribution
+ * loggen wir auf `warn`, damit der Log-Viewer fehlende Herkunftsinfos
+ * sichtbar macht (forensische Lücke, nicht bloß Info).
+ */
+function successLevel(actor?: ActorContext): "info" | "warn" {
+  return actor?.actorId ? "info" : "warn";
+}
+
 /* ----------------------------------- CRUD --------------------------------- */
 
 export interface CreateUserInput {
@@ -291,7 +328,7 @@ export interface CreateUserInput {
   profileImage?: string;
 }
 
-export function createUser(input: CreateUserInput): UserProfile {
+export function createUser(input: CreateUserInput, actor?: ActorContext): UserProfile {
   const users = loadUsers();
   const user: UserProfile = {
     id: newUserId(),
@@ -309,12 +346,13 @@ export function createUser(input: CreateUserInput): UserProfile {
     updatedAt: nowIso(),
   };
   saveUsers([...users, user]);
-  logger.info("User created", {
+  logger[successLevel(actor)]("User created", {
     module: "UserManagement",
     action: "createUser",
     userId: user.id,
     role: user.role,
     status: user.status,
+    ...actorFields(actor),
   });
   return user;
 }
@@ -329,6 +367,7 @@ function activeSysAdminCount(users: UserProfile[], excludeId?: string): number {
 export function updateUser(
   id: string,
   patch: Partial<Omit<UserProfile, "id" | "createdAt">>,
+  actor?: ActorContext,
 ): UserProfile | null {
   const users = loadUsers();
   const idx = users.findIndex((u) => u.id === id);
@@ -337,6 +376,7 @@ export function updateUser(
       module: "UserManagement",
       action: "updateUser",
       userId: id,
+      ...actorFields(actor),
     });
     return null;
   }
@@ -347,12 +387,12 @@ export function updateUser(
   const stillActiveSysAdmin = nextRole === "systemadministrator" && nextStatus === "active";
   if (wasActiveSysAdmin && !stillActiveSysAdmin) {
     if (activeSysAdminCount(users, id) === 0) {
-      // Letzter aktiver SysAdmin darf nicht degradiert/deaktiviert werden.
       logger.warn("User update blocked: last active systemadministrator", {
         module: "UserManagement",
         action: "updateUser",
         code: "SYSADMIN_LOCKOUT",
         userId: id,
+        ...actorFields(actor),
       });
       return null;
     }
@@ -367,19 +407,20 @@ export function updateUser(
   const copy = users.slice();
   copy[idx] = next;
   saveUsers(copy);
-  logger.info("User updated", {
+  logger[successLevel(actor)]("User updated", {
     module: "UserManagement",
     action: "updateUser",
     userId: next.id,
     role: next.role,
     status: next.status,
     changedFields: Object.keys(patch),
+    ...actorFields(actor),
   });
   return next;
 }
 
 /** Hard-Delete inklusive aller gescopten Daten. Letzten SysAdmin nicht löschen. */
-export function deleteUser(id: string): { ok: boolean; reason?: string } {
+export function deleteUser(id: string, actor?: ActorContext): { ok: boolean; reason?: string } {
   const users = loadUsers();
   const target = users.find((u) => u.id === id);
   if (!target) {
@@ -387,6 +428,7 @@ export function deleteUser(id: string): { ok: boolean; reason?: string } {
       module: "UserManagement",
       action: "deleteUser",
       userId: id,
+      ...actorFields(actor),
     });
     return { ok: false, reason: "Benutzer nicht gefunden." };
   }
@@ -396,6 +438,7 @@ export function deleteUser(id: string): { ok: boolean; reason?: string } {
       action: "deleteUser",
       code: "SYSADMIN_LOCKOUT",
       userId: id,
+      ...actorFields(actor),
     });
     return {
       ok: false,
@@ -414,6 +457,7 @@ export function deleteUser(id: string): { ok: boolean; reason?: string } {
       action: "deleteUser",
       code: "ADMIN_LOCKOUT",
       userId: id,
+      ...actorFields(actor),
     });
     return {
       ok: false,
@@ -436,14 +480,16 @@ export function deleteUser(id: string): { ok: boolean; reason?: string } {
     const fallback = next.find((u) => u.status === "active") ?? next[0];
     if (fallback) setActiveUserId(fallback.id);
   }
-  logger.info("User deleted", {
+  logger[successLevel(actor)]("User deleted", {
     module: "UserManagement",
     action: "deleteUser",
     userId: id,
     role: target.role,
+    ...actorFields(actor),
   });
   return { ok: true };
 }
+
 
 export function setUserStatus(id: string, status: UserStatus): UserProfile | null {
   return updateUser(id, { status });
