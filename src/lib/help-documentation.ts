@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.13.0";
+export const DOCUMENTATION_VERSION = "1.14.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -544,6 +544,33 @@ function buildChangelogContent(): string {
 }
 
 const generatedTopics: HelpTopic[] = [
+  {
+    id: "backup-restore-tests",
+    title: "Backup-, Restore- und IO-Tests",
+    category: "Service",
+    keywords: ["Backup", "Restore", "Wiederherstellung", "Integrität", "Import", "Export", "ADR-0015"],
+    lastUpdated: "2026-07-13",
+    content: `## Zweck
+Nachweis, dass Daten exportiert, gesichert, wiederhergestellt und importiert werden können — automatisiert und mit Integritätsbericht.
+
+## Suiten
+- \`src/__tests__/backup/create.test.ts\` — Backup-Erzeugung, ZIP-Struktur, Manifest, Version, Log-Regel, RBAC-Assignments.
+- \`src/__tests__/backup/integrity.test.ts\` — beschädigte / unvollständige / falsche-Version-ZIPs werden abgewiesen.
+- \`src/__tests__/backup/restore.test.ts\` — Restore auf leeren/vollen Zustand, Actor-/Herkunftsfelder, Restore-Protokoll, kein Teilzustand.
+- \`src/__tests__/io/import.suite.test.ts\` — gültige/ungültige Dateien, Konflikte, Duplikate, ungültige Referenzen, Rollback.
+- \`src/__tests__/io/export.suite.test.ts\` — JSON/CSV, Schema, Dateiname, Sonderzeichen (UTF-8/Emoji), leere Daten, große Menge, Scope-Begrenzung.
+
+## Restore-API
+\`restoreFromZip(bytes, { actor, mode })\` in \`src/lib/backup-service.ts\` — Modi: \`empty\` (leerer Zielzustand erforderlich), \`overwrite\` (ersetzt alle App-Keys), \`merge\` (nur Backup-Keys). Fehler rollen den Pre-Snapshot zurück; jedes Restore wird in \`backup:restoreLog\` (max. 100) protokolliert.
+
+## Integritätsbericht
+\`bun run test:backup:integrity\` erzeugt \`test-report/backup-integrity-report.{json,md}\` mit Kategorien (backup/restore/import/export), Anzahl geprüfter Fälle, Findings, Schweregrad und Empfehlung.
+
+## Bekannte Einschränkungen
+- Keine Prüfsumme im Manifest (Follow-up, siehe ADR-0015).
+- PDF-Export wird strukturell, nicht semantisch geprüft (E2E-Suite).
+- Rollen-/Scope-Enforcement ist clientseitig — Backend-RBAC bleibt offen (SEC-CRIT-001).`,
+  },
   {
     id: "changelog",
     title: "Änderungshistorie",
