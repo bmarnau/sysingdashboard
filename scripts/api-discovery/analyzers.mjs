@@ -76,16 +76,54 @@ export function analyzeArchivedImports(source) {
 }
 
 /**
- * Heuristische Klassifizierung. Kann später durch expliziten
- * `endpointMeta`-Export ersetzt werden.
+ * Extrahiert einen optionalen `endpointMeta`-Export aus dem Route-Quelltext.
+ * Bewusst tolerant, keine verschachtelten Objekte, kein AST.
+ *
+ * Erkannte Felder: `public`, `authRequired`, `permission`, `classification`,
+ * `reason`. Alles andere wird ignoriert.
+ *
+ * Rückgabe: `null` wenn kein Export gefunden, sonst partial-Meta.
  */
-export function classify({ path, methods, authRequired, permission }) {
+export function analyzeEndpointMeta(source) {
+  const block = source.match(
+    /export\s+const\s+endpointMeta\s*=\s*\{([\s\S]*?)\}\s*(?:as\s+const)?\s*;?/,
+  );
+  if (!block) return null;
+  const body = block[1];
+  const bool = (name) => {
+    const m = body.match(new RegExp(`\\b${name}\\s*:\\s*(true|false)\\b`));
+    return m ? m[1] === "true" : null;
+  };
+  const str = (name) => {
+    const m = body.match(new RegExp(`\\b${name}\\s*:\\s*["'\`]([^"'\`]+)["'\`]`));
+    return m ? m[1] : null;
+  };
+  return {
+    public: bool("public"),
+    authRequired: bool("authRequired"),
+    permission: str("permission"),
+    classification: str("classification"),
+    reason: str("reason"),
+  };
+}
+
+/**
+ * Heuristische Klassifizierung.
+ *
+ * Vorrang-Reihenfolge:
+ *   1. `meta.classification` (explizit gesetzt)
+ *   2. `meta.public === true`
+ *   3. `permission`  → privileged
+ *   4. `authRequired` → authenticated
+ *   5. `/api/public/*`-Prefix → public
+ *   6. sonst → unclassified
+ */
+export function classify({ path, methods: _methods, authRequired, permission, meta }) {
+  if (meta?.classification) return meta.classification;
+  if (meta?.public === true) return "public";
   if (permission) return "privileged";
   if (authRequired) return "authenticated";
-  // /api/public/* ist per Konvention öffentlich (Webhooks/Cron).
   if (path.startsWith("/api/public/")) return "public";
-  // Alles andere unter /api/ ohne Auth: gilt als „unclassified" — muss
-  // vom Betreiber explizit klassifiziert werden.
   return "unclassified";
 }
 
