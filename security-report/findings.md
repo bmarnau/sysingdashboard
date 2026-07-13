@@ -1,20 +1,18 @@
 # Security-Scan-Report
 
-- **Generiert:** 2026-07-13T04:03:41.966Z
+- **Generiert:** 2026-07-13T04:04:09.565Z
 - **Dateien geprüft:** 179
 - **Regeln:** 22
-- **CRITICAL:** 0 · **HIGH:** 1 · **MEDIUM:** 0
-- **Build-Status:** ❌ FAIL (CRITICAL/HIGH)
+- **CRITICAL:** 0 · **HIGH:** 0 · **MEDIUM:** 0
+- **Build-Status:** ✅ PASS
 
 ## CRITICAL
 
 _Keine Funde._
 
-## HIGH (1)
+## HIGH
 
-| Regel | Fundstelle | Beschreibung | Snippet |
-| --- | --- | --- | --- |
-| `azure-env-outside-server` | src/__tests__/env/test-instance.ts:93 | process.env.AZURE_* / *CONNECTION* außerhalb Server-Scope | `if (process.env.AZURE_TEST_LIVE === "1") return;` |
+_Keine Funde._
 
 ## MEDIUM
 
