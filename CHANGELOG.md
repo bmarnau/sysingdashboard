@@ -13,6 +13,17 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.32.0 - 2026-07-13
+
+- **Zentrale Correlation-ID** für alle aktiven API-Routen (`/api/status`, `/api/sync`). Neuer Wrapper `withCorrelation` in `src/lib/correlation-context.server.ts` nutzt `AsyncLocalStorage`, um pro Request eine ID durch den gesamten Server-Baum zu propagieren; Utilities (`generateCorrelationId`, `isValidCorrelationId`, `acceptOrGenerateCorrelationId`) in `src/lib/correlation.ts`. Format: UUID v4 (default) oder eingehende Client-ID, sofern sie `^[A-Za-z0-9._-]{8,64}$` erfüllt — sonst wird sie verworfen und eine neue erzeugt.
+- **Response-Header `X-Correlation-Id`** wird auf jeder Antwort gesetzt (auch bei Fehlern) und kann vom Handler nicht überschrieben werden. Strukturierte Fehler-Response (`{ ok:false, code, message, correlationId, timestamp }`) via `jsonErrorWithCorrelation` — kein Stack, keine Provider-Details.
+- **Backend-Logger** (`backend/services/logger.mjs`) reichert jeden Eintrag additiv um `correlationId`, `route`, `method` und `durationMs` an, sofern ein Request-Kontext aktiv ist. Bestehende `logger.info/warn/error`-Aufrufe funktionieren unverändert.
+- **Frontend**: `useSystemStatusHealth` liest den Header und speichert die letzte Referenz-ID. `SystemStatusDialog` zeigt sie sichtbar an, inkl. Copy-Button und Anzeige im Fehlerfall. `LogViewerDialog`-Suche findet Einträge auch nach `correlationId`.
+- **Tests**: neue Suite `src/__tests__/api/correlation.test.ts` (Utils, Wrapper, Header-Handling, parallele Requests, Fehler-Shape, Logger-Enrichment) und E2E `e2e/specs/correlation.spec.ts` gegen den Dev-Server. Contract-Schemas (`endpoints.ts`) erwarten das neue Feld.
+- **Tech-Debt-Detektor** `correlation-id.mjs`: markiert neue TSS-Routes ohne `withCorrelation`, unstrukturierte Fehlerantworten und ungeprüften Rohzugriff auf den Client-Header.
+- **Systemstatus**-Abschnitt „Sicherheit" ergänzt um `correlationId.middlewareActive` / Anzahl unterstützter Routen. Handbuch-Kapitel „Correlation-ID & Nachverfolgung" hinzugefügt, `DOCUMENTATION_VERSION` auf **1.11.0**.
+
+
 ## 1.31.0 - 2026-07-13
 
 - **UI- und End-to-End-Test-Suite (ADR-0012)**: Playwright-Suite unter `e2e/specs/` mit sieben Bereichen — Navigation, Dashboard, Servicemenü, Fehlerzustände, Responsive, Accessibility (axe-core WCAG 2.1 A/AA), RBAC (datengetriebene Rollen-Matrix über alle 7 Rollen + Backend-Denial gegen direkte HTTP-Requests). Läuft gegen den lokalen Dev-Server, Chromium-only.
