@@ -57,6 +57,25 @@ jobs:
       - name: API endpoint contract tests
         run: bun run test:api
 
+      - name: API discovery (inventory)
+        run: bun run api:discover
+
+      - name: API discovery self-tests
+        run: bun run test:api:discovery
+
+      - name: API smoke tests
+        run: bun run test:api:smoke
+
+      - name: API functional coverage
+        run: bun run test:api:functional
+
+      - name: API discovery report
+        if: always()
+        run: bun run api:report
+
+      - name: API discovery release gate (soft)
+        run: node scripts/api-discovery/report.mjs --gate || echo "::warning ::API discovery gate reported blocking findings — soft mode, not failing build"
+
       - name: Restore previous tech-debt report (Diff-Basis)
         uses: actions/cache@v4
         with:

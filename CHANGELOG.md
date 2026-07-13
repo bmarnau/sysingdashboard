@@ -13,6 +13,18 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.34.0 - 2026-07-13
+
+- **API Discovery Framework (ADR-0014)**: neues Framework unter `scripts/api-discovery/` erkennt aktive Server-Routen (`src/routes/api/**`) automatisch per statischer Analyse und schreibt das deterministische Inventar nach `test-report/api-inventory.json`. Archivierte Verzeichnisse (`archive/**`) und Tests werden strikt ausgeschlossen; Imports aus `archive/**` in aktiven Routen erzeugen ein Critical-Finding.
+- **Discovery-Analyzer** erkennen HTTP-Methoden, `withCorrelation`-Wrapper, Zod-Validierung, Auth-Guards (`checkAuth`, `X-Sync-Token`, `requireSupabaseAuth`), Permissions, Logger-Nutzung und destruktive Wirkung. Endpoints werden als `public | authenticated | privileged | unclassified` klassifiziert.
+- **API Smoke-Suite** (`src/__tests__/api/smoke/smoke.test.ts`): iteriert das Inventar, prüft Handler-Existenz, korrekte 4xx-Antwort auf ungültige Methode/JSON, secret-freie Responses (JWT/SAS/Connection-String/Stacktrace), Correlation-ID-Header. Rohdaten → `api-smoke-raw.json`, aggregiert → `api-smoke-report.json`.
+- **API Functional-Coverage** (`src/__tests__/api/functional/functional.test.ts`) dokumentiert je Endpoint fachlichen Zweck, positive/negative Fälle, Auth/Scope/Validation/Idempotency/Audit und explizite Gaps. `complete | partial | missing | blocked | not-applicable`; `skipped/not-implemented/not-configured` werden **niemals** als `passed` gewertet.
+- **Discovery Self-Tests** (`src/__tests__/api-discovery/discovery.test.ts`) mit synthetischen Fixtures für neu/entfernt/archiviert/dynamischer Parameter, deterministische Sortierung und Finding-Kategorien.
+- **CI**: neuer Job-Block `API discovery` (Inventar → Smoke → Functional → Report → soft Gate) direkt hinter den Contract-Tests. Artefakte `api-inventory.json`, `api-smoke-report.json`, `api-functional-report.json`, `api-findings.md` werden über den bestehenden `test-report`-Upload mitgeschickt.
+- **Handbuch**: neues Kapitel „API Discovery und Testabdeckung" (Kategorie Service) inkl. Bedeutung der Klassifizierungen, Aufbau der drei Artefakte, Unterschied Smoke vs. Functional, Umgang mit archivierten Routen und CI-Gate-Verhalten. `DOCUMENTATION_VERSION` auf **1.13.0** angehoben.
+- **docs/API.md** ergänzt um Discovery-Hinweis: manuelle Endpoint-Tabelle bleibt, verweist aber jetzt auf das automatisch erzeugte Inventar als Wahrheitsquelle.
+- **ADR-0014** dokumentiert die Entscheidung für regex-basierte statische Analyse gegenüber Konventions-Meta-Export.
+
 ## 1.33.0 - 2026-07-13
 
 - **Sicherheits-, RBAC- und Auth-Test-Suite (ADR-0013)**: neue Vitest-Suite unter `src/__tests__/security/` (rbac-v1, rbac-v2, manipulation, logging, source-scan) und E2E-Specs unter `e2e/specs/security/` (ui-gate-tamper, api-direct-call). Prüft FE↔BE-Parität der RBAC-Matrix, Sysadmin/Admin-Lockout, verbotene Berechtigungen, Scope-Kanonisierung und -Inklusion, abgelaufene/revokierte Assignments, Zod-Reject bei Import-Injection, Logger-Redaction (Frontend + Backend) und statische Quellcode-Scans (direkte `role===`-Vergleiche außerhalb `src/lib/rbac`, Auth-Token-Persistenz in localStorage).

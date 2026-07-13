@@ -1,0 +1,43 @@
+{
+  "results": [
+    {
+      "endpointId": "status",
+      "purpose": "Health- und Systemstatus, secret-frei.",
+      "coverage": "partial",
+      "positive": true,
+      "negative": true,
+      "auth": false,
+      "authorization": false,
+      "scope": false,
+      "validation": true,
+      "errorHandling": true,
+      "sideEffects": false,
+      "idempotency": true,
+      "audit": true,
+      "gaps": [
+        "Kein Rate-Limit-Test (nicht implementiert).",
+        "Correlation-ID-Header wird noch nicht in allen Fällen exposed."
+      ]
+    },
+    {
+      "endpointId": "sync",
+      "purpose": "Manueller Sync-Trigger; PROD hinter X-Sync-Token.",
+      "coverage": "partial",
+      "positive": true,
+      "negative": true,
+      "auth": true,
+      "authorization": false,
+      "scope": false,
+      "validation": true,
+      "errorHandling": true,
+      "sideEffects": true,
+      "idempotency": false,
+      "audit": true,
+      "gaps": [
+        "Keine echte Azure-Live-Verifizierung (AZURE_TEST_LIVE=false).",
+        "Keine Parallelitäts-/Idempotenz-Tests.",
+        "Auth greift nur in PROD-Modus (Design-Limit — SEC-CRIT-001)."
+      ]
+    }
+  ]
+}
