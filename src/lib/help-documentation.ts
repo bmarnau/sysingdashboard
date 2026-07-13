@@ -1581,6 +1581,70 @@ Nur **Critical**-Funde brechen die Pipeline (Exit 2). High/Medium/Low/Informatio
 - **Tech-Debt**: aggregiert alles Übrige zu einem sichtbaren Trend, ohne Doppelung mit den harten Gates.`,
     relatedTopics: ["test-instance", "system-status", "fehlerbehandlung-logging"],
   },
+  {
+    id: "api-endpoint-tests",
+    title: "API- und Endpoint-Tests",
+    category: "Service",
+    keywords: [
+      "API",
+      "Endpoint",
+      "Contract",
+      "Registry",
+      "Runner",
+      "Matrix",
+      "Zod",
+      "Security-Scan",
+      "Playwright",
+    ],
+    lastUpdated: "2026-07-13",
+    content: `## Zweck
+Alle Server-Routen des Dashboards werden mit positiven und negativen Fällen automatisiert geprüft. Ziel: Kontrakt-Regressionen (Schema-Drift), Secret-Lecks im Response, ungeschützte Methoden und instabiles Fehler-Handling frühzeitig fangen — bei jedem Build.
+
+## Architektur (ADR-0011)
+- **Registry** unter \`src/__tests__/api/registry/\`: jede Route ist ein \`EndpointContract\` (Pfad, Methoden, Auth, Zod-Schemas, \`loadRoute()\`). Neue Route → ein Eintrag, kein neuer Testcode.
+- **Generischer Runner** (\`src/__tests__/api/runner.test.ts\`): iteriert die Registry und erzeugt pro aktivem Endpoint dieselben Kategorien.
+- **Handler-direct**: Handler werden ohne Netz aufgerufen — millisekundenschnell und deterministisch. Für Middleware-/Framework-Verhalten existiert die schmale Playwright-Suite \`e2e/api-smoke.spec.ts\`.
+- **Matrix-Report**: \`test-report/api-matrix.{md,json}\` mit Endpoint, Methode, Auth, Permission, Scope, Schema-Status, Case-Zahl und offenen Risiken. In CI als Artefakt hochgeladen.
+
+## Aktueller Testumfang
+| Endpoint | Methoden | Status |
+| -------- | -------- | ------ |
+| \`/api/status\` | GET | active |
+| \`/api/sync\` | POST | active |
+| \`/api/azure/*\` | POST | planned (Registry-Platzhalter) |
+| \`/api/rbac/assignments\` | GET/POST/DELETE | planned |
+
+## Testkategorien pro Endpoint
+- **Grundfunktion**: erlaubte Methoden liefern JSON und passen zum Zod-Response-Schema; nicht erlaubte Methoden dürfen keinen Handler haben.
+- **Payload-Varianten**: ungültiges JSON, leerer Body, 1 MB Oversize, unerwartete Felder, Injection-nahe Eingaben (SQL-ähnliche Strings dürfen nicht reflektiert werden).
+- **Security**: Response-Body und Header werden hart auf JWT-, Bearer-, Connection-String-, SAS- und Stacktrace-Muster gescannt. Sensitive Header (\`set-cookie\`, \`x-powered-by\`, \`server\`) sind verboten. Bei \`authRequired: true\` wird der Anonym-Zugriff auf 401/403 geprüft.
+- **Stabilität**: 10 parallele Requests dürfen keinen 5xx-Crash produzieren.
+- **Nachvollziehbarkeit**: Fehlerantworten müssen strukturiert sein (\`{ ok: false, error: string }\`).
+
+## Ausführung
+\`\`\`
+bun run test:api        # nur Endpoint-Suite
+bun run test:e2e        # inkl. Playwright-Smoke gegen den Dev-Server
+\`\`\`
+Der Runner schreibt \`test-report/api-matrix.{md,json}\` nach jedem Lauf.
+
+## Fehlerinterpretation
+- **Schema-Verletzung** → Route hat ihr Response-Shape geändert, ohne die Registry anzupassen. Entweder Route zurückrollen oder Schema aktualisieren.
+- **Handler existiert für nicht gelistete Methode** → entweder Methode zur Registry hinzufügen oder aus der Route entfernen (typisches Copy-Paste-Risiko).
+- **Secret-Muster im Response** → Sofort-Blocker. Antwort niemals mergen, bevor die Quelle behoben ist.
+- **Anonymer Zugriff auf geschützte Route erlaubt** → Blocker. Auth-Middleware prüfen.
+
+## Sicherheitsgrenzen
+- **Handler-direct umgeht Middleware**: reale CORS-Header, Cloudflare-Worker-Body-Limits und globale Request-Middleware sieht der Runner nicht. Deshalb der Playwright-Smoke gegen \`http://localhost:8080\` als Ergänzung.
+- **Kein Live-Azure**: geplante Azure-Routen liegen im Runner als \`test.todo\`; produktive Endpunkte werden nie kontaktiert.
+- **Kein Fuzzing**: bewusst außen vor. Property-Based-Erweiterung (fast-check) folgt erst bei nachgewiesener Regression.
+
+## Bekannte Einschränkungen
+- **Correlation-ID** wird noch nicht von den Routen ausgestellt; der Runner protokolliert das als offenes Risiko in der Matrix, ohne CI zu brechen. Nachrüsten ist eigener Prompt.
+- Der Idempotenz-Check ist auf „nicht crashen bei Wiederholung" reduziert; echte Response-Gleichheit prüft der Runner erst, wenn Routen sie garantieren können.
+- Archivierte Legacy-Routen unter \`archive/legacy-standalone-backend/routes/\` sind bewusst nicht in der Registry — sie sind nicht Teil des Live-Bundles.`,
+    relatedTopics: ["test-instance", "system-status", "security-principles", "tech-debt"],
+  },
 ];
 
 function allTopicsBase(): HelpTopic[] {

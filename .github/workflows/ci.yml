@@ -44,6 +44,9 @@ jobs:
       - name: Test (with coverage)
         run: bun run test:coverage
 
+      - name: API endpoint contract tests
+        run: bun run test:api
+
       - name: Restore previous tech-debt report (Diff-Basis)
         uses: actions/cache@v4
         with:
