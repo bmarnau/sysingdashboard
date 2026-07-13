@@ -28,7 +28,7 @@
       "requestSchema": "yes",
       "responseSchema": "yes",
       "status": "active",
-      "cases": 15,
+      "cases": 16,
       "failures": 0,
       "knownRisks": [
         "Auth-Gate greift erst in PROD (`SYNC_TRIGGER_TOKEN`); DEV-Modus ist ungeschützt.",
