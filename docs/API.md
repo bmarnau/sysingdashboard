@@ -3,6 +3,13 @@
 Server-Routen des Dashboards. Alle Endpoints liegen unter `src/routes/api/`
 (TanStack Start Server-Routes) und laufen im Cloudflare Worker.
 
+> **Wahrheitsquelle ist ab v1.34.0 das automatisch erzeugte Inventar**
+> `test-report/api-inventory.json` (siehe ADR-0014, Handbuch-Kapitel
+> „API Discovery und Testabdeckung"). Dieses Dokument beschreibt
+> vertragsrelevante Details (Payload-Beispiele, Fehlercodes) und wird
+> gegen das Inventar per CI abgeglichen.
+
+
 **Auth-Status (Stand 2026-07-08)**: Es gibt aktuell **keine Authentifizierung**.
 Endpoints sind auf published-Deployments öffentlich erreichbar. Vor Go-Live
 mit realen Kundendaten muss Auth ergänzt werden (siehe [ADR-0002](./ADR/0002-frontend-rbac-mirrored.md)).
