@@ -46,28 +46,23 @@ function normalizeError(err) {
 }
 
 /**
- * Lazy import — vermeidet zirkuläre Auflösung im Test-Umfeld und
- * schützt Node-Versionen ohne `node:async_hooks` (Fallback: leer).
+ * Correlation-Kontext lesen — die Server-Route setzt eine
+ * `AsyncLocalStorage`-Instanz auf `globalThis.__dashboardCorrelationStore__`
+ * (siehe `src/lib/correlation-context.server.ts`). Wir greifen ohne
+ * TS-Import direkt darauf zu, damit dieses `.mjs`-Modul sowohl unter
+ * Node (backend/server.mjs) als auch im TSS-Bundle funktioniert.
+ * Ist kein Store aktiv, liefern wir `undefined` und der Logger
+ * schreibt einfach ohne Correlation-Felder.
  */
-let getContextFn = null;
-async function loadContextGetter() {
-  if (getContextFn !== null) return getContextFn;
-  try {
-    const mod = await import("../../src/lib/correlation-context.server.ts");
-    getContextFn = mod.getCurrentCorrelationContext ?? (() => undefined);
-  } catch {
-    getContextFn = () => undefined;
-  }
-  return getContextFn;
-}
-
 function readContextSync() {
-  // Falls Getter geladen ist, synchron nutzen — sonst undefined.
-  return typeof getContextFn === "function" ? getContextFn() : undefined;
+  const store = globalThis.__dashboardCorrelationStore__;
+  if (!store || typeof store.getStore !== "function") return undefined;
+  try {
+    return store.getStore();
+  } catch {
+    return undefined;
+  }
 }
-
-// Vorwarm-Lauf im Hintergrund, damit ab dem ersten Request Kontext da ist.
-void loadContextGetter();
 
 function emit(level, message, error, ctx) {
   const cor = readContextSync();
