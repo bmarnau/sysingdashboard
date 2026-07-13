@@ -8,7 +8,9 @@
 import { describe, expect, it } from "vitest";
 import { mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { join, resolve } from "node:path";
+// @ts-expect-error — .mjs sources without .d.ts, discovery is JS
 import { discover } from "../../../scripts/api-discovery/discover.mjs";
+// @ts-expect-error — .mjs source
 import { isExcluded } from "../../../scripts/api-discovery/exclude.mjs";
 import {
   analyzeMethods,
@@ -17,7 +19,17 @@ import {
   analyzeCorrelation,
   analyzeArchivedImports,
   classify,
+  // @ts-expect-error — .mjs source
 } from "../../../scripts/api-discovery/analyzers.mjs";
+
+type InvEndpoint = {
+  path: string;
+  methods: string[];
+  requestValidation: boolean;
+  correlationId: boolean;
+  archivedImports: string[];
+};
+type InvFinding = { id: string; category: string; severity: string };
 
 const FIX_ROOT = resolve(process.cwd(), "src/__tests__/api-discovery/fixtures/routes-api");
 
