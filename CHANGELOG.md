@@ -13,6 +13,10 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.27.2 - 2026-07-13
+
+- **Legacy-Standalone-Backend archiviert**: `backend/server.mjs` und `backend/routes/` (bis v1.16.0 lokaler Node-HTTP-Server) nach `archive/legacy-standalone-backend/` verschoben. Keine Runtime-Änderung — die produktiven TanStack-Server-Routes (`src/routes/api/status.ts`, `src/routes/api/sync.ts`) importieren weiterhin die framework-freien Services aus `backend/services/`. Doku (`docs/API.md`, `docs/ARCHITECTURE.md`, Handbuch-Kapitel „Sync-Architektur" und „ENV-Validierung") und CI-Guard `scripts/check-no-console.mjs` entsprechend bereinigt.
+
 ## 1.27.1 - 2026-07-13
 
 - **ADR-0008 — RBAC v2 Assignment-Architektur**: Design-Dokument für die produktive Nutzung der v2-Typen. Definiert Domänenmodell (Principal, ScopeRef, Lifecycle, Audit), Datenfluss (Store ↔ Repository ↔ ScopeResolver), Repository-Port (`AssignmentRepository` mit Local- und Remote-Adapter), `AssignmentService` samt Invarianten (Lockout-Schutz, Scope-Validierung, Duplikat-Prevention) und einen fünfphasigen Migrationspfad (M1 Typen → M5 Backend-Mirror). Bestehende v2-Typen bleiben unverändert; keine Code- oder UI-Änderung in dieser Version.
