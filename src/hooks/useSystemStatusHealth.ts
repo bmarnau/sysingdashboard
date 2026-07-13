@@ -64,6 +64,8 @@ export interface SystemStatusHealth {
   mode: "development" | "production" | null;
   azureAllowed: boolean | null;
   lastError: string | null;
+  /** Correlation-ID der letzten Antwort (aus X-Correlation-Id-Header). */
+  lastCorrelationId: string | null;
   inFlight: boolean;
   payload: SystemStatusPayload | null;
 }
@@ -74,6 +76,7 @@ const initial: SystemStatusHealth = {
   mode: null,
   azureAllowed: null,
   lastError: null,
+  lastCorrelationId: null,
   inFlight: false,
   payload: null,
 };
