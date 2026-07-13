@@ -343,6 +343,7 @@ function Dashboard() {
     { id: "security-principles", label: "Sicherheitsprinzipien" },
     { id: "azure-outage", label: "Was bei Azure-Ausfall passiert" },
     { id: "test-instance", label: "Testinstanz und Qualitätssicherung" },
+    { id: "tech-debt", label: "Technical-Debt-Analyse" },
   ];
   const [showBackupDialog, setShowBackupDialog] = useState(false);
   const [showSystemStatus, setShowSystemStatus] = useState(false);

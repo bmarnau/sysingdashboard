@@ -1,6 +1,6 @@
 # Management-Zusammenfassung — Technical Debt
 
-**Version 1.28.0** · 2026-07-13
+**Version 1.29.0** · 2026-07-13
 
 | Kategorie | Wert |
 | --------- | ---- |
