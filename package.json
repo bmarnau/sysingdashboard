@@ -30,7 +30,7 @@
     "test:e2e": "playwright test",
     "test:perf": "node scripts/check-bundle.mjs",
     "test:docs": "bun run docs:check",
-    "test:debt": "node scripts/check-tech-debt.mjs",
+    "test:debt": "node scripts/tech-debt/run.mjs",
     "test:regression": "bun run test && bun run test:e2e",
     "test:full": "bun run lint && bun run test && bun run test:security && bun run test:a11y && bun run test:perf && bun run test:docs && bun run test:debt",
     "test:report": "node scripts/generate-test-report.mjs",

@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.7.0";
+export const DOCUMENTATION_VERSION = "1.8.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -1505,7 +1505,81 @@ Die Testinstanz prüft den **aktuellen Buildstand** des Dashboards — sie ist k
 ## Grenzen
 - Azure-Live-Modus ist vorbereitet, aber nicht produktionsbereit — Aktivierung nur nach expliziter Freigabe.
 - Kein Virtual Scrolling in Testreports (ADR-0006): Anzeigelimits gelten weiterhin.`,
-    relatedTopics: ["log-viewer", "fehlerbehandlung-logging", "system-status"],
+    relatedTopics: ["log-viewer", "fehlerbehandlung-logging", "system-status", "tech-debt"],
+  },
+  {
+    id: "tech-debt",
+    title: "Technical-Debt-Analyse",
+    category: "Service",
+    keywords: [
+      "Debt",
+      "Schulden",
+      "Qualität",
+      "Architektur",
+      "Report",
+      "Findings",
+      "Priorisierung",
+      "ADR",
+    ],
+    lastUpdated: "2026-07-13",
+    content: `## Zweck
+Die Technical-Debt-Analyse macht mit jedem aktuellen Buildstand nachvollziehbar sichtbar, welche strukturellen, qualitativen und dokumentarischen Schulden im Projekt bestehen. Sie ist bewusst **kein** Ersatz für den Security-Scan (\`scripts/security-check.mjs\`) — der bleibt separater, harter Gate.
+
+## Analyseverfahren
+Zwei Quellen laufen durch dasselbe Schema und werden vom Runner \`scripts/tech-debt/run.mjs\` zusammengeführt:
+
+1. **Automatisierte Detektoren** unter \`scripts/tech-debt/detectors/\`:
+   - \`cyclic-deps\`: Import-Zyklen (Regex-basierter Modul-Graph).
+   - \`layer-violations\`: UI-Komponenten, die Persistenz- oder Azure-Interna direkt statt über Facades importieren.
+   - \`oversize-modules\`: Dateien über LOC-Schwelle (400 Komponenten / 600 Libs).
+   - \`endpoint-guards\`: Fehlender Auth-Guard, fehlende Zod-Validierung, fehlende strukturierte Fehlerantwort in \`src/routes/api/**\`.
+   - \`orphan-modules\`: Vermutlich ungenutzte Dateien.
+   - \`doc-drift\`: Handbuch-Kapitel mit \`lastUpdated\` > 180 Tage.
+   - \`coverage-gaps\`: Kritische Services (\`src/lib/{azure,rbac,backup-service,json-*,user-management,logger*}\`) unter 50 % Line-Coverage.
+   - \`console-usage\`: Direkte \`console.*\`-Aufrufe außerhalb der Logger-Fassade.
+2. **Kuratierter Manual-Katalog** in \`tech-debt/findings.json\`. Vom Team gepflegt; deckt alles ab, was kein Detektor sinnvoll erkennen kann.
+
+## Ausgabe
+Jeder Lauf schreibt nach \`test-report/\`:
+
+| Datei | Zweck |
+| ----- | ----- |
+| \`tech-debt.json\` | Maschinenlesbarer Voll-Report inkl. Summary und Diff |
+| \`tech-debt.md\` | Vollständiger Bericht, nach Kategorie gegliedert |
+| \`tech-debt-summary.md\` | Management-Zusammenfassung (Top-10, Verteilung, Delta) |
+| \`tech-debt-actions.md\` | Sortierte Maßnahmenliste (offen/geplant) |
+| \`tech-debt-diff.json\` | Neue / behobene / bestehende Funde ggü. dem Vorlauf |
+
+Ein Actions-Cache in CI persistiert \`tech-debt.prev.json\` pro Branch, damit der Diff über Runs stabil bleibt.
+
+## Priorisierung
+Findings werden nach diesem Ranking sortiert:
+
+1. Security-Lücken → 2. Datenverlust/-manipulation → 3. offene privilegierte Endpoints → 4. Auth-/RBAC-Lücken → 5. Backup-/Restore-Risiken → 6. funktionale Fehler → 7. Stabilität → 8. Architektur/Wartbarkeit → 9. Performance → 10. Dokumentation → 11. Kosmetik.
+
+Innerhalb einer Prioritätsstufe entscheidet Severity, dann \`recommendedOrder\`.
+
+## CI-Gate
+Nur **Critical**-Funde brechen die Pipeline (Exit 2). High/Medium/Low/Informational sind reine Trend-Metriken — das verhindert Bypass-Reflexe und hält den Report ehrlich.
+
+## Grenzen (bewusst nicht automatisiert)
+- „Zu viele Verantwortlichkeiten pro Komponente" — braucht semantisches Verständnis; im Manual-Katalog dokumentiert.
+- „Widerspruch zwischen README, Architektur, API und ADR" — nur mit Review greifbar.
+- „Instabile Tests" — Flakiness ist ein CI-Signal, kein statisches.
+- „Unklare Ownership" — nur mit \`CODEOWNERS\` messbar (aktuell nicht vorhanden).
+- Regex-basierte Detektoren übersehen dynamische Imports und Barrel-Files; entsprechende Whitelists werden je Detektor gepflegt, nicht global.
+
+## Bedienung
+- Lokal: \`bun run test:debt\`.
+- Als Teil der Vollprüfung: \`bun run test:full\`.
+- Manual-Katalog erweitern: neuen Eintrag in \`tech-debt/findings.json\` mit stabiler \`id\` (\`td-manual-<slug>\`) — der Runner validiert das Schema und weist Abweichungen sofort ab.
+
+## Verhältnis zu anderen Prüfungen
+- **Security-Scan** (\`scripts/security-check.mjs\`): harter Gate für Secrets/Header, bleibt getrennt.
+- **RBAC-Check** (\`scripts/check-rbac.mjs\`): prüft Matrix-Drift Frontend↔Backend.
+- **Docs-Sync** (\`scripts/check-docs-sync.mjs\`): erzwingt Handbuch-Pflege bei Änderungen.
+- **Tech-Debt**: aggregiert alles Übrige zu einem sichtbaren Trend, ohne Doppelung mit den harten Gates.`,
+    relatedTopics: ["test-instance", "system-status", "fehlerbehandlung-logging"],
   },
 ];
 

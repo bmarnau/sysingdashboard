@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.29.0 - 2026-07-13
+
+- **Technical-Debt-Scanner (ADR-0010)**: Hybrider Ansatz aus acht automatisierten Detektoren (`scripts/tech-debt/detectors/`: `cyclic-deps`, `layer-violations`, `oversize-modules`, `endpoint-guards`, `orphan-modules`, `doc-drift`, `coverage-gaps`, `console-usage`) und einem kuratierten Manual-Katalog (`tech-debt/findings.json`). Gemeinsames Schema mit ID, Titel, Kategorie, Location, Beschreibung, Ursache, Auswirkung, Severity, Wahrscheinlichkeit, Empfehlung, Aufwand, Status, `firstDetected`, `lastChecked`, Version und Quelle.
+- **Aggregator** (`scripts/tech-debt/run.mjs`) validiert beide Quellen, mergt, priorisiert nach Prompt-Ranking (Security → Datenverlust → offener privilegierter Endpoint → RBAC → Backup → funktional → Stabilität → Architektur → Performance → Doku → Kosmetik) und produziert `test-report/tech-debt.{json,md}`, `tech-debt-summary.md`, `tech-debt-actions.md` sowie `tech-debt-diff.json` gegen den vorherigen Lauf.
+- **CI-Gate**: Nur Critical-Funde brechen die Pipeline (Exit 2); alles darüber ist Trend-Metrik. Actions-Cache persistiert `tech-debt.prev.json` pro Branch für echten Diff.
+- **Alter `scripts/check-tech-debt.mjs` entfernt** (LOC/TODO-Zähler passte nicht ins Schema).
+- Handbuch-Kapitel „Technical-Debt-Analyse" (Kategorie Service) inkl. Grenzen und bewusst nicht automatisierten Prüfpunkten; verlinkt im Hilfe-Quick-Menü.
+
 ## 1.28.0 - 2026-07-13
 
 - **Zentrale Testinstanz eingeführt (ADR-0009)**: 15 klar getrennte Testmodi (Unit, Komponenten, Frontend-/Backend-Integration, API, I/O, Backup, Azure-Mock, A11y, Security/RBAC, Performance/Bundle, Docs, Technical Debt, UI-E2E, Regression, Full) über Vitest-Pfad-Filter + Playwright + MSW. Isolation via `src/__tests__/env/test-instance.ts` (Fake Timer, seeded PRNG, Storage-Präfix `test:`, IndexedDB `sysingdashboard-test`, Vitest-Guard). Fixtures für Projects/WorkPackages/Assignments/Azure-Responses. Additive Namespace-Hooks in `store/dashboard-persistence.ts` und `logger.indexeddb.ts` (`VITE_TEST_STORAGE_PREFIX`, `VITE_TEST_IDB_NAME`); Produktions-Default unverändert. Azure-Live-Aufrufe hart geblockt (nur mit `AZURE_TEST_LIVE=1`).

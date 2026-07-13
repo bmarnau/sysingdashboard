@@ -44,6 +44,15 @@ jobs:
       - name: Test (with coverage)
         run: bun run test:coverage
 
+      - name: Restore previous tech-debt report (Diff-Basis)
+        uses: actions/cache@v4
+        with:
+          path: test-report/tech-debt.prev.json
+          key: tech-debt-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            tech-debt-${{ github.ref_name }}-
+            tech-debt-main-
+
       - name: Tech-debt report
         run: bun run test:debt
 
