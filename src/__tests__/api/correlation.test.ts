@@ -179,7 +179,9 @@ describe("backend logger correlation enrichment", () => {
   afterEach(() => vi.restoreAllMocks());
 
   it("should_addCorrelationFields_when_loggingInsideRequest", async () => {
-    const { logger } = await import("../../../backend/services/logger.mjs");
+    const { logger } = (await import("../../../backend/services/logger.mjs")) as {
+      logger: { info: (m: string, c?: Record<string, unknown>) => void };
+    };
     const handler = withCorrelation(async () => {
       logger.info("hello from handler", { extra: 1 });
       return Response.json({ ok: true });
