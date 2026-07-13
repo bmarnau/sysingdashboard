@@ -29,6 +29,7 @@ import { detectOrphanModules } from "./detectors/orphan-modules.mjs";
 import { detectDocDrift } from "./detectors/doc-drift.mjs";
 import { detectCoverageGaps } from "./detectors/coverage-gaps.mjs";
 import { detectConsoleUsage } from "./detectors/console-usage.mjs";
+import { detectCorrelationId } from "./detectors/correlation-id.mjs";
 
 const ROOT = resolve(new URL("../..", import.meta.url).pathname);
 const REPORT_DIR = resolve(ROOT, "test-report");
