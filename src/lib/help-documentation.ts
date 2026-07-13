@@ -1640,7 +1640,7 @@ Der Runner schreibt \`test-report/api-matrix.{md,json}\` nach jedem Lauf.
 - **Kein Fuzzing**: bewusst außen vor. Property-Based-Erweiterung (fast-check) folgt erst bei nachgewiesener Regression.
 
 ## Bekannte Einschränkungen
-- **Correlation-ID** wird noch nicht von den Routen ausgestellt; der Runner protokolliert das als offenes Risiko in der Matrix, ohne CI zu brechen. Nachrüsten ist eigener Prompt.
+- **Correlation-ID**: seit v1.32.0 vollständig aktiv — siehe eigenes Kapitel „Correlation-ID & Nachverfolgung". Der API-Runner prüft das Feld jetzt hart.
 - Der Idempotenz-Check ist auf „nicht crashen bei Wiederholung" reduziert; echte Response-Gleichheit prüft der Runner erst, wenn Routen sie garantieren können.
 - Archivierte Legacy-Routen unter \`archive/legacy-standalone-backend/routes/\` sind bewusst nicht in der Registry — sie sind nicht Teil des Live-Bundles.`,
     relatedTopics: ["test-instance", "system-status", "security-principles", "tech-debt"],
