@@ -64,6 +64,7 @@ const detectorResults = await Promise.all([
   Promise.resolve(detectDocDrift(ROOT)),
   Promise.resolve(detectCoverageGaps(ROOT)),
   Promise.resolve(detectConsoleUsage(ROOT)),
+  Promise.resolve(detectCorrelationId(ROOT)),
 ]);
 const automated = detectorResults.flat();
 
