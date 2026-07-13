@@ -1,23 +1,14 @@
 {
   "summary": {
-    "generatedAt": "2026-06-25T04:34:08.987Z",
-    "filesScanned": 107,
+    "generatedAt": "2026-07-13T04:04:09.565Z",
+    "filesScanned": 179,
     "rulesEvaluated": 22,
     "counts": {
       "CRITICAL": 0,
       "HIGH": 0,
-      "MEDIUM": 1
+      "MEDIUM": 0
     },
     "failed": false
   },
-  "findings": [
-    {
-      "severity": "MEDIUM",
-      "rule": "cors-wildcard-only",
-      "title": "CORS-Wildcard (Access-Control-Allow-Origin: *)",
-      "file": "backend/server.mjs",
-      "line": 24,
-      "snippet": "res.setHeader(\"Access-Control-Allow-Origin\", \"*\");"
-    }
-  ]
+  "findings": []
 }

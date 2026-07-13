@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.6.0";
+export const DOCUMENTATION_VERSION = "1.7.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -1426,6 +1426,86 @@ Secrets sind bereits im Logger maskiert (Keys wie \`token\`, \`password\`, \`aut
 - Anzeige ist auf 1000 Zeilen begrenzt (bewusst kein Virtual Scrolling, siehe ADR-0006). Bei mehr Treffern erscheint ein Hinweis „N weitere gefiltert".
 - In DEV schreibt der Logger zusätzlich in die Browser-Console; IndexedDB-Persistenz greift erst im PROD-Build.`,
     relatedTopics: ["fehlerbehandlung-logging"],
+  },
+  {
+    id: "test-instance",
+    title: "Testinstanz und Qualitätssicherung",
+    category: "Service",
+    keywords: [
+      "Test",
+      "Testinstanz",
+      "Qualität",
+      "QA",
+      "Vitest",
+      "Playwright",
+      "E2E",
+      "Coverage",
+      "Regression",
+      "MSW",
+      "Mock",
+    ],
+    lastUpdated: "2026-07-13",
+    content: `## Zweck
+Die Testinstanz prüft den **aktuellen Buildstand** des Dashboards — sie ist keine zweite Anwendung und kein separater Entwicklungszweig. Alle Testmodi laufen gegen dieselbe Codebasis. Ziel: reproduzierbare Prüfung von Frontend, Backend, API, Daten, UI, Sicherheit, Dokumentation und technischer Qualität.
+
+## Aufbau
+- **Runner**: Vitest (bestehend) für Unit-, Komponenten-, Integrations-, Backend-, API-, Security-, Azure-, I/O-, Backup- und A11y-Tests.
+- **UI-E2E**: Playwright gegen den lokalen Dev-Server (Port 8080).
+- **HTTP-Isolation**: MSW (Node) für Azure- und API-Mocks.
+- **Guards**: \`src/__tests__/env/test-instance.ts\` erzwingt Testumgebung, setzt Storage-Präfix (\`test:\`), IndexedDB-Namen (\`sysingdashboard-test\`), Fake Timer und einen seeded PRNG.
+
+## Testmodi
+| Modus | Kommando | Umfang |
+| ----- | -------- | ------ |
+| Unit | \`bun run test:unit\` | Reine Logik in \`src/lib\` und \`src/hooks\` |
+| Komponenten | \`bun run test:components\` | UI-Komponenten unter jsdom |
+| Frontend-Integration | \`bun run test:integration\` | Store, Import/Export, Persistenz |
+| Backend-Integration | \`bun run test:backend\` | \`backend/services/*.mjs\` |
+| API/Endpoint | \`bun run test:api\` | TSS-Server-Handler direkt |
+| Import/Export | \`bun run test:io\` | JSON-Pipeline |
+| Backup/Restore | \`bun run test:backup\` | ZIP-Erzeugung, Konsistenz |
+| Azure-Mock | \`bun run test:azure\` | MSW-basiert, blockt Live-Aufrufe |
+| Accessibility | \`bun run test:a11y\` | vitest-axe |
+| Security/RBAC | \`bun run test:security\` | RBAC-Matrix + Secret-Scan + Docs |
+| Performance/Bundle | \`bun run test:perf\` | \`dist/\`-Chunk-Analyse |
+| Doku/Version | \`bun run test:docs\` | CHANGELOG ↔ Handbuch |
+| Technical Debt | \`bun run test:debt\` | TODO/HACK/ts-ignore-Trend |
+| UI-E2E | \`bun run test:e2e\` | Playwright Smoke + Gating |
+| Regression | \`bun run test:regression\` | Vitest + E2E |
+| Full | \`bun run test:full\` | Alles inkl. Lint + Debt |
+
+## Datentrennung (verpflichtend)
+- Storage-Präfix \`test:\` verhindert, dass Testläufe produktive localStorage-Einträge überschreiben.
+- Eigene IndexedDB \`sysingdashboard-test\` für Logger und Downloads.
+- Deterministische Zeitstempel (\`2026-01-01T00:00:00Z\`) und seeded PRNG.
+- Kein Zugriff auf produktives Azure — MSW-Mock aktiv, \`AZURE_TEST_LIVE=1\` ist der einzige Bypass.
+
+## Ausführung
+- **Lokal**: \`bun run test:full\` deckt Lint, Vitest, Security, A11y, Performance, Docs und Debt ab. \`bun run test:e2e\` startet den Dev-Server automatisch (Playwright \`webServer\`).
+- **CI**: \`.github/workflows/ci.yml\` führt alle Modi aus und lädt \`coverage/\`, \`test-report/\` und \`playwright-report/\` als Artefakte hoch.
+
+## Interpretation der Ergebnisse
+- **Coverage-Report** (\`coverage/\`): v8-Instrumentierung; harter Threshold nur für \`src/lib/time-period.ts\`.
+- **Bundle-Report** (\`test-report/bundle.json\`): Top-15-Chunks nach Größe. Kein hartes Budget — Trendbeobachtung.
+- **Technical-Debt-Report** (\`test-report/tech-debt.json\`): TODO/FIXME/HACK-Zähler + \`@ts-ignore\` + Dateien > 500 Zeilen.
+- **Prüfbericht** (\`test-report/summary.md\`): Aggregation aller Bereiche für den Managementbericht.
+
+## Managementsicht
+- Reproduzierbare Prüfung des jeweils aktuellen Buildstands (kein Drift).
+- Klar getrennte Modi ermöglichen risikobezogene Auslieferung: Kritische Änderungen erfordern \`test:full\`, Textkorrekturen nur \`test:unit\`.
+- Sicherheitskritische Bereiche (RBAC, Secrets, Azure-Gate) sind eigenständige Modi mit expliziten Guards.
+- Reporting-Kadenz: Jeder CI-Lauf produziert einen aggregierten Prüfbericht als Artefakt.
+
+## Entwicklersicht
+- Neue Tests werden im passenden Ordner unter \`src/__tests__/<modus>/\` abgelegt und importieren \`../env/test-instance\` als erste Zeile.
+- Fixtures (deterministische Testdaten) liegen unter \`src/__tests__/fixtures/\`.
+- MSW-Handler zentral unter \`src/__tests__/mocks/handlers/\`.
+- Playwright-Tests unter \`e2e/\`, Fixtures in \`e2e/fixtures.ts\`.
+
+## Grenzen
+- Azure-Live-Modus ist vorbereitet, aber nicht produktionsbereit — Aktivierung nur nach expliziter Freigabe.
+- Kein Virtual Scrolling in Testreports (ADR-0006): Anzeigelimits gelten weiterhin.`,
+    relatedTopics: ["log-viewer", "fehlerbehandlung-logging", "system-status"],
   },
 ];
 

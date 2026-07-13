@@ -1,9 +1,9 @@
 # Security-Scan-Report
 
-- **Generiert:** 2026-06-25T04:34:08.987Z
-- **Dateien geprüft:** 107
+- **Generiert:** 2026-07-13T04:04:09.565Z
+- **Dateien geprüft:** 179
 - **Regeln:** 22
-- **CRITICAL:** 0 · **HIGH:** 0 · **MEDIUM:** 1
+- **CRITICAL:** 0 · **HIGH:** 0 · **MEDIUM:** 0
 - **Build-Status:** ✅ PASS
 
 ## CRITICAL
@@ -14,11 +14,9 @@ _Keine Funde._
 
 _Keine Funde._
 
-## MEDIUM (1)
+## MEDIUM
 
-| Regel                | Fundstelle            | Beschreibung                                    | Snippet                                              |
-| -------------------- | --------------------- | ----------------------------------------------- | ---------------------------------------------------- |
-| `cors-wildcard-only` | backend/server.mjs:24 | CORS-Wildcard (Access-Control-Allow-Origin: \*) | `res.setHeader("Access-Control-Allow-Origin", "*");` |
+_Keine Funde._
 
 ---
 

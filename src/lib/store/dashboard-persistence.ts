@@ -26,7 +26,13 @@ import { logger } from "@/lib/logger";
 import { UserManagementService, subscribeUserChanges } from "@/lib/user-management";
 import { dashboardStore, type DashboardDomainState } from "./dashboard-store";
 
-const STORAGE_KEY_BASE = "northbit-dashboard-v2";
+// Test-Isolation: Präfix wird von der Testinstanz gesetzt
+// (VITE_TEST_STORAGE_PREFIX). Produktion: Präfix ist leer, das
+// bestehende Schlüsselformat bleibt unverändert.
+const TEST_PREFIX =
+  (import.meta as unknown as { env?: { VITE_TEST_STORAGE_PREFIX?: string } }).env
+    ?.VITE_TEST_STORAGE_PREFIX ?? "";
+const STORAGE_KEY_BASE = `${TEST_PREFIX}northbit-dashboard-v2`;
 const DEBOUNCE_MS = 300;
 
 function storageKey(): string {
