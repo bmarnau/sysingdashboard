@@ -713,3 +713,352 @@ export function triggerBackupDownload(blob: Blob, fileName: string): void {
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }
+
+/* ---------------------------------------------------------------------- */
+/*  Restore (Prompt 2A.6)                                                  */
+/* ---------------------------------------------------------------------- */
+
+/**
+ * Wiederherstellungsmodi:
+ *  - "empty"     verlangt einen leeren Zielzustand (keine App-Keys vorhanden).
+ *  - "overwrite" ersetzt vorhandene Keys komplett.
+ *  - "merge"     überschreibt nur die im Backup enthaltenen Keys, lässt
+ *                unbekannte lokale Keys stehen.
+ *
+ * Alle Modi arbeiten transaktional: vor dem Schreiben wird ein Pre-Snapshot
+ * der betroffenen localStorage-Keys angelegt. Tritt beim Schreiben oder bei
+ * der Nach-Validierung ein Fehler auf, wird der Snapshot zurückgespielt und
+ * `rollback: true` gemeldet — keinerlei Teilzustand bleibt zurück.
+ */
+export type RestoreMode = "empty" | "overwrite" | "merge";
+
+export interface RestoreOptions {
+  actor: string;
+  mode: RestoreMode;
+  /** Ältere MINOR/PATCH akzeptieren (Default true). */
+  allowOlderMinor?: boolean;
+  /** Neuere MAJOR/MINOR akzeptieren (Default false — Vorsicht). */
+  allowNewer?: boolean;
+  /** Erwarteter Projektname. Default `dashboard`. */
+  expectedProject?: string;
+}
+
+export interface RestoreResult {
+  ok: boolean;
+  runId: string;
+  snapshotId: string | null;
+  startedAt: string;
+  finishedAt: string;
+  actor: string;
+  mode: RestoreMode;
+  fileName?: string;
+  counts: { keysWritten: number; keysSkipped: number; keysConsidered: number };
+  warnings: string[];
+  errors: string[];
+  rollback: boolean;
+}
+
+const RESTORE_LOG_KEY = "backup:restoreLog";
+const RESTORE_LOG_MAX = 100;
+
+function readRestoreLog(): RestoreResult[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(RESTORE_LOG_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeRestoreLog(entry: RestoreResult): void {
+  if (typeof window === "undefined") return;
+  try {
+    const log = readRestoreLog();
+    log.unshift(entry);
+    window.localStorage.setItem(RESTORE_LOG_KEY, JSON.stringify(log.slice(0, RESTORE_LOG_MAX)));
+  } catch {
+    /* quota — ignore */
+  }
+}
+
+interface RestoreSnapshot {
+  id: string;
+  keys: Array<{ key: string; value: string | null }>;
+}
+
+function takeSnapshotOf(keys: string[]): RestoreSnapshot {
+  const id = `restore-snap-${crypto.randomUUID()}`;
+  if (typeof window === "undefined") return { id, keys: [] };
+  return {
+    id,
+    keys: keys.map((k) => ({ key: k, value: window.localStorage.getItem(k) })),
+  };
+}
+
+function rollbackSnapshot(snap: RestoreSnapshot): void {
+  if (typeof window === "undefined") return;
+  for (const { key, value } of snap.keys) {
+    if (value === null) window.localStorage.removeItem(key);
+    else window.localStorage.setItem(key, value);
+  }
+}
+
+function listCurrentAppKeys(): string[] {
+  if (typeof window === "undefined") return [];
+  const out: string[] = [];
+  for (let i = 0; i < window.localStorage.length; i++) {
+    const k = window.localStorage.key(i);
+    if (k && isAppKey(k) && k !== LOG_KEY && k !== RESTORE_LOG_KEY && k !== LAST_BACKUP_KEY) {
+      out.push(k);
+    }
+  }
+  return out;
+}
+
+function parseSemverMajor(v: string): number {
+  const m = /^(\d+)/.exec(v);
+  return m ? Number(m[1]) : NaN;
+}
+
+/**
+ * Setzt ein Backup-ZIP zurück in localStorage. Reine Client-Operation.
+ *
+ * Fehlerfälle liefern `ok: false` und beschreiben in `errors[]` den Grund.
+ * Ausnahme: nur echte Programmierfehler eskalieren via throw; alle
+ * erwarteten Restore-Fehler (kaputtes ZIP, Manifest-Mismatch, fehlende
+ * Pflichtdateien, Versions-Verweigerung) sind protokolliert und werden
+ * zurückgegeben.
+ */
+export async function restoreFromZip(
+  bytes: Uint8Array,
+  opts: RestoreOptions,
+  meta: { fileName?: string } = {},
+): Promise<RestoreResult> {
+  const startedAt = new Date().toISOString();
+  const runId = `restore-${crypto.randomUUID()}`;
+  const warnings: string[] = [];
+  const errors: string[] = [];
+  const counts = { keysWritten: 0, keysSkipped: 0, keysConsidered: 0 };
+  const expectedProject = opts.expectedProject ?? PROJECT_NAME;
+  const allowOlderMinor = opts.allowOlderMinor ?? true;
+  const allowNewer = opts.allowNewer ?? false;
+
+  const fail = (msg: string, extra: Partial<RestoreResult> = {}): RestoreResult => {
+    errors.push(msg);
+    const res: RestoreResult = {
+      ok: false,
+      runId,
+      snapshotId: null,
+      startedAt,
+      finishedAt: new Date().toISOString(),
+      actor: opts.actor,
+      mode: opts.mode,
+      fileName: meta.fileName,
+      counts,
+      warnings,
+      errors,
+      rollback: false,
+      ...extra,
+    };
+    writeRestoreLog(res);
+    logger.error("Restore rejected", new BackupError("RESTORE_REJECTED", msg), {
+      actor: opts.actor,
+      mode: opts.mode,
+      fileName: meta.fileName,
+    });
+    return res;
+  };
+
+  if (!bytes || bytes.length === 0) return fail("Backup-Datei ist leer.");
+
+  // 1. Entpacken
+  let entries: Record<string, Uint8Array>;
+  try {
+    entries = unzipSync(bytes);
+  } catch (err) {
+    return fail(`ZIP konnte nicht entpackt werden: ${(err as Error).message}`);
+  }
+
+  // 2. Pflichtdateien
+  const required = ["manifest.json"];
+  for (const r of required) {
+    if (!entries[r]) return fail(`Pflichtdatei fehlt: ${r}`);
+  }
+
+  // 3. Manifest parsen und prüfen
+  let manifest: Snapshot["manifest"];
+  try {
+    manifest = JSON.parse(strFromU8(entries["manifest.json"])) as Snapshot["manifest"];
+  } catch (err) {
+    return fail(`Manifest ist beschädigt: ${(err as Error).message}`);
+  }
+  if (manifest.project !== expectedProject) {
+    return fail(
+      `Projektname im Manifest ("${manifest.project}") passt nicht zu "${expectedProject}".`,
+    );
+  }
+  const localMajor = parseSemverMajor(String(manifest.version ?? "1"));
+  const expectedMajor = 1;
+  if (Number.isFinite(localMajor)) {
+    if (localMajor > expectedMajor && !allowNewer) {
+      return fail(
+        `Backup nutzt Schema-MAJOR ${localMajor}, unterstützt wird ${expectedMajor}. Aktiviere \`allowNewer\`, um es dennoch einzuspielen.`,
+      );
+    }
+    if (localMajor < expectedMajor && !allowOlderMinor) {
+      return fail(
+        `Backup nutzt Schema-MAJOR ${localMajor}, älter als ${expectedMajor}. Migration erforderlich.`,
+      );
+    }
+    if (localMajor < expectedMajor) {
+      warnings.push(
+        `Älteres Schema (MAJOR ${localMajor}) — nur additive Wiederherstellung möglich.`,
+      );
+    }
+  }
+
+  // 4. Datendateien einsammeln
+  const dataEntries = Object.entries(entries).filter(([p]) => p.startsWith("data/"));
+  if (dataEntries.length === 0) {
+    return fail("Backup enthält keine Datendateien unter data/.");
+  }
+
+  const desiredKeyValues: Array<{ key: string; raw: string }> = [];
+  for (const [path, u8] of dataEntries) {
+    // Dateiname → Storage-Key rekonstruieren. Wir verlassen uns auf das
+    // Manifest, wenn der Original-Key nicht mehr rekonstruierbar ist.
+    const safe = path.replace(/^data\//, "").replace(/\.json$/, "");
+    // Der ursprüngliche Key wird beim Backup mit `[^a-zA-Z0-9._-] → _`
+    // maskiert. Für eine perfekte Umkehr müsste er im Manifest stehen —
+    // additiv gepflegt in `manifest.entries[]` (nicht rückwärtskompatibel
+    // erzwungen). Ohne diese Info nutzen wir den maskierten Namen 1:1;
+    // App-Keys sind ohnehin ohne Sonderzeichen definiert (Prefix-basiert).
+    desiredKeyValues.push({ key: safe, raw: strFromU8(u8) });
+  }
+  counts.keysConsidered = desiredKeyValues.length;
+
+  // 5. Modus-abhängige Vor-Bedingungen
+  if (typeof window === "undefined") {
+    return fail("Restore ist nur im Browser (localStorage) verfügbar.");
+  }
+  if (opts.mode === "empty") {
+    const existing = listCurrentAppKeys();
+    if (existing.length > 0) {
+      return fail(
+        `Modus 'empty' verlangt leeren Zielzustand, ${existing.length} vorhandene App-Keys gefunden.`,
+      );
+    }
+  }
+
+  // 6. Sensitive Keys im Backup abweisen (Defense-in-Depth)
+  for (const { key, raw } of desiredKeyValues) {
+    if (looksSensitive(key, raw)) {
+      return fail(`Sensibler Schlüssel im Backup gefunden — Restore verweigert: ${key}`);
+    }
+  }
+
+  // 7. Snapshot der zu berührenden Keys nehmen
+  const touchKeys = new Set<string>(desiredKeyValues.map((d) => d.key));
+  if (opts.mode === "overwrite") {
+    for (const k of listCurrentAppKeys()) touchKeys.add(k);
+  }
+  const snap = takeSnapshotOf(Array.from(touchKeys));
+  snapshotRegistryRestore.set(snap.id, snap);
+
+  // 8. Anwenden (transaktional)
+  try {
+    if (opts.mode === "overwrite") {
+      for (const k of listCurrentAppKeys()) {
+        if (!desiredKeyValues.some((d) => d.key === k)) {
+          window.localStorage.removeItem(k);
+          counts.keysSkipped++;
+        }
+      }
+    }
+    for (const { key, raw } of desiredKeyValues) {
+      window.localStorage.setItem(key, raw);
+      counts.keysWritten++;
+    }
+    // 9. Nachvalidierung: Anzahl im Ziel muss ≥ geschriebene Keys sein.
+    let verifyMiss = 0;
+    for (const { key, raw } of desiredKeyValues) {
+      if (window.localStorage.getItem(key) !== raw) verifyMiss++;
+    }
+    if (verifyMiss > 0) {
+      throw new Error(`Nach-Validierung fehlgeschlagen: ${verifyMiss} Keys weichen ab.`);
+    }
+  } catch (err) {
+    rollbackSnapshot(snap);
+    const message = err instanceof Error ? err.message : String(err);
+    errors.push(message);
+    const res: RestoreResult = {
+      ok: false,
+      runId,
+      snapshotId: snap.id,
+      startedAt,
+      finishedAt: new Date().toISOString(),
+      actor: opts.actor,
+      mode: opts.mode,
+      fileName: meta.fileName,
+      counts,
+      warnings,
+      errors,
+      rollback: true,
+    };
+    writeRestoreLog(res);
+    logger.error("Restore rolled back", err, { actor: opts.actor, mode: opts.mode });
+    return res;
+  }
+
+  const finishedAt = new Date().toISOString();
+  const result: RestoreResult = {
+    ok: true,
+    runId,
+    snapshotId: snap.id,
+    startedAt,
+    finishedAt,
+    actor: opts.actor,
+    mode: opts.mode,
+    fileName: meta.fileName,
+    counts,
+    warnings,
+    errors,
+    rollback: false,
+  };
+  writeRestoreLog(result);
+  logger.info("Restore applied", {
+    module: "BackupService",
+    action: "restore",
+    runId,
+    actor: opts.actor,
+    mode: opts.mode,
+    counts,
+    warnings: warnings.length,
+  });
+  return result;
+}
+
+const snapshotRegistryRestore = new Map<string, RestoreSnapshot>();
+
+/** Vorheriges Restore rückgängig machen (nur solange dieselbe Session läuft). */
+export function rollbackRestore(snapshotId: string): boolean {
+  const snap = snapshotRegistryRestore.get(snapshotId);
+  if (!snap) return false;
+  rollbackSnapshot(snap);
+  logger.info("Restore manually rolled back", {
+    module: "BackupService",
+    action: "restore-rollback",
+    snapshotId,
+  });
+  return true;
+}
+
+export function restoreLog(): RestoreResult[] {
+  return readRestoreLog();
+}
+
+export function clearRestoreLog(): void {
+  if (typeof window !== "undefined") window.localStorage.removeItem(RESTORE_LOG_KEY);
+}
