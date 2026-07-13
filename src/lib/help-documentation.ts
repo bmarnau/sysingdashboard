@@ -1694,6 +1694,37 @@ Artefakte in CI: \`playwright-report/\` (HTML + JSON + Traces), \`e2e/reports/\`
 Die E2E-Suite ergänzt die Unit-, Component-, API- und Security-Suiten. Ein grüner Playwright-Lauf ist **kein** Beweis für serverseitige Berechtigungsprüfung — dafür bleibt \`rbac/backend-denial.spec.ts\` plus \`test:security\` maßgeblich.`,
     relatedTopics: ["test-instance", "api-endpoint-tests", "barrierefreiheit", "system-status"],
   },
+  {
+    id: "correlation-id",
+    title: "Correlation-ID & Nachverfolgung",
+    category: "Service",
+    keywords: ["Correlation-ID", "Referenz-ID", "Trace", "Logs", "Fehleranalyse", "Support"],
+    lastUpdated: "2026-07-13",
+    content: `## Zweck
+Jeder Server-Request bekommt eine eindeutige **Correlation-ID** (auch Referenz-ID). Sie verknüpft Response, Logs, Fehlermeldungen und spätere Azure-Aufrufe. Bei Support-Anfragen genügt die ID, um den Request im Log Viewer zu finden.
+
+## Format
+- Standard: **UUID v4** (36 Zeichen), z. B. \`550e8400-e29b-41d4-a716-446655440000\`.
+- Akzeptierte Client-IDs müssen \`^[A-Za-z0-9._-]{8,64}$\` erfüllen — ideal für externe Traces (\`trace-abc.123\`).
+- Alles andere (Sonderzeichen, HTML, Whitespace, Überlänge) wird verworfen; der Server erzeugt stattdessen eine neue ID.
+
+## Verhalten pro Request
+- Header **\`X-Correlation-Id\`** eingehend → validiert und übernommen.
+- Header fehlt/ungültig → neue UUID v4.
+- Response spiegelt die ID **immer** im Header (auch bei Fehlern).
+- Fehlerantwort: \`{ ok:false, code, message, correlationId, timestamp }\` — kein Stack, keine Provider-Details.
+- Server-Logs enthalten \`correlationId\`, \`route\`, \`method\`, \`durationMs\` (nur wenn Request-Kontext aktiv ist).
+
+## Frontend
+- **Systemstatus** zeigt die letzte Referenz-ID an, mit Copy-Button. Bei Fehlern erscheint sie zusätzlich im Fehlerkasten.
+- **Log Viewer** findet Einträge auch nach Correlation-ID (Suchfeld).
+
+## Grenzen
+- Client-Anfragen ohne Header bekommen ihre erste ID erst mit der Server-Antwort; Client-eigene ID (\`X-Correlation-Id\` im Fetch) wird empfohlen für Ende-zu-Ende-Traces.
+- Azure- und Key-Vault-Adapter sind Stubs — Correlation wird bereits durch den Logger propagiert und ab produktiver Anbindung sichtbar.
+- Persistente Log-Suche über Neustarts hinweg braucht den serverseitigen Sink (offen, siehe Tech-Debt).`,
+    relatedTopics: ["system-status", "log-viewer", "api-endpoint-tests", "fehlerbehandlung-logging"],
+  },
 ];
 
 
