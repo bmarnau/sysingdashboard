@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.30.0 - 2026-07-13
+
+- **API- und Endpoint-Test-Suite (ADR-0011)**: Contract-first Registry unter `src/__tests__/api/registry/` — jede Server-Route ist ein `EndpointContract` mit Pfad, Methoden, Auth-Flag, Zod-Schemas und `loadRoute()`. Der generische Runner `src/__tests__/api/runner.test.ts` iteriert die Registry und erzeugt pro aktivem Endpoint dieselben Kategorien: Grundfunktion (Methoden, Content-Type, Statuscode, Response-Schema), Payload-Varianten (ungültiges JSON, leerer Body, 1 MB Oversize, unerwartete Felder, Injection-nahe Eingaben), Security-Scan (JWT/Bearer/Connection-String/SAS/Stacktrace im Body, sensitive Header, Auth-Negativfall), Stabilität (10 parallele Requests) und Nachvollziehbarkeit (strukturierter Fehler). Nicht-unterstützte HTTP-Methoden werden hart geprüft (Handler darf nicht existieren).
+- **Endpoint-Matrix** wird bei jedem Runner-Lauf als `test-report/api-matrix.{md,json}` erzeugt und in CI als Artefakt hochgeladen. Enthält Endpoint, Methode, Auth, Permission, Scope, Request-/Response-Schema, Case-Zähler, Status und offene Risiken.
+- **Vorbereitete Registry-Einträge** für spätere Routen (`/api/azure/*`, `/api/rbac/assignments`) mit Status `planned` — Runner überspringt sie via `test.todo`, bleibt aber in der Matrix sichtbar als bekannte Lücke.
+- **Playwright-Smoke `e2e/api-smoke.spec.ts`**: echter HTTP-Round-Trip für die Fälle, die der Handler-direct-Runner nicht sieht (Middleware, Framework-Header).
+- **Legacy-Tests entfernt**: `src/__tests__/api/status.route.test.ts` und `sync.route.test.ts` werden vollständig vom Runner abgedeckt.
+- Handbuch-Kapitel „API- und Endpoint-Tests" (Kategorie Service) inkl. Testumfang, Ausführung, Fehlerinterpretation, Sicherheitsgrenzen und bekannten Einschränkungen; verlinkt im Hilfe-Quick-Menü. ADR-0011 dokumentiert die Registry-Entscheidung. `DOCUMENTATION_VERSION` auf 1.9.0 angehoben.
+
 ## 1.29.0 - 2026-07-13
 
 - **Technical-Debt-Scanner (ADR-0010)**: Hybrider Ansatz aus acht automatisierten Detektoren (`scripts/tech-debt/detectors/`: `cyclic-deps`, `layer-violations`, `oversize-modules`, `endpoint-guards`, `orphan-modules`, `doc-drift`, `coverage-gaps`, `console-usage`) und einem kuratierten Manual-Katalog (`tech-debt/findings.json`). Gemeinsames Schema mit ID, Titel, Kategorie, Location, Beschreibung, Ursache, Auswirkung, Severity, Wahrscheinlichkeit, Empfehlung, Aufwand, Status, `firstDetected`, `lastChecked`, Version und Quelle.
