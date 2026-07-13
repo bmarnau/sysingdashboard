@@ -1,130 +1,91 @@
+## Prompt 2A.4 – UI-Funktionstest und End-to-End-Test (v1.31.0)
 
-# Plan: API- und Endpoint-Test-Suite (v1.30.0)
+Ziel: Playwright-basierte E2E-Suite, die die Anwendung aus Benutzersicht prüft, in die bestehende zentrale Testinstanz (v1.28.0) und CI integriert.
 
-## Kontext
-Aktuell existieren zwei Server-Routen (`/api/status`, `/api/sync`) und je ein
-minimaler Handler-Test (`src/__tests__/api/*.route.test.ts`), der nur
-"Antwort ist JSON" verifiziert. Es gibt keine Endpoint-Matrix, keine
-negativen Fälle, keine Security-Assertions und keinen CI-Gate speziell für
-API-Tests. Azure-/RBAC-/Assignment-Routen sind noch nicht implementiert,
-das Framework muss sie aber vorbereitet aufnehmen.
+### Werkzeugwahl
 
-## Ansatz
-Ein **Contract-first Endpoint-Registry** statt handgeschriebener Tests pro
-Route. Jede Route wird einmal deklarativ beschrieben (Methode, Auth,
-Schema, Cases); ein generischer Runner erzeugt daraus alle Test-Fälle. Neue
-Routen (Azure, RBAC) tragen nur einen Registry-Eintrag ein — Runner, CI-
-Gate und Matrix-Report aktualisieren sich automatisch.
+Playwright bleibt. Es ist bereits in `e2e/api-smoke.spec.ts` produktiv, mit TanStack Start und Cloudflare Worker verträglich (läuft gegen den Vite-Dev-Server bzw. `bun run start`), und in CI vorhanden. Keine neue Abhängigkeit.
 
-## Deliverables
+Kritischer Trade-off (offen benennen): die Suite läuft gegen den **Dev-Server**, nicht gegen einen echten Worker-Build. Das ist bewusst, weil ein Wrangler-Preview in CI die Laufzeit verdoppeln würde; Worker-spezifische Regressionen fängt weiterhin `build:dev` + `test:api` ab.
 
-### 1. Endpoint-Registry (`src/__tests__/api/registry/`)
-- `types.ts` — `EndpointContract`: `{ path, methods[], authRequired,
-  permission?, scope?, requestSchema?, responseSchema, errorSchema,
-  cases: TestCase[], knownRisks[] }`.
-- `endpoints.ts` — zentrale Liste. Initial: `status`, `sync`.
-- `cases/` — wiederverwendbare Case-Bausteine (`invalidJson`,
-  `emptyBody`, `oversizePayload`, `wrongMethod`, `sqlishInput`,
-  `secretsInResponse`, `stacktraceInResponse`, `sensitiveHeaders`).
+### Struktur
 
-### 2. Generischer Runner (`src/__tests__/api/runner.test.ts`)
-Iteriert die Registry, führt pro Endpoint aus:
-- **Grundfunktion**: erlaubte/nicht erlaubte Methoden, Content-Type,
-  Statuscode, Response gegen Zod-Schema, Fehlerform.
-- **Payloads**: gültig, leer, unvollständig, 1 MB Oversize, unerwartete
-  Felder, ungültiges JSON.
-- **Security**: Response-Body-Scan auf JWT-, Bearer-, Connection-String-,
-  SAS-, Stacktrace-Muster; Header-Scan auf `set-cookie`, `x-powered-by`,
-  `server`. CORS-Check, wenn `corsExpected` gesetzt.
-- **Stabilität**: 10 parallele Requests, 3 wiederholte identische
-  Requests (Idempotenz-Assert bei GET/PUT/DELETE).
-- **Auth-Negativfall**: für `authRequired: true` Endpunkte ohne / mit
-  falschem Token → 401/403.
-- **Nachvollziehbarkeit**: falls `X-Correlation-Id` mitgegeben, muss der
-  Wert im Response-Header oder Log auftauchen; Fehler müssen strukturiert
-  sein (`{ ok:false, error, code? }`).
+```text
+e2e/
+  fixtures/
+    roles.ts             # 7 Rollen → gemockter Session-Bootstrap via localStorage
+    test-instance.ts     # test:-Prefix, Storage-Reset pro Test
+    axe.ts               # @axe-core/playwright Wrapper
+  specs/
+    navigation.spec.ts       # Hauptnav, Servicemenü, Dialoge, Zurück, Deep Links, mobile Nav
+    dashboard.spec.ts        # KPIs, Listen, Suche/Filter/Sort, Edit, Persistenz, User-Wechsel
+    service-menu.spec.ts     # LogViewer, Systemstatus, Health, Backup, Download, Import/Export, Azure, UserMgmt, Handbuch, ReleaseReadiness
+    error-states.spec.ts     # leere/korrupte Daten, IDB/LS aus, API 500/Timeout, Azure unconfigured, 401/403
+    responsive.spec.ts       # Desktop/Tablet/Mobile/kleine Höhe/200%-Zoom
+    a11y.spec.ts             # axe-Scan, Fokus-Reihenfolge, Escape, Dialog-Focus-Trap
+    rbac/
+      role-matrix.spec.ts    # generisch über 7 Rollen × sichtbare Menüs/Aktionen
+      backend-denial.spec.ts # direkter Fetch auf geschützte Endpunkte ohne UI
+  reports/
+    test-report.md           # generiert
+    ui-matrix.md             # UI-Funktion ↔ Testfall
+    untested.md              # Lücken
+playwright.config.ts         # trace: on-first-retry, screenshot: only-on-failure, video: retain-on-failure
+```
 
-Der Runner ruft **Route-Handler direkt** auf (kein Netz, kein Dev-Server),
-so wie es die bestehenden Tests machen. Ergänzend eine kleine
-Playwright-Suite (`e2e/api-smoke.spec.ts`) für echten HTTP-Round-Trip
-gegen Vite auf 8080, gated durch `E2E=1`.
+### Testabdeckung (Zuordnung UI-Funktion → Spec)
 
-### 3. Reporter (`scripts/api-matrix/generate.mjs`)
-Liest die Registry (via `tsx`) und generiert:
-- `test-report/api-matrix.md` — Tabelle: Endpoint | Methode | Auth |
-  Permission | Scope | Req-Schema | Resp-Schema | Cases (n) | Status |
-  offene Risiken.
-- `test-report/api-matrix.json` — maschinenlesbar für Diffs.
-- Wird von `bun run test:api` nach dem Runner ausgeführt.
+| Bereich | Spec |
+|---|---|
+| Navigation (7 Punkte) | `navigation.spec.ts` |
+| Dashboard (14 Punkte) | `dashboard.spec.ts` |
+| Servicefunktionen (11 Dialoge) | `service-menu.spec.ts` |
+| Fehlerzustände (10 Punkte) | `error-states.spec.ts` |
+| Responsive (5 Viewports) | `responsive.spec.ts` |
+| Accessibility (7 Punkte) | `a11y.spec.ts` |
+| Rollen (7 Rollen × 5 Prüfungen) | `rbac/*.spec.ts` |
 
-### 4. CI-Gate (`.github/workflows/ci.yml`)
-Neuer Job-Step `test:api`:
-- Läuft nach Unit-Tests, vor E2E.
-- **Kritisch = Build-Fail** (Exit 1): Secrets/Stacktraces im Response,
-  falsche Statuscodes bei Auth-Fällen, Registry-Eintrag ohne Runner-
-  Cases.
-- **Warn** (Exit 0, im Report markiert): fehlende Correlation-ID,
-  fehlende CORS-Header wenn `corsExpected: false`.
-- Upload `test-report/api-matrix.{md,json}` als Artefakt.
+Rollen-Matrix wird datengetrieben aus `src/lib/rbac/permissions.ts` erzeugt — kein Handpflege-Duplikat.
 
-### 5. Handbuch + ADR
-- **`src/lib/help-documentation.ts`**: neues Kapitel `api-endpoint-tests`
-  (Testumfang, Ausführung `bun run test:api`, Fehlerinterpretation nach
-  Case-Kategorie, Sicherheitsgrenzen — kein Live-Azure, keine Prod-DB —,
-  bekannte Einschränkungen: nur Handler-Level außer E2E-Smoke).
-  `DOCUMENTATION_VERSION` → 1.9.0.
-- **`docs/ADR/0011-api-endpoint-contract-tests.md`**: Warum Registry statt
-  Test-pro-Datei, warum Handler-direct statt HTTP, Migration-Weg für neue
-  Routen.
-- **`CHANGELOG.md`**: v1.30.0 Eintrag.
+### Selektor-Strategie
 
-### 6. Migration bestehender Tests
-`src/__tests__/api/status.route.test.ts` und `sync.route.test.ts` werden
-gelöscht — der Runner deckt sie vollständig ab. `security.route`-Tests in
-`src/__tests__/security/rbac-endpoints.test.ts` bleiben bestehen
-(anderer Fokus: RBAC-Matrix-Konsistenz, nicht HTTP-Kontrakt).
+Bevorzugt `getByRole` + Name. Wo Rollen nicht eindeutig sind, werden **minimal-invasiv** `data-testid`-Anker in Dialog-Wurzeln und Servicemenü-Buttons ergänzt (kein UI-Refactor). Erwartete Anker: `service-menu`, `dialog-<name>`, `kpi-<key>`, `nav-mobile-toggle`, `role-badge`.
 
-## Technisch: Abgrenzungen und bewusste Trade-offs
+### Fehlerzustands-Simulation
 
-- **Handler-direct statt HTTP-Round-Trip als Default**: schnell, kein
-  Port-Handling, deterministisch. **Trade-off**: umgeht Middleware-Stack
-  (CORS-Header vom Framework, Body-Size-Limits des Workers). Deshalb der
-  zusätzliche Playwright-Smoke gegen 8080 — bewusst schmal, nur die Fälle
-  die Handler-Level nicht sehen können.
-- **Response-Schema mit Zod**: die Registry deklariert das Schema; wenn
-  eine Route ihr Response-Shape ändert, bricht der Test. Das ist genau
-  der Sinn — Schema-Drift ist der häufigste API-Regression-Vektor.
-- **Oversize-Payload = 1 MB**, nicht 100 MB: der Test-Runner soll nicht
-  Minuten dauern. Real-World-DoS-Grenzen gehören in die Worker-Config
-  (`wrangler.jsonc`), nicht in Vitest.
-- **Kein Fuzzing / kein Property-Based**: bewusst außen vor für v1.30.
-  Wenn später konkrete Regressionen auftauchen, wäre `fast-check` die
-  10-Zeilen-Ergänzung im Runner. Nicht spekulativ jetzt.
-- **Azure-/RBAC-Endpoints als Placeholder-Einträge**: Registry-Einträge
-  mit `status: "planned"` und leerer `cases`-Liste. Der Runner
-  überspringt sie mit `test.todo`, damit sie im Matrix-Report sichtbar
-  bleiben ("bekannte Lücke") ohne CI rot zu färben.
+- **IDB/LS aus**: `addInitScript` löscht `indexedDB` bzw. wirft in `localStorage.setItem`.
+- **API-Ausfälle**: `page.route('**/api/**', ...)` mit Fulfill 500/Timeout/Body-Garbage.
+- **Azure**: Env-Flag `VITE_E2E_AZURE=off` → Service-Stub.
+- **RBAC-Backend-Denial**: `page.request.post()` auf geschützte Server-Fn ohne passenden Rollenkontext → erwartet 401/403 statt 200.
 
-## Offene Fragen (blockieren den Plan nicht, aber gut zu wissen)
+### CI-Integration
 
-1. Soll die Registry auch die **archivierten Legacy-Routen** unter
-   `archive/legacy-standalone-backend/routes/` dokumentieren (Status
-   `archived`), oder komplett ignorieren? Vorschlag: ignorieren — sie
-   sind nicht im Live-Bundle.
-2. Ist `SYNC_TRIGGER_TOKEN` in Tests via ENV-Fixture ok, oder soll der
-   Runner den PROD-Auth-Pfad nur mit `AZURE_TEST_LIVE`-ähnlichem Gate
-   testen? Vorschlag: gesetztes Test-Token im MSW-Env (`test:` Prefix),
-   damit beide Auth-Pfade abgedeckt sind.
+Neuer Job `e2e` in `.github/workflows/ci.yml`:
 
-## Kritischer Punkt vorab
+- `actions/cache@v4` auf `~/.cache/ms-playwright` (offener Punkt aus v1.30.0 mit erledigt)
+- `bunx playwright install --with-deps chromium`
+- `bun run test:e2e`
+- Upload von `playwright-report/`, `test-results/` (Traces, Screenshots, Videos) und `e2e/reports/*.md` als Artefakt
 
-Der Prompt fordert "Correlation-ID" als Nachvollziehbarkeit — die gibt es
-im aktuellen Code **nicht**. Zwei Optionen:
-- **A**: Runner asserted nur "wenn vorhanden, dann korrekt" — dokumentiert
-  Lücke im Matrix-Report als `openRisk`.
-- **B**: Correlation-ID im gleichen PR nachrüsten (Middleware, die
-  `X-Correlation-Id` durchreicht / generiert, Logger-Kontext).
+Neue Scripts:
+- `test:e2e` — vollständige Suite
+- `test:e2e:ui` — lokal headed
+- `test:e2e:report` — generiert `test-report.md`, `ui-matrix.md`, `untested.md` aus Playwright-JSON
 
-Vorschlag: **A** für v1.30.0, **B** als separater Prompt danach —
-sonst wird der PR zu groß und mischt Test-Infrastruktur mit
-Runtime-Änderungen.
+### Dokumentation
+
+- Neues Handbuch-Kapitel „UI- und End-to-End-Tests" in `src/lib/help-documentation.ts`, Quicklink im Hilfe-Menü, `DOCUMENTATION_VERSION → 1.10.0`.
+- `CHANGELOG.md`: `## 1.31.0 - 2026-07-13` mit den Bullet-Punkten.
+- **ADR-0012**: „Playwright gegen Dev-Server statt Wrangler-Preview" — Begründung + Grenzen.
+- `docs/ARCHITECTURE.md`: Testpyramide um E2E-Schicht ergänzt.
+
+### Bewusst NICHT im Scope (mit Begründung)
+
+1. **Visuelle Regression** (Screenshot-Diffing): flackert stark ohne stabile Fonts/Rendering; separater Prompt sinnvoll.
+2. **Cross-Browser** (Firefox/WebKit): CI-Zeit + geringer Nutzen für Intranet-Dashboard. Erweiterbar in `playwright.config.ts` per `projects`.
+3. **Echte Azure-Live-E2E**: bleibt hinter `AZURE_TEST_LIVE=1` wie in v1.28.0 vereinbart.
+4. **Performance-Budgets** (LCP/CLS in E2E): separate Lighthouse-CI-Kette geplant.
+
+### Erwartetes Ergebnis
+
+~60–80 E2E-Cases, Laufzeit lokal < 3 min, in CI < 6 min (mit Cache). Erste Läufe werden reale Lücken (z. B. fehlende `aria-label` an Icon-Buttons, fehlende Fokus-Rückgabe nach Dialog-Close) sichtbar machen — diese fließen als Findings in den bestehenden Technical-Debt-Scanner (v1.29.0), nicht als Fixes in diesen PR (Scope-Disziplin).

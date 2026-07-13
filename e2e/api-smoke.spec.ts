@@ -1,4 +1,4 @@
-import { test, expect } from "./fixtures";
+import { test, expect } from "./fixtures/test-instance";
 
 /**
  * Echter HTTP-Round-Trip gegen den lokalen Dev-Server. Fängt genau die

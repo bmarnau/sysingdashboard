@@ -1,14 +1,16 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * Playwright-Konfiguration für die zentrale Testinstanz.
+ * Playwright-Konfiguration für die zentrale Testinstanz (v1.31.0).
  *
- * - Läuft gegen den lokalen Dev-Server (Port 8080), nicht gegen die
- *   produktive Preview-URL.
- * - Chromium headless reicht für Smoke/Regression; weitere Browser
- *   werden erst bei nachgewiesener Renderdifferenz aktiviert.
- * - `reuseExistingServer` erlaubt lokale iterative Läufe, ohne den
- *   Dev-Server neu zu starten.
+ * Struktur:
+ * - UI-/Funktions-Specs: `e2e/specs/`
+ * - Reine API-Round-Trips: `e2e/api-smoke.spec.ts` (Wurzel)
+ *
+ * Trade-offs siehe ADR-0012:
+ * - Läuft gegen den Vite-Dev-Server (Port 8080), nicht gegen einen Worker-Preview.
+ * - Chromium-only in CI.
+ * - Traces/Screenshots/Videos nur bei Fehlern (CI-Kosten).
  */
 export default defineConfig({
   testDir: "./e2e",
@@ -18,14 +20,20 @@ export default defineConfig({
     ? [
         ["list"],
         ["html", { outputFolder: "playwright-report", open: "never" }],
+        ["json", { outputFile: "playwright-report/results.json" }],
         ["junit", { outputFile: "test-report/playwright-junit.xml" }],
       ]
-    : "list",
+    : [
+        ["list"],
+        ["html", { outputFolder: "playwright-report", open: "never" }],
+        ["json", { outputFile: "playwright-report/results.json" }],
+      ],
   use: {
     baseURL: "http://localhost:8080",
     viewport: { width: 1280, height: 800 },
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
+    video: "retain-on-failure",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {

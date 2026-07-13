@@ -59,11 +59,23 @@ jobs:
       - name: Tech-debt report
         run: bun run test:debt
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium
 
       - name: E2E (Playwright)
         run: bun run test:e2e
+
+      - name: Generate E2E report
+        if: always()
+        run: bun run test:e2e:report
 
       - name: Build (production)
         run: bun run build

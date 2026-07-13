@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.31.0 - 2026-07-13
+
+- **UI- und End-to-End-Test-Suite (ADR-0012)**: Playwright-Suite unter `e2e/specs/` mit sieben Bereichen — Navigation, Dashboard, Servicemenü, Fehlerzustände, Responsive, Accessibility (axe-core WCAG 2.1 A/AA), RBAC (datengetriebene Rollen-Matrix über alle 7 Rollen + Backend-Denial gegen direkte HTTP-Requests). Läuft gegen den lokalen Dev-Server, Chromium-only.
+- **Rollen-Fixture** (`e2e/fixtures/roles.ts`) seedet Benutzer und aktive Rolle vor jedem Test in `localStorage`; Storage wird nach jedem Test gelöscht (Test-Isolation). Für Accessibility gibt es einen `@axe-core/playwright`-Wrapper (`e2e/fixtures/axe.ts`).
+- **Reports** unter `e2e/reports/`: `ui-matrix.md` (UI-Funktion ↔ Testfall, manuell gepflegt), `untested.md` (bewusste Lücken), `test-report.md` (auto-generiert via `scripts/generate-e2e-report.mjs` aus dem Playwright-JSON). Alle drei plus HTML-Report werden in CI als Artefakte hochgeladen.
+- **CI**: neuer Playwright-Browser-Cache (`actions/cache@v4` auf `~/.cache/ms-playwright`) senkt die Job-Laufzeit; neuer Report-Step läuft `if: always()`. Neue Scripts `test:e2e:ui` (lokal headed) und `test:e2e:report`.
+- **Handbuch-Kapitel** „UI- und End-to-End-Tests" (Kategorie Service) inkl. Ausführung, Reports, Werkzeug-Entscheidung und Grenzen (Rollen-Sichtbarkeit ist kein Sicherheitsnachweis). Verlinkt in „test-instance", „api-endpoint-tests", „barrierefreiheit", „system-status". `DOCUMENTATION_VERSION` auf **1.10.0** angehoben.
+- **ADR-0012** dokumentiert die Entscheidungen Dev-Server statt Wrangler-Preview, Chromium-only, client-seitiges Rollen-Seeding und die daraus folgenden Grenzen.
+
 ## 1.30.0 - 2026-07-13
 
 - **API- und Endpoint-Test-Suite (ADR-0011)**: Contract-first Registry unter `src/__tests__/api/registry/` — jede Server-Route ist ein `EndpointContract` mit Pfad, Methoden, Auth-Flag, Zod-Schemas und `loadRoute()`. Der generische Runner `src/__tests__/api/runner.test.ts` iteriert die Registry und erzeugt pro aktivem Endpoint dieselben Kategorien: Grundfunktion (Methoden, Content-Type, Statuscode, Response-Schema), Payload-Varianten (ungültiges JSON, leerer Body, 1 MB Oversize, unerwartete Felder, Injection-nahe Eingaben), Security-Scan (JWT/Bearer/Connection-String/SAS/Stacktrace im Body, sensitive Header, Auth-Negativfall), Stabilität (10 parallele Requests) und Nachvollziehbarkeit (strukturierter Fehler). Nicht-unterstützte HTTP-Methoden werden hart geprüft (Handler darf nicht existieren).
