@@ -18,6 +18,7 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 | 0008 | [RBAC v2 — Assignment-Architektur](./0008-rbac-v2-assignment-architecture.md) | Accepted |
 | 0009 | [Zentrale Testinstanz — Vitest-Projects + Playwright + MSW](./0009-central-test-instance.md) | Accepted |
 | 0010 | [Technical-Debt-Hybrid-Ansatz](./0010-tech-debt-hybrid.md) | Accepted |
+| 0011 | [API-/Endpoint-Contract-Tests via Registry](./0011-api-endpoint-contract-tests.md) | Accepted |
 
 ## Template
 

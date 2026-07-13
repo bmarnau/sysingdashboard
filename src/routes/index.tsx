@@ -344,6 +344,7 @@ function Dashboard() {
     { id: "azure-outage", label: "Was bei Azure-Ausfall passiert" },
     { id: "test-instance", label: "Testinstanz und Qualitätssicherung" },
     { id: "tech-debt", label: "Technical-Debt-Analyse" },
+    { id: "api-endpoint-tests", label: "API- und Endpoint-Tests" },
   ];
   const [showBackupDialog, setShowBackupDialog] = useState(false);
   const [showSystemStatus, setShowSystemStatus] = useState(false);

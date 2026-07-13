@@ -1,86 +1,130 @@
 
-# Prompt 2A.2 – Technical-Debt-Scanner (v1.29.0)
+# Plan: API- und Endpoint-Test-Suite (v1.30.0)
 
-## Kritische Reflexion vorab
+## Kontext
+Aktuell existieren zwei Server-Routen (`/api/status`, `/api/sync`) und je ein
+minimaler Handler-Test (`src/__tests__/api/*.route.test.ts`), der nur
+"Antwort ist JSON" verifiziert. Es gibt keine Endpoint-Matrix, keine
+negativen Fälle, keine Security-Assertions und keinen CI-Gate speziell für
+API-Tests. Azure-/RBAC-/Assignment-Routen sind noch nicht implementiert,
+das Framework muss sie aber vorbereitet aufnehmen.
 
-Der Prompt listet ~70 Prüfpunkte. **Die Hälfte davon ist nicht sinnvoll voll­automatisch entscheidbar** ("unklare Modulgrenzen", "zu viele Verantwortlichkeiten", "Widersprüche zwischen README, Architektur, API und ADR"). Ein rein regelbasierter Scanner, der solche Kategorien produziert, erzeugt genau die "automatisch erzeugten Scheinprobleme", die der Prompt explizit verbietet.
+## Ansatz
+Ein **Contract-first Endpoint-Registry** statt handgeschriebener Tests pro
+Route. Jede Route wird einmal deklarativ beschrieben (Methode, Auth,
+Schema, Cases); ein generischer Runner erzeugt daraus alle Test-Fälle. Neue
+Routen (Azure, RBAC) tragen nur einen Registry-Eintrag ein — Runner, CI-
+Gate und Matrix-Report aktualisieren sich automatisch.
 
-**Bewusste Entscheidung → Hybrid-Ansatz:**
+## Deliverables
 
-1. **Automatische Detektoren** nur für objektiv messbare Signale (hoher Trennschärfegrad, wenige False Positives).
-2. **Kuratierter Findings-Katalog** (`tech-debt/findings.yaml`) für alles Subjektive — mit exakt dem im Prompt geforderten Schema. Vom Team gepflegt, vom Scanner geladen und in denselben Report gemischt.
-3. **Ein einziger Report-Merger**, der beides zusammenführt, gegen den Vor-Report diffed und Management-Summary + Priorisierung ableitet.
+### 1. Endpoint-Registry (`src/__tests__/api/registry/`)
+- `types.ts` — `EndpointContract`: `{ path, methods[], authRequired,
+  permission?, scope?, requestSchema?, responseSchema, errorSchema,
+  cases: TestCase[], knownRisks[] }`.
+- `endpoints.ts` — zentrale Liste. Initial: `status`, `sync`.
+- `cases/` — wiederverwendbare Case-Bausteine (`invalidJson`,
+  `emptyBody`, `oversizePayload`, `wrongMethod`, `sqlishInput`,
+  `secretsInResponse`, `stacktraceInResponse`, `sensitiveHeaders`).
 
-Der bestehende `scripts/check-tech-debt.mjs` (Zeilen-Count/TODOs) wird ersetzt, nicht ergänzt — er passt nicht ins neue Schema und ist Rauschen.
+### 2. Generischer Runner (`src/__tests__/api/runner.test.ts`)
+Iteriert die Registry, führt pro Endpoint aus:
+- **Grundfunktion**: erlaubte/nicht erlaubte Methoden, Content-Type,
+  Statuscode, Response gegen Zod-Schema, Fehlerform.
+- **Payloads**: gültig, leer, unvollständig, 1 MB Oversize, unerwartete
+  Felder, ungültiges JSON.
+- **Security**: Response-Body-Scan auf JWT-, Bearer-, Connection-String-,
+  SAS-, Stacktrace-Muster; Header-Scan auf `set-cookie`, `x-powered-by`,
+  `server`. CORS-Check, wenn `corsExpected` gesetzt.
+- **Stabilität**: 10 parallele Requests, 3 wiederholte identische
+  Requests (Idempotenz-Assert bei GET/PUT/DELETE).
+- **Auth-Negativfall**: für `authRequired: true` Endpunkte ohne / mit
+  falschem Token → 401/403.
+- **Nachvollziehbarkeit**: falls `X-Correlation-Id` mitgegeben, muss der
+  Wert im Response-Header oder Log auftauchen; Fehler müssen strukturiert
+  sein (`{ ok:false, error, code? }`).
 
-## Umfang
+Der Runner ruft **Route-Handler direkt** auf (kein Netz, kein Dev-Server),
+so wie es die bestehenden Tests machen. Ergänzend eine kleine
+Playwright-Suite (`e2e/api-smoke.spec.ts`) für echten HTTP-Round-Trip
+gegen Vite auf 8080, gated durch `E2E=1`.
 
-### 1. Findings-Schema (`src/lib/tech-debt/schema.ts` + JSON-Schema)
+### 3. Reporter (`scripts/api-matrix/generate.mjs`)
+Liest die Registry (via `tsx`) und generiert:
+- `test-report/api-matrix.md` — Tabelle: Endpoint | Methode | Auth |
+  Permission | Scope | Req-Schema | Resp-Schema | Cases (n) | Status |
+  offene Risiken.
+- `test-report/api-matrix.json` — maschinenlesbar für Diffs.
+- Wird von `bun run test:api` nach dem Runner ausgeführt.
 
-Ein `TechDebtFinding` mit exakt den Feldern aus dem Prompt: `id`, `title`, `category`, `location`, `description`, `rootCause`, `impact`, `severity` (Critical/High/Medium/Low/Informational), `likelihood`, `recommendation`, `recommendedOrder`, `effort` (klein/mittel/gross), `status` (offen/akzeptiert/geplant/behoben/nicht-zutreffend), `firstDetected`, `lastChecked`, `version`, `source` (`automated` | `manual`), optional `adrRef`, `automatedRule`.
+### 4. CI-Gate (`.github/workflows/ci.yml`)
+Neuer Job-Step `test:api`:
+- Läuft nach Unit-Tests, vor E2E.
+- **Kritisch = Build-Fail** (Exit 1): Secrets/Stacktraces im Response,
+  falsche Statuscodes bei Auth-Fällen, Registry-Eintrag ohne Runner-
+  Cases.
+- **Warn** (Exit 0, im Report markiert): fehlende Correlation-ID,
+  fehlende CORS-Header wenn `corsExpected: false`.
+- Upload `test-report/api-matrix.{md,json}` als Artefakt.
 
-Zod-validiert. Beide Quellen (YAML + Detektor-Output) laufen durch dieselbe Validierung → Reportintegrität.
+### 5. Handbuch + ADR
+- **`src/lib/help-documentation.ts`**: neues Kapitel `api-endpoint-tests`
+  (Testumfang, Ausführung `bun run test:api`, Fehlerinterpretation nach
+  Case-Kategorie, Sicherheitsgrenzen — kein Live-Azure, keine Prod-DB —,
+  bekannte Einschränkungen: nur Handler-Level außer E2E-Smoke).
+  `DOCUMENTATION_VERSION` → 1.9.0.
+- **`docs/ADR/0011-api-endpoint-contract-tests.md`**: Warum Registry statt
+  Test-pro-Datei, warum Handler-direct statt HTTP, Migration-Weg für neue
+  Routen.
+- **`CHANGELOG.md`**: v1.30.0 Eintrag.
 
-### 2. Automatische Detektoren (`scripts/tech-debt/detectors/*.mjs`)
+### 6. Migration bestehender Tests
+`src/__tests__/api/status.route.test.ts` und `sync.route.test.ts` werden
+gelöscht — der Runner deckt sie vollständig ab. `security.route`-Tests in
+`src/__tests__/security/rbac-endpoints.test.ts` bleiben bestehen
+(anderer Fokus: RBAC-Matrix-Konsistenz, nicht HTTP-Kontrakt).
 
-Nur Regeln mit **hoher Präzision**. Jede liefert `TechDebtFinding[]`.
+## Technisch: Abgrenzungen und bewusste Trade-offs
 
-| Detektor | Deckt Prompt-Punkt | Quelle |
-|---|---|---|
-| `cyclic-deps.mjs` | zyklische Abhängigkeiten | `madge --circular` (devDep) |
-| `orphan-modules.mjs` | nicht genutzter/veralteter Code | `knip` (devDep), Ignore-Liste für ADR-legitimierte Fälle |
-| `layer-violations.mjs` | UI→Persistenz / UI→Azure-Direktzugriffe | AST-freies Grep: `src/components/**` importiert `@/lib/store/dashboard-persistence` oder `@/lib/azure/*` (nicht via Facade `azure-service`) |
-| `oversize-modules.mjs` | übergrosse Komponenten | LOC + JSX-Return-Count Heuristik, Schwelle 400 LOC ODER >8 exportierte Symbole; ADR-0006-Ausnahmen respektieren |
-| `console-usage.mjs` | direkte console.\* | reuse `scripts/check-no-console.mjs`-Regel |
-| `endpoint-guards.mjs` | ungeschützte Endpoints, fehlende Zod-Validierung | scannt `src/routes/api/**` auf fehlende `requireSupabaseAuth`/`X-Sync-Token`/Zod-`.parse` |
-| `doc-drift.mjs` | abweichende Versionsangaben, veraltete Kapitel | reuse `scripts/check-docs-sync.mjs`-Kern + `lastUpdated > 180 Tage` |
-| `coverage-gaps.mjs` | ungetestete kritische Services | liest `coverage/coverage-summary.json`, meldet `<50%` für Dateien unter `src/lib/{azure,rbac,backup-service,json-*,user-management,logger*}` |
-| `adr-compliance.mjs` | ADR-Verletzungen | ADR-Metadaten in `docs/ADR/*.md` frontmatter (`enforced-by:`) → verlinkt entsprechenden Detektor-Fund als `adrRef` |
+- **Handler-direct statt HTTP-Round-Trip als Default**: schnell, kein
+  Port-Handling, deterministisch. **Trade-off**: umgeht Middleware-Stack
+  (CORS-Header vom Framework, Body-Size-Limits des Workers). Deshalb der
+  zusätzliche Playwright-Smoke gegen 8080 — bewusst schmal, nur die Fälle
+  die Handler-Level nicht sehen können.
+- **Response-Schema mit Zod**: die Registry deklariert das Schema; wenn
+  eine Route ihr Response-Shape ändert, bricht der Test. Das ist genau
+  der Sinn — Schema-Drift ist der häufigste API-Regression-Vektor.
+- **Oversize-Payload = 1 MB**, nicht 100 MB: der Test-Runner soll nicht
+  Minuten dauern. Real-World-DoS-Grenzen gehören in die Worker-Config
+  (`wrangler.jsonc`), nicht in Vitest.
+- **Kein Fuzzing / kein Property-Based**: bewusst außen vor für v1.30.
+  Wenn später konkrete Regressionen auftauchen, wäre `fast-check` die
+  10-Zeilen-Ergänzung im Runner. Nicht spekulativ jetzt.
+- **Azure-/RBAC-Endpoints als Placeholder-Einträge**: Registry-Einträge
+  mit `status: "planned"` und leerer `cases`-Liste. Der Runner
+  überspringt sie mit `test.todo`, damit sie im Matrix-Report sichtbar
+  bleiben ("bekannte Lücke") ohne CI rot zu färben.
 
-Detektoren, die **nicht** implementiert werden, mit Begründung im Handbuch: „zu viele Verantwortlichkeiten", „Widerspruch zwischen README und ADR", „instabile Tests" — landen im Manual-Katalog.
+## Offene Fragen (blockieren den Plan nicht, aber gut zu wissen)
 
-### 3. Kuratierter Manual-Katalog (`tech-debt/findings.yaml`)
+1. Soll die Registry auch die **archivierten Legacy-Routen** unter
+   `archive/legacy-standalone-backend/routes/` dokumentieren (Status
+   `archived`), oder komplett ignorieren? Vorschlag: ignorieren — sie
+   sind nicht im Live-Bundle.
+2. Ist `SYNC_TRIGGER_TOKEN` in Tests via ENV-Fixture ok, oder soll der
+   Runner den PROD-Auth-Pfad nur mit `AZURE_TEST_LIVE`-ähnlichem Gate
+   testen? Vorschlag: gesetztes Test-Token im MSW-Env (`test:` Prefix),
+   damit beide Auth-Pfade abgedeckt sind.
 
-Vom Team gepflegt. Beispiel-Einträge werden initial gesät für die aus 2A.1 bekannten offenen Punkte (Playwright-Smoke-only, MSW-Coverage, Chromium-Cache in CI). Jeder Eintrag hat die volle Schema-Struktur; `source: manual`.
+## Kritischer Punkt vorab
 
-### 4. Aggregator + Diff (`scripts/tech-debt/run.mjs`)
+Der Prompt fordert "Correlation-ID" als Nachvollziehbarkeit — die gibt es
+im aktuellen Code **nicht**. Zwei Optionen:
+- **A**: Runner asserted nur "wenn vorhanden, dann korrekt" — dokumentiert
+  Lücke im Matrix-Report als `openRisk`.
+- **B**: Correlation-ID im gleichen PR nachrüsten (Middleware, die
+  `X-Correlation-Id` durchreicht / generiert, Logger-Kontext).
 
-- Führt alle Detektoren aus, lädt YAML-Katalog, validiert, mergt (deterministische IDs: automatisierte via `hash(rule+file+line)`, manuelle via Slug).
-- Vergleicht mit `test-report/tech-debt.prev.json` → produziert `diff.json` (neu / behoben / geändert).
-- Priorisiert per gefordertem Ranking (Security → Datenverlust → offene privilegierte Endpoints → RBAC → Backup → funktional → Stabilität → Architektur → Performance → Doku → Kosmetik).
-- Schreibt:
-  - `test-report/tech-debt.json` (maschinenlesbar)
-  - `test-report/tech-debt.md` (kompletter Bericht, gruppiert nach Kategorie)
-  - `test-report/tech-debt-summary.md` (Management-Zusammenfassung: Top-10, Delta zum Vorlauf, Trend-Zeile)
-  - `test-report/tech-debt-actions.md` (sortierte Maßnahmenliste)
-
-### 5. CI-Integration (`.github/workflows/ci.yml`)
-
-- Neuer Step `bun run test:tech-debt` **nach** `test:coverage` (braucht coverage-summary).
-- Non-failing (Trend-Metrik, kein Gate) — Ausnahme: **Critical**-Funde failen (dokumentiert im Handbuch).
-- Vor-Report wird als Actions-Cache-Key `tech-debt-${branch}` persistiert → echter Diff über Runs.
-- Alle vier Report-Dateien als Artefakt.
-
-### 6. Handbuch + ADR
-
-- Neues Kapitel `tech-debt` in `src/lib/help-documentation.ts` (Kategorie "Qualitätssicherung"): Analyseverfahren, was **nicht** automatisch geprüft wird und warum, wie der Manual-Katalog gepflegt wird, wie Critical-Gate funktioniert.
-- **ADR-0010 „Technical-Debt-Hybrid-Ansatz"**: dokumentiert die Trennung Automatik/Manual und die bewusst nicht automatisierten Prüfpunkte.
-- `DOCUMENTATION_VERSION` → 1.8.0, `CHANGELOG.md` v1.29.0.
-
-## Was NICHT im Umfang ist (bewusst)
-
-- Kein Auto-Fix (`--fix`) — Debt-Findings brauchen menschliches Urteil.
-- Kein Dashboard-UI für Findings (Report bleibt CI-Artefakt; falls gewünscht später separater Prompt).
-- Keine Integration in Security-Scan (bleibt getrennt: Security = harter Gate, Debt = Trend).
-- Kein AST-basierter „Verantwortlichkeiten"-Detektor — zu viele False Positives; im Manual-Katalog abgebildet.
-
-## Technische Details
-
-- **Neue devDependencies**: `madge`, `knip`, `js-yaml` (klein, alle Worker-agnostisch, nur CI/lokal).
-- **ID-Stabilität**: automatisierte IDs = `td-<detector>-<sha1(path+rule+lineHash)[:8]>` → über Runs stabil, sodass Diff funktioniert.
-- **Ownership-Feld** (Prompt: „unklare Ownership") wird optional aus `CODEOWNERS` gelesen, falls vorhanden — sonst leer, nicht erfunden.
-- **Performance**: alle Detektoren laufen parallel via `Promise.all`; Zielwert < 15 s auf CI.
-
-## Offene Frage (falls du sie anders siehst — sonst setze ich die default)
-
-Default: **Critical-Funde failen CI**, alles andere ist reine Trend-Metrik. Alternative: alles non-failing (nur Report). Ich nehme Default, wenn du nichts anderes sagst.
+Vorschlag: **A** für v1.30.0, **B** als separater Prompt danach —
+sonst wird der PR zu groß und mischt Test-Infrastruktur mit
+Runtime-Änderungen.
