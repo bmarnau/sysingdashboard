@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.12.0";
+export const DOCUMENTATION_VERSION = "1.13.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -1767,6 +1767,74 @@ Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine 
     relatedTopics: [
       "system-status", "log-viewer", "api-endpoint-tests", "ui-end-to-end-tests",
       "test-instance",
+    ],
+  },
+  {
+    id: "api-discovery",
+    title: "API Discovery und Testabdeckung",
+    category: "Service",
+    keywords: [
+      "API", "Discovery", "Inventar", "Smoke", "Functional", "Endpoint",
+      "Klassifizierung", "Correlation", "Findings", "ADR-0014",
+    ],
+    lastUpdated: "2026-07-13",
+    content: `## Zweck
+Das API Discovery Framework ermittelt zur Buildzeit automatisch **alle aktiven Server-Routen** unter \`src/routes/api/\` und erzeugt drei verpflichtende Artefakte, die als Wahrheitsquelle für Doku, Sicherheits- und Testabdeckungsprüfungen dienen.
+
+## Erkennung
+- Statische Analyse der TanStack-Server-Routen (kein Crawling, keine Ausführung).
+- Ergänzt Metadaten aus \`src/__tests__/api/registry/endpoints.ts\` (Schemas, Auth-Hints).
+- Erkennt HTTP-Methoden, \`withCorrelation\`-Wrapper, Zod-Validierung, Auth-Guards (\`checkAuth\`, \`X-Sync-Token\`, \`requireSupabaseAuth\`), Permissions, Logger-Nutzung und destruktive Wirkung.
+
+## Ausgeschlossen
+- \`archive/legacy-standalone-backend/routes/\` — archiviertes Standalone-Backend (v1.27.2).
+- \`**/*.test.ts\`, \`**/__tests__/**\`, \`.d.ts\`, \`.d.mts\`.
+- Aktive Routen, die Code aus \`archive/**\` importieren, erzeugen ein **Critical-Finding** (\`active-to-archived-import\`).
+
+## Klassifizierungen
+- **public** — bewusst öffentlich, muss unter \`/api/public/*\` liegen und eigene Signatur/HMAC prüfen.
+- **authenticated** — erfordert Session/Bearer/Token.
+- **privileged** — zusätzlich benannte Permission (RBAC).
+- **unclassified** — Endpoint hat weder Auth noch \`/api/public/\`-Prefix; erzeugt Finding.
+
+## Artefakte
+- \`test-report/api-inventory.json\` — deterministisch sortiertes Inventar (Pfad, Methode).
+- \`test-report/api-smoke-report.json\` — Ergebnisse der Smoke-Suite (Erreichbarkeit, 405, invalid JSON, Secret-Scan, Correlation-ID-Header).
+- \`test-report/api-functional-report.json\` — dokumentierte Coverage je Endpoint (\`complete | partial | missing | blocked | not-applicable\`) mit expliziten Gaps.
+- \`test-report/api-findings.md\` — konsolidierte Findings nach Severity.
+
+## Smoke vs. Functional
+- **Smoke** — schnell, nicht destruktiv, iteriert das Inventar mit direktem Handler-Aufruf. Prüft: Handler existiert, unerlaubte Methode wird abgelehnt, ungültiges JSON → 4xx, kein HTML-Fehler, keine Secrets/Stacktraces, Correlation-ID vorhanden.
+- **Functional** — deklarative Selbsteinschätzung je Endpoint. Kein zusätzlicher Test-Ablauf; die harte Assertion-Ebene lebt weiterhin in \`runner.test.ts\`.
+- **Nie als \`passed\` gezählt**: \`skipped\`, \`not-implemented\`, \`not-configured\`.
+
+## Severity-Regeln (Auszug)
+- **Critical** — privilegierter Endpoint ohne Auth, Secret/Token im Response, Import aus \`archive/**\` in aktiver Route.
+- **High** — schreibender Endpoint ohne serverseitige Validierung, aktiver Endpoint nicht inventarisiert.
+- **Medium** — Endpoint undokumentiert, fehlende Correlation-ID, fehlender Response-Schema-Check.
+- **Low** — uneinheitliche Benennung, redundante Registry-Metadaten.
+
+## Azure-Test-Gate
+- Live-Tests gegen echte Azure-Ressourcen laufen ausschließlich mit \`AZURE_TEST_LIVE=true\` und isolierten Testressourcen. Ohne dieses Gate werden entsprechende Szenarien als \`not-configured\` ausgewiesen — niemals als \`passed\`.
+
+## CI-Verhalten
+- Reihenfolge: \`api:discover → test:api:discovery → test:api:smoke → test:api:functional → api:report\`.
+- Gate ist derzeit **soft**: Critical- und High-Security-Findings erscheinen als Warning, blockieren aber (noch) nicht den Merge — analog zum Security-Gate, damit bestehende Design-Lücken (SEC-CRIT-001/002) nicht zum Bootstrap-Block werden.
+- Artefakte werden über den bestehenden \`test-report\`-Upload mitgeliefert.
+
+## Grenzen
+- Rein statische Analyse — Muster außerhalb der Detektoren (z. B. neue Auth-Middleware) müssen erweitert oder in die Registry eingetragen werden.
+- Kein echter HTTP-Round-Trip (dafür existiert \`e2e/api-smoke.spec.ts\`).
+- Keine automatische Schema-Verifikation, solange die Registry kein \`responseSchema\` liefert.
+
+## Ausführung
+- \`bun run api:discover\` — Inventar bauen.
+- \`bun run test:api:smoke\` / \`bun run test:api:functional\` / \`bun run test:api:discovery\` — Suiten einzeln.
+- \`bun run api:report\` — konsolidierte Berichte + Findings.
+- \`bun run api:gate\` — Exit != 0 bei blockierenden Findings (CI-Nutzung).`,
+    relatedTopics: [
+      "security-rbac-tests", "api-endpoint-tests", "system-status",
+      "correlation-id", "test-instance",
     ],
   },
 ];
