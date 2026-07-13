@@ -1,23 +1,31 @@
 {
   "summary": {
-    "generatedAt": "2026-06-25T04:34:08.987Z",
-    "filesScanned": 107,
+    "generatedAt": "2026-07-13T04:02:59.739Z",
+    "filesScanned": 179,
     "rulesEvaluated": 22,
     "counts": {
-      "CRITICAL": 0,
-      "HIGH": 0,
-      "MEDIUM": 1
+      "CRITICAL": 1,
+      "HIGH": 1,
+      "MEDIUM": 0
     },
-    "failed": false
+    "failed": true
   },
   "findings": [
     {
-      "severity": "MEDIUM",
-      "rule": "cors-wildcard-only",
-      "title": "CORS-Wildcard (Access-Control-Allow-Origin: *)",
-      "file": "backend/server.mjs",
-      "line": 24,
-      "snippet": "res.setHeader(\"Access-Control-Allow-Origin\", \"*\");"
+      "severity": "HIGH",
+      "rule": "azure-env-outside-server",
+      "title": "process.env.AZURE_* / *CONNECTION* außerhalb Server-Scope",
+      "file": "src/__tests__/env/test-instance.ts",
+      "line": 93,
+      "snippet": "if (process.env.AZURE_TEST_LIVE === \"1\") return;"
+    },
+    {
+      "severity": "CRITICAL",
+      "rule": "jwt-literal",
+      "title": "JWT-Literal (eyJ…\\.…\\.…)",
+      "file": "src/__tests__/lib/logger.test.ts",
+      "line": 29,
+      "snippet": "const jwt = \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U\";"
     }
   ]
 }
