@@ -286,7 +286,11 @@ for (const ep of ENDPOINTS) {
       if (res.status >= 400) {
         const { json } = await readBody(res);
         expect(json).toMatchObject({ ok: false });
-        expect((json as { error?: unknown }).error).toBeTypeOf("string");
+        // Fehlerantwort trägt entweder `message` (v1.32.0+) oder Legacy `error`.
+        const msg =
+          (json as { message?: unknown; error?: unknown }).message ??
+          (json as { message?: unknown; error?: unknown }).error;
+        expect(msg).toBeTypeOf("string");
       }
       bump(ep.id, {});
     });
