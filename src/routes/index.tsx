@@ -342,6 +342,7 @@ function Dashboard() {
     { id: "env-validation", label: "ENV-Validierung" },
     { id: "security-principles", label: "Sicherheitsprinzipien" },
     { id: "azure-outage", label: "Was bei Azure-Ausfall passiert" },
+    { id: "test-instance", label: "Testinstanz und Qualitätssicherung" },
   ];
   const [showBackupDialog, setShowBackupDialog] = useState(false);
   const [showSystemStatus, setShowSystemStatus] = useState(false);

@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.28.0 - 2026-07-13
+
+- **Zentrale Testinstanz eingeführt (ADR-0009)**: 15 klar getrennte Testmodi (Unit, Komponenten, Frontend-/Backend-Integration, API, I/O, Backup, Azure-Mock, A11y, Security/RBAC, Performance/Bundle, Docs, Technical Debt, UI-E2E, Regression, Full) über Vitest-Pfad-Filter + Playwright + MSW. Isolation via `src/__tests__/env/test-instance.ts` (Fake Timer, seeded PRNG, Storage-Präfix `test:`, IndexedDB `sysingdashboard-test`, Vitest-Guard). Fixtures für Projects/WorkPackages/Assignments/Azure-Responses. Additive Namespace-Hooks in `store/dashboard-persistence.ts` und `logger.indexeddb.ts` (`VITE_TEST_STORAGE_PREFIX`, `VITE_TEST_IDB_NAME`); Produktions-Default unverändert. Azure-Live-Aufrufe hart geblockt (nur mit `AZURE_TEST_LIVE=1`).
+- **Neue Scripts**: `test:{unit,components,integration,backend,api,io,backup,azure,a11y,security,e2e,perf,docs,debt,regression,full,report}`. Aggregierter Prüfbericht unter `test-report/summary.{json,md}` via `scripts/generate-test-report.mjs`.
+- **CI erweitert**: Docs-Check, Tech-Debt-Report, Playwright-Chromium, Bundle-Report und Prüfbericht mit Artefakt-Upload (`coverage/`, `test-report/`, `playwright-report/`).
+- **Handbuch-Kapitel „Testinstanz und Qualitätssicherung"** (Kategorie Service), verlinkt im Hilfe-Quick-Menü. ADR-0009 dokumentiert die Architekturentscheidung.
+
 ## 1.27.2 - 2026-07-13
 
 - **Legacy-Standalone-Backend archiviert**: `backend/server.mjs` und `backend/routes/` (bis v1.16.0 lokaler Node-HTTP-Server) nach `archive/legacy-standalone-backend/` verschoben. Keine Runtime-Änderung — die produktiven TanStack-Server-Routes (`src/routes/api/status.ts`, `src/routes/api/sync.ts`) importieren weiterhin die framework-freien Services aus `backend/services/`. Doku (`docs/API.md`, `docs/ARCHITECTURE.md`, Handbuch-Kapitel „Sync-Architektur" und „ENV-Validierung") und CI-Guard `scripts/check-no-console.mjs` entsprechend bereinigt.
