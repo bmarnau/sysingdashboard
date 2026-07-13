@@ -3,13 +3,15 @@ import type { WorkPackage } from "@/lib/dashboard-data";
 export function makeWorkPackage(overrides: Partial<WorkPackage> = {}): WorkPackage {
   return {
     id: overrides.id ?? "wp-test-1",
+    title: overrides.title ?? "AP Test",
     projectId: overrides.projectId ?? "prj-test-1",
-    name: overrides.name ?? "AP Test",
+    status: overrides.status ?? "offen",
+    priority: overrides.priority ?? "mittel",
     ...overrides,
-  } as WorkPackage;
+  };
 }
 
 export const testWorkPackages: WorkPackage[] = [
   makeWorkPackage({ id: "wp-test-1" }),
-  makeWorkPackage({ id: "wp-test-2", name: "AP Zwei" }),
+  makeWorkPackage({ id: "wp-test-2", title: "AP Zwei" }),
 ];
