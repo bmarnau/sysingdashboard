@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.33.0 - 2026-07-13
+
+- **Sicherheits-, RBAC- und Auth-Test-Suite (ADR-0013)**: neue Vitest-Suite unter `src/__tests__/security/` (rbac-v1, rbac-v2, manipulation, logging, source-scan) und E2E-Specs unter `e2e/specs/security/` (ui-gate-tamper, api-direct-call). Prüft FE↔BE-Parität der RBAC-Matrix, Sysadmin/Admin-Lockout, verbotene Berechtigungen, Scope-Kanonisierung und -Inklusion, abgelaufene/revokierte Assignments, Zod-Reject bei Import-Injection, Logger-Redaction (Frontend + Backend) und statische Quellcode-Scans (direkte `role===`-Vergleiche außerhalb `src/lib/rbac`, Auth-Token-Persistenz in localStorage).
+- **Ehrliches Findings-Gate statt grüner Platzhalter**: `scripts/security/static-findings.json` listet Design- und Infrastruktur-Lücken, die strukturell nicht via Test grün werden können (Backend hat keine RBAC-Middleware, Rolle nur in localStorage, kein produktiver Auth-Provider, Connection-Strings entgehen der Logger-Redaction). `scripts/security/release-rules.mjs` codiert Severity→Release-Wirkung; `scripts/security/security-report.mjs` erzeugt `test-report/security-report.{md,json}` und `security:gate` failed CI bei offenen Critical-Findings.
+- **CI**: neuer Job-Step `Security suite` + `Security report` (Artefakt) + `Security release gate`. Report läuft `if: always()`, Gate blockiert nur bei tatsächlichen Blockern.
+- **Handbuch-Kapitel** „Sicherheits- und RBAC-Tests" (Kategorie Service) inkl. Abdeckung, Grenzen, Release-Regeln und expliziter Nicht-Zertifizierungsklausel. `DOCUMENTATION_VERSION` auf **1.12.0** angehoben.
+- **ADR-0013** dokumentiert die Entscheidung, Lücken als strukturierte Findings mit Release-Gate zu führen, statt sie durch Skip-Tests oder Platzhalter-Assertions zu verstecken.
+- **Backend-Typings**: `backend/services/rbac.d.mts` schließt die letzte Lücke für strikt getypte Tests gegen die Backend-Rechte-Matrix.
+
 ## 1.32.0 - 2026-07-13
 
 - **Zentrale Correlation-ID** für alle aktiven API-Routen (`/api/status`, `/api/sync`). Neuer Wrapper `withCorrelation` in `src/lib/correlation-context.server.ts` nutzt `AsyncLocalStorage`, um pro Request eine ID durch den gesamten Server-Baum zu propagieren; Utilities (`generateCorrelationId`, `isValidCorrelationId`, `acceptOrGenerateCorrelationId`) in `src/lib/correlation.ts`. Format: UUID v4 (default) oder eingehende Client-ID, sofern sie `^[A-Za-z0-9._-]{8,64}$` erfüllt — sonst wird sie verworfen und eine neue erzeugt.

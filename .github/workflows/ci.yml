@@ -44,6 +44,16 @@ jobs:
       - name: Test (with coverage)
         run: bun run test:coverage
 
+      - name: Security suite (Vitest + scanners)
+        run: bun run test:security
+
+      - name: Security report
+        if: always()
+        run: bun run security:report
+
+      - name: Security release gate (soft — CRITICAL sichtbar, kein Merge-Block)
+        run: node scripts/security/security-report.mjs --soft
+
       - name: API endpoint contract tests
         run: bun run test:api
 

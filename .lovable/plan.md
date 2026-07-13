@@ -1,91 +1,168 @@
-## Prompt 2A.4 – UI-Funktionstest und End-to-End-Test (v1.31.0)
 
-Ziel: Playwright-basierte E2E-Suite, die die Anwendung aus Benutzersicht prüft, in die bestehende zentrale Testinstanz (v1.28.0) und CI integriert.
+# Prompt 2A.5 – Sicherheits-, RBAC- und Auth-Test-Suite
 
-### Werkzeugwahl
+## Realitätsabgleich vorab (wichtig)
 
-Playwright bleibt. Es ist bereits in `e2e/api-smoke.spec.ts` produktiv, mit TanStack Start und Cloudflare Worker verträglich (läuft gegen den Vite-Dev-Server bzw. `bun run start`), und in CI vorhanden. Keine neue Abhängigkeit.
+- **Kein echter Auth-Layer im Repo**: Aktive Rolle wird per `localStorage`
+  gesetzt (`src/lib/user-management.ts`). Es gibt keine Sessions, keine
+  Tokens, keinen Tenant, keine Claims, keine Gruppen. Die Entra-Quelle ist
+  ein Assignment-Feld, kein OIDC-Client.
+- **Backend-RBAC fehlt**: `/api/status` ist öffentlich, `/api/sync` prüft
+  nur einen statischen `X-Sync-Token`. Keine Rolle/Assignment wird
+  serverseitig ausgewertet.
+- Konsequenz: viele Prompt-Punkte („abgelaufene Session", „manipulierte
+  Claims") sind **strukturell nicht testbar**, bis Auth existiert. Die
+  Suite meldet das ehrlich als **Release-Blocker-Findings**, statt grüne
+  Tests vorzutäuschen. Das ist die Kernaufgabe des Berichts.
 
-Kritischer Trade-off (offen benennen): die Suite läuft gegen den **Dev-Server**, nicht gegen einen echten Worker-Build. Das ist bewusst, weil ein Wrangler-Preview in CI die Laufzeit verdoppeln würde; Worker-spezifische Regressionen fängt weiterhin `build:dev` + `test:api` ab.
+## Ziel
 
-### Struktur
+Deterministische, additive Testsuite `v1.33.0`, die den Ist-Zustand
+ehrlich messbar macht und die Auth-/Azure-Produktivierung an klare
+Bedingungen knüpft.
+
+## Neue/geänderte Dateien
 
 ```text
-e2e/
-  fixtures/
-    roles.ts             # 7 Rollen → gemockter Session-Bootstrap via localStorage
-    test-instance.ts     # test:-Prefix, Storage-Reset pro Test
-    axe.ts               # @axe-core/playwright Wrapper
-  specs/
-    navigation.spec.ts       # Hauptnav, Servicemenü, Dialoge, Zurück, Deep Links, mobile Nav
-    dashboard.spec.ts        # KPIs, Listen, Suche/Filter/Sort, Edit, Persistenz, User-Wechsel
-    service-menu.spec.ts     # LogViewer, Systemstatus, Health, Backup, Download, Import/Export, Azure, UserMgmt, Handbuch, ReleaseReadiness
-    error-states.spec.ts     # leere/korrupte Daten, IDB/LS aus, API 500/Timeout, Azure unconfigured, 401/403
-    responsive.spec.ts       # Desktop/Tablet/Mobile/kleine Höhe/200%-Zoom
-    a11y.spec.ts             # axe-Scan, Fokus-Reihenfolge, Escape, Dialog-Focus-Trap
-    rbac/
-      role-matrix.spec.ts    # generisch über 7 Rollen × sichtbare Menüs/Aktionen
-      backend-denial.spec.ts # direkter Fetch auf geschützte Endpunkte ohne UI
-  reports/
-    test-report.md           # generiert
-    ui-matrix.md             # UI-Funktion ↔ Testfall
-    untested.md              # Lücken
-playwright.config.ts         # trace: on-first-retry, screenshot: only-on-failure, video: retain-on-failure
+src/__tests__/security/
+  rbac-v1/
+    permission-matrix.test.ts       FE↔BE-Parität aus permissions.ts vs rbac.mjs
+    forbidden-permissions.test.ts   roles.manage, azure.database.build nur SysAdmin
+    direct-role-compare.test.ts     rg-Scan: `role === "..."` außerhalb src/lib/rbac
+    lockout.test.ts                 letzter SysAdmin / letzter Admin nicht löschbar/degradierbar
+    forbidden-role-changes.test.ts  Non-SysAdmin kann keinen SysAdmin erzeugen/befördern
+  rbac-v2/
+    scope-canonicalization.test.ts  parseScope/serialize/roundtrip/scopeIncludes
+    assignments.test.ts             expiresAt<now denied, revokedAt denied, Duplikate,
+                                    Multi-Assignment, source local/entra
+    sysadmin-protection.test.ts     v2-Pfad kann Lockout nicht umgehen
+    scope-fixtures.test.ts          customer/*, azure.subscription/*, azure.rg/*
+  manipulation/
+    localstorage-tamper.test.ts     Rolle im Storage ändern → PermissionGate bleibt zu
+    assignment-injection.test.ts    JSON-Import mit gefälschten Assignments → Zod-Reject
+    scope-payload-tamper.test.ts    Client sendet scope/permission → Backend ignoriert
+    ui-gate-bypass.test.ts          React-Render mit manipuliertem Store → keine Aktion
+    expired-revoked-replay.test.ts  wiederverwendete abgelaufene/widerrufene Assignments
+  auth/
+    api-anonymous.test.ts           /api/sync ohne Token → 401 + code+correlationId
+    api-invalid-token.test.ts       falscher Token → 401
+    session-gaps.test.ts            skipped-mit-Grund: expired/invalid/tenant/claims/groups
+                                    (jeder Skip erzeugt Finding in report.json)
+    redirect-safety.test.ts         Redirect-Ziel muss same-origin/relative sein
+    token-storage-scan.test.ts      rg-Scan localStorage/sessionStorage vs token/jwt/bearer
+  logging/
+    blocked-access-logged.test.ts   Logger-Spy: actorId + correlationId bei Deny
+    no-secret-leak.test.ts          Logger-Redaction: token, connectionString, password
+    claims-not-full.test.ts         Redaction für claims.* (Whitelist statt Blacklist)
+
+e2e/specs/security/
+  ui-gate-tamper.spec.ts            aktive Rolle in localStorage patchen, Servicemenü prüfen
+  api-direct-call.spec.ts           /api/sync direkt aus Browser ohne Token
+  logout-and-back.spec.ts           Logout → Back-Button darf keinen geschützten Zustand zeigen
+
+scripts/security/
+  release-rules.mjs                 Severity→Gate-Regeln (Critical/High/Medium/Low)
+  security-report.mjs               liest Vitest-JSON + statische Findings → Markdown
+  static-findings.json              vom Team gepflegte Fundstellen (v1.33.0-Startset)
+
+test-report/security-report.md      Output (in .gitignore, CI-Artefakt)
+
+CHANGELOG.md                        v1.33.0-Eintrag (Single Source of Truth)
+src/lib/help-documentation.ts       Kapitel „Sicherheits- und RBAC-Tests", DOC 1.12.0
+docs/adr/ADR-0013-security-release-gate.md
+.github/workflows/ci.yml            neuer Job `security` mit Gate-Step
+package.json                        Scripts: test:security, test:security:report,
+                                    security:gate, test:e2e:security
 ```
 
-### Testabdeckung (Zuordnung UI-Funktion → Spec)
+## Release-Regeln (in `release-rules.mjs`)
 
-| Bereich | Spec |
+| Severity | Gate |
 |---|---|
-| Navigation (7 Punkte) | `navigation.spec.ts` |
-| Dashboard (14 Punkte) | `dashboard.spec.ts` |
-| Servicefunktionen (11 Dialoge) | `service-menu.spec.ts` |
-| Fehlerzustände (10 Punkte) | `error-states.spec.ts` |
-| Responsive (5 Viewports) | `responsive.spec.ts` |
-| Accessibility (7 Punkte) | `a11y.spec.ts` |
-| Rollen (7 Rollen × 5 Prüfungen) | `rbac/*.spec.ts` |
+| **Critical** | blockiert JEDE weitere Phase; CI fail |
+| **High** | blockiert Auth- und Azure-Produktivierung; CI warn+Artefakt |
+| **Medium** | benötigt dokumentierte Bewertung in `static-findings.json` (`accepted: true` + Begründung) |
+| **Low** | geplant, kein Gate |
 
-Rollen-Matrix wird datengetrieben aus `src/lib/rbac/permissions.ts` erzeugt — kein Handpflege-Duplikat.
+`security:gate` liest `security-report.md`-JSON-Kopf, zählt offene
+Critical/High. Critical → `exit 1`. High außerhalb der Whitelist → Warn.
 
-### Selektor-Strategie
+## Berichts-Format (`security-report.md`)
 
-Bevorzugt `getByRole` + Name. Wo Rollen nicht eindeutig sind, werden **minimal-invasiv** `data-testid`-Anker in Dialog-Wurzeln und Servicemenü-Buttons ergänzt (kein UI-Refactor). Erwartete Anker: `service-menu`, `dialog-<name>`, `kpi-<key>`, `nav-mobile-toggle`, `role-badge`.
+Pro Finding: **ID · Severity · Titel · Route/Funktion · Reproduktion
+(3-Zeilen-Snippet oder Testname) · Empfohlene Behebung · Release-Blocker?**.
+Sortiert nach Severity, gruppiert nach Bereich (RBAC v1/v2, Manipulation,
+Auth, Logging).
 
-### Fehlerzustands-Simulation
+## Startset an ehrlichen Findings (statisch, v1.33.0)
 
-- **IDB/LS aus**: `addInitScript` löscht `indexedDB` bzw. wirft in `localStorage.setItem`.
-- **API-Ausfälle**: `page.route('**/api/**', ...)` mit Fulfill 500/Timeout/Body-Garbage.
-- **Azure**: Env-Flag `VITE_E2E_AZURE=off` → Service-Stub.
-- **RBAC-Backend-Denial**: `page.request.post()` auf geschützte Server-Fn ohne passenden Rollenkontext → erwartet 401/403 statt 200.
+- **CRITICAL** — Backend prüft keine Rolle/Assignment; `/api/sync` nur per
+  Shared Token. Empfehlung: `requireRole`/`requirePermission`-Middleware
+  vor Auth-Produktivierung. → blockiert alle Folgeprompts.
+- **CRITICAL** — Aktive Rolle wird ausschließlich im `localStorage`
+  gehalten; kein serverseitiger Gegencheck. → blockiert Auth-Prod.
+- **HIGH** — Keine Session/Token-Infrastruktur (Auth-Kapitel-Tests sind
+  strukturell N/A). → blockiert Auth-Prod bis Auth eingezogen.
+- **HIGH** — `/api/status` liefert `security.envValidation.missing` als
+  Klartext-Env-Namen; sinnvoll, aber muss unauthentisiert bleiben dürfen
+  → als bewusste Ausnahme dokumentieren.
+- **MEDIUM** — Kein Redaction-Test für Logger-Ausgaben (wird durch neue
+  Suite abgedeckt, Finding schließt sich bei erstem grünen Lauf).
+- **MEDIUM** — Redirect-Search-Param wird nicht zentral validiert
+  (`redirect-safety.test.ts` wird aktuell rot → Fix in Folge-Prompt).
 
-### CI-Integration
+Diese Liste ist die Grundlage der ersten `security-report.md`. Sie
+verschwindet nicht mit einem grünen Vitest-Lauf.
 
-Neuer Job `e2e` in `.github/workflows/ci.yml`:
+## Manipulationsstrategie (technisch)
 
-- `actions/cache@v4` auf `~/.cache/ms-playwright` (offener Punkt aus v1.30.0 mit erledigt)
-- `bunx playwright install --with-deps chromium`
-- `bun run test:e2e`
-- Upload von `playwright-report/`, `test-results/` (Traces, Screenshots, Videos) und `e2e/reports/*.md` als Artefakt
+- **localStorage-Tamper (Vitest)**: `test-instance`-Storage, `setActiveUser`
+  auf gefälschte ID, `PermissionGate` per Testing-Library rendern und
+  Sichtbarkeit assertieren. Zusätzlich e2e mit `page.evaluate`, gleichzeitig
+  Backend-Aufruf → 401/403.
+- **Assignment-Injection**: JSON-Import-Pipeline mit manipuliertem
+  Snapshot (`source:"entra"`, `expiresAt`-Fake) → Zod-Schema muss ablehnen.
+- **Payload-Tamper**: POST an `/api/sync` mit `{ role, permission, scope }`
+  im Body → Feld muss ignoriert werden (Test dokumentiert bis
+  Backend-RBAC-Middleware existiert, dass Payload egal ist, weil kein
+  RBAC-Check greift → Finding CRITICAL wie oben).
+- **Replay**: Assignments mit `expiresAt < now`, `revokedAt != null` durch
+  `evaluateAccessV2` → `false`.
 
-Neue Scripts:
-- `test:e2e` — vollständige Suite
-- `test:e2e:ui` — lokal headed
-- `test:e2e:report` — generiert `test-report.md`, `ui-matrix.md`, `untested.md` aus Playwright-JSON
+## Logging-Tests
 
-### Dokumentation
+- Logger-Spy im Test-Setup registriert alle `warn`/`error` und asserted:
+  - Bei Deny: `event: "access.denied"`, `actorId`, `correlationId` gesetzt.
+  - Kein Feld matcht `/eyJ[A-Za-z0-9._-]{10,}/`, `/(password|pwd|secret)=/i`,
+    `/(Server=|AccountKey=|SharedAccessSignature=)/`.
+- Claims-Redaction: der Logger reicht künftig nur eine Whitelist
+  (`sub`, `roles`, `tid`) durch; Test prüft Blacklist-Felder werden
+  entfernt. Falls Redaction fehlt → Finding HIGH, kein grüner Test.
 
-- Neues Handbuch-Kapitel „UI- und End-to-End-Tests" in `src/lib/help-documentation.ts`, Quicklink im Hilfe-Menü, `DOCUMENTATION_VERSION → 1.10.0`.
-- `CHANGELOG.md`: `## 1.31.0 - 2026-07-13` mit den Bullet-Punkten.
-- **ADR-0012**: „Playwright gegen Dev-Server statt Wrangler-Preview" — Begründung + Grenzen.
-- `docs/ARCHITECTURE.md`: Testpyramide um E2E-Schicht ergänzt.
+## Handbuch-Kapitel „Sicherheits- und RBAC-Tests"
 
-### Bewusst NICHT im Scope (mit Begründung)
+- Abdeckung: was wird tatsächlich getestet.
+- **Grenzen** (explizit): keine Pen-Test-Ersatzleistung, kein Fuzzing,
+  keine Zeitangriffs- oder Kryptoanalyse, keine Prüfung produktiver
+  Auth-Provider (nicht vorhanden), Rollen-Manipulation im Client zeigt
+  keine Backend-Sicherheit.
+- **Keine Zertifizierungsbehauptung**: „ISO/IEC 27001", „SOC 2", „BSI"
+  o. ä. dürfen nicht abgeleitet werden. Suite ist internes
+  Regressions-/Design-Testing.
+- Verweis auf `docs/adr/ADR-0013` und Release-Gate.
 
-1. **Visuelle Regression** (Screenshot-Diffing): flackert stark ohne stabile Fonts/Rendering; separater Prompt sinnvoll.
-2. **Cross-Browser** (Firefox/WebKit): CI-Zeit + geringer Nutzen für Intranet-Dashboard. Erweiterbar in `playwright.config.ts` per `projects`.
-3. **Echte Azure-Live-E2E**: bleibt hinter `AZURE_TEST_LIVE=1` wie in v1.28.0 vereinbart.
-4. **Performance-Budgets** (LCP/CLS in E2E): separate Lighthouse-CI-Kette geplant.
+## Bewusste Nicht-Ziele
 
-### Erwartetes Ergebnis
+- Keine echte Session-/OIDC-Implementierung in diesem Prompt.
+- Kein Umbau der Auth-Provider-Wahl (bleibt späterem Prompt vorbehalten).
+- Keine Änderung an bestehenden Endpoints (nur additive Tests + Berichte).
 
-~60–80 E2E-Cases, Laufzeit lokal < 3 min, in CI < 6 min (mit Cache). Erste Läufe werden reale Lücken (z. B. fehlende `aria-label` an Icon-Buttons, fehlende Fokus-Rückgabe nach Dialog-Close) sichtbar machen — diese fließen als Findings in den bestehenden Technical-Debt-Scanner (v1.29.0), nicht als Fixes in diesen PR (Scope-Disziplin).
+## Risiken
+
+1. Report-Startset entwertet spätere Auth-Arbeit nicht — er dokumentiert
+   Blocker, die diese Arbeit erst rechtfertigen.
+2. Vitest-JSON-Reporter muss aktiviert werden (`--reporter=json`), sonst
+   findet `security-report.mjs` keine Rohdaten. Ich baue Fallback auf
+   statische Findings ein, damit CI nicht am Reporter scheitert.
+3. `direct-role-compare`-Scan kann False Positives erzeugen; ich pflege
+   eine minimale Whitelist in der Testdatei mit Begründung pro Eintrag.
