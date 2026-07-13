@@ -11,7 +11,12 @@
  */
 import type { LogEntry } from "./logger";
 
-const DB_NAME = "dashboard-logs";
+// Test-Isolation: die Testinstanz überschreibt den DB-Namen, damit
+// produktive Log-Historien in Tests nicht angefasst werden. Default
+// bleibt der bisherige Wert.
+const DB_NAME =
+  (import.meta as unknown as { env?: { VITE_TEST_IDB_NAME?: string } }).env?.VITE_TEST_IDB_NAME ??
+  "dashboard-logs";
 const STORE = "entries";
 const VERSION = 1;
 const MAX_ROWS = 1000;
