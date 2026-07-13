@@ -5,7 +5,6 @@
  */
 import { describe, expect, it } from "vitest";
 import "../env/test-instance";
-// @ts-expect-error — .mjs ohne Types, Runtime-Import ist gewollt.
 import { getStatus } from "../../../backend/services/statusService.mjs";
 
 describe("backend/statusService", () => {

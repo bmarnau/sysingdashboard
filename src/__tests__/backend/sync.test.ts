@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import "../env/test-instance";
-// @ts-expect-error — .mjs ohne Types.
 import { runSync } from "../../../backend/services/syncService.mjs";
 
 describe("backend/syncService", () => {
