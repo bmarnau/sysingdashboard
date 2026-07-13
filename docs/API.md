@@ -71,7 +71,11 @@ Endpoints. Sollten welche entstehen: **immer** Signatur-Verifikation im Handler
 (HMAC + `timingSafeEqual`), da `/api/public/*` auf published-Sites Auth
 umgeht.
 
-## Standalone-Backend (`backend/`)
+## Historisches Standalone-Backend
 
-Für lokale Entwicklung/Ops läuft `backend/server.mjs` als eigenständiger
-Node-ESM-HTTP-Server mit denselben Routes. Nicht Teil des Produktions-Deployments.
+Bis v1.16.0 lief ein eigenständiger Node-ESM-HTTP-Server (`backend/server.mjs`)
+für lokale Entwicklung. Ersetzt durch die TanStack-Server-Routen oben.
+Die framework-freien Services unter `backend/services/` sind geblieben und
+werden von beiden Wegen importiert. Die alten Server-/Routes-Dateien liegen
+zu Referenzzwecken unter `archive/legacy-standalone-backend/`.
+
