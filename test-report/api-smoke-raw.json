@@ -1,0 +1,78 @@
+{
+  "results": [
+    {
+      "endpointId": "status",
+      "method": "GET",
+      "status": "passed",
+      "scenarios": [
+        {
+          "name": "handler registered",
+          "category": "reachability",
+          "ok": true
+        },
+        {
+          "name": "response is not HTML error page",
+          "category": "schema",
+          "ok": true
+        },
+        {
+          "name": "no secrets in response body",
+          "category": "secret-scan",
+          "ok": true
+        },
+        {
+          "name": "correlation-id header present (if wrapper used)",
+          "category": "correlation",
+          "ok": true
+        },
+        {
+          "name": "unsupported method rejected",
+          "category": "method",
+          "ok": true,
+          "detail": "status=405"
+        }
+      ],
+      "duration": 210.96160900000018
+    },
+    {
+      "endpointId": "sync",
+      "method": "POST",
+      "status": "passed",
+      "scenarios": [
+        {
+          "name": "handler registered",
+          "category": "reachability",
+          "ok": true
+        },
+        {
+          "name": "response is not HTML error page",
+          "category": "schema",
+          "ok": true
+        },
+        {
+          "name": "no secrets in response body",
+          "category": "secret-scan",
+          "ok": true
+        },
+        {
+          "name": "correlation-id header present (if wrapper used)",
+          "category": "correlation",
+          "ok": true
+        },
+        {
+          "name": "unsupported method rejected",
+          "category": "method",
+          "ok": true,
+          "detail": "status=405"
+        },
+        {
+          "name": "invalid JSON rejected",
+          "category": "validation",
+          "ok": true,
+          "detail": "status=400"
+        }
+      ],
+      "duration": 37.655065999999806
+    }
+  ]
+}
