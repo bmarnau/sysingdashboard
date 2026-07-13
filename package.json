@@ -41,7 +41,13 @@
     "test:report": "node scripts/generate-test-report.mjs",
     "test:examples": "node scripts/test-example-files.mjs",
     "rbac:check": "node scripts/check-rbac.mjs",
-    "lint:no-console": "node scripts/check-no-console.mjs"
+    "lint:no-console": "node scripts/check-no-console.mjs",
+    "api:discover": "node scripts/api-discovery/discover.mjs",
+    "api:report": "node scripts/api-discovery/report.mjs",
+    "api:gate": "node scripts/api-discovery/report.mjs --gate",
+    "test:api:smoke": "vitest run src/__tests__/api/smoke",
+    "test:api:functional": "vitest run src/__tests__/api/functional",
+    "test:api:discovery": "vitest run src/__tests__/api-discovery"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.42.3",
