@@ -15,7 +15,8 @@ Entscheidungen mit Trade-offs sind in [`docs/ADR/`](./ADR/) einzeln dokumentiert
 | State       | Pub-Sub-Store (`src/lib/store/`) + `useSyncExternalStore` + localStorage |
 | Persistenz  | Browser: `localStorage` (user-scoped) · `IndexedDB` nur für Logs        |
 | Backend     | TanStack Server-Routes auf Cloudflare Worker (`nodejs_compat`)         |
-| Node-Backend| `backend/` — Standalone-ESM-Server für lokale Entwicklung/Ops-Tools    |
+| Services    | `backend/services/` — framework-freie ESM-Module, von Server-Routes importiert |
+
 | Auth        | **Aktuell keine** — lokale User-Verwaltung; RBAC nur UX (siehe ADR-0002) |
 | CI          | GitHub Actions: lint, docs:check, test, build, security-scan           |
 
