@@ -262,7 +262,7 @@ export function LogViewerDialog({ open, onOpenChange }: LogViewerDialogProps) {
         <div className="flex flex-wrap items-center gap-2 border-b pb-3">
           <Input
             aria-label="Volltextsuche in Logs"
-            placeholder="Suchen in Message, Kontext, Fehler…"
+            placeholder="Suchen in Message, Kontext, Fehler, Correlation-ID…"
             value={rawQuery}
             onChange={(e) => setRawQuery(e.target.value)}
             className="h-9 max-w-sm"
