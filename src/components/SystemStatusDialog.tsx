@@ -407,9 +407,36 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
               }
             />
             <Row label="Zuletzt geprüft" value={fmtDate(health.checkedAt)} />
+            <Row
+              label="Correlation-ID-Middleware"
+              ok
+              value="aktiv — Header X-Correlation-Id auf allen aktiven Routen"
+            />
+            <Row
+              label="Referenz-ID (letzte Antwort)"
+              value={health.lastCorrelationId ?? NOT_CONFIGURED}
+            />
             {health.lastError && (
               <p className="mt-2 break-words text-xs text-destructive [overflow-wrap:anywhere]">
                 Fehler: {health.lastError}
+                {health.lastCorrelationId && (
+                  <>
+                    {" · "}
+                    <span className="text-muted-foreground">
+                      Referenz-ID:{" "}
+                      <button
+                        type="button"
+                        className="cursor-pointer font-mono underline"
+                        onClick={() =>
+                          void navigator.clipboard?.writeText(health.lastCorrelationId ?? "")
+                        }
+                        aria-label="Referenz-ID kopieren"
+                      >
+                        {health.lastCorrelationId}
+                      </button>
+                    </span>
+                  </>
+                )}
               </p>
             )}
             {health.apiReachable === false && (

@@ -4,15 +4,13 @@ import { runSync } from "../../../backend/services/syncService.mjs";
 import { isProd } from "../../../config/env.mjs";
 import { getEnv } from "../../../config/secretManager.mjs";
 import { ensureEnv } from "../../../backend/services/ensure-env.mjs";
+import {
+  withCorrelation,
+  jsonErrorWithCorrelation,
+  getCurrentCorrelationId,
+} from "../../lib/correlation-context.server";
 
 const BodySchema = z.object({ source: z.string().min(1).max(64).optional() }).partial();
-
-function jsonError(status: number, error: string): Response {
-  return new Response(JSON.stringify({ ok: false, error }), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}
 
 /**
  * Auth-Gate für /api/sync:
@@ -24,11 +22,11 @@ function jsonError(status: number, error: string): Response {
 function checkAuth(request: Request): Response | null {
   if (!isProd()) return null;
   const expected = getEnv("SYNC_TRIGGER_TOKEN", false) ?? "";
-  if (!expected) return jsonError(503, "Sync trigger disabled");
+  if (!expected) return jsonErrorWithCorrelation(503, "SYNC_DISABLED", "Sync trigger disabled");
   const provided = request.headers.get("x-sync-token") ?? "";
   // Konstante Laufzeit: gleich lange Strings vergleichen.
   if (provided.length !== expected.length || provided !== expected) {
-    return jsonError(401, "Unauthorized");
+    return jsonErrorWithCorrelation(401, "UNAUTHORIZED", "Unauthorized");
   }
   return null;
 }
@@ -36,11 +34,11 @@ function checkAuth(request: Request): Response | null {
 export const Route = createFileRoute("/api/sync")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: withCorrelation(async ({ request }) => {
         try {
           ensureEnv();
         } catch {
-          return jsonError(500, "Service not configured");
+          return jsonErrorWithCorrelation(500, "SERVICE_NOT_CONFIGURED", "Service not configured");
         }
         const denied = checkAuth(request);
         if (denied) return denied;
@@ -50,16 +48,16 @@ export const Route = createFileRoute("/api/sync")({
           const text = await request.text();
           parsed = text ? BodySchema.parse(JSON.parse(text)) : {};
         } catch {
-          return jsonError(400, "Invalid JSON body");
+          return jsonErrorWithCorrelation(400, "INVALID_JSON", "Invalid JSON body");
         }
         try {
           const result = await runSync({ source: parsed.source ?? "manual" });
-          return Response.json(result);
+          return Response.json({ ...result, correlationId: getCurrentCorrelationId() });
         } catch {
           // Generische Antwort — niemals Stacktraces oder Secrets durchreichen
-          return jsonError(500, "Sync failed");
+          return jsonErrorWithCorrelation(500, "SYNC_FAILED", "Sync failed");
         }
-      },
+      }),
     },
   },
 });

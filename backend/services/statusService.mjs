@@ -96,6 +96,16 @@ export function getStatus() {
       secretManager: { enabled: true, missing: envValidation.missing },
       envValidation: { ok: envValidation.ok, missing: envValidation.missing },
       keyVault: { configured: isKeyVaultConfigured() },
+      correlationId: {
+        middlewareActive: true,
+        header: "X-Correlation-Id",
+        // Aktive Routen sind statisch bekannt (src/routes/api/*.ts). Beide
+        // sind auf `withCorrelation` migriert — spätere Routen erben die
+        // Middleware, sonst schlägt der Tech-Debt-Detector Alarm.
+        activeRoutesWithSupport: 2,
+        activeRoutesWithoutSupport: 0,
+        lastTestAt: null,
+      },
     },
     data: {
       lastAzureExportAt: sync.lastRun, // letzter Sync-Lauf gilt als Export-Indikator
