@@ -86,3 +86,20 @@ Die framework-freien Services unter `backend/services/` sind geblieben und
 werden von beiden Wegen importiert. Die alten Server-/Routes-Dateien liegen
 zu Referenzzwecken unter `archive/legacy-standalone-backend/`.
 
+
+## Endpoint-Selbstdeklaration (`endpointMeta`)
+
+Ab v1.34.1 dürfen Routen ihre Klassifizierung direkt exportieren.
+API Discovery liest den Block statisch und behandelt ihn vor Registry und
+Heuristik:
+
+```ts
+export const endpointMeta = {
+  public: true,
+  reason: "Health/Status – kein Secret, kein State",
+  classification: "public",
+} as const;
+```
+
+`reason` ist Pflicht bei `public: true` — sonst erzeugt Discovery das
+Low-Finding `public-without-reason`. Details: ADR-0014 (Amendment).

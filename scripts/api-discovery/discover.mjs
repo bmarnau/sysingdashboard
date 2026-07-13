@@ -24,6 +24,7 @@ import {
   analyzeLogging,
   analyzeArchivedImports,
   analyzeDestructiveImpact,
+  analyzeEndpointMeta,
   classify,
 } from "./analyzers.mjs";
 
@@ -122,14 +123,19 @@ export function discover(scanDir = DEFAULT_SCAN_DIR) {
 
     const methods = analyzeMethods(source);
     const permission = analyzePermission(source);
+    const meta = analyzeEndpointMeta(source);
     const relFile = relative(ROOT, file).replaceAll("\\", "/");
 
     // Registry-Merge (überschreibt fehlende Felder additiv).
+    // `endpointMeta` gewinnt vor Registry-Hint — die Route-Datei ist näher
+    // an der Wahrheit als eine separat gepflegte Registry.
     const hint = registryHints.find((h) => h.path === path) ?? {};
     const authRequired =
-      hint.authRequired !== null && hint.authRequired !== undefined
-        ? hint.authRequired
-        : analyzeAuthGuard(source);
+      meta?.authRequired !== null && meta?.authRequired !== undefined
+        ? meta.authRequired
+        : hint.authRequired !== null && hint.authRequired !== undefined
+          ? hint.authRequired
+          : analyzeAuthGuard(source);
     const hasValidation = analyzeValidation(source);
     const hasCorrelation = analyzeCorrelation(source);
     const hasLogging = analyzeLogging(source);
@@ -139,7 +145,8 @@ export function discover(scanDir = DEFAULT_SCAN_DIR) {
       path,
       methods,
       authRequired,
-      permission: permission ?? hint.permission,
+      permission: permission ?? meta?.permission ?? hint.permission,
+      meta,
     });
     const impact = analyzeDestructiveImpact(path, methods);
 
@@ -154,7 +161,7 @@ export function discover(scanDir = DEFAULT_SCAN_DIR) {
       status: hint.status || "active",
       classification,
       authRequired,
-      permission: permission ?? hint.permission ?? null,
+      permission: permission ?? meta?.permission ?? hint.permission ?? null,
       scope: null,
       scopeResolver: null,
       requestValidation: hasValidation,
@@ -171,6 +178,8 @@ export function discover(scanDir = DEFAULT_SCAN_DIR) {
       securityTest: null,
       lastChecked: new Date().toISOString(),
       archivedImports,
+      declaredPublic: meta?.public === true,
+      publicReason: meta?.reason ?? null,
     });
 
     // Findings während der Discovery
@@ -200,7 +209,23 @@ export function discover(scanDir = DEFAULT_SCAN_DIR) {
         description:
           "Keine Auth, keine Permission, kein /api/public/ Prefix — Klassifizierung explizit setzen.",
         recommendation:
-          "In Registry `permission`/`authRequired` setzen oder unter `/api/public/*` mit Signaturprüfung ablegen.",
+          "`export const endpointMeta = { public: true, reason: \"…\" } as const` in der Route setzen, in der Registry `permission`/`authRequired` pflegen oder unter `/api/public/*` mit Signaturprüfung ablegen.",
+        status: "open",
+      });
+    }
+    if (meta?.public === true && !meta?.reason) {
+      findings.push({
+        id: `DISC-LOW-${id}-public-without-reason`,
+        severity: "low",
+        category: "public-without-reason",
+        endpoint: path,
+        methods,
+        file: relFile,
+        title: "Endpoint als public deklariert, aber ohne Begründung",
+        description:
+          "`endpointMeta.public = true` ohne `reason` — die Ausnahme ist nicht dokumentiert.",
+        recommendation:
+          "`reason: \"…\"` in `endpointMeta` ergänzen (kurze fachliche Begründung, warum anonym zulässig).",
         status: "open",
       });
     }

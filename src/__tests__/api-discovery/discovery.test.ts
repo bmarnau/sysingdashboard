@@ -18,6 +18,7 @@ import {
   analyzeValidation,
   analyzeCorrelation,
   analyzeArchivedImports,
+  analyzeEndpointMeta,
   classify,
   // @ts-expect-error — .mjs source
 } from "../../../scripts/api-discovery/analyzers.mjs";
@@ -89,6 +90,27 @@ describe("api-discovery analyzers", () => {
       classify({ path: "/api/admin", methods: ["POST"], authRequired: true, permission: "admin" }),
     ).toBe("privileged");
   });
+
+  it("extracts endpointMeta and prefers it over heuristics in classify()", () => {
+    const src = `export const endpointMeta = {
+      public: true,
+      reason: "Health/Status",
+    } as const;`;
+    const meta = analyzeEndpointMeta(src);
+    expect(meta).toMatchObject({ public: true, reason: "Health/Status" });
+    // meta.public overrides the unclassified default
+    expect(classify({ path: "/api/status", methods: ["GET"], authRequired: false, meta })).toBe(
+      "public",
+    );
+    // explicit meta.classification wins over meta.public
+    const meta2 = analyzeEndpointMeta(
+      `export const endpointMeta = { public: true, classification: "internal" } as const;`,
+    );
+    expect(
+      classify({ path: "/api/x", methods: ["GET"], authRequired: false, meta: meta2 }),
+    ).toBe("internal");
+    expect(analyzeEndpointMeta("no meta here")).toBeNull();
+  });
 });
 
 describe("api-discovery exclude", () => {
@@ -148,6 +170,55 @@ export const Route = createFileRoute("/api/legacy")({
     // Reihenfolge deterministisch
     const ids = findings.map((f: InvFinding) => f.id);
     expect([...ids].sort()).toEqual(ids);
+
+    resetFixtures();
+  });
+
+  it("honours endpointMeta.public and demands a reason", () => {
+    resetFixtures();
+    writeFixture(
+      "status.ts",
+      `import { createFileRoute } from "@tanstack/react-router";
+export const endpointMeta = {
+  public: true,
+  reason: "Health/Status",
+} as const;
+export const Route = createFileRoute("/api/status")({
+  server: { handlers: { GET: async () => Response.json({ ok: true }) } },
+});`,
+    );
+    writeFixture(
+      "ping.ts",
+      `import { createFileRoute } from "@tanstack/react-router";
+export const endpointMeta = { public: true } as const;
+export const Route = createFileRoute("/api/ping")({
+  server: { handlers: { GET: async () => Response.json({ ok: true }) } },
+});`,
+    );
+
+    const inv = discover(FIX_ROOT) as {
+      endpoints: (InvEndpoint & { classification: string; declaredPublic: boolean })[];
+      findings: InvFinding[];
+    };
+    const status = inv.endpoints.find((e) => e.path === "/api/status")!;
+    expect(status.classification).toBe("public");
+    expect(status.declaredPublic).toBe(true);
+
+    const ping = inv.endpoints.find((e) => e.path === "/api/ping")!;
+    expect(ping.classification).toBe("public");
+
+    // /api/status must NOT be flagged unclassified anymore
+    expect(
+      inv.findings.some(
+        (f) => f.category === "unclassified-endpoint" && f.id.includes("api-status"),
+      ),
+    ).toBe(false);
+    // /api/ping is public but has no reason → low finding
+    expect(
+      inv.findings.some(
+        (f) => f.category === "public-without-reason" && f.id.includes("api-ping"),
+      ),
+    ).toBe(true);
 
     resetFixtures();
   });

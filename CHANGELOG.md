@@ -13,7 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
-## 1.34.0 - 2026-07-13
+## 1.34.1 - 2026-07-13
+
+- **API Discovery — `endpointMeta`-Selbstdeklaration**: Routen können jetzt per `export const endpointMeta = { public: true, reason: "…" } as const;` explizit ihre Klassifizierung setzen (Felder: `public`, `authRequired`, `permission`, `classification`, `reason`). `endpointMeta` gewinnt vor Contract-Registry und Heuristik. `/api/status` nutzt dies als erste Route — das Medium-Finding `unclassified-endpoint` entfällt dort.
+- **Neues Finding** `public-without-reason` (LOW): Wenn `endpointMeta.public = true` gesetzt ist, aber `reason` fehlt, wird die stille Ausnahme sichtbar gemacht.
+- **Discovery Self-Tests** erweitert (10/10 grün): Extraktion von `endpointMeta`, Vorrang von `meta.classification`, Unterdrückung des Unclassified-Findings, Erzeugung des Public-without-reason-Findings.
+- **ADR-0014 Amendment**: dokumentiert die additive Aufnahme des Konventions-Meta-Export (ehemals verworfene Option C) als opt-in ergänzend zur Regex-Heuristik.
+- **Handbuch** Kapitel „API Discovery" um Abschnitt „Endpoint-Selbstdeklaration (`endpointMeta`)" ergänzt.
+
+
 
 - **API Discovery Framework (ADR-0014)**: neues Framework unter `scripts/api-discovery/` erkennt aktive Server-Routen (`src/routes/api/**`) automatisch per statischer Analyse und schreibt das deterministische Inventar nach `test-report/api-inventory.json`. Archivierte Verzeichnisse (`archive/**`) und Tests werden strikt ausgeschlossen; Imports aus `archive/**` in aktiven Routen erzeugen ein Critical-Finding.
 - **Discovery-Analyzer** erkennen HTTP-Methoden, `withCorrelation`-Wrapper, Zod-Validierung, Auth-Guards (`checkAuth`, `X-Sync-Token`, `requireSupabaseAuth`), Permissions, Logger-Nutzung und destruktive Wirkung. Endpoints werden als `public | authenticated | privileged | unclassified` klassifiziert.

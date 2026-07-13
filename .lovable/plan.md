@@ -1,64 +1,82 @@
+## Ziel
 
-# Prompt 2A.5B — API Discovery Framework
-
-Ziel: Statt einer manuellen Registry (`src/__tests__/api/registry/endpoints.ts`) entsteht ein automatisiertes Discovery-Framework, das den echten Buildstand als Wahrheitsquelle nimmt, mit der Registry abgleicht und daraus Inventar, Smoke-/Functional-Reports und Findings erzeugt. Die bestehende Contract-Registry bleibt als **Anreicherungsquelle** (Schemas, Auth-Meta), wird aber nicht mehr als alleiniger Nachweis akzeptiert.
-
-## Kritische Vorbemerkung
-
-Ein echter "Discovery"-Ansatz nur über statische Regex-Analyse ist fragil (die bestehenden tech-debt-Detektoren zeigen die Grenzen). Ich schlage einen **Hybrid** vor: TanStack Vite-Plugin generiert bereits `src/routeTree.gen.ts` — daraus lesen wir alle aktiven Routen deterministisch aus. Ergänzend eine leichtgewichtige AST-Analyse der Route-Dateien (via `@babel/parser`, bereits transitiv vorhanden) für HTTP-Methoden, Middleware, Validatoren. Kein Crawling.
-
-Falls dir das zu schwer erscheint: Alternative wäre eine reine **Konventions-Pflicht** — jede Route exportiert ein `endpointMeta`-Objekt, Discovery liest nur diese Exports. Sauberer, aber invasiver. Sag Bescheid, wenn du das lieber willst.
+Routen können ihre Öffentlichkeit **selbst deklarieren** über einen exportierten `endpointMeta`-Block direkt in der Route-Datei. Damit entfällt der Umweg über die Contract-Registry für einfache Fälle wie `/api/status`, und `unclassified`-Findings entstehen nur noch dort, wo wirklich nichts gesagt wurde.
 
 ## Umfang
 
-### Discovery-Engine (`scripts/api-discovery/`)
-- `discover.mjs` — Hauptskript: liest `src/routeTree.gen.ts` + parst `src/routes/api/**/*.ts` per AST
-- `analyzers/` — je Analyzer eine Datei: `methods`, `middleware`, `validation`, `auth-guard`, `permission`, `correlation`, `logging`
-- `exclude.mjs` — harte Liste (`archive/**`, `**/*.test.ts`, `**/__tests__/**`); Verstöße erzeugen Finding
-- `enrich.mjs` — merged mit `ENDPOINTS`-Registry (Schemas, Klassifizierung)
-- `inventory.mjs` — schreibt `test-report/api-inventory.json` deterministisch (Sort: path, method)
+### 1. Konvention definieren
+In jeder Route-Datei optional:
 
-### Smoke-Tests (`src/__tests__/api/smoke/`)
-- `smoke.test.ts` — iteriert das Inventar; testet je Endpoint: Erreichbarkeit, akzeptierte Methoden, 405 auf unerlaubte Methode, 400/422 auf ungültiges JSON, leere Payload, falscher Content-Type, Response ist JSON (nicht HTML), keine Stacktraces/Secrets im Body, Correlation-ID-Header
-- `writers.guard.ts` — schreibende Endpoints laufen nur gegen In-Memory-Adapter (bestehende MSW-Testinstanz), Azure-Live nur bei `AZURE_TEST_LIVE=true`
-- Reporter schreibt `test-report/api-smoke-report.json`
+```ts
+export const endpointMeta = {
+  public: true,              // bewusst anonym erreichbar
+  reason: "Health/Status – kein Secret, kein State",
+  classification: "public",  // optional, sonst abgeleitet
+  permission: null,          // optional
+} as const;
+```
 
-### Functional-Report (`src/__tests__/api/functional/`)
-- `functional.test.ts` — aggregiert bestehende Runner-Tests + neue Szenarien (Auth-Negativ, Scope, Idempotenz wo anwendbar)
-- Bewertung je Endpoint: `complete | partial | missing | blocked | not-applicable`
-- Reporter schreibt `test-report/api-functional-report.json`
+Nur `public: true` und optional `reason`, `classification`, `permission`, `authRequired` werden ausgewertet. Alles andere wird ignoriert (keine Registry-Ersatzfunktion, kein Feature-Creep).
 
-### Findings & Severity
-- `scripts/api-discovery/findings.mjs` — Kategorien laut Prompt (Critical/High/Medium/Low)
-- Merged in bestehendes `scripts/security/security-report.mjs`-Format, damit CI-Gate wiederverwendbar
-- Neue Detector-Regel: aktiver Handler importiert aus `archive/**` → Critical
+### 2. Analyzer erweitern (`scripts/api-discovery/analyzers.mjs`)
+- Neue Funktion `analyzeEndpointMeta(source)`: Regex-Extraktion des `endpointMeta`-Objekts (Zero-Dependency, konsistent mit ADR-0010). Erkennt `public`, `reason`, `classification`, `permission`, `authRequired`.
+- `classify(...)` bekommt Vorrang-Reihenfolge:
+  1. `meta.classification` (explizit gesetzt) → gewinnt
+  2. `meta.public === true` → `"public"`
+  3. `permission` → `"privileged"`
+  4. `authRequired` → `"authenticated"`
+  5. `/api/public/*`-Prefix → `"public"`
+  6. sonst → `"unclassified"`
 
-### Self-Tests (`src/__tests__/api-discovery/`)
-- Fixtures unter `src/__tests__/api-discovery/fixtures/` mit synthetischen Routen (neu/entfernt/archiviert/multi-method/dynamic-param/no-validation/no-auth)
-- Test prüft: JSON-Schema-Validität des Inventars, deterministische Reihenfolge, korrekte Findings
+### 3. Discovery-Integration (`scripts/api-discovery/discover.mjs`)
+- `endpointMeta` wird pro Datei extrahiert und in das Endpoint-Objekt geschrieben (`declaredPublic`, `publicReason`).
+- Wenn `meta.public === true` **ohne** `reason` → neues Low-Finding `public-without-reason` (transparente Doku-Pflicht statt stiller Ausnahme).
+- Bestehendes Medium-Finding `unclassified-endpoint` wird für Routen mit `meta.public` unterdrückt.
+- Registry-Merge bleibt unverändert; `endpointMeta` gewinnt vor Registry-Hint (Route-Datei ist näher an der Wahrheit).
 
-### CI (`ci.yml`)
-- Neuer Job `api-discovery` nach `build`:
-  1. `bun run api:discover` → Inventar
-  2. `bun run test:api:smoke`
-  3. `bun run test:api:functional`
-  4. `bun run api:report` → Merge-Report + Findings
-  5. Upload `test-report/api-*.json` als Artefakte
-- Gates: Critical / High-Security / privilegiert-ohne-Auth / Secret-im-Response / Discovery-Error → **blocking**. Fehlende Doku / fehlende Correlation-ID / partial Functional → **warning**.
+### 4. Route anpassen (`src/routes/api/status.ts`)
+`endpointMeta` mit `public: true` und `reason` ergänzen — sonst keine Änderung am Handler.
 
-### Dokumentation (Doku-Sync-Pflicht)
-- Neues HelpTopic „API Discovery und Testabdeckung" in `src/lib/help-documentation.ts` (`lastUpdated` heute; `DOCUMENTATION_VERSION` → 1.13.0)
-- `docs/API.md`: manuelle Endpoint-Tabelle durch generierten Ausschnitt aus `api-inventory.json` ersetzen (Build-Script rendert Markdown-Tabelle)
-- `CHANGELOG.md`: `## 1.34.0 - 2026-07-13`
-- ADR-0014: „AST-basierte API-Discovery vs. Konventions-Meta-Export"
+### 5. Selbst-Test (`src/__tests__/api-discovery/discovery.test.ts`)
+Zwei neue Fixture-Tests:
+- Route mit `endpointMeta.public = true` → `classification === "public"`, kein Unclassified-Finding.
+- Route mit `endpointMeta.public = true` **ohne** `reason` → Low-Finding `public-without-reason`.
 
-## Nicht enthalten (bewusst)
-- Kein neuer Auth-Layer — offene SEC-CRIT-001/002 aus v1.33.0 bleiben. Discovery **meldet** sie neu, löst sie nicht.
-- Keine Azure-Live-Tests — bleiben hinter `AZURE_TEST_LIVE`-Gate `not-configured`.
-- Keine Rate-Limit-Implementierung — nur Reporting.
+### 6. Doku
+- `src/lib/help-documentation.ts`: Kapitel „API Discovery" ergänzt einen Abschnitt „Endpoint-Selbstdeklaration (`endpointMeta`)"; `lastUpdated` bump.
+- `docs/API.md`: kurzer Hinweis + Beispiel-Snippet.
+- `CHANGELOG.md`: neuer Eintrag **v1.34.1** (Patch), da rein additive Erweiterung.
+- `DOCUMENTATION_VERSION`: nicht anheben (kleine additive Ergänzung).
 
-## Abschlussprüfung (wird am Ende ausgeführt)
-`bun run build && bun run api:discover && bun run test:api:smoke && bun run test:api:functional && bun run test:security && bun run docs:check` — Ergebnisliste + Bewertung („bestanden mit Einschränkungen" ist zu erwarten, da SEC-CRIT-001/002 offen bleiben).
+### 7. Kein Scope-Creep
+- Keine Änderung an der Contract-Registry-Struktur.
+- Kein Runtime-Import von `endpointMeta` — reine statische Analyse (bleibt konform zu ADR-0014).
+- Kein neuer CI-Job, keine neuen Scripts.
+- `missing-correlation-id`-False-Positive (aus letzter Zusammenfassung) bleibt separat und wird **nicht** hier mitgemacht.
 
-## Offene Frage
-Willst du den **AST-Hybrid** (mein Vorschlag) oder den strengeren **Konventions-Meta-Export** (jede Route muss `export const endpointMeta = {...}` deklarieren)? Zweiter ist robuster, aber verlangt Änderungen an jeder heutigen und künftigen Route.
+## Erwartetes Ergebnis nach Umsetzung
+
+Discovery-Lauf gegen aktuellen Stand:
+- `/api/status` → `classification: "public"`, `declaredPublic: true`
+- Findings-Zahl sinkt um 1 (Wegfall `DISC-MED-api-status-unclassified`)
+- Alle bestehenden Self-Tests + 2 neue Fixtures grün
+
+## Technische Details
+
+**Regex für `endpointMeta`** (bewusst tolerant, gleiche Philosophie wie andere Analyzer):
+
+```js
+const block = source.match(
+  /export\s+const\s+endpointMeta\s*=\s*\{([\s\S]*?)\}\s*(as\s+const)?\s*;/
+);
+```
+
+Innerhalb des Blocks werden `public`, `authRequired`, `permission`, `classification`, `reason` per Einzel-Regex extrahiert. Verschachtelte Objekte werden nicht unterstützt — das ist Absicht, um AST-Zwang zu vermeiden.
+
+**Vorrang von `meta.classification`** erlaubt Grenzfälle (z. B. `"internal"` später), ohne dass die Basis-Heuristik neu geschrieben werden muss.
+
+## Nicht enthalten (bewusste Nicht-Ziele)
+
+- Auslesen von `endpointMeta` zur Laufzeit oder in der Route-Registrierung.
+- Migration bestehender Registry-Einträge auf `endpointMeta` (die Registry bleibt für Payload/Schema-Metadaten).
+- Automatische Härtung des CI-Gates.
