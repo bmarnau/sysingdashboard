@@ -55,7 +55,7 @@
    - Empfehlung: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
    - Finding-ID: `td-oversize-26e43c0a`
 
-12. **[High/gross]** Modul überschreitet Größenschwelle (3255 Zeilen)
+12. **[High/gross]** Modul überschreitet Größenschwelle (3256 Zeilen)
    - Ort: `src/routes/index.tsx`
    - Empfehlung: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
    - Finding-ID: `td-oversize-99cca8a6`
