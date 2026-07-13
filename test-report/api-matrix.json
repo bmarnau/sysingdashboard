@@ -1,0 +1,99 @@
+{
+  "generated": "2026-01-01T00:00:00.000Z",
+  "endpoints": [
+    {
+      "id": "status",
+      "path": "/api/status",
+      "methods": "GET",
+      "authRequired": false,
+      "permission": "",
+      "scope": "",
+      "requestSchema": "no",
+      "responseSchema": "yes",
+      "status": "active",
+      "cases": 10,
+      "failures": 0,
+      "knownRisks": [
+        "Keine Correlation-ID im Response — Traceability nur über Server-Log.",
+        "Anonymer Zugriff bewusst offen (Uptime-Checks); prüft aber Secret-Freiheit hart."
+      ]
+    },
+    {
+      "id": "sync",
+      "path": "/api/sync",
+      "methods": "POST",
+      "authRequired": false,
+      "permission": "sync.trigger",
+      "scope": "",
+      "requestSchema": "yes",
+      "responseSchema": "yes",
+      "status": "active",
+      "cases": 15,
+      "failures": 0,
+      "knownRisks": [
+        "Auth-Gate greift erst in PROD (`SYNC_TRIGGER_TOKEN`); DEV-Modus ist ungeschützt.",
+        "Kein Rate-Limit — parallele Requests laufen alle durch."
+      ]
+    },
+    {
+      "id": "azure-connection-test",
+      "path": "/api/azure/connection-test",
+      "methods": "POST",
+      "authRequired": true,
+      "permission": "azure.connection.test",
+      "scope": "global",
+      "requestSchema": "no",
+      "responseSchema": "no",
+      "status": "planned",
+      "cases": 0,
+      "failures": 0,
+      "knownRisks": [
+        "Route noch nicht implementiert; Registry-Platzhalter für ADR-0008."
+      ]
+    },
+    {
+      "id": "azure-export",
+      "path": "/api/azure/export",
+      "methods": "POST",
+      "authRequired": true,
+      "permission": "azure.export",
+      "scope": "customer",
+      "requestSchema": "no",
+      "responseSchema": "no",
+      "status": "planned",
+      "cases": 0,
+      "failures": 0,
+      "knownRisks": []
+    },
+    {
+      "id": "azure-import",
+      "path": "/api/azure/import",
+      "methods": "POST",
+      "authRequired": true,
+      "permission": "azure.import",
+      "scope": "customer",
+      "requestSchema": "no",
+      "responseSchema": "no",
+      "status": "planned",
+      "cases": 0,
+      "failures": 0,
+      "knownRisks": []
+    },
+    {
+      "id": "rbac-assignments",
+      "path": "/api/rbac/assignments",
+      "methods": "GET,POST,DELETE",
+      "authRequired": true,
+      "permission": "rbac.assignments.write",
+      "scope": "tenant",
+      "requestSchema": "no",
+      "responseSchema": "no",
+      "status": "planned",
+      "cases": 0,
+      "failures": 0,
+      "knownRisks": [
+        "Backend-Mirror für RBAC v2 (ADR-0008 Phase M5)."
+      ]
+    }
+  ]
+}
