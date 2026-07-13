@@ -7,6 +7,13 @@ import {
   getCurrentCorrelationId,
 } from "../../lib/correlation-context.server";
 
+export const endpointMeta = {
+  public: true,
+  reason:
+    "Health-/Statusanzeige — kein Secret, kein State, wird vom Dashboard und CI ohne Auth abgefragt.",
+  classification: "public",
+} as const;
+
 export const Route = createFileRoute("/api/status")({
   server: {
     handlers: {

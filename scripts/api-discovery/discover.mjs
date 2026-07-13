@@ -209,7 +209,23 @@ export function discover(scanDir = DEFAULT_SCAN_DIR) {
         description:
           "Keine Auth, keine Permission, kein /api/public/ Prefix — Klassifizierung explizit setzen.",
         recommendation:
-          "In Registry `permission`/`authRequired` setzen oder unter `/api/public/*` mit Signaturprüfung ablegen.",
+          "`export const endpointMeta = { public: true, reason: \"…\" } as const` in der Route setzen, in der Registry `permission`/`authRequired` pflegen oder unter `/api/public/*` mit Signaturprüfung ablegen.",
+        status: "open",
+      });
+    }
+    if (meta?.public === true && !meta?.reason) {
+      findings.push({
+        id: `DISC-LOW-${id}-public-without-reason`,
+        severity: "low",
+        category: "public-without-reason",
+        endpoint: path,
+        methods,
+        file: relFile,
+        title: "Endpoint als public deklariert, aber ohne Begründung",
+        description:
+          "`endpointMeta.public = true` ohne `reason` — die Ausnahme ist nicht dokumentiert.",
+        recommendation:
+          "`reason: \"…\"` in `endpointMeta` ergänzen (kurze fachliche Begründung, warum anonym zulässig).",
         status: "open",
       });
     }
