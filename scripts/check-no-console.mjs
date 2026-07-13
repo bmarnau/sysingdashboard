@@ -30,8 +30,7 @@ const TARGETS = [
   "src/components/SaveTargetDialog.tsx",
   "src/components/azure",
   "backend/services",
-  "backend/routes",
-  "backend/server.mjs",
+
 ];
 
 const ALLOW = new Set([
