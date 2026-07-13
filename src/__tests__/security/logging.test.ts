@@ -24,9 +24,13 @@ const SENSITIVE_INPUT = {
   arr: [{ password: "x" }, "eyJa.b.c"],
 };
 
+function fe(input: Record<string, unknown>): Record<string, unknown> {
+  return feRedact(input) as Record<string, unknown>;
+}
+
 describe("Logger-Redaction – Frontend", () => {
   it("should_maskSecretKeys_when_redactCalled", () => {
-    const out = feRedact({ ...SENSITIVE_INPUT }) as Record<string, unknown>;
+    const out = fe({ ...SENSITIVE_INPUT });
     expect(out.token).toBe("[REDACTED]");
     expect(out.password).toBe("[REDACTED]");
     expect(out.api_key).toBe("[REDACTED]");
@@ -34,18 +38,18 @@ describe("Logger-Redaction – Frontend", () => {
   });
 
   it("should_maskJwtLikeStringValues_regardlessOfKey", () => {
-    const out = feRedact({ trace: SENSITIVE_INPUT.jwtLike }) as Record<string, string>;
+    const out = fe({ trace: SENSITIVE_INPUT.jwtLike });
     expect(out.trace).toBe("[REDACTED]");
   });
 
   it("should_preserveActorAndCorrelation_when_redacting", () => {
-    const out = feRedact({ ...SENSITIVE_INPUT }) as Record<string, unknown>;
+    const out = fe({ ...SENSITIVE_INPUT });
     expect(out.actorId).toBe("usr-42");
     expect(out.correlationId).toBe("550e8400-e29b-41d4-a716-446655440000");
   });
 
   it("should_recurseIntoNestedObjectsAndArrays", () => {
-    const out = feRedact({ ...SENSITIVE_INPUT }) as {
+    const out = fe({ ...SENSITIVE_INPUT }) as {
       nested: { secret: string; ok: boolean };
       arr: Array<Record<string, unknown> | string>;
     };
@@ -58,28 +62,27 @@ describe("Logger-Redaction – Frontend", () => {
 
 describe("Logger-Redaction – Backend", () => {
   it("should_maskSecretKeys_when_backendRedactCalled", () => {
-    const out = beRedact({ ...SENSITIVE_INPUT });
+    const out = beRedact({ ...SENSITIVE_INPUT }) as Record<string, unknown> & {
+      nested: Record<string, unknown>;
+      arr: Array<Record<string, unknown> | string>;
+    };
     expect(out.token).toBe("[REDACTED]");
     expect(out.password).toBe("[REDACTED]");
     expect(out.api_key).toBe("[REDACTED]");
     expect(out.authorization).toBe("[REDACTED]");
     expect(out.nested.secret).toBe("[REDACTED]");
-    expect(out.arr[0].password).toBe("[REDACTED]");
+    expect((out.arr[0] as Record<string, string>).password).toBe("[REDACTED]");
     expect(out.arr[1]).toBe("[REDACTED]");
   });
 
   it("should_notLeakConnectionStringInLogOutput", () => {
     // Aktuell wird `connectionString` NICHT redacted (Feldname enthält nicht
-    // password/token/secret). Der Test dokumentiert diese Lücke als
-    // Finding SEC-HIGH-LOG-001; solange sie offen ist, soll wenigstens
-    // sichergestellt sein, dass der Wert nicht als AccountKey-Substring
-    // im Logfile eines JWT-Regex-Treffers landet.
-    const out = beRedact({ conn: SENSITIVE_INPUT.connectionString });
-    // Erwartung heute: unmaskiert (Lücke). Der Assertion-Wert steht als
-    // Regressions-Marker: sobald Redaction erweitert wird, kippt der Test
-    // und muss auf `expect(out.conn).toBe("[REDACTED]")` gestellt werden.
-    expect(typeof out.conn).toBe("string");
-    // Marker in report: SEC-HIGH-LOG-001.
+    // password/token/secret). Finding SEC-HIGH-LOG-001. Sobald Redaction
+    // erweitert wird, kippt der Test auf `[REDACTED]`.
+    const out = beRedact({ conn: SENSITIVE_INPUT.connectionString }) as
+      | Record<string, unknown>
+      | undefined;
+    expect(typeof out?.conn).toBe("string");
   });
 });
 
