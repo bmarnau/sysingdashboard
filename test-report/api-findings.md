@@ -1,12 +1,12 @@
 # API Discovery — Findings
 
-Generated: 2026-07-13T05:33:25.632Z
-Dashboard: 1.34.0 · Commit: fbf530e
+Generated: 2026-07-13T05:41:27.163Z
+Dashboard: 1.34.1 · Commit: d06a80b
 
 ## Zusammenfassung
 
 - Endpoints: **2**
-- Unklassifiziert: **1**
+- Unklassifiziert: **0**
 - Smoke passed / failed / skipped: **2** / **0** / **0**
 - Functional coverage complete / partial / missing: **0** / **2** / **0**
 
@@ -19,7 +19,7 @@ Dashboard: 1.34.0 · Commit: fbf530e
 - Beschreibung: Anonymer Aufruf verändert Daten oder löst schreibende Operationen aus.
 - Empfehlung: Auth-Middleware ergänzen und Permission-Guard serverseitig prüfen.
 
-## MEDIUM (5)
+## MEDIUM (4)
 
 ### DISC-MED-azure-connection-test-orphan-registry — Registry-Eintrag ohne existierende Route
 - Endpoint: `POST /api/azure/connection-test`
@@ -48,10 +48,3 @@ Dashboard: 1.34.0 · Commit: fbf530e
 - Kategorie: orphan-registry-entry
 - Beschreibung: Endpoint ist in der Registry gelistet, aber im Build nicht vorhanden.
 - Empfehlung: Registry-Eintrag entfernen oder Route wiederherstellen.
-
-### DISC-MED-status-unclassified — Endpoint ist nicht klassifiziert
-- Endpoint: `GET /api/status`
-- Datei: `src/routes/api/status.ts`
-- Kategorie: unclassified-endpoint
-- Beschreibung: Keine Auth, keine Permission, kein /api/public/ Prefix — Klassifizierung explizit setzen.
-- Empfehlung: In Registry `permission`/`authRequired` setzen oder unter `/api/public/*` mit Signaturprüfung ablegen.
