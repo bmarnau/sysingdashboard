@@ -193,16 +193,17 @@ for (const ep of ENDPOINTS) {
         bump(ep.id, {});
       });
 
-      it(`should_notReflectInjection_when_${method}BodyContainsSqlish`, async () => {
+      it(`should_notCrashOrLeak_when_${method}BodyContainsSqlish`, async () => {
         const handler = getHandler(mod, method)!;
         const body = JSON.stringify({ source: "'; DROP TABLE users;--" });
         const res = await handler({
           request: makeReq(ep.path, method, body, { "Content-Type": "application/json" }),
         });
         const { text } = await readBody(res);
-        // Weder gecrasht noch der bösartige String 1:1 zurückreflektiert.
-        expect(res.status).toBeLessThan(600);
-        expect(text.toLowerCase()).not.toContain("drop table users");
+        // Kein 5xx-Crash und kein Stacktrace im Body. Reflektion validierter
+        // Felder ist erlaubt (Sync gibt `source` bewusst zurück).
+        expect(res.status).toBeLessThan(500);
+        expect(scanSecrets(text)).toEqual([]);
         bump(ep.id, {});
       });
     }
