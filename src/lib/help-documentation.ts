@@ -322,7 +322,7 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
 ## Architektur
 - Frontend ruft ausschließlich \`/api/...\` (same-origin), kein direkter Azure-Zugriff im Browser.
 - TanStack-Server-Routes unter \`src/routes/api/\` sind der Production-Pfad (Cloudflare Workers).
-- Lokal kann zusätzlich \`node backend/server.mjs\` gestartet werden — beide Wege importieren dieselben framework-freien Services aus \`backend/services/\`.
+- Framework-freie Services unter \`backend/services/\` werden von den Server-Routes importiert. Der frühere Standalone-Node-Server ist ins Archiv verschoben (\`archive/legacy-standalone-backend/\`).
 
 ## Sicherheit
 - \`config/env.mjs\` blockiert Azure-Aufrufe im Dev-Modus (\`assertAzureAllowed\`).
