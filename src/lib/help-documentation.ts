@@ -1645,7 +1645,57 @@ Der Runner schreibt \`test-report/api-matrix.{md,json}\` nach jedem Lauf.
 - Archivierte Legacy-Routen unter \`archive/legacy-standalone-backend/routes/\` sind bewusst nicht in der Registry — sie sind nicht Teil des Live-Bundles.`,
     relatedTopics: ["test-instance", "system-status", "security-principles", "tech-debt"],
   },
+  {
+    id: "ui-e2e-tests",
+    title: "UI- und End-to-End-Tests",
+    category: "Service",
+    keywords: ["Playwright", "E2E", "UI-Tests", "axe", "Rollen-Matrix", "Responsive", "Fehlerzustände"],
+    lastUpdated: "2026-07-13",
+    content: `## Zweck
+Die Anwendung wird aus Sicht eines tatsächlichen Benutzers automatisiert geprüft: Navigation, Dashboard, Servicefunktionen, Fehlerzustände, Responsive-Verhalten, Barrierefreiheit und Rollen-Sichtbarkeit. Ergänzt die Handler-direct-Suite aus dem API-Kapitel um echte Browser-Interaktion.
+
+## Struktur
+- \`e2e/specs/navigation.spec.ts\` — Haupt-/Servicemenü, Deep Links, Browser-Back
+- \`e2e/specs/dashboard.spec.ts\` — Suche, Reset, Persistenz-Anker, Benutzeranzeige
+- \`e2e/specs/service-menu.spec.ts\` — Servicemenü-Einträge (Log Viewer, Systemstatus, Backup, Handbuch)
+- \`e2e/specs/error-states.spec.ts\` — leerer/korrupter Storage, Storage-Quota, API-Ausfall, Not-Found
+- \`e2e/specs/responsive.spec.ts\` — Desktop/Tablet/Mobile/kleine Höhe + 200 % Zoom
+- \`e2e/specs/a11y.spec.ts\` — axe-core (WCAG 2.1 A/AA) + Fokus-Anker
+- \`e2e/specs/rbac/role-matrix.spec.ts\` — datengetrieben über alle 7 Rollen
+- \`e2e/specs/rbac/backend-denial.spec.ts\` — direkte HTTP-Requests auf geschützte Endpunkte
+- \`e2e/api-smoke.spec.ts\` — API-Round-Trip (unverändert seit v1.30.0)
+
+## Werkzeug (ADR-0012)
+- **Playwright** gegen den lokalen Vite-Dev-Server, **Chromium-only** in CI.
+- **Rollen-Seeding** erfolgt clientseitig via \`localStorage\` (\`e2e/fixtures/roles.ts\`). Ausreichend für UI-Sichtbarkeit — **kein** Sicherheitsnachweis.
+- **@axe-core/playwright** für Accessibility-Scans, gekapselt in \`e2e/fixtures/axe.ts\`.
+- **Traces, Screenshots und Videos** nur bei Fehlern (CI-Kosten).
+
+## Ausführung
+\`\`\`
+bun run test:e2e            # vollständige Suite
+bun run test:e2e:ui         # lokal headed / debug
+bun run test:e2e:report     # generiert e2e/reports/test-report.md aus Playwright-JSON
+\`\`\`
+Artefakte in CI: \`playwright-report/\` (HTML + JSON + Traces), \`e2e/reports/\` (Matrix, Lücken, Report).
+
+## Reports
+- \`e2e/reports/ui-matrix.md\` — Zuordnung UI-Funktion ↔ Testfall (manuell gepflegt)
+- \`e2e/reports/untested.md\` — bewusste Lücken (nur Smoke, nicht funktional geprüft)
+- \`e2e/reports/test-report.md\` — auto-generiert nach jedem Lauf
+
+## Bekannte Einschränkungen
+- Servicemenü-Dialoge sind nur auf **„öffnet sich"-Ebene** geprüft. Tiefergehende Interaktionen (Bearbeitung, Wizards, Zeiterfassung) brauchen stabile \`data-testid\`-Anker — dokumentiert in \`untested.md\`.
+- Rollen-Matrix prüft nur den Servicemenü-Öffner-Button. Fein-granulare Aktions-Sichtbarkeit fehlt.
+- Kein Cross-Browser (Firefox/WebKit), keine visuellen Regressions-Snapshots, kein echter Wrangler-Worker-Preview — siehe ADR-0012 für die Begründungen.
+- Keine \`aria-required-attr\`- oder Kontrast-Tests jenseits der axe-Standardregeln.
+
+## Ergänzung, nicht Ersatz
+Die E2E-Suite ergänzt die Unit-, Component-, API- und Security-Suiten. Ein grüner Playwright-Lauf ist **kein** Beweis für serverseitige Berechtigungsprüfung — dafür bleibt \`rbac/backend-denial.spec.ts\` plus \`test:security\` maßgeblich.`,
+    relatedTopics: ["test-instance", "api-endpoint-tests", "barrierefreiheit", "system-status"],
+  },
 ];
+
 
 function allTopicsBase(): HelpTopic[] {
   const merged = new Map<string, HelpTopic>();
