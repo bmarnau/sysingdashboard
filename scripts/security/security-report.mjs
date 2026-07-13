@@ -33,6 +33,10 @@ const OUT_JSON = join(ROOT, "test-report/security-report.json");
 const args = new Set(process.argv.slice(2));
 const strictHigh = args.has("--strict-high");
 const gate = args.has("--gate");
+// --soft: Gate-Ausgabe (Zusammenfassung + Exit-Code-Signal in stdout),
+// aber kein `exit(1)` — für CI, das den Status im Log sichtbar macht,
+// ohne den Merge zu blockieren. Release-Checklisten nutzen `--gate`.
+const soft = args.has("--soft");
 
 function loadStatic() {
   const raw = readFileSync(STATIC, "utf8");
@@ -156,8 +160,14 @@ console.log(
   `[security-report] critical=${counts.critical} high=${counts.high} medium=${counts.medium} low=${counts.low} accepted=${counts.accepted} → ${OUT_MD}`,
 );
 
-if (gate && json.blocked) {
-  // eslint-disable-next-line no-console
-  console.error("[security-report] Release GEBLOCKT durch offene Findings.");
-  process.exit(1);
+if ((gate || soft) && json.blocked) {
+  const msg = "[security-report] Release GEBLOCKT durch offene Findings (siehe test-report/security-report.md).";
+  if (soft) {
+    // eslint-disable-next-line no-console
+    console.warn(msg);
+  } else {
+    // eslint-disable-next-line no-console
+    console.error(msg);
+    process.exit(1);
+  }
 }

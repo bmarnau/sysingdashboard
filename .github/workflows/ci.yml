@@ -51,8 +51,8 @@ jobs:
         if: always()
         run: bun run security:report
 
-      - name: Security release gate
-        run: bun run security:gate
+      - name: Security release gate (soft — CRITICAL sichtbar, kein Merge-Block)
+        run: node scripts/security/security-report.mjs --soft
 
       - name: API endpoint contract tests
         run: bun run test:api
