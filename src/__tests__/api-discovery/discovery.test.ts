@@ -18,6 +18,7 @@ import {
   analyzeValidation,
   analyzeCorrelation,
   analyzeArchivedImports,
+  analyzeEndpointMeta,
   classify,
   // @ts-expect-error — .mjs source
 } from "../../../scripts/api-discovery/analyzers.mjs";
@@ -88,6 +89,27 @@ describe("api-discovery analyzers", () => {
     expect(
       classify({ path: "/api/admin", methods: ["POST"], authRequired: true, permission: "admin" }),
     ).toBe("privileged");
+  });
+
+  it("extracts endpointMeta and prefers it over heuristics in classify()", () => {
+    const src = `export const endpointMeta = {
+      public: true,
+      reason: "Health/Status",
+    } as const;`;
+    const meta = analyzeEndpointMeta(src);
+    expect(meta).toMatchObject({ public: true, reason: "Health/Status" });
+    // meta.public overrides the unclassified default
+    expect(classify({ path: "/api/status", methods: ["GET"], authRequired: false, meta })).toBe(
+      "public",
+    );
+    // explicit meta.classification wins over meta.public
+    const meta2 = analyzeEndpointMeta(
+      `export const endpointMeta = { public: true, classification: "internal" } as const;`,
+    );
+    expect(
+      classify({ path: "/api/x", methods: ["GET"], authRequired: false, meta: meta2 }),
+    ).toBe("internal");
+    expect(analyzeEndpointMeta("no meta here")).toBeNull();
   });
 });
 
