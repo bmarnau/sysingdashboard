@@ -56,3 +56,36 @@ schrittweise, ohne Big-Bang.
   Bootstrap nicht blockieren; kippen auf `--gate` erfolgt, sobald
   SEC-CRIT-001/002 (Backend-RBAC-Middleware, Rolle nur in localStorage)
   aufgelöst sind.
+
+## Amendment — 2026-07-13 (v1.34.1)
+
+Option C (Konventions-Meta-Export) wird **additiv** eingeführt, nicht als
+Ersatz für Option A. Motivation: Regex-basierte Auto-Klassifizierung ist
+konservativ und meldet legitime anonyme Endpoints wie `/api/status` als
+`unclassified`. Der Weg über die Contract-Registry funktioniert, ist aber
+für einfache Fälle zu umständlich und trennt die Ausnahmebegründung
+räumlich vom Handler.
+
+### Regel
+Routen dürfen optional exportieren:
+
+```ts
+export const endpointMeta = {
+  public: true,
+  reason: "…",              // Pflicht bei public:true — sonst LOW-Finding
+  classification: "public",  // optional, überschreibt Heuristik
+  permission: null,
+  authRequired: false,
+} as const;
+```
+
+Vorrang: `endpointMeta` > Registry > Heuristik. Keine verschachtelten
+Objekte — bewusst tolerante Regex-Extraktion, kein AST (siehe Kern-ADR).
+`public: true` **ohne** `reason` erzeugt Low-Finding
+`public-without-reason`, damit die Ausnahme dokumentiert bleibt.
+
+### Warum kein Widerspruch zur ursprünglichen Entscheidung
+Option C wurde ursprünglich als *Ersatz* für die Auto-Discovery bewertet
+und daher verworfen (Bricht bei jeder neuen Route ohne Meta). Die
+additive Einführung ändert daran nichts: fehlt `endpointMeta`, greift
+weiter die Heuristik.
