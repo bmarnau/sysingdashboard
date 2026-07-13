@@ -17,10 +17,24 @@ const StatusResponseSchema = z
     }),
     mode: z.string(),
     timestamp: z.string(),
+    correlationId: z.string().min(8).max(64),
   })
   .passthrough();
 
-const ErrorSchema = z.object({ ok: z.literal(false), error: z.string() }).passthrough();
+// v1.32.0: Fehlerantworten tragen jetzt zusätzlich `code`,
+// `correlationId` und `timestamp`. Alte Felder bleiben optional
+// erhalten, damit Detektoren nicht rot laufen, falls eine Route
+// noch nicht migriert ist.
+const ErrorSchema = z
+  .object({
+    ok: z.literal(false),
+    code: z.string().optional(),
+    error: z.string().optional(),
+    message: z.string().optional(),
+    correlationId: z.string().min(8).max(64).optional(),
+    timestamp: z.string().optional(),
+  })
+  .passthrough();
 
 const SyncSuccessSchema = z
   .object({
@@ -28,6 +42,7 @@ const SyncSuccessSchema = z
     startedAt: z.string(),
     durationMs: z.number(),
     mode: z.string(),
+    correlationId: z.string().min(8).max(64).optional(),
   })
   .passthrough();
 
