@@ -24,6 +24,7 @@
     "test:api": "vitest run src/__tests__/api",
     "test:io": "vitest run src/__tests__/io",
     "test:backup": "vitest run src/__tests__/backup",
+    "test:backup:integrity": "vitest run src/__tests__/backup src/__tests__/io --reporter=default --reporter=json --outputFile.json=test-report/backup-vitest.json && node scripts/backup-integrity/report.mjs",
     "test:azure": "vitest run src/__tests__/azure",
     "test:a11y": "vitest run src/__tests__/a11y",
     "test:security": "vitest run src/__tests__/security --reporter=default --reporter=json --outputFile.json=test-report/security-vitest.json && bun run rbac:check && bun run security:check",
