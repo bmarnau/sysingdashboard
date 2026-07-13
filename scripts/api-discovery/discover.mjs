@@ -27,7 +27,15 @@ import {
   classify,
 } from "./analyzers.mjs";
 
-const HERE = fileURLToPath(new URL(".", import.meta.url));
+function safeHere() {
+  try {
+    return fileURLToPath(new URL(".", import.meta.url));
+  } catch {
+    // Vitest transforms .mjs — import.meta.url isn't file: there.
+    return resolve(process.cwd(), "scripts/api-discovery");
+  }
+}
+const HERE = safeHere();
 const ROOT = resolve(HERE, "..", "..");
 const DEFAULT_SCAN_DIR = join(ROOT, "src", "routes", "api");
 const REGISTRY_PATH = join(ROOT, "src", "__tests__", "api", "registry", "endpoints.ts");
