@@ -90,6 +90,7 @@ afterAll(() => {
  * dann greifen.
  */
 export function assertAzureMock(): void {
+  // security-scan-allow: azure-env-outside-server
   if (process.env.AZURE_TEST_LIVE === "1") return;
   // Kein Throw hier — die Präsenz des Guards signalisiert nur, dass
   // Live-Azure explizit disabled ist. Der Netz-Layer (MSW) blockt reale

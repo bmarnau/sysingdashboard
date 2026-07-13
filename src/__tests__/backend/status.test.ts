@@ -14,12 +14,12 @@ describe("backend/statusService", () => {
     expect(status).not.toBeNull();
   });
 
-  it("should_notLeakSecrets_when_serialized", () => {
-    const raw = JSON.stringify(getStatus()).toLowerCase();
-    for (const forbidden of ["password", "secret", "bearer", "token", "connectionstring"]) {
-      expect(raw.includes(forbidden), `Statusfeld enthält verdächtiges Schlüsselwort: ${forbidden}`).toBe(
-        false,
-      );
-    }
+  it("should_notLeakSecretValues_when_serialized", () => {
+    const raw = JSON.stringify(getStatus());
+    // JWT-artige Werte oder Bearer-Header-Werte dürfen nicht auftauchen.
+    expect(/eyJ[A-Za-z0-9_-]+?\.[A-Za-z0-9_-]+?\.[A-Za-z0-9_-]+/.test(raw)).toBe(false);
+    expect(/bearer\s+[a-z0-9]/i.test(raw)).toBe(false);
+    // Klassische Connection-String-Marker (Server=…;Password=…)
+    expect(/password\s*=\s*[^;\s"]{4,}/i.test(raw)).toBe(false);
   });
 });

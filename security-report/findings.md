@@ -1,16 +1,14 @@
 # Security-Scan-Report
 
-- **Generiert:** 2026-07-13T04:02:59.739Z
+- **Generiert:** 2026-07-13T04:03:41.966Z
 - **Dateien geprüft:** 179
 - **Regeln:** 22
-- **CRITICAL:** 1 · **HIGH:** 1 · **MEDIUM:** 0
+- **CRITICAL:** 0 · **HIGH:** 1 · **MEDIUM:** 0
 - **Build-Status:** ❌ FAIL (CRITICAL/HIGH)
 
-## CRITICAL (1)
+## CRITICAL
 
-| Regel | Fundstelle | Beschreibung | Snippet |
-| --- | --- | --- | --- |
-| `jwt-literal` | src/__tests__/lib/logger.test.ts:29 | JWT-Literal (eyJ…\.…\.…) | `const jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U";` |
+_Keine Funde._
 
 ## HIGH (1)
 
