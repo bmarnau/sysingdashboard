@@ -173,4 +173,53 @@ export const Route = createFileRoute("/api/legacy")({
 
     resetFixtures();
   });
+
+  it("honours endpointMeta.public and demands a reason", () => {
+    resetFixtures();
+    writeFixture(
+      "status.ts",
+      `import { createFileRoute } from "@tanstack/react-router";
+export const endpointMeta = {
+  public: true,
+  reason: "Health/Status",
+} as const;
+export const Route = createFileRoute("/api/status")({
+  server: { handlers: { GET: async () => Response.json({ ok: true }) } },
+});`,
+    );
+    writeFixture(
+      "ping.ts",
+      `import { createFileRoute } from "@tanstack/react-router";
+export const endpointMeta = { public: true } as const;
+export const Route = createFileRoute("/api/ping")({
+  server: { handlers: { GET: async () => Response.json({ ok: true }) } },
+});`,
+    );
+
+    const inv = discover(FIX_ROOT) as {
+      endpoints: (InvEndpoint & { classification: string; declaredPublic: boolean })[];
+      findings: InvFinding[];
+    };
+    const status = inv.endpoints.find((e) => e.path === "/api/status")!;
+    expect(status.classification).toBe("public");
+    expect(status.declaredPublic).toBe(true);
+
+    const ping = inv.endpoints.find((e) => e.path === "/api/ping")!;
+    expect(ping.classification).toBe("public");
+
+    // /api/status must NOT be flagged unclassified anymore
+    expect(
+      inv.findings.some(
+        (f) => f.category === "unclassified-endpoint" && f.id.includes("api-status"),
+      ),
+    ).toBe(false);
+    // /api/ping is public but has no reason → low finding
+    expect(
+      inv.findings.some(
+        (f) => f.category === "public-without-reason" && f.id.includes("api-ping"),
+      ),
+    ).toBe(true);
+
+    resetFixtures();
+  });
 });
