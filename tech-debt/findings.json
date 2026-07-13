@@ -1,0 +1,81 @@
+/**
+ * Manuell kuratierter Findings-Katalog (Tech-Debt).
+ *
+ * JSON statt YAML gewählt, um eine devDep (`js-yaml`) zu vermeiden. Das
+ * Schema entspricht 1:1 dem der automatisierten Findings — siehe
+ * `scripts/tech-debt/schema.mjs`. Bei jeder Änderung `bun run test:debt`
+ * ausführen; das Runner-Script validiert die Struktur.
+ *
+ * Konvention: `id` beginnt mit `td-manual-<slug>`, ist stabil über Runs
+ * und wird nicht recycled, wenn ein Finding als „behoben" markiert ist.
+ */
+[
+  {
+    "id": "td-manual-playwright-smoke-only",
+    "title": "E2E-Suite ist bewusst nur Smoke",
+    "category": "Tests",
+    "location": "e2e/",
+    "description":
+      "Die Playwright-Suite (smoke, rbac-gating, import-export) prüft nur Erreichbarkeit und grobe DOM-Sichtbarkeit. Echte RBAC-Gating- und Import/Export-Flows werden nicht End-to-End geprüft.",
+    "rootCause":
+      "Fehlende stabile `data-testid`-Anker in der UI; die E2E-Suite wurde zusammen mit der Testinstanz (v1.28.0) als Rahmen etabliert.",
+    "impact":
+      "Regressionen in Gating- oder Import/Export-Flows werden nur durch Vitest-Komponenten erkannt, nicht durch echten Browser-Kontext.",
+    "severity": "Medium",
+    "likelihood": "Mittel",
+    "recommendation":
+      "`data-testid` in Dialoge einführen (BackupDialog, ImportExportDialog, AzureDataDialog) und darauf basierend echte Flows in `e2e/*.spec.ts` ergänzen.",
+    "recommendedOrder": 55,
+    "effort": "mittel",
+    "status": "offen",
+    "firstDetected": "2026-07-13",
+    "lastChecked": "2026-07-13",
+    "version": "1.28.0",
+    "source": "manual",
+    "priorityTag": "stability"
+  },
+  {
+    "id": "td-manual-msw-coverage-gap",
+    "title": "MSW-Handler decken nur wenige Azure-Endpunkte",
+    "category": "Tests",
+    "location": "src/__tests__/mocks/handlers/azure.ts",
+    "description":
+      "Aktuell sind nur die im Rahmen von 2A.1 benötigten Azure-Antworten gemockt. Weitere Azure-Aufrufe (Insert, Delete, Batch) würden im Testlauf ungefiltert ins Netz gehen — MSW `onUnhandledRequest: 'error'` verhindert dies zwar, blockiert aber auch neue Test-Fälle.",
+    "rootCause": "Iterativer Aufbau der Mock-Landschaft.",
+    "impact": "Neue Azure-Feature-Tests scheitern zunächst an fehlenden Handlern statt an Business-Logik.",
+    "severity": "Low",
+    "likelihood": "Mittel",
+    "recommendation":
+      "Handler-Set pro Azure-Operation erweitern, sobald der jeweilige Feature-Test geschrieben wird.",
+    "recommendedOrder": 70,
+    "effort": "klein",
+    "status": "offen",
+    "firstDetected": "2026-07-13",
+    "lastChecked": "2026-07-13",
+    "version": "1.28.0",
+    "source": "manual",
+    "priorityTag": "stability"
+  },
+  {
+    "id": "td-manual-ci-playwright-cache",
+    "title": "CI installiert Chromium bei jedem Lauf",
+    "category": "Tests",
+    "location": ".github/workflows/ci.yml",
+    "description":
+      "`bunx playwright install --with-deps chromium` läuft in jedem Job neu (~200 MB Cache). Kein `actions/cache@v4` auf `~/.cache/ms-playwright`.",
+    "rootCause": "CI-Änderung in 2A.1 bewusst minimal gehalten.",
+    "impact": "CI-Laufzeit ~1–2 min höher, Netzwerkkosten unnötig.",
+    "severity": "Low",
+    "likelihood": "Hoch",
+    "recommendation":
+      "Cache-Step vor Playwright-Install ergänzen; Key = Runner-OS + Playwright-Version.",
+    "recommendedOrder": 90,
+    "effort": "klein",
+    "status": "offen",
+    "firstDetected": "2026-07-13",
+    "lastChecked": "2026-07-13",
+    "version": "1.28.0",
+    "source": "manual",
+    "priorityTag": "performance"
+  }
+]
