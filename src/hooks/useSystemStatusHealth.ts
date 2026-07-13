@@ -110,14 +110,16 @@ export async function runSystemStatusCheck(): Promise<void> {
   const timer = setTimeout(() => ctrl.abort(), 3000);
   try {
     const res = await fetch("/api/status", { signal: ctrl.signal });
+    const correlationId = res.headers.get("X-Correlation-Id");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = (await res.json()) as SystemStatusPayload;
+    const json = (await res.json()) as SystemStatusPayload & { correlationId?: string };
     setState({
       checkedAt: new Date().toISOString(),
       apiReachable: true,
       mode: json.application?.mode ?? json.mode ?? null,
       azureAllowed: json.azure?.allowed ?? null,
       lastError: null,
+      lastCorrelationId: correlationId ?? json.correlationId ?? null,
       inFlight: false,
       payload: json,
     });
