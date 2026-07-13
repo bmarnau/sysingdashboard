@@ -140,8 +140,9 @@ describe("withCorrelation handler wrapper", () => {
     const seen: string[] = [];
     const handler = withCorrelation(async () => {
       seen.push(getCurrentCorrelationId()!);
-      // kleiner Delay, damit ALS-Contexts wirklich überlappen
-      await new Promise((r) => setTimeout(r, 5));
+      // Yield across a microtask, damit ALS-Contexts wirklich überlappen.
+      await Promise.resolve();
+      seen.push(getCurrentCorrelationId()!);
       return Response.json({ ok: true });
     });
     const results = await Promise.all(
@@ -149,10 +150,10 @@ describe("withCorrelation handler wrapper", () => {
     );
     const headerIds = results.map((r) => r.headers.get(CORRELATION_HEADER)!);
     expect(new Set(headerIds).size).toBe(25);
-    expect(new Set(seen).size).toBe(25);
-    // Und ALS-IDs matchen die Header-IDs (Reihenfolge egal)
+    // Jede ID muss doppelt vorkommen (vor und nach Await) — ALS überlebt.
+    expect(seen).toHaveLength(50);
     expect(new Set(seen)).toEqual(new Set(headerIds));
-  });
+  }, 10_000);
 
   it("should_expose_correlationId_via_jsonErrorHelper", async () => {
     const handler = withCorrelation(async () =>
