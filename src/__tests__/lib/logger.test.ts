@@ -26,6 +26,7 @@ describe("redact", () => {
   });
 
   it("should_maskJwtLookingStrings", () => {
+    // security-scan-allow: jwt-literal
     const jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U";
     const out = redact({ note: jwt });
     expect(out).toEqual({ note: "[REDACTED]" });
