@@ -15,6 +15,7 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 | 0005 | [Frontend-Logger statt Sentry](./0005-frontend-logger-no-sentry.md)   | Accepted |
 | 0006 | [Kein Virtual Scrolling (bis Messnachweis)](./0006-no-virtual-scrolling.md) | Accepted |
 | 0007 | [RBAC v2 — Resource Types, Scopes und Permission Groups](./0007-rbac-v2-scopes-and-resources.md) | Accepted |
+| 0008 | [RBAC v2 — Assignment-Architektur](./0008-rbac-v2-assignment-architecture.md) | Accepted |
 
 ## Template
 

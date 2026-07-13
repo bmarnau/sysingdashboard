@@ -925,7 +925,7 @@ Backups ab Version 1.14 enthalten zusätzlich eine kanonische \`dashboard.json\`
       "Administrator",
       "Viewer",
     ],
-    lastUpdated: "2026-06-28",
+    lastUpdated: "2026-07-13",
     content: `## Rollen
 Sieben Rollen mit klarer Privileg-Reihenfolge (hoch → niedrig):
 1. **System-Administrator** — darf alles. Einzige Rolle für Datenbankaufbau (\`azure.database.build\`) und Rollenverwaltung (\`roles.manage\`).
