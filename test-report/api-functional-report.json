@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-07-13T05:31:47.532Z",
+  "dashboardVersion": "1.33.0",
+  "commit": "f508bed",
+  "counts": {
+    "total": 2,
+    "complete": 0,
+    "partial": 2,
+    "missing": 0,
+    "blocked": 0,
+    "notApplicable": 0
+  },
+  "results": [
+    {
+      "endpointId": "status",
+      "purpose": "Health- und Systemstatus, secret-frei.",
+      "coverage": "partial",
+      "positive": true,
+      "negative": true,
+      "auth": false,
+      "authorization": false,
+      "scope": false,
+      "validation": true,
+      "errorHandling": true,
+      "sideEffects": false,
+      "idempotency": true,
+      "audit": true,
+      "gaps": [
+        "Kein Rate-Limit-Test (nicht implementiert).",
+        "Correlation-ID-Header wird noch nicht in allen Fällen exposed."
+      ],
+      "path": "/api/status"
+    },
+    {
+      "endpointId": "sync",
+      "purpose": "Manueller Sync-Trigger; PROD hinter X-Sync-Token.",
+      "coverage": "partial",
+      "positive": true,
+      "negative": true,
+      "auth": true,
+      "authorization": false,
+      "scope": false,
+      "validation": true,
+      "errorHandling": true,
+      "sideEffects": true,
+      "idempotency": false,
+      "audit": true,
+      "gaps": [
+        "Keine echte Azure-Live-Verifizierung (AZURE_TEST_LIVE=false).",
+        "Keine Parallelitäts-/Idempotenz-Tests.",
+        "Auth greift nur in PROD-Modus (Design-Limit — SEC-CRIT-001)."
+      ],
+      "path": "/api/sync"
+    }
+  ]
+}
