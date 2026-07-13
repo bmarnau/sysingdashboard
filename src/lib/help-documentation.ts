@@ -1812,7 +1812,23 @@ Das API Discovery Framework ermittelt zur Buildzeit automatisch **alle aktiven S
 - **Critical** — privilegierter Endpoint ohne Auth, Secret/Token im Response, Import aus \`archive/**\` in aktiver Route.
 - **High** — schreibender Endpoint ohne serverseitige Validierung, aktiver Endpoint nicht inventarisiert.
 - **Medium** — Endpoint undokumentiert, fehlende Correlation-ID, fehlender Response-Schema-Check.
-- **Low** — uneinheitliche Benennung, redundante Registry-Metadaten.
+- **Low** — uneinheitliche Benennung, redundante Registry-Metadaten, \`endpointMeta.public = true\` ohne \`reason\`.
+
+## Endpoint-Selbstdeklaration (\`endpointMeta\`, ab v1.34.1)
+Routen können ihre Klassifizierung direkt in der Route-Datei setzen — bevorzugt gegenüber Registry-Einträgen, weil Ausnahme und Handler räumlich zusammenbleiben:
+
+\`\`\`ts
+export const endpointMeta = {
+  public: true,                          // bewusst anonym erreichbar
+  reason: "Health-/Statusanzeige",       // Pflicht bei public:true
+  classification: "public",              // optional, überschreibt Heuristik
+  permission: null,                      // optional
+  authRequired: false,                   // optional
+} as const;
+\`\`\`
+
+Vorrang bei der Klassifizierung: **\`endpointMeta\` > Registry > Heuristik**. Fehlt \`endpointMeta\`, greift wie bisher die Regex-Heuristik. \`public: true\` **ohne** \`reason\` erzeugt Low-Finding \`public-without-reason\` — die stille Ausnahme wird sichtbar gemacht, nicht versteckt (siehe ADR-0014 Amendment).
+
 
 ## Azure-Test-Gate
 - Live-Tests gegen echte Azure-Ressourcen laufen ausschließlich mit \`AZURE_TEST_LIVE=true\` und isolierten Testressourcen. Ohne dieses Gate werden entsprechende Szenarien als \`not-configured\` ausgewiesen — niemals als \`passed\`.
