@@ -1,7 +1,14 @@
 {
-  "$schema": "./static-findings.schema.json",
-  "generatedFor": "v1.33.0",
-  "notes": "Findings, die nicht aus Vitest-Ergebnissen abgeleitet werden können (Design-, Prozess- und Infrastruktur-Lücken). Vom Team gepflegt.",
+  "generatedAt": "2026-07-13T05:19:51.712Z",
+  "strictHigh": false,
+  "blocked": true,
+  "counts": {
+    "critical": 2,
+    "high": 3,
+    "medium": 1,
+    "low": 0,
+    "accepted": 3
+  },
   "findings": [
     {
       "id": "SEC-CRIT-001",
