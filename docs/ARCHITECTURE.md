@@ -15,7 +15,8 @@ Entscheidungen mit Trade-offs sind in [`docs/ADR/`](./ADR/) einzeln dokumentiert
 | State       | Pub-Sub-Store (`src/lib/store/`) + `useSyncExternalStore` + localStorage |
 | Persistenz  | Browser: `localStorage` (user-scoped) · `IndexedDB` nur für Logs        |
 | Backend     | TanStack Server-Routes auf Cloudflare Worker (`nodejs_compat`)         |
-| Node-Backend| `backend/` — Standalone-ESM-Server für lokale Entwicklung/Ops-Tools    |
+| Services    | `backend/services/` — framework-freie ESM-Module, von Server-Routes importiert |
+
 | Auth        | **Aktuell keine** — lokale User-Verwaltung; RBAC nur UX (siehe ADR-0002) |
 | CI          | GitHub Actions: lint, docs:check, test, build, security-scan           |
 
@@ -40,10 +41,12 @@ src/
 ├── server.ts          Worker-Entry (TanStack SSR)
 └── styles.css         Tailwind v4 + Design-Tokens
 
-backend/               Node-ESM Standalone (lokal / CLI)
-├── server.mjs
-├── routes/            HTTP-Adapter
-└── services/          syncService, statusService, logger, rbac
+backend/               Framework-freie ESM-Services (kein eigener Server)
+└── services/          syncService, statusService, ensure-env, logger, rbac
+
+archive/               Historischer Code (nicht im Build)
+└── legacy-standalone-backend/  ex-Node-HTTP-Server (bis v1.16.0)
+
 
 config/                Env-/Secret-Validation, Entra-Mapping
 scripts/               docs:check, check-rbac, security-check

@@ -1,163 +1,93 @@
+## Kritischer Befund vorab
 
-# Plan: ADR-0008 — RBAC v2 Assignment-Architektur
+Nicht das gesamte `/backend/` ist tot. Die TanStack-Server-Routen
+`src/routes/api/status.ts` und `src/routes/api/sync.ts` importieren
+weiterhin `backend/services/{statusService,syncService,ensure-env}.mjs`.
+Diese laufen also **produktiv im Cloudflare-Deployment** und dürfen nicht
+verschoben werden — sonst bricht der Build.
 
-Ziel: **Ein einziges neues Dokument** `docs/ADR/0007-rbac-v2-scopes-and-resources.md`
-ergänzendes ADR anlegen und ADR-Index aktualisieren. Kein Code, keine UI,
-keine Tests. Bestehende Typen (`ResourceType`, `ResourceScope`, `PermissionV2`,
-`PermissionGroup`, `RoleAssignment`, `AccessContext`, `evaluateAccess()`)
-bleiben unangetastet.
+Tatsächlich obsolet ist nur das **Standalone-Node-Server-Gerüst** (Express-artiger
+lokaler Dev-Server), das seit v1.16.0 durch die TanStack-Routen abgelöst wurde:
 
-## Zu erstellende / zu ändernde Dateien
+- `backend/server.mjs` — startet den lokalen HTTP-Listener; wird von
+  keinem Runtime-Pfad und keinem npm-Script mehr aufgerufen.
+- `backend/routes/status.mjs`, `backend/routes/sync.mjs` — Adapter, die
+  `services/*` an Node-`http` hängen; von den TanStack-Routen ersetzt.
+- `backend/README.md` — beschreibt den Standalone-Betrieb.
 
-1. **`docs/ADR/0008-rbac-v2-assignment-architecture.md`** (neu) — der ADR.
-2. **`docs/ADR/README.md`** — Index-Zeile für ADR-0008.
-3. **`CHANGELOG.md`** — neuer Patch-Eintrag (Doku-Änderung, kein Feature-Bump).
-4. **`src/lib/help-documentation.ts`** — `lastUpdated` bumpen und kurzen
-   Verweis auf das neue ADR im bestehenden Kapitel „Rollen und Berechtigungen"
-   ergänzen (keine neue HelpTopic).
+`backend/services/*.mjs` und `backend/services/logger.mjs`, `rbac.mjs`
+**bleiben unverändert** — sie sind die framework-freie Business-Logik,
+die sowohl das (jetzt archivierte) Standalone-Backend als auch die
+TanStack-Routen nutzen.
 
-## ADR-Inhalt (Gliederung)
+## Zielstruktur
 
-### Kontext
-- v2-Typen sind vorhanden, aber `evaluateAccess()` fällt ohne Assignments
-  auf v1-Matrix zurück → v2 ist heute inert.
-- Fehlend für produktive Nutzung: Persistenz, Lookup, Lifecycle,
-  Actor-Attribution, Multi-Assignment pro Prinzipal, Scope-Auflösung
-  für Customer / Azure-Subscription / Azure-ResourceGroup.
-- Constraints: Local-First (ADR-0003), Pub-Sub-Store (ADR-0004),
-  Cloudflare Worker (kein Node-FS), zukünftige Entra-Sync (ADR-0007),
-  additiv zu v1 (kein Breaking Change).
-
-### Entscheidung — fünf Bausteine
-
-**1. Domänenmodell** (rein deklarativ, additiv zu `types.ts`)
-- `Principal` — diskriminierte Union `user | group | service`, stabile Id
-  (Entra-`oid` wenn vorhanden, sonst lokale ULID). Groups heute Stub
-  (nur Typ + Store), Auflösung folgt mit Entra-Sync.
-- `ScopeRef` — typisierter Wrapper `{ type: ResourceType, id: string }[]`,
-  serialisiert via bestehendem `serializeScope()`. Neu spezifiziert:
-    - `customer` = eigenständiger Top-Level-Scope **oder**
-      `tenant:{t}/customer:{c}` (Migration siehe unten).
-    - `azure.subscription:{subId}` — Top-Level (kein Tenant-Präfix nötig,
-      da Azure global adressierbar).
-    - `azure.resourceGroup:{rg}` — **nur** verschachtelt unter
-      `azure.subscription:{subId}` gültig (Invariante).
-- `AssignmentLifecycle` — `active | pending | expired | revoked`, abgeleitet
-  aus `grantedAt`, `expiresAt`, `revokedAt`; nicht persistiert (Ableitung).
-- `AssignmentAudit` — `grantedBy`, `revokedBy?`, `reason?`, `source`
-  (`local | entra`), `sourceRef?` (Entra-Group-Id).
-- Erweiterung `RoleAssignment` nur additiv: `revokedAt?`, `revokedBy?`,
-  `reason?`, `sourceRef?`. Kein Feld entfernt, kein Typ umbenannt.
-
-**2. Datenfluss**
 ```text
-UI / Service
-      │  requestPermission(user, perm, scopeRef)
-      ▼
-usePermission()  ──►  evaluateAccess(user, perm, ctx)
-                              ▲
-                              │ ctx.assignments
-                              │
-             AssignmentContextBuilder (pure)
-                              ▲
-                              │ liest
-                              │
-        ┌─────────────────────┴─────────────────────┐
-        │                                           │
- AssignmentRepository                    ScopeResolver
-   (Persistenz-Port)                     (Ressource → ScopeRef)
-        │                                           │
-   LocalAssignmentRepo                    CustomerScopeResolver
-   (localStorage, heute)                  AzureScopeResolver
-   BackendAssignmentRepo                  (jeweils reine Funktionen)
-   (später, Cloudflare KV / D1)
+archive/
+└── legacy-standalone-backend/
+    ├── README.md         ← Kontext + Wiederherstellungs-Anleitung
+    ├── server.mjs        ← ex-backend/server.mjs
+    └── routes/
+        ├── status.mjs    ← ex-backend/routes/status.mjs
+        └── sync.mjs      ← ex-backend/routes/sync.mjs
+
+backend/
+├── README.md             ← neu geschrieben: „Nur Services, kein Server"
+└── services/             ← unverändert, weiter produktiv
+    ├── ensure-env.mjs
+    ├── logger.mjs
+    ├── rbac.mjs
+    ├── statusService.mjs
+    └── syncService.mjs
 ```
-- Reads sind synchron aus dem Pub-Sub-Store (bereits geladene
-  Assignments); Writes async über Service.
-- Actor-Kontext (aus v1.27.0) fließt in **jeden** Write als
-  `grantedBy` / `revokedBy`.
 
-**3. Repositories** (Ports, keine Implementierung im ADR)
-- `AssignmentRepository` (Interface):
-  `list(principalId): Promise<RoleAssignment[]>`,
-  `listByScope(scope): Promise<RoleAssignment[]>`,
-  `upsert(a: RoleAssignment, actor): Promise<void>`,
-  `revoke(id, actor, reason?): Promise<void>`,
-  `snapshot(): Promise<RoleAssignment[]>` (für Backup/Export).
-- Zwei Adapter geplant:
-  - `LocalAssignmentRepository` — localStorage-Key
-    `rbac.assignments.v1`, versioniert, mit Backup-Hook
-    (`backup-service.ts`).
-  - `RemoteAssignmentRepository` — Server-Function-Backend
-    (später, hinter Feature-Flag `RBAC_REMOTE`).
-- Read-Model im Pub-Sub-Store: Slice `assignments` mit Selector
-  `selectAssignmentsForPrincipal(id)`; kein direkter Repo-Aufruf aus
-  Komponenten.
+## Dateiänderungen
 
-**4. Services**
-- `AssignmentService` (Use-Cases, keine Persistenz-Logik):
-  `grantRole(principal, role, scope, actor, opts?)`,
-  `revokeAssignment(id, actor, reason?)`,
-  `extendAssignment(id, newExpiry, actor)`,
-  `resolveEffectivePermissions(user, scope)` (delegiert an
-  `evaluateAccess()`; nur Convenience).
-- **Invarianten** (im Service erzwungen, nicht im Repo):
-  - Kein Grant von `roles.manage` außerhalb `systemadministrator`.
-  - `azure.resourceGroup:*`-Scope nur unter existierender
-    `azure.subscription:*`-Ebene.
-  - Lockout-Schutz: letzter aktiver `systemadministrator` kann nicht
-    revoked werden (mirror aus v1).
-  - Duplikat-Prevention: `(principalId, role, scope, source)` unique.
-- `ScopeResolver` (pro Ressourcentyp eine reine Funktion):
-  `customerToScope(customerId, tenantId?)`,
-  `azureSubscriptionToScope(subId)`,
-  `azureResourceGroupToScope(subId, rg)`.
-- Logging: jeder Grant/Revoke via `logger.info` mit `actorFields()`,
-  fehlender Actor → `warn` (konsistent zu v1.27.0).
+1. **Neu:** `archive/README.md` — erklärt Zweck des Archivs, Regel „Build ignoriert /archive/".
+2. **Neu:** `archive/legacy-standalone-backend/README.md` — was war das, wann/warum
+   ersetzt (v1.16.0 → TanStack Server-Routen), wie im Notfall reaktivieren.
+3. **Verschieben** via `mv`:
+   - `backend/server.mjs` → `archive/legacy-standalone-backend/server.mjs`
+   - `backend/routes/` → `archive/legacy-standalone-backend/routes/`
+4. **Ersetzen:** `backend/README.md` — Kurzfassung: „Enthält framework-freie
+   Services, die von `src/routes/api/*` importiert werden. Kein eigener
+   HTTP-Server mehr — Historie unter `archive/legacy-standalone-backend/`."
+5. **Anpassen:** `scripts/check-no-console.mjs` — Zeile 33
+   (`"backend/routes"`) entfernen (Pfad existiert nicht mehr) und
+   verifizieren, dass `backend/server.mjs`-Referenz ebenfalls raus muss.
+6. **Anpassen:** `scripts/security-check.mjs` — Zeile 110
+   (`rel.startsWith("backend/")`) bleibt korrekt für `backend/services/`,
+   keine Änderung nötig; nur prüfen.
+7. **Anpassen:** `.gitleaks.toml`, `.github/workflows/*.yml` — grep, ob
+   `backend/server.mjs` / `backend/routes` referenziert wird; anpassen falls ja.
+8. **Doku-Updates:**
+   - `docs/API.md` — Kapitel „Standalone-Backend" umschreiben auf
+     „Historisch, siehe archive/…".
+   - `docs/ARCHITECTURE.md` — Zeilen 18 / 34 / 43 aktualisieren
+     („Node-Backend" entfällt, nur noch Services).
+   - `CHANGELOG.md` — neuer Patch-Eintrag `v1.27.2 - 2026-07-13`:
+     „Legacy-Standalone-Backend archiviert. Keine Runtime-Änderung."
+   - `src/lib/help-documentation.ts` — `lastUpdated: "2026-07-13"` bumpen.
 
-**5. Migrationsstrategie** (fünf Phasen, jede rückwärtskompatibel)
+## Verifikation (nach Umbau)
 
-| Phase | Umfang | Rollback |
-| ----- | ------ | -------- |
-| M1 | ADR + Typ-Erweiterungen (`revokedAt`, `sourceRef`). Kein Verhalten. | Datei löschen. |
-| M2 | `LocalAssignmentRepository` + Store-Slice + Backup-Integration. Read-only-UI im System­status („X aktive Assignments"). | Slice leeren. |
-| M3 | `AssignmentService.grantRole/revoke` + Actor-Logging + Invarianten-Tests. Noch kein `evaluateAccess`-Aufrufer nutzt Assignments produktiv. | Service ausbauen; v1 bleibt aktiv. |
-| M4 | Ein erster Aufrufer (Vorschlag: `azure.subscription:import`) nutzt `evaluateAccess(user, perm, { scope })`. Feature-Flag `RBAC_V2_ENFORCE`. | Flag off → v1-Fallback. |
-| M5 | Schrittweise Migration weiterer Aufrufer; `check-rbac.mjs` um Scope-Invarianten erweitern; Backend-Mirror (`backend/services/rbac.mjs`) übernimmt Assignment-Prüfung. | Aufrufer einzeln zurückrollen. |
+- `bun run docs:check` — muss grün bleiben.
+- `bun run build:dev` — muss grün bleiben; sichert, dass die
+  TanStack-Routen ihre Service-Imports weiterhin auflösen.
+- `bun run lint:no-console` und `bun run security:check` — grün.
+- Grep-Kontrolle: `rg "backend/(server\.mjs|routes)" -g '!archive/**' -g '!CHANGELOG.md' -g '!docs/**'`
+  liefert keine Treffer.
 
-Entra-Sync (ADR-0007 v5) hakt in M3 ein: Import legt Assignments mit
-`source: "entra"` + `sourceRef: <groupObjectId>` an; lokale Grants bleiben
-`source: "local"` und überleben einen Sync-Lauf.
+## Bewusst NICHT angefasst (aus Sicherheitsgründen)
 
-### Alternativen
-- **Assignments direkt im `UserProfile`** — bricht Multi-Assignment und
-  Group-Prinzipale; verworfen.
-- **Policy-Engine (Casbin/oso) statt Assignments** — Runtime-Kosten im
-  Worker, verliert statische Typprüfung; verworfen (siehe ADR-0007).
-- **Nur Backend-Assignments** — bricht Local-First (ADR-0003).
-- **`customer` immer unter `tenant`** erzwingen — sauberer, aber
-  blockiert Single-Tenant-Betrieb heute; stattdessen beide Formen
-  erlaubt, Normalisierung in `ScopeResolver`.
+- `backend/services/**` — produktiv genutzt.
+- `config/envValidator.mjs`, `config/keyVault.mjs` — laut vorheriger
+  ADR-Iteration ausdrücklich als Fassade/Stub für die Azure-Key-Vault-
+  Vorbereitung erhalten; nicht Teil dieses Prompts.
+- `.env.example`, `config/entraMapping.example.json`, generierte
+  Security-Reports — vom User-Umfang ausgeschlossen.
 
-### Konsequenzen
-- **Positiv:** v2 wird produktiv nutzbar ohne Breaking Change; klare
-  Persistenz-Grenze (Repository-Port); Entra-Sync-Pfad ohne weitere
-  Architekturänderung; Actor-Audit end-to-end.
-- **Negativ:** Zwei Wahrheiten während M2–M4 (v1-Matrix + Assignments)
-  — Risiko divergierender Ergebnisse, gemindert durch Fallback-Design
-  von `evaluateAccess()`. Duplikat-Erkennung braucht kanonische
-  Scope-Serialisierung (nutzt `serializeScope()`), sonst
-  Doppel-Grants.
+## Rollback
 
-### Trust-Boundary / Security-Note
-- Client-seitige Assignments sind Komfort, keine Sicherheitsgrenze.
-- Ab M5 gilt: **jede** privilegierte Server-Route ruft
-  `evaluateAccess()` mit dem serverseitig aufgelösten Scope auf; Client-
-  Payload-Scopes werden verworfen.
-- Backup/Restore von Assignments muss Actor-Signatur bewahren; Restore
-  ohne Signatur → alle Einträge auf `source: "local"`, `grantedBy: "restore"`.
-
-## Was **nicht** zum Plan gehört
-- Keine neuen `.ts`-Dateien, keine Store-Slices, keine Repository-
-  Implementierung, keine UI, keine Tests. Diese folgen in separaten
-  Prompts pro Migrationsphase (M1 … M5).
+Reversibel per `mv archive/legacy-standalone-backend/{server.mjs,routes} backend/`
+plus `backend/README.md` zurücksetzen.

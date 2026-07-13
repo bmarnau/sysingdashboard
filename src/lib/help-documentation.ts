@@ -322,7 +322,7 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
 ## Architektur
 - Frontend ruft ausschließlich \`/api/...\` (same-origin), kein direkter Azure-Zugriff im Browser.
 - TanStack-Server-Routes unter \`src/routes/api/\` sind der Production-Pfad (Cloudflare Workers).
-- Lokal kann zusätzlich \`node backend/server.mjs\` gestartet werden — beide Wege importieren dieselben framework-freien Services aus \`backend/services/\`.
+- Framework-freie Services unter \`backend/services/\` werden von den Server-Routes importiert. Der frühere Standalone-Node-Server ist ins Archiv verschoben (\`archive/legacy-standalone-backend/\`).
 
 ## Sicherheit
 - \`config/env.mjs\` blockiert Azure-Aufrufe im Dev-Modus (\`assertAzureAllowed\`).
@@ -383,8 +383,7 @@ Zentrale, sichere Prüfung aller produktionskritischen ENV-Variablen. Verhindert
 - \`AZURE_TENANT_ID\`
 
 ## Startpunkte
-- **Node-Backend** (\`backend/server.mjs\`): \`secretManager.validate()\` läuft vor \`server.listen(...)\`. Fehlt etwas in PROD → aggregierter Throw, Exit-Code ≠ 0.
-- **TanStack Server-Routes** (\`src/routes/api/*.ts\`): \`backend/services/ensure-env.mjs\` cached die Prüfung beim ersten Request. PROD-Fehler → generische 500-Antwort \`"Service not configured"\`.
+- **TanStack Server-Routes** (\`src/routes/api/*.ts\`): \`backend/services/ensure-env.mjs\` cached die Prüfung beim ersten Request. PROD-Fehler → generische 500-Antwort \`"Service not configured"\`. (Der frühere Standalone-Node-Server ist archiviert; siehe \`archive/legacy-standalone-backend/\`.)
 
 ## Sicherheitsregeln
 - Niemals ENV-Werte loggen — nur Variablennamen.
