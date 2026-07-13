@@ -13,6 +13,10 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.27.1 - 2026-07-13
+
+- **ADR-0008 — RBAC v2 Assignment-Architektur**: Design-Dokument für die produktive Nutzung der v2-Typen. Definiert Domänenmodell (Principal, ScopeRef, Lifecycle, Audit), Datenfluss (Store ↔ Repository ↔ ScopeResolver), Repository-Port (`AssignmentRepository` mit Local- und Remote-Adapter), `AssignmentService` samt Invarianten (Lockout-Schutz, Scope-Validierung, Duplikat-Prevention) und einen fünfphasigen Migrationspfad (M1 Typen → M5 Backend-Mirror). Bestehende v2-Typen bleiben unverändert; keine Code- oder UI-Änderung in dieser Version.
+
 ## 1.27.0 - 2026-07-12
 
 - **Forensischer Actor-Kontext**: `UserManagementService.createUser/updateUser/deleteUser/setUserStatus/setUserRole` akzeptieren jetzt einen optionalen `ActorContext` (`actorId`, `actorRole`, `reason`). Audit-Log-Einträge enthalten damit sowohl Ziel- als auch Ausführer-Id. Fehlt der Actor, loggt der Service bewusst auf `warn`, damit der Log Viewer forensische Lücken sichtbar macht. `UserManagementDialog` reicht den aktiven Benutzer automatisch als Actor durch.

@@ -925,7 +925,7 @@ Backups ab Version 1.14 enthalten zusätzlich eine kanonische \`dashboard.json\`
       "Administrator",
       "Viewer",
     ],
-    lastUpdated: "2026-06-28",
+    lastUpdated: "2026-07-13",
     content: `## Rollen
 Sieben Rollen mit klarer Privileg-Reihenfolge (hoch → niedrig):
 1. **System-Administrator** — darf alles. Einzige Rolle für Datenbankaufbau (\`azure.database.build\`) und Rollenverwaltung (\`roles.manage\`).
@@ -960,7 +960,10 @@ Bestehende Default-Administratoren werden beim Start einmalig auf \`systemadmini
 \`config/roleResolver.mjs\` enthält \`resolveRoleFromGroups(groupIds, mapping)\`. Mehrere Treffer ergeben die höchstprivilegierte Rolle, kein Treffer ergibt \`viewer\` (Least-Privilege-Fallback). Beispielmapping: \`config/entraMapping.example.json\`. Entra liefert nur Identität — die interne Permission-Matrix bleibt die einzige Autorität für Aktionen.
 
 ## UI-Gating vs. Server-Guard
-\`PermissionGate\` und \`usePermission()\` blenden UI rein lokal. Sobald serverseitige Auth aktiv ist, muss jede schreibende Server-Route zusätzlich \`requirePermission()\` aus \`backend/services/rbac.mjs\` aufrufen — UI-Gating ist niemals der einzige Schutz.`,
+`PermissionGate` und `usePermission()` blenden UI rein lokal. Sobald serverseitige Auth aktiv ist, muss jede schreibende Server-Route zusätzlich `requirePermission()` aus `backend/services/rbac.mjs` aufrufen — UI-Gating ist niemals der einzige Schutz.
+
+## Ausblick: RBAC v2 Assignments
+Die Weiterentwicklung Richtung Multi-Customer, Azure-Ressourcen-Scopes und Entra-Gruppen ist in **ADR-0007** (Typen) und **ADR-0008** (Assignment-Architektur) beschrieben. Solange keine Assignments gepflegt sind, gilt weiterhin die flache v1-Matrix.`,
   },
   {
     id: "local-operation",

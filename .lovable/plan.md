@@ -1,112 +1,163 @@
-# Plan: Actor-ID Audit + zukunftssichere RBAC-Architektur v2
 
-Zwei zusammenhängende Bausteine für Prompt v1.27.0:
+# Plan: ADR-0008 — RBAC v2 Assignment-Architektur
 
-## Teil A — Actor-ID im User-Management (forensische Audit-Logs)
+Ziel: **Ein einziges neues Dokument** `docs/ADR/0007-rbac-v2-scopes-and-resources.md`
+ergänzendes ADR anlegen und ADR-Index aktualisieren. Kein Code, keine UI,
+keine Tests. Bestehende Typen (`ResourceType`, `ResourceScope`, `PermissionV2`,
+`PermissionGroup`, `RoleAssignment`, `AccessContext`, `evaluateAccess()`)
+bleiben unangetastet.
 
-Ziel: Jede Änderung im User-Management protokolliert **wer** (actor) **wen** (target) geändert hat.
+## Zu erstellende / zu ändernde Dateien
 
-### Änderungen `src/lib/user-management.ts`
+1. **`docs/ADR/0008-rbac-v2-assignment-architecture.md`** (neu) — der ADR.
+2. **`docs/ADR/README.md`** — Index-Zeile für ADR-0008.
+3. **`CHANGELOG.md`** — neuer Patch-Eintrag (Doku-Änderung, kein Feature-Bump).
+4. **`src/lib/help-documentation.ts`** — `lastUpdated` bumpen und kurzen
+   Verweis auf das neue ADR im bestehenden Kapitel „Rollen und Berechtigungen"
+   ergänzen (keine neue HelpTopic).
 
-- Neuer optionaler `ActorContext`-Parameter:
-  ```ts
-  export interface ActorContext {
-    actorId: string;         // id des ausführenden Users, "system" für automatisierte Pfade
-    actorRole?: UserRole;    // Snapshot der Rolle zum Zeitpunkt der Aktion
-    reason?: string;         // freitext (z.B. "bulk deactivation")
-  }
-  ```
-- Signaturen erweitern (rückwärtskompatibel, actor optional):
-  - `createUser(input, actor?)`
-  - `updateUser(id, patch, actor?)`
-  - `deleteUser(id, actor?)`
-  - `setUserStatus(id, status, actor?)` / `setUserRole(id, role, actor?)` reichen durch.
-- Alle `logger.info/warn`-Aufrufe in diesen Funktionen erweitern um:
-  ```ts
-  actorId: actor?.actorId ?? "unknown",
-  actorRole: actor?.actorRole,
-  reason: actor?.reason,
-  ```
-- Default-Fallback `"unknown"` wird beim Log als Warnung markiert (level `warn` statt `info`, wenn kein actor gesetzt), damit fehlende Actor-Attribution im Log-Viewer sichtbar wird.
+## ADR-Inhalt (Gliederung)
 
-### Aufrufseite `src/components/UserManagementDialog.tsx`
+### Kontext
+- v2-Typen sind vorhanden, aber `evaluateAccess()` fällt ohne Assignments
+  auf v1-Matrix zurück → v2 ist heute inert.
+- Fehlend für produktive Nutzung: Persistenz, Lookup, Lifecycle,
+  Actor-Attribution, Multi-Assignment pro Prinzipal, Scope-Auflösung
+  für Customer / Azure-Subscription / Azure-ResourceGroup.
+- Constraints: Local-First (ADR-0003), Pub-Sub-Store (ADR-0004),
+  Cloudflare Worker (kein Node-FS), zukünftige Entra-Sync (ADR-0007),
+  additiv zu v1 (kein Breaking Change).
 
-- Aktiven Benutzer via `useCurrentUser()` holen und als `actor` an alle Mutations-Aufrufe weiterreichen.
+### Entscheidung — fünf Bausteine
 
-### Tests `src/__tests__/lib/user-management.test.ts`
+**1. Domänenmodell** (rein deklarativ, additiv zu `types.ts`)
+- `Principal` — diskriminierte Union `user | group | service`, stabile Id
+  (Entra-`oid` wenn vorhanden, sonst lokale ULID). Groups heute Stub
+  (nur Typ + Store), Auflösung folgt mit Entra-Sync.
+- `ScopeRef` — typisierter Wrapper `{ type: ResourceType, id: string }[]`,
+  serialisiert via bestehendem `serializeScope()`. Neu spezifiziert:
+    - `customer` = eigenständiger Top-Level-Scope **oder**
+      `tenant:{t}/customer:{c}` (Migration siehe unten).
+    - `azure.subscription:{subId}` — Top-Level (kein Tenant-Präfix nötig,
+      da Azure global adressierbar).
+    - `azure.resourceGroup:{rg}` — **nur** verschachtelt unter
+      `azure.subscription:{subId}` gültig (Invariante).
+- `AssignmentLifecycle` — `active | pending | expired | revoked`, abgeleitet
+  aus `grantedAt`, `expiresAt`, `revokedAt`; nicht persistiert (Ableitung).
+- `AssignmentAudit` — `grantedBy`, `revokedBy?`, `reason?`, `source`
+  (`local | entra`), `sourceRef?` (Entra-Group-Id).
+- Erweiterung `RoleAssignment` nur additiv: `revokedAt?`, `revokedBy?`,
+  `reason?`, `sourceRef?`. Kein Feld entfernt, kein Typ umbenannt.
 
-- Zusätzliche Cases: `should_logActorId_when_updateUserCalledWithActor`, `should_logUnknownActor_when_actorOmitted`.
-
-## Teil B — RBAC-Architektur v2 (Vorbereitung Entra ID / Multi-Customer / Azure Resources)
-
-Ziel: Bestehende flache Matrix (Role → Permission) erweitern zu einem **skalierbaren Modell mit Resource Types, Scopes und Permission Groups**, ohne Breaking Changes am heutigen `can()`-API.
-
-### Konzeptuelle Erweiterungen
-
-**Rollen** (unverändert 7):
-`systemadministrator`, `administrator`, `teamlead`, `projectmanager`, `engineer`, `customer`, `viewer`.
-
-**Resource Types** (neu):
-- `tenant` — Multi-Customer Root (Mandant)
-- `customer` — einzelner Kunde innerhalb eines Tenants
-- `project` — Projekt eines Kunden
-- `workpackage` — Arbeitspaket eines Projekts
-- `activity` — Tätigkeit eines Arbeitspakets
-- `azure.subscription` — Azure Subscription (später)
-- `azure.resourceGroup` — Azure Ressourcengruppe (später)
-- `system` — globale Systemobjekte (Users, Roles, Settings, Audit)
-
-**Scope-Modell**:
+**2. Datenfluss**
+```text
+UI / Service
+      │  requestPermission(user, perm, scopeRef)
+      ▼
+usePermission()  ──►  evaluateAccess(user, perm, ctx)
+                              ▲
+                              │ ctx.assignments
+                              │
+             AssignmentContextBuilder (pure)
+                              ▲
+                              │ liest
+                              │
+        ┌─────────────────────┴─────────────────────┐
+        │                                           │
+ AssignmentRepository                    ScopeResolver
+   (Persistenz-Port)                     (Ressource → ScopeRef)
+        │                                           │
+   LocalAssignmentRepo                    CustomerScopeResolver
+   (localStorage, heute)                  AzureScopeResolver
+   BackendAssignmentRepo                  (jeweils reine Funktionen)
+   (später, Cloudflare KV / D1)
 ```
-tenant:{id}/customer:{id}/project:{id}/workpackage:{id}/activity:{id}
-```
-Wildcards (`*`) und Vererbung (höherer Scope gewährt Zugriff auf Kinder).
+- Reads sind synchron aus dem Pub-Sub-Store (bereits geladene
+  Assignments); Writes async über Service.
+- Actor-Kontext (aus v1.27.0) fließt in **jeden** Write als
+  `grantedBy` / `revokedBy`.
 
-**Permission Groups** (Bündel für UI + Entra Mapping):
-- `readonly.basic`, `project.manage`, `azure.readonly`, `azure.operate`, `admin.users`, `admin.system`.
+**3. Repositories** (Ports, keine Implementierung im ADR)
+- `AssignmentRepository` (Interface):
+  `list(principalId): Promise<RoleAssignment[]>`,
+  `listByScope(scope): Promise<RoleAssignment[]>`,
+  `upsert(a: RoleAssignment, actor): Promise<void>`,
+  `revoke(id, actor, reason?): Promise<void>`,
+  `snapshot(): Promise<RoleAssignment[]>` (für Backup/Export).
+- Zwei Adapter geplant:
+  - `LocalAssignmentRepository` — localStorage-Key
+    `rbac.assignments.v1`, versioniert, mit Backup-Hook
+    (`backup-service.ts`).
+  - `RemoteAssignmentRepository` — Server-Function-Backend
+    (später, hinter Feature-Flag `RBAC_REMOTE`).
+- Read-Model im Pub-Sub-Store: Slice `assignments` mit Selector
+  `selectAssignmentsForPrincipal(id)`; kein direkter Repo-Aufruf aus
+  Komponenten.
 
-**Assignment-Modell**:
-```
-RoleAssignment {
-  principalId: string,        // User-ID oder (später) Entra ObjectId
-  principalType: "user" | "group" | "service",
-  role: UserRole,
-  scope: ResourceScope,
-  source: "local" | "entra",  // Herkunft
-  grantedAt, grantedBy, expiresAt?
-}
-```
+**4. Services**
+- `AssignmentService` (Use-Cases, keine Persistenz-Logik):
+  `grantRole(principal, role, scope, actor, opts?)`,
+  `revokeAssignment(id, actor, reason?)`,
+  `extendAssignment(id, newExpiry, actor)`,
+  `resolveEffectivePermissions(user, scope)` (delegiert an
+  `evaluateAccess()`; nur Convenience).
+- **Invarianten** (im Service erzwungen, nicht im Repo):
+  - Kein Grant von `roles.manage` außerhalb `systemadministrator`.
+  - `azure.resourceGroup:*`-Scope nur unter existierender
+    `azure.subscription:*`-Ebene.
+  - Lockout-Schutz: letzter aktiver `systemadministrator` kann nicht
+    revoked werden (mirror aus v1).
+  - Duplikat-Prevention: `(principalId, role, scope, source)` unique.
+- `ScopeResolver` (pro Ressourcentyp eine reine Funktion):
+  `customerToScope(customerId, tenantId?)`,
+  `azureSubscriptionToScope(subId)`,
+  `azureResourceGroupToScope(subId, rg)`.
+- Logging: jeder Grant/Revoke via `logger.info` mit `actorFields()`,
+  fehlender Actor → `warn` (konsistent zu v1.27.0).
 
-### Neue Dateien
+**5. Migrationsstrategie** (fünf Phasen, jede rückwärtskompatibel)
 
-1. **`src/lib/rbac/types.ts`** — TypeScript Interfaces (`ResourceType`, `ResourceScope`, `Permission` mit `resource:action`-Format, `PermissionGroup`, `RoleAssignment`, `AccessContext`).
-2. **`src/lib/rbac/permission-groups.ts`** — Definition der Permission Groups + Mapping Rolle → Groups.
-3. **`src/lib/rbac/scope.ts`** — Pure-Utils: `parseScope`, `scopeIncludes`, `narrowestScope`.
-4. **`src/lib/rbac/access.ts`** — `evaluateAccess(user, permission, resourceScope)` als zukünftiger Ersatz für `can()`. Heute delegiert es zurück an die flache Matrix, wenn kein Scope gesetzt ist → **kein Breaking Change**.
-5. **`docs/ADR/0007-rbac-v2-scopes-and-resources.md`** — Kontext, Entscheidung, Alternativen, Migrationspfad, Trust-Boundary, Entra-Mapping-Regeln.
-6. **`docs/RBAC-MATRIX.md`** — Menschenlesbare Matrix Role × Permission × ResourceType inkl. Beispiel-Assignments.
-7. **`src/__tests__/lib/rbac/scope.test.ts`** und **`access.test.ts`** — Invarianten (Vererbung, Wildcard, Deny-by-Default).
+| Phase | Umfang | Rollback |
+| ----- | ------ | -------- |
+| M1 | ADR + Typ-Erweiterungen (`revokedAt`, `sourceRef`). Kein Verhalten. | Datei löschen. |
+| M2 | `LocalAssignmentRepository` + Store-Slice + Backup-Integration. Read-only-UI im System­status („X aktive Assignments"). | Slice leeren. |
+| M3 | `AssignmentService.grantRole/revoke` + Actor-Logging + Invarianten-Tests. Noch kein `evaluateAccess`-Aufrufer nutzt Assignments produktiv. | Service ausbauen; v1 bleibt aktiv. |
+| M4 | Ein erster Aufrufer (Vorschlag: `azure.subscription:import`) nutzt `evaluateAccess(user, perm, { scope })`. Feature-Flag `RBAC_V2_ENFORCE`. | Flag off → v1-Fallback. |
+| M5 | Schrittweise Migration weiterer Aufrufer; `check-rbac.mjs` um Scope-Invarianten erweitern; Backend-Mirror (`backend/services/rbac.mjs`) übernimmt Assignment-Prüfung. | Aufrufer einzeln zurückrollen. |
 
-### Bestehendes bleibt
+Entra-Sync (ADR-0007 v5) hakt in M3 ein: Import legt Assignments mit
+`source: "entra"` + `sourceRef: <groupObjectId>` an; lokale Grants bleiben
+`source: "local"` und überleben einen Sync-Lauf.
 
-- `src/lib/rbac/permissions.ts` (v1-Matrix) bleibt Single Source of Truth für die *flache* Prüfung und `can()`.
-- `backend/services/rbac.mjs` bleibt gespiegelt. `check-rbac.mjs` unverändert grün.
-- v2 ist rein additiv — kein Aufruf-Site-Umbau in dieser Iteration.
+### Alternativen
+- **Assignments direkt im `UserProfile`** — bricht Multi-Assignment und
+  Group-Prinzipale; verworfen.
+- **Policy-Engine (Casbin/oso) statt Assignments** — Runtime-Kosten im
+  Worker, verliert statische Typprüfung; verworfen (siehe ADR-0007).
+- **Nur Backend-Assignments** — bricht Local-First (ADR-0003).
+- **`customer` immer unter `tenant`** erzwingen — sauberer, aber
+  blockiert Single-Tenant-Betrieb heute; stattdessen beide Formen
+  erlaubt, Normalisierung in `ScopeResolver`.
 
-### Doku & CI
+### Konsequenzen
+- **Positiv:** v2 wird produktiv nutzbar ohne Breaking Change; klare
+  Persistenz-Grenze (Repository-Port); Entra-Sync-Pfad ohne weitere
+  Architekturänderung; Actor-Audit end-to-end.
+- **Negativ:** Zwei Wahrheiten während M2–M4 (v1-Matrix + Assignments)
+  — Risiko divergierender Ergebnisse, gemindert durch Fallback-Design
+  von `evaluateAccess()`. Duplikat-Erkennung braucht kanonische
+  Scope-Serialisierung (nutzt `serializeScope()`), sonst
+  Doppel-Grants.
 
-- `CHANGELOG.md`: neue Version `1.27.0` mit beiden Teilen.
-- `src/lib/help-documentation.ts`: neues Kapitel „Actor-Audit im Benutzer-Management" + Update „Rollen und Berechtigungen" (Ausblick RBAC v2). `DOCUMENTATION_VERSION` → 1.5.0.
-- `bun run docs:check`, `bun run test`, `bun run check:rbac` müssen grün sein.
+### Trust-Boundary / Security-Note
+- Client-seitige Assignments sind Komfort, keine Sicherheitsgrenze.
+- Ab M5 gilt: **jede** privilegierte Server-Route ruft
+  `evaluateAccess()` mit dem serverseitig aufgelösten Scope auf; Client-
+  Payload-Scopes werden verworfen.
+- Backup/Restore von Assignments muss Actor-Signatur bewahren; Restore
+  ohne Signatur → alle Einträge auf `source: "local"`, `grantedBy: "restore"`.
 
-## Technische Details
-
-- `ActorContext` bewusst nicht als Middleware-Global — explizit übergeben macht Aufrufpfade im Code lesbar und lässt sich später leicht durch AsyncLocalStorage/Request-Context ersetzen.
-- Log-Feld heißt konsistent `actorId` (nicht `changedBy`), passend zum späteren Entra-`oid`.
-- Permission-Format-Migration (`azure.import` → `azure.subscription:import`) ist **explizit nicht Teil dieses Prompts** — nur die Typen und ADR bereiten sie vor, damit v3 sie durchzieht ohne v1-Aufrufe zu brechen.
-
-## Nicht enthalten (bewusst)
-
-- Server-seitige Auth-Middleware (folgt mit echter Entra-Anbindung).
-- Backend-Mirror der v2-Typen (`backend/services/rbac.mjs` bleibt v1 bis der Server tatsächlich Scope prüft).
-- UI zum Verwalten von RoleAssignments (Datenmodell nur, Admin-UI folgt später).
+## Was **nicht** zum Plan gehört
+- Keine neuen `.ts`-Dateien, keine Store-Slices, keine Repository-
+  Implementierung, keine UI, keine Tests. Diese folgen in separaten
+  Prompts pro Migrationsphase (M1 … M5).
