@@ -1,0 +1,109 @@
+{
+  "$schema": "./static-findings.schema.json",
+  "generatedFor": "v1.33.0",
+  "notes": "Findings, die nicht aus Vitest-Ergebnissen abgeleitet werden können (Design-, Prozess- und Infrastruktur-Lücken). Vom Team gepflegt.",
+  "findings": [
+    {
+      "id": "SEC-CRIT-001",
+      "severity": "critical",
+      "area": "backend-rbac",
+      "title": "Backend prüft keine Rolle oder Assignment",
+      "location": "backend/services/*, src/routes/api/*",
+      "reproduction": "Direkter POST auf einen Endpoint mit beliebigem Body — es findet keine Rollen- oder Permission-Prüfung statt (siehe e2e/specs/security/api-direct-call.spec.ts).",
+      "recommendation": "Vor Auth-Produktivierung `requireRole`/`requirePermission`-Middleware analog zu `withCorrelation` einziehen. Verifiziert Actor gegen serverseitige Session, nicht gegen Client-Payload.",
+      "blocksReleasePhase": "all",
+      "accepted": false
+    },
+    {
+      "id": "SEC-CRIT-002",
+      "severity": "critical",
+      "area": "identity",
+      "title": "Aktive Rolle wird ausschließlich im localStorage geführt",
+      "location": "src/lib/user-management.ts",
+      "reproduction": "In der DevTools-Konsole: `localStorage.setItem('northbit-active-user', existingId)` — sofort greift die dortige Rolle in allen UI-Gates. Vitest-Beleg: manipulation.test.ts › KNOWN_GAP_SEC_CRIT_002.",
+      "recommendation": "Session-basierte Identität einführen (HTTP-only Cookie oder Bearer Token gegen echten Auth-Provider). Client-Storage bleibt UI-Cache.",
+      "blocksReleasePhase": "auth-production",
+      "accepted": false
+    },
+    {
+      "id": "SEC-HIGH-AUTH-001",
+      "severity": "high",
+      "area": "auth",
+      "title": "Keine Session-, Token- oder Provider-Infrastruktur",
+      "location": "-",
+      "reproduction": "Es existieren weder Login-Endpunkte noch Session-Cookies/JWT. Damit sind sämtliche Test-Kategorien 'abgelaufene Session', 'manipulierte Claims', 'falscher Tenant', 'unpassende Gruppen' strukturell nicht umsetzbar.",
+      "recommendation": "Entra-ID (OIDC) oder Lovable Cloud Auth integrieren, Session-Layer + Middleware anlegen. Diese Suite wird die Kategorien dann tatsächlich testen.",
+      "blocksReleasePhase": "auth-production",
+      "accepted": false
+    },
+    {
+      "id": "SEC-HIGH-AZURE-001",
+      "severity": "high",
+      "area": "azure",
+      "title": "Azure-Sync akzeptiert einen statischen Shared-Token als einzige Auth",
+      "location": "src/routes/api/sync.ts",
+      "reproduction": "Production erwartet Header `X-Sync-Token` gegen ein Env-Secret. Kein Actor, keine Rolle, kein Audit-Bezug zum Benutzer.",
+      "recommendation": "Shared-Token nur für Server-zu-Server-Callbacks belassen; benutzerinitiierten Sync auf `requirePermission('azure.import' | 'azure.export')` gegen echte Session umziehen.",
+      "blocksReleasePhase": "azure-production",
+      "accepted": false
+    },
+    {
+      "id": "SEC-HIGH-STATUS-001",
+      "severity": "high",
+      "area": "status",
+      "title": "/api/status ist ohne Auth erreichbar und listet fehlende ENV-Namen",
+      "location": "src/routes/api/status.ts",
+      "reproduction": "GET /api/status liefert 200 mit `security.envValidation.missing` als Klartext-Env-Namen.",
+      "recommendation": "Bewusste Ausnahme dokumentieren (Health-Endpoint darf öffentlich sein) und sicherstellen, dass keine WERTE — nur Namen — ausgegeben werden. Bei Auth-Produktivierung Split in `/api/status/public` (Ping) und `/api/status/internal` (Details) erwägen.",
+      "blocksReleasePhase": "auth-production",
+      "accepted": true,
+      "acceptanceReason": "Nur Namen, keine Werte. Bewusstes Design für Monitoring; wird bei Auth-Produktivierung neu bewertet."
+    },
+    {
+      "id": "SEC-HIGH-LOG-001",
+      "severity": "high",
+      "area": "logging",
+      "title": "Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS",
+      "location": "src/lib/logger.ts, backend/services/logger.mjs",
+      "reproduction": "Feldnamen ohne token/secret/password (`connectionString`, `conn`) werden nicht maskiert. Nur der Wert wird gegen `JWT_RE` geprüft — Connection-Strings matchen nicht.",
+      "recommendation": "Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.",
+      "blocksReleasePhase": "azure-production",
+      "accepted": false
+    },
+    {
+      "id": "SEC-MED-REDIRECT-001",
+      "severity": "medium",
+      "area": "navigation",
+      "title": "Kein zentraler Guard für Redirect-Ziele",
+      "location": "-",
+      "reproduction": "Es gibt heute keinen Login-Flow und damit keinen `redirect`-Search-Param. Bei Auth-Einführung MUSS der Guard existieren, bevor der erste geschützte Redirect verwendet wird.",
+      "recommendation": "Helper `isSafeRedirectTarget(url)` bereitstellen, der nur same-origin/relative Pfade ohne `//`, `javascript:` oder Backslashes zulässt. Testen in `session-gaps` (später).",
+      "blocksReleasePhase": "auth-production",
+      "accepted": true,
+      "acceptanceReason": "Kein Auth-Redirect existiert heute; Guard wird gemeinsam mit dem Login-Flow eingezogen."
+    },
+    {
+      "id": "SEC-MED-CLAIMS-001",
+      "severity": "medium",
+      "area": "logging",
+      "title": "Keine Claims-Whitelist im Logger",
+      "location": "src/lib/logger.ts, backend/services/logger.mjs",
+      "reproduction": "Ein zukünftiges `claims`-Feld würde vollständig geloggt (nur Feldnamen mit Secret-Match werden maskiert). Ohne Whitelist landen potentiell E-Mail, Vor-/Nachname, Groups im Log.",
+      "recommendation": "Whitelist einführen (`sub`, `roles`, `tid`) und vor Auth-Produktivierung aktivieren.",
+      "blocksReleasePhase": "auth-production",
+      "accepted": false
+    },
+    {
+      "id": "SEC-LOW-DOCS-001",
+      "severity": "low",
+      "area": "docs",
+      "title": "Handbuch weist Grenzen der Suite explizit aus",
+      "location": "src/lib/help-documentation.ts",
+      "reproduction": "-",
+      "recommendation": "Kapitel „Sicherheits- und RBAC-Tests" gepflegt halten, damit keine Zertifizierungs-Fehlannahmen entstehen.",
+      "blocksReleasePhase": "none",
+      "accepted": true,
+      "acceptanceReason": "Marker-Finding, damit Doku-Pflege sichtbar im Bericht bleibt."
+    }
+  ]
+}
