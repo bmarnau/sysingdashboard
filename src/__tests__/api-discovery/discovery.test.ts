@@ -129,24 +129,24 @@ export const Route = createFileRoute("/api/legacy")({
 });`,
     );
 
-    const inv = discover(FIX_ROOT);
-    const paths = inv.endpoints.map((e) => e.path);
+    const inv = discover(FIX_ROOT) as { endpoints: InvEndpoint[]; findings: InvFinding[] };
+    const paths = inv.endpoints.map((e: InvEndpoint) => e.path);
     expect(paths).toEqual(["/api/hello", "/api/legacy", "/api/submit"]);
 
-    const submit = inv.endpoints.find((e) => e.path === "/api/submit")!;
+    const submit = inv.endpoints.find((e: InvEndpoint) => e.path === "/api/submit")!;
     expect(submit.methods).toEqual(["POST"]);
     expect(submit.requestValidation).toBe(true);
     expect(submit.correlationId).toBe(true);
 
-    const legacy = inv.endpoints.find((e) => e.path === "/api/legacy")!;
+    const legacy = inv.endpoints.find((e: InvEndpoint) => e.path === "/api/legacy")!;
     expect(legacy.archivedImports.length).toBeGreaterThan(0);
 
     const findings = inv.findings;
-    expect(findings.some((f) => f.category === "active-to-archived-import")).toBe(true);
+    expect(findings.some((f: InvFinding) => f.category === "active-to-archived-import")).toBe(true);
     // Unclassified + no-correlation für /api/hello, /api/legacy
-    expect(findings.some((f) => f.category === "unclassified-endpoint")).toBe(true);
+    expect(findings.some((f: InvFinding) => f.category === "unclassified-endpoint")).toBe(true);
     // Reihenfolge deterministisch
-    const ids = findings.map((f) => f.id);
+    const ids = findings.map((f: InvFinding) => f.id);
     expect([...ids].sort()).toEqual(ids);
 
     resetFixtures();
