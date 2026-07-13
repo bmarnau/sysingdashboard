@@ -44,6 +44,16 @@ jobs:
       - name: Test (with coverage)
         run: bun run test:coverage
 
+      - name: Security suite (Vitest + scanners)
+        run: bun run test:security
+
+      - name: Security report
+        if: always()
+        run: bun run security:report
+
+      - name: Security release gate
+        run: bun run security:gate
+
       - name: API endpoint contract tests
         run: bun run test:api
 

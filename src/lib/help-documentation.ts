@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.11.0";
+export const DOCUMENTATION_VERSION = "1.12.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -1724,6 +1724,50 @@ Jeder Server-Request bekommt eine eindeutige **Correlation-ID** (auch Referenz-I
 - Azure- und Key-Vault-Adapter sind Stubs — Correlation wird bereits durch den Logger propagiert und ab produktiver Anbindung sichtbar.
 - Persistente Log-Suche über Neustarts hinweg braucht den serverseitigen Sink (offen, siehe Tech-Debt).`,
     relatedTopics: ["system-status", "log-viewer", "api-endpoint-tests", "fehlerbehandlung-logging"],
+  },
+  {
+    id: "security-rbac-tests",
+    title: "Sicherheits- und RBAC-Tests",
+    category: "Service",
+    keywords: [
+      "Security", "RBAC", "Rollen", "Assignments", "Scope", "Manipulation",
+      "Lockout", "Logger", "Redaction", "Findings", "Release-Gate", "ADR-0013",
+    ],
+    lastUpdated: "2026-07-13",
+    content: `## Zweck
+Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine und macht Lücken sichtbar — statt sie durch grüne Platzhalter-Tests zu verstecken.
+
+## Abgedeckt (Vitest)
+- **RBAC v1**: Frontend↔Backend-Parität der Rechte-Matrix, verbotene Berechtigungen pro Rolle, Sysadmin- und Administrator-Lockout-Schutz.
+- **RBAC v2**: Scope-Kanonisierung und -Inklusion, Wildcards, Assignment-Auswertung mit Ablauf, Multi-Assignment, Herkunft (local/entra).
+- **Manipulation**: JSON-Import weist gefälschte Envelopes ab, Sensitive-Fields werden gestrippt, abgelaufene/scope-fremde Assignments werden verweigert.
+- **Logger**: Redaction von Token, Password, API-Key, JWT-Werten im Frontend- und Backend-Logger; Actor/Correlation bleiben erhalten.
+- **Source-Scan**: keine direkten \`role === "..."\`-Vergleiche außerhalb von \`src/lib/rbac\`, keine Auth-Tokens in localStorage/sessionStorage.
+
+## Abgedeckt (Playwright)
+- **UI-Gate-Tamper**: manipulierter \`northbit-active-user\` öffnet Sysadmin-UI — bewusst grün als Beleg für Finding SEC-CRIT-002.
+- **Direkter Endpoint-Call**: \`/api/sync\` liefert keinen Stack, kein AccountKey/SAS, immer eine Correlation-ID.
+
+## Findings-Report
+- \`test-report/security-report.md\` und \`.json\` werden bei jedem CI-Lauf erzeugt.
+- \`scripts/security/static-findings.json\` pflegt Design- und Infrastruktur-Lücken mit Severity, Reproduktion und Empfehlung.
+- CI-Step \`security:gate\` failed bei offenen **CRITICAL**-Findings; **HIGH** blockiert Auth- und Azure-Produktivierung.
+
+## Grenzen
+- Kein Pen-Test-Ersatz, kein Fuzzing, keine Kryptoanalyse, keine Prüfung produktiver Auth-Provider (existieren nicht).
+- UI-Sichtbarkeit ist **kein** Sicherheitsnachweis. Backend hat aktuell keine RBAC-Middleware (Finding SEC-CRIT-001) und die aktive Rolle wird ausschließlich im localStorage geführt (Finding SEC-CRIT-002).
+- Grüne Tests bedeuten „keine Regression in geprüften Bausteinen" — nicht „System ist sicher". Kein Anspruch auf ISO/IEC 27001, SOC 2 oder BSI.
+- Session-, Claims-, Tenant- und Group-Tests sind heute strukturell nicht ausführbar und als HIGH-Finding SEC-HIGH-AUTH-001 dokumentiert.
+
+## Ausführung
+- \`bun run test:security\` — Vitest-Suite + RBAC-Drift + Static-Scanner.
+- \`bun run test:e2e:security\` — Playwright-Security-Specs.
+- \`bun run security:report\` — Report neu bauen.
+- \`bun run security:gate\` — Exit != 0 bei offenen Blockern (CI-Nutzung).`,
+    relatedTopics: [
+      "system-status", "log-viewer", "api-endpoint-tests", "ui-end-to-end-tests",
+      "test-instance",
+    ],
   },
 ];
 
