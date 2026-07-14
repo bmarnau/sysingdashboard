@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.14.0";
+export const DOCUMENTATION_VERSION = "1.15.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -1880,7 +1880,43 @@ Vorrang bei der Klassifizierung: **\`endpointMeta\` > Registry > Heuristik**. Fe
       "correlation-id", "test-instance",
     ],
   },
+  {
+    id: "ops-audit",
+    title: "Performance-, Build- und Betriebsprüfung",
+    category: "Service",
+    route: "/",
+    component: "SystemStatusDialog",
+    keywords: ["Ops", "Performance", "Bundle", "Startzeit", "Health", "Baseline"],
+    lastUpdated: "2026-07-14",
+    content: `## Ziel
+Reproduzierbarer Betriebs-Snapshot des aktuellen Buildstands ohne harte Grenzwerte. Grundlage für Release-Reviews.
+
+## Checks
+- **Build**: TypeScript, ESLint (soft), Prettier (soft), Doku-Sync, No-Console, RBAC-Parität, Security-Scan (soft).
+- **Bundle**: Gesamt/Entry/Lazy-Größen, Top-20-Chunks, schwere Libs im Initial-Bundle, Duplikate (\`bun pm ls\`), Trend gegen letzten Lauf.
+- **Performance (E2E)**: Startzeit (\`load\`), \`first-paint\`, \`first-contentful-paint\` — Rohwerte in \`test-report/perf-raw.json\`.
+- **Stabilität (E2E)**: Dialog-Loop-Belastung, Rohwerte in \`test-report/stability-raw.json\`.
+- **Betrieb (E2E)**: \`/api/status\` liefert 200, keine Secret-Muster im Payload, 500-Antworten ohne Stacktrace-Leak. Static: Rollback-Doku vorhanden, Backup-Service verfügbar, ENV-Validator gesetzt.
+- **Kompatibilität**: Chromium Standard. Firefox/WebKit/Mobile opt-in via \`RUN_FIREFOX=1\`, \`RUN_WEBKIT=1\`, \`RUN_MOBILE=1\`.
+
+## Baseline-Modell (ADR-0016)
+Erster Lauf schreibt \`test-report/ops-baseline.json\`. Folgeläufe warnen bei Delta > 20 %. Kein Hard-Gate, weil absolute Zahlen runner-abhängig sind. Baseline-Reset = Datei löschen.
+
+## Ausführung
+- \`bun run test:ops\` — komplette Suite (Build/Bundle/Ops-Checks/E2E/Aggregat-Report).
+- \`bun run ops:build\` / \`ops:bundle\` / \`ops:e2e\` / \`ops:report\` — Einzelschritte.
+
+## Sicherheits-Härtung
+\`/api/status\` gibt in PRODUCTION nur noch \`missingEnvCount\` zurück; ENV-Namen bleiben DEV-only. Namen sind ein leichter Infrastruktur-Fingerabdruck und gehören nicht in eine öffentliche Antwort.
+
+## Bekannte Einschränkungen
+- \`performance.memory\` nur in Chromium.
+- Baseline maschinen-/runner-abhängig — CI-Runner-Wechsel verzerrt Trends.
+- Kein Load-/Stress-Testing.`,
+    relatedTopics: ["system-status", "api-endpoint-tests", "security-rbac-tests", "test-instance"],
+  },
 ];
+
 
 
 function allTopicsBase(): HelpTopic[] {
