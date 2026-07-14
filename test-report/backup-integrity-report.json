@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-07-14T03:23:48.931Z",
+  "summary": {
+    "checked": 48,
+    "passed": 48,
+    "failed": 0,
+    "restorable": true
+  },
+  "categories": {
+    "backup": {
+      "passed": 13,
+      "failed": 0,
+      "findings": []
+    },
+    "restore": {
+      "passed": 8,
+      "failed": 0,
+      "findings": []
+    },
+    "import": {
+      "passed": 13,
+      "failed": 0,
+      "findings": []
+    },
+    "export": {
+      "passed": 13,
+      "failed": 0,
+      "findings": []
+    },
+    "other": {
+      "passed": 1,
+      "failed": 0,
+      "findings": []
+    }
+  },
+  "records": {
+    "backupCases": 13,
+    "restoreScenarios": 8,
+    "importCases": 13,
+    "exportCases": 13
+  }
+}

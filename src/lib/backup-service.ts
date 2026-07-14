@@ -185,8 +185,12 @@ function dbTx<T>(
   );
 }
 
+interface BackupRecordStored extends BackupRecordMeta {
+  bytes: Uint8Array;
+}
 interface BackupRecord extends BackupRecordMeta {
   blob: Blob;
+  bytes: Uint8Array;
 }
 
 /* ---------------------------------------------------------------------- */
@@ -587,9 +591,20 @@ export const BackupService = {
         status,
         checkMessages: [...consistency.messages, ...zipValidation.messages],
         blob,
+        bytes: new Uint8Array(bytes),
       };
 
-      await dbTx("readwrite", (s) => s.put(record));
+      const stored: BackupRecordStored = {
+        id: record.id,
+        fileName: record.fileName,
+        createdAt: record.createdAt,
+        sizeBytes: record.sizeBytes,
+        manual: record.manual,
+        status: record.status,
+        checkMessages: record.checkMessages,
+        bytes: record.bytes,
+      };
+      await dbTx("readwrite", (s) => s.put(stored));
       window.localStorage.setItem(LAST_BACKUP_KEY, record.createdAt);
 
       const logEntry: BackupLogEntry = {
@@ -604,7 +619,7 @@ export const BackupService = {
       };
       writeLog(logEntry);
 
-      const { blob: _b, ...meta } = record;
+      const { blob: _b, bytes: _by, ...meta } = record;
       return { ok: true, record: meta, log: logEntry };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -632,12 +647,12 @@ export const BackupService = {
 
   async list(): Promise<BackupRecordMeta[]> {
     try {
-      const all = await dbTx<BackupRecord[]>(
+      const all = await dbTx<BackupRecordStored[]>(
         "readonly",
-        (s) => s.getAll() as IDBRequest<BackupRecord[]>,
+        (s) => s.getAll() as IDBRequest<BackupRecordStored[]>,
       );
       return all
-        .map(({ blob: _b, ...meta }) => meta)
+        .map(({ bytes: _by, ...meta }) => meta)
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     } catch (err) {
       logger.error("Backup list could not be loaded", err);
@@ -646,10 +661,14 @@ export const BackupService = {
   },
 
   async get(id: string): Promise<BackupRecord | undefined> {
-    return dbTx<BackupRecord | undefined>(
+    const stored = await dbTx<BackupRecordStored | undefined>(
       "readonly",
-      (s) => s.get(id) as IDBRequest<BackupRecord | undefined>,
+      (s) => s.get(id) as IDBRequest<BackupRecordStored | undefined>,
     );
+    if (!stored) return undefined;
+    const bytes = stored.bytes instanceof Uint8Array ? stored.bytes : new Uint8Array(stored.bytes);
+    const blob = new Blob([bytes as BlobPart], { type: "application/zip" });
+    return { ...stored, bytes, blob };
   },
 
   async delete(id: string): Promise<void> {
