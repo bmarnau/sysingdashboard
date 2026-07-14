@@ -591,9 +591,20 @@ export const BackupService = {
         status,
         checkMessages: [...consistency.messages, ...zipValidation.messages],
         blob,
+        bytes: new Uint8Array(bytes),
       };
 
-      await dbTx("readwrite", (s) => s.put(record));
+      const stored: BackupRecordStored = {
+        id: record.id,
+        fileName: record.fileName,
+        createdAt: record.createdAt,
+        sizeBytes: record.sizeBytes,
+        manual: record.manual,
+        status: record.status,
+        checkMessages: record.checkMessages,
+        bytes: record.bytes,
+      };
+      await dbTx("readwrite", (s) => s.put(stored));
       window.localStorage.setItem(LAST_BACKUP_KEY, record.createdAt);
 
       const logEntry: BackupLogEntry = {
@@ -608,7 +619,7 @@ export const BackupService = {
       };
       writeLog(logEntry);
 
-      const { blob: _b, ...meta } = record;
+      const { blob: _b, bytes: _by, ...meta } = record;
       return { ok: true, record: meta, log: logEntry };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
