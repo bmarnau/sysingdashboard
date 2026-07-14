@@ -25,6 +25,8 @@ Format pro Eintrag:
 
 
 
+## 1.35.0 - 2026-07-13
+
 - **Backup-, Restore-, Import- und Export-Test-Suite (Prompt 2A.6, ADR-0015)**: neue Vitest-Suiten unter `src/__tests__/backup/` (create, integrity, restore) und `src/__tests__/io/` (import.suite, export.suite) mit deterministischen Fixtures (`src/__tests__/fixtures/backup.ts`) für gültige, beschädigte, unvollständige und version-inkompatible Backups.
 - **`restoreFromZip()` in `src/lib/backup-service.ts`** (additiv): transaktionale Wiederherstellung mit Modi `empty`/`overwrite`/`merge`, Pre-Snapshot-Rollback bei Fehlern, Actor-/Herkunftsfeldern und Restore-Protokoll (`backup:restoreLog`, max. 100 Einträge). Weist beschädigte ZIPs, falsche Projektnamen, inkompatible MAJOR-Versionen und sensible Feldnamen ab, ohne einen Teilzustand zu hinterlassen.
 - **Integritätsbericht**: `scripts/backup-integrity/report.mjs` aggregiert die Vitest-JSON-Ausgabe nach Kategorien (backup/restore/import/export), erzeugt `test-report/backup-integrity-report.{json,md}` mit Schweregrad-Empfehlungen und dokumentiert bekannte Grenzen (keine Prüfsumme, PDF nur strukturell, RBAC clientseitig).
