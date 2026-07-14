@@ -13,7 +13,17 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
-## 1.35.0 - 2026-07-13
+## 1.36.0 - 2026-07-14
+
+- **Performance-, Build- und Betriebsprüfung (Prompt 2A.7, ADR-0016)**: neue Scripts unter `scripts/ops/` (`build-checks.mjs`, `bundle-report.mjs`, `ops-checks.mjs`, `report.mjs`) mit konsolidiertem `test-report/ops-report.{json,md}` und Baseline-Datei `test-report/ops-baseline.json`. Baselines statt harter Grenzwerte, Warnschwelle bei Delta > 20 %.
+- **E2E-Suiten** für Startzeit (`e2e/perf/startup.spec.ts`), Dialog-Loop-Stabilität (`e2e/stability/dialog-loop.spec.ts`) und Health/Payload/Fehlerhygiene (`e2e/ops/health.spec.ts`). Rohwerte in `test-report/perf-raw.json`, `stability-raw.json`, `ops-checks.json`.
+- **Kompatibilitäts-Matrix opt-in**: `playwright.config.ts` schaltet Firefox (`RUN_FIREFOX=1`), WebKit (`RUN_WEBKIT=1`) und Mobile-Chrome (`RUN_MOBILE=1`) hinzu — Chromium bleibt Default.
+- **Bundle-Analyse erweitert**: Trend-Vergleich, Heavy-Lib-Heuristik im Initial-Bundle, Duplikat-Erkennung via `bun pm ls`.
+- **Sicherheits-Härtung `/api/status`**: `azure.missingEnv` liefert in PROD nur noch `missingEnvCount`; ENV-Namen bleiben DEV-only. Namen sind ein Infrastruktur-Fingerabdruck.
+- **Neue npm-Scripts**: `test:ops`, `ops:build`, `ops:bundle`, `ops:checks`, `ops:e2e`, `ops:report`.
+- **Handbuch**: Kapitel „Performance-, Build- und Betriebsprüfung" (`DOCUMENTATION_VERSION` → 1.15.0).
+
+
 
 - **Backup-, Restore-, Import- und Export-Test-Suite (Prompt 2A.6, ADR-0015)**: neue Vitest-Suiten unter `src/__tests__/backup/` (create, integrity, restore) und `src/__tests__/io/` (import.suite, export.suite) mit deterministischen Fixtures (`src/__tests__/fixtures/backup.ts`) für gültige, beschädigte, unvollständige und version-inkompatible Backups.
 - **`restoreFromZip()` in `src/lib/backup-service.ts`** (additiv): transaktionale Wiederherstellung mit Modi `empty`/`overwrite`/`merge`, Pre-Snapshot-Rollback bei Fehlern, Actor-/Herkunftsfeldern und Restore-Protokoll (`backup:restoreLog`, max. 100 Einträge). Weist beschädigte ZIPs, falsche Projektnamen, inkompatible MAJOR-Versionen und sensible Feldnamen ab, ohne einen Teilzustand zu hinterlassen.
