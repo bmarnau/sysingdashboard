@@ -667,7 +667,7 @@ export const BackupService = {
     );
     if (!stored) return undefined;
     const bytes = stored.bytes instanceof Uint8Array ? stored.bytes : new Uint8Array(stored.bytes);
-    const blob = new Blob([bytes], { type: "application/zip" });
+    const blob = new Blob([bytes as BlobPart], { type: "application/zip" });
     return { ...stored, bytes, blob };
   },
 
