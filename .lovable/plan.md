@@ -1,101 +1,130 @@
 
-## Prompt 2A.6 — Backup / Restore / Import / Export Test-Suite
+# Prompt 2A.7 — Performance-, Build- und Betriebsprüfung
 
-Ziel: automatisierte Nachweise für Datenintegrität und Wiederherstellbarkeit, mit maschinenlesbarem Integritätsbericht + Handbuch-Update.
+Ziel: eine reproduzierbare Betriebsprüfung, die den aktuellen Buildstand misst, Baselines schreibt und Regressionen sichtbar macht — ohne willkürliche Grenzwerte. Analog zu 2A.5B/2A.6: Soft-Gate, JSON+MD-Report, Handbuch-Update.
 
-### Rahmen & Randbedingungen (kritisch — bitte prüfen)
+## Prinzipien
 
-- **Restore-Funktion existiert heute nicht als eigenständige API.** `backup-service.ts` erzeugt und validiert ZIPs, aber es gibt kein `BackupService.restore(id)`, das ein ZIP zurück in localStorage schreibt. Zwei Optionen:
-  - **A (empfohlen)**: Kleine, additive `restoreFromZip(bytes, opts)`-Funktion in `backup-service.ts` ergänzen (entpackt → validiert → schreibt keys atomar mit Pre-Snapshot/Rollback, spiegelt die bereits im Import-Service etablierte Snapshot-Mechanik). Ohne diese Funktion sind Restore-Tests reine Whitebox-Prüfungen der ZIP-Struktur, kein echter Wiederherstellungsnachweis.
-  - **B**: Nur ZIP-/Manifest-Ebene testen, Restore-Bereich als „nicht testbar — Funktion fehlt" im Integritätsbericht ausweisen und als Follow-up markieren.
-  Ich schlage **A** vor, hälst du es für zu großen Scope, sag Bescheid.
-- **Prüfsumme fehlt heute im Manifest.** Ehrlich als Finding melden; optional additiv `sha256` über die Datenblöcke im Manifest ergänzen (klein, aber Scope-Erweiterung — nur wenn gewünscht).
-- **PDF-Prüfung ist bewusst minimal** (Header `%PDF-`, Seitenanzahl per Regex, Größe > 0). Struktur/Layout-Verifikation ist außerhalb dieser Suite.
-- **Rollen/Scope-Begrenzung im Export**: das JSON-Schema hat kein Rollen-Feld pro Export; wir testen die vorhandene `scopeWhitelist`/Partial-Scope-Logik + `stripSensitiveFields` — echte Backend-RBAC-Enforcement bleibt Follow-up aus 2A.5 (SEC-CRIT-001).
+- **Baselines statt Wunschwerte**: Erster Lauf schreibt Referenz (`test-report/ops-baseline.json`), spätere Läufe vergleichen und melden Trend. Kein Fail bei fehlender Baseline.
+- **Soft-Gate**: Der Report-Job scheitert nicht am Messwert, nur an echten Fehlern (Build kaputt, Typecheck rot, Playwright-Crash). Hart-Gate ist späterer Bump.
+- **Additiv**: keine bestehenden Tests umbauen, keine ADR-Umkehr, keine Änderungen an Produktionscode außer im Systemstatus-Payload (siehe „Betrieb").
 
-### Neue Test-Dateien (Vitest, Modus `backup` bzw. `io`)
+## Umfang & Struktur
 
+### 1. Build-Checks (`scripts/ops/build-checks.mjs`)
+Aggregiert existierende Prüfungen zu einem Report:
+- `bun run build` (prod) + `bun run build:dev` (dev) — Dauer, Exit-Code, Warnings
+- `bunx tsgo --noEmit` — TypeScript
+- `bun run lint` — ESLint (soft; Ergebnis nur protokollieren)
+- `bunx prettier --check .` — Formatierung
+- `bun run docs:check`, `bun run check:no-console`, `bun run check:rbac`, `bun run security:check` (bereits vorhanden — hier nur konsolidiert)
+Output: `test-report/build-report.{json,md}`
+
+### 2. Bundle-Checks (erweitert `scripts/check-bundle.mjs` → `scripts/ops/bundle-report.mjs`)
+- Gesamt/Top-15 (schon vorhanden)
+- Neu: Entry-Chunk vs Lazy-Chunks (Vite-Manifest lesen)
+- Neu: Doppelte Deps via `bun pm ls --all` + Duplikat-Erkennung (Package-Name+Major)
+- Neu: „Schwere Libs im Initial-Bundle" — Heuristik (Regex auf Chunk-Sourcemaps für `xlsx`, `jspdf`, `pdfjs`, `fflate`, `zod`) mit Whitelist
+- Neu: Trend gegenüber `test-report/bundle.prev.json` (Diff je Chunk, Gesamt-Delta)
+Output: `test-report/bundle-report.{json,md}`
+
+### 3. Performance-Messungen (Playwright, `e2e/perf/*.spec.ts`)
+Läuft gegen den Dev-Server (wie bestehende E2E-Specs). Nutzt `performance.mark`/`measure` und `Performance API`.
+- `startup.spec.ts` — Navigation Timing (FCP, LCP, TTI-Näherung via `PerformanceObserver`) für `/`
+- `dialogs.spec.ts` — Öffnen der schweren Dialoge (Backup, Import/Export, Log Viewer, System Status, Azure) — jeweils Zeit bis interaktiv
+- `lists.spec.ts` — 500 Aufgaben/Tätigkeiten seeden via localStorage-Fixture, Render-Zeit messen
+- `io.spec.ts` — Import-Preview und Export mit synthetischem Datensatz (500 Zeilen)
+- `memory.spec.ts` — `performance.memory` (nur Chromium) vor/nach 20× Dialog-Auf/Zu
+Ergebnisse werden in `test-report/perf-raw.json` gesammelt.
+
+### 4. Stabilität (`e2e/stability/*.spec.ts`)
+- Dialog-Loop (20× Open/Close, kein Memory-Growth-Guard, nur Zahl protokollieren)
+- Benutzerwechsel: Rolle wechseln, prüfen dass UI-Gates konsistent bleiben
+- Cross-Tab-Sync: zwei Contexts, `storage`-Event auslösen, State-Konsistenz prüfen
+- Reload-Persistenz: Dashboard-Store übersteht F5
+- Offline-Simulation: `context.setOffline(true)` → Fehler-Banner erwartet, App bleibt bedienbar
+- API-Ausfall: MSW/Route-Interception liefert 500 auf `/api/status` → Systemstatus zeigt Fehler statt Crash
+- Speicherausfall: `localStorage.setItem` → QuotaExceeded simulieren
+- Lange Sitzung: 10 min Idle + Interaktion (verkürzte Version in CI: 30 s)
+
+### 5. Kompatibilität
+- Playwright-Projekte erweitern: `chromium` (bereits), `firefox`, `webkit` als optionale CI-Matrix (webkit nur wenn `RUN_WEBKIT=1`, Standard aus wegen CI-Kosten)
+- Viewports: Desktop (1280×800, bereits) + Mobile (`iPhone 13`)-Projekt für die Smoke-Suite (Nav + Dashboard + ein Dialog)
+
+### 6. Betrieb (`e2e/ops/*.spec.ts` + Codeänderung)
+- Health: GET `/api/status` → 200, Body enthält `application.mode`, keine Secrets (Regex-Prüfung auf `key`, `token`, `password`, `connectionString`)
+- ENV-Validierung: Server-Fn-Aufruf mit fehlender Pflicht-ENV → 500 mit generischer Message (kein Variablenname im Body)
+- **Kleine Änderung an `src/routes/api/status.ts`**: sicherstellen, dass `azure.missingEnv` in Prod-Mode nur Booleans/Counts liefert, keine Variablennamen (aktuell werden Namen zurückgegeben — Public-Endpoint, siehe `endpointMeta.public = true`). Neuer Feld `azure.missingEnvCount: number`; `missingEnv[]` nur im Development-Mode. Dokumentiert in Report + Handbuch.
+- Rollback-Doku: prüfen, dass `docs/DEPLOYMENT.md` einen Rollback-Abschnitt enthält (statischer Check)
+- Backup-Verfügbarkeit: prüfen, dass `BackupService.create()` in Test-Instance ein gültiges ZIP liefert (bereits via `backup/create.test.ts` abgedeckt — hier nur re-verlinkt)
+
+### 7. Report-Aggregator (`scripts/ops/report.mjs`)
+- Sammelt: build-report, bundle-report, perf-raw, stability-raw, compat-matrix, ops-checks
+- Vergleicht gegen `test-report/ops-baseline.json`, schreibt Diff
+- Erzeugt `test-report/ops-report.{json,md}` mit Sektionen: Build / Bundle / Performance / Stability / Compat / Betrieb / Trends / Bekannte Einschränkungen
+- Erst-Lauf: schreibt Baseline, meldet „no baseline yet"
+- Follow-Läufe: markiert Deltas > 20 % als Warning (nicht Fail)
+
+### 8. CI-Integration (`.github/workflows/ci.yml`)
+Neuer Job `ops-check` (nach `build`):
 ```
-src/__tests__/backup/
-  create.test.ts          Backup erzeugen, ZIP-Struktur, Manifest, Version, Vollständigkeit, RBAC/Assignments, Log-Regel
-  integrity.test.ts       beschädigtes ZIP, unvollständiges ZIP, sensible Felder, (optional) Prüfsumme
-  restore.test.ts         leerer/bestehender Datenbestand, alte/neue Version, fehlende Assignments,
-                          beschädigte Daten, Abbruch ohne Teilzustand, Actor/Herkunft, Restore-Protokoll
-src/__tests__/io/
-  import.suite.test.ts    gültig/ungültig/falsche Version/Konflikte/Duplikate/Referenzen/
-                          Vorschau/Pflichtbackup/Abbruch/keine stillen Löschungen
-  export.suite.test.ts    JSON/CSV/PDF, Schema, Dateiname, Inhalt, Sonderzeichen (UTF-8/Emoji/CR-LF),
-                          leere Daten, große Menge (10k Aktivitäten), Scope-Begrenzung
+- bun run build
+- bun run test:ops:build
+- bun run test:ops:bundle
+- bunx playwright test e2e/perf e2e/stability e2e/ops --project=chromium
+- bun run ops:report
+- upload-artifact: test-report/
 ```
+Kein hartes Fail außer bei echten Runner-Fehlern.
 
-Fixtures und Helper landen in `src/__tests__/fixtures/backup.ts` und `src/__tests__/fixtures/restore-scenarios.ts` (deterministische Snapshots + kaputte ZIPs generiert via `fflate`). Alle Tests binden `src/__tests__/env/test-instance.ts` ein (Isolation, kein echter Azure-Call).
+### 9. package.json
+Neue Scripts:
+- `test:ops:build`, `test:ops:bundle`, `test:ops:perf`, `test:ops:stability`, `test:ops:compat`, `test:ops:betrieb`
+- `ops:report` (Aggregator)
+- `test:ops` (alle oben)
 
-### Restore-API (nur bei Option A)
+### 10. Dokumentation
+- `docs/adr/ADR-0016-ops-baselines.md` — Baseline-vs-Threshold-Entscheidung, Soft-Gate-Begründung, Cross-Browser-Matrix (Chromium-Standard, Firefox opt-in, WebKit gated)
+- `CHANGELOG.md` v1.36.0
+- `src/lib/help-documentation.ts` — neues Topic „Performance-, Build- und Betriebsprüfung" (Kapitel: was gemessen wird, wo Reports liegen, wie Baselines aktualisiert werden), `DOCUMENTATION_VERSION` → 1.15.0
+- README-Verweis auf `test-report/ops-report.md`
 
-Ergänzung in `src/lib/backup-service.ts` (additiv, keine Signatur-Änderung bestehender Exports):
+## Technische Details
 
-```ts
-export interface RestoreOptions {
-  actor: string;
-  mode: "empty" | "overwrite" | "merge";   // "empty" verlangt leeren Zustand
-  allowOlderMinor?: boolean;               // Default true
-  allowNewerMajor?: boolean;               // Default false
-}
-export interface RestoreResult { ok: boolean; runId: string; snapshotId: string;
-  counts: { keysWritten: number; keysSkipped: number }; warnings: string[];
-  errors: string[]; rollback: boolean; startedAt: string; finishedAt: string; actor: string; }
-export async function restoreFromZip(bytes: Uint8Array, opts: RestoreOptions): Promise<RestoreResult>
+### Baseline-Format (`test-report/ops-baseline.json`)
 ```
-
-Implementierung: Pre-Snapshot der betroffenen localStorage-Keys → validieren (Manifest, `manifest.project`, Version, Pflichtdateien) → alle Keys schreiben oder bei erstem Fehler zurückrollen → Eintrag in `backup:restoreLog` (max. 100). Reine Client-seitige Operation, kein Backend.
-
-### Report-Generator
-
-Neue Datei `scripts/backup-integrity/report.mjs` liest die Vitest-JSON-Ausgabe der neuen Suiten und schreibt:
-
-```
-test-report/backup-integrity-report.json
-test-report/backup-integrity-report.md
-```
-
-Format (JSON):
-
-```json
 {
-  "generatedAt": "…",
-  "summary": { "checked": 42, "passed": 40, "failed": 2, "restorable": true },
-  "categories": {
-    "backup":  { "passed": 12, "failed": 0, "findings": [] },
-    "restore": { "passed": 9,  "failed": 1, "findings": [{ "id": "RST-001", "severity": "high", "recommendation": "…" }] },
-    "import":  { "passed": 11, "failed": 0, "findings": [] },
-    "export":  { "passed": 8,  "failed": 1, "findings": [{ "id": "EXP-004", "severity": "medium", "recommendation": "…" }] }
-  },
-  "records": { "backupsChecked": 3, "restoreScenarios": 7, "importCases": 11, "exportCases": 8 }
+  "createdAt": "...",
+  "build": { "prodMs": 12345, "devMs": 7890, "tscMs": 3456 },
+  "bundle": { "totalKB": 850, "entryKB": 220, "topChunks": [...] },
+  "perf": { "startupMs": 180, "dialogOpen": { "backup": 45, ... } },
+  "stability": { "dialogLoopGrowthKB": 1.2 }
 }
 ```
 
-Severity-Skala und Empfehlungs-Katalog spiegeln das Security-Report-Schema aus 2A.5 (konsistent für spätere Dashboards).
+### Playwright-Perf-Snippet (Beispiel)
+```ts
+const nav = await page.evaluate(() => JSON.stringify(performance.getEntriesByType("navigation")[0]));
+const paint = await page.evaluate(() => performance.getEntriesByType("paint"));
+```
 
-### package.json / CI
+### Duplikat-Erkennung
+`bun pm ls --all` → parse → `Map<name, Set<major>>` → alle mit `size > 1` sind Duplikate. Whitelist für bekannte Fälle (React DevTools shims etc.).
 
-- Neue Scripts:
-  - `test:backup:integrity` → `vitest run src/__tests__/backup src/__tests__/io --reporter=json --outputFile.json=test-report/backup-vitest.json && node scripts/backup-integrity/report.mjs`
-  - `test:full` erweitert um `test:backup:integrity`
-- `.github/workflows/ci.yml`: neuer Step nach den bestehenden Test-Jobs; Artefakt-Upload für `test-report/backup-integrity-*`.
-- Release-Gate: **soft** (Warnung im Log), analog 2A.5B, bis SEC-CRIT-001/002 gefixt sind.
+### Bewusst NICHT im Umfang
+- Lighthouse-Integration (extra Toolchain, unproportional für interne Ops-Suite)
+- Echte Load-Tests (kein Backend-Zustand, der davon profitiert)
+- Bundle-Größen-Hard-Gate (Follow-up nach ≥3 Baselines)
 
-### Doku
+## Bekannte Einschränkungen (im Report gelistet)
+- WebKit-Coverage nur opt-in (CI-Kosten)
+- `performance.memory` nur Chromium
+- Baselines sind maschinenabhängig — CI-Runner-Wechsel verzerrt Trends
+- Kein echtes Load-/Stress-Testing
 
-- `CHANGELOG.md`: Eintrag `## 1.35.0 - 2026-07-13` mit Backup-/Restore-Test-Suite und (falls Option A) `restoreFromZip`.
-- `src/lib/help-documentation.ts`: neues Kapitel „Backup- und Restore-Tests" + Ergänzung in „Downloadbereich" (Restore-Pfad). `DOCUMENTATION_VERSION` bleibt (keine Struktur-Änderung), `lastUpdated` gesetzt.
-- `docs/adr/ADR-0015-backup-restore-tests.md`: dokumentiert Entscheidung zu Option A vs. B, Prüfsummen-Follow-up, PDF-Prüftiefe, Soft-Gate.
-
-### Verifikation vor Abschluss
-
-`bun run test:backup`, `bun run test:io`, `bun run test:backup:integrity`, `bun run docs:check`, `bun run lint` — plus stichprobenartige Sichtprüfung `test-report/backup-integrity-report.md`.
-
-### Offene Entscheidungen für dich
-
-1. **Option A (echte `restoreFromZip`) oder B (nur ZIP-Ebene testen)?**
-2. **Prüfsumme (`sha256` im Manifest) additiv mit einführen** — ja/nein?
-3. **Release-Gate hart oder weiter soft** bis Backend-RBAC steht?
+## Abnahmekriterien
+- `bun run test:ops` läuft lokal grün durch
+- `test-report/ops-report.md` enthält alle 6 Sektionen + Trend
+- CI-Artefakt sichtbar
+- Handbuch-Topic verlinkt und `docs:check` grün
+- ADR-0016 commited
