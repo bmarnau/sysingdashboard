@@ -185,8 +185,12 @@ function dbTx<T>(
   );
 }
 
+interface BackupRecordStored extends BackupRecordMeta {
+  bytes: Uint8Array;
+}
 interface BackupRecord extends BackupRecordMeta {
   blob: Blob;
+  bytes: Uint8Array;
 }
 
 /* ---------------------------------------------------------------------- */
