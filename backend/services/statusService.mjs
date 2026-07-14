@@ -84,7 +84,10 @@ export function getStatus() {
       table: { configured: Boolean(azureSecrets.AZURE_TABLE_CONNECTION) },
       storage: { configured: Boolean(azureSecrets.AZURE_STORAGE_SAS) },
       lastConnectionTestAt: null, // Stub — echter Test folgt mit PROD-Anbindung.
-      missingEnv: azureMissing, // nur Namen
+      // In PROD nur Anzahl freigeben — Variablennamen sind ein leichter
+      // Fingerabdruck der Infra und gehören nicht in eine öffentliche Antwort.
+      missingEnv: isDev() ? azureMissing : [],
+      missingEnvCount: azureMissing.length,
     },
     security: {
       authMode: envOrNull("AUTH_PROVIDER") || "local",
