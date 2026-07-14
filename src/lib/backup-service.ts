@@ -647,12 +647,12 @@ export const BackupService = {
 
   async list(): Promise<BackupRecordMeta[]> {
     try {
-      const all = await dbTx<BackupRecord[]>(
+      const all = await dbTx<BackupRecordStored[]>(
         "readonly",
-        (s) => s.getAll() as IDBRequest<BackupRecord[]>,
+        (s) => s.getAll() as IDBRequest<BackupRecordStored[]>,
       );
       return all
-        .map(({ blob: _b, ...meta }) => meta)
+        .map(({ bytes: _by, ...meta }) => meta)
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     } catch (err) {
       logger.error("Backup list could not be loaded", err);
@@ -661,10 +661,14 @@ export const BackupService = {
   },
 
   async get(id: string): Promise<BackupRecord | undefined> {
-    return dbTx<BackupRecord | undefined>(
+    const stored = await dbTx<BackupRecordStored | undefined>(
       "readonly",
-      (s) => s.get(id) as IDBRequest<BackupRecord | undefined>,
+      (s) => s.get(id) as IDBRequest<BackupRecordStored | undefined>,
     );
+    if (!stored) return undefined;
+    const bytes = stored.bytes instanceof Uint8Array ? stored.bytes : new Uint8Array(stored.bytes);
+    const blob = new Blob([bytes], { type: "application/zip" });
+    return { ...stored, bytes, blob };
   },
 
   async delete(id: string): Promise<void> {
