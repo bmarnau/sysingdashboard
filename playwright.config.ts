@@ -35,7 +35,12 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
+    ...(process.env.RUN_FIREFOX ? [{ name: "firefox", use: { ...devices["Desktop Firefox"] } }] : []),
+    ...(process.env.RUN_WEBKIT ? [{ name: "webkit", use: { ...devices["Desktop Safari"] } }] : []),
+    ...(process.env.RUN_MOBILE ? [{ name: "mobile-chrome", use: { ...devices["Pixel 7"] } }] : []),
+  ],
   webServer: {
     command: "bun run dev",
     url: "http://localhost:8080",
