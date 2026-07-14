@@ -48,7 +48,13 @@
     "api:gate": "node scripts/api-discovery/report.mjs --gate",
     "test:api:smoke": "vitest run src/__tests__/api/smoke",
     "test:api:functional": "vitest run src/__tests__/api/functional",
-    "test:api:discovery": "vitest run src/__tests__/api-discovery"
+    "test:api:discovery": "vitest run src/__tests__/api-discovery",
+    "ops:build": "node scripts/ops/build-checks.mjs",
+    "ops:bundle": "node scripts/ops/bundle-report.mjs",
+    "ops:checks": "node scripts/ops/ops-checks.mjs",
+    "ops:e2e": "playwright test e2e/perf e2e/stability e2e/ops",
+    "ops:report": "node scripts/ops/report.mjs",
+    "test:ops": "bun run ops:build && bun run ops:bundle && bun run ops:checks && bun run ops:e2e && bun run ops:report"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.42.3",
