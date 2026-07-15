@@ -69,6 +69,9 @@ const BackupDialog = lazy(() =>
 const SystemStatusDialog = lazy(() =>
   import("@/components/SystemStatusDialog").then((m) => ({ default: m.SystemStatusDialog })),
 );
+const TechnicalReportDialog = lazy(() =>
+  import("@/components/TechnicalReportDialog").then((m) => ({ default: m.TechnicalReportDialog })),
+);
 const DownloadCenterDialog = lazy(() =>
   import("@/components/DownloadCenterDialog").then((m) => ({ default: m.DownloadCenterDialog })),
 );
@@ -348,6 +351,7 @@ function Dashboard() {
   ];
   const [showBackupDialog, setShowBackupDialog] = useState(false);
   const [showSystemStatus, setShowSystemStatus] = useState(false);
+  const [showTechnicalReport, setShowTechnicalReport] = useState(false);
   const [showDownloads, setShowDownloads] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
   const [showAzureData, setShowAzureData] = useState(false);
@@ -1036,6 +1040,17 @@ function Dashboard() {
                         <Gauge className="size-4 opacity-70" /> Systemstatus…
                       </button>
                     )}
+                    {can(currentUser, "systemstatus.view") && (
+                      <button
+                        onClick={() => {
+                          setShowServiceMenu(false);
+                          setShowTechnicalReport(true);
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                      >
+                        <ScrollText className="size-4 opacity-70" /> Technischer Prüfbericht…
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         setShowServiceMenu(false);
@@ -1471,6 +1486,15 @@ function Dashboard() {
       {showSystemStatus && (
         <Suspense fallback={null}>
           <SystemStatusDialog open={showSystemStatus} onOpenChange={setShowSystemStatus} />
+        </Suspense>
+      )}
+
+      {showTechnicalReport && (
+        <Suspense fallback={null}>
+          <TechnicalReportDialog
+            open={showTechnicalReport}
+            onOpenChange={setShowTechnicalReport}
+          />
         </Suspense>
       )}
 

@@ -1,130 +1,87 @@
 
-# Prompt 2A.7 — Performance-, Build- und Betriebsprüfung
+# Prompt 2A.8 – Zentraler technischer Prüfbericht
 
-Ziel: eine reproduzierbare Betriebsprüfung, die den aktuellen Buildstand misst, Baselines schreibt und Regressionen sichtbar macht — ohne willkürliche Grenzwerte. Analog zu 2A.5B/2A.6: Soft-Gate, JSON+MD-Report, Handbuch-Update.
+Ziel: Ein Aggregator, der alle vorhandenen Bereichsberichte (Security, API Discovery, Backup-Integrität, Tech-Debt, Ops, Vitest, Playwright) zu **einem** konsolidierten technischen Prüfbericht zusammenführt — mit Findings, Maßnahmenreihenfolge, Versionsvergleich und Freigabeempfehlung. Reine Aggregation, keine neuen Tests.
 
-## Prinzipien
+## 1. Neue Skripte
 
-- **Baselines statt Wunschwerte**: Erster Lauf schreibt Referenz (`test-report/ops-baseline.json`), spätere Läufe vergleichen und melden Trend. Kein Fail bei fehlender Baseline.
-- **Soft-Gate**: Der Report-Job scheitert nicht am Messwert, nur an echten Fehlern (Build kaputt, Typecheck rot, Playwright-Crash). Hart-Gate ist späterer Bump.
-- **Additiv**: keine bestehenden Tests umbauen, keine ADR-Umkehr, keine Änderungen an Produktionscode außer im Systemstatus-Payload (siehe „Betrieb").
+**`scripts/technical-report/collectors/`** — je ein kleiner Reader pro Quelle, defensiv (fehlende Datei → Bereich als `not-run` markieren, nicht crashen):
+- `security.mjs` → `test-report/security-report.json`
+- `api.mjs` → `test-report/api-*.json` + `api-findings.md`
+- `backup.mjs` → `test-report/backup-integrity-report.json`
+- `tech-debt.mjs` → `tech-debt/findings.json` + `test-report/tech-debt.json`
+- `ops.mjs` → `test-report/ops-report.json` (Build/Bundle/Perf/Stability/Ops)
+- `vitest.mjs` → `test-report/*-vitest.json` (backup, security)
+- `e2e.mjs` → `e2e/reports/*.md` (best-effort Zähl-Parse)
+- `docs.mjs` → Ergebnis von `scripts/check-docs-sync.mjs` (Exitcode + kurzer Reason)
 
-## Umfang & Struktur
-
-### 1. Build-Checks (`scripts/ops/build-checks.mjs`)
-Aggregiert existierende Prüfungen zu einem Report:
-- `bun run build` (prod) + `bun run build:dev` (dev) — Dauer, Exit-Code, Warnings
-- `bunx tsgo --noEmit` — TypeScript
-- `bun run lint` — ESLint (soft; Ergebnis nur protokollieren)
-- `bunx prettier --check .` — Formatierung
-- `bun run docs:check`, `bun run check:no-console`, `bun run check:rbac`, `bun run security:check` (bereits vorhanden — hier nur konsolidiert)
-Output: `test-report/build-report.{json,md}`
-
-### 2. Bundle-Checks (erweitert `scripts/check-bundle.mjs` → `scripts/ops/bundle-report.mjs`)
-- Gesamt/Top-15 (schon vorhanden)
-- Neu: Entry-Chunk vs Lazy-Chunks (Vite-Manifest lesen)
-- Neu: Doppelte Deps via `bun pm ls --all` + Duplikat-Erkennung (Package-Name+Major)
-- Neu: „Schwere Libs im Initial-Bundle" — Heuristik (Regex auf Chunk-Sourcemaps für `xlsx`, `jspdf`, `pdfjs`, `fflate`, `zod`) mit Whitelist
-- Neu: Trend gegenüber `test-report/bundle.prev.json` (Diff je Chunk, Gesamt-Delta)
-Output: `test-report/bundle-report.{json,md}`
-
-### 3. Performance-Messungen (Playwright, `e2e/perf/*.spec.ts`)
-Läuft gegen den Dev-Server (wie bestehende E2E-Specs). Nutzt `performance.mark`/`measure` und `Performance API`.
-- `startup.spec.ts` — Navigation Timing (FCP, LCP, TTI-Näherung via `PerformanceObserver`) für `/`
-- `dialogs.spec.ts` — Öffnen der schweren Dialoge (Backup, Import/Export, Log Viewer, System Status, Azure) — jeweils Zeit bis interaktiv
-- `lists.spec.ts` — 500 Aufgaben/Tätigkeiten seeden via localStorage-Fixture, Render-Zeit messen
-- `io.spec.ts` — Import-Preview und Export mit synthetischem Datensatz (500 Zeilen)
-- `memory.spec.ts` — `performance.memory` (nur Chromium) vor/nach 20× Dialog-Auf/Zu
-Ergebnisse werden in `test-report/perf-raw.json` gesammelt.
-
-### 4. Stabilität (`e2e/stability/*.spec.ts`)
-- Dialog-Loop (20× Open/Close, kein Memory-Growth-Guard, nur Zahl protokollieren)
-- Benutzerwechsel: Rolle wechseln, prüfen dass UI-Gates konsistent bleiben
-- Cross-Tab-Sync: zwei Contexts, `storage`-Event auslösen, State-Konsistenz prüfen
-- Reload-Persistenz: Dashboard-Store übersteht F5
-- Offline-Simulation: `context.setOffline(true)` → Fehler-Banner erwartet, App bleibt bedienbar
-- API-Ausfall: MSW/Route-Interception liefert 500 auf `/api/status` → Systemstatus zeigt Fehler statt Crash
-- Speicherausfall: `localStorage.setItem` → QuotaExceeded simulieren
-- Lange Sitzung: 10 min Idle + Interaktion (verkürzte Version in CI: 30 s)
-
-### 5. Kompatibilität
-- Playwright-Projekte erweitern: `chromium` (bereits), `firefox`, `webkit` als optionale CI-Matrix (webkit nur wenn `RUN_WEBKIT=1`, Standard aus wegen CI-Kosten)
-- Viewports: Desktop (1280×800, bereits) + Mobile (`iPhone 13`)-Projekt für die Smoke-Suite (Nav + Dashboard + ein Dialog)
-
-### 6. Betrieb (`e2e/ops/*.spec.ts` + Codeänderung)
-- Health: GET `/api/status` → 200, Body enthält `application.mode`, keine Secrets (Regex-Prüfung auf `key`, `token`, `password`, `connectionString`)
-- ENV-Validierung: Server-Fn-Aufruf mit fehlender Pflicht-ENV → 500 mit generischer Message (kein Variablenname im Body)
-- **Kleine Änderung an `src/routes/api/status.ts`**: sicherstellen, dass `azure.missingEnv` in Prod-Mode nur Booleans/Counts liefert, keine Variablennamen (aktuell werden Namen zurückgegeben — Public-Endpoint, siehe `endpointMeta.public = true`). Neuer Feld `azure.missingEnvCount: number`; `missingEnv[]` nur im Development-Mode. Dokumentiert in Report + Handbuch.
-- Rollback-Doku: prüfen, dass `docs/DEPLOYMENT.md` einen Rollback-Abschnitt enthält (statischer Check)
-- Backup-Verfügbarkeit: prüfen, dass `BackupService.create()` in Test-Instance ein gültiges ZIP liefert (bereits via `backup/create.test.ts` abgedeckt — hier nur re-verlinkt)
-
-### 7. Report-Aggregator (`scripts/ops/report.mjs`)
-- Sammelt: build-report, bundle-report, perf-raw, stability-raw, compat-matrix, ops-checks
-- Vergleicht gegen `test-report/ops-baseline.json`, schreibt Diff
-- Erzeugt `test-report/ops-report.{json,md}` mit Sektionen: Build / Bundle / Performance / Stability / Compat / Betrieb / Trends / Bekannte Einschränkungen
-- Erst-Lauf: schreibt Baseline, meldet „no baseline yet"
-- Follow-Läufe: markiert Deltas > 20 % als Warning (nicht Fail)
-
-### 8. CI-Integration (`.github/workflows/ci.yml`)
-Neuer Job `ops-check` (nach `build`):
+**`scripts/technical-report/normalize.mjs`** — einheitliches Finding-Schema:
 ```
-- bun run build
-- bun run test:ops:build
-- bun run test:ops:bundle
-- bunx playwright test e2e/perf e2e/stability e2e/ops --project=chromium
-- bun run ops:report
-- upload-artifact: test-report/
+{ id, severity, category, area, title, description, cause, impact,
+  evidence: {file, line?, reportRef}, components[], recommendation,
+  dependencies[], order, effort: 'S'|'M'|'L', status, source: 'auto'|'manual' }
 ```
-Kein hartes Fail außer bei echten Runner-Fehlern.
+Bereichs-IDs werden verlustfrei übernommen (`SEC-CRIT-001`, `DISC-CRIT-…`, `TD-…`) und mit Prefix in einen Gesamt-Namespace gehoben.
 
-### 9. package.json
-Neue Scripts:
-- `test:ops:build`, `test:ops:bundle`, `test:ops:perf`, `test:ops:stability`, `test:ops:compat`, `test:ops:betrieb`
-- `ops:report` (Aggregator)
-- `test:ops` (alle oben)
+**`scripts/technical-report/build.mjs`** — Aggregator; erzeugt:
+- `test-report/technical-test-report.json`
+- `test-report/technical-test-report.md`
+- `test-report/technical-test-report.prev.json` (Rotation für Vergleich)
 
-### 10. Dokumentation
-- `docs/adr/ADR-0016-ops-baselines.md` — Baseline-vs-Threshold-Entscheidung, Soft-Gate-Begründung, Cross-Browser-Matrix (Chromium-Standard, Firefox opt-in, WebKit gated)
-- `CHANGELOG.md` v1.36.0
-- `src/lib/help-documentation.ts` — neues Topic „Performance-, Build- und Betriebsprüfung" (Kapitel: was gemessen wird, wo Reports liegen, wie Baselines aktualisiert werden), `DOCUMENTATION_VERSION` → 1.15.0
-- README-Verweis auf `test-report/ops-report.md`
+**`scripts/technical-report/diff.mjs`** — Vergleich gegen `prev.json` (neu / behoben / verschlechtert / unverändert / wieder aufgetreten). Match über Finding-ID.
 
-## Technische Details
+**`scripts/technical-report/rules.mjs`** — Bewertungsregeln (Single Source of Truth):
+- Gesamtstatus-Ableitung: `failed` bei ≥1 CRITICAL offen, `passed-with-findings` bei HIGH/MEDIUM offen, `blocked` wenn Pflicht-Bereich `not-run`, `passed` sonst.
+- Freigabe-Matrix (dev / pilot / eingeschränkt-pilot / nicht-pilot / nicht-prod / nächste-phase) — leitet sich aus offenen CRITICAL/HIGH nach Bereich ab, deckt sich mit ADR-0013.
+- Maßnahmen-Sortierreihenfolge exakt wie im Prompt vorgegeben.
 
-### Baseline-Format (`test-report/ops-baseline.json`)
-```
-{
-  "createdAt": "...",
-  "build": { "prodMs": 12345, "devMs": 7890, "tscMs": 3456 },
-  "bundle": { "totalKB": 850, "entryKB": 220, "topChunks": [...] },
-  "perf": { "startupMs": 180, "dialogOpen": { "backup": 45, ... } },
-  "stability": { "dialogLoopGrowthKB": 1.2 }
-}
-```
+## 2. Berichtsstruktur (`technical-test-report.md`)
 
-### Playwright-Perf-Snippet (Beispiel)
-```ts
-const nav = await page.evaluate(() => JSON.stringify(performance.getEntriesByType("navigation")[0]));
-const paint = await page.evaluate(() => performance.getEntriesByType("paint"));
-```
+1. Prüfidentität — Dashboard-Version (aus `CHANGELOG.md`), Commit (aus `BUILD_INFO`), Build-Zeit, Testzeit, Umgebung (Node/Bun/OS, CI-Flag).
+2. Gesamtstatus — passed / passed-with-findings / failed / blocked.
+3. Executive Summary — Top-Ergebnisse, Hauptrisiken, Release-Empfehlung.
+4. Testergebnisse nach Bereich — Tabelle mit 13 Bereichen (Frontend, Backend, API, UI/E2E, RBAC, Auth, Azure, Datenintegrität, Backup/Restore, Accessibility, Performance, Dokumentation, technische Schulden): Status, Zahl offener Findings, Report-Referenz.
+5. Findings — vollständig, sortiert nach Schweregrad, mit allen im Prompt geforderten Feldern.
+6. Sortierte Maßnahmenliste — 14-stufige Reihenfolge wie vorgegeben.
+7. Vergleich zum vorherigen Bericht — 5 Kategorien.
+8. Freigabeempfehlung — genau eine der 6 Stufen + Begründung.
 
-### Duplikat-Erkennung
-`bun pm ls --all` → parse → `Map<name, Set<major>>` → alle mit `size > 1` sind Duplikate. Whitelist für bekannte Fälle (React DevTools shims etc.).
+## 3. UI-Anzeige im Servicebereich
 
-### Bewusst NICHT im Umfang
-- Lighthouse-Integration (extra Toolchain, unproportional für interne Ops-Suite)
-- Echte Load-Tests (kein Backend-Zustand, der davon profitiert)
-- Bundle-Größen-Hard-Gate (Follow-up nach ≥3 Baselines)
+Neuer Dialog **`src/components/TechnicalReportDialog.tsx`** (Lazy-Loaded, konsistent mit `SystemStatusDialog`/`LogViewerDialog`):
+- Lädt den Report zur Buildzeit als Asset (`import report from '../../test-report/technical-test-report.json'` via Vite `?raw`/JSON-Import) — kein Runtime-Fetch nötig, Report ist mit dem Build eingefroren.
+- Zeigt: Prüfidentität, Ampel-Gesamtstatus, Bereichstabelle, Top-Findings (kollabierbar), Freigabeempfehlung, Diff-Zusammenfassung.
+- Kein localStorage als Quelle; nur UI-Filter (Severity/Bereich) dürfen persistiert werden.
+- Menüeintrag im Servicebereich unter „Systemstatus".
 
-## Bekannte Einschränkungen (im Report gelistet)
-- WebKit-Coverage nur opt-in (CI-Kosten)
-- `performance.memory` nur Chromium
-- Baselines sind maschinenabhängig — CI-Runner-Wechsel verzerrt Trends
-- Kein echtes Load-/Stress-Testing
+**Fallback** wenn Report fehlt: Dialog zeigt Hinweis „Bericht nicht generiert — `bun run report:technical` ausführen".
 
-## Abnahmekriterien
-- `bun run test:ops` läuft lokal grün durch
-- `test-report/ops-report.md` enthält alle 6 Sektionen + Trend
-- CI-Artefakt sichtbar
-- Handbuch-Topic verlinkt und `docs:check` grün
-- ADR-0016 commited
+## 4. Package-Scripts & CI
+
+- `report:technical` → führt Collectors + Aggregator + Diff aus.
+- `report:technical:ci` → identisch, exit 1 nur bei Aggregator-Fehler (nicht bei Findings — Soft-Gate, analog ADR-0013/0016).
+- `.github/workflows/ci.yml`: neuer Step `technical-report` **nach** allen bestehenden Test-Jobs; lädt Artefakte der Vorjobs, ruft `report:technical:ci`, veröffentlicht `technical-test-report.{json,md}` als Artefakt.
+
+## 5. Handbuch & Doku
+
+- `src/lib/help-documentation.ts`: neues Kapitel „Technischer Prüfbericht" (Schweregrade, Freigaberegeln, Bearbeitungsprozess, Versionsvergleich). `DOCUMENTATION_VERSION` → 1.16.0.
+- `CHANGELOG.md`: v1.37.0-Eintrag → treibt `DASHBOARD_VERSION`.
+- **ADR-0017** „Zentraler technischer Prüfbericht": Aggregator statt paralleler Bereichsberichte, Finding-Namespace, Report-Snapshot im Bundle, Soft-Gate.
+
+## 6. Sicherheits- & Qualitäts-Leitplanken (aus Prompt-Vorgaben)
+
+- Report **wird nicht** in localStorage als Primärquelle abgelegt — Snapshot lebt in `test-report/` und im Build-Bundle.
+- Collectors dürfen keine Payloads/Secrets weiterreichen: Werte >200 Zeichen werden abgeschnitten, ENV-Werte nie übernommen (nur Namen wie in ADR-0013), Stacktraces gekürzt.
+- Jedes Finding trägt `evidence.reportRef` (Datei + Anker), damit reproduzierbar.
+- Feldern `source: 'auto' | 'manual'` unterscheidet Scanner-Befunde von menschlich hinzugefügten Bewertungen; manuelle Findings liegen in `scripts/technical-report/manual-findings.json` (bearbeitbar, versioniert).
+
+## Technischer Anhang
+
+- Kein neuer Runtime-Code außer dem Dialog.
+- Reine Node-Skripte (`.mjs`), keine neuen Dependencies (JSON/Markdown-Handling wie in bestehenden Scannern).
+- Reportformat kompatibel mit vorhandenem `test-report/`-Namensschema.
+- Diff nutzt stabile Finding-IDs; wo Bereiche keine stabilen IDs liefern (E2E-Markdown), wird ein Hash aus `title+area` als Fallback-ID erzeugt und im Report als solcher markiert.
+
+## Nicht Teil dieses Prompts
+
+- Neue Tests, neue Detektoren, Hard-Gates, Server-Push des Berichts, Web-Auslieferung außerhalb des Dialogs.
