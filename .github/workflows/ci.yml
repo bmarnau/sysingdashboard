@@ -116,6 +116,10 @@ jobs:
         if: always()
         run: bun run test:report
 
+      - name: Technical report (Prompt 2A.8)
+        if: always()
+        run: bun run report:technical:ci
+
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4

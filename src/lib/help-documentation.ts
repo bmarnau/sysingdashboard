@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.15.0";
+export const DOCUMENTATION_VERSION = "1.16.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -1914,6 +1914,45 @@ Erster Lauf schreibt \`test-report/ops-baseline.json\`. Folgeläufe warnen bei D
 - Baseline maschinen-/runner-abhängig — CI-Runner-Wechsel verzerrt Trends.
 - Kein Load-/Stress-Testing.`,
     relatedTopics: ["system-status", "api-endpoint-tests", "security-rbac-tests", "test-instance"],
+  },
+  {
+    id: "technical-test-report",
+    title: "Technischer Prüfbericht",
+    category: "Qualität",
+    keywords: ["Prüfbericht", "Findings", "Freigabe", "Aggregator", "Diff", "Maßnahmen"],
+    lastUpdated: "2026-07-15",
+    content: `## Zweck
+Der zentrale technische Prüfbericht (Prompt 2A.8, ADR-0017) fasst alle Bereichsberichte (Security, API, Backup/Restore, Tech-Debt, Ops, Docs) zu einem konsolidierten Bericht pro Buildstand zusammen. Reine Aggregation — keine neuen Tests.
+
+## Aufruf
+- \`bun run report:technical\` — schreibt \`test-report/technical-test-report.{json,md}\`.
+- Servicemenü → „Technischer Prüfbericht…" (UI-Ansicht mit Filtern).
+
+## Schweregrade
+- **CRITICAL** — blockiert Freigabe.
+- **HIGH** — blockiert Auth-/Azure-Produktion.
+- **MEDIUM** — dokumentierte Akzeptanz nötig.
+- **LOW / INFO** — kein Blocker, aber Trend beobachten.
+
+## Freigaberegeln
+Ableitung aus offenen CRIT/HIGH nach Bereich:
+- \`nicht produktionsfähig\` — ≥1 offenes CRITICAL.
+- \`nur eingeschränkt pilotfähig\` — Auth-/RBAC- oder Azure-Blocker offen.
+- \`für Pilot geeignet\` — nur HIGH-Findings.
+- \`für nächste Phase freigegeben\` — Security & Backup grün, keine offenen HIGH.
+- \`Entwicklung fortsetzen\` — Default.
+
+## Bearbeitungsprozess
+Maßnahmen sind in 14 Buckets sortiert (Critical Security → Critical Data Integrity → High Security → High Functional → Auth/RBAC → Azure → Backup/Restore → Stabilität → Architektur → Testlücken → Performance → Dokumentation → UI). Manuelle Findings (\`source=manual\`, IDs mit \`man:\`) werden von automatisch erzeugten (\`source=auto\`) unterschieden.
+
+## Versionsvergleich
+Der Aggregator rotiert den vorherigen Bericht nach \`technical-test-report.prev.json\` und meldet: neu, behoben, verschlechtert, unverändert, wieder aufgetreten. Match über Finding-ID.
+
+## Bekannte Grenzen
+- Qualität hängt an den Eingaben — fehlt ein Bereichsbericht, gilt der Bereich als \`not-run\`.
+- Bericht ist zur Build-Zeit im Bundle eingefroren, nicht Runtime-Fetch.
+- Keine Prüfsummen, keine Ticket-System-Anbindung, keine Secrets im Report.`,
+    relatedTopics: ["system-status", "security-rbac-tests", "api-endpoint-tests", "performance-build-ops"],
   },
 ];
 

@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.37.0 - 2026-07-15
+
+- **Zentraler technischer Prüfbericht (Prompt 2A.8, ADR-0017)**: neuer Aggregator `scripts/technical-report/build.mjs` fasst Security-, API-, Backup-Integritäts-, Tech-Debt-, Ops- und Docs-Berichte zu `test-report/technical-test-report.{json,md}` zusammen. Einheitliches Finding-Schema mit ID-Namespace (`sec:`, `api:`, `backup:`, `td:`, `ops:`, `docs:`, `man:`), Vergleich zum Vorbericht (`.prev.json`), sortierte Maßnahmenliste (14 Buckets), Freigabeempfehlung (6 Stufen), Soft-Gate analog ADR-0013/0016.
+- **UI**: neuer `TechnicalReportDialog.tsx` im Servicemenü unter „Systemstatus". Lädt den Bericht per `?raw`-Import (kein localStorage als Primärquelle, kein Runtime-Fetch), zeigt Prüfidentität, Ampel-Gesamtstatus, Bereichstabelle, Diff-Summary und filterbare Finding-Liste (Severity/Bereich).
+- **Manuelle Findings**: `scripts/technical-report/manual-findings.json` (versioniert, `source=manual` — sichtbar vom Aggregator-Namespace `auto` unterschieden).
+- **Neue npm-Scripts**: `report:technical`, `report:technical:ci`.
+- **CI**: neuer Step „Technical report" schreibt `test-report/technical-test-report.{json,md}` in das bestehende `test-report`-Artefakt.
+- **Handbuch**: Kapitel „Technischer Prüfbericht" (`DOCUMENTATION_VERSION` → 1.16.0).
+
 ## 1.36.0 - 2026-07-14
 
 - **Performance-, Build- und Betriebsprüfung (Prompt 2A.7, ADR-0016)**: neue Scripts unter `scripts/ops/` (`build-checks.mjs`, `bundle-report.mjs`, `ops-checks.mjs`, `report.mjs`) mit konsolidiertem `test-report/ops-report.{json,md}` und Baseline-Datei `test-report/ops-baseline.json`. Baselines statt harter Grenzwerte, Warnschwelle bei Delta > 20 %.
