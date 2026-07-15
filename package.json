@@ -54,7 +54,9 @@
     "ops:checks": "node scripts/ops/ops-checks.mjs",
     "ops:e2e": "playwright test e2e/perf e2e/stability e2e/ops",
     "ops:report": "node scripts/ops/report.mjs",
-    "test:ops": "bun run ops:build && bun run ops:bundle && bun run ops:checks && bun run ops:e2e && bun run ops:report"
+    "test:ops": "bun run ops:build && bun run ops:bundle && bun run ops:checks && bun run ops:e2e && bun run ops:report",
+    "report:technical": "node scripts/technical-report/build.mjs",
+    "report:technical:ci": "node scripts/technical-report/build.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.42.3",
