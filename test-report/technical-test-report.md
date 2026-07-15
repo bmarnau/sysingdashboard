@@ -1,12 +1,12 @@
 # Technischer Prüfbericht
 
-_Generiert: 2026-07-15T03:50:43.714Z_
+_Generiert: 2026-07-15T03:52:18.745Z_
 
 ## 1. Prüfidentität
-- Dashboard-Version: **1.36.0**
-- Commit: `614740d`
+- Dashboard-Version: **1.37.0**
+- Commit: `6781aba`
 - Build-Zeit: —
-- Testzeit: 2026-07-15T03:50:43.628Z
+- Testzeit: 2026-07-15T03:52:18.640Z
 - Umgebung: Node v22.22.0 · linux · CI=false
 
 ## 2. Gesamtstatus
@@ -784,7 +784,11 @@ _Generiert: 2026-07-15T03:50:43.714Z_
 - **documentation** (1): sec:SEC-LOW-DOCS-001
 
 ## 7. Vergleich zum vorherigen Bericht
-_Kein Vorbericht — dies ist der erste Lauf._
+- Neu: 0
+- Behoben: 0
+- Verschlechtert: 0
+- Unverändert: 67
+- Wieder aufgetreten: 0
 
 ## 8. Freigabeempfehlung
 **nicht produktionsfähig** — 2 offene CRITICAL-Findings.
