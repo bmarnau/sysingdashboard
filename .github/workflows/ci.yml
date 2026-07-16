@@ -6,137 +6,360 @@ on:
   pull_request:
     branches: [main, develop]
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  BUN_VERSION: latest
+  NODE_VERSION: "22"
+
 jobs:
-  verify:
-    name: Lint & Build
+  # 1 – Installation / Cache-Warmup ---------------------------------------
+  setup:
+    name: 1 · Setup
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - name: Cache bun install
+        uses: actions/cache@v4
         with:
-          bun-version: latest
-
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Lint
+  # 2 – Format / Lint / TypeScript / Docs-Sync ----------------------------
+  static:
+    name: 2 · Static (format, lint, types, docs)
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - name: Prettier (check)
+        run: bunx prettier --check .
+      - name: ESLint
         run: bun run lint
-
+      - name: TypeScript (tsgo)
+        run: bunx --bun tsgo --noEmit
       - name: RBAC matrix check
         run: bun run rbac:check
-
       - name: No-console guard
         run: bun run lint:no-console
-
       - name: Docs sync check
         run: bun run docs:check
 
-      - name: Test (with coverage)
+  # 3+4 – Unit- und Komponenten-Tests -------------------------------------
+  unit:
+    name: 3+4 · Unit & Components
+    needs: static
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - name: Vitest (unit + components + coverage)
         run: bun run test:coverage
-
-      - name: Security suite (Vitest + scanners)
-        run: bun run test:security
-
-      - name: Security report
+      - uses: actions/upload-artifact@v4
         if: always()
-        run: bun run security:report
+        with: { name: coverage, path: coverage/ }
 
-      - name: Security release gate (soft — CRITICAL sichtbar, kein Merge-Block)
-        run: node scripts/security/security-report.mjs --soft
+  # 5 – Backend-Tests ------------------------------------------------------
+  backend:
+    name: 5 · Backend
+    needs: unit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run test:backend
 
-      - name: API endpoint contract tests
-        run: bun run test:api
-
-      - name: API discovery (inventory)
-        run: bun run api:discover
-
-      - name: API discovery self-tests
-        run: bun run test:api:discovery
-
-      - name: API smoke tests
-        run: bun run test:api:smoke
-
-      - name: API functional coverage
-        run: bun run test:api:functional
-
+  # 6 – API-Tests (Contract, Discovery, Smoke, Functional) ----------------
+  api:
+    name: 6 · API
+    needs: backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run test:api
+      - run: bun run api:discover
+      - run: bun run test:api:discovery
+      - run: bun run test:api:smoke
+      - run: bun run test:api:functional
       - name: API discovery report
         if: always()
         run: bun run api:report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: api-reports, path: test-report/api-*.* }
 
-      - name: API discovery release gate (soft)
-        run: node scripts/api-discovery/report.mjs --gate || echo "::warning ::API discovery gate reported blocking findings — soft mode, not failing build"
+  # 7 – RBAC / Security ---------------------------------------------------
+  security:
+    name: 7 · RBAC & Security
+    needs: api
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - name: Vitest security suite + scanners
+        run: bun run test:security
+      - name: Security report
+        if: always()
+        run: bun run security:report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: security-reports, path: test-report/security-*.* }
 
-      - name: Restore previous tech-debt report (Diff-Basis)
-        uses: actions/cache@v4
+  # 8 – Import / Export ---------------------------------------------------
+  io:
+    name: 8 · Import/Export
+    needs: security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run test:io
+      - run: bun run test:examples
+
+  # 9 – Backup / Restore --------------------------------------------------
+  backup:
+    name: 9 · Backup/Restore
+    needs: io
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run test:backup:integrity
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: backup-reports, path: test-report/backup-*.* }
+
+  # 10 – Production Build -------------------------------------------------
+  build:
+    name: 10 · Production Build
+    needs: backup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - name: Build (production)
+        run: bun run build
+      - name: Bundle report
+        run: bun run test:perf
+      - uses: actions/upload-artifact@v4
+        with: { name: dist, path: dist/ }
+
+  # 11 – E2E (Playwright, inkl. Security-Specs) ---------------------------
+  e2e:
+    name: 11 · E2E (Playwright)
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - name: Playwright browsers
+        run: bunx playwright install --with-deps chromium
+      - name: Playwright E2E
+        run: bun run test:e2e
+      - name: E2E report
+        if: always()
+        run: bun run test:e2e:report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: playwright-report, path: playwright-report/ }
+
+  # 12 – Accessibility (Warn-Only) ----------------------------------------
+  a11y:
+    name: 12 · Accessibility
+    needs: build
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - run: bun run test:a11y
+
+  # 13 – Technical Debt (Warn-Only, Diff) ---------------------------------
+  debt:
+    name: 13 · Technical Debt
+    needs: build
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - uses: actions/cache@v4
         with:
           path: test-report/tech-debt.prev.json
           key: tech-debt-${{ github.ref_name }}-${{ github.run_id }}
           restore-keys: |
             tech-debt-${{ github.ref_name }}-
             tech-debt-main-
+      - run: bun install --frozen-lockfile
+      - run: bun run test:debt
 
-      - name: Tech-debt report
-        run: bun run test:debt
-
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
+  # 14 – Zentraler Prüfbericht + Quality-Gate -----------------------------
+  report:
+    name: 14 · Technical Report & Quality Gate
+    needs: [static, unit, backend, api, security, io, backup, build, e2e, a11y, debt]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: ${{ env.BUN_VERSION }} }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: actions/cache@v4
         with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
-      - name: Install Playwright browsers
-        run: bunx playwright install --with-deps chromium
-
-      - name: E2E (Playwright)
-        run: bun run test:e2e
-
-      - name: Generate E2E report
-        if: always()
-        run: bun run test:e2e:report
-
-      - name: Build (production)
-        run: bun run build
-
-      - name: Bundle report
-        run: bun run test:perf
-
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: test-report-in
+          pattern: "*-reports"
+          merge-multiple: true
+      - name: Move downloaded reports into place
+        run: |
+          mkdir -p test-report
+          cp -r test-report-in/* test-report/ 2>/dev/null || true
       - name: Aggregate test report
-        if: always()
         run: bun run test:report
-
       - name: Technical report (Prompt 2A.8)
-        if: always()
         run: bun run report:technical:ci
-
-      - name: Upload coverage
+      - name: Quality Gate (Prompt 2A.10)
+        run: bun run ci:gate
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage/
-
-      - name: Upload test-report
-        if: always()
-        uses: actions/upload-artifact@v4
         with:
           name: test-report
           path: test-report/
-
-      - name: Upload Playwright report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
