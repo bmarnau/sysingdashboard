@@ -466,7 +466,99 @@ function diffReports(current, prev) {
   return { new: newer, fixed, worse, same, reappeared };
 }
 
-// ------------------------------------------------------------------ main
+// ------------------------------------------------------------------ blockers
+
+/**
+ * Prompt 2A.10 – Quality-Gate-Blocker.
+ *
+ * Erzeugt eine kanonische Liste harter CI-Blocker aus den aggregierten
+ * Findings und den Roh-Vitest-Reports der Bereiche Backup und Security.
+ * `scripts/ci/quality-gate.mjs` liest ausschließlich dieses Feld — es gibt
+ * keine zweite Wahrheit.
+ */
+function collectVitestFailures(reportPath) {
+  const rep = readJson(reportPath);
+  if (!rep) return [];
+  const failures = [];
+  const walk = (node) => {
+    if (!node) return;
+    if (Array.isArray(node)) return node.forEach(walk);
+    if (node.type === "test" || node.tasks === undefined) {
+      // vitest json v2: results tree with `testResults[].assertionResults[]`
+    }
+    if (Array.isArray(node.testResults)) {
+      for (const file of node.testResults) {
+        for (const t of file.assertionResults ?? []) {
+          if (t.status === "failed") failures.push(`${file.name}::${t.fullName ?? t.title}`);
+        }
+      }
+    }
+  };
+  walk(rep);
+  return failures;
+}
+
+function computeBlockers(allFindings, sources) {
+  const blockers = [];
+  const push = (id, reason, detail) => blockers.push({ id, reason, detail });
+
+  // 1. Critical Findings (jede Kategorie)
+  for (const f of allFindings) {
+    if (f.severity === "CRITICAL" && !f.accepted) {
+      push("critical-finding", `Critical Finding offen: ${f.id}`, f.title);
+    }
+  }
+  // 2. High Security Findings
+  for (const f of allFindings) {
+    if (f.severity === "HIGH" && !f.accepted && f.id.startsWith("sec:")) {
+      push("high-security-finding", `High Security Finding: ${f.id}`, f.title);
+    }
+  }
+  // 3. Datenintegritätsfehler (Backup, CRIT/HIGH)
+  for (const f of allFindings) {
+    if (
+      !f.accepted &&
+      (f.severity === "CRITICAL" || f.severity === "HIGH") &&
+      f.id.startsWith("backup:")
+    ) {
+      push("data-integrity", `Datenintegritätsfehler: ${f.id}`, f.title);
+    }
+  }
+  // 4. Offener privilegierter Endpoint
+  for (const f of allFindings) {
+    if (!f.accepted && f.id.startsWith("api:") && /unprotected|privileged|open-endpoint/i.test(`${f.id} ${f.title}`)) {
+      push("unprotected-privileged-endpoint", `Privilegierter Endpoint ungeschützt: ${f.id}`, f.title);
+    }
+  }
+  // 5. Secret Leak
+  for (const f of allFindings) {
+    if (!f.accepted && /secret-leak|gitleaks|leaked-secret/i.test(`${f.id} ${f.title}`)) {
+      push("secret-leak", `Secret-Leak-Verdacht: ${f.id}`, f.title);
+    }
+  }
+  // 6. RBAC-Lockout-Test failed → security-vitest.json
+  const secFailures = collectVitestFailures(`${OUT_DIR}/security-vitest.json`);
+  for (const name of secFailures) {
+    if (/admin.?lockout|lockout|last-admin/i.test(name)) {
+      push("rbac-lockout-failed", "RBAC-Lockout-Test fehlgeschlagen", name);
+    }
+  }
+  // 7. Backup-/Restore-Kerntest failed → backup-vitest.json
+  const backupFailures = collectVitestFailures(`${OUT_DIR}/backup-vitest.json`);
+  for (const name of backupFailures) {
+    if (/restore|integrity|create\.test|backup-service/i.test(name)) {
+      push("backup-restore-core-failed", "Backup-/Restore-Kerntest fehlgeschlagen", name);
+    }
+  }
+  // 8. Docs oder Security-Bereich nicht ausgeführt (Pflichtbereiche)
+  for (const key of ["security", "backup", "docs"]) {
+    if (sources[key]?.status === "not-run" && sources[key]?.mandatory) {
+      push("mandatory-source-missing", `Pflichtbereich ohne Bericht: ${key}`, "Report fehlt");
+    }
+  }
+  return blockers;
+}
+
 
 function main() {
   mkdirSync(OUT_DIR, { recursive: true });
@@ -497,8 +589,10 @@ function main() {
     ? readJson(PREV_JSON) ?? readJson(OUT_JSON)
     : null;
 
+  const blockers = computeBlockers(allFindings, sources);
+
   const report = {
-    schemaVersion: "1.0.0",
+    schemaVersion: "1.1.0",
     generatedAt: new Date().toISOString(),
     identity,
     status,
@@ -521,6 +615,7 @@ function main() {
       findings: allFindings.filter((f) => f.bucket === bucket).map((f) => f.id),
     })).filter((b) => b.findings.length > 0),
     diff: prev ? diffReports({ findings: allFindings }, prev) : null,
+    blockers,
   };
 
   // Rotate: aktueller Bericht wird zur prev.
@@ -626,6 +721,15 @@ function renderMarkdown(r) {
   lines.push("");
   lines.push(`## 8. Freigabeempfehlung`);
   lines.push(`**${REC_LABEL[r.recommendation.level]}** — ${r.recommendation.reason}`);
+  lines.push("");
+  lines.push(`## 9. Quality-Gate-Blocker (Prompt 2A.10)`);
+  if (!r.blockers?.length) {
+    lines.push("_Keine — CI-Gate ist grün._");
+  } else {
+    for (const b of r.blockers) {
+      lines.push(`- **${b.id}** — ${b.reason}${b.detail ? ` _(${b.detail})_` : ""}`);
+    }
+  }
   lines.push("");
   lines.push(`## Bekannte Grenzen`);
   lines.push(`- Reine Aggregation: Qualität hängt an den Einzelberichten.`);

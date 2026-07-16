@@ -1,11 +1,11 @@
 {
-  "schemaVersion": "1.0.0",
-  "generatedAt": "2026-07-15T03:52:18.745Z",
+  "schemaVersion": "1.1.0",
+  "generatedAt": "2026-07-16T03:41:45.451Z",
   "identity": {
-    "dashboardVersion": "1.37.0",
-    "commit": "6781aba",
+    "dashboardVersion": "1.38.0",
+    "commit": "5dd99eb",
     "buildTime": null,
-    "testTime": "2026-07-15T03:52:18.640Z",
+    "testTime": "2026-07-16T03:41:45.369Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -2089,5 +2089,32 @@
       "td:td-coverage-027fe478"
     ],
     "reappeared": []
-  }
+  },
+  "blockers": [
+    {
+      "id": "critical-finding",
+      "reason": "Critical Finding offen: sec:SEC-CRIT-001",
+      "detail": "Backend prüft keine Rolle oder Assignment"
+    },
+    {
+      "id": "critical-finding",
+      "reason": "Critical Finding offen: sec:SEC-CRIT-002",
+      "detail": "Aktive Rolle wird ausschließlich im localStorage geführt"
+    },
+    {
+      "id": "high-security-finding",
+      "reason": "High Security Finding: sec:SEC-HIGH-LOG-001",
+      "detail": "Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS"
+    },
+    {
+      "id": "high-security-finding",
+      "reason": "High Security Finding: sec:SEC-HIGH-AUTH-001",
+      "detail": "Keine Session-, Token- oder Provider-Infrastruktur"
+    },
+    {
+      "id": "high-security-finding",
+      "reason": "High Security Finding: sec:SEC-HIGH-AZURE-001",
+      "detail": "Azure-Sync akzeptiert einen statischen Shared-Token als einzige Auth"
+    }
+  ]
 }

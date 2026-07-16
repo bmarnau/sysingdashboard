@@ -13,6 +13,16 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.38.0 - 2026-07-16
+
+- **CI-Integration und Quality Gates (Prompt 2A.10, ADR-0018)**: `.github/workflows/ci.yml` in 14 geordnete Stufen aufgeteilt (Setup → Static → Unit → Backend → API → Security → IO → Backup → Build → E2E → A11y → Debt → Report). `needs:`-Kette stoppt Folgejobs bei frühem Fehler; Concurrency-Cancel für PRs; Bun- und Playwright-Browser-Cache pro Job.
+- **Zentraler Quality-Gate**: neues Skript `scripts/ci/quality-gate.mjs` (Script `bun run ci:gate`) liest ausschließlich `test-report/technical-test-report.json` → neues Feld `blockers[]`. Blocker-Definition ist damit einmal in `scripts/technical-report/build.mjs` gepflegt (Single Source of Truth).
+- **Harte Blocker** exakt gemäß Prompt: fehlgeschlagener Build, TypeScript-Fehler, Critical Finding (jede Kategorie), High Security Finding, Datenintegritätsfehler, offener privilegierter Endpoint, Secret Leak, fehlgeschlagener RBAC-Lockout-Test, fehlgeschlagener Backup-/Restore-Kerntest, fehlender Pflichtbereich (Security/Backup/Docs).
+- **Warn-Only**: Accessibility, Technical Debt und Performance-Delta blockieren nicht (Jobs mit `continue-on-error`).
+- **Technischer Prüfbericht** um Kapitel 9 „Quality-Gate-Blocker" erweitert; Schema-Version 1.1.0.
+- **Tests**: `src/__tests__/ci/quality-gate.test.ts` (8 Fälle, deckt alle Blocker-Kategorien + Grün-Pfad + Fehlformate ab); neues Script `test:ci-gate`.
+- **Handbuch**: neues Kapitel „CI-Pipeline und Quality Gates" (`DOCUMENTATION_VERSION` → 1.17.0).
+
 ## 1.37.0 - 2026-07-15
 
 - **Zentraler technischer Prüfbericht (Prompt 2A.8, ADR-0017)**: neuer Aggregator `scripts/technical-report/build.mjs` fasst Security-, API-, Backup-Integritäts-, Tech-Debt-, Ops- und Docs-Berichte zu `test-report/technical-test-report.{json,md}` zusammen. Einheitliches Finding-Schema mit ID-Namespace (`sec:`, `api:`, `backup:`, `td:`, `ops:`, `docs:`, `man:`), Vergleich zum Vorbericht (`.prev.json`), sortierte Maßnahmenliste (14 Buckets), Freigabeempfehlung (6 Stufen), Soft-Gate analog ADR-0013/0016.

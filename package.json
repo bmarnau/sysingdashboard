@@ -56,7 +56,9 @@
     "ops:report": "node scripts/ops/report.mjs",
     "test:ops": "bun run ops:build && bun run ops:bundle && bun run ops:checks && bun run ops:e2e && bun run ops:report",
     "report:technical": "node scripts/technical-report/build.mjs",
-    "report:technical:ci": "node scripts/technical-report/build.mjs"
+    "report:technical:ci": "node scripts/technical-report/build.mjs",
+    "ci:gate": "node scripts/ci/quality-gate.mjs",
+    "test:ci-gate": "vitest run src/__tests__/ci"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.42.3",

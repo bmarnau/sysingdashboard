@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.16.0";
+export const DOCUMENTATION_VERSION = "1.17.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -1953,6 +1953,61 @@ Der Aggregator rotiert den vorherigen Bericht nach \`technical-test-report.prev.
 - Bericht ist zur Build-Zeit im Bundle eingefroren, nicht Runtime-Fetch.
 - Keine Prüfsummen, keine Ticket-System-Anbindung, keine Secrets im Report.`,
     relatedTopics: ["system-status", "security-rbac-tests", "api-endpoint-tests", "performance-build-ops"],
+  },
+  {
+    id: "ci-pipeline-quality-gates",
+    title: "CI-Pipeline und Quality Gates",
+    category: "Qualität",
+    keywords: ["CI", "GitHub Actions", "Quality Gate", "Blocker", "Pipeline", "Release-Gate"],
+    lastUpdated: "2026-07-16",
+    content: `## Zweck
+Prompt 2A.10 verankert die vollständige Testinstanz in GitHub Actions (\`.github/workflows/ci.yml\`, ADR-0018). Jeder Push und jede PR auf \`main\`/\`develop\` durchläuft eine geordnete Stufenkette. Ein Fehler in einer frühen Stufe stoppt die Folgejobs.
+
+## Pipeline-Stufen
+1. **Setup** — \`bun install --frozen-lockfile\` + Cache.
+2. **Static** — Prettier-Check, ESLint, \`tsgo --noEmit\`, RBAC-Matrix, No-Console-Guard, Docs-Sync.
+3. **Unit & Components** — \`bun run test:coverage\`.
+4. **Backend** — \`bun run test:backend\`.
+5. **API** — Contract, Discovery, Smoke, Functional + Discovery-Report.
+6. **RBAC & Security** — Vitest-Suite, statische Scans, \`security:report\`.
+7. **Import/Export** — \`bun run test:io\` + Beispielsdateien.
+8. **Backup/Restore** — \`bun run test:backup:integrity\` (Restore-Kerntests).
+9. **Production Build** — \`bun run build\` + Bundle-Report.
+10. **E2E** — Playwright inkl. Security-Specs (privilegierte Endpoints, UI-Tamper).
+11. **Accessibility** (Warn-Only) — \`bun run test:a11y\`.
+12. **Technical Debt** (Warn-Only) — Diff gegen Vor-Report.
+13. **Report** — Aggregation + zentraler Prüfbericht + **Quality Gate**.
+
+## Quality-Gate-Blocker (hart)
+Der Gate liest ausschließlich \`test-report/technical-test-report.json\` → Feld \`blockers[]\`. Blockierend sind:
+- **critical-finding** — jedes CRITICAL-Finding, egal aus welchem Bereich.
+- **high-security-finding** — HIGH-Finding aus dem Security-Namespace (\`sec:\`).
+- **data-integrity** — CRIT/HIGH aus dem Backup-Namespace (\`backup:\`).
+- **unprotected-privileged-endpoint** — privilegierter API-Endpoint ohne Guard.
+- **secret-leak** — Gitleaks- oder Scanner-Treffer.
+- **rbac-lockout-failed** — Admin-Lockout-Regressionstest scheitert.
+- **backup-restore-core-failed** — Restore-/Integritäts-Kerntest scheitert.
+- **mandatory-source-missing** — Pflichtbereich (Security, Backup, Docs) hat keinen Bericht.
+- Implizit: Build-Fehler, TypeScript-Fehler, Lint-Fehler → durch die jeweilige Stufe selbst.
+
+Bekannte Findings können mit \`accepted:true\` in \`scripts/security/static-findings.json\` (Security) bzw. über die entsprechende Source dokumentiert akzeptiert werden. Akzeptierte Findings zählen nicht als Blocker.
+
+## Warn-Only (kein Merge-Block)
+Accessibility, Technical Debt und Performance-Delta liefern nur Warnungen. Sie erscheinen im Prüfbericht, blockieren aber keinen Merge.
+
+## Ausführung lokal
+- \`bun run report:technical\` — schreibt Report inkl. \`blockers[]\`.
+- \`bun run ci:gate\` — spiegelt den CI-Gate; Exit 1 = Blocker.
+- \`bun run test:ci-gate\` — Unit-Tests der Gate-Logik.
+
+## Artefakte
+Jeder Job lädt seinen Report als GitHub-Artefakt hoch (\`coverage/\`, \`api-reports\`, \`security-reports\`, \`backup-reports\`, \`playwright-report\`, \`test-report\`). Der Report-Job zieht alle wieder ein, aggregiert sie und erzeugt \`test-report/technical-test-report.{json,md}\`.
+
+## Bekannte Grenzen
+- Job-Split erhöht Install-Zeit; per Bun- und Playwright-Cache reduziert, aber nicht eliminiert.
+- Kein automatisches Ticket-System — Blocker müssen im PR-Verlauf adressiert oder als akzeptiert markiert werden.
+- Firefox/WebKit/Mobile-Chrome bleiben opt-in (\`RUN_FIREFOX=1\`, siehe ADR-0012).`,
+    relatedTopics: ["technical-test-report", "security-rbac-tests", "performance-build-ops", "api-endpoint-tests"],
   },
 ];
 

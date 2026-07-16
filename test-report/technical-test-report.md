@@ -1,12 +1,12 @@
 # Technischer Prüfbericht
 
-_Generiert: 2026-07-15T03:52:18.745Z_
+_Generiert: 2026-07-16T03:41:45.451Z_
 
 ## 1. Prüfidentität
-- Dashboard-Version: **1.37.0**
-- Commit: `6781aba`
+- Dashboard-Version: **1.38.0**
+- Commit: `5dd99eb`
 - Build-Zeit: —
-- Testzeit: 2026-07-15T03:52:18.640Z
+- Testzeit: 2026-07-16T03:41:45.369Z
 - Umgebung: Node v22.22.0 · linux · CI=false
 
 ## 2. Gesamtstatus
@@ -792,6 +792,13 @@ _Generiert: 2026-07-15T03:52:18.745Z_
 
 ## 8. Freigabeempfehlung
 **nicht produktionsfähig** — 2 offene CRITICAL-Findings.
+
+## 9. Quality-Gate-Blocker (Prompt 2A.10)
+- **critical-finding** — Critical Finding offen: sec:SEC-CRIT-001 _(Backend prüft keine Rolle oder Assignment)_
+- **critical-finding** — Critical Finding offen: sec:SEC-CRIT-002 _(Aktive Rolle wird ausschließlich im localStorage geführt)_
+- **high-security-finding** — High Security Finding: sec:SEC-HIGH-LOG-001 _(Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS)_
+- **high-security-finding** — High Security Finding: sec:SEC-HIGH-AUTH-001 _(Keine Session-, Token- oder Provider-Infrastruktur)_
+- **high-security-finding** — High Security Finding: sec:SEC-HIGH-AZURE-001 _(Azure-Sync akzeptiert einen statischen Shared-Token als einzige Auth)_
 
 ## Bekannte Grenzen
 - Reine Aggregation: Qualität hängt an den Einzelberichten.
