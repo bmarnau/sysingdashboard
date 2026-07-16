@@ -497,8 +497,10 @@ function main() {
     ? readJson(PREV_JSON) ?? readJson(OUT_JSON)
     : null;
 
+  const blockers = computeBlockers(allFindings, sources);
+
   const report = {
-    schemaVersion: "1.0.0",
+    schemaVersion: "1.1.0",
     generatedAt: new Date().toISOString(),
     identity,
     status,
@@ -521,6 +523,7 @@ function main() {
       findings: allFindings.filter((f) => f.bucket === bucket).map((f) => f.id),
     })).filter((b) => b.findings.length > 0),
     diff: prev ? diffReports({ findings: allFindings }, prev) : null,
+    blockers,
   };
 
   // Rotate: aktueller Bericht wird zur prev.
