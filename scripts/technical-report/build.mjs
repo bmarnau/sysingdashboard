@@ -722,6 +722,15 @@ function renderMarkdown(r) {
   lines.push(`## 8. Freigabeempfehlung`);
   lines.push(`**${REC_LABEL[r.recommendation.level]}** — ${r.recommendation.reason}`);
   lines.push("");
+  lines.push(`## 9. Quality-Gate-Blocker (Prompt 2A.10)`);
+  if (!r.blockers?.length) {
+    lines.push("_Keine — CI-Gate ist grün._");
+  } else {
+    for (const b of r.blockers) {
+      lines.push(`- **${b.id}** — ${b.reason}${b.detail ? ` _(${b.detail})_` : ""}`);
+    }
+  }
+  lines.push("");
   lines.push(`## Bekannte Grenzen`);
   lines.push(`- Reine Aggregation: Qualität hängt an den Einzelberichten.`);
   lines.push(`- Bereichs-Status \`not-run\` heißt fehlender Vorbericht, nicht „grün".`);
