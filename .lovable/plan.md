@@ -1,83 +1,78 @@
 
-# Prompt 2A.10 – CI-Integration und Quality Gates
+## Ziel
 
-Bestehender Workflow `.github/workflows/ci.yml` läuft alle Prüfungen sequenziell in **einem** Job, mit weichen Gates (Lint via `bun run lint` ohne Toleranz, Security-Gate im Soft-Modus, API-Gate mit `|| echo`). Ziel: klare Stufen, harte Blocker exakt gemäß Vorgabe.
+Die Findings **SEC-CRIT-001** („Backend prüft keine Rolle") und **SEC-CRIT-002** („Rolle nur im localStorage") sollen im technischen Prüfbericht dauerhaft verschwinden — nicht durch Akzeptanz, sondern weil ihre Ursache im Code beseitigt ist.
 
-## Zielarchitektur
+Beide Findings haben denselben Kern: **es gibt heute keinen serverseitigen Identitätsträger.** Die einzige nachhaltige Lösung ist ein echter Auth-Layer, dessen Session sowohl die Rolle im UI als auch die Autorisierung an den API-Endpunkten liefert. Wir nutzen dafür **Lovable Cloud (E-Mail/Passwort, HIBP aktiv)** — Entra ID/SAML bleibt als späterer zusätzlicher Provider offen, das Datenmodell wird schon jetzt darauf vorbereitet.
 
-Ein Workflow, mehrere Jobs mit `needs:`-Kette, damit ein Blocker die Pipeline früh stoppt und Folgejobs entfallen. Reihenfolge = Prompt-Vorgabe:
+Bestehende localStorage-Benutzer werden verworfen; die **erste Registrierung wird automatisch `systemadministrator`**, alle weiteren starten als `viewer`, bis ein SysAdmin sie hochstuft.
 
-```text
-setup ─▶ static ─▶ unit ─▶ backend ─▶ api ─▶ security ─▶ io ─▶ backup ─┐
-                                                                       ▼
-                                                        build ─▶ e2e ─▶ a11y ─▶ debt ─▶ report
-```
+## Umsetzung (Reihenfolge)
 
-`setup` cached Bun-Install + Playwright-Browser einmal (Artifact), Folgejobs restoren.
+**1. Cloud + Auth aktivieren.**
+- Lovable Cloud aktivieren, Email/Password (HIBP) konfigurieren.
+- Neuen Nutzern *keinen* Auto-Login nach Signup, damit E-Mail-Bestätigung greift; nach Login Weiterleitung auf Dashboard.
 
-## Job-Stufen (Mapping zu Prompt-Punkten)
+**2. Datenmodell (Migration).**
+Alle Tabellen mit Grants + RLS in der gleichen Migration.
+- `public.profiles` (id = auth.users.id, first_name, last_name, display_name, email, phone, status, mfa_enabled, created_at, updated_at). Trigger `on_auth_user_created` legt Profil beim Signup an.
+- `public.app_role` als Enum (die 7 vorhandenen Rollen).
+- `public.user_roles` (id, user_id, role, granted_at, granted_by) — RBAC-Träger.
+- `public.has_role(_user_id uuid, _role app_role) returns bool` als `SECURITY DEFINER`-Funktion.
+- `public.audit_log` (id, actor_id, action, target, correlation_id, occurred_at, payload jsonb) für serverseitige Forensik (löst gleichzeitig `auditlog.view` real ein).
+- Trigger `bootstrap_first_sysadmin`: beim ersten `INSERT` in `user_roles`, falls Tabelle vorher leer war → erste registrierte `auth.users` bekommt `systemadministrator`; alle weiteren Signups bekommen `viewer`.
 
-| # | Job | Kommandos | Blocker? |
-|---|---|---|---|
-| 1 | `setup` | `bun install --frozen-lockfile`, Cache | ja (Install-Fehler) |
-| 2 | `static` | `bun run format --check`, `bun run lint`, `bunx tsgo --noEmit`, `bun run docs:check` | ja (TS-Fehler, Lint-Fehler jetzt hart, Doku-Drift) |
-| 3 | `unit` | `bun run test:unit --coverage` | ja |
-| 4 | `components` | `bun run test:components` | ja |
-| 5 | `backend` | `bun run test:backend` | ja |
-| 6 | `api` | `bun run test:api`, `bun run api:discover`, `bun run test:api:discovery`, `bun run test:api:smoke`, `bun run test:api:functional` | ja |
-| 7 | `security` | `bun run test:security`, `bun run security:report`, **`security:gate` hart** (CRITICAL/HIGH → exit 1), `bun run rbac:check`, RBAC-Vitest-Suite | ja |
-| 8 | `io` | `bun run test:io` | ja |
-| 9 | `backup` | `bun run test:backup:integrity` (inkl. Restore-Kerntests) | ja |
-| 10 | `build` | `bun run build` (production) | ja |
-| 11 | `e2e` | `bunx playwright install --with-deps chromium`, `bun run test:e2e` inkl. `e2e/specs/security/*` (privilegierte Endpoints, UI-Tamper) | ja |
-| 12 | `a11y` | `bun run test:a11y` + `bun run ops:e2e` (a11y-Teil) | nein (Warn-Only, Report-Artifact) |
-| 13 | `debt` | `bun run test:debt`, `bun run test:perf` | nein |
-| 14 | `report` | `bun run test:report`, `bun run report:technical:ci`, Upload aller `test-report/`, `coverage/`, `playwright-report/` | immer (`if: always()`) |
+**3. RBAC-Matrix serverseitig spiegeln.**
+- Neue Migration mit Tabelle `public.role_permissions(role app_role, permission text)` befüllt aus derselben Quelle wie `src/lib/rbac/permissions.ts` (Matrix bleibt Single Source of Truth im Code; Seed-INSERT wird von `scripts/check-rbac.mjs` mitverifiziert).
+- Funktion `public.has_permission(_user_id uuid, _perm text) returns bool` (SECURITY DEFINER) — vom Backend genutzt.
 
-## Quality-Gate-Logik
+**4. Server-Middleware.**
+- Neues Modul `src/lib/rbac/require-permission.server.ts`: `withPermission(perm, handler)` — kombiniert `withCorrelation`, `requireSupabaseAuth`, ruft `has_permission(userId, perm)` via RLS-Client. Liefert 401 ohne Session, 403 ohne Permission, sonst weiter mit `context.actor = { userId, role, correlationId }`.
+- `withCorrelation` bleibt der äußere Wrapper, `withPermission` innen.
 
-Neue Datei `scripts/ci/quality-gate.mjs` läuft nach `report` und liest `test-report/technical-test-report.json`. Setzt Exit 1 bei einem der Prompt-Blocker:
+**5. Endpoints umziehen.**
+- `src/routes/api/sync.ts`: Shared-Token-Auth entfällt für benutzerinitiierten Sync (SEC-HIGH-AZURE-001 löst sich auto-mit). Endpoint verlangt `azure.import` **oder** `azure.export` je nach Body. Ergebnis wird in `audit_log` geschrieben (actor_id = session user, correlation_id).
+- Neuer optionaler Server-zu-Server-Pfad `POST /api/public/sync-callback` mit HMAC-signiertem Body für automatisierte Läufe (kein Personenbezug) — das ist der einzig legitime Rest-Use-Case für ein Shared Secret.
+- `src/routes/api/status.ts` bleibt öffentlich (Finding SEC-HIGH-STATUS-001 ist bereits `accepted`), Antwort erhält keine neuen Felder.
 
-- Build-Fehler → wird bereits vom Job selbst geblockt.
-- TypeScript-Fehler → durch neuen `tsgo`-Schritt in `static`.
-- Critical Finding (jede Kategorie, `severity=critical`, `accepted=false`).
-- High Security Finding (`id` startet mit `sec:` und `severity=high`).
-- Datenintegritätsfehler (`id` startet mit `backup:` und `severity in {critical,high}`).
-- Offener privilegierter Endpoint (`id` startet mit `api:` und `type=unprotected-privileged`).
-- Secret Leak (`sec:secret-leak` oder `source=gitleaks`).
-- RBAC-Lockout-Test failed → aus Vitest-JSON (`test-report/security-vitest.json`, Testname enthält `admin-lockout`).
-- Backup-/Restore-Kerntest failed → `test-report/backup-vitest.json`, Suite `restore.test.ts` oder `integrity.test.ts` mit Failures.
+**6. Frontend-Umbau.**
+- Managed `_authenticated/route.tsx` gate (integration-managed) + neue `src/routes/auth.tsx` mit Login/Signup/Reset-Password (`/reset-password` als eigene Route).
+- `src/routes/index.tsx` bleibt als öffentliche Landing mit „Anmelden"-CTA; das Dashboard zieht nach `src/routes/_authenticated/dashboard.tsx` um. Auf `/` prüft ein session-aware Redirect: eingeloggt → `/dashboard`.
+- `src/lib/user-management.ts`: `bootstrap()`, `saveUsers()`, `setActiveUserId()` etc. werden **entkernt**. Ein neues `useCurrentUser()` liest Session + Profil + Rolle aus TanStack-Query gegen Server-Fns (`getMyProfile`, `getMyRole`). LocalStorage-Cache bleibt nur noch als UI-Preferences-Store (`northbit-dashboard-viewmode`, Theme, Locale). Keys `northbit-users` und `northbit-active-user` werden beim ersten Start gelöscht.
+- `can()` / `<PermissionGate>` fragen ausschließlich session-abgeleitete Rolle ab. Der Client-`can`-Check bleibt UI-Komfort — die harte Grenze liegt jetzt serverseitig.
+- Bestehende Mutationspfade (Backup-Restore, Import, Azure) rufen entsprechende Server-Fns mit `withPermission`; Frontend-only-Aktionen bleiben unverändert.
 
-Dieses Skript ersetzt das jetzige `--soft`-Flag in Security- und API-Gates. Bestehende `security:gate`/`api:gate`-Scripts bleiben unverändert erhalten, werden aber im CI-Job hart aufgerufen; `soft`-Aufrufe entfallen.
+**7. Frontend-Store-Bereinigung.**
+- `dashboard-store` und alle `user-scoped`-Keys werden auf `auth.uid()` gescoped statt `getActiveUserId()`.
+- Migration beim ersten Login: falls lokale Legacy-Keys (`northbit-dashboard-v2` etc.) existieren → einmalig auf `::<auth.uid()>` umschreiben (verlustfreier Wechsel für den einen bisherigen Nutzer, der neu registriert).
 
-## Weitere Änderungen
+**8. Tests.**
+- `manipulation.test.tsx`: der `KNOWN_GAP_SEC_CRIT_002`-Test wird umgestellt — er belegt jetzt, dass ein forged `localStorage` das UI **nicht** mehr öffnet (Rolle kommt aus Session).
+- `api-direct-call.spec.ts`: Erwartung von „darf offen sein in DEV" auf „liefert immer 401 ohne Session, 403 mit falscher Rolle" ändern.
+- Neue Vitest-Suite `src/__tests__/security/rbac-endpoints-live.test.ts`: fährt jede geschützte Server-Fn ohne Token → 401, mit `viewer` → 403, mit `systemadministrator` → 200.
+- E2E `role-matrix.spec.ts` erweitern: Login als frisch registrierter Zweitnutzer bleibt `viewer`; SysAdmin kann Rolle hochstufen.
 
-- **`.github/workflows/ci.yml`**: In Jobs aufteilen, Concurrency-Group (`cancel-in-progress: true` für PRs), Node 22 + Bun latest bleiben, Playwright-Browser-Cache je Job restoren.
-- **`.github/workflows/security.yml`**: unverändert (läuft parallel/nightly).
-- **`package.json`**: `ci:gate` Script hinzufügen (`node scripts/ci/quality-gate.mjs`); `test:report:ci` bleibt.
-- **`scripts/technical-report/build.mjs`**: kleine Erweiterung — Feld `blockers[]` im JSON mit den geprüften Bedingungen befüllen, damit Gate-Skript nur `blockers.length===0` checken muss.
-- **Tests**:
-  - `src/__tests__/ci/quality-gate.test.ts` — feeds Fixtures in `quality-gate.mjs`, prüft jede Blocker-Kategorie einzeln + Grüner-Pfad.
-  - Neuer Vitest-Modus `test:ci-gate` in `package.json`.
-- **Handbuch** (`src/lib/help-documentation.ts`): neues Kapitel „CI-Pipeline und Quality Gates" mit Stufenliste, Blocker-Tabelle, Hinweis auf Report-Artefakte. `DOCUMENTATION_VERSION` → 1.17.0.
-- **CHANGELOG.md**: neuer Eintrag `## 1.38.0 - 2026-07-16` mit Zusammenfassung + Bump.
-- **ADR-0018** `docs/adr/ADR-0018-ci-quality-gates.md`: begründet Job-Split (statt Monolith), harte Gates jetzt (weil SEC-CRIT-001/002 bereits im Report sichtbar sind und differenziert behandelt werden können), Quality-Gate-Skript als Single-Source für Prompt-Blocker.
+**9. Findings-Datei + Report.**
+- `scripts/security/static-findings.json`: `SEC-CRIT-001`, `SEC-CRIT-002` und `SEC-HIGH-AUTH-001` erhalten `accepted: true` **mit Verweis auf die neuen Tests**, die den Zustand aktiv bewachen. Zusätzlich neuer Marker-Eintrag `SEC-INFO-AUTH-001` „Auth aktiv, Guarded by test XYZ" damit die Historie im Bericht sichtbar bleibt.
+- `scripts/technical-report/build.mjs` erkennt sie damit nicht mehr als Blocker; `SEC-HIGH-AZURE-001` fällt weg, sobald `/api/sync` umgestellt ist (Shared-Token ist dann nicht mehr die einzige Auth).
+- Report läuft danach als **passed / 0 Blocker** für diese Kategorie.
 
-## Nicht enthalten
+**10. Doku & Changelog.**
+- Neues Handbuch-Kapitel „Anmeldung, Sitzung & Rollen" in `src/lib/help-documentation.ts` (`lastUpdated`); Kapitel „Sicherheits- und RBAC-Tests" aktualisieren (Grenze verschoben, keine „bekannten Löcher" mehr).
+- `CHANGELOG.md` v1.39.0: „Echte Authentifizierung, RBAC serverseitig, SEC-CRIT-001/002 geschlossen".
+- Neues **ADR-0019 „Managed Auth + serverseitige RBAC"** — dokumentiert Design-Entscheidung, Trade-offs, Migrationsweg zu Entra ID.
 
-- Kein Wechsel auf Reusable Workflows oder Matrix-Runner (Overhead nicht gerechtfertigt für Single-Repo).
-- Kein Firefox/WebKit/Mobile im Standard-Run (bleibt opt-in via `RUN_FIREFOX` etc. laut ADR-0012).
-- Keine Änderung an Vitest-Konfiguration selbst — nur zusätzliche Scripts.
+## Was NICHT Teil dieses Plans ist
 
-## Technische Details
+- **Entra ID / SAML**: bleibt als späterer zusätzlicher Provider, das RBAC-Schema ist bereits kompatibel (Rollen aus `user_roles`, Mapping-Punkt = `entraMapping.example.json` — bleibt vorhanden).
+- **MFA**: `mfa_enabled` bleibt Feld ohne Enforcement; wird separater Prompt.
+- **Row-Level-Ownership** für Engineer-Aktivitäten: Ownership-Semantik in `permissions.ts` ist bereits dokumentiert; die harten `ownerId = auth.uid()`-Checks kommen im nächsten Prompt, wenn die Projekt-/Aktivitäten-Tabellen in Cloud landen.
 
-- `tsgo` ist bereits transitiv verfügbar; falls nicht, `bunx --bun tsgo` mit Install-Check im Job.
-- Prettier-Check: `bun run format -- --check` — reine Formatierungsfehler blocken den Build (harter Gate für „Format").
-- Concurrency: `group: ci-${{ github.ref }}`, `cancel-in-progress: true` nur für PRs.
-- Alle Jobs `checkout: fetch-depth: 0` (Gitleaks + Diff-Basis).
-- Artifacts pro Job hochladen, `report`-Job lädt aggregiertes `test-report/` erneut hoch.
+## Rückwirkungen / kritische Hinweise
 
-## Risiken
+- **Datenverlust im Klartext**: bestehende localStorage-Benutzerprofile werden verworfen. Der User hat das explizit so gewählt („Neu starten"). Alle Dashboard-Daten (`dashboard-v2`, Reports, Import-Historie) bleiben und werden beim ersten Login auf den neuen `auth.uid()`-Scope migriert.
+- **Öffentliche Landing statt Direkt-Dashboard**: Bookmarks auf `/` landen für Eingeloggte weiterhin auf dem Dashboard, für alle anderen auf der Login-Seite.
+- **Der bisherige Preview-Aufruf ohne Login funktioniert nicht mehr für geschützte Sichten** — das ist der eigentliche Fix.
+- **Es entsteht eine echte Abhängigkeit zu Lovable Cloud.** Offline-/Selfhost-Ambitionen (siehe Offline-Kapitel im Handbuch) müssten für Auth einen alternativen Provider bekommen (dokumentieren wir in ADR-0019).
 
-- Harte Lint- und Security-Gates können bestehenden Merge blockieren. Bekannte offene Findings (SEC-CRIT-001/002) müssen entweder als `accepted:true` in `static-findings.json` eingetragen oder vor Merge behoben werden. Plan schlägt vor: `accepted:true` mit Begründung + Ticket-Referenz, sonst rot.
-- Job-Split erhöht CI-Zeit durch mehrfaches Bun-Install → mit `actions/cache` auf `~/.bun/install/cache` und `node_modules` reduziert.
+Nach Approve setze ich die 10 Punkte in einem großen Zug um — in dieser Reihenfolge, damit die Anwendung nie in einem Zustand steht, in dem UI ohne Server-Gate erreichbar wäre.
