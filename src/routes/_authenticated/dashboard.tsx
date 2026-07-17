@@ -114,7 +114,7 @@ import {
 } from "@/lib/store/useDashboardStore";
 import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: `Engineer Console – ${dashboardData.engineer.company}` },
