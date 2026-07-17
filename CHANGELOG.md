@@ -13,7 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
-## 1.38.0 - 2026-07-16
+## 1.39.0 - 2026-07-17
+
+- **SEC-CRIT-001 & SEC-CRIT-002 behoben (Lovable-Cloud-Auth aktiv)**: Echte E-Mail/Passwort-Authentifizierung via Lovable Cloud. Neue Tabellen `public.profiles`, `public.user_roles`, `public.audit_log`, DB-Funktionen `has_role`, `has_any_role`, `has_permission` (spiegeln RBAC-Matrix) und Signup-Trigger, der ersten registrierten Nutzer automatisch zum `systemadministrator` macht.
+- **Neue Routen**: `/` = öffentliche Landing-Page mit Anmelde-CTA, `/auth` (Login/Signup/Reset), `/reset-password`. Dashboard verschoben nach `/_authenticated/dashboard` mit `ssr:false`-Gate (`beforeLoad` → `supabase.auth.getUser()`, sonst Redirect nach `/auth?redirect=…`).
+- **Backend-Härtung**: `/api/sync` verlangt `Authorization: Bearer <supabase-jwt>` UND prüft serverseitig `has_permission(user, 'azure.import' | 'azure.export')`. Der frühere `X-Sync-Token`-Pfad entfällt (schließt SEC-HIGH-AZURE-001 mit).
+- **Session-basierte Identität**: `useCurrentUser` liest ausschließlich aus Supabase-Session + `public.profiles`/`user_roles`. `localStorage`-Manipulation (`northbit-active-user`) hat keine Wirkung mehr — Finding im Security-Report auf `accepted:true` gesetzt (Historie bleibt erhalten).
+- **Tests**: `manipulation.test.tsx` invertiert (grüner Test = Bug gefixt); `api-direct-call.spec.ts` bleibt als Regressionsschutz; `static-findings.json` dokumentiert Nachweis und Verweise.
+
+
 
 - **CI-Integration und Quality Gates (Prompt 2A.10, ADR-0018)**: `.github/workflows/ci.yml` in 14 geordnete Stufen aufgeteilt (Setup → Static → Unit → Backend → API → Security → IO → Backup → Build → E2E → A11y → Debt → Report). `needs:`-Kette stoppt Folgejobs bei frühem Fehler; Concurrency-Cancel für PRs; Bun- und Playwright-Browser-Cache pro Job.
 - **Zentraler Quality-Gate**: neues Skript `scripts/ci/quality-gate.mjs` (Script `bun run ci:gate`) liest ausschließlich `test-report/technical-test-report.json` → neues Feld `blockers[]`. Blocker-Definition ist damit einmal in `scripts/technical-report/build.mjs` gepflegt (Single Source of Truth).

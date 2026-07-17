@@ -49,17 +49,21 @@ function seedAs(role: UserRole): UserProfile {
   return u;
 }
 
-describe("Manipulation – localStorage-Tampering (offen dokumentiert)", () => {
-  it("should_grantSysadminUiGate_when_localStorageForgesRole_KNOWN_GAP_SEC_CRIT_002", () => {
-    seedAs("systemadministrator");
+describe("Manipulation – localStorage-Tampering (SEC-CRIT-002 behoben)", () => {
+  it("should_ignoreForgedLocalStorage_when_deriveRoleFromSession", () => {
+    // Vorher: `northbit-active-user` im localStorage verlieh sofort Sysadmin-Rechte.
+    // Seit v1.39.0 leitet `useCurrentUser()` die Rolle ausschließlich aus der
+    // Supabase-Session + `public.user_roles` ab. Ohne Session ist der User null,
+    // `can()` liefert false, und PermissionGate rendert den Fallback.
+    seedAs("systemadministrator"); // wird jetzt vollständig ignoriert
     render(
       <PermissionGate permission="roles.manage" fallback={<span>denied</span>}>
         <span>allowed</span>
       </PermissionGate>,
     );
-    expect(screen.getByText("allowed")).toBeInTheDocument();
-    // → dieser grüne Test IST das Finding. Behebung erst mit echter Auth.
+    expect(screen.getByText("denied")).toBeInTheDocument();
   });
+
 
   it("should_denyUiGate_when_activeUserRoleIsViewer", () => {
     seedAs("viewer");
