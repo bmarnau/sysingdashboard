@@ -14,16 +14,139 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_role: Database["public"]["Enums"]["app_role"] | null
+          correlation_id: string | null
+          id: string
+          occurred_at: string
+          payload: Json | null
+          target: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_role?: Database["public"]["Enums"]["app_role"] | null
+          correlation_id?: string | null
+          id?: string
+          occurred_at?: string
+          payload?: Json | null
+          target?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_role?: Database["public"]["Enums"]["app_role"] | null
+          correlation_id?: string | null
+          id?: string
+          occurred_at?: string
+          payload?: Json | null
+          target?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          mfa_enabled: boolean
+          phone: string
+          profile_image: string | null
+          status: Database["public"]["Enums"]["user_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          email?: string
+          first_name?: string
+          id: string
+          last_name?: string
+          mfa_enabled?: boolean
+          phone?: string
+          profile_image?: string | null
+          status?: Database["public"]["Enums"]["user_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          mfa_enabled?: boolean
+          phone?: string
+          profile_image?: string | null
+          status?: Database["public"]["Enums"]["user_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_any_role: {
+        Args: {
+          _roles: Database["public"]["Enums"]["app_role"][]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_permission: {
+        Args: { _perm: string; _user_id: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "systemadministrator"
+        | "administrator"
+        | "teamlead"
+        | "projectmanager"
+        | "engineer"
+        | "customer"
+        | "viewer"
+      user_status: "active" | "inactive" | "locked" | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +273,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "systemadministrator",
+        "administrator",
+        "teamlead",
+        "projectmanager",
+        "engineer",
+        "customer",
+        "viewer",
+      ],
+      user_status: ["active", "inactive", "locked", "archived"],
+    },
   },
 } as const
