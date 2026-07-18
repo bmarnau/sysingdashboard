@@ -1,78 +1,59 @@
 
 ## Ziel
 
-Die Findings **SEC-CRIT-001** („Backend prüft keine Rolle") und **SEC-CRIT-002** („Rolle nur im localStorage") sollen im technischen Prüfbericht dauerhaft verschwinden — nicht durch Akzeptanz, sondern weil ihre Ursache im Code beseitigt ist.
+1. UserManagementDialog liest/schreibt Profile und Rollen wieder aus `public.profiles` / `public.user_roles` — nicht mehr aus dem localStorage-Store. Admins können damit Rollen aus der UI vergeben.
+2. Kurzes Handbuch-Kapitel erklärt, wie und wann `accepted:true` in `scripts/security/static-findings.json` gesetzt wird, mit Beispiel-Begründung und Ticket-Format.
 
-Beide Findings haben denselben Kern: **es gibt heute keinen serverseitigen Identitätsträger.** Die einzige nachhaltige Lösung ist ein echter Auth-Layer, dessen Session sowohl die Rolle im UI als auch die Autorisierung an den API-Endpunkten liefert. Wir nutzen dafür **Lovable Cloud (E-Mail/Passwort, HIBP aktiv)** — Entra ID/SAML bleibt als späterer zusätzlicher Provider offen, das Datenmodell wird schon jetzt darauf vorbereitet.
+Kein Umbau der Auth-, Routing- oder Backend-Layer. Legacy-`UserManagementService` (localStorage) wird für diesen Dialog nicht mehr aufgerufen; der Service bleibt im Repo, weil weitere Verbraucher (Actor-IDs, Storage-Scoping) noch daran hängen — Cleanup ist eigener Folge-Schritt.
 
-Bestehende localStorage-Benutzer werden verworfen; die **erste Registrierung wird automatisch `systemadministrator`**, alle weiteren starten als `viewer`, bis ein SysAdmin sie hochstuft.
+## Änderungen im Frontend
 
-## Umsetzung (Reihenfolge)
+### Neuer Datenzugriffs-Layer
+- Neue Datei `src/lib/users-supabase-service.ts` mit reinen Funktionen, die gegen den Browser-Client arbeiten und die RLS-Grenzen respektieren:
+  - `listUsers()` — `profiles` + `user_roles` in zwei parallelen Queries, mapped auf `UserProfile`. Rolle-Fallback `viewer`.
+  - `updateOwnProfile(id, patch)` — `profiles.update`, gescoped über `auth.uid()` (durch RLS-Policy `profiles_self_update`).
+  - `updateUserProfile(id, patch)` — `profiles.update` als Admin (`profiles_admins_update_all`).
+  - `setUserRole(userId, role)` — löscht alle bestehenden Rollen des Users und legt eine neue Zeile in `user_roles` an (SysAdmin-only via RLS). Enthält Client-seitigen Lockout-Guard: verweigert Wechsel weg von der letzten aktiven Sysadmin-Rolle.
+  - `setUserStatus(userId, status)` — `profiles.update({status})`.
+  - Kein `createUser`/`deleteUser` — Neuanlage passiert ausschließlich über Registrierung, Löschen wäre Auth-Admin (Service-Role) und ist bewusst nicht Teil dieses Schritts. Dialog zeigt stattdessen Status „archived" als Soft-Delete.
+- `useUsers()` in `src/hooks/useCurrentUser.ts` neu implementieren: React-Query-frei, mit lokalem `useEffect`-Fetch + Refresh-Trigger (Callback aus dem Dialog nach Mutation). Ergänzt Realtime nicht — bewusst simpel gehalten.
 
-**1. Cloud + Auth aktivieren.**
-- Lovable Cloud aktivieren, Email/Password (HIBP) konfigurieren.
-- Neuen Nutzern *keinen* Auto-Login nach Signup, damit E-Mail-Bestätigung greift; nach Login Weiterleitung auf Dashboard.
+### UserManagementDialog Refactor (`src/components/UserManagementDialog.tsx`)
+- Tab „Profil wechseln" entfernen (mit echter Auth entfällt der Use-Case; Wechsel = Abmelden + neu anmelden).
+- Tabs verbleiben: „Mein Profil" und „Benutzerverwaltung" (letzterer nur bei `users.manage`).
+- „Mein Profil":
+  - Speichert über `updateOwnProfile`. Feld `email` wird read-only (Änderung nur über Supabase Auth).
+- „Benutzerverwaltung":
+  - Zeigt Liste aus `listUsers()`. Neuanlage-Formular entfernen und durch Hinweis ersetzen: „Neue Benutzer registrieren sich über die Anmeldeseite. Rolle und Status hier zuweisen."
+  - Rolle ändern: Dropdown → `setUserRole`, nur sichtbar wenn `roles.manage` (SysAdmin).
+  - Status: Toggle Aktiv/Archiviert → `setUserStatus`.
+  - Löschen-Button entfällt (Hinweis auf Archivierung).
+  - Nach jeder Mutation: Refresh-Callback → `useUsers` lädt neu; Toast-artige Inline-Meldung bei RLS-Fehlern (`error.message`).
+- Alle `UserManagementService.*`-Aufrufe im Dialog entfernen; ActorContext bleibt, weil der Legacy-Logger sie später konsumiert.
 
-**2. Datenmodell (Migration).**
-Alle Tabellen mit Grants + RLS in der gleichen Migration.
-- `public.profiles` (id = auth.users.id, first_name, last_name, display_name, email, phone, status, mfa_enabled, created_at, updated_at). Trigger `on_auth_user_created` legt Profil beim Signup an.
-- `public.app_role` als Enum (die 7 vorhandenen Rollen).
-- `public.user_roles` (id, user_id, role, granted_at, granted_by) — RBAC-Träger.
-- `public.has_role(_user_id uuid, _role app_role) returns bool` als `SECURITY DEFINER`-Funktion.
-- `public.audit_log` (id, actor_id, action, target, correlation_id, occurred_at, payload jsonb) für serverseitige Forensik (löst gleichzeitig `auditlog.view` real ein).
-- Trigger `bootstrap_first_sysadmin`: beim ersten `INSERT` in `user_roles`, falls Tabelle vorher leer war → erste registrierte `auth.users` bekommt `systemadministrator`; alle weiteren Signups bekommen `viewer`.
+### Tests
+- `src/__tests__/lib/user-management.test.ts` weiter grün halten (Legacy-Service unverändert).
+- Neue leichte Vitest-Suite `src/__tests__/lib/users-supabase-service.test.ts`: mockt den Supabase-Client und prüft Lockout-Guard (letzter SysAdmin) sowie Query-Shape von `listUsers`.
 
-**3. RBAC-Matrix serverseitig spiegeln.**
-- Neue Migration mit Tabelle `public.role_permissions(role app_role, permission text)` befüllt aus derselben Quelle wie `src/lib/rbac/permissions.ts` (Matrix bleibt Single Source of Truth im Code; Seed-INSERT wird von `scripts/check-rbac.mjs` mitverifiziert).
-- Funktion `public.has_permission(_user_id uuid, _perm text) returns bool` (SECURITY DEFINER) — vom Backend genutzt.
+## Handbuch-Ergänzung
 
-**4. Server-Middleware.**
-- Neues Modul `src/lib/rbac/require-permission.server.ts`: `withPermission(perm, handler)` — kombiniert `withCorrelation`, `requireSupabaseAuth`, ruft `has_permission(userId, perm)` via RLS-Client. Liefert 401 ohne Session, 403 ohne Permission, sonst weiter mit `context.actor = { userId, role, correlationId }`.
-- `withCorrelation` bleibt der äußere Wrapper, `withPermission` innen.
+`src/lib/help-documentation.ts`:
+- Neues HelpTopic `security-findings-acceptance` (Kategorie „Sicherheit"), verlinkt aus dem bestehenden Kapitel „Sicherheits- und RBAC-Tests":
+  - Was `accepted:true` bedeutet (kein Verstecken; Blocker-Ausnahme mit Nachweis).
+  - Wann erlaubt: kompensierender Guard vorhanden, Dokumentation aktualisiert, Verantwortlicher benannt.
+  - Wann NICHT erlaubt: offene Root Cause, unbekanntes Risiko, fehlender Guard-Test.
+  - Prozedur: Finding-Eintrag um `accepted`, `acceptanceReason` (inkl. Ticket-Referenz und Guard-Test-Pfad) ergänzen; PR-Beschreibung verlinkt Ticket und Test.
+  - **Beispiel-Text für `acceptanceReason`** (aus dem Kapitel kopierbar):
+    `"v1.39.0 (TICKET-1234): Kompensiert durch e2e/specs/security/api-direct-call.spec.ts und src/__tests__/security/rbac-endpoints.test.ts. Reevaluation vor Azure-Produktivierung. Owner: @sec-team."`
+  - **Ticket-Format**: `SEC-<AREA>-<NNNN>` (z. B. `SEC-AUTH-0007`), Titel = Finding-ID + Kurzbeschreibung, Labels `security`, `accepted-finding`, Due-Date für Reevaluation Pflicht.
+- `lastUpdated` des neuen Topics setzen.
 
-**5. Endpoints umziehen.**
-- `src/routes/api/sync.ts`: Shared-Token-Auth entfällt für benutzerinitiierten Sync (SEC-HIGH-AZURE-001 löst sich auto-mit). Endpoint verlangt `azure.import` **oder** `azure.export` je nach Body. Ergebnis wird in `audit_log` geschrieben (actor_id = session user, correlation_id).
-- Neuer optionaler Server-zu-Server-Pfad `POST /api/public/sync-callback` mit HMAC-signiertem Body für automatisierte Läufe (kein Personenbezug) — das ist der einzig legitime Rest-Use-Case für ein Shared Secret.
-- `src/routes/api/status.ts` bleibt öffentlich (Finding SEC-HIGH-STATUS-001 ist bereits `accepted`), Antwort erhält keine neuen Felder.
+`CHANGELOG.md`:
+- Neuer Eintrag `## 1.40.0 - 2026-07-18` mit den beiden Bullets (Dialog-Refactor, Handbuch-Kapitel). `DASHBOARD_VERSION` wird durch das CHANGELOG-Skript automatisch nachgezogen.
 
-**6. Frontend-Umbau.**
-- Managed `_authenticated/route.tsx` gate (integration-managed) + neue `src/routes/auth.tsx` mit Login/Signup/Reset-Password (`/reset-password` als eigene Route).
-- `src/routes/index.tsx` bleibt als öffentliche Landing mit „Anmelden"-CTA; das Dashboard zieht nach `src/routes/_authenticated/dashboard.tsx` um. Auf `/` prüft ein session-aware Redirect: eingeloggt → `/dashboard`.
-- `src/lib/user-management.ts`: `bootstrap()`, `saveUsers()`, `setActiveUserId()` etc. werden **entkernt**. Ein neues `useCurrentUser()` liest Session + Profil + Rolle aus TanStack-Query gegen Server-Fns (`getMyProfile`, `getMyRole`). LocalStorage-Cache bleibt nur noch als UI-Preferences-Store (`northbit-dashboard-viewmode`, Theme, Locale). Keys `northbit-users` und `northbit-active-user` werden beim ersten Start gelöscht.
-- `can()` / `<PermissionGate>` fragen ausschließlich session-abgeleitete Rolle ab. Der Client-`can`-Check bleibt UI-Komfort — die harte Grenze liegt jetzt serverseitig.
-- Bestehende Mutationspfade (Backup-Restore, Import, Azure) rufen entsprechende Server-Fns mit `withPermission`; Frontend-only-Aktionen bleiben unverändert.
+## Bewusst nicht Teil dieses Schritts (kritisches Feedback)
 
-**7. Frontend-Store-Bereinigung.**
-- `dashboard-store` und alle `user-scoped`-Keys werden auf `auth.uid()` gescoped statt `getActiveUserId()`.
-- Migration beim ersten Login: falls lokale Legacy-Keys (`northbit-dashboard-v2` etc.) existieren → einmalig auf `::<auth.uid()>` umschreiben (verlustfreier Wechsel für den einen bisherigen Nutzer, der neu registriert).
-
-**8. Tests.**
-- `manipulation.test.tsx`: der `KNOWN_GAP_SEC_CRIT_002`-Test wird umgestellt — er belegt jetzt, dass ein forged `localStorage` das UI **nicht** mehr öffnet (Rolle kommt aus Session).
-- `api-direct-call.spec.ts`: Erwartung von „darf offen sein in DEV" auf „liefert immer 401 ohne Session, 403 mit falscher Rolle" ändern.
-- Neue Vitest-Suite `src/__tests__/security/rbac-endpoints-live.test.ts`: fährt jede geschützte Server-Fn ohne Token → 401, mit `viewer` → 403, mit `systemadministrator` → 200.
-- E2E `role-matrix.spec.ts` erweitern: Login als frisch registrierter Zweitnutzer bleibt `viewer`; SysAdmin kann Rolle hochstufen.
-
-**9. Findings-Datei + Report.**
-- `scripts/security/static-findings.json`: `SEC-CRIT-001`, `SEC-CRIT-002` und `SEC-HIGH-AUTH-001` erhalten `accepted: true` **mit Verweis auf die neuen Tests**, die den Zustand aktiv bewachen. Zusätzlich neuer Marker-Eintrag `SEC-INFO-AUTH-001` „Auth aktiv, Guarded by test XYZ" damit die Historie im Bericht sichtbar bleibt.
-- `scripts/technical-report/build.mjs` erkennt sie damit nicht mehr als Blocker; `SEC-HIGH-AZURE-001` fällt weg, sobald `/api/sync` umgestellt ist (Shared-Token ist dann nicht mehr die einzige Auth).
-- Report läuft danach als **passed / 0 Blocker** für diese Kategorie.
-
-**10. Doku & Changelog.**
-- Neues Handbuch-Kapitel „Anmeldung, Sitzung & Rollen" in `src/lib/help-documentation.ts` (`lastUpdated`); Kapitel „Sicherheits- und RBAC-Tests" aktualisieren (Grenze verschoben, keine „bekannten Löcher" mehr).
-- `CHANGELOG.md` v1.39.0: „Echte Authentifizierung, RBAC serverseitig, SEC-CRIT-001/002 geschlossen".
-- Neues **ADR-0019 „Managed Auth + serverseitige RBAC"** — dokumentiert Design-Entscheidung, Trade-offs, Migrationsweg zu Entra ID.
-
-## Was NICHT Teil dieses Plans ist
-
-- **Entra ID / SAML**: bleibt als späterer zusätzlicher Provider, das RBAC-Schema ist bereits kompatibel (Rollen aus `user_roles`, Mapping-Punkt = `entraMapping.example.json` — bleibt vorhanden).
-- **MFA**: `mfa_enabled` bleibt Feld ohne Enforcement; wird separater Prompt.
-- **Row-Level-Ownership** für Engineer-Aktivitäten: Ownership-Semantik in `permissions.ts` ist bereits dokumentiert; die harten `ownerId = auth.uid()`-Checks kommen im nächsten Prompt, wenn die Projekt-/Aktivitäten-Tabellen in Cloud landen.
-
-## Rückwirkungen / kritische Hinweise
-
-- **Datenverlust im Klartext**: bestehende localStorage-Benutzerprofile werden verworfen. Der User hat das explizit so gewählt („Neu starten"). Alle Dashboard-Daten (`dashboard-v2`, Reports, Import-Historie) bleiben und werden beim ersten Login auf den neuen `auth.uid()`-Scope migriert.
-- **Öffentliche Landing statt Direkt-Dashboard**: Bookmarks auf `/` landen für Eingeloggte weiterhin auf dem Dashboard, für alle anderen auf der Login-Seite.
-- **Der bisherige Preview-Aufruf ohne Login funktioniert nicht mehr für geschützte Sichten** — das ist der eigentliche Fix.
-- **Es entsteht eine echte Abhängigkeit zu Lovable Cloud.** Offline-/Selfhost-Ambitionen (siehe Offline-Kapitel im Handbuch) müssten für Auth einen alternativen Provider bekommen (dokumentieren wir in ADR-0019).
-
-Nach Approve setze ich die 10 Punkte in einem großen Zug um — in dieser Reihenfolge, damit die Anwendung nie in einem Zustand steht, in dem UI ohne Server-Gate erreichbar wäre.
+- **Benutzer löschen** via Auth Admin API würde einen serverseitigen `createServerFn`-Endpoint mit `supabaseAdmin` und Rollencheck brauchen. Sinnvoll, aber eigener Prompt — sonst zieht dieser Schritt Server-Auth-Design mit rein.
+- **Realtime-Updates** der Benutzerliste (postgres_changes) verschieben — Refresh-Callback reicht für Admin-UI mit niedriger Änderungsfrequenz.
+- **Lockout-Enforcement in der DB** (Trigger, der letzten aktiven SysAdmin schützt) wäre die eigentlich harte Absicherung. Client-Guard schließt die UI-Lücke, ersetzt aber keinen DB-Constraint — als HIGH-Finding-Kandidat für den nächsten Sicherheits-Review vormerken.
+- **Legacy-`UserManagementService`** aufräumen: erst nachdem alle Verbraucher (Actor-IDs im Logger, Storage-Scoping) migriert sind; getrennter Refactor-Prompt.
