@@ -2009,6 +2009,68 @@ Jeder Job lädt seinen Report als GitHub-Artefakt hoch (\`coverage/\`, \`api-rep
 - Firefox/WebKit/Mobile-Chrome bleiben opt-in (\`RUN_FIREFOX=1\`, siehe ADR-0012).`,
     relatedTopics: ["technical-test-report", "security-rbac-tests", "performance-build-ops", "api-endpoint-tests"],
   },
+  {
+    id: "security-findings-acceptance",
+    title: "Security-Findings akzeptieren (accepted:true)",
+    category: "Service",
+    keywords: [
+      "Security", "Findings", "accepted", "Ausnahme", "Ticket", "Begründung",
+      "static-findings", "Quality Gate", "Blocker",
+    ],
+    lastUpdated: "2026-07-18",
+    content: `## Zweck
+Nicht jedes bekannte Sicherheits-Finding lässt sich sofort im Code beheben. Wenn ein kompensierender Guard existiert (Test, Policy, organisatorische Maßnahme) und das Restrisiko dokumentiert ist, kann das Finding in \`scripts/security/static-findings.json\` auf \`accepted: true\` gesetzt werden. Damit blockiert es den Quality-Gate nicht mehr, bleibt aber im technischen Prüfbericht sichtbar.
+
+## Wann erlaubt
+- Es existiert **mindestens ein automatisierter Guard-Test**, der Regression sichtbar macht (Vitest oder Playwright).
+- Das Restrisiko ist **klein oder abgegrenzt** (Scope, Rolle, Umgebung).
+- Ein **Verantwortlicher** ist benannt und ein **Reevaluations-Datum** ist vergeben.
+- Handbuch und CHANGELOG sind aktualisiert.
+
+## Wann NICHT erlaubt
+- Root Cause ist unbekannt oder nicht analysiert.
+- Kein Guard-Test — dann ist es „vergessen", nicht „akzeptiert".
+- Risiko betrifft Produktivbetrieb ohne kompensierende Kontrolle.
+- Es gibt einen einfachen Fix, der im aktuellen Sprint möglich wäre.
+
+## Prozedur (Schritt für Schritt)
+1. Ticket im Format \`SEC-<AREA>-<NNNN>\` anlegen (z. B. \`SEC-AUTH-0007\`). Titel = Finding-ID + Kurzbeschreibung. Labels: \`security\`, \`accepted-finding\`. Due-Date für die Reevaluation eintragen.
+2. Guard-Test schreiben oder auf bestehenden verweisen (Pfad merken).
+3. In \`scripts/security/static-findings.json\` das Finding-Objekt ergänzen:
+   - \`accepted: true\`
+   - \`acceptanceReason\`: Version, Ticket, Guard-Test-Pfad, Reevaluations-Datum, Owner.
+4. Handbuch-Kapitel „Sicherheits- und RBAC-Tests" prüfen und ggf. anpassen.
+5. CHANGELOG-Eintrag ergänzen (eine Zeile pro akzeptiertem Finding).
+6. \`bun run security:report\` und \`bun run docs:check\` lokal grün laufen lassen.
+
+## Beispiel-Text für \`acceptanceReason\`
+Kopiervorlage — Platzhalter anpassen:
+
+\`\`\`
+v1.39.0 (SEC-AUTH-0007): Kompensiert durch e2e/specs/security/api-direct-call.spec.ts und src/__tests__/security/rbac-endpoints.test.ts. Reevaluation vor Azure-Produktivierung (Q4). Owner: @sec-team.
+\`\`\`
+
+Pflichtbestandteile:
+- **Version**, in der die Akzeptanz eingezogen wurde.
+- **Ticket-ID** in Klammern.
+- **Guard-Test-Pfade** (mindestens einer, mehrere kommagetrennt).
+- **Reevaluations-Trigger** (Datum, Milestone oder Ereignis).
+- **Owner** (Team- oder Person-Handle).
+
+## Ticket-Format
+- Schema: \`SEC-<AREA>-<NNNN>\`
+  - \`AREA\`: \`AUTH\`, \`RBAC\`, \`AZURE\`, \`LOG\`, \`API\`, \`DATA\`, \`INFRA\`.
+  - \`NNNN\`: fortlaufend, vierstellig.
+- Titel: \`<FINDING-ID>: <Kurzbeschreibung>\` — z. B. \`SEC-HIGH-AUTH-001: MFA-Pflicht fehlt für Administratoren\`.
+- Beschreibung: Link auf Finding-Eintrag, Guard-Test-Pfad, Restrisiko in 2–3 Sätzen, Reevaluations-Bedingung.
+- Labels: \`security\`, \`accepted-finding\`, Severity (\`critical\`/\`high\`/\`medium\`/\`low\`).
+- Due-Date: **Pflichtfeld** — Ticket bleibt offen bis zur Reevaluation.
+
+## Grenzen
+- Akzeptanz ist **kein Fix**. Der Report zählt akzeptierte Findings separat und weist sie im Kapitel „Quality-Gate-Blocker" mit Owner und Reevaluation aus.
+- Reine Akzeptanz ohne Guard-Test wird im nächsten CI-Lauf als Prozess-Verstoß markiert (offen für Tech-Debt-Scanner-Erweiterung).`,
+    relatedTopics: ["security-rbac-tests", "ci-quality-gates", "technical-test-report"],
+  },
 ];
 
 
