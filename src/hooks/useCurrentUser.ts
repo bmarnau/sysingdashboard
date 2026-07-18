@@ -82,12 +82,34 @@ export function useCurrentUser(): UserProfile | null {
 }
 
 /**
- * Legacy-Liste aller lokalen Benutzer. Der Session-Wechsel entwertet den
- * lokalen Store — die Verwaltung läuft künftig gegen `public.profiles`
- * (siehe UserManagementDialog-Refactor in Folgeprompt). Bis dahin liefert
- * dieser Hook eine leere Liste, damit alte Verbraucher nichts anzeigen,
- * das nicht mehr existiert.
+ * Liste aller Benutzer aus `public.profiles` + `public.user_roles`. RLS
+ * bestimmt, welche Zeilen sichtbar sind (Admins sehen alle, normale Nutzer
+ * nur sich selbst). Refresh-Callback nach Mutationen aus dem Dialog.
  */
-export function useUsers(): UserProfile[] {
-  return [];
+import { listUsers } from "@/lib/users-supabase-service";
+
+export function useUsers(): { users: UserProfile[]; loading: boolean; refresh: () => void } {
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    listUsers()
+      .then((rows) => {
+        if (!cancelled) setUsers(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setUsers([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [tick]);
+
+  return { users, loading, refresh: () => setTick((n) => n + 1) };
 }

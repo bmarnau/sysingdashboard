@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.40.0 - 2026-07-18
+
+- **UserManagementDialog gegen Supabase verdrahtet**: Profile, Rollen und Status werden jetzt aus `public.profiles` und `public.user_roles` gelesen bzw. geschrieben (neuer `src/lib/users-supabase-service.ts`). Rollenwechsel via Dropdown ist SysAdmin-only (RLS `user_roles_sysadmin_*`), Statuswechsel (aktiv/archiviert) für Admins. Tab „Profil wechseln" entfällt — mit echter Auth ist Wechsel = Abmelden. Neuanlage/Löschen wurden bewusst entfernt: Registrierung läuft über die Anmeldeseite, Löschen (Auth Admin API) wird eigenständig behandelt.
+- **Client-Lockout-Guard** in `setUserRole` verhindert Herabstufung des letzten aktiven Systemadministrators. Ersetzt keinen DB-Constraint — als Sicherheits-Kandidat für Folge-Review vermerkt.
+- **Handbuch-Kapitel „Security-Findings akzeptieren (accepted:true)"**: dokumentiert Voraussetzungen, Prozedur, Beispiel-Begründung und Ticket-Format (`SEC-<AREA>-<NNNN>`) für die Pflege von `scripts/security/static-findings.json`. Verlinkt aus „Sicherheits- und RBAC-Tests".
+
 ## 1.39.0 - 2026-07-17
 
 - **SEC-CRIT-001 & SEC-CRIT-002 behoben (Lovable-Cloud-Auth aktiv)**: Echte E-Mail/Passwort-Authentifizierung via Lovable Cloud. Neue Tabellen `public.profiles`, `public.user_roles`, `public.audit_log`, DB-Funktionen `has_role`, `has_any_role`, `has_permission` (spiegeln RBAC-Matrix) und Signup-Trigger, der ersten registrierten Nutzer automatisch zum `systemadministrator` macht.
