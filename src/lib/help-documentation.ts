@@ -1793,7 +1793,7 @@ Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine 
 - \`bun run security:gate\` — Exit != 0 bei offenen Blockern (CI-Nutzung).`,
     relatedTopics: [
       "system-status", "log-viewer", "api-endpoint-tests", "ui-end-to-end-tests",
-      "test-instance",
+      "test-instance", "security-findings-acceptance",
     ],
   },
   {
