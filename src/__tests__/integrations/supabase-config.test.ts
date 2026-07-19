@@ -12,7 +12,7 @@ describe("getAuthConfigurationStatus", () => {
       if (v === undefined) delete (process.env as Record<string, string | undefined>)[k];
       else process.env[k] = v;
     }
-    return await import("./config");
+    return await import("@/integrations/supabase/config");
   }
 
   it("meldet 'missing', wenn keine ENV gesetzt ist", async () => {
