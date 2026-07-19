@@ -7,6 +7,7 @@
  * ungefangenen Modul-/Effect-Fehler ab.
  */
 
+import { supabase } from "./client";
 import { getAuthConfigurationStatus, type AuthConfiguration } from "./config";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
@@ -25,13 +26,8 @@ export function trySupabase(): TrySupabaseResult {
     return cached;
   }
   try {
-    // Lazy require — falls der Proxy-Zugriff dennoch wirft (z. B. Runtime-
-    // Sonderfall), landet er im catch statt in der React-Fehlerboundary.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { supabase } = require("./client") as {
-      supabase: SupabaseClient<Database>;
-    };
-    // Trigger-Zugriff, damit der Proxy einmal auflöst:
+    // Der Proxy löst erst bei erstem Property-Zugriff auf; erzwinge das hier,
+    // damit ein Fehler im catch landet statt in einer React-Boundary.
     void supabase.auth;
     cached = { ok: true, client: supabase };
     return cached;
