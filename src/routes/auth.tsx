@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate, useSearch, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
+import { trySupabase } from "@/integrations/supabase/safe-client";
+import type { AuthConfiguration } from "@/integrations/supabase/config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,11 +13,9 @@ import { toast } from "sonner";
 /**
  * Anmeldung / Registrierung / Passwort-Reset.
  *
- * - Kein Auto-Login nach Registrierung, damit Lovable-Cloud-E-Mail-Bestätigung
- *   (falls aktiviert) greift.
- * - `redirect`-Search-Param wird nach erfolgreichem Login angesteuert; wird
- *   gegen relative Same-Origin-Pfade validiert, um Open-Redirect zu vermeiden.
- * - Erste Registrierung wird per DB-Trigger automatisch `systemadministrator`.
+ * Alle Auth-Aufrufe sind gegen Reject-, Netzwerk- und Konfigurationsfehler
+ * abgesichert. Bei fehlender/ungültiger Konfiguration werden die Formulare
+ * gesperrt und ein nicht-technischer Hinweis angezeigt.
  */
 const SearchSchema = z.object({ redirect: z.string().optional() });
 
@@ -39,75 +38,121 @@ function AuthPage() {
   const search = useSearch({ from: "/auth" });
   const redirectTo = safeRedirect(search.redirect);
   const [busy, setBusy] = useState(false);
+  const [configError, setConfigError] = useState<AuthConfiguration | null>(null);
 
-  // Wenn bereits eine Session existiert, direkt weiterleiten.
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: redirectTo, replace: true });
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) navigate({ to: redirectTo, replace: true });
-    });
-    return () => sub.subscription.unsubscribe();
+    const result = trySupabase();
+    if (!result.ok) {
+      setConfigError(result.config);
+      return;
+    }
+    const supabase = result.client;
+    let unsub: (() => void) | undefined;
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (data.session) navigate({ to: redirectTo, replace: true }).catch(() => undefined);
+      })
+      .catch(() => {
+        toast.error("Sitzungsprüfung fehlgeschlagen. Bitte erneut versuchen.");
+      });
+    try {
+      const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_IN" && session)
+          navigate({ to: redirectTo, replace: true }).catch(() => undefined);
+      });
+      unsub = () => sub.subscription.unsubscribe();
+    } catch {
+      // onAuthStateChange darf niemals die Seite blockieren.
+    }
+    return () => unsub?.();
   }, [navigate, redirectTo]);
+
+  function assertReady() {
+    const result = trySupabase();
+    if (!result.ok) {
+      setConfigError(result.config);
+      return null;
+    }
+    return result.client;
+  }
 
   async function onLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const supabase = assertReady();
+    if (!supabase) return;
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email") ?? "").trim();
     const password = String(fd.get("password") ?? "");
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message || "Anmeldung fehlgeschlagen");
-      return;
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) toast.error(error.message || "Anmeldung fehlgeschlagen");
+    } catch {
+      toast.error("Anmeldung fehlgeschlagen. Bitte später erneut versuchen.");
+    } finally {
+      setBusy(false);
     }
-    // onAuthStateChange übernimmt die Navigation
   }
 
   async function onSignup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const supabase = assertReady();
+    if (!supabase) return;
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email") ?? "").trim();
     const password = String(fd.get("password") ?? "");
     const firstName = String(fd.get("firstName") ?? "").trim();
     const lastName = String(fd.get("lastName") ?? "").trim();
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth`,
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          display_name: `${firstName} ${lastName}`.trim(),
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth`,
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            display_name: `${firstName} ${lastName}`.trim(),
+          },
         },
-      },
-    });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message || "Registrierung fehlgeschlagen");
-      return;
+      });
+      if (error) {
+        toast.error(error.message || "Registrierung fehlgeschlagen");
+      } else {
+        toast.success(
+          "Registrierung erfolgreich. Bitte E-Mail bestätigen (falls angefordert) und anmelden.",
+        );
+      }
+    } catch {
+      toast.error("Registrierung fehlgeschlagen. Bitte später erneut versuchen.");
+    } finally {
+      setBusy(false);
     }
-    toast.success(
-      "Registrierung erfolgreich. Bitte E-Mail bestätigen (falls angefordert) und anmelden.",
-    );
   }
 
   async function onReset(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const supabase = assertReady();
+    if (!supabase) return;
     const fd = new FormData(e.currentTarget);
     const email = String(fd.get("email") ?? "").trim();
     setBusy(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    setBusy(false);
-    if (error) toast.error(error.message);
-    else toast.success("E-Mail zum Zurücksetzen wurde gesendet.");
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) toast.error(error.message);
+      else toast.success("E-Mail zum Zurücksetzen wurde gesendet.");
+    } catch {
+      toast.error("Zurücksetzen fehlgeschlagen. Bitte später erneut versuchen.");
+    } finally {
+      setBusy(false);
+    }
   }
+
+  const formsDisabled = busy || configError !== null;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
@@ -117,6 +162,26 @@ function AuthPage() {
           <CardDescription>Anmelden oder neuen Zugang anlegen</CardDescription>
         </CardHeader>
         <CardContent>
+          {configError && (
+            <div
+              role="alert"
+              className="mb-4 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive"
+            >
+              <p className="font-medium">Die Anmeldung ist noch nicht konfiguriert.</p>
+              <p className="mt-1 text-xs opacity-80">
+                Bitte den Administrator kontaktieren.
+              </p>
+              {import.meta.env.DEV && (
+                <p className="mt-2 text-xs opacity-70">
+                  Detail (nur DEV): {configError.status}
+                  {configError.missingKeys.length > 0
+                    ? ` – fehlt: ${configError.missingKeys.join(", ")}`
+                    : ""}
+                  {configError.invalidReason ? ` – ${configError.invalidReason}` : ""}
+                </p>
+              )}
+            </div>
+          )}
           <Tabs defaultValue="login">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login">Anmelden</TabsTrigger>
@@ -139,7 +204,7 @@ function AuthPage() {
                     autoComplete="current-password"
                   />
                 </div>
-                <Button className="w-full" type="submit" disabled={busy}>
+                <Button className="w-full" type="submit" disabled={formsDisabled}>
                   Anmelden
                 </Button>
               </form>
@@ -175,7 +240,7 @@ function AuthPage() {
                   Erste Registrierung wird automatisch System-Administrator; alle weiteren starten
                   als Viewer und müssen hochgestuft werden.
                 </p>
-                <Button className="w-full" type="submit" disabled={busy}>
+                <Button className="w-full" type="submit" disabled={formsDisabled}>
                   Registrieren
                 </Button>
               </form>
@@ -186,7 +251,7 @@ function AuthPage() {
                   <Label htmlFor="rs-email">E-Mail</Label>
                   <Input id="rs-email" name="email" type="email" required />
                 </div>
-                <Button className="w-full" type="submit" disabled={busy}>
+                <Button className="w-full" type="submit" disabled={formsDisabled}>
                   Passwort zurücksetzen
                 </Button>
               </form>
