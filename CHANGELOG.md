@@ -13,6 +13,17 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.40.1 - 2026-07-19
+
+- **Startfehler nach Auth-Umstellung behoben**: Landing (`/`) und Auth (`/auth`) starten jetzt in jeder ENV-Situation ohne leeren Bildschirm. Root Cause war ein stale Preview-Build ohne `VITE_SUPABASE_*`-Werte plus fehlende Fehlerabsicherung in der Landing-Page — `checked` blieb bei einem `getSession()`-Reject dauerhaft `false` und der Anmelde-Button war deaktiviert.
+- **Neu**: `src/integrations/supabase/config.ts` (`getAuthConfigurationStatus`, `AuthConfigurationError`) — wurf-freie, secret-freie Statusermittlung, weist `sb_secret_*` im Client hart ab.
+- **Neu**: `src/integrations/supabase/safe-client.ts` (`trySupabase`) — Fassade um den generierten Proxy-Client; fängt Init-Fehler ab, statt die App-Boundary auszulösen.
+- **Landing-Zustandsmaschine** (`checking | authenticated | anonymous | config-error | connection-error`) mit Retry und aktiv bleibendem Anmelde-Button in Anonymous-/Connection-Zuständen.
+- **Auth-Seite** fängt alle Auth-Aufrufe (`getSession`, `onAuthStateChange`, Login/Signup/Reset) mit try/catch + Toast ab; sperrt Formulare bei Konfig-Fehler.
+- **`_authenticated/route.tsx`** kapselt `getUser()` und leitet bei Netzwerk-/Config-Fehler kontrolliert nach `/auth`, statt zu loopen.
+- **`.env.example`** dokumentiert die Supabase-/Cloud-Variablen inklusive Warnung gegen `sb_secret_*` im Client.
+- **Tests**: `supabase-config.test.ts` deckt alle vier Statusfälle und die Secret-Key-Ablehnung ab.
+
 ## 1.40.0 - 2026-07-18
 
 - **UserManagementDialog gegen Supabase verdrahtet**: Profile, Rollen und Status werden jetzt aus `public.profiles` und `public.user_roles` gelesen bzw. geschrieben (neuer `src/lib/users-supabase-service.ts`). Rollenwechsel via Dropdown ist SysAdmin-only (RLS `user_roles_sysadmin_*`), Statuswechsel (aktiv/archiviert) für Admins. Tab „Profil wechseln" entfällt — mit echter Auth ist Wechsel = Abmelden. Neuanlage/Löschen wurden bewusst entfernt: Registrierung läuft über die Anmeldeseite, Löschen (Auth Admin API) wird eigenständig behandelt.
