@@ -13,6 +13,16 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.41.0 - 2026-07-20
+
+- **Race-safe Bootstrap**: `handle_new_user()` nimmt `pg_advisory_xact_lock('sysadmin_bootstrap')` vor der Rollenzuweisung — parallele Erstregistrierungen erzeugen genau einen Systemadministrator, alle weiteren `viewer`.
+- **DB-Lockout für letzten Sysadmin**: Neue Trigger `trg_protect_last_sysadmin_roles` (auf `user_roles` BEFORE UPDATE/DELETE) und `trg_protect_last_sysadmin_profile` (auf `profiles` BEFORE UPDATE OF status). Herabstufen, Löschen oder Deaktivieren des letzten aktiven Systemadministrators schlägt mit `last_sysadmin_locked` fehl — greift auch bei direktem API-/SQL-Zugriff und ersetzt den bisherigen reinen Client-Guard.
+- **Statusprüfung serverseitig**: Neue Funktion `public.is_account_active(uuid)` (SECURITY DEFINER, GRANT nur `authenticated`). `_authenticated`-Gate ruft die RPC nach `getUser()` und meldet inaktive Konten mit `signOut()` + Redirect `/auth?reason=account_inactive` ab.
+- **Rollenaudit**: Trigger `trg_audit_user_roles` schreibt jede INSERT/UPDATE/DELETE-Aktion auf `user_roles` in `audit_log` (nur IDs, keine PII); Bootstrap protokolliert `auth.bootstrap`.
+- **Auth-Konfiguration**: `Confirm email = on`, `HIBP = on`, `Anonymous signups = off`, `Signups = enabled`.
+- **`/auth`-UX**: Signup unterscheidet „Konto existiert bereits" (`identities.length === 0`), „direkt angemeldet" (Session vorhanden) und „E-Mail bestätigen". Neuer `?reason=`-Parameter mit lesbaren Hinweisen (`account_inactive|account_locked|account_archived|unavailable`).
+- **Manueller Deploy-Schritt (nicht automatisierbar)**: In Cloud → Users → URL-Konfiguration die erlaubten Redirect-URLs pflegen (mind. `https://sysingdashboard.lovable.app/**` und aktuelle Preview). Dokumentiert in `docs/DEPLOYMENT.md`.
+
 ## 1.40.1 - 2026-07-19
 
 - **Startfehler nach Auth-Umstellung behoben**: Landing (`/`) und Auth (`/auth`) starten jetzt in jeder ENV-Situation ohne leeren Bildschirm. Root Cause war ein stale Preview-Build ohne `VITE_SUPABASE_*`-Werte plus fehlende Fehlerabsicherung in der Landing-Page — `checked` blieb bei einem `getSession()`-Reject dauerhaft `false` und der Anmelde-Button war deaktiviert.

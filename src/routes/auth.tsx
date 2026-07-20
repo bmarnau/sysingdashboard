@@ -17,7 +17,12 @@ import { toast } from "sonner";
  * abgesichert. Bei fehlender/ungültiger Konfiguration werden die Formulare
  * gesperrt und ein nicht-technischer Hinweis angezeigt.
  */
-const SearchSchema = z.object({ redirect: z.string().optional() });
+const SearchSchema = z.object({
+  redirect: z.string().optional(),
+  reason: z
+    .enum(["unavailable", "account_inactive", "account_locked", "account_archived"])
+    .optional(),
+});
 
 function safeRedirect(target: string | undefined): string {
   if (!target) return "/dashboard";
@@ -26,6 +31,13 @@ function safeRedirect(target: string | undefined): string {
   }
   return target;
 }
+
+const REASON_MESSAGES: Record<string, string> = {
+  account_inactive: "Dieses Konto ist derzeit nicht aktiv. Bitte einen Administrator kontaktieren.",
+  account_locked: "Konto ist gesperrt. Bitte einen Administrator kontaktieren.",
+  account_archived: "Konto wurde archiviert. Zugriff ist nicht möglich.",
+  unavailable: "Anmeldedienst war kurzzeitig nicht erreichbar. Bitte erneut versuchen.",
+};
 
 export const Route = createFileRoute("/auth")({
   validateSearch: SearchSchema,
@@ -106,7 +118,7 @@ function AuthPage() {
     const lastName = String(fd.get("lastName") ?? "").trim();
     setBusy(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -120,10 +132,12 @@ function AuthPage() {
       });
       if (error) {
         toast.error(error.message || "Registrierung fehlgeschlagen");
+      } else if (data.user && (data.user.identities?.length ?? 0) === 0) {
+        toast.info("Ein Konto mit dieser E-Mail existiert bereits. Bitte anmelden oder Passwort zurücksetzen.");
+      } else if (data.session) {
+        toast.success("Registrierung erfolgreich. Du bist angemeldet.");
       } else {
-        toast.success(
-          "Registrierung erfolgreich. Bitte E-Mail bestätigen (falls angefordert) und anmelden.",
-        );
+        toast.success("Registrierung erfolgreich. Bitte E-Mail-Bestätigungslink öffnen, dann anmelden.");
       }
     } catch {
       toast.error("Registrierung fehlgeschlagen. Bitte später erneut versuchen.");
@@ -180,6 +194,14 @@ function AuthPage() {
                   {configError.invalidReason ? ` – ${configError.invalidReason}` : ""}
                 </p>
               )}
+            </div>
+          )}
+          {search.reason && REASON_MESSAGES[search.reason] && (
+            <div
+              role="alert"
+              className="mb-4 rounded-md border border-warning/40 bg-warning/5 p-3 text-sm"
+            >
+              {REASON_MESSAGES[search.reason]}
             </div>
           )}
           <Tabs defaultValue="login">
