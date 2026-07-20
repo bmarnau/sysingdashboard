@@ -1,5 +1,34 @@
 # Deployment Guide
 
+## Auth-Inbetriebnahme (Erstinstallation)
+
+1. **Cloud → Users → URL-Konfiguration**: Zulässige Redirect-URLs eintragen
+   (mindestens `https://sysingdashboard.lovable.app/**` und aktuelle
+   Preview-URL sowie `/reset-password`). Keine Wildcard `*`.
+2. **Confirm email**, **HIBP** aktiv (per `configure_auth` gesetzt),
+   Anonymous-Signups deaktiviert.
+3. **Ersten Benutzer** über `/auth` selbst registrieren — der DB-Trigger
+   `handle_new_user` weist ihm atomar `systemadministrator` zu.
+   Kein Passwort im Repo, kein Seed, keine manuelle Rollenvergabe.
+4. Weitere Benutzer starten als `viewer` und werden vom Sysadmin
+   über die Benutzerverwaltung hochgestuft.
+
+Reparaturpfad, falls ein Auth-Benutzer vor Trigger-Installation existiert
+(nicht der Regelfall — DB ist bei Erstinstallation leer):
+
+```sql
+-- Nur ausführen wenn der Benutzer eindeutig identifiziert ist.
+-- Ersetze <UUID> durch die auth.users.id des Erstadmins.
+INSERT INTO public.profiles (id, email)
+  SELECT id, COALESCE(email, '') FROM auth.users WHERE id = '<UUID>'
+  ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.user_roles (user_id, role, granted_by)
+  VALUES ('<UUID>', 'systemadministrator', '<UUID>')
+  ON CONFLICT DO NOTHING;
+```
+
+
+
 Das Dashboard deployed als **TanStack Start** auf **Cloudflare Worker**
 (`compatibility_date: 2025-09-24`, `nodejs_compat`).
 
