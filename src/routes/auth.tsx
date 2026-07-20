@@ -118,7 +118,7 @@ function AuthPage() {
     const lastName = String(fd.get("lastName") ?? "").trim();
     setBusy(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -132,10 +132,12 @@ function AuthPage() {
       });
       if (error) {
         toast.error(error.message || "Registrierung fehlgeschlagen");
+      } else if (data.user && (data.user.identities?.length ?? 0) === 0) {
+        toast.info("Ein Konto mit dieser E-Mail existiert bereits. Bitte anmelden oder Passwort zurücksetzen.");
+      } else if (data.session) {
+        toast.success("Registrierung erfolgreich. Du bist angemeldet.");
       } else {
-        toast.success(
-          "Registrierung erfolgreich. Bitte E-Mail bestätigen (falls angefordert) und anmelden.",
-        );
+        toast.success("Registrierung erfolgreich. Bitte E-Mail-Bestätigungslink öffnen, dann anmelden.");
       }
     } catch {
       toast.error("Registrierung fehlgeschlagen. Bitte später erneut versuchen.");
