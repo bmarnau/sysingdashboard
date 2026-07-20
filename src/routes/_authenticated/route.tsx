@@ -22,9 +22,16 @@ export const Route = createFileRoute("/_authenticated")({
       if (error || !data.user) {
         throw redirect({ to: "/auth", search: { redirect: location.href } });
       }
+      // Statusprüfung: nur `active` darf ins Dashboard.
+      const { data: active } = await result.client.rpc("is_account_active", {
+        _user_id: data.user.id,
+      });
+      if (active === false) {
+        await result.client.auth.signOut().catch(() => undefined);
+        throw redirect({ to: "/auth", search: { redirect: "/dashboard", reason: "account_inactive" } });
+      }
       return { userId: data.user.id };
     } catch (e) {
-      // isRedirect-Muster: TanStack-Router wirft Redirect-Objekte; nicht schlucken.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (e && typeof e === "object" && (e as any).isRedirect) throw e;
       throw redirect({ to: "/auth", search: { redirect: location.href } });
