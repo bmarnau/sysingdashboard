@@ -17,7 +17,12 @@ import { toast } from "sonner";
  * abgesichert. Bei fehlender/ungültiger Konfiguration werden die Formulare
  * gesperrt und ein nicht-technischer Hinweis angezeigt.
  */
-const SearchSchema = z.object({ redirect: z.string().optional() });
+const SearchSchema = z.object({
+  redirect: z.string().optional(),
+  reason: z
+    .enum(["unavailable", "account_inactive", "account_locked", "account_archived"])
+    .optional(),
+});
 
 function safeRedirect(target: string | undefined): string {
   if (!target) return "/dashboard";
@@ -26,6 +31,13 @@ function safeRedirect(target: string | undefined): string {
   }
   return target;
 }
+
+const REASON_MESSAGES: Record<string, string> = {
+  account_inactive: "Dieses Konto ist derzeit nicht aktiv. Bitte einen Administrator kontaktieren.",
+  account_locked: "Konto ist gesperrt. Bitte einen Administrator kontaktieren.",
+  account_archived: "Konto wurde archiviert. Zugriff ist nicht möglich.",
+  unavailable: "Anmeldedienst war kurzzeitig nicht erreichbar. Bitte erneut versuchen.",
+};
 
 export const Route = createFileRoute("/auth")({
   validateSearch: SearchSchema,
