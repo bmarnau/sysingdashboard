@@ -196,6 +196,14 @@ function AuthPage() {
               )}
             </div>
           )}
+          {search.reason && REASON_MESSAGES[search.reason] && (
+            <div
+              role="alert"
+              className="mb-4 rounded-md border border-warning/40 bg-warning/5 p-3 text-sm"
+            >
+              {REASON_MESSAGES[search.reason]}
+            </div>
+          )}
           <Tabs defaultValue="login">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login">Anmelden</TabsTrigger>
