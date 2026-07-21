@@ -31,17 +31,24 @@ export class AuthConfigurationError extends Error {
   }
 }
 
-function readViteEnv(name: string): string | undefined {
-  // `import.meta.env` existiert nur unter Vite; per typeof-Guard SSR-sicher.
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const env = (import.meta as any)?.env as Record<string, string | undefined> | undefined;
-    const v = env?.[name];
-    return typeof v === "string" && v.length > 0 ? v : undefined;
-  } catch {
-    return undefined;
-  }
-}
+/**
+ * WICHTIG: Vite ersetzt `import.meta.env.VITE_*` NUR bei statischem
+ * Property-Zugriff zur Build-Zeit. Ein dynamischer Zugriff über einen
+ * Variablennamen (`env[name]`) bleibt im Production-Bundle leer, weil
+ * Vite `import.meta.env` bei statischer Analyse nicht als vollständiges
+ * Objekt bereitstellt. Deshalb hier zwingend statische Reads.
+ */
+const VITE_SUPABASE_URL: string | undefined =
+  typeof import.meta.env.VITE_SUPABASE_URL === "string" &&
+  import.meta.env.VITE_SUPABASE_URL.length > 0
+    ? import.meta.env.VITE_SUPABASE_URL
+    : undefined;
+
+const VITE_SUPABASE_PUBLISHABLE_KEY: string | undefined =
+  typeof import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY === "string" &&
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY.length > 0
+    ? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+    : undefined;
 
 function readProcessEnv(name: string): string | undefined {
   try {
