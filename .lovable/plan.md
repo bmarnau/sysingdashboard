@@ -1,82 +1,70 @@
 
-## Ist-Zustand (verifiziert)
+## Root Cause
 
-- Supabase-Projekt verbunden, Trigger `on_auth_user_created` existiert, Enum + Funktionen (`handle_new_user`, `has_role`, `has_any_role`, `has_permission`) sind da, RLS-Policies auf `profiles`/`user_roles`/`audit_log` aktiv.
-- Datenbank ist **leer**: `auth.users = 0`, `profiles = 0`, `user_roles = 0`, `sysadmins = 0` → Fall A (noch kein Auth-Benutzer). Keine Reparaturmigration nötig.
-- Auth-Provider-Einstellungen (Email/Password an, Confirm-Email, Redirect-URLs, HIBP) sind über die Cloud-Tools nicht direkt abfragbar → müssen explizit gesetzt werden.
-- Bekannte Lücken: `handle_new_user()` prüft `NOT EXISTS (SELECT 1 FROM user_roles)` ohne Lock (Race Condition), es gibt keinen DB-Schutz gegen Herabstufung/Archivierung des letzten Sysadmins, `profiles.status` wird beim Login nicht durchgesetzt, Signup-Feedback in `/auth` ist minimal.
+`src/integrations/supabase/config.ts` liest die Vite-Variablen über einen **dynamischen Property-Zugriff**:
 
-## Ziel
+```ts
+const env = (import.meta as any)?.env as Record<string, string | undefined>;
+const v = env?.[name];              // ← wird von Vite NICHT ersetzt
+```
 
-Ein realer Erstbenutzer registriert sich selbst, wird atomar `systemadministrator`, kann sich anmelden, Rolle wird serverseitig verifiziert, Status-/Lockout-Regeln greifen auch bei direktem API-Zugriff. Keine Test-/Standardpasswörter, keine PII im Report.
+Vite inlined `import.meta.env.VITE_*` nur bei **statischem** Zugriff. Über einen Variablennamen (`env[name]`) bleibt im produzierten Browser-Bundle nichts übrig, daher liefert `getAuthConfigurationStatus()` in der veröffentlichten App `status: "missing"`, obwohl Lovable Cloud die Werte korrekt bereitstellt (`.env` enthält alle drei `VITE_SUPABASE_*`). `trySupabase()` gibt `{ ok: false }` zurück und die Routen zeigen die rote Meldung.
 
----
+Der generierte `client.ts` verwendet dagegen bereits statischen Zugriff und würde funktionieren – er wird nur durch die Fassade nie erreicht.
 
-## Änderungen
+## Fix
 
-### 1. DB-Migration `20260720_auth_hardening.sql`
+### 1. `src/integrations/supabase/config.ts`
 
-**a) Race-safe Bootstrap** — `handle_new_user()` neu:
-- Vor der Rollenzuweisung `PERFORM pg_advisory_xact_lock(hashtext('sysadmin_bootstrap'))`.
-- Danach `SELECT NOT EXISTS ... FOR UPDATE`-Äquivalent per Lock erzwungen; parallele Signups sehen konsistent, ob bereits ein Sysadmin existiert → genau einer wird `systemadministrator`, alle weiteren `viewer`.
-- Verhalten sonst unverändert, `ON CONFLICT DO NOTHING` bleibt.
+- `readViteEnv(name)` durch statische Konstanten ersetzen, die einmalig auf Modulebene ausgewertet werden:
 
-**b) Sysadmin-Lockout-Trigger** auf `user_roles` (BEFORE UPDATE/DELETE) und `profiles` (BEFORE UPDATE):
-- Blockiert Löschen/Herabstufen der letzten `systemadministrator`-Rolle mit `status='active'`-Profil.
-- Blockiert Status-Wechsel auf `inactive|locked|archived` für den letzten aktiven Sysadmin.
-- `RAISE EXCEPTION 'last_sysadmin_locked'` → auch bei direktem SQL/API wirksam.
+  ```ts
+  const VITE_URL = import.meta.env.VITE_SUPABASE_URL;
+  const VITE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  ```
 
-**c) Statusprüfung** — neue SECURITY DEFINER Funktion `public.is_account_active(_user_id uuid) returns boolean` (liest `profiles.status='active'`), authenticated GRANT.
+- `readProcessEnv` als SSR-Fallback beibehalten (dort ist `process.env` ein echtes Objekt).
+- Validierung (`isValidHttpsUrl`, `isPlausiblePublishableKey`) unverändert – akzeptiert weiterhin `sb_publishable_*` und Legacy-JWT-Anon-Keys, weist `sb_secret_*` zurück.
+- Keine URL, kein Key, kein Token wird geloggt oder zurückgegeben.
 
-**d) Audit-Log-Trigger** auf `user_roles` für INSERT/UPDATE/DELETE (Actor = `auth.uid()`, keine E-Mail/PII, nur IDs + Aktion), damit Bootstrap und Rollenänderungen dokumentiert sind.
+### 2. `src/routes/auth.tsx` und `src/routes/index.tsx` – DEV-Diagnose
 
-### 2. Server-seitige Enforcement in TanStack
+Die Fehlermeldung nur in `import.meta.env.DEV` um vier nicht-sensible Felder erweitern:
 
-- Neues Middleware-Add-on `requireActiveAccount` (baut auf `requireSupabaseAuth` auf): ruft `is_account_active(userId)` → wirft 403 bei nicht-`active`. Wird in bestehende geschützte `createServerFn`-Aufrufe eingehängt (sync, user-management, azure).
-- `_authenticated/route.tsx`: nach `getUser()` zusätzlich `is_account_active` per RPC prüfen; bei false → `signOut()` + Redirect `/auth?reason=account_inactive`.
+- `status` (`configured` | `missing` | `invalid`)
+- `missingKeys` (nur Namen, keine Werte)
+- `invalidReason` (generischer String aus `config.ts`)
+- `clientCreated: yes|no` (Ergebnis von `trySupabase().ok`)
 
-### 3. UI-Feedback in `/auth`
+In Production bleibt die Meldung unverändert kurz.
 
-- Signup-Ergebnis unterscheidet: `identities.length === 0` (Konto existiert bereits), `session != null` (direkt eingeloggt), sonst „E-Mail bestätigen".
-- `search.reason` (`account_inactive|account_locked|account_archived|unavailable`) auf `/auth` als sichtbarer Alert.
-- Profilbereich (bestehender Dialog) zeigt Anzeigename, E-Mail, Rolle, Status — keine UUIDs.
+### 3. Keine weiteren Änderungen
 
-### 4. Auth-Konfiguration (Tool-Aufruf)
+- `client.ts` bleibt unangetastet (auto-generiert, korrekter statischer Zugriff).
+- `safe-client.ts` bleibt unverändert – der Cache wird nach dem Fix ohnehin `{ ok: true }` cachen.
+- `.env`, `.env.example`, `client.server.ts`, `auth-middleware.ts`, `auth-attacher.ts`, `types.ts` bleiben unverändert.
+- Kein manueller Schlüssel im Code, keine deaktivierte Sicherheitsprüfung.
 
-- `supabase--configure_auth` mit `disable_signup=false`, `external_anonymous_users_enabled=false`, `auto_confirm_email=false` (Confirm-Email an), `password_hibp_enabled=true`.
-- Hinweis an Nutzer: Redirect-URLs (`preview`, `sysingdashboard.lovable.app`) müssen in Cloud→Users→URL-Konfiguration ergänzt werden — kein Tool-API dafür.
+## Verifikation
 
-### 5. Tests
+1. `bun run build` – erfolgreich, keine TS-Fehler.
+2. `tsgo` typecheck.
+3. `bunx vitest run src/__tests__/integrations/supabase-config.test.ts` – bestehende Config-Tests weiterhin grün; ggf. Erwartung an `readViteEnv`-Interna anpassen, falls dort auf die alte Signatur getestet wird.
+4. Erneutes Publish via `preview_ui--publish`.
+5. Playwright-Smoke gegen `http://localhost:8080/` und `http://localhost:8080/auth`:
+   - Prüfe, dass die rote Meldung nicht erscheint.
+   - Prüfe, dass die Felder E-Mail/Passwort/Registrierung aktiv sind.
+   - Fülle das Registrierungsformular mit Test-Werten bis unmittelbar vor Absenden (kein Submit).
+6. `CHANGELOG.md` + `help-documentation.ts` gemäß Doku-Sync-Pflicht aktualisieren (Patch-Version).
 
-- `src/__tests__/auth/bootstrap.test.ts`: erster User → sysadmin, zweiter → viewer, parallele Signups (Promise.all) → genau ein sysadmin.
-- `src/__tests__/auth/lockout.test.ts`: Herabstufen des letzten Sysadmins wirft `last_sysadmin_locked`; mit zweitem Sysadmin erlaubt.
-- `src/__tests__/auth/status-enforcement.test.ts`: `inactive`-User bekommt 403 auf geschützten serverFn.
-- Playwright `e2e/specs/auth/full-flow.spec.ts`: Signup → (Confirm optional übersprungen wenn autoconfirm=off in Test-Instanz) → Login → `/dashboard` → Logout → geschützte Route → Redirect → Reset-Flow (bis `resetPasswordForEmail`).
+## Abnahmekriterien
 
-### 6. Dokumentation & Bericht
+- Rote Meldung „Anmeldung ist noch nicht konfiguriert“ verschwunden.
+- Registrierungsformular aktiv.
+- `trySupabase()` liefert `{ ok: true, client }`.
+- `supabase.auth.getSession()` läuft ohne Konfigurationsfehler.
+- Keine Schlüssel im Repository ergänzt; nur `config.ts` (Kernfix) sowie `auth.tsx`/`index.tsx` (DEV-Diagnose), `CHANGELOG.md`, `help-documentation.ts` (Doku) verändert.
 
-- CHANGELOG `1.41.0` — Bootstrap-Härtung, Lockout-Trigger, Status-Enforcement, UX.
-- `help-documentation.ts`: Kapitel „Erst-Inbetriebnahme & Bootstrap", „Kontostatus & Sperren".
-- `docs/DEPLOYMENT.md`: Redirect-URL-Konfiguration, Confirm-Email, HIBP.
-- Neuer Bericht `test-report/auth-commissioning-report.md` mit den 14 Punkten aus Abschnitt 13 (nur anonymisierte Zahlen).
-- SystemStatus-Dialog: Sektion „Auth" (Confirm-Email, Provider-Count, Sysadmin-Count via RPC-Zähler ohne PII).
+## Kritische Anmerkung
 
----
-
-## Technische Details
-
-- Trigger-Sprache: `plpgsql`, `SECURITY DEFINER`, `SET search_path = public` — konsistent zu Bestand.
-- Advisory-Lock-Key deterministisch (`hashtext('sysadmin_bootstrap')`), Scope `xact` → wird beim Commit freigegeben.
-- `is_account_active` läuft als SECURITY DEFINER, GRANT nur für `authenticated`.
-- Lockout-Trigger prüft `count(*) FILTER (WHERE role='systemadministrator' AND profile.status='active') > 1` **nach** der geplanten Änderung (per NEW/OLD).
-- Reparaturpfade (Fall B–E) sind aktuell **nicht** nötig (leere DB) → wir liefern sie als dokumentierte SQL-Snippets im Deployment-Handbuch statt als ausgeführte Migration.
-
----
-
-## Manueller Schritt für den Nutzer (nach Deploy)
-
-1. Redirect-URLs in Cloud→Users→URL-Konfiguration ergänzen: `https://sysingdashboard.lovable.app/**`, aktuelle Preview-URL, `/reset-password`.
-2. Auf `/auth` erstes Konto registrieren — wird automatisch Sysadmin.
-3. Bericht `test-report/auth-commissioning-report.md` prüfen.
-
-Kein Passwort, keine E-Mail wird von uns gesetzt oder committed.
+Die aktuelle `config.ts`-Struktur mit dynamischer Env-Lesung war eine Fehlerquelle, die sich in Dev nicht zeigt (dort ist `import.meta.env` ein echtes Proxy-Objekt) und ausschließlich im Production-Bundle bricht – klassischer „works on my machine“-Fall. Nach dem Fix schlage ich vor, in einem Folge-Prompt einen Vitest gegen den **gebauten** Bundle-Output zu ergänzen (`bun run build` + serve + Headless-Check), damit dieselbe Klasse Fehler zukünftig nicht erneut unbemerkt bleibt.
