@@ -83,9 +83,8 @@ function isPlausiblePublishableKey(value: string): boolean {
  * serverseitigen `SUPABASE_*` zurück.
  */
 export function getAuthConfigurationStatus(): AuthConfiguration {
-  const url = readViteEnv("VITE_SUPABASE_URL") ?? readProcessEnv("SUPABASE_URL");
-  const key =
-    readViteEnv("VITE_SUPABASE_PUBLISHABLE_KEY") ?? readProcessEnv("SUPABASE_PUBLISHABLE_KEY");
+  const url = VITE_SUPABASE_URL ?? readProcessEnv("SUPABASE_URL");
+  const key = VITE_SUPABASE_PUBLISHABLE_KEY ?? readProcessEnv("SUPABASE_PUBLISHABLE_KEY");
 
   const missing: string[] = [];
   if (!url) missing.push("SUPABASE_URL");
