@@ -13,6 +13,10 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.41.2 - 2026-07-23
+
+- **Publish-Build neu erzeugt**: Re-Publish mit im Runner vorhandenen `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` und `VITE_SUPABASE_PROJECT_ID`, damit Vite die Werte statisch in das Client-Bundle inlined. Behebt die Meldung „Die Anmeldung ist noch nicht konfiguriert" auf der veröffentlichten App. Keine Code-Änderung.
+
 ## 1.41.0 - 2026-07-20
 
 - **Race-safe Bootstrap**: `handle_new_user()` nimmt `pg_advisory_xact_lock('sysadmin_bootstrap')` vor der Rollenzuweisung — parallele Erstregistrierungen erzeugen genau einen Systemadministrator, alle weiteren `viewer`.
