@@ -149,6 +149,10 @@ function RootComponent() {
     import("@/hooks/useSystemStatusHealth").then(({ bootstrapSystemStatusCheck }) => {
       bootstrapSystemStatusCheck();
     });
+    // Existenz der drei VITE_SUPABASE_*-Variablen im Client-Bundle prüfen.
+    import("@/integrations/supabase/env-check").then(({ runStartupEnvCheck }) => {
+      runStartupEnvCheck();
+    });
   }
 
   return (
