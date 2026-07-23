@@ -45,7 +45,7 @@ function buildInstruction(missing: string[], invalidReason?: string): string {
   lines.push("  2. Lokal: Werte in .env eintragen (siehe .env.example) und");
   lines.push("     Dev-Server neu starten. Vite ersetzt VITE_*-Variablen");
   lines.push("     ausschließlich zur Build-Zeit über statische Zugriffe.");
-  lines.push("  3. Veröffentlichte App: Im Publish-Dialog „Update" ausführen,");
+  lines.push('  3. Veroeffentlichte App: Im Publish-Dialog "Update" ausfuehren,');
   lines.push("     damit ein frischer Build mit den aktuellen Env-Werten");
   lines.push("     erzeugt wird.");
   lines.push("");
