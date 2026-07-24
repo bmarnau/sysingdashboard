@@ -1,7 +1,7 @@
 # API Discovery — Findings
 
-Generated: 2026-07-13T05:41:27.163Z
-Dashboard: 1.34.1 · Commit: d06a80b
+Generated: 2026-07-24T05:45:52.939Z
+Dashboard: 1.41.3 · Commit: 452e517
 
 ## Zusammenfassung
 
@@ -10,14 +10,14 @@ Dashboard: 1.34.1 · Commit: d06a80b
 - Smoke passed / failed / skipped: **2** / **0** / **0**
 - Functional coverage complete / partial / missing: **0** / **2** / **0**
 
-## CRITICAL (1)
+## HIGH (1)
 
-### DISC-CRIT-sync-no-auth — Endpoint mit Wirkung write ohne Authentifizierung
+### DISC-HIGH-sync-no-validation — Schreibender Endpoint ohne erkennbare Request-Validierung
 - Endpoint: `POST /api/sync`
 - Datei: `src/routes/api/sync.ts`
-- Kategorie: privileged-without-auth
-- Beschreibung: Anonymer Aufruf verändert Daten oder löst schreibende Operationen aus.
-- Empfehlung: Auth-Middleware ergänzen und Permission-Guard serverseitig prüfen.
+- Kategorie: missing-validation
+- Beschreibung: Keine `z.object(...)` o. ä. im Handler gefunden.
+- Empfehlung: Zod-Schema für Request-Body ergänzen.
 
 ## MEDIUM (4)
 

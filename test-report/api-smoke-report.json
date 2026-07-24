@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-07-13T05:41:27.162Z",
-  "dashboardVersion": "1.34.1",
-  "commit": "d06a80b",
+  "generatedAt": "2026-07-24T05:45:52.938Z",
+  "dashboardVersion": "1.41.3",
+  "commit": "452e517",
   "counts": {
     "total": 2,
     "tested": 2,
@@ -12,7 +12,7 @@
     "notImplemented": 0,
     "notConfigured": 0,
     "unclassified": 0,
-    "withoutAuthTest": 2,
+    "withoutAuthTest": 1,
     "withoutValidationTest": 1,
     "withoutSchemaCheck": 0
   },
@@ -49,7 +49,7 @@
           "detail": "status=405"
         }
       ],
-      "duration": 151.8379520000001,
+      "duration": 520.1600719999997,
       "path": "/api/status",
       "classification": "public"
     },
@@ -88,10 +88,16 @@
           "name": "invalid JSON rejected",
           "category": "validation",
           "ok": true,
-          "detail": "status=400"
+          "detail": "status=401"
+        },
+        {
+          "name": "anonymous request rejected",
+          "category": "auth",
+          "ok": true,
+          "detail": "status=401"
         }
       ],
-      "duration": 22.595638999999892,
+      "duration": 87.4284430000007,
       "path": "/api/sync",
       "classification": "privileged"
     }
