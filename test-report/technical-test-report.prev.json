@@ -1,21 +1,21 @@
 {
   "schemaVersion": "1.1.0",
-  "generatedAt": "2026-07-16T03:41:45.451Z",
+  "generatedAt": "2026-07-24T05:45:53.296Z",
   "identity": {
-    "dashboardVersion": "1.38.0",
-    "commit": "5dd99eb",
+    "dashboardVersion": "1.41.3",
+    "commit": "b3e5560",
     "buildTime": null,
-    "testTime": "2026-07-16T03:41:45.369Z",
+    "testTime": "2026-07-24T05:45:53.167Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
       "ci": false
     }
   },
-  "status": "failed",
+  "status": "passed-with-findings",
   "recommendation": {
-    "level": "not-production",
-    "reason": "2 offene CRITICAL-Findings."
+    "level": "pilot-ready",
+    "reason": "7 HIGH-Findings — für Pilot geeignet, für Produktion nicht."
   },
   "summary": {
     "total": 67,
@@ -23,10 +23,10 @@
     "high": 10,
     "medium": 13,
     "low": 41,
-    "accepted": 3,
+    "accepted": 7,
     "sources": {
       "security": {
-        "status": "failed",
+        "status": "passed-with-findings",
         "count": 9
       },
       "api": {
@@ -90,25 +90,25 @@
       ]
     },
     "RBAC": {
-      "status": "failed",
-      "openCritical": 2,
-      "openHigh": 3,
+      "status": "passed-with-findings",
+      "openCritical": 0,
+      "openHigh": 1,
       "sourceKeys": [
         "security"
       ]
     },
     "Auth": {
-      "status": "failed",
-      "openCritical": 2,
-      "openHigh": 3,
+      "status": "passed-with-findings",
+      "openCritical": 0,
+      "openHigh": 1,
       "sourceKeys": [
         "security"
       ]
     },
     "Azure": {
-      "status": "failed",
-      "openCritical": 2,
-      "openHigh": 3,
+      "status": "passed-with-findings",
+      "openCritical": 0,
+      "openHigh": 1,
       "sourceKeys": [
         "security"
       ]
@@ -169,8 +169,8 @@
       "category": "security",
       "area": "backend-rbac",
       "title": "Backend prüft keine Rolle oder Assignment",
-      "description": "Direkter POST auf einen Endpoint mit beliebigem Body — es findet keine Rollen- oder Permission-Prüfung statt (siehe e2e/specs/security/api-direct-call.spec.ts).",
-      "cause": "Direkter POST auf einen Endpoint mit beliebigem Body — es findet keine Rollen- oder Permission-Prüfung statt (siehe e2e/specs/security/api-direct-call.spec.ts).",
+      "description": "Historisch: direkter POST auf einen Endpoint ohne Auth. Seit v1.39.0 erzwingt `/api/sync` `Authorization: Bearer <supabase-jwt>` UND `public.has_permission(user, 'azure.import'|'azure.export')`.",
+      "cause": "Historisch: direkter POST auf einen Endpoint ohne Auth. Seit v1.39.0 erzwingt `/api/sync` `Authorization: Bearer <supabase-jwt>` UND `public.has_permission(user, 'azure.import'|'azure.export')`.",
       "impact": "Blockiert Release-Phase: all",
       "evidence": {
         "file": "backend/services/*, src/routes/api/*",
@@ -180,12 +180,12 @@
       "components": [
         "backend/services/*, src/routes/api/*"
       ],
-      "recommendation": "Vor Auth-Produktivierung `requireRole`/`requirePermission`-Middleware analog zu `withCorrelation` einziehen. Verifiziert Actor gegen serverseitige Session, nicht gegen Client-Payload.",
+      "recommendation": "Weitere Endpoints beim Anlegen sofort über `requireSupabaseAuth` + `has_permission` schützen. Muster: siehe `src/routes/api/sync.ts` (Prompt 2A.11).",
       "dependencies": [],
       "effort": "L",
-      "status": "open",
+      "status": "accepted",
       "source": "auto",
-      "accepted": false,
+      "accepted": true,
       "bucket": "critical-security",
       "order": 0
     },
@@ -195,23 +195,23 @@
       "category": "security",
       "area": "identity",
       "title": "Aktive Rolle wird ausschließlich im localStorage geführt",
-      "description": "In der DevTools-Konsole: `localStorage.setItem('northbit-active-user', existingId)` — sofort greift die dortige Rolle in allen UI-Gates. Vitest-Beleg: manipulation.test.ts › KNOWN_GAP_SEC_CRIT_002.",
-      "cause": "In der DevTools-Konsole: `localStorage.setItem('northbit-active-user', existingId)` — sofort greift die dortige Rolle in allen UI-Gates. Vitest-Beleg: manipulation.test.ts › KNOWN_GAP_SEC_CRIT_002.",
+      "description": "Historisch: `localStorage.setItem('northbit-active-user', existingId)` verlieh sofort Sysadmin-Rechte. Seit v1.39.0 leitet `useCurrentUser()` Rolle ausschließlich aus `public.user_roles` gegen `auth.uid()` (RLS-geschützt) ab; localStorage-Manipulation hat keinen Effekt.",
+      "cause": "Historisch: `localStorage.setItem('northbit-active-user', existingId)` verlieh sofort Sysadmin-Rechte. Seit v1.39.0 leitet `useCurrentUser()` Rolle ausschließlich aus `public.user_roles` gegen `auth.uid()` (RLS-geschützt) ab; localStorage-Manipulation hat keinen Effekt.",
       "impact": "Blockiert Release-Phase: auth-production",
       "evidence": {
-        "file": "src/lib/user-management.ts",
+        "file": "src/hooks/useCurrentUser.ts, src/lib/user-management.ts",
         "line": null,
         "reportRef": "test-report/security-report.md#SEC-CRIT-002"
       },
       "components": [
-        "src/lib/user-management.ts"
+        "src/hooks/useCurrentUser.ts, src/lib/user-management.ts"
       ],
-      "recommendation": "Session-basierte Identität einführen (HTTP-only Cookie oder Bearer Token gegen echten Auth-Provider). Client-Storage bleibt UI-Cache.",
+      "recommendation": "Bei künftigen UI-Gates strikt `useCurrentUser()` verwenden, niemals direkt gegen localStorage prüfen.",
       "dependencies": [],
       "effort": "L",
-      "status": "open",
+      "status": "accepted",
       "source": "auto",
-      "accepted": false,
+      "accepted": true,
       "bucket": "critical-security",
       "order": 0
     },
@@ -428,9 +428,9 @@
       "severity": "HIGH",
       "category": "security",
       "area": "auth",
-      "title": "Keine Session-, Token- oder Provider-Infrastruktur",
-      "description": "Es existieren weder Login-Endpunkte noch Session-Cookies/JWT. Damit sind sämtliche Test-Kategorien 'abgelaufene Session', 'manipulierte Claims', 'falscher Tenant', 'unpassende Gruppen' strukturell nicht umsetzbar.",
-      "cause": "Es existieren weder Login-Endpunkte noch Session-Cookies/JWT. Damit sind sämtliche Test-Kategorien 'abgelaufene Session', 'manipulierte Claims', 'falscher Tenant', 'unpassende Gruppen' strukturell nicht umsetzbar.",
+      "title": "Historisch: Keine Session-, Token- oder Provider-Infrastruktur",
+      "description": "Historischer Befund vor v1.39.0. Aktuell existieren Auth-Seiten, Auth-Session, geschützte Dashboard-Route und serverseitige Bearer-Validierung auf /api/sync.",
+      "cause": "Historischer Befund vor v1.39.0. Aktuell existieren Auth-Seiten, Auth-Session, geschützte Dashboard-Route und serverseitige Bearer-Validierung auf /api/sync.",
       "impact": "Blockiert Release-Phase: auth-production",
       "evidence": {
         "file": "-",
@@ -440,12 +440,12 @@
       "components": [
         "-"
       ],
-      "recommendation": "Entra-ID (OIDC) oder Lovable Cloud Auth integrieren, Session-Layer + Middleware anlegen. Diese Suite wird die Kategorien dann tatsächlich testen.",
+      "recommendation": "Echte Sign-in-E2E-Tests nur mit bereitgestellter Test-Session ausführen; ohne Test-Session authentifizierte Pfade als UNVERIFIED dokumentieren, nicht als fehlende Infrastruktur.",
       "dependencies": [],
       "effort": "M",
-      "status": "open",
+      "status": "accepted",
       "source": "auto",
-      "accepted": false,
+      "accepted": true,
       "bucket": "auth-rbac-blocker",
       "order": 4
     },
@@ -454,9 +454,9 @@
       "severity": "HIGH",
       "category": "security",
       "area": "azure",
-      "title": "Azure-Sync akzeptiert einen statischen Shared-Token als einzige Auth",
-      "description": "Production erwartet Header `X-Sync-Token` gegen ein Env-Secret. Kein Actor, keine Rolle, kein Audit-Bezug zum Benutzer.",
-      "cause": "Production erwartet Header `X-Sync-Token` gegen ein Env-Secret. Kein Actor, keine Rolle, kein Audit-Bezug zum Benutzer.",
+      "title": "Historisch: Azure-Sync akzeptierte einen statischen Shared-Token als einzige Auth",
+      "description": "Historischer Befund. Der aktuelle Endpoint liest `Authorization: Bearer ...`, validiert `auth.getUser()` und prüft `has_permission(user, 'azure.import'|'azure.export')` vor Sync-Ausführung.",
+      "cause": "Historischer Befund. Der aktuelle Endpoint liest `Authorization: Bearer ...`, validiert `auth.getUser()` und prüft `has_permission(user, 'azure.import'|'azure.export')` vor Sync-Ausführung.",
       "impact": "Blockiert Release-Phase: azure-production",
       "evidence": {
         "file": "src/routes/api/sync.ts",
@@ -466,12 +466,12 @@
       "components": [
         "src/routes/api/sync.ts"
       ],
-      "recommendation": "Shared-Token nur für Server-zu-Server-Callbacks belassen; benutzerinitiierten Sync auf `requirePermission('azure.import' | 'azure.export')` gegen echte Session umziehen.",
+      "recommendation": "Dieses Muster für alle künftigen benutzerinitiierten Azure-Aktionen beibehalten; keinen X-Sync-Token-Fallback reintroduzieren.",
       "dependencies": [],
       "effort": "M",
-      "status": "open",
+      "status": "accepted",
       "source": "auto",
-      "accepted": false,
+      "accepted": true,
       "bucket": "azure-blocker",
       "order": 5
     },
@@ -2092,29 +2092,9 @@
   },
   "blockers": [
     {
-      "id": "critical-finding",
-      "reason": "Critical Finding offen: sec:SEC-CRIT-001",
-      "detail": "Backend prüft keine Rolle oder Assignment"
-    },
-    {
-      "id": "critical-finding",
-      "reason": "Critical Finding offen: sec:SEC-CRIT-002",
-      "detail": "Aktive Rolle wird ausschließlich im localStorage geführt"
-    },
-    {
       "id": "high-security-finding",
       "reason": "High Security Finding: sec:SEC-HIGH-LOG-001",
       "detail": "Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS"
-    },
-    {
-      "id": "high-security-finding",
-      "reason": "High Security Finding: sec:SEC-HIGH-AUTH-001",
-      "detail": "Keine Session-, Token- oder Provider-Infrastruktur"
-    },
-    {
-      "id": "high-security-finding",
-      "reason": "High Security Finding: sec:SEC-HIGH-AZURE-001",
-      "detail": "Azure-Sync akzeptiert einen statischen Shared-Token als einzige Auth"
     }
   ]
 }

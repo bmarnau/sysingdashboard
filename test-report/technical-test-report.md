@@ -1,19 +1,19 @@
 # Technischer Prüfbericht
 
-_Generiert: 2026-07-24T05:45:53.296Z_
+_Generiert: 2026-07-24T05:46:26.711Z_
 
 ## 1. Prüfidentität
 - Dashboard-Version: **1.41.3**
-- Commit: `b3e5560`
+- Commit: `ef369a5`
 - Build-Zeit: —
-- Testzeit: 2026-07-24T05:45:53.167Z
+- Testzeit: 2026-07-24T05:46:26.597Z
 - Umgebung: Node v22.22.0 · linux · CI=false
 
 ## 2. Gesamtstatus
 **bestanden mit Findings**
 
 ## 3. Executive Summary
-- Findings gesamt: 67 (CRITICAL 2 · HIGH 10 · MEDIUM 13 · LOW 41 · akzeptiert 7).
+- Findings gesamt: 67 (CRITICAL 0 · HIGH 7 · MEDIUM 12 · LOW 40 · akzeptiert 7).
 - Freigabeempfehlung: **für Pilot geeignet** — 7 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
 
 ## 4. Testergebnisse nach Bereich
@@ -774,14 +774,10 @@ _Generiert: 2026-07-24T05:45:53.296Z_
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: test-gap · **Status**: open
 
 ## 6. Sortierte Maßnahmenliste
-- **critical-security** (2): sec:SEC-CRIT-001, sec:SEC-CRIT-002
-- **high-security** (2): sec:SEC-HIGH-STATUS-001, sec:SEC-HIGH-LOG-001
+- **high-security** (1): sec:SEC-HIGH-LOG-001
 - **high-functional** (6): td:td-endpoint-auth-cdae73c5, td:td-cycle-1fa843a1, td:td-cycle-dc9fbe11, td:td-oversize-26e43c0a, td:td-oversize-99cca8a6, td:td-oversize-ebfd4b54
-- **auth-rbac-blocker** (1): sec:SEC-HIGH-AUTH-001
-- **azure-blocker** (1): sec:SEC-HIGH-AZURE-001
-- **architecture** (50): sec:SEC-MED-REDIRECT-001, sec:SEC-MED-CLAIMS-001, td:td-console-375dfc5b, td:td-console-629bd14d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-da1180ce, td:td-layer-b432b1b9, td:td-layer-c1c89b30, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-789d61fa, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-9d8b7a18, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
+- **architecture** (49): sec:SEC-MED-CLAIMS-001, td:td-console-375dfc5b, td:td-console-629bd14d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-da1180ce, td:td-layer-b432b1b9, td:td-layer-c1c89b30, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-789d61fa, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-9d8b7a18, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
-- **documentation** (1): sec:SEC-LOW-DOCS-001
 
 ## 7. Vergleich zum vorherigen Bericht
 - Neu: 0
