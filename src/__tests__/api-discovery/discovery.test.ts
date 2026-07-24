@@ -17,6 +17,7 @@ import {
   analyzePath,
   analyzeValidation,
   analyzeCorrelation,
+  analyzeAuthGuard,
   analyzeArchivedImports,
   analyzeEndpointMeta,
   classify,
@@ -69,6 +70,17 @@ describe("api-discovery analyzers", () => {
   it("recognises withCorrelation wrapper", () => {
     expect(analyzeCorrelation("withCorrelation(async () => {})")).toBe(true);
     expect(analyzeCorrelation("async () => {}")).toBe(false);
+  });
+
+  it("recognises bearer auth and permission RPC guards", () => {
+    expect(
+      analyzeAuthGuard(`
+        const authHeader = request.headers.get("authorization") ?? "";
+        const { data } = await client.auth.getUser();
+        await client.rpc("has_permission", { _perm: "azure.export" });
+      `),
+    ).toBe(true);
+    expect(analyzeAuthGuard("const x = JSON.parse(body)")).toBe(false);
   });
 
   it("flags imports from archive/", () => {

@@ -1,14 +1,12 @@
 /**
  * Security-Suite – Manipulationsversuche.
  *
- * Wichtig: die App hat KEINEN produktiven Auth-Layer. Die Tests hier
- * dokumentieren daher zwei Klassen von Ergebnissen:
+ * Wichtig: Auth ist aktiv. Die Tests hier dokumentieren zwei Klassen von Ergebnissen:
  *  1. Erwartungen, die DURCH den Code sichergestellt sind (Zod-Reject,
  *     scope-Prüfung, Sensitive-Field-Stripping).
- *  2. Bekannte offene Löcher — z. B. dass ein manipulierter
- *     `northbit-active-user` im localStorage sofort Sysadmin-Rechte
- *     verleiht (Finding SEC-CRIT-002). Der Test asserted den Ist-Zustand
- *     und verweist auf `scripts/security/static-findings.json`.
+ *  2. Regressionsschutz gegen historische Lücken — z. B. dass ein
+ *     manipulierter `northbit-active-user` keine Session-/Rollenautorität
+ *     mehr besitzt (SEC-CRIT-002).
  */
 import { describe, expect, it, afterEach } from "vitest";
 import "../env/test-instance";
@@ -53,7 +51,7 @@ describe("Manipulation – localStorage-Tampering (SEC-CRIT-002 behoben)", () =>
   it("should_ignoreForgedLocalStorage_when_deriveRoleFromSession", () => {
     // Vorher: `northbit-active-user` im localStorage verlieh sofort Sysadmin-Rechte.
     // Seit v1.39.0 leitet `useCurrentUser()` die Rolle ausschließlich aus der
-    // Supabase-Session + `public.user_roles` ab. Ohne Session ist der User null,
+    // Auth-Session + `public.user_roles` ab. Ohne Session ist der User null,
     // `can()` liefert false, und PermissionGate rendert den Fallback.
     seedAs("systemadministrator"); // wird jetzt vollständig ignoriert
     render(

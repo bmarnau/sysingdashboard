@@ -7,9 +7,9 @@
  * Schema, sortiert Maßnahmen, vergleicht gegen den letzten Bericht und
  * schreibt `technical-test-report.{json,md}`.
  *
- * Soft-Gate: Aggregator scheitert nur an eigenem Fehler, nicht an offenen
- * Findings. Umstellung auf Hard-Gate frühestens, wenn SEC-CRIT-001/002
- * geschlossen sind (analog ADR-0013/0016).
+ * Aggregator: führt Bereichsberichte zusammen. Offene Critical-Findings
+ * setzen den Status auf blocked; akzeptierte historische Findings bleiben
+ * dokumentiert, zählen aber nicht als offene Blocker.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import { execSync } from "node:child_process";
