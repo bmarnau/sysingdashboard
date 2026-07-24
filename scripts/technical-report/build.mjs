@@ -7,9 +7,9 @@
  * Schema, sortiert Maßnahmen, vergleicht gegen den letzten Bericht und
  * schreibt `technical-test-report.{json,md}`.
  *
- * Soft-Gate: Aggregator scheitert nur an eigenem Fehler, nicht an offenen
- * Findings. Umstellung auf Hard-Gate frühestens, wenn SEC-CRIT-001/002
- * geschlossen sind (analog ADR-0013/0016).
+ * Aggregator: führt Bereichsberichte zusammen. Offene Critical-Findings
+ * setzen den Status auf blocked; akzeptierte historische Findings bleiben
+ * dokumentiert, zählen aber nicht als offene Blocker.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import { execSync } from "node:child_process";
@@ -590,6 +590,7 @@ function main() {
     : null;
 
   const blockers = computeBlockers(allFindings, sources);
+  const openFindings = allFindings.filter((f) => !f.accepted);
 
   const report = {
     schemaVersion: "1.1.0",
@@ -599,10 +600,11 @@ function main() {
     recommendation,
     summary: {
       total: allFindings.length,
-      critical: allFindings.filter((f) => f.severity === "CRITICAL").length,
-      high: allFindings.filter((f) => f.severity === "HIGH").length,
-      medium: allFindings.filter((f) => f.severity === "MEDIUM").length,
-      low: allFindings.filter((f) => f.severity === "LOW").length,
+      openTotal: openFindings.length,
+      critical: openFindings.filter((f) => f.severity === "CRITICAL").length,
+      high: openFindings.filter((f) => f.severity === "HIGH").length,
+      medium: openFindings.filter((f) => f.severity === "MEDIUM").length,
+      low: openFindings.filter((f) => f.severity === "LOW").length,
       accepted: allFindings.filter((f) => f.accepted).length,
       sources: Object.fromEntries(
         Object.entries(sources).map(([k, v]) => [k, { status: v.status, count: v.findings.length }]),
@@ -612,7 +614,7 @@ function main() {
     findings: allFindings,
     actionOrder: ORDER_BUCKETS.map((bucket) => ({
       bucket,
-      findings: allFindings.filter((f) => f.bucket === bucket).map((f) => f.id),
+      findings: openFindings.filter((f) => f.bucket === bucket).map((f) => f.id),
     })).filter((b) => b.findings.length > 0),
     diff: prev ? diffReports({ findings: allFindings }, prev) : null,
     blockers,

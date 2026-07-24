@@ -31,6 +31,7 @@ type ProfileRow = {
 };
 
 type UserRoleRow = { user_id: string; role: UserRole };
+const SYSTEM_ADMINISTRATOR_ROLE: UserRole = "systemadministrator";
 
 function toProfile(p: ProfileRow, role: UserRole): UserProfile {
   return {
@@ -113,14 +114,14 @@ export async function setUserStatus(userId: string, status: UserStatus): Promise
  * Systemadministrators — reine UX, ersetzt keinen DB-Constraint.
  */
 export async function setUserRole(userId: string, role: UserRole): Promise<void> {
-  if (role !== "systemadministrator") {
+  if (role !== SYSTEM_ADMINISTRATOR_ROLE) {
     const users = await listUsers();
     const target = users.find((u) => u.id === userId);
     const activeSysAdmins = users.filter(
-      (u) => u.role === "systemadministrator" && u.status === "active",
+      (u) => u.role === SYSTEM_ADMINISTRATOR_ROLE && u.status === "active",
     );
     if (
-      target?.role === "systemadministrator" &&
+      target?.role === SYSTEM_ADMINISTRATOR_ROLE &&
       target.status === "active" &&
       activeSysAdmins.length <= 1
     ) {

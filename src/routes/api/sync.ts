@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { runSync } from "../../../backend/services/syncService.mjs";
-import { ensureEnv } from "../../../backend/services/ensure-env.mjs";
 import {
   withCorrelation,
   jsonErrorWithCorrelation,
@@ -16,16 +15,29 @@ const BodySchema = z
   })
   .partial();
 
-function buildAuthedClient(token: string) {
-  return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
+export const endpointMeta = {
+  authRequired: true,
+  permission: "azure.export",
+  classification: "privileged",
+} as const;
+
+function readAuthEnv(): { url: string; key: string } | null {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) return null;
+  return { url, key };
+}
+
+function buildAuthedClient(env: { url: string; key: string }, token: string) {
+  return createClient(env.url, env.key, {
     global: {
       headers: { Authorization: `Bearer ${token}` },
       fetch: (input, init) => {
         const h = new Headers(init?.headers);
-        if (h.get("Authorization") === `Bearer ${process.env.SUPABASE_PUBLISHABLE_KEY!}`) {
+        if (env.key.startsWith("sb_") && h.get("Authorization") === `Bearer ${env.key}`) {
           h.delete("Authorization");
         }
-        h.set("apikey", process.env.SUPABASE_PUBLISHABLE_KEY!);
+        h.set("apikey", env.key);
         h.set("Authorization", `Bearer ${token}`);
         return fetch(input, { ...init, headers: h });
       },
@@ -50,18 +62,23 @@ export const Route = createFileRoute("/api/sync")({
   server: {
     handlers: {
       POST: withCorrelation(async ({ request }) => {
-        try {
-          ensureEnv();
-        } catch {
-          return jsonErrorWithCorrelation(500, "SERVICE_NOT_CONFIGURED", "Service not configured");
-        }
-
         const authHeader = request.headers.get("authorization") ?? "";
         if (!authHeader.startsWith("Bearer ")) {
           return jsonErrorWithCorrelation(401, "UNAUTHORIZED", "Unauthorized");
         }
         const token = authHeader.slice("Bearer ".length).trim();
         if (!token) {
+          return jsonErrorWithCorrelation(401, "UNAUTHORIZED", "Unauthorized");
+        }
+
+        const authEnv = readAuthEnv();
+        if (!authEnv) {
+          return jsonErrorWithCorrelation(500, "AUTH_SERVICE_NOT_CONFIGURED", "Auth service not configured");
+        }
+
+        const client = buildAuthedClient(authEnv, token);
+        const { data: userData, error: userErr } = await client.auth.getUser();
+        if (userErr || !userData?.user) {
           return jsonErrorWithCorrelation(401, "UNAUTHORIZED", "Unauthorized");
         }
 
@@ -73,11 +90,6 @@ export const Route = createFileRoute("/api/sync")({
           return jsonErrorWithCorrelation(400, "INVALID_JSON", "Invalid JSON body");
         }
 
-        const client = buildAuthedClient(token);
-        const { data: userData, error: userErr } = await client.auth.getUser();
-        if (userErr || !userData?.user) {
-          return jsonErrorWithCorrelation(401, "UNAUTHORIZED", "Unauthorized");
-        }
         const perm = parsed.direction === "import" ? "azure.import" : "azure.export";
         const { data: allowed, error: rpcErr } = await client.rpc("has_permission", {
           _user_id: userData.user.id,

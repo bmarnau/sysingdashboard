@@ -1,20 +1,20 @@
 # Technischer Prüfbericht
 
-_Generiert: 2026-07-16T03:41:45.451Z_
+_Generiert: 2026-07-24T05:46:26.711Z_
 
 ## 1. Prüfidentität
-- Dashboard-Version: **1.38.0**
-- Commit: `5dd99eb`
+- Dashboard-Version: **1.41.3**
+- Commit: `ef369a5`
 - Build-Zeit: —
-- Testzeit: 2026-07-16T03:41:45.369Z
+- Testzeit: 2026-07-24T05:46:26.597Z
 - Umgebung: Node v22.22.0 · linux · CI=false
 
 ## 2. Gesamtstatus
-**fehlgeschlagen**
+**bestanden mit Findings**
 
 ## 3. Executive Summary
-- Findings gesamt: 67 (CRITICAL 2 · HIGH 10 · MEDIUM 13 · LOW 41 · akzeptiert 3).
-- Freigabeempfehlung: **nicht produktionsfähig** — 2 offene CRITICAL-Findings.
+- Findings gesamt: 67 (CRITICAL 0 · HIGH 7 · MEDIUM 12 · LOW 40 · akzeptiert 7).
+- Freigabeempfehlung: **für Pilot geeignet** — 7 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
 
 ## 4. Testergebnisse nach Bereich
 
@@ -24,9 +24,9 @@ _Generiert: 2026-07-16T03:41:45.451Z_
 | Backend | nicht ausgeführt | 0 | 0 |
 | API | bestanden | 0 | 0 |
 | UI/E2E | nicht ausgeführt | 0 | 0 |
-| RBAC | fehlgeschlagen | 2 | 3 |
-| Auth | fehlgeschlagen | 2 | 3 |
-| Azure | fehlgeschlagen | 2 | 3 |
+| RBAC | bestanden mit Findings | 0 | 1 |
+| Auth | bestanden mit Findings | 0 | 1 |
+| Azure | bestanden mit Findings | 0 | 1 |
 | Datenintegrität | bestanden | 0 | 0 |
 | Backup/Restore | bestanden | 0 | 0 |
 | Accessibility | nicht ausgeführt | 0 | 0 |
@@ -38,25 +38,25 @@ _Generiert: 2026-07-16T03:41:45.451Z_
 
 ### sec:SEC-CRIT-001 · CRITICAL · Backend prüft keine Rolle oder Assignment
 - **Kategorie**: security / backend-rbac
-- **Quelle**: auto
-- **Beschreibung**: Direkter POST auf einen Endpoint mit beliebigem Body — es findet keine Rollen- oder Permission-Prüfung statt (siehe e2e/specs/security/api-direct-call.spec.ts).
-- **Ursache**: Direkter POST auf einen Endpoint mit beliebigem Body — es findet keine Rollen- oder Permission-Prüfung statt (siehe e2e/specs/security/api-direct-call.spec.ts).
+- **Quelle**: auto (akzeptiert)
+- **Beschreibung**: Historisch: direkter POST auf einen Endpoint ohne Auth. Seit v1.39.0 erzwingt `/api/sync` `Authorization: Bearer <supabase-jwt>` UND `public.has_permission(user, 'azure.import'|'azure.export')`.
+- **Ursache**: Historisch: direkter POST auf einen Endpoint ohne Auth. Seit v1.39.0 erzwingt `/api/sync` `Authorization: Bearer <supabase-jwt>` UND `public.has_permission(user, 'azure.import'|'azure.export')`.
 - **Auswirkung**: Blockiert Release-Phase: all
 - **Komponenten**: backend/services/*, src/routes/api/*
 - **Nachweis**: test-report/security-report.md#SEC-CRIT-001
-- **Empfehlung**: Vor Auth-Produktivierung `requireRole`/`requirePermission`-Middleware analog zu `withCorrelation` einziehen. Verifiziert Actor gegen serverseitige Session, nicht gegen Client-Payload.
-- **Aufwand**: L · **Bearbeitungsreihenfolge**: critical-security · **Status**: open
+- **Empfehlung**: Weitere Endpoints beim Anlegen sofort über `requireSupabaseAuth` + `has_permission` schützen. Muster: siehe `src/routes/api/sync.ts` (Prompt 2A.11).
+- **Aufwand**: L · **Bearbeitungsreihenfolge**: critical-security · **Status**: accepted
 
 ### sec:SEC-CRIT-002 · CRITICAL · Aktive Rolle wird ausschließlich im localStorage geführt
 - **Kategorie**: security / identity
-- **Quelle**: auto
-- **Beschreibung**: In der DevTools-Konsole: `localStorage.setItem('northbit-active-user', existingId)` — sofort greift die dortige Rolle in allen UI-Gates. Vitest-Beleg: manipulation.test.ts › KNOWN_GAP_SEC_CRIT_002.
-- **Ursache**: In der DevTools-Konsole: `localStorage.setItem('northbit-active-user', existingId)` — sofort greift die dortige Rolle in allen UI-Gates. Vitest-Beleg: manipulation.test.ts › KNOWN_GAP_SEC_CRIT_002.
+- **Quelle**: auto (akzeptiert)
+- **Beschreibung**: Historisch: `localStorage.setItem('northbit-active-user', existingId)` verlieh sofort Sysadmin-Rechte. Seit v1.39.0 leitet `useCurrentUser()` Rolle ausschließlich aus `public.user_roles` gegen `auth.uid()` (RLS-geschützt) ab; localStorage-Manipulation hat keinen Effekt.
+- **Ursache**: Historisch: `localStorage.setItem('northbit-active-user', existingId)` verlieh sofort Sysadmin-Rechte. Seit v1.39.0 leitet `useCurrentUser()` Rolle ausschließlich aus `public.user_roles` gegen `auth.uid()` (RLS-geschützt) ab; localStorage-Manipulation hat keinen Effekt.
 - **Auswirkung**: Blockiert Release-Phase: auth-production
-- **Komponenten**: src/lib/user-management.ts
+- **Komponenten**: src/hooks/useCurrentUser.ts, src/lib/user-management.ts
 - **Nachweis**: test-report/security-report.md#SEC-CRIT-002
-- **Empfehlung**: Session-basierte Identität einführen (HTTP-only Cookie oder Bearer Token gegen echten Auth-Provider). Client-Storage bleibt UI-Cache.
-- **Aufwand**: L · **Bearbeitungsreihenfolge**: critical-security · **Status**: open
+- **Empfehlung**: Bei künftigen UI-Gates strikt `useCurrentUser()` verwenden, niemals direkt gegen localStorage prüfen.
+- **Aufwand**: L · **Bearbeitungsreihenfolge**: critical-security · **Status**: accepted
 
 ### sec:SEC-HIGH-STATUS-001 · HIGH · /api/status ist ohne Auth erreichbar und listet fehlende ENV-Namen
 - **Kategorie**: security / status
@@ -146,27 +146,27 @@ _Generiert: 2026-07-16T03:41:45.451Z_
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: open
 
-### sec:SEC-HIGH-AUTH-001 · HIGH · Keine Session-, Token- oder Provider-Infrastruktur
+### sec:SEC-HIGH-AUTH-001 · HIGH · Historisch: Keine Session-, Token- oder Provider-Infrastruktur
 - **Kategorie**: security / auth
-- **Quelle**: auto
-- **Beschreibung**: Es existieren weder Login-Endpunkte noch Session-Cookies/JWT. Damit sind sämtliche Test-Kategorien 'abgelaufene Session', 'manipulierte Claims', 'falscher Tenant', 'unpassende Gruppen' strukturell nicht umsetzbar.
-- **Ursache**: Es existieren weder Login-Endpunkte noch Session-Cookies/JWT. Damit sind sämtliche Test-Kategorien 'abgelaufene Session', 'manipulierte Claims', 'falscher Tenant', 'unpassende Gruppen' strukturell nicht umsetzbar.
+- **Quelle**: auto (akzeptiert)
+- **Beschreibung**: Historischer Befund vor v1.39.0. Aktuell existieren Auth-Seiten, Auth-Session, geschützte Dashboard-Route und serverseitige Bearer-Validierung auf /api/sync.
+- **Ursache**: Historischer Befund vor v1.39.0. Aktuell existieren Auth-Seiten, Auth-Session, geschützte Dashboard-Route und serverseitige Bearer-Validierung auf /api/sync.
 - **Auswirkung**: Blockiert Release-Phase: auth-production
 - **Komponenten**: -
 - **Nachweis**: test-report/security-report.md#SEC-HIGH-AUTH-001
-- **Empfehlung**: Entra-ID (OIDC) oder Lovable Cloud Auth integrieren, Session-Layer + Middleware anlegen. Diese Suite wird die Kategorien dann tatsächlich testen.
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: auth-rbac-blocker · **Status**: open
+- **Empfehlung**: Echte Sign-in-E2E-Tests nur mit bereitgestellter Test-Session ausführen; ohne Test-Session authentifizierte Pfade als UNVERIFIED dokumentieren, nicht als fehlende Infrastruktur.
+- **Aufwand**: M · **Bearbeitungsreihenfolge**: auth-rbac-blocker · **Status**: accepted
 
-### sec:SEC-HIGH-AZURE-001 · HIGH · Azure-Sync akzeptiert einen statischen Shared-Token als einzige Auth
+### sec:SEC-HIGH-AZURE-001 · HIGH · Historisch: Azure-Sync akzeptierte einen statischen Shared-Token als einzige Auth
 - **Kategorie**: security / azure
-- **Quelle**: auto
-- **Beschreibung**: Production erwartet Header `X-Sync-Token` gegen ein Env-Secret. Kein Actor, keine Rolle, kein Audit-Bezug zum Benutzer.
-- **Ursache**: Production erwartet Header `X-Sync-Token` gegen ein Env-Secret. Kein Actor, keine Rolle, kein Audit-Bezug zum Benutzer.
+- **Quelle**: auto (akzeptiert)
+- **Beschreibung**: Historischer Befund. Der aktuelle Endpoint liest `Authorization: Bearer ...`, validiert `auth.getUser()` und prüft `has_permission(user, 'azure.import'|'azure.export')` vor Sync-Ausführung.
+- **Ursache**: Historischer Befund. Der aktuelle Endpoint liest `Authorization: Bearer ...`, validiert `auth.getUser()` und prüft `has_permission(user, 'azure.import'|'azure.export')` vor Sync-Ausführung.
 - **Auswirkung**: Blockiert Release-Phase: azure-production
 - **Komponenten**: src/routes/api/sync.ts
 - **Nachweis**: test-report/security-report.md#SEC-HIGH-AZURE-001
-- **Empfehlung**: Shared-Token nur für Server-zu-Server-Callbacks belassen; benutzerinitiierten Sync auf `requirePermission('azure.import' | 'azure.export')` gegen echte Session umziehen.
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: azure-blocker · **Status**: open
+- **Empfehlung**: Dieses Muster für alle künftigen benutzerinitiierten Azure-Aktionen beibehalten; keinen X-Sync-Token-Fallback reintroduzieren.
+- **Aufwand**: M · **Bearbeitungsreihenfolge**: azure-blocker · **Status**: accepted
 
 ### sec:SEC-MED-REDIRECT-001 · MEDIUM · Kein zentraler Guard für Redirect-Ziele
 - **Kategorie**: security / navigation
@@ -774,14 +774,10 @@ _Generiert: 2026-07-16T03:41:45.451Z_
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: test-gap · **Status**: open
 
 ## 6. Sortierte Maßnahmenliste
-- **critical-security** (2): sec:SEC-CRIT-001, sec:SEC-CRIT-002
-- **high-security** (2): sec:SEC-HIGH-STATUS-001, sec:SEC-HIGH-LOG-001
+- **high-security** (1): sec:SEC-HIGH-LOG-001
 - **high-functional** (6): td:td-endpoint-auth-cdae73c5, td:td-cycle-1fa843a1, td:td-cycle-dc9fbe11, td:td-oversize-26e43c0a, td:td-oversize-99cca8a6, td:td-oversize-ebfd4b54
-- **auth-rbac-blocker** (1): sec:SEC-HIGH-AUTH-001
-- **azure-blocker** (1): sec:SEC-HIGH-AZURE-001
-- **architecture** (50): sec:SEC-MED-REDIRECT-001, sec:SEC-MED-CLAIMS-001, td:td-console-375dfc5b, td:td-console-629bd14d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-da1180ce, td:td-layer-b432b1b9, td:td-layer-c1c89b30, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-789d61fa, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-9d8b7a18, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
+- **architecture** (49): sec:SEC-MED-CLAIMS-001, td:td-console-375dfc5b, td:td-console-629bd14d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-da1180ce, td:td-layer-b432b1b9, td:td-layer-c1c89b30, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-789d61fa, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-9d8b7a18, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
-- **documentation** (1): sec:SEC-LOW-DOCS-001
 
 ## 7. Vergleich zum vorherigen Bericht
 - Neu: 0
@@ -791,14 +787,10 @@ _Generiert: 2026-07-16T03:41:45.451Z_
 - Wieder aufgetreten: 0
 
 ## 8. Freigabeempfehlung
-**nicht produktionsfähig** — 2 offene CRITICAL-Findings.
+**für Pilot geeignet** — 7 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
 
 ## 9. Quality-Gate-Blocker (Prompt 2A.10)
-- **critical-finding** — Critical Finding offen: sec:SEC-CRIT-001 _(Backend prüft keine Rolle oder Assignment)_
-- **critical-finding** — Critical Finding offen: sec:SEC-CRIT-002 _(Aktive Rolle wird ausschließlich im localStorage geführt)_
 - **high-security-finding** — High Security Finding: sec:SEC-HIGH-LOG-001 _(Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS)_
-- **high-security-finding** — High Security Finding: sec:SEC-HIGH-AUTH-001 _(Keine Session-, Token- oder Provider-Infrastruktur)_
-- **high-security-finding** — High Security Finding: sec:SEC-HIGH-AZURE-001 _(Azure-Sync akzeptiert einen statischen Shared-Token als einzige Auth)_
 
 ## Bekannte Grenzen
 - Reine Aggregation: Qualität hängt an den Einzelberichten.

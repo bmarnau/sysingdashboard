@@ -32,7 +32,7 @@
           "detail": "status=405"
         }
       ],
-      "duration": 151.8379520000001
+      "duration": 520.1600719999997
     },
     {
       "endpointId": "sync",
@@ -69,10 +69,16 @@
           "name": "invalid JSON rejected",
           "category": "validation",
           "ok": true,
-          "detail": "status=400"
+          "detail": "status=401"
+        },
+        {
+          "name": "anonymous request rejected",
+          "category": "auth",
+          "ok": true,
+          "detail": "status=401"
         }
       ],
-      "duration": 22.595638999999892
+      "duration": 87.4284430000007
     }
   ]
 }

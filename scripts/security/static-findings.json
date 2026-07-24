@@ -31,23 +31,25 @@
       "id": "SEC-HIGH-AUTH-001",
       "severity": "high",
       "area": "auth",
-      "title": "Keine Session-, Token- oder Provider-Infrastruktur",
+      "title": "Historisch: Keine Session-, Token- oder Provider-Infrastruktur",
       "location": "-",
-      "reproduction": "Es existieren weder Login-Endpunkte noch Session-Cookies/JWT. Damit sind sämtliche Test-Kategorien 'abgelaufene Session', 'manipulierte Claims', 'falscher Tenant', 'unpassende Gruppen' strukturell nicht umsetzbar.",
-      "recommendation": "Entra-ID (OIDC) oder Lovable Cloud Auth integrieren, Session-Layer + Middleware anlegen. Diese Suite wird die Kategorien dann tatsächlich testen.",
+      "reproduction": "Historischer Befund vor v1.39.0. Aktuell existieren Auth-Seiten, Auth-Session, geschützte Dashboard-Route und serverseitige Bearer-Validierung auf /api/sync.",
+      "recommendation": "Echte Sign-in-E2E-Tests nur mit bereitgestellter Test-Session ausführen; ohne Test-Session authentifizierte Pfade als UNVERIFIED dokumentieren, nicht als fehlende Infrastruktur.",
       "blocksReleasePhase": "auth-production",
-      "accepted": false
+      "accepted": true,
+      "acceptanceReason": "v1.39.0/v1.41.x: Auth-Infrastruktur ist vorhanden. Verbleibende Grenze ist Test-Session-Verfügbarkeit, kein Critical/High Architektur-Gap."
     },
     {
       "id": "SEC-HIGH-AZURE-001",
       "severity": "high",
       "area": "azure",
-      "title": "Azure-Sync akzeptiert einen statischen Shared-Token als einzige Auth",
+      "title": "Historisch: Azure-Sync akzeptierte einen statischen Shared-Token als einzige Auth",
       "location": "src/routes/api/sync.ts",
-      "reproduction": "Production erwartet Header `X-Sync-Token` gegen ein Env-Secret. Kein Actor, keine Rolle, kein Audit-Bezug zum Benutzer.",
-      "recommendation": "Shared-Token nur für Server-zu-Server-Callbacks belassen; benutzerinitiierten Sync auf `requirePermission('azure.import' | 'azure.export')` gegen echte Session umziehen.",
+      "reproduction": "Historischer Befund. Der aktuelle Endpoint liest `Authorization: Bearer ...`, validiert `auth.getUser()` und prüft `has_permission(user, 'azure.import'|'azure.export')` vor Sync-Ausführung.",
+      "recommendation": "Dieses Muster für alle künftigen benutzerinitiierten Azure-Aktionen beibehalten; keinen X-Sync-Token-Fallback reintroduzieren.",
       "blocksReleasePhase": "azure-production",
-      "accepted": false
+      "accepted": true,
+      "acceptanceReason": "v1.41.3: Shared-Token-Pfad entfernt; Actor stammt aus validierter Session, Permission aus DB-RPC."
     },
     {
       "id": "SEC-HIGH-STATUS-001",

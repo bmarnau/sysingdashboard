@@ -314,10 +314,10 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
     title: "Backend-API",
     category: "Service",
     keywords: ["API", "Backend", "Sync", "Status", "Azure", "Endpunkt"],
-    lastUpdated: "2026-06-24",
+    lastUpdated: "2026-07-24",
     content: `## Endpunkte
-- \`POST /api/sync\` — Body \`{ "source": "manual" }\`. Triggert einen Sync-Lauf. Im Development-Modus liefert er ausschließlich Mock-Daten; eine Azure-Verbindung wird nicht aufgebaut. **In Production erfordert der Endpunkt einen \`X-Sync-Token\`-Header**, der dem Server-Secret \`SYNC_TRIGGER_TOKEN\` entspricht. Ist das Secret nicht gesetzt, antwortet der Endpunkt mit 503 ("Sync trigger disabled").
-- \`GET /api/status\` — Liefert Modus (\`development\`/\`production\`), Verfügbarkeit der Azure-Secrets (nur Boolean, keine Klartexte) und Metadaten des letzten Sync-Laufs.
+- \`POST /api/sync\` — Body \`{ "source": "manual", "direction": "export" }\`. Triggert einen Sync-Lauf erst nach gültiger Bearer-Session und serverseitiger DB-Permission (\`azure.export\` oder \`azure.import\`). Im Development-Modus liefert der Sync weiterhin Mock-Daten; eine Azure-Verbindung wird nicht aufgebaut.
+- \`GET /api/status\` — Liefert Modus (\`development\`/\`production\`), Verfügbarkeit der Azure-Secrets (nur Boolean/Namen, keine Klartexte) und Metadaten des letzten Sync-Laufs. Fehlende optionale Azure-ENV erzeugt keinen Start-500.
 
 ## Architektur
 - Frontend ruft ausschließlich \`/api/...\` (same-origin), kein direkter Azure-Zugriff im Browser.
@@ -327,6 +327,7 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
 ## Sicherheit
 - \`config/env.mjs\` blockiert Azure-Aufrufe im Dev-Modus (\`assertAzureAllowed\`).
 - \`config/secretManager.mjs\` gibt niemals Roh-Strings zurück; \`consume()\` ist im Dev-Modus blockiert.
+- \`/api/sync\` akzeptiert keine Rollen oder Owner aus dem Request; Identität kommt ausschließlich aus der validierten Auth-Session, Autorisierung aus \`has_permission()\`.
 - Server antwortet bei Fehlern generisch (keine Stacktraces, keine Secrets im Body).
 - Logging gehärtet: Worker und SSR-Middleware loggen nur gekürzte Error-Messages (≤ 256 Zeichen), niemals volle Error-Objekte oder Response-Bodies.
 - Import-Schemas (\`src/lib/json-schema.ts\`) erzwingen Längenlimits (IDs 128, Strings 255, Texte 2000 Zeichen) gegen unbounded Payloads.`,
@@ -336,7 +337,7 @@ Die wichtigsten Einstellungen sind im Kapitel "Einstellungen im Überblick" aufg
     title: "Offline-Betrieb",
     category: "Service",
     keywords: ["Offline", "localStorage", "Azure", "Sync", "Backend", "Ausfall"],
-    lastUpdated: "2026-06-26",
+    lastUpdated: "2026-07-24",
     content: `## Garantien
 Das Dashboard ist offline-first und arbeitet ohne Backend vollständig im Browser.
 
@@ -352,7 +353,7 @@ Das Dashboard ist offline-first und arbeitet ohne Backend vollständig im Browse
 Dashboard-Ansichten, Projekte, Arbeitspakete, Tätigkeiten, Leistungsreport, Export (PDF/CSV/JSON), Downloads, Backup-ZIP, Import/Export-Wizard, Handbuch, Systemstatus-Anzeige (ohne Live-Health).
 
 ## Was Backend braucht
-Nur der manuell ausgelöste **Sync** über \`POST /api/sync\` (mit \`X-Sync-Token\` in Production). Ohne erreichbares Backend bleibt der Button im Dialog deaktivierbar — alle anderen Funktionen sind unberührt.
+Nur der manuell ausgelöste **Sync** über \`POST /api/sync\` braucht eine gültige Anmeldung und Azure-Berechtigung. Ohne erreichbares Backend oder ohne Session bleibt der Button im Dialog deaktivierbar bzw. der Endpoint antwortet mit 401/403 — alle anderen Funktionen sind unberührt.
 
 ## Erwartete Anzeige im Systemstatus
 Im reinen Static-Deploy ohne Backend meldet die Sektion „Versionen & Backend": \`Backend /api/status — nicht erreichbar\`. Das ist **kein Fehler**, sondern korrektes Verhalten: das Dashboard arbeitet vollständig lokal.`,
@@ -569,7 +570,7 @@ Nachweis, dass Daten exportiert, gesichert, wiederhergestellt und importiert wer
 ## Bekannte Einschränkungen
 - Keine Prüfsumme im Manifest (Follow-up, siehe ADR-0015).
 - PDF-Export wird strukturell, nicht semantisch geprüft (E2E-Suite).
-- Rollen-/Scope-Enforcement ist clientseitig — Backend-RBAC bleibt offen (SEC-CRIT-001).`,
+- Rollen-/Scope-Enforcement ist in der UI weiterhin nur Komfort. Schreibende Server-Routen prüfen zusätzlich Bearer-Session und DB-Permission; reine Offline-/Export-Helfer bleiben lokale Datenfunktionen.`,
   },
   {
     id: "changelog",
@@ -836,7 +837,7 @@ Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Ma
       "Preview",
       "Health",
     ],
-    lastUpdated: "2026-06-29",
+    lastUpdated: "2026-07-24",
     content: `## Was zeigt der Systemstatus?
 Der Dialog "Service → Systemstatus…" ist in **sieben Sektionen** gegliedert und zeigt ausschließlich Booleans, Status und ENV-Variablen­**namen**. Werte, Secrets, Connection Strings und SAS-Tokens werden **niemals** angezeigt.
 
@@ -862,7 +863,7 @@ Local Storage (immer aktiv), Last Local Backup (\`BackupService.lastAuto\`), Las
 User-Manual-Version, Management-Overview-Status, Last Documentation Update.
 
 ## Startvalidierung
-Beim Laden des Dashboards triggert \`bootstrapSystemStatusCheck()\` einmalig einen Fetch auf \`/api/status\` (Timeout 3 s). Das Backend ruft \`secretManager.validate()\` pro Request auf (PROD-Fail-Fast, DEV-Warn). Frontend rendert defensiv: fehlt eine Antwort, bleiben lokale Werte (Version, Build, Backup) sichtbar und alle Server-Felder erscheinen als "Not configured".
+Beim Laden des Dashboards triggert \`bootstrapSystemStatusCheck()\` einmalig einen Fetch auf \`/api/status\` (Timeout 3 s). Der Endpoint ist bewusst Health-only: fehlende optionale Azure-Konfiguration wird im Payload als Status gemeldet, erzeugt aber keinen 500-Startfehler. Zusätzlich prüft \`runStartupEnvCheck()\` im Browser, ob \`VITE_SUPABASE_URL\`, \`VITE_SUPABASE_PUBLISHABLE_KEY\` und \`VITE_SUPABASE_PROJECT_ID\` im aktuellen Bundle vorhanden sind. Frontend rendert defensiv: fehlt eine Antwort, bleiben lokale Werte (Version, Build, Backup) sichtbar und alle Server-Felder erscheinen als "Not configured".
 
 ## Sicherheitsregeln
 - Frontend importiert weder \`secretManager\` noch \`envValidator\`/\`keyVault\`.
@@ -951,7 +952,7 @@ Backups ab Version 1.14 enthalten zusätzlich eine kanonische \`dashboard.json\`
       "Administrator",
       "Viewer",
     ],
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-07-24",
     content: `## Rollen
 Sieben Rollen mit klarer Privileg-Reihenfolge (hoch → niedrig):
 1. **System-Administrator** — darf alles. Einzige Rolle für Datenbankaufbau (\`azure.database.build\`) und Rollenverwaltung (\`roles.manage\`).
@@ -996,7 +997,7 @@ Die Weiterentwicklung Richtung Multi-Customer, Azure-Ressourcen-Scopes und Entra
     title: "Lokaler Betrieb ohne Azure",
     category: "Betrieb",
     keywords: ["lokal", "offline", "Azure", "Standalone", "Browser", "localStorage"],
-    lastUpdated: "2026-06-30",
+    lastUpdated: "2026-07-24",
     content: `## Worum geht es?
 Das Dashboard funktioniert vollständig ohne Azure und ohne Backend. Alle Daten liegen lokal im Browser (localStorage / IndexedDB) und verlassen das Gerät nur, wenn Sie es aktiv anstoßen (Export, Backup-Download, Sync).
 
@@ -1256,7 +1257,7 @@ Das Frontend liest nie ENV. Alle Azure-Aufrufe werden später serverseitig ausge
 - **Defense in Depth** — UI-Gating (\`PermissionGate\`) plus serverseitige Guards (\`requirePermission\`) plus RLS/Provider-seitige Prüfungen.
 - **Secret-Freiheit des Frontends** — das Browser-Bundle enthält weder Connection-Strings noch SAS-Tokens noch Service-Keys. ENV-Zugriff ausschließlich über \`config/secretManager.mjs\` im Backend.
 - **No Plain Logs** — Error-Logs sind auf 256 Zeichen begrenzt; keine vollständigen Error-Objekte, keine Response-Bodies, keine Secrets.
-- **Sichere Defaults** — Development-Modus blockiert Azure-Aufrufe; \`/api/sync\` erfordert in Production einen \`X-Sync-Token\`.
+- **Sichere Defaults** — Development-Modus blockiert Azure-Aufrufe; \`/api/sync\` erfordert eine gültige Bearer-Session und serverseitige Permission.
 - **Schema-Härtung** — Importe werden gegen Zod-Schemas mit Längenlimits validiert (IDs 128, Strings 255, Texte 2000 Zeichen).
 - **Sensible Felder entfernen** — Passwörter, Hashes, MFA-Secrets, Tokens und API-Keys werden vor Export und Import aktiv entfernt (Denylist auf Storage-Keys und Feldnamen).
 - **Audit** — Importe, Konflikt-Entscheidungen und Sync-Läufe werden protokolliert.
@@ -1772,8 +1773,8 @@ Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine 
 - **Source-Scan**: keine direkten \`role === "..."\`-Vergleiche außerhalb von \`src/lib/rbac\`, keine Auth-Tokens in localStorage/sessionStorage.
 
 ## Abgedeckt (Playwright)
-- **UI-Gate-Tamper**: manipulierter \`northbit-active-user\` öffnet Sysadmin-UI — bewusst grün als Beleg für Finding SEC-CRIT-002.
-- **Direkter Endpoint-Call**: \`/api/sync\` liefert keinen Stack, kein AccountKey/SAS, immer eine Correlation-ID.
+- **UI-Gate-Tamper**: manipulierter \`northbit-active-user\` öffnet keine Sysadmin-/Dashboard-Sichten mehr; die Rolle stammt aus Session + \`user_roles\`.
+- **Direkter Endpoint-Call**: \`/api/sync\` weist anonyme Aufrufe mit strukturierter 401/403-Antwort zurück, liefert keinen Stack, kein AccountKey/SAS und immer eine Correlation-ID.
 
 ## Findings-Report
 - \`test-report/security-report.md\` und \`.json\` werden bei jedem CI-Lauf erzeugt.
@@ -1781,10 +1782,10 @@ Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine 
 - CI-Step \`security:gate\` failed bei offenen **CRITICAL**-Findings; **HIGH** blockiert Auth- und Azure-Produktivierung.
 
 ## Grenzen
-- Kein Pen-Test-Ersatz, kein Fuzzing, keine Kryptoanalyse, keine Prüfung produktiver Auth-Provider (existieren nicht).
-- UI-Sichtbarkeit ist **kein** Sicherheitsnachweis. Backend hat aktuell keine RBAC-Middleware (Finding SEC-CRIT-001) und die aktive Rolle wird ausschließlich im localStorage geführt (Finding SEC-CRIT-002).
+- Kein Pen-Test-Ersatz, kein Fuzzing, keine Kryptoanalyse.
+- UI-Sichtbarkeit ist **kein** Sicherheitsnachweis. Schreibende Server-Routen müssen Session und Permission serverseitig prüfen; \`/api/sync\` ist das Referenzmuster.
 - Grüne Tests bedeuten „keine Regression in geprüften Bausteinen" — nicht „System ist sicher". Kein Anspruch auf ISO/IEC 27001, SOC 2 oder BSI.
-- Session-, Claims-, Tenant- und Group-Tests sind heute strukturell nicht ausführbar und als HIGH-Finding SEC-HIGH-AUTH-001 dokumentiert.
+- End-to-End-Tests für echte Anmeldung laufen nur, wenn eine Test-Session bereitsteht; ohne Session wird der authentifizierte Pfad als nicht verifiziert dokumentiert.
 
 ## Ausführung
 - \`bun run test:security\` — Vitest-Suite + RBAC-Drift + Static-Scanner.
@@ -1811,7 +1812,7 @@ Das API Discovery Framework ermittelt zur Buildzeit automatisch **alle aktiven S
 ## Erkennung
 - Statische Analyse der TanStack-Server-Routen (kein Crawling, keine Ausführung).
 - Ergänzt Metadaten aus \`src/__tests__/api/registry/endpoints.ts\` (Schemas, Auth-Hints).
-- Erkennt HTTP-Methoden, \`withCorrelation\`-Wrapper, Zod-Validierung, Auth-Guards (\`checkAuth\`, \`X-Sync-Token\`, \`requireSupabaseAuth\`), Permissions, Logger-Nutzung und destruktive Wirkung.
+- Erkennt HTTP-Methoden, \`withCorrelation\`-Wrapper, Zod-Validierung, Auth-Guards (Authorization-Bearer, \`getUser()\`, \`has_permission\`, \`requireSupabaseAuth\`), Permissions, Logger-Nutzung und destruktive Wirkung.
 
 ## Ausgeschlossen
 - \`archive/legacy-standalone-backend/routes/\` — archiviertes Standalone-Backend (v1.27.2).
@@ -1862,7 +1863,7 @@ Vorrang bei der Klassifizierung: **\`endpointMeta\` > Registry > Heuristik**. Fe
 
 ## CI-Verhalten
 - Reihenfolge: \`api:discover → test:api:discovery → test:api:smoke → test:api:functional → api:report\`.
-- Gate ist derzeit **soft**: Critical- und High-Security-Findings erscheinen als Warning, blockieren aber (noch) nicht den Merge — analog zum Security-Gate, damit bestehende Design-Lücken (SEC-CRIT-001/002) nicht zum Bootstrap-Block werden.
+- Gate-Regel: offene Critical-Findings blockieren; akzeptierte historische Findings werden dokumentiert, zählen aber nicht als offene Blocker. Geschützte Endpoints müssen Anonym-Zugriff mit 401/403 abweisen.
 - Artefakte werden über den bestehenden \`test-report\`-Upload mitgeliefert.
 
 ## Grenzen

@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-13T05:20:16.430Z",
+  "generatedAt": "2026-07-24T05:45:53.046Z",
   "strictHigh": false,
-  "blocked": true,
+  "blocked": false,
   "counts": {
-    "critical": 2,
-    "high": 3,
+    "critical": 0,
+    "high": 1,
     "medium": 1,
     "low": 0,
-    "accepted": 3
+    "accepted": 7
   },
   "findings": [
     {
@@ -16,43 +16,47 @@
       "area": "backend-rbac",
       "title": "Backend prüft keine Rolle oder Assignment",
       "location": "backend/services/*, src/routes/api/*",
-      "reproduction": "Direkter POST auf einen Endpoint mit beliebigem Body — es findet keine Rollen- oder Permission-Prüfung statt (siehe e2e/specs/security/api-direct-call.spec.ts).",
-      "recommendation": "Vor Auth-Produktivierung `requireRole`/`requirePermission`-Middleware analog zu `withCorrelation` einziehen. Verifiziert Actor gegen serverseitige Session, nicht gegen Client-Payload.",
+      "reproduction": "Historisch: direkter POST auf einen Endpoint ohne Auth. Seit v1.39.0 erzwingt `/api/sync` `Authorization: Bearer <supabase-jwt>` UND `public.has_permission(user, 'azure.import'|'azure.export')`.",
+      "recommendation": "Weitere Endpoints beim Anlegen sofort über `requireSupabaseAuth` + `has_permission` schützen. Muster: siehe `src/routes/api/sync.ts` (Prompt 2A.11).",
       "blocksReleasePhase": "all",
-      "accepted": false
+      "accepted": true,
+      "acceptanceReason": "v1.39.0: echte Auth aktiv (Lovable Cloud E-Mail/Passwort). Endpoint prüft Session + Permission via DB-Funktion `has_permission`. Guards: e2e/specs/security/api-direct-call.spec.ts (401 ohne Token), src/__tests__/security/rbac-endpoints.test.ts (Matrix-Invarianten). Marker bleibt für Report-Historie."
     },
     {
       "id": "SEC-CRIT-002",
       "severity": "critical",
       "area": "identity",
       "title": "Aktive Rolle wird ausschließlich im localStorage geführt",
-      "location": "src/lib/user-management.ts",
-      "reproduction": "In der DevTools-Konsole: `localStorage.setItem('northbit-active-user', existingId)` — sofort greift die dortige Rolle in allen UI-Gates. Vitest-Beleg: manipulation.test.ts › KNOWN_GAP_SEC_CRIT_002.",
-      "recommendation": "Session-basierte Identität einführen (HTTP-only Cookie oder Bearer Token gegen echten Auth-Provider). Client-Storage bleibt UI-Cache.",
+      "location": "src/hooks/useCurrentUser.ts, src/lib/user-management.ts",
+      "reproduction": "Historisch: `localStorage.setItem('northbit-active-user', existingId)` verlieh sofort Sysadmin-Rechte. Seit v1.39.0 leitet `useCurrentUser()` Rolle ausschließlich aus `public.user_roles` gegen `auth.uid()` (RLS-geschützt) ab; localStorage-Manipulation hat keinen Effekt.",
+      "recommendation": "Bei künftigen UI-Gates strikt `useCurrentUser()` verwenden, niemals direkt gegen localStorage prüfen.",
       "blocksReleasePhase": "auth-production",
-      "accepted": false
+      "accepted": true,
+      "acceptanceReason": "v1.39.0: session-basierte Identität aktiv. Guard: src/__tests__/security/manipulation.test.tsx › should_ignoreForgedLocalStorage_when_deriveRoleFromSession."
     },
     {
       "id": "SEC-HIGH-AUTH-001",
       "severity": "high",
       "area": "auth",
-      "title": "Keine Session-, Token- oder Provider-Infrastruktur",
+      "title": "Historisch: Keine Session-, Token- oder Provider-Infrastruktur",
       "location": "-",
-      "reproduction": "Es existieren weder Login-Endpunkte noch Session-Cookies/JWT. Damit sind sämtliche Test-Kategorien 'abgelaufene Session', 'manipulierte Claims', 'falscher Tenant', 'unpassende Gruppen' strukturell nicht umsetzbar.",
-      "recommendation": "Entra-ID (OIDC) oder Lovable Cloud Auth integrieren, Session-Layer + Middleware anlegen. Diese Suite wird die Kategorien dann tatsächlich testen.",
+      "reproduction": "Historischer Befund vor v1.39.0. Aktuell existieren Auth-Seiten, Auth-Session, geschützte Dashboard-Route und serverseitige Bearer-Validierung auf /api/sync.",
+      "recommendation": "Echte Sign-in-E2E-Tests nur mit bereitgestellter Test-Session ausführen; ohne Test-Session authentifizierte Pfade als UNVERIFIED dokumentieren, nicht als fehlende Infrastruktur.",
       "blocksReleasePhase": "auth-production",
-      "accepted": false
+      "accepted": true,
+      "acceptanceReason": "v1.39.0/v1.41.x: Auth-Infrastruktur ist vorhanden. Verbleibende Grenze ist Test-Session-Verfügbarkeit, kein Critical/High Architektur-Gap."
     },
     {
       "id": "SEC-HIGH-AZURE-001",
       "severity": "high",
       "area": "azure",
-      "title": "Azure-Sync akzeptiert einen statischen Shared-Token als einzige Auth",
+      "title": "Historisch: Azure-Sync akzeptierte einen statischen Shared-Token als einzige Auth",
       "location": "src/routes/api/sync.ts",
-      "reproduction": "Production erwartet Header `X-Sync-Token` gegen ein Env-Secret. Kein Actor, keine Rolle, kein Audit-Bezug zum Benutzer.",
-      "recommendation": "Shared-Token nur für Server-zu-Server-Callbacks belassen; benutzerinitiierten Sync auf `requirePermission('azure.import' | 'azure.export')` gegen echte Session umziehen.",
+      "reproduction": "Historischer Befund. Der aktuelle Endpoint liest `Authorization: Bearer ...`, validiert `auth.getUser()` und prüft `has_permission(user, 'azure.import'|'azure.export')` vor Sync-Ausführung.",
+      "recommendation": "Dieses Muster für alle künftigen benutzerinitiierten Azure-Aktionen beibehalten; keinen X-Sync-Token-Fallback reintroduzieren.",
       "blocksReleasePhase": "azure-production",
-      "accepted": false
+      "accepted": true,
+      "acceptanceReason": "v1.41.3: Shared-Token-Pfad entfernt; Actor stammt aus validierter Session, Permission aus DB-RPC."
     },
     {
       "id": "SEC-HIGH-STATUS-001",

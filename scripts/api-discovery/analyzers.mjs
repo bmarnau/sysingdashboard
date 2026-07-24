@@ -45,21 +45,24 @@ export function analyzeCorrelation(source) {
  * Erkennt Auth-Guards. Aktuell akzeptierte Muster:
  *  - `checkAuth(`             — projektinterne Konvention
  *  - `requireSupabaseAuth`    — Middleware-Referenz
- *  - `X-Sync-Token` / `x-sync-token` als Header-Prüfung
- *  - `isProd()` + Header-Read (defensiver Fallback)
+ *  - `Authorization: Bearer ...` aus dem Request
+ *  - `client.auth.getUser()` plus serverseitiger Permission-RPC
  */
 export function analyzeAuthGuard(source) {
   const patterns = [
     /checkAuth\s*\(/,
     /requireSupabaseAuth/,
-    /x-sync-token|X-Sync-Token|SYNC_TRIGGER_TOKEN/,
     /request\.headers\.get\(\s*["'`]authorization["'`]\s*\)/i,
+    /\.auth\.getUser\s*\(/,
+    /\.rpc\(\s*["'`]has_permission["'`]/,
   ];
   return patterns.some((re) => re.test(source));
 }
 
 /** Erkennt Referenzen auf Permission-Konstanten (`permission: "..."`). */
 export function analyzePermission(source) {
+  const meta = analyzeEndpointMeta(source);
+  if (meta?.permission) return meta.permission;
   const m = source.match(/permission\s*:\s*["'`]([^"'`]+)["'`]/);
   return m ? m[1] : null;
 }

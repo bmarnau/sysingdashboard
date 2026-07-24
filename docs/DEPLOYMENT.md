@@ -41,14 +41,25 @@ in Production.
 
 | Variable                | Zweck                                  | Pflicht (PROD) |
 | ----------------------- | -------------------------------------- | -------------- |
-| `AZURE_SQL_CONNECTION`  | Verbindung zur Azure SQL DB            | Ja¹            |
-| `AZURE_TABLE_CONNECTION`| Azure Table Storage                    | Ja¹            |
-| `AZURE_STORAGE_SAS`     | SAS-URL für Blob Storage               | Ja¹            |
-| `AZURE_CLIENT_ID`       | Entra-App-Registration (App-Only)      | Ja¹            |
-| `AZURE_TENANT_ID`       | Entra-Tenant                           | Ja¹            |
+| `VITE_SUPABASE_URL` | Client-Auth-URL, statisch ins Vite-Bundle ersetzt | Ja |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Publishable Auth-Key für Browser-Client | Ja |
+| `VITE_SUPABASE_PROJECT_ID` | Projektkennung für Startprüfung/Diagnose | Ja |
+| `SUPABASE_URL` | Server-seitige Auth-/DB-URL | Ja |
+| `SUPABASE_PUBLISHABLE_KEY` | Server-seitiger Publishable Key für Bearer-validierte Requests | Ja |
+| `AZURE_SQL_CONNECTION`  | Verbindung zur Azure SQL DB            | Nur Azure-Live¹ |
+| `AZURE_TABLE_CONNECTION`| Azure Table Storage                    | Nur Azure-Live¹ |
+| `AZURE_STORAGE_SAS`     | SAS-URL für Blob Storage               | Nur Azure-Live¹ |
+| `AZURE_CLIENT_ID`       | Entra-App-Registration (App-Only)      | Nur Azure-Live¹ |
+| `AZURE_TENANT_ID`       | Entra-Tenant                           | Nur Azure-Live¹ |
 
-¹ Nur nötig, sobald Azure-Sync aktiviert wird. Ohne diese Werte läuft das
-Dashboard mit Mock-/Local-Only-Daten (siehe `config/secretManager.mjs`).
+¹ Nur nötig, sobald Azure-Sync live aktiviert wird. Ohne diese Werte startet
+das Dashboard trotzdem; `/api/status` meldet die fehlende Azure-Konfiguration
+secret-frei, blockiert aber Anmeldung und Health nicht.
+
+Die drei `VITE_SUPABASE_*`-Werte werden ausschließlich zur Build-Zeit per
+statischem Zugriff (`import.meta.env.VITE_SUPABASE_URL` usw.) ersetzt. Nach
+Änderungen an der Lovable-Cloud-Verbindung muss die veröffentlichte App über
+„Update" im Publish-Dialog neu gebaut werden.
 
 Vollständige Vorlage: [`.env.example`](../.env.example).
 
