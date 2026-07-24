@@ -21,12 +21,12 @@
     },
     {
       "endpointId": "sync",
-      "purpose": "Manueller Sync-Trigger; PROD hinter X-Sync-Token.",
+      "purpose": "Manueller Sync-Trigger; Bearer-Session plus DB-Permission `azure.export`/`azure.import`.",
       "coverage": "partial",
       "positive": true,
       "negative": true,
       "auth": true,
-      "authorization": false,
+      "authorization": true,
       "scope": false,
       "validation": true,
       "errorHandling": true,
@@ -36,7 +36,7 @@
       "gaps": [
         "Keine echte Azure-Live-Verifizierung (AZURE_TEST_LIVE=false).",
         "Keine Parallelitäts-/Idempotenz-Tests.",
-        "Auth greift nur in PROD-Modus (Design-Limit — SEC-CRIT-001)."
+        "Positive Auth-End-to-End-Ausführung erfordert eine bereitgestellte Test-Session mit Azure-Permission."
       ]
     }
   ]

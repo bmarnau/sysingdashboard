@@ -1,9 +1,9 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-07-13T05:41:22.248Z",
-  "dashboardVersion": "1.34.1",
-  "commit": "d06a80b",
-  "branch": "edit/edt-d5375792-b671-45da-a052-0dbbf07acb12",
+  "generatedAt": "2026-07-24T05:45:18.678Z",
+  "dashboardVersion": "1.41.3",
+  "commit": "452e517",
+  "branch": "edit/edt-e4440002-8756-4ef6-b80a-579509ca023f",
   "scannedDir": "src/routes/api",
   "excluded": [
     {
@@ -58,7 +58,7 @@
       "smokeTest": true,
       "functionalTest": null,
       "securityTest": null,
-      "lastChecked": "2026-07-13T05:41:22.232Z",
+      "lastChecked": "2026-07-24T05:45:18.665Z",
       "archivedImports": [],
       "declaredPublic": true,
       "publicReason": "Health-/Statusanzeige — kein Secret, kein State, wird vom Dashboard und CI ohne Auth abgefragt."
@@ -74,12 +74,12 @@
       "runtime": "tanstack-start-server-route",
       "status": "active",
       "classification": "privileged",
-      "authRequired": false,
-      "permission": "sync.trigger",
+      "authRequired": true,
+      "permission": "azure.export",
       "scope": null,
       "scopeResolver": null,
-      "requestValidation": true,
-      "requestSchema": "zod (source-detected)",
+      "requestValidation": false,
+      "requestSchema": null,
       "responseSchema": null,
       "contentTypes": [
         "application/json"
@@ -98,7 +98,7 @@
       "smokeTest": true,
       "functionalTest": null,
       "securityTest": null,
-      "lastChecked": "2026-07-13T05:41:22.233Z",
+      "lastChecked": "2026-07-24T05:45:18.666Z",
       "archivedImports": [],
       "declaredPublic": false,
       "publicReason": null
@@ -106,17 +106,17 @@
   ],
   "findings": [
     {
-      "id": "DISC-CRIT-sync-no-auth",
-      "severity": "critical",
-      "category": "privileged-without-auth",
+      "id": "DISC-HIGH-sync-no-validation",
+      "severity": "high",
+      "category": "missing-validation",
       "endpoint": "/api/sync",
       "methods": [
         "POST"
       ],
       "file": "src/routes/api/sync.ts",
-      "title": "Endpoint mit Wirkung write ohne Authentifizierung",
-      "description": "Anonymer Aufruf verändert Daten oder löst schreibende Operationen aus.",
-      "recommendation": "Auth-Middleware ergänzen und Permission-Guard serverseitig prüfen.",
+      "title": "Schreibender Endpoint ohne erkennbare Request-Validierung",
+      "description": "Keine `z.object(...)` o. ä. im Handler gefunden.",
+      "recommendation": "Zod-Schema für Request-Body ergänzen.",
       "status": "open"
     },
     {
