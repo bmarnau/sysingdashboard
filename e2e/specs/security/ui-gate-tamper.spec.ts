@@ -3,18 +3,15 @@ import { test, expect } from "../../fixtures/test-instance";
 /**
  * Manipulations-Test: setzt eine gefälschte Sysadmin-Identität in
  * localStorage und prüft, dass:
- *   (a) das UI die Sysadmin-Sichten öffnet — Finding SEC-CRIT-002,
- *   (b) das Backend TROTZDEM keinen serverseitigen Nachweis liefert
- *       (die Endpoint-Prüfung passiert in api-direct-call.spec.ts).
+ *   (a) die App daraus KEINE angemeldete Session ableitet,
+ *   (b) geschützte Sysadmin-/Dashboard-Sichten nicht über localStorage
+ *       geöffnet werden können.
  *
- * Ziel: sichtbar dokumentieren, dass UI-Gates keine Sicherheitsgrenze
- * darstellen. Der Test schlägt fehl, sobald irgendwann eine echte
- * clientseitige Identitäts-Bindung (z. B. gegen ein signiertes Cookie)
- * greift — dann muss das Assertion-Verhalten angepasst und das
- * Finding im static-findings.json auf `accepted: true` umgestellt werden.
+ * Ziel: Regressionsschutz für SEC-CRIT-002. Autorität ist die Auth-Session
+ * plus `public.user_roles`, nicht `northbit-active-user`.
  */
 test.describe("Security – UI-Gate Tampering (SEC-CRIT-002)", () => {
-  test("localStorage-Rolle vortäuschen öffnet Sysadmin-Sichten", async ({ page }) => {
+  test("localStorage-Rolle vortäuschen öffnet keine Sysadmin-Sichten", async ({ page }) => {
     await page.addInitScript(() => {
       const now = new Date("2026-06-01T00:00:00.000Z").toISOString();
       const fake = {
@@ -34,9 +31,8 @@ test.describe("Security – UI-Gate Tampering (SEC-CRIT-002)", () => {
       localStorage.setItem("northbit-active-user", fake.id);
     });
     await page.goto("/");
-    await expect(page.locator("main").first()).toBeVisible();
-    // Sanity: Servicemenü-Öffner ist sichtbar (rollen-agnostisch).
-    const svc = page.getByRole("button", { name: /Einstellungen und Services/i });
-    await expect(svc).toBeVisible();
+    await expect(page.getByRole("heading", { name: /SysIng Dashboard/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Einstellungen und Services/i })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Anmelden/i })).toBeVisible();
   });
 });

@@ -67,8 +67,8 @@ export const ENDPOINTS: EndpointContract[] = [
     id: "sync",
     path: "/api/sync",
     methods: ["POST"],
-    authRequired: false, // DEV: offen, PROD: X-Sync-Token — Runner testet nur DEV
-    permission: "sync.trigger",
+    authRequired: true,
+    permission: "azure.export",
     requestSchema: SyncRequestSchema,
     responseSchema: SyncSuccessSchema,
     errorSchema: ErrorSchema,
@@ -76,7 +76,7 @@ export const ENDPOINTS: EndpointContract[] = [
     loadRoute: () => import("@/routes/api/sync") as Promise<never>,
     status: "active",
     knownRisks: [
-      "Auth-Gate greift erst in PROD (`SYNC_TRIGGER_TOKEN`); DEV-Modus ist ungeschützt.",
+      "Positive Sync-Ausführung benötigt eine echte angemeldete Session mit `azure.export` oder `azure.import`.",
       "Kein Rate-Limit — parallele Requests laufen alle durch.",
     ],
   },

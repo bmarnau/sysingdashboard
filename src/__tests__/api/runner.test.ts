@@ -176,7 +176,7 @@ for (const ep of ENDPOINTS) {
         });
         // Erwartet: strukturierte Fehler, kein Crash. Genauer Statuscode
         // hängt vom Zod-Schema ab (Sync bricht auf `source`-Länge).
-        expect([200, 400, 413, 500]).toContain(res.status);
+        expect([200, 400, 401, 403, 413, 500]).toContain(res.status);
         bump(ep.id, {});
       });
 

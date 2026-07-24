@@ -197,11 +197,30 @@ describe("api smoke (inventory-driven)", () => {
                 body: "{not-json",
               }),
             });
+            const expectedInvalidJsonStatuses = ep.authRequired
+              ? [400, 401, 403, 415, 422]
+              : [400, 415, 422];
             scenarios.push({
               name: "invalid JSON rejected",
               category: "validation",
-              ok: [400, 415, 422].includes(badRes.status),
+              ok: expectedInvalidJsonStatuses.includes(badRes.status),
               detail: `status=${badRes.status}`,
+            });
+          }
+
+          if (ep.authRequired) {
+            const anonymousRes = await handler({
+              request: new Request(`http://localhost${ep.path}`, {
+                method,
+                headers: { "content-type": "application/json" },
+                body: ["POST", "PUT", "PATCH"].includes(method) ? "{}" : null,
+              }),
+            });
+            scenarios.push({
+              name: "anonymous request rejected",
+              category: "auth",
+              ok: [401, 403].includes(anonymousRes.status),
+              detail: `status=${anonymousRes.status}`,
             });
           }
         }

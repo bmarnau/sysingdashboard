@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.41.3 - 2026-07-24
+
+- **Start-/Health-Reparatur**: `/api/status` hängt nicht mehr an optionaler Azure-Live-Konfiguration. Fehlende Azure-ENV wird secret-frei im Status gemeldet, blockiert aber Anmeldung und App-Start nicht.
+- **Critical-Findings aktualisiert**: `/api/sync` trennt Authentifizierung, Berechtigungsprüfung und Payload-Validierung strikt. Anonyme Aufrufe werden vor jeder Sync-Logik mit 401 abgewiesen; Permission-Check läuft über die Datenbankfunktion `has_permission`.
+- **Security-/API-Suite nachgezogen**: API Discovery, Smoke-/Functional-Coverage und UI-Tamper-E2E spiegeln die Session-basierte Authentifizierung statt der historischen localStorage-/X-Sync-Token-Grenzen.
+
 ## 1.41.2 - 2026-07-23
 
 - **Publish-Build neu erzeugt**: Re-Publish mit im Runner vorhandenen `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` und `VITE_SUPABASE_PROJECT_ID`, damit Vite die Werte statisch in das Client-Bundle inlined. Behebt die Meldung „Die Anmeldung ist noch nicht konfiguriert" auf der veröffentlichten App. Keine Code-Änderung.

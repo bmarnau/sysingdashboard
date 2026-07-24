@@ -158,8 +158,11 @@ describe("Manipulation – Replay abgelaufener / manipulierter Assignments", () 
     ).toBe(false);
   });
 
-  it("should_notEscalate_when_clientTriesToRunCanWithForgedRole", () => {
+  it("should_documentPurePermissionHelperBoundary_when_calledWithForgedRole", () => {
     const forged: UserProfile = { ...anyUser, role: "systemadministrator" };
-    expect(can(forged, "roles.manage")).toBe(true); // Ist-Zustand: forged wins → SEC-CRIT-002
+    // `can()` ist eine reine Matrix-Funktion und validiert keine Identität.
+    // Der Fix für SEC-CRIT-002 liegt davor: `useCurrentUser()` bezieht die
+    // Rolle aus Session + `user_roles`, nicht aus localStorage/Payload.
+    expect(can(forged, "roles.manage")).toBe(true);
   });
 });

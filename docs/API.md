@@ -10,9 +10,9 @@ Server-Routen des Dashboards. Alle Endpoints liegen unter `src/routes/api/`
 > gegen das Inventar per CI abgeglichen.
 
 
-**Auth-Status (Stand 2026-07-08)**: Es gibt aktuell **keine Authentifizierung**.
-Endpoints sind auf published-Deployments öffentlich erreichbar. Vor Go-Live
-mit realen Kundendaten muss Auth ergänzt werden (siehe [ADR-0002](./ADR/0002-frontend-rbac-mirrored.md)).
+**Auth-Status (Stand 2026-07-24)**: Lovable-Cloud-Auth ist aktiv. Öffentliche
+Health-Routen bleiben anonym und secret-frei; schreibende Routen benötigen eine
+gültige Bearer-Session und prüfen Berechtigungen serverseitig.
 
 ## `GET /api/status`
 
@@ -37,7 +37,8 @@ Tokens.
 
 **Fehler**:
 - `405` bei anderer HTTP-Methode als `GET`.
-- `500` bei ENV-Validation-Failure (nur PROD).
+- `500` nur bei unerwartetem Handler-Fehler; fehlende optionale Azure-ENV wird
+  im Payload als Status gemeldet und blockiert Health nicht.
 
 ## `POST /api/sync`
 
@@ -65,7 +66,13 @@ Shape: siehe [`DATA-SCHEMA.md`](./DATA-SCHEMA.md) und `src/lib/json-schema.ts`.
 }
 ```
 
+- **Auth**: `Authorization: Bearer <Session-Token>` ist Pflicht. Der Handler
+  validiert den Benutzer über den Auth-Service und prüft danach
+  `has_permission(user, 'azure.export')` bzw. `has_permission(user, 'azure.import')`.
+
 **Fehler**:
+- `401` ohne gültige Session.
+- `403` bei fehlender Azure-Berechtigung.
 - `400` bei Schema-Verletzung (Zod-Validation).
 - `405` bei anderer HTTP-Methode als `POST`.
 - `500` bei Azure-Fehler — Details im Response-Body, Secret-frei.

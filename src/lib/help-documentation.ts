@@ -569,7 +569,7 @@ Nachweis, dass Daten exportiert, gesichert, wiederhergestellt und importiert wer
 ## Bekannte Einschränkungen
 - Keine Prüfsumme im Manifest (Follow-up, siehe ADR-0015).
 - PDF-Export wird strukturell, nicht semantisch geprüft (E2E-Suite).
-- Rollen-/Scope-Enforcement ist clientseitig — Backend-RBAC bleibt offen (SEC-CRIT-001).`,
+- Rollen-/Scope-Enforcement ist in der UI weiterhin nur Komfort. Schreibende Server-Routen prüfen zusätzlich Bearer-Session und DB-Permission; reine Offline-/Export-Helfer bleiben lokale Datenfunktionen.`,
   },
   {
     id: "changelog",
@@ -836,7 +836,7 @@ Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Ma
       "Preview",
       "Health",
     ],
-    lastUpdated: "2026-06-29",
+    lastUpdated: "2026-07-24",
     content: `## Was zeigt der Systemstatus?
 Der Dialog "Service → Systemstatus…" ist in **sieben Sektionen** gegliedert und zeigt ausschließlich Booleans, Status und ENV-Variablen­**namen**. Werte, Secrets, Connection Strings und SAS-Tokens werden **niemals** angezeigt.
 
@@ -862,7 +862,7 @@ Local Storage (immer aktiv), Last Local Backup (\`BackupService.lastAuto\`), Las
 User-Manual-Version, Management-Overview-Status, Last Documentation Update.
 
 ## Startvalidierung
-Beim Laden des Dashboards triggert \`bootstrapSystemStatusCheck()\` einmalig einen Fetch auf \`/api/status\` (Timeout 3 s). Das Backend ruft \`secretManager.validate()\` pro Request auf (PROD-Fail-Fast, DEV-Warn). Frontend rendert defensiv: fehlt eine Antwort, bleiben lokale Werte (Version, Build, Backup) sichtbar und alle Server-Felder erscheinen als "Not configured".
+Beim Laden des Dashboards triggert \`bootstrapSystemStatusCheck()\` einmalig einen Fetch auf \`/api/status\` (Timeout 3 s). Der Endpoint ist bewusst Health-only: fehlende optionale Azure-Konfiguration wird im Payload als Status gemeldet, erzeugt aber keinen 500-Startfehler. Zusätzlich prüft \`runStartupEnvCheck()\` im Browser, ob \`VITE_SUPABASE_URL\`, \`VITE_SUPABASE_PUBLISHABLE_KEY\` und \`VITE_SUPABASE_PROJECT_ID\` im aktuellen Bundle vorhanden sind. Frontend rendert defensiv: fehlt eine Antwort, bleiben lokale Werte (Version, Build, Backup) sichtbar und alle Server-Felder erscheinen als "Not configured".
 
 ## Sicherheitsregeln
 - Frontend importiert weder \`secretManager\` noch \`envValidator\`/\`keyVault\`.
@@ -951,7 +951,7 @@ Backups ab Version 1.14 enthalten zusätzlich eine kanonische \`dashboard.json\`
       "Administrator",
       "Viewer",
     ],
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-07-24",
     content: `## Rollen
 Sieben Rollen mit klarer Privileg-Reihenfolge (hoch → niedrig):
 1. **System-Administrator** — darf alles. Einzige Rolle für Datenbankaufbau (\`azure.database.build\`) und Rollenverwaltung (\`roles.manage\`).
@@ -1772,8 +1772,8 @@ Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine 
 - **Source-Scan**: keine direkten \`role === "..."\`-Vergleiche außerhalb von \`src/lib/rbac\`, keine Auth-Tokens in localStorage/sessionStorage.
 
 ## Abgedeckt (Playwright)
-- **UI-Gate-Tamper**: manipulierter \`northbit-active-user\` öffnet Sysadmin-UI — bewusst grün als Beleg für Finding SEC-CRIT-002.
-- **Direkter Endpoint-Call**: \`/api/sync\` liefert keinen Stack, kein AccountKey/SAS, immer eine Correlation-ID.
+- **UI-Gate-Tamper**: manipulierter \`northbit-active-user\` öffnet keine Sysadmin-/Dashboard-Sichten mehr; die Rolle stammt aus Session + \`user_roles\`.
+- **Direkter Endpoint-Call**: \`/api/sync\` weist anonyme Aufrufe mit strukturierter 401/403-Antwort zurück, liefert keinen Stack, kein AccountKey/SAS und immer eine Correlation-ID.
 
 ## Findings-Report
 - \`test-report/security-report.md\` und \`.json\` werden bei jedem CI-Lauf erzeugt.
@@ -1781,10 +1781,10 @@ Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine 
 - CI-Step \`security:gate\` failed bei offenen **CRITICAL**-Findings; **HIGH** blockiert Auth- und Azure-Produktivierung.
 
 ## Grenzen
-- Kein Pen-Test-Ersatz, kein Fuzzing, keine Kryptoanalyse, keine Prüfung produktiver Auth-Provider (existieren nicht).
-- UI-Sichtbarkeit ist **kein** Sicherheitsnachweis. Backend hat aktuell keine RBAC-Middleware (Finding SEC-CRIT-001) und die aktive Rolle wird ausschließlich im localStorage geführt (Finding SEC-CRIT-002).
+- Kein Pen-Test-Ersatz, kein Fuzzing, keine Kryptoanalyse.
+- UI-Sichtbarkeit ist **kein** Sicherheitsnachweis. Schreibende Server-Routen müssen Session und Permission serverseitig prüfen; \`/api/sync\` ist das Referenzmuster.
 - Grüne Tests bedeuten „keine Regression in geprüften Bausteinen" — nicht „System ist sicher". Kein Anspruch auf ISO/IEC 27001, SOC 2 oder BSI.
-- Session-, Claims-, Tenant- und Group-Tests sind heute strukturell nicht ausführbar und als HIGH-Finding SEC-HIGH-AUTH-001 dokumentiert.
+- End-to-End-Tests für echte Anmeldung laufen nur, wenn eine Test-Session bereitsteht; ohne Session wird der authentifizierte Pfad als nicht verifiziert dokumentiert.
 
 ## Ausführung
 - \`bun run test:security\` — Vitest-Suite + RBAC-Drift + Static-Scanner.
@@ -1811,7 +1811,7 @@ Das API Discovery Framework ermittelt zur Buildzeit automatisch **alle aktiven S
 ## Erkennung
 - Statische Analyse der TanStack-Server-Routen (kein Crawling, keine Ausführung).
 - Ergänzt Metadaten aus \`src/__tests__/api/registry/endpoints.ts\` (Schemas, Auth-Hints).
-- Erkennt HTTP-Methoden, \`withCorrelation\`-Wrapper, Zod-Validierung, Auth-Guards (\`checkAuth\`, \`X-Sync-Token\`, \`requireSupabaseAuth\`), Permissions, Logger-Nutzung und destruktive Wirkung.
+- Erkennt HTTP-Methoden, \`withCorrelation\`-Wrapper, Zod-Validierung, Auth-Guards (Authorization-Bearer, \`getUser()\`, \`has_permission\`, \`requireSupabaseAuth\`), Permissions, Logger-Nutzung und destruktive Wirkung.
 
 ## Ausgeschlossen
 - \`archive/legacy-standalone-backend/routes/\` — archiviertes Standalone-Backend (v1.27.2).

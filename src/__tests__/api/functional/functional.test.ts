@@ -58,12 +58,12 @@ const KNOWN: Record<string, Coverage> = {
   },
   sync: {
     endpointId: "sync",
-    purpose: "Manueller Sync-Trigger; PROD hinter X-Sync-Token.",
+    purpose: "Manueller Sync-Trigger; Bearer-Session plus DB-Permission `azure.export`/`azure.import`.",
     coverage: "partial",
     positive: true,
     negative: true,
-    auth: true, // Token-Check
-    authorization: false, // keine feingranulare Permission
+    auth: true,
+    authorization: true,
     scope: false,
     validation: true,
     errorHandling: true,
@@ -73,7 +73,7 @@ const KNOWN: Record<string, Coverage> = {
     gaps: [
       "Keine echte Azure-Live-Verifizierung (AZURE_TEST_LIVE=false).",
       "Keine Parallelitäts-/Idempotenz-Tests.",
-      "Auth greift nur in PROD-Modus (Design-Limit — SEC-CRIT-001).",
+      "Positive Auth-End-to-End-Ausführung erfordert eine bereitgestellte Test-Session mit Azure-Permission.",
     ],
   },
 };

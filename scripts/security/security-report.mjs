@@ -113,8 +113,8 @@ function buildMarkdown(findings, counts) {
   lines.push("## Grenzen der Suite");
   lines.push("");
   lines.push("- Keine Pen-Test-Ersatzleistung, kein Fuzzing, keine Kryptoanalyse.");
-  lines.push("- Kein produktiver Auth-Provider — Session-/Claims-Kategorien sind Findings, keine grünen Tests.");
-  lines.push("- UI-Sichtbarkeit ist kein Sicherheitsnachweis; Serverseite wird durch Middleware in einem Folge-Prompt eingezogen.");
+  lines.push("- Auth ist aktiv; Browser-/E2E-Sign-in wird nur ausgeführt, wenn eine Test-Session bereitsteht.");
+  lines.push("- UI-Sichtbarkeit ist kein Sicherheitsnachweis; schreibende Server-Routen müssen Session und Permission serverseitig prüfen.");
   lines.push("- Kein Anspruch auf Zertifizierung (ISO/IEC 27001, SOC 2, BSI o. ä.).");
   lines.push("");
   const byArea = new Map();
