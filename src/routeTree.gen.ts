@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSyncRouteImport } from './routes/api/sync'
 import { Route as ApiStatusRouteImport } from './routes/api/status'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as ApiPublicAuthConfigRouteImport } from './routes/api/public/auth-config'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -51,6 +52,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicAuthConfigRoute = ApiPublicAuthConfigRouteImport.update({
+  id: '/api/public/auth-config',
+  path: '/api/public/auth-config',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
+  '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
+  '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
+  '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/api/status'
     | '/api/sync'
+    | '/api/public/auth-config'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/api/status'
     | '/api/sync'
+    | '/api/public/auth-config'
   id:
     | '__root__'
     | '/'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/api/status'
     | '/api/sync'
+    | '/api/public/auth-config'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -113,6 +125,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiStatusRoute: typeof ApiStatusRoute
   ApiSyncRoute: typeof ApiSyncRoute
+  ApiPublicAuthConfigRoute: typeof ApiPublicAuthConfigRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -166,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/auth-config': {
+      id: '/api/public/auth-config'
+      path: '/api/public/auth-config'
+      fullPath: '/api/public/auth-config'
+      preLoaderRoute: typeof ApiPublicAuthConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -187,17 +207,8 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ApiStatusRoute: ApiStatusRoute,
   ApiSyncRoute: ApiSyncRoute,
+  ApiPublicAuthConfigRoute: ApiPublicAuthConfigRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

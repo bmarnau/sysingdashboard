@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { trySupabase } from "@/integrations/supabase/safe-client";
+import { loadAuthConfig } from "@/integrations/supabase/runtime-config";
 
 /**
  * Auth-Gate für alle Routen unter `_authenticated/`.
@@ -13,6 +14,8 @@ import { trySupabase } from "@/integrations/supabase/safe-client";
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async ({ location }) => {
+    // Runtime-Fallback für Auth-Config sicherstellen (siehe runtime-config.ts).
+    await loadAuthConfig();
     const result = trySupabase();
     if (!result.ok) {
       throw redirect({ to: "/auth", search: { redirect: location.href } });

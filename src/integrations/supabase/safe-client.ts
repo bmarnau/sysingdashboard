@@ -19,11 +19,12 @@ export type TrySupabaseResult =
 let cached: TrySupabaseResult | undefined;
 
 export function trySupabase(): TrySupabaseResult {
-  if (cached) return cached;
+  if (cached && cached.ok) return cached;
   const config = getAuthConfigurationStatus();
   if (config.status !== "configured") {
-    cached = { ok: false, config };
-    return cached;
+    // Fehlerpfad NICHT cachen — der Runtime-Fallback (siehe runtime-config.ts)
+    // kann die Config noch nachliefern; ein späterer Aufruf muss erneut prüfen.
+    return { ok: false, config };
   }
   try {
     // Der Proxy löst erst bei erstem Property-Zugriff auf; erzwinge das hier,
@@ -32,7 +33,7 @@ export function trySupabase(): TrySupabaseResult {
     cached = { ok: true, client: supabase };
     return cached;
   } catch {
-    cached = {
+    return {
       ok: false,
       config: {
         status: "invalid",
@@ -41,7 +42,6 @@ export function trySupabase(): TrySupabaseResult {
         invalidReason: "Supabase client failed to initialize",
       },
     };
-    return cached;
   }
 }
 

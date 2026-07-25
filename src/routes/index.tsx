@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { trySupabase } from "@/integrations/supabase/safe-client";
+import { loadAuthConfig } from "@/integrations/supabase/runtime-config";
 import type { AuthConfiguration } from "@/integrations/supabase/config";
 import { Button } from "@/components/ui/button";
 
@@ -38,30 +39,33 @@ function LandingPage() {
 
   const check = useCallback(() => {
     setState({ kind: "checking" });
-    const result = trySupabase();
-    if (!result.ok) {
-      setState({ kind: "config-error", config: result.config });
-      return;
-    }
-    result.client.auth
-      .getSession()
-      .then(({ data, error }) => {
-        if (error) {
+    // Runtime-Fallback für Auth-Config zuerst versuchen (siehe runtime-config.ts).
+    loadAuthConfig().finally(() => {
+      const result = trySupabase();
+      if (!result.ok) {
+        setState({ kind: "config-error", config: result.config });
+        return;
+      }
+      result.client.auth
+        .getSession()
+        .then(({ data, error }) => {
+          if (error) {
+            setState({ kind: "connection-error" });
+            return;
+          }
+          if (data.session?.user) {
+            setState({ kind: "authenticated" });
+            navigate({ to: "/dashboard", replace: true }).catch(() => {
+              // Navigation-Fehler dürfen den Zustand nicht kippen.
+            });
+          } else {
+            setState({ kind: "anonymous" });
+          }
+        })
+        .catch(() => {
           setState({ kind: "connection-error" });
-          return;
-        }
-        if (data.session?.user) {
-          setState({ kind: "authenticated" });
-          navigate({ to: "/dashboard", replace: true }).catch(() => {
-            // Navigation-Fehler dürfen den Zustand nicht kippen.
-          });
-        } else {
-          setState({ kind: "anonymous" });
-        }
-      })
-      .catch(() => {
-        setState({ kind: "connection-error" });
-      });
+        });
+    });
   }, [navigate]);
 
   useEffect(() => {
