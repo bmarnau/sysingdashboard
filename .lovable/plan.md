@@ -1,65 +1,67 @@
-## Ziel
+## Ursache (verifiziert)
 
-Die aktuellen Start-/Auth-Symptome und die technischen Critical Findings werden ohne neue Produktfunktionen bereinigt. Fokus: **SEC-CRIT-001**, **SEC-CRIT-002**, lauffähige Security/API-Suite, klare Trennung von Auth, RBAC/RLS und API-Health, anschließend neuer Technical Compliance Report.
+Der veröffentlichte JS-Bundle enthält **keinen** `sb_publishable_*`-Key und keinen Supabase-URL-Wert:
 
-## Gesicherte Ist-Analyse
+```
+curl -s https://sysingdashboard.lovable.app/assets/index-DeqK2Yjw.js \
+  | grep -oE '(sb_publishable_[A-Za-z0-9_]{8}|VITE_SUPABASE_[A-Z_]+)'
+→ (leer)
+```
 
-- `src/integrations/supabase/config.ts` und `src/integrations/supabase/env-check.ts` nutzen bereits statische Vite-Zugriffe (`import.meta.env.VITE_SUPABASE_*`). Der frühere dynamische Zugriff ist im Code nicht mehr vorhanden.
-- Die Browser-Signale zeigen trotzdem: Im aktuell geladenen Preview-Bundle fehlen `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` und `VITE_SUPABASE_PROJECT_ID`. Das erklärt die Meldung „Die Anmeldung ist noch nicht konfiguriert“ im Browser-Build.
-- Zusätzlich schlägt `GET /api/status` mit `500 SERVICE_NOT_CONFIGURED` fehl. Ursache im Code: `src/routes/api/status.ts` ruft `ensureEnv()` auf. Diese Validierung verlangt in Production Azure-Variablen, obwohl `/api/status` ein öffentlicher, secret-freier Health-Endpunkt sein soll und `backend/services/statusService.mjs` fehlende ENV bereits selbst defensiv im Payload abbildet.
-- `/api/sync` ist bereits auf Bearer-Token + `has_permission` umgestellt, ruft aber `ensureEnv()` vor der Authentifizierung auf. Dadurch kann fehlende Azure-Konfiguration anonyme Requests als 500 maskieren, statt zuerst die Auth-Grenze mit 401/403 durchzusetzen.
-- Die aktuellen `test-report/security-report.*` und `test-report/technical-test-report.*` sind stale: `scripts/security/static-findings.json` hat SEC-CRIT-001/002 bereits akzeptiert/dokumentiert, der generierte Report zeigt aber noch die alten offenen Findings.
-- Die Test-/Doku-Artefakte enthalten noch historische Aussagen: kein produktiver Auth-Provider, `X-Sync-Token`, localStorage-Tamper öffnet Sysadmin-Sichten. Diese Aussagen widersprechen dem aktuellen Auth-Zielbild.
+Damit stehen `import.meta.env.VITE_SUPABASE_URL` und `VITE_SUPABASE_PUBLISHABLE_KEY` im ausgelieferten Browser-Code auf `undefined`. Die Kette:
 
-## Umsetzungsplan
+1. `src/integrations/supabase/config.ts` (Z. 41–51) liest die drei VITE_-Konstanten statisch. Beide sind leer.
+2. `getAuthConfigurationStatus()` liefert `{ status: "missing", missingKeys: ["SUPABASE_URL","SUPABASE_PUBLISHABLE_KEY"] }` (Z. 85–94), weil `readProcessEnv` im Browser nichts liefert.
+3. `trySupabase()` (`safe-client.ts`, Z. 21–27) gibt `ok:false` zurück.
+4. `src/routes/index.tsx` (Z. 42–43) schaltet in `config-error` → "Die Anmeldung ist noch nicht konfiguriert." Selbe Kette auf `/auth`.
 
-1. **Health-Endpoint stabilisieren**
-   - In `src/routes/api/status.ts` den `ensureEnv()`-Fail-Fast entfernen.
-   - `/api/status` liefert immer den secret-freien Status aus `getStatus()` plus Correlation-ID.
-   - Fehlende Azure-Konfiguration bleibt sichtbar, blockiert aber App-Start und Health nicht.
+**Warum ist der Bundle leer?**
+- `.env` ist git-ignored (bestätigt in `.gitignore`) und existiert nur in der Sandbox.
+- Der Lovable-Publish-Build hat im Runner-Environment keine `VITE_SUPABASE_*`-Variablen; Vite ersetzt sie zur Build-Zeit deshalb mit `undefined`.
+- Erneutes Publish alleine hilft nicht — solange der Runner die Werte nicht kennt, entsteht immer wieder ein "leerer" Bundle.
 
-2. **Sync-Endpoint strikt trennen: Auth vor Payload/Sync/ENV**
-   - In `src/routes/api/sync.ts` die Reihenfolge korrigieren:
-     1. Bearer-Header prüfen.
-     2. Server-Auth-ENV (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`) prüfen.
-     3. Token mit `auth.getUser()` validieren.
-     4. Request-Body validieren.
-     5. `has_permission(user, azure.import|azure.export)` prüfen.
-     6. Erst danach `runSync()` ausführen.
-   - `endpointMeta` für `/api/sync` ergänzen: `authRequired: true`, `classification: "privileged"`, Permission-Hinweis.
-   - Kein Rückfall auf `X-Sync-Token`, keine caller-supplied Rolle/Owner-ID.
+**Wichtig:** Serverseitig sind die Pendants **vorhanden**. `/api/status` läuft und die serverseitigen `SUPABASE_URL`/`SUPABASE_PUBLISHABLE_KEY` werden von Lovable Cloud in die Worker-Runtime injiziert (sie sind non-secret Publishable-Werte). Nur das Vite-Client-Inlining greift nicht.
 
-3. **API Discovery und API-Tests auf die neue Auth-Grenze aktualisieren**
-   - `scripts/api-discovery/analyzers.mjs` so anpassen, dass Bearer-Auth, `auth.getUser()` und `has_permission` als Auth-/Permission-Guard erkannt werden.
-   - Endpoint-Registry (`src/__tests__/api/registry/endpoints.ts`) für `/api/sync` auf `authRequired: true` und Azure-Permission aktualisieren.
-   - Smoke-/Runner-Tests so anpassen, dass geschützte Write-Endpunkte ohne Session 401/403 liefern dürfen und genau das als korrekter Auth-Nachweis zählt.
-   - Functional-Coverage für `/api/sync` von „X-Sync-Token/PROD-only“ auf „Bearer + DB-Permission“ ändern.
+## Fix (minimal, kein Refactoring)
 
-4. **SEC-CRIT-002 Regressionsschutz korrigieren**
-   - E2E-Test `ui-gate-tamper.spec.ts` invertieren: gefälschter `northbit-active-user` darf keine Sysadmin-/Dashboard-Sicht öffnen; sichtbar bleiben Landing/Auth-CTA.
-   - Kommentare in `manipulation.test.tsx` klarstellen: `can()` ist reine Matrixlogik, Identitätsvertrauen entsteht nur vorher durch `useCurrentUser()` aus Session + `user_roles`.
+Runtime-Fallback: neuer öffentlicher Endpoint `GET /api/public/auth-config`, der aus `process.env.SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` ein kleines JSON liefert (`{ url, publishableKey }`). Der Browser-Bootstrap holt sich diese Werte, wenn die VITE_-Konstanten leer sind — und initialisiert den Supabase-Client damit. Damit funktioniert die Anmeldung sofort, unabhängig vom Vite-Inlining.
 
-5. **Security-Report-Generator und Dokumentation entstalen**
-   - Security-Report-Grenzen von „kein produktiver Auth-Provider“ auf „Auth aktiv; echte E2E-Anmeldung nur mit Test-Session“ aktualisieren.
-   - Handbuch-Kapitel zu Systemstatus, Security Suite und API Discovery aktualisieren.
-   - `docs/API.md` und `docs/DEPLOYMENT.md` auf aktuellen Auth-/ENV-Stand bringen.
-   - `CHANGELOG.md` mit einer neuen Version für diese Reparatur ergänzen.
+### Änderungen
 
-6. **Reports neu erzeugen und validieren**
-   - Security/API-Artefakte neu generieren:
-     - API Discovery
-     - API Smoke/Functional Reports
-     - Security Report
-     - Technical Report
-   - Zielzustand im neuen Technical Compliance Report:
-     - keine offenen `SEC-CRIT-001`/`SEC-CRIT-002` als Blocker,
-     - `/api/sync` als privilegierter, authentifizierter Endpoint erkannt,
-     - `/api/status` als öffentlicher Health-Endpoint ohne 500 durch optionale Azure-ENV,
-     - Quality Gate blockiert nicht mehr wegen der beiden Critical Findings.
+1. **`src/routes/api/public/auth-config.ts` (neu)** — TanStack Server-Route:
+   - `GET` liefert `{ url, publishableKey }` aus `process.env.SUPABASE_URL` und `process.env.SUPABASE_PUBLISHABLE_KEY`. Nur Publishable-Werte; niemals `SUPABASE_SERVICE_ROLE_KEY`. Ablehnt `sb_secret_*` explizit.
+   - `Cache-Control: no-store`, kurze Zod-Validierung, keine Logs mit Werten.
 
-## Erwartetes Ergebnis
+2. **`src/integrations/supabase/runtime-config.ts` (neu)** — Browser-Bootstrap:
+   - `loadAuthConfig(): Promise<{ url; publishableKey } | null>`
+   - Reihenfolge: (a) `import.meta.env.VITE_*` wenn vorhanden, sonst (b) `fetch('/api/public/auth-config')`. Ergebnis wird gecacht (Module-Singleton).
+   - Wirft nie; gibt `null` bei Fehler.
 
-- Die Browser-Meldung „Anmeldung nicht konfiguriert“ ist nach einem frischen Publish-Build mit vorhandenen `VITE_SUPABASE_*`-Werten behoben; der Code nutzt dafür bereits statische Vite-Zugriffe.
-- Der zusätzliche `/api/status`-500 und der `dwl.proxy.response.error` werden durch die Health-Endpoint-Korrektur beseitigt.
-- SEC-CRIT-001/002 erscheinen im neuen Technical Compliance Report nicht mehr als offene Critical Blocker.
-- Auth, RBAC/RLS und API-Health sind fachlich sauber getrennt.
+3. **`src/integrations/supabase/client.ts` (minimaler Eingriff)** — auto-generierter Header bleibt; die Datei muss aber ohnehin lesen können: statt hart auf VITE_-Konstanten zu prüfen, ruft der Proxy beim ersten Zugriff eine `bootstrapSupabase()`-Funktion aus `runtime-config.ts` auf, die synchron einen bereits geladenen Config-Snapshot liefert. Kein API-Umbau, keine geänderten Exports.
+
+4. **`src/integrations/supabase/safe-client.ts`** — `trySupabase()` prüft zusätzlich den Snapshot aus `runtime-config.ts`, damit `getAuthConfigurationStatus()` bei Runtime-Fallback nicht mehr `"missing"` meldet.
+
+5. **`src/routes/__root.tsx`** — `runStartupEnvCheck()`-Aufruf bleibt; zusätzlich wird **einmalig vor der ersten Auth-Nutzung** `loadAuthConfig()` awaited (im vorhandenen dynamischen Import-Block, Z. ~153). Kein neuer Provider, keine Änderung an der Route-Struktur.
+
+6. **`.env.example`** — Kommentar ergänzen: bei fehlendem VITE_-Inlining greift der Runtime-Fallback über `/api/public/auth-config`.
+
+7. **Doku**: `CHANGELOG.md` (v1.41.4 – „Auth-Config Runtime-Fallback"), Kapitel in `src/lib/help-documentation.ts` ("Auth-Bootstrap"), `test-report/technical-test-report.md`-Notiz.
+
+### Was **nicht** angefasst wird
+
+- RBAC / RLS / Datenbank-Policies
+- Azure-Pfad und `/api/status`
+- Auth-Gate (`_authenticated/route.tsx`), Login-Flow, Reset-Password
+- Vite-Config, Build-Runner-Einstellungen
+
+### Validierung
+
+- Unit: Test für `runtime-config.ts` (VITE-Path, Fetch-Path, Fehlerpfad).
+- Manuell/Playwright: Landing zeigt "Anmelden" (kein Config-Error), `/auth` lädt, Login mit Testuser, Reload, Signout, Password-Reset — jeweils in Preview UND Published.
+- Bundle-Scan: bestätigen, dass der neue Endpoint auf `sysingdashboard.lovable.app/api/public/auth-config` `{ url, publishableKey }` liefert.
+
+### Abschlussbericht (Template nach Umsetzung)
+
+- Ursache: VITE_SUPABASE_*-Konstanten im Publish-Build nicht inlined → Client-Config leer → "nicht konfiguriert".
+- Betroffene Dateien: siehe Liste oben.
+- Testergebnisse: Vitest grün, Playwright Auth-Flows grün, identisches Verhalten Preview ↔ Published.
