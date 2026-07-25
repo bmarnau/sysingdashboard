@@ -13,6 +13,11 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.41.4 - 2026-07-25
+
+- **Auth-Config Runtime-Fallback**: Neuer öffentlicher Endpoint `GET /api/public/auth-config` liefert `SUPABASE_URL` und `SUPABASE_PUBLISHABLE_KEY` aus der Server-Runtime. Der Browser-Client bootstrappt darüber, wenn der Publish-Build ohne `VITE_SUPABASE_*` gebaut wurde — behebt die Meldung „Die Anmeldung ist noch nicht konfiguriert" endgültig, unabhängig vom Vite-Inlining.
+- **Bootstrap in Auth-Flows**: `index.tsx`, `auth.tsx` und `_authenticated/route.tsx` warten vor der ersten Session-Prüfung auf `loadAuthConfig()`. `safe-client.ts` cacht Fehlerzustände nicht mehr, damit der Runtime-Fallback nach dem Nachladen sofort greift.
+
 ## 1.41.3 - 2026-07-24
 
 - **Start-/Health-Reparatur**: `/api/status` hängt nicht mehr an optionaler Azure-Live-Konfiguration. Fehlende Azure-ENV wird secret-frei im Status gemeldet, blockiert aber Anmeldung und App-Start nicht.

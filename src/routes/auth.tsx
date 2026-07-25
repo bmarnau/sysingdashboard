@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, useSearch, Link } from "@tanstack/react-r
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { trySupabase } from "@/integrations/supabase/safe-client";
+import { loadAuthConfig } from "@/integrations/supabase/runtime-config";
 import type { AuthConfiguration } from "@/integrations/supabase/config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,31 +54,39 @@ function AuthPage() {
   const [configError, setConfigError] = useState<AuthConfiguration | null>(null);
 
   useEffect(() => {
-    const result = trySupabase();
-    if (!result.ok) {
-      setConfigError(result.config);
-      return;
-    }
-    const supabase = result.client;
     let unsub: (() => void) | undefined;
-    supabase.auth
-      .getSession()
-      .then(({ data }) => {
-        if (data.session) navigate({ to: redirectTo, replace: true }).catch(() => undefined);
-      })
-      .catch(() => {
-        toast.error("Sitzungsprüfung fehlgeschlagen. Bitte erneut versuchen.");
-      });
-    try {
-      const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-        if (event === "SIGNED_IN" && session)
-          navigate({ to: redirectTo, replace: true }).catch(() => undefined);
-      });
-      unsub = () => sub.subscription.unsubscribe();
-    } catch {
-      // onAuthStateChange darf niemals die Seite blockieren.
-    }
-    return () => unsub?.();
+    let cancelled = false;
+    // Runtime-Fallback für Auth-Config zuerst versuchen (siehe runtime-config.ts).
+    loadAuthConfig().finally(() => {
+      if (cancelled) return;
+      const result = trySupabase();
+      if (!result.ok) {
+        setConfigError(result.config);
+        return;
+      }
+      const supabase = result.client;
+      supabase.auth
+        .getSession()
+        .then(({ data }) => {
+          if (data.session) navigate({ to: redirectTo, replace: true }).catch(() => undefined);
+        })
+        .catch(() => {
+          toast.error("Sitzungsprüfung fehlgeschlagen. Bitte erneut versuchen.");
+        });
+      try {
+        const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+          if (event === "SIGNED_IN" && session)
+            navigate({ to: redirectTo, replace: true }).catch(() => undefined);
+        });
+        unsub = () => sub.subscription.unsubscribe();
+      } catch {
+        // onAuthStateChange darf niemals die Seite blockieren.
+      }
+    });
+    return () => {
+      cancelled = true;
+      unsub?.();
+    };
   }, [navigate, redirectTo]);
 
   function assertReady() {
