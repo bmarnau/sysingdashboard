@@ -83,8 +83,27 @@ function isPlausiblePublishableKey(value: string): boolean {
  * serverseitigen `SUPABASE_*` zurück.
  */
 export function getAuthConfigurationStatus(): AuthConfiguration {
-  const url = VITE_SUPABASE_URL ?? readProcessEnv("SUPABASE_URL");
-  const key = VITE_SUPABASE_PUBLISHABLE_KEY ?? readProcessEnv("SUPABASE_PUBLISHABLE_KEY");
+  // Runtime-Fallback (siehe runtime-config.ts) berücksichtigen — er füllt
+  // sich nach `loadAuthConfig()`, wenn VITE_-Konstanten im Publish-Bundle
+  // fehlen.
+  let runtimeUrl: string | undefined;
+  let runtimeKey: string | undefined;
+  try {
+    // Dynamischer Zugriff auf Fenster-Marker; kein Import-Zyklus, keine Wurfgefahr.
+    if (typeof window !== "undefined") {
+      const w = window as unknown as {
+        __sysing_auth_config?: { url?: string; publishableKey?: string };
+      };
+      runtimeUrl = w.__sysing_auth_config?.url;
+      runtimeKey = w.__sysing_auth_config?.publishableKey;
+    }
+  } catch {
+    // ignore
+  }
+
+  const url = VITE_SUPABASE_URL ?? runtimeUrl ?? readProcessEnv("SUPABASE_URL");
+  const key =
+    VITE_SUPABASE_PUBLISHABLE_KEY ?? runtimeKey ?? readProcessEnv("SUPABASE_PUBLISHABLE_KEY");
 
   const missing: string[] = [];
   if (!url) missing.push("SUPABASE_URL");
