@@ -13,6 +13,16 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.42.0 - 2026-07-26
+
+- **Compliance-Dashboard fertiggestellt** (`TechnicalReportDialog`): Management-Summary mit Severity-Kacheln, farbigem Statusband und Quellen-Chips; Trennung technisch vs. organisatorisch vs. akzeptiert über Tabs.
+- **Filter & Suche**: Volltextsuche plus Auswahllisten für Severity, Bereich, Kategorie, Status, Bucket und Aufwand mit Reset-Button.
+- **Drill-Down pro Finding**: aufklappbare Detailansicht mit vollständiger Beschreibung, Empfehlung, Komponenten-Chips, Evidence-Kopie und Metadaten-Grid.
+- **Historie & Diff**: Vergleichs­sektion mit Deltas gegenüber `technical-test-report.prev.json` und klappbaren ID-Listen pro Diff-Bucket.
+- **Druckansicht**: „Drucken / PDF"-Button aktiviert `@media print`-Regeln, die ausschließlich den Report-Dialog rendern (Body-Klasse `printing-compliance`).
+- **Responsive**: Bereichstabelle als Karten unterhalb `sm`, Filterleiste bricht sauber um, Dialog auf Tablet auf `min(96vw, 56rem)` verbreitert; alle Farben ausschließlich über Design-Tokens (`destructive`, `warning`, `success`, `muted`, `accent`).
+- **Modul-Split**: neue Präsentationskomponenten unter `src/components/compliance/` (`ComplianceSummary`, `ComplianceAreaTable`, `ComplianceFilters`, `ComplianceFindingList`, `ComplianceDiff`, `ComplianceHistory`, `types`) — reine UI, keine Fachlogik.
+
 ## 1.41.4 - 2026-07-25
 
 - **Auth-Config Runtime-Fallback**: Neuer öffentlicher Endpoint `GET /api/public/auth-config` liefert `SUPABASE_URL` und `SUPABASE_PUBLISHABLE_KEY` aus der Server-Runtime. Der Browser-Client bootstrappt darüber, wenn der Publish-Build ohne `VITE_SUPABASE_*` gebaut wurde — behebt die Meldung „Die Anmeldung ist noch nicht konfiguriert" endgültig, unabhängig vom Vite-Inlining.

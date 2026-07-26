@@ -22,16 +22,16 @@
       "id": "sync",
       "path": "/api/sync",
       "methods": "POST",
-      "authRequired": false,
-      "permission": "sync.trigger",
+      "authRequired": true,
+      "permission": "azure.export",
       "scope": "",
       "requestSchema": "yes",
       "responseSchema": "yes",
       "status": "active",
-      "cases": 16,
+      "cases": 17,
       "failures": 0,
       "knownRisks": [
-        "Auth-Gate greift erst in PROD (`SYNC_TRIGGER_TOKEN`); DEV-Modus ist ungeschützt.",
+        "Positive Sync-Ausführung benötigt eine echte angemeldete Session mit `azure.export` oder `azure.import`.",
         "Kein Rate-Limit — parallele Requests laufen alle durch."
       ]
     },

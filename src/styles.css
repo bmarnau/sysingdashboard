@@ -165,3 +165,21 @@
 .print-only {
   display: none;
 }
+
+/* Compliance-Dashboard Druckansicht: nur den Report-Dialog zeigen. */
+@media print {
+  body.printing-compliance > *:not(:has([data-compliance-print-content])) {
+    display: none !important;
+  }
+  body.printing-compliance [data-compliance-print-content] {
+    position: static !important;
+    max-height: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+    inset: auto !important;
+  }
+}
