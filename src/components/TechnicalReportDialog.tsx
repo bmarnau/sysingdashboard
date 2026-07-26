@@ -21,11 +21,7 @@ import { ComplianceSummary } from "./compliance/ComplianceSummary";
 import { ComplianceAreaTable } from "./compliance/ComplianceAreaTable";
 import { ComplianceDiff } from "./compliance/ComplianceDiff";
 import { ComplianceHistory } from "./compliance/ComplianceHistory";
-import {
-  ComplianceFilters,
-  EMPTY_FILTER,
-  type FilterState,
-} from "./compliance/ComplianceFilters";
+import { ComplianceFilters, EMPTY_FILTER, type FilterState } from "./compliance/ComplianceFilters";
 import { ComplianceFindingList } from "./compliance/ComplianceFindingList";
 import { parseReport, type Finding } from "./compliance/types";
 
@@ -51,8 +47,7 @@ export function TechnicalReportDialog({ open, onOpenChange }: Props) {
     });
 
   const options = useMemo(() => {
-    if (!report)
-      return { areas: [], categories: [], statuses: [], buckets: [], efforts: [] };
+    if (!report) return { areas: [], categories: [], statuses: [], buckets: [], efforts: [] };
     const uniq = (xs: string[]) => Array.from(new Set(xs.filter(Boolean))).sort();
     return {
       areas: uniq(report.findings.map((f) => f.area)),
@@ -151,9 +146,7 @@ export function TechnicalReportDialog({ open, onOpenChange }: Props) {
                   <TabsTrigger value="manual">
                     Organisatorisch ({buckets.manual.length})
                   </TabsTrigger>
-                  <TabsTrigger value="accepted">
-                    Akzeptiert ({buckets.accepted.length})
-                  </TabsTrigger>
+                  <TabsTrigger value="accepted">Akzeptiert ({buckets.accepted.length})</TabsTrigger>
                 </TabsList>
                 <TabsContent value={tab} className="mt-3" />
               </Tabs>

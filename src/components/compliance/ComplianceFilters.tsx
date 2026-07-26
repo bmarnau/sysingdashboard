@@ -52,7 +52,10 @@ export function ComplianceFilters({ value, onChange, options }: Props) {
   return (
     <div className="no-print flex flex-wrap items-center gap-2 rounded-md border border-border bg-secondary/20 p-2 text-xs">
       <label className="relative flex min-w-0 flex-1 items-center">
-        <Search className="pointer-events-none absolute left-2 size-3.5 text-muted-foreground" aria-hidden />
+        <Search
+          className="pointer-events-none absolute left-2 size-3.5 text-muted-foreground"
+          aria-hidden
+        />
         <input
           type="search"
           aria-label="Findings durchsuchen"
@@ -86,7 +89,10 @@ export function ComplianceFilters({ value, onChange, options }: Props) {
         label="Kategorie"
         value={value.category}
         onChange={(v) => set("category", v)}
-        options={[{ v: "ALL", l: "Alle Kategorien" }, ...options.categories.map((a) => ({ v: a, l: a }))]}
+        options={[
+          { v: "ALL", l: "Alle Kategorien" },
+          ...options.categories.map((a) => ({ v: a, l: a })),
+        ]}
       />
       <FilterSelect
         label="Status"
@@ -104,7 +110,10 @@ export function ComplianceFilters({ value, onChange, options }: Props) {
         label="Aufwand"
         value={value.effort}
         onChange={(v) => set("effort", v)}
-        options={[{ v: "ALL", l: "Alle Aufwände" }, ...options.efforts.map((a) => ({ v: a, l: a }))]}
+        options={[
+          { v: "ALL", l: "Alle Aufwände" },
+          ...options.efforts.map((a) => ({ v: a, l: a })),
+        ]}
       />
 
       {isFiltered && (

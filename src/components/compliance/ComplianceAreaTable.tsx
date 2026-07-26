@@ -3,7 +3,8 @@ import { STATUS_LABEL, type Report } from "./types";
 
 function statusIcon(status: string) {
   if (status === "passed") return <CheckCircle2 className="size-4 text-success" />;
-  if (status === "failed" || status === "blocked") return <XCircle className="size-4 text-destructive" />;
+  if (status === "failed" || status === "blocked")
+    return <XCircle className="size-4 text-destructive" />;
   if (status === "not-run") return <ShieldAlert className="size-4 text-muted-foreground" />;
   return <AlertTriangle className="size-4 text-warning" />;
 }
@@ -34,8 +35,13 @@ export function ComplianceAreaTable({ areas }: Props) {
               </span>
             </div>
             <div className="mt-1 flex gap-4 text-xs text-muted-foreground">
-              <span>CRIT offen: <strong className="text-foreground tabular-nums">{row.openCritical}</strong></span>
-              <span>HIGH offen: <strong className="text-foreground tabular-nums">{row.openHigh}</strong></span>
+              <span>
+                CRIT offen:{" "}
+                <strong className="text-foreground tabular-nums">{row.openCritical}</strong>
+              </span>
+              <span>
+                HIGH offen: <strong className="text-foreground tabular-nums">{row.openHigh}</strong>
+              </span>
             </div>
           </li>
         ))}

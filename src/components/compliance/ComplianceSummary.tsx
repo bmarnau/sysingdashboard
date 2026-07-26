@@ -11,7 +11,8 @@ import {
 
 function statusIcon(status: string) {
   if (status === "passed") return <CheckCircle2 className="size-4 text-success" />;
-  if (status === "failed" || status === "blocked") return <XCircle className="size-4 text-destructive" />;
+  if (status === "failed" || status === "blocked")
+    return <XCircle className="size-4 text-destructive" />;
   if (status === "not-run") return <ShieldAlert className="size-4 text-muted-foreground" />;
   return <AlertTriangle className="size-4 text-warning" />;
 }
@@ -103,7 +104,9 @@ export function ComplianceSummary({ report }: Props) {
               className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary/40 px-2 py-1 text-xs"
               title={`${STATUS_LABEL[val.status] ?? val.status} · ${val.count} Findings`}
             >
-              <span className={`inline-flex ${statusToneClass(val.status)}`}>{statusIcon(val.status)}</span>
+              <span className={`inline-flex ${statusToneClass(val.status)}`}>
+                {statusIcon(val.status)}
+              </span>
               <span className="font-medium">{key}</span>
               <span className="text-muted-foreground">{val.count}</span>
             </span>

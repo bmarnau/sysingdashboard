@@ -39,11 +39,7 @@ export function ComplianceHistory({ current }: Props) {
           const delta = r.now - r.then;
           const Icon = delta === 0 ? ArrowRight : delta > 0 ? ArrowUpRight : ArrowDownRight;
           const tone =
-            delta === 0
-              ? "text-muted-foreground"
-              : delta > 0
-                ? "text-destructive"
-                : "text-success";
+            delta === 0 ? "text-muted-foreground" : delta > 0 ? "text-destructive" : "text-success";
           return (
             <div key={r.label} className="rounded border border-border bg-secondary/20 p-2">
               <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -56,9 +52,7 @@ export function ComplianceHistory({ current }: Props) {
                   {delta > 0 ? `+${delta}` : delta}
                 </span>
               </div>
-              <div className="text-[11px] text-muted-foreground tabular-nums">
-                vorher: {r.then}
-              </div>
+              <div className="text-[11px] text-muted-foreground tabular-nums">vorher: {r.then}</div>
             </div>
           );
         })}
