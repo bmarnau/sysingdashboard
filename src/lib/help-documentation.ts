@@ -1921,13 +1921,21 @@ Erster Lauf schreibt \`test-report/ops-baseline.json\`. Folgeläufe warnen bei D
     title: "Technischer Prüfbericht",
     category: "Qualität",
     keywords: ["Prüfbericht", "Findings", "Freigabe", "Aggregator", "Diff", "Maßnahmen"],
-    lastUpdated: "2026-07-15",
+    lastUpdated: "2026-07-26",
     content: `## Zweck
 Der zentrale technische Prüfbericht (Prompt 2A.8, ADR-0017) fasst alle Bereichsberichte (Security, API, Backup/Restore, Tech-Debt, Ops, Docs) zu einem konsolidierten Bericht pro Buildstand zusammen. Reine Aggregation — keine neuen Tests.
 
 ## Aufruf
 - \`bun run report:technical\` — schreibt \`test-report/technical-test-report.{json,md}\`.
-- Servicemenü → „Technischer Prüfbericht…" (UI-Ansicht mit Filtern).
+- Servicemenü → „Technischer Prüfbericht…" öffnet das Compliance-Dashboard.
+
+## Compliance-Dashboard (Sprint A1)
+- **Management-Summary** — Statusband mit Empfehlung, vier Severity-Kacheln (CRITICAL/HIGH/MEDIUM/LOW), Quellen-Chips.
+- **Tabs** — trennt Findings in *Alle*, *Technisch* (Scanner, \`source=auto\`), *Organisatorisch* (\`source=manual\`) und *Akzeptiert*.
+- **Filter** — Volltextsuche über Titel/ID/Beschreibung/Komponenten plus Auswahllisten für Schweregrad, Bereich, Kategorie, Status, Bucket, Aufwand. „Zurücksetzen" leert alle Filter.
+- **Drill-Down** — jede Finding-Zeile ist aufklappbar und zeigt vollständige Beschreibung, Handlungsempfehlung, Komponenten, Evidence (mit Kopieren-Button) und Metadaten-Grid.
+- **Historie** — Delta zwischen aktuellem und vorherigem Buildstand (aus \`technical-test-report.prev.json\`) pro Schweregrad.
+- **Druckansicht** — Button „Drucken / PDF" öffnet die Systemdruckvorschau; nur der Report wird gedruckt.
 
 ## Schweregrade
 - **CRITICAL** — blockiert Freigabe.
