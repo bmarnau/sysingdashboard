@@ -1,7 +1,10 @@
 {
   "new": [],
-  "resolved": [],
-  "persistent": 58,
-  "previousVersion": "1.28.0",
-  "currentVersion": "1.29.0"
+  "resolved": [
+    "td-correlation-err-shape-34111d3b",
+    "td-correlation-missing-34111d3b"
+  ],
+  "persistent": 63,
+  "previousVersion": "1.42.0",
+  "currentVersion": "1.42.1"
 }

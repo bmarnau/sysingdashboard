@@ -14,16 +14,29 @@ import { loadAuthConfig } from "@/integrations/supabase/runtime-config";
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async ({ location }) => {
+    // Open-Redirect-Härtung: nur same-origin Pfad-Teile weiterreichen,
+    // niemals `location.href` (absolute URL) oder Protocol-relative
+    // Doppel-Slash-Werte wie `//evil.example`.
+    const safeInternalTarget = (() => {
+      const path = location.pathname ?? "/";
+      const search = location.search ?? "";
+      const combined = `${path}${search}`;
+      if (!combined.startsWith("/") || combined.startsWith("//") || combined.startsWith("/\\")) {
+        return "/dashboard";
+      }
+      return combined;
+    })();
+
     // Runtime-Fallback für Auth-Config sicherstellen (siehe runtime-config.ts).
     await loadAuthConfig();
     const result = trySupabase();
     if (!result.ok) {
-      throw redirect({ to: "/auth", search: { redirect: location.href } });
+      throw redirect({ to: "/auth", search: { redirect: safeInternalTarget } });
     }
     try {
       const { data, error } = await result.client.auth.getUser();
       if (error || !data.user) {
-        throw redirect({ to: "/auth", search: { redirect: location.href } });
+        throw redirect({ to: "/auth", search: { redirect: safeInternalTarget } });
       }
       // Statusprüfung: nur `active` darf ins Dashboard.
       const { data: active } = await result.client.rpc("is_account_active", {
@@ -37,7 +50,7 @@ export const Route = createFileRoute("/_authenticated")({
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (e && typeof e === "object" && (e as any).isRedirect) throw e;
-      throw redirect({ to: "/auth", search: { redirect: location.href } });
+      throw redirect({ to: "/auth", search: { redirect: safeInternalTarget } });
     }
   },
   component: () => <Outlet />,

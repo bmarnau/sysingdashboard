@@ -79,8 +79,12 @@ export function detectCyclicDeps(ROOT) {
   const now = new Date().toISOString();
   for (const cyc of cycles) {
     const norm = cyc.map((f) => rel(ROOT, f));
+    // Self-Loops (a→a) sind Re-Exports einer Datei — kein Zyklus im Sinne
+    // der Initialisierungsreihenfolge. Filtern, um Rauschen zu vermeiden.
+    const uniqueNodes = new Set(norm);
+    if (uniqueNodes.size < 2) continue;
     // Zyklen-Fingerprint: sortierte Node-Menge (identifiziert dieselbe SCC).
-    const key = [...new Set(norm)].sort().join(">");
+    const key = [...uniqueNodes].sort().join(">");
     if (seen.has(key)) continue;
     seen.add(key);
     findings.push({

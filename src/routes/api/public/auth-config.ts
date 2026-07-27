@@ -16,54 +16,63 @@
  */
 
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  withCorrelation,
+  getCurrentCorrelationId,
+  jsonErrorWithCorrelation,
+} from "../../../lib/correlation-context.server";
 
-function json(body: unknown, init?: ResponseInit): Response {
-  return new Response(JSON.stringify(body), {
-    ...init,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
-      ...(init?.headers ?? {}),
+export const endpointMeta = {
+  public: true,
+  reason:
+    "Auth-Config-Bootstrap — liefert nur SUPABASE_URL und den öffentlichen Publishable-Key, damit der Browser-Client sich initialisieren kann, wenn der Publish-Build ohne VITE_SUPABASE_* gebaut wurde.",
+  classification: "public",
+} as const;
+
+function jsonOk(body: Record<string, unknown>): Response {
+  const correlationId = getCurrentCorrelationId() ?? "unknown";
+  return new Response(
+    JSON.stringify({ ...body, correlationId, timestamp: new Date().toISOString() }),
+    {
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-Correlation-Id": correlationId,
+      },
     },
-  });
+  );
 }
 
 export const Route = createFileRoute("/api/public/auth-config")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: withCorrelation(async () => {
         const url = process.env.SUPABASE_URL;
         const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
 
         if (!url || !publishableKey) {
-          return json(
-            { status: "missing", provider: "supabase" },
-            { status: 503 },
-          );
+          return jsonErrorWithCorrelation(503, "not_configured", "Supabase-Konfiguration fehlt.");
         }
         if (publishableKey.startsWith("sb_secret_")) {
           // Defense-in-Depth: niemals einen Service-Role-Key ausliefern.
-          return json(
-            { status: "invalid", provider: "supabase" },
-            { status: 500 },
-          );
+          return jsonErrorWithCorrelation(500, "invalid_key", "Ungültiger Publishable-Key.");
         }
         try {
           const parsed = new URL(url);
           if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-            return json({ status: "invalid", provider: "supabase" }, { status: 500 });
+            return jsonErrorWithCorrelation(500, "invalid_url", "Ungültige Supabase-URL.");
           }
         } catch {
-          return json({ status: "invalid", provider: "supabase" }, { status: 500 });
+          return jsonErrorWithCorrelation(500, "invalid_url", "Ungültige Supabase-URL.");
         }
 
-        return json({
+        return jsonOk({
           status: "configured",
           provider: "supabase",
           url,
           publishableKey,
         });
-      },
+      }),
     },
   },
 });

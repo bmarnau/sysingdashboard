@@ -1,125 +1,84 @@
-# Sprint A1 – Compliance Dashboard fertigstellen
+# Sprint 03A – Auth- und Security-Regression
 
-## Analyse (Ist-Zustand)
+Keine neuen Fachfunktionen. Reihenfolge: reproduzieren → analysieren → minimal fixen → Tests → Report.
 
-- **Komponente**: `src/components/TechnicalReportDialog.tsx` (~330 Zeilen, monolithisch). Öffnen aus `src/routes/_authenticated/dashboard.tsx` (Servicemenü „Technischer Prüfbericht…").
-- **Datenquelle**: `test-report/technical-test-report.json` via `?raw`-Import (Build-Snapshot, ADR-0017). Vergleichsdatei `technical-test-report.prev.json` vorhanden.
-- **Statusmodell**: Findings mit `severity`, `category`, `area`, `source (auto|manual)`, `bucket`, `effort`, `accepted`, `status`, `evidence`, `description`, `recommendation`. Report enthält `summary`, `areas`, `diff`, `recommendation`, `identity`.
-- **Aktuelle Defizite**:
-  - Management-Summary nur als Zeile mit vier Zählern, keine visuelle Gewichtung.
-  - Keine Trennung technisch vs. organisatorisch (source auto vs. manual).
-  - Nur Severity- und Area-Filter; kein Status-/Kategorie-/Quelle-Filter, keine Suche.
-  - Findings als Flat-List, kein Drill-Down (Evidence/Empfehlung nur inline gekürzt).
-  - Keine Druckansicht, kein History-Zugriff auf `prev.json`, kein Responsive-Layout unterhalb `sm:` (Tabellen scrollen horizontal, Filter brechen um).
-  - Statuslabels/Farben teils Tailwind-Rohfarben statt Design-Tokens.
+## 1. Auth-Regression: reproduzieren & bewerten
 
-## Umsetzung
+**Erste Beobachtung aus den Quellen:**
+- `src/routes/index.tsx` (Landing, 129 Zeilen) ruft `getSession()`. Bei vorhandener Session `navigate({ to: "/dashboard", replace: true })`. Das ist erwartetes Verhalten für einen **eingeloggten** Benutzer.
+- `_authenticated/route.tsx` erzwingt Session per `getUser()` und `is_account_active` RPC. Ohne Session → Redirect nach `/auth`. Anonymer Zugriff ist damit blockiert.
+- These: Die "verschwundene Anmeldung" ist keine Umgehung, sondern eine **persistierte Session** aus früheren Anmeldungen (`persistSession: true, storage: localStorage` in `client.ts`).
 
-Reine UI-Arbeit in `src/components/TechnicalReportDialog.tsx` + neue Präsentationsmodule unter `src/components/compliance/`. Keine Änderungen an Aggregator (`scripts/technical-report/build.mjs`), keinem Datenmodell, keinem Backend, keinen Tests der Fachlogik.
+**Vorgehen zur Verifikation** (Playwright im Sandbox):
+1. Preview + Published öffnen mit sauberem Storage → muss auf Landing verharren und Anmelde-CTA zeigen.
+2. Direktaufruf `/_authenticated/dashboard` ohne Session → muss auf `/auth` redirecten.
+3. Direktaufruf `/dashboard` mit vorhandener Session → Dashboard nur mit `is_account_active=true`.
+4. Netzwerk-Trace: prüfen, ob PostgREST-Requests wirklich `Authorization: Bearer <jwt>` tragen (RLS-wirksame Identität).
+5. Logout: `signOut()` + Cache-Teardown → Zurück auf `/auth`, Reload bleibt anonym.
 
-### 1. Modul-Aufteilung (Wiederverwendbarkeit)
+**Behebung nur wenn Verifikation Umgehung zeigt.** Andernfalls im Report als "kein Sicherheitsproblem – persistierte Session, wie spezifiziert" schließen und im Handbuch als erwartetes Verhalten dokumentieren. Zusätzlich `search`-Redirect in `_authenticated/route.tsx` von `location.href` auf `location.pathname + location.search` einschränken (Open-Redirect-Härtung), damit externe URLs nicht als Redirect-Ziel eingeschleust werden können.
 
-Aufteilen von `TechnicalReportDialog.tsx` in:
-- `compliance/ComplianceSummary.tsx` — Management-Kacheln (Gesamtstatus, Empfehlung, Severity-Kacheln mit Icon+Zahl+Label, Quellen-Status-Grid).
-- `compliance/ComplianceFilters.tsx` — Filterleiste (Severity, Kategorie, Bereich, Status, Quelle, Volltextsuche).
-- `compliance/ComplianceFindingList.tsx` — Liste mit Drill-Down (Accordion-Item pro Finding).
-- `compliance/ComplianceFindingDetail.tsx` — aufgeklappte Detailansicht (Beschreibung, Empfehlung strukturiert, Evidence-Block, Komponenten-Chips, Akzeptanz-Info).
-- `compliance/ComplianceAreaTable.tsx` — Bereichstabelle, responsiv (Karten <sm, Tabelle ≥sm).
-- `compliance/ComplianceDiff.tsx` — Diff-Sektion inkl. Auflistung neu/verschlechtert/behoben (bisher nur Zähler).
-- `compliance/ComplianceHistory.tsx` — Vergleich zum vorherigen Report aus `technical-test-report.prev.json?raw`; zeigt Vorgängerversion, Delta pro Severity, Trendpfeile.
-- `compliance/ComplianceEmpty.tsx` — Fallback wenn Report fehlt.
-- `compliance/types.ts` — `Report`/`Finding`-Typen (aus bestehendem Dialog extrahiert), keine Laufzeitlogik außer `parseReport` und Label-Maps.
+## 2. High-Findings validieren
 
-`TechnicalReportDialog.tsx` bleibt Container: State (Filter, aktives Tab, aufgeklappte Finding-IDs), Komposition der Bausteine, Dialog-Chrome.
+| ID | Datei | Bewertung nach Codelese | Aktion |
+|---|---|---|---|
+| SEC-HIGH-LOG-001 | `src/lib/logger.ts`, `backend/services/logger.mjs` | **Echt.** Redaction prüft nur `JWT_RE` auf Werten; `AccountKey=`/`SharedAccessSignature=`/`Server=…Password=` bleiben unmaskiert. | Fix + Tests |
+| td-endpoint-auth-…cdae73c5 | `src/routes/api/status.ts` | **Fehlalarm.** Datei deklariert `endpointMeta.public = true` mit Begründung; Scanner (`scripts/api-discovery/analyzers.mjs`) wertet dieses Marker-Feld nicht aus. | Scanner erweitern, Finding schließen |
+| td-cycle-1fa843a1 | `src/__tests__/mocks/server.ts` | **Fehlalarm.** Self-Loop (Modul → sich selbst) in 16-Zeilen-Testdatei; Detektor zählt Re-Export als Kante. | Detektor: Self-Loop ignorieren |
+| td-cycle-dc9fbe11 | `src/lib/logger.ts ↔ src/lib/logger.indexeddb.ts` | **Echt, klein & risikoarm.** | Sofort auflösen: `LogEntry`-Type nach `src/lib/logger.types.ts` extrahieren |
+| td-oversize-99cca8a6 | `src/routes/index.tsx` (Report sagt 3256, tatsächlich 129) | **Stale Report.** Datei wurde in Sprint 1.40.x geschrumpft. | Reports neu bauen; Finding fällt weg |
+| td-oversize-26e43c0a | `src/components/ExportDialog.tsx` (807 Z.) | **Echt, kein Auth/Security-Bezug.** | Tech-Debt für späteren Sprint, Refactor-Plan skizzieren |
+| td-oversize-ebfd4b54 | `src/components/UserManagementDialog.tsx` (562 Z.) | **Echt, RBAC-nahe – aber Logik in `users-supabase-service.ts` gekapselt.** | Tech-Debt, Refactor-Plan skizzieren |
 
-### 2. Management Summary
+## 3. Minimale Fixes
 
-- Grid `grid-cols-2 md:grid-cols-4` mit vier Severity-Kacheln (CRITICAL/HIGH/MEDIUM/LOW) — Icon, Anzahl offen, Gesamtsumme klein daneben, konsistente semantische Tokens (`--destructive`, `--warning` falls vorhanden, sonst `bg-destructive/10` etc., keine neuen Tokens erfunden).
-- Statusband (Gesamtstatus + Empfehlung) als eigene Karte darüber mit Icon-Stripe.
-- Quellen-Status als kompakte Chip-Reihe (`security`, `api`, `backup`, `techdebt`, `ops`, `docs`, `manual`) mit farbiger Statuskugel.
+### 3.1 Logger-Redaction (SEC-HIGH-LOG-001)
+- `src/lib/logger.ts`: Regex-Set erweitern (`SECRET_VALUE_RE`) für:
+  `AccountKey=…`, `SharedAccessSignature=…`, `Password=…`, `Server=…;.*Password=…`, `AccountName=…;AccountKey=…`, `postgres://…:…@`, `Bearer <opaque/JWT>`, `sb_secret_…`, `sb_publishable_…` (nur in Werten, nicht als Feldname).
+- `SECRET_KEY_RE` um `connectionString`, `conn`, `dsn`, `sasUrl`, `sasToken` ergänzen.
+- `backend/services/logger.mjs`: gleiche Regeln, gemeinsame Definition via reinem Datenmodul `backend/services/redact-rules.mjs` (kein ESM-CJS-Bruch).
+- Tests: `src/__tests__/lib/logger.test.ts` erweitern (positiv: Werte werden `[REDACTED]`; negativ: harmlose Strings wie `"Server=lokaler Testserver"` ohne Credential-Muster bleiben unverändert; Nested Objects/Arrays; Fehler-Messages externer Provider).
+- Snapshot-Guard: `src/__tests__/security/logging.test.ts` — kein Rohwert im Ringpuffer.
 
-### 3. Trennung technisch vs. organisatorisch
+### 3.2 Endpoint-Auth-Scanner (Fehlalarm)
+- `scripts/api-discovery/analyzers.mjs`: Wenn Modul `endpointMeta.public === true` exportiert, als "public, dokumentiert" führen und aus Auth-Guard-Prüfung ausklammern.
+- Test: `src/__tests__/api-discovery/discovery.test.ts` — Fixture mit `endpointMeta.public = true` erzeugt **kein** Finding; Fixture ohne Marker erzeugt weiterhin Finding.
 
-Tabs innerhalb der Findings-Sektion:
-- **Alle**
-- **Technisch** — `source === "auto"` (Scanner-Befunde).
-- **Organisatorisch** — `source === "manual"` (aus `manual-findings.json`).
-- **Akzeptiert** — `accepted === true` (bisher visuell versteckt).
+### 3.3 Zyklen
+- `src/lib/logger.types.ts` (neu): `LogEntry`, `LogLevel`.
+- `src/lib/logger.ts` und `src/lib/logger.indexeddb.ts` importieren daraus; kein Rückimport mehr.
+- `scripts/tech-debt/detectors/cyclic-deps.mjs`: Self-Loops (a→a) verwerfen, weil Re-Exports einer Datei kein Zyklus im Sinne der Initialisierungsreihenfolge sind. Test ergänzen.
 
-Tab-Count-Badges nutzen bereits vorhandene Zähler bzw. clientseitige Ableitung — keine neuen Daten.
+### 3.4 Open-Redirect-Härtung
+- `src/routes/_authenticated/route.tsx`: `redirect`-Suchparameter auf `location.pathname + location.search` beschränken; Whitelist per `startsWith("/")` und `!startsWith("//")`.
+- `src/routes/auth.tsx`: gleiche Validierung beim Rücksprung nach Login.
 
-### 4. Filter
+### 3.5 Report-Refresh
+- `bun run test-report:build` (bzw. gleichwertiges Script) neu ausführen, damit stale Oversize-Angabe für `src/routes/index.tsx` verschwindet.
 
-Filterleiste sticky oberhalb der Liste. Zusätzlich zu Severity/Bereich:
-- **Kategorie** (`f.category`, dedupliziert)
-- **Status** (`f.status`)
-- **Bucket/Effort** (`f.bucket`, `f.effort`)
-- **Volltextsuche** über `title`, `id`, `description`, `components`
-- „Zurücksetzen"-Button
-Filter-State lokal (`useState`), nicht persistent — konsistent mit ADR-0017 („kein localStorage als Primärquelle").
+## 4. Tech-Debt dokumentieren (nicht beheben)
 
-### 5. Drill-Down
+`docs/adr/ADR-0019-oversize-modules.md` (neu): Aufteilungsplan für `ExportDialog.tsx` (Export-Wizard-Steps + `useExportForm`-Hook + `export-formats.ts` Services) und `UserManagementDialog.tsx` (User-Table, Role-Editor-Panel, Invite-Form). Ziel-Sprint benennen.
 
-Bestehende `<li>`-Karte → aufklappbarer Row (`data-state`-Toggle, keine neue Dependency). Detail-View zeigt:
-- vollständige Beschreibung/Empfehlung (nicht mehr auf 1 Zeile begrenzt)
-- Evidence mit `file`, `reportRef`, direkter Link/Copy-Button (nur clipboard, kein Fetch)
-- Komponenten als Badge-Reihe
-- Metadaten-Grid (Bucket, Effort, Source, Status, Accepted-Grund)
-- Handlungsempfehlung strukturiert: „Empfehlung / Aufwand / Verantwortlichkeit (aus category)".
+## 5. Tests
 
-### 6. Historie
+- `bun run test` (Vitest, u.a. api/, security/, lib/logger, api-discovery).
+- `bun run docs:check`.
+- `bun run build`.
+- `bunx tsc --noEmit`.
+- Playwright (Sandbox, headless) Szenarien aus Abschnitt 1 gegen `http://localhost:8080`.
 
-`ComplianceHistory.tsx` liest `technical-test-report.prev.json?raw` (defensiv – falls fehlt: Sektion versteckt). Zeigt Version-vs-Version und Severity-Delta. Kein zusätzlicher Store, keine Persistenz.
+## 6. Dokumentation
 
-### 7. Druckansicht
+- `CHANGELOG.md`: neuer Eintrag `v1.42.1` mit Bulletliste.
+- `src/lib/help-documentation.ts`: Kapitel "Authentifizierung" (persistierte Session dokumentieren) und "Logging" (Redaction-Regeln) aktualisieren, `lastUpdated` setzen.
+- `docs/SECURITY.md` (falls vorhanden, sonst kurzer Abschnitt in `README.md`): Auth-Verhalten, Public-Endpoint-Konvention (`endpointMeta.public`), Redaction-Regeln.
 
-- Dialog erhält Button „Drucken" → öffnet `window.print()` auf einer print-optimierten Ansicht.
-- `@media print`-Regeln in `src/styles.css` (nur ergänzend, tokengebunden): Dialog-Chrome ausblenden, Karten stapeln, Farben in Graustufen mit erhaltenen Severity-Icons, Seitenumbrüche zwischen Sektionen. Kein separater Report-Renderer.
+## 7. Abschlussbericht (im Report + Chat)
+Ursache Auth-"Regression", geänderte Dateien, Ergebnis je High-Finding, geschlossene vs. offene Tech-Debt, Testergebnisse, **Go/No-Go für Sprint 04**.
 
-### 8. Responsive
-
-- Dialog-Container: `max-w-4xl` bleibt Desktop, für Tablet `w-[min(96vw,56rem)]`.
-- Areas-Tabelle: <sm als Karten-Liste (`grid gap-2`), ≥sm klassische Tabelle. Nutzt Muster aus `responsive-layout-patterns` (grid + `min-w-0` + `shrink-0`, `truncate` für Titel).
-- Filterleiste: `flex flex-wrap gap-2` mit `min-w-0`; Selects `w-full sm:w-auto`.
-- Findings-Karte: Kopfzeile `grid-cols-[minmax(0,1fr)_auto]` auf Mobile.
-
-### 9. Design-Tokens
-
-Alle Farben auf semantische Tokens umstellen (`text-destructive`, `bg-destructive/10`, `text-muted-foreground`, `bg-secondary/40`, `bg-accent` …). Bestehende Rohfarben (`text-red-600`, `bg-amber-500/15` …) entfernen — Grund: `design-craft`-Regel.
-
-## Architektur
-
-- UI-only. Keine neuen Datenquellen, keine Fetches, keine Fachlogik, kein Store, keine DB-Zugriffe. Datenparsing bleibt reines JSON-Deserialisieren mit Fallback.
-- Keine neuen Runtime-Dependencies.
-- Keine Änderungen am Servicemenü, am Auth-Flow oder an Reports.
-
-## Qualität
-
-Nach Umsetzung ausführen:
-```
-bun run lint
-bun run typecheck        # tsgo
-bun run build            # strikter Modus
-bun run test             # vitest (inkl. bestehende Suites)
-bun run docs:check
-```
-Keine bestehenden Tests werden angepasst — Präsentation-Refactor darf keine Regression erzeugen.
-
-## Dokumentation
-
-- `CHANGELOG.md`: neuer Eintrag `## 1.42.0 - <Datum>` mit UI-Refactor Compliance-Dashboard (Summary, Filter, Drill-Down, Historie, Druck, Responsive).
-- `src/lib/help-documentation.ts`: HelpTopic „Technischer Prüfbericht" aktualisieren (`lastUpdated`, neue Sektionen Filter/Drill-Down/Druck/Historie).
-- `README.md`: kurzer Abschnitt zum Compliance-Dashboard (nur wenn bereits Report-Kapitel existiert; sonst 3-Zeilen-Absatz unter Features).
-- `test-report/technical-test-report.md` bzw. `.json` **nicht** manuell ändern — wird beim nächsten Aggregator-Lauf regeneriert.
-
-## Kritischer Hinweis (custom-instruction)
-
-Alternative, die ich verworfen habe: eigene Route `/_authenticated/compliance` statt Dialog. Vorteil wäre Deep-Link/Print-URL, Nachteil ist die Doppelung zur Servicemenü-Einstiegskonvention aller anderen Prüf-Dialoge (Backup, Logs, SystemStatus). Empfehlung: **beim Dialog bleiben**, dafür Druckansicht sauber via `@media print` — falls du Deep-Link willst, sag Bescheid, dann promote ich zur Route (kleiner Zusatzschritt, keine Fachlogik-Änderung).
-
-## Abnahmekriterien-Mapping
-
-- Managementübersicht → Abschnitt 2 (Summary-Karten + Statusband + Quellen-Chips).
-- Keine offenen UI-Baustellen → Abschnitte 3–8 (Tabs, Filter, Drill-Down, Historie, Druck).
-- Responsive → Abschnitt 8, verifiziert Desktop + Tablet-Breakpoints.
-- Keine Duplikate → Modul-Split (Abschnitt 1), Wiederverwendung bestehender Label-Maps.
-- Keine Regression → Qualitäts-Pipeline (Build/Typecheck/Lint/Tests) grün, keine Änderungen außerhalb UI/Doku.
+## Technische Details
+- Keine RLS-Policies berühren; keine Schema-Migration in diesem Sprint.
+- Keine neuen Server-Fns; keine Änderungen an `client.server.ts` oder `auth-middleware.ts`.
+- Änderungen sind additiv (Regex-Set, neuer Types-Splitfile, Scanner-Whitelist) → geringes Regressionsrisiko.
+- Ergebnisartefakte: `test-report/technical-test-report.json` neu; alter Report als `prev` erhalten für Diff-Panel im Compliance-Dashboard.

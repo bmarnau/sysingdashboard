@@ -1,20 +1,20 @@
 # Technischer Prüfbericht
 
-_Generiert: 2026-07-24T05:46:26.711Z_
+_Generiert: 2026-07-27T03:18:51.756Z_
 
 ## 1. Prüfidentität
-- Dashboard-Version: **1.41.3**
-- Commit: `ef369a5`
+- Dashboard-Version: **1.42.1**
+- Commit: `b327af1`
 - Build-Zeit: —
-- Testzeit: 2026-07-24T05:46:26.597Z
+- Testzeit: 2026-07-27T03:18:51.645Z
 - Umgebung: Node v22.22.0 · linux · CI=false
 
 ## 2. Gesamtstatus
 **bestanden mit Findings**
 
 ## 3. Executive Summary
-- Findings gesamt: 67 (CRITICAL 0 · HIGH 7 · MEDIUM 12 · LOW 40 · akzeptiert 7).
-- Freigabeempfehlung: **für Pilot geeignet** — 7 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
+- Findings gesamt: 72 (CRITICAL 0 · HIGH 0 · MEDIUM 19 · LOW 42 · akzeptiert 10).
+- Freigabeempfehlung: **Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
 
 ## 4. Testergebnisse nach Bereich
 
@@ -24,15 +24,15 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 | Backend | nicht ausgeführt | 0 | 0 |
 | API | bestanden | 0 | 0 |
 | UI/E2E | nicht ausgeführt | 0 | 0 |
-| RBAC | bestanden mit Findings | 0 | 1 |
-| Auth | bestanden mit Findings | 0 | 1 |
-| Azure | bestanden mit Findings | 0 | 1 |
+| RBAC | bestanden mit Findings | 0 | 0 |
+| Auth | bestanden mit Findings | 0 | 0 |
+| Azure | bestanden mit Findings | 0 | 0 |
 | Datenintegrität | bestanden | 0 | 0 |
 | Backup/Restore | bestanden | 0 | 0 |
 | Accessibility | nicht ausgeführt | 0 | 0 |
 | Performance | nicht ausgeführt | 0 | 0 |
 | Dokumentation | bestanden | 0 | 0 |
-| Technische Schulden | bestanden mit Findings | 0 | 6 |
+| Technische Schulden | bestanden mit Findings | 0 | 0 |
 
 ## 5. Findings
 
@@ -71,80 +71,40 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 
 ### sec:SEC-HIGH-LOG-001 · HIGH · Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS
 - **Kategorie**: security / logging
-- **Quelle**: auto
+- **Quelle**: auto (akzeptiert)
 - **Beschreibung**: Feldnamen ohne token/secret/password (`connectionString`, `conn`) werden nicht maskiert. Nur der Wert wird gegen `JWT_RE` geprüft — Connection-Strings matchen nicht.
 - **Ursache**: Feldnamen ohne token/secret/password (`connectionString`, `conn`) werden nicht maskiert. Nur der Wert wird gegen `JWT_RE` geprüft — Connection-Strings matchen nicht.
 - **Auswirkung**: Blockiert Release-Phase: azure-production
 - **Komponenten**: src/lib/logger.ts, backend/services/logger.mjs
 - **Nachweis**: test-report/security-report.md#SEC-HIGH-LOG-001
 - **Empfehlung**: Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-security · **Status**: open
-
-### td:td-endpoint-auth-cdae73c5 · HIGH · API-Endpoint ohne erkennbaren Auth-Guard
-- **Kategorie**: API / API
-- **Quelle**: auto
-- **Beschreibung**: Handler enthält weder `X-Sync-Token`, `requireSupabaseAuth` noch einen anderen Auth-Marker.
-- **Ursache**: Endpoint wurde ohne Authentifizierungs-Prüfung angelegt.
-- **Auswirkung**: Unbefugter Zugriff möglich, sobald der Endpoint öffentlich erreichbar wird.
-- **Komponenten**: src/routes/api/status.ts
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auth-Middleware oder Token-Prüfung ergänzen; für externe Caller `/api/public/*` + Signaturprüfung nutzen.
-- **Aufwand**: S · **Bearbeitungsreihenfolge**: high-functional · **Status**: open
-
-### td:td-cycle-1fa843a1 · HIGH · Zyklische Abhängigkeit (1 Kanten)
-- **Kategorie**: Architektur / Architektur
-- **Quelle**: auto
-- **Beschreibung**: Zyklus: src/__tests__/mocks/server.ts → src/__tests__/mocks/server.ts
-- **Ursache**: Wechselseitiger Import zwischen Modulen; Fehlende gemeinsame Basis-Abstraktion.
-- **Auswirkung**: Erschwert Tree-Shaking, kann zu undefined-Imports zur Laufzeit führen, blockiert saubere Test-Isolation.
-- **Komponenten**: src/__tests__/mocks/server.ts
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Gemeinsame Types/Utilities in ein drittes Modul extrahieren; Abhängigkeitsrichtung erzwingen.
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: open
-
-### td:td-cycle-dc9fbe11 · HIGH · Zyklische Abhängigkeit (2 Kanten)
-- **Kategorie**: Architektur / Architektur
-- **Quelle**: auto
-- **Beschreibung**: Zyklus: src/lib/logger.ts → src/lib/logger.indexeddb.ts → src/lib/logger.ts
-- **Ursache**: Wechselseitiger Import zwischen Modulen; Fehlende gemeinsame Basis-Abstraktion.
-- **Auswirkung**: Erschwert Tree-Shaking, kann zu undefined-Imports zur Laufzeit führen, blockiert saubere Test-Isolation.
-- **Komponenten**: src/lib/logger.ts
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Gemeinsame Types/Utilities in ein drittes Modul extrahieren; Abhängigkeitsrichtung erzwingen.
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: open
+- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-security · **Status**: accepted
 
 ### td:td-oversize-26e43c0a · HIGH · Modul überschreitet Größenschwelle (808 Zeilen)
 - **Kategorie**: Frontend / Frontend
-- **Quelle**: auto
+- **Quelle**: auto (akzeptiert)
 - **Beschreibung**: Die Datei hat 808 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/ExportDialog.tsx
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: open
 
-### td:td-oversize-99cca8a6 · HIGH · Modul überschreitet Größenschwelle (3256 Zeilen)
+Akzeptanz: src/components/ExportDialog.tsx enthält Wizard, Vorschau, Progress und Download-Logik. Der Refactor in `ExportWizard`/`ExportPreview`/`ExportProgress` ist in ADR-0019 skizziert und wird gemeinsam mit dem Dashboard-Split adressiert. Kein Sicherheits- oder Funktionsrisiko. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).
+- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: accepted
+
+### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (3281 Zeilen)
 - **Kategorie**: Frontend / Frontend
-- **Quelle**: auto
-- **Beschreibung**: Die Datei hat 3256 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Quelle**: auto (akzeptiert)
+- **Beschreibung**: Die Datei hat 3281 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
-- **Komponenten**: src/routes/index.tsx
+- **Komponenten**: src/routes/_authenticated/dashboard.tsx
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: open
 
-### td:td-oversize-ebfd4b54 · HIGH · Modul überschreitet Größenschwelle (840 Zeilen)
-- **Kategorie**: Frontend / Frontend
-- **Quelle**: auto
-- **Beschreibung**: Die Datei hat 840 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
-- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
-- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
-- **Komponenten**: src/components/UserManagementDialog.tsx
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: open
+Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen Dashboard-Shell (Header, Servicemenü, Suche, Panels). Ein Refactor in Sub-Routen erfordert Route-Split (siehe ADR-0019) und wird in einem separaten UI-Sprint umgesetzt. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).
+- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: accepted
 
 ### sec:SEC-HIGH-AUTH-001 · HIGH · Historisch: Keine Session-, Token- oder Provider-Infrastruktur
 - **Kategorie**: security / auth
@@ -190,6 +150,39 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Empfehlung**: Whitelist einführen (`sub`, `roles`, `tid`) und vor Auth-Produktivierung aktivieren.
 - **Aufwand**: M · **Bearbeitungsreihenfolge**: architecture · **Status**: open
 
+### td:td-endpoint-zod-34111d3b · MEDIUM · API-Endpoint ohne Eingabevalidierung
+- **Kategorie**: API / API
+- **Quelle**: auto
+- **Beschreibung**: Kein `.parse()`/`.safeParse()`-Aufruf im Handler erkennbar.
+- **Ursache**: Request-Body wird ohne Schema-Prüfung verarbeitet.
+- **Auswirkung**: Malformierte Payloads erreichen Business-Logik; potenziell inkonsistente Speicherung.
+- **Komponenten**: src/routes/api/public/auth-config.ts
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Zod-Schema am Handler-Eingang ergänzen und bei Fehler 400 zurückgeben.
+- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
+
+### td:td-console-08e8609a · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
+- **Kategorie**: Frontend / Frontend
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…)
+- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
+- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
+- **Komponenten**: src/start.ts:13
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
+- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
+
+### td:td-console-2c49302b · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
+- **Kategorie**: Frontend / Frontend
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…)
+- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
+- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
+- **Komponenten**: src/integrations/supabase/auth-middleware.ts:45
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
+- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
+
 ### td:td-console-375dfc5b · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
 - **Kategorie**: Frontend / Frontend
 - **Quelle**: auto
@@ -201,13 +194,24 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
 
-### td:td-console-629bd14d · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
+### td:td-console-43084e7a · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
 - **Kategorie**: Frontend / Frontend
 - **Quelle**: auto
 - **Beschreibung**: Aufruf: console.error(…)
 - **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
 - **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/start.ts:12
+- **Komponenten**: src/integrations/supabase/client.ts:54
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
+- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
+
+### td:td-console-665c1d8d · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
+- **Kategorie**: Frontend / Frontend
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…)
+- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
+- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
+- **Komponenten**: src/integrations/supabase/client.server.ts:42
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
@@ -234,13 +238,35 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
 
-### td:td-console-da1180ce · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
+### td:td-console-9771f164 · MEDIUM · Direktes console.info außerhalb der Logger-Fassade
+- **Kategorie**: Frontend / Frontend
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.info(…)
+- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
+- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
+- **Komponenten**: src/integrations/supabase/env-check.ts:93
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
+- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
+
+### td:td-console-993be125 · MEDIUM · Direktes console.warn außerhalb der Logger-Fassade
+- **Kategorie**: Frontend / Frontend
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.warn(…)
+- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
+- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
+- **Komponenten**: src/integrations/supabase/env-check.ts:82
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
+- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
+
+### td:td-console-f7820fc7 · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
 - **Kategorie**: Frontend / Frontend
 - **Quelle**: auto
 - **Beschreibung**: Aufruf: console.error(…)
 - **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
 - **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/lib/help-documentation.ts:425
+- **Komponenten**: src/lib/help-documentation.ts:426
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
@@ -256,13 +282,13 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Empfehlung**: Ausschließlich `@/lib/azure/azure-service` importieren.
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
 
-### td:td-layer-c1c89b30 · MEDIUM · UI-Direktzugriff auf Persistenz-Schicht
+### td:td-layer-e0ac1bea · MEDIUM · UI-Direktzugriff auf Persistenz-Schicht
 - **Kategorie**: Architektur / Architektur
 - **Quelle**: auto
 - **Beschreibung**: Datei importiert ein verbotenes Modul: from "@/lib/store/dashboard-persistence"
 - **Ursache**: Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.
 - **Auswirkung**: Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.
-- **Komponenten**: src/routes/index.tsx:112
+- **Komponenten**: src/routes/_authenticated/dashboard.tsx:115
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
@@ -289,6 +315,17 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Bearbeitungsreihenfolge**: architecture · **Status**: open
 
+### td:td-oversize-789d61fa · MEDIUM · Modul überschreitet Größenschwelle (1084 Zeilen)
+- **Kategorie**: Architektur / Architektur
+- **Quelle**: auto
+- **Beschreibung**: Die Datei hat 1084 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
+- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
+- **Komponenten**: src/lib/backup-service.ts
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
+- **Aufwand**: M · **Bearbeitungsreihenfolge**: architecture · **Status**: open
+
 ### td:td-oversize-f3843ebe · MEDIUM · Modul überschreitet Größenschwelle (731 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Quelle**: auto
@@ -310,6 +347,28 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: data-testid in Dialoge einführen (BackupDialog, ImportExportDialog, AzureDataDialog) und darauf basierend echte Flows in e2e/*.spec.ts ergänzen.
 - **Aufwand**: M · **Bearbeitungsreihenfolge**: test-gap · **Status**: open
+
+### td:td-endpoint-err-cdae73c5 · LOW · API-Endpoint ohne strukturierte Fehlerantwort
+- **Kategorie**: API / API
+- **Quelle**: auto
+- **Beschreibung**: Kein erkennbarer 4xx/5xx-Response-Pfad.
+- **Ursache**: Handler wirft ungefangen; Framework antwortet mit generischer 500-Antwort.
+- **Auswirkung**: Client kann Fehler nicht klassifizieren, Correlation erschwert.
+- **Komponenten**: src/routes/api/status.ts
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: try/catch mit `Response.json({error, code}, {status: 4xx|5xx})` ergänzen.
+- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
+
+### td:td-endpoint-err-ce5fa0be · LOW · API-Endpoint ohne strukturierte Fehlerantwort
+- **Kategorie**: API / API
+- **Quelle**: auto
+- **Beschreibung**: Kein erkennbarer 4xx/5xx-Response-Pfad.
+- **Ursache**: Handler wirft ungefangen; Framework antwortet mit generischer 500-Antwort.
+- **Auswirkung**: Client kann Fehler nicht klassifizieren, Correlation erschwert.
+- **Komponenten**: src/routes/api/sync.ts
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: try/catch mit `Response.json({error, code}, {status: 4xx|5xx})` ergänzen.
+- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
 
 ### td:td-oversize-32eb5e8c · LOW · Modul überschreitet Größenschwelle (436 Zeilen)
 - **Kategorie**: Frontend / Frontend
@@ -355,21 +414,10 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Bearbeitungsreihenfolge**: architecture · **Status**: open
 
-### td:td-oversize-789d61fa · LOW · Modul überschreitet Größenschwelle (716 Zeilen)
-- **Kategorie**: Architektur / Architektur
-- **Quelle**: auto
-- **Beschreibung**: Die Datei hat 716 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
-- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
-- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
-- **Komponenten**: src/lib/backup-service.ts
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: architecture · **Status**: open
-
-### td:td-oversize-af210d92 · LOW · Modul überschreitet Größenschwelle (454 Zeilen)
+### td:td-oversize-af210d92 · LOW · Modul überschreitet Größenschwelle (481 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Quelle**: auto
-- **Beschreibung**: Die Datei hat 454 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 481 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/SystemStatusDialog.tsx
@@ -384,6 +432,17 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/LogViewerDialog.tsx
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
+- **Aufwand**: M · **Bearbeitungsreihenfolge**: architecture · **Status**: open
+
+### td:td-oversize-ebfd4b54 · LOW · Modul überschreitet Größenschwelle (563 Zeilen)
+- **Kategorie**: Frontend / Frontend
+- **Quelle**: auto
+- **Beschreibung**: Die Datei hat 563 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
+- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
+- **Komponenten**: src/components/UserManagementDialog.tsx
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Bearbeitungsreihenfolge**: architecture · **Status**: open
@@ -597,17 +656,6 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
 
-### td:td-orphan-9d8b7a18 · LOW · Möglicherweise verwaistes Modul
-- **Kategorie**: Architektur / Architektur
-- **Quelle**: auto
-- **Beschreibung**: Kein Import unter `src/**` referenziert dieses Modul (heuristisch via Basisname).
-- **Ursache**: Modul wurde ersetzt/verschoben, aber die Datei ist geblieben.
-- **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
-- **Komponenten**: src/components/ui/card.tsx
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
-- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
-
 ### td:td-orphan-adda4e46 · LOW · Möglicherweise verwaistes Modul
 - **Kategorie**: Architektur / Architektur
 - **Quelle**: auto
@@ -637,6 +685,17 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Ursache**: Modul wurde ersetzt/verschoben, aber die Datei ist geblieben.
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Komponenten**: src/components/ui/popover.tsx
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
+- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
+
+### td:td-orphan-bd7563ab · LOW · Möglicherweise verwaistes Modul
+- **Kategorie**: Architektur / Architektur
+- **Quelle**: auto
+- **Beschreibung**: Kein Import unter `src/**` referenziert dieses Modul (heuristisch via Basisname).
+- **Ursache**: Modul wurde ersetzt/verschoben, aber die Datei ist geblieben.
+- **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
+- **Komponenten**: src/integrations/supabase/auth-middleware.ts
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
@@ -774,23 +833,21 @@ _Generiert: 2026-07-24T05:46:26.711Z_
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: test-gap · **Status**: open
 
 ## 6. Sortierte Maßnahmenliste
-- **high-security** (1): sec:SEC-HIGH-LOG-001
-- **high-functional** (6): td:td-endpoint-auth-cdae73c5, td:td-cycle-1fa843a1, td:td-cycle-dc9fbe11, td:td-oversize-26e43c0a, td:td-oversize-99cca8a6, td:td-oversize-ebfd4b54
-- **architecture** (49): sec:SEC-MED-CLAIMS-001, td:td-console-375dfc5b, td:td-console-629bd14d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-da1180ce, td:td-layer-b432b1b9, td:td-layer-c1c89b30, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-789d61fa, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-9d8b7a18, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
+- **architecture** (58): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-375dfc5b, td:td-console-43084e7a, td:td-console-665c1d8d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-9771f164, td:td-console-993be125, td:td-console-f7820fc7, td:td-layer-b432b1b9, td:td-layer-e0ac1bea, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-789d61fa, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 7. Vergleich zum vorherigen Bericht
 - Neu: 0
-- Behoben: 0
+- Behoben: 1
 - Verschlechtert: 0
-- Unverändert: 67
+- Unverändert: 72
 - Wieder aufgetreten: 0
 
 ## 8. Freigabeempfehlung
-**für Pilot geeignet** — 7 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
+**Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
 
 ## 9. Quality-Gate-Blocker (Prompt 2A.10)
-- **high-security-finding** — High Security Finding: sec:SEC-HIGH-LOG-001 _(Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS)_
+_Keine — CI-Gate ist grün._
 
 ## Bekannte Grenzen
 - Reine Aggregation: Qualität hängt an den Einzelberichten.

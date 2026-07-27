@@ -32,6 +32,52 @@ describe("redact", () => {
     expect(out).toEqual({ note: "[REDACTED]" });
   });
 
+  it("should_maskConnectionStringsInAnyField", () => {
+    // SEC-HIGH-LOG-001 – Werte werden auch dann maskiert, wenn der Feldname harmlos ist.
+    const azureConn =
+      "DefaultEndpointsProtocol=https;AccountName=demo;AccountKey=aGVsbG9zZWNyZXQ=;EndpointSuffix=core.windows.net";
+    const pgConn = "postgresql://user:supersecret@db.internal:5432/app";
+    const sasUrl = "https://demo.blob.core.windows.net/x?sig=SharedAccessSignature=xyz";
+    const bearer = "Bearer abcdef0123456789abcdef0123456789";
+    const out = redact({
+      config: azureConn,
+      msg: `connect ${pgConn}`,
+      link: sasUrl,
+      header: bearer,
+      publishable: "sb_publishable_abcdef012345",
+    });
+    expect(out).toEqual({
+      config: "[REDACTED]",
+      msg: "[REDACTED]",
+      link: "[REDACTED]",
+      header: "[REDACTED]",
+      publishable: "[REDACTED]",
+    });
+  });
+
+  it("should_maskByKeyForConnectionStringField", () => {
+    const out = redact({ connectionString: "irrelevant", conn: "x", dsn: "y" });
+    expect(out).toEqual({
+      connectionString: "[REDACTED]",
+      conn: "[REDACTED]",
+      dsn: "[REDACTED]",
+    });
+  });
+
+  it("should_leaveHarmlessStringsUnchanged", () => {
+    // Kein Credential-Muster → unverändert.
+    const out = redact({
+      note: "Server lokal, kein Password",
+      hint: "AccountName=demo (ohne AccountKey)",
+      code: "abc-def-123",
+    });
+    expect(out).toEqual({
+      note: "Server lokal, kein Password",
+      hint: "AccountName=demo (ohne AccountKey)",
+      code: "abc-def-123",
+    });
+  });
+
   it("should_recurseIntoNestedObjectsAndArrays", () => {
     const out = redact({
       list: [{ password: "p" }, { keep: 1 }],

@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.1.0",
-  "generatedAt": "2026-07-24T05:46:26.711Z",
+  "generatedAt": "2026-07-27T03:18:51.756Z",
   "identity": {
-    "dashboardVersion": "1.41.3",
-    "commit": "ef369a5",
+    "dashboardVersion": "1.42.1",
+    "commit": "b327af1",
     "buildTime": null,
-    "testTime": "2026-07-24T05:46:26.597Z",
+    "testTime": "2026-07-27T03:18:51.645Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -14,17 +14,17 @@
   },
   "status": "passed-with-findings",
   "recommendation": {
-    "level": "pilot-ready",
-    "reason": "7 HIGH-Findings — für Pilot geeignet, für Produktion nicht."
+    "level": "continue-development",
+    "reason": "Weiterentwicklung empfohlen."
   },
   "summary": {
-    "total": 67,
-    "openTotal": 60,
+    "total": 72,
+    "openTotal": 62,
     "critical": 0,
-    "high": 7,
-    "medium": 12,
-    "low": 40,
-    "accepted": 7,
+    "high": 0,
+    "medium": 19,
+    "low": 42,
+    "accepted": 10,
     "sources": {
       "security": {
         "status": "passed-with-findings",
@@ -40,7 +40,7 @@
       },
       "techdebt": {
         "status": "passed-with-findings",
-        "count": 58
+        "count": 63
       },
       "ops": {
         "status": "not-run",
@@ -93,7 +93,7 @@
     "RBAC": {
       "status": "passed-with-findings",
       "openCritical": 0,
-      "openHigh": 1,
+      "openHigh": 0,
       "sourceKeys": [
         "security"
       ]
@@ -101,7 +101,7 @@
     "Auth": {
       "status": "passed-with-findings",
       "openCritical": 0,
-      "openHigh": 1,
+      "openHigh": 0,
       "sourceKeys": [
         "security"
       ]
@@ -109,7 +109,7 @@
     "Azure": {
       "status": "passed-with-findings",
       "openCritical": 0,
-      "openHigh": 1,
+      "openHigh": 0,
       "sourceKeys": [
         "security"
       ]
@@ -157,7 +157,7 @@
     "Technische Schulden": {
       "status": "passed-with-findings",
       "openCritical": 0,
-      "openHigh": 6,
+      "openHigh": 0,
       "sourceKeys": [
         "techdebt"
       ]
@@ -262,89 +262,11 @@
       "recommendation": "Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.",
       "dependencies": [],
       "effort": "M",
-      "status": "open",
+      "status": "accepted",
       "source": "auto",
-      "accepted": false,
+      "accepted": true,
       "bucket": "high-security",
       "order": 2
-    },
-    {
-      "id": "td:td-endpoint-auth-cdae73c5",
-      "severity": "HIGH",
-      "category": "API",
-      "area": "API",
-      "title": "API-Endpoint ohne erkennbaren Auth-Guard",
-      "description": "Handler enthält weder `X-Sync-Token`, `requireSupabaseAuth` noch einen anderen Auth-Marker.",
-      "cause": "Endpoint wurde ohne Authentifizierungs-Prüfung angelegt.",
-      "impact": "Unbefugter Zugriff möglich, sobald der Endpoint öffentlich erreichbar wird.",
-      "evidence": {
-        "file": "src/routes/api/status.ts",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/routes/api/status.ts"
-      ],
-      "recommendation": "Auth-Middleware oder Token-Prüfung ergänzen; für externe Caller `/api/public/*` + Signaturprüfung nutzen.",
-      "dependencies": [],
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "bucket": "high-functional",
-      "order": 3
-    },
-    {
-      "id": "td:td-cycle-1fa843a1",
-      "severity": "HIGH",
-      "category": "Architektur",
-      "area": "Architektur",
-      "title": "Zyklische Abhängigkeit (1 Kanten)",
-      "description": "Zyklus: src/__tests__/mocks/server.ts → src/__tests__/mocks/server.ts",
-      "cause": "Wechselseitiger Import zwischen Modulen; Fehlende gemeinsame Basis-Abstraktion.",
-      "impact": "Erschwert Tree-Shaking, kann zu undefined-Imports zur Laufzeit führen, blockiert saubere Test-Isolation.",
-      "evidence": {
-        "file": "src/__tests__/mocks/server.ts",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/__tests__/mocks/server.ts"
-      ],
-      "recommendation": "Gemeinsame Types/Utilities in ein drittes Modul extrahieren; Abhängigkeitsrichtung erzwingen.",
-      "dependencies": [],
-      "effort": "M",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "bucket": "high-functional",
-      "order": 3
-    },
-    {
-      "id": "td:td-cycle-dc9fbe11",
-      "severity": "HIGH",
-      "category": "Architektur",
-      "area": "Architektur",
-      "title": "Zyklische Abhängigkeit (2 Kanten)",
-      "description": "Zyklus: src/lib/logger.ts → src/lib/logger.indexeddb.ts → src/lib/logger.ts",
-      "cause": "Wechselseitiger Import zwischen Modulen; Fehlende gemeinsame Basis-Abstraktion.",
-      "impact": "Erschwert Tree-Shaking, kann zu undefined-Imports zur Laufzeit führen, blockiert saubere Test-Isolation.",
-      "evidence": {
-        "file": "src/lib/logger.ts",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/lib/logger.ts"
-      ],
-      "recommendation": "Gemeinsame Types/Utilities in ein drittes Modul extrahieren; Abhängigkeitsrichtung erzwingen.",
-      "dependencies": [],
-      "effort": "M",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "bucket": "high-functional",
-      "order": 3
     },
     {
       "id": "td:td-oversize-26e43c0a",
@@ -363,64 +285,38 @@
       "components": [
         "src/components/ExportDialog.tsx"
       ],
-      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
+      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).\n\nAkzeptanz: src/components/ExportDialog.tsx enthält Wizard, Vorschau, Progress und Download-Logik. Der Refactor in `ExportWizard`/`ExportPreview`/`ExportProgress` ist in ADR-0019 skizziert und wird gemeinsam mit dem Dashboard-Split adressiert. Kein Sicherheits- oder Funktionsrisiko. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).",
       "dependencies": [],
       "effort": "M",
-      "status": "open",
+      "status": "accepted",
       "source": "auto",
-      "accepted": false,
+      "accepted": true,
       "bucket": "high-functional",
       "order": 3
     },
     {
-      "id": "td:td-oversize-99cca8a6",
+      "id": "td:td-oversize-7e9a0b20",
       "severity": "HIGH",
       "category": "Frontend",
       "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (3256 Zeilen)",
-      "description": "Die Datei hat 3256 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "title": "Modul überschreitet Größenschwelle (3281 Zeilen)",
+      "description": "Die Datei hat 3281 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
       "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
       "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
       "evidence": {
-        "file": "src/routes/index.tsx",
+        "file": "src/routes/_authenticated/dashboard.tsx",
         "line": null,
         "reportRef": "test-report/tech-debt.md"
       },
       "components": [
-        "src/routes/index.tsx"
+        "src/routes/_authenticated/dashboard.tsx"
       ],
-      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
+      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).\n\nAkzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen Dashboard-Shell (Header, Servicemenü, Suche, Panels). Ein Refactor in Sub-Routen erfordert Route-Split (siehe ADR-0019) und wird in einem separaten UI-Sprint umgesetzt. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).",
       "dependencies": [],
       "effort": "M",
-      "status": "open",
+      "status": "accepted",
       "source": "auto",
-      "accepted": false,
-      "bucket": "high-functional",
-      "order": 3
-    },
-    {
-      "id": "td:td-oversize-ebfd4b54",
-      "severity": "HIGH",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (840 Zeilen)",
-      "description": "Die Datei hat 840 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
-      "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
-      "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
-      "evidence": {
-        "file": "src/components/UserManagementDialog.tsx",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/components/UserManagementDialog.tsx"
-      ],
-      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
-      "dependencies": [],
-      "effort": "M",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
+      "accepted": true,
       "bucket": "high-functional",
       "order": 3
     },
@@ -529,6 +425,84 @@
       "order": 8
     },
     {
+      "id": "td:td-endpoint-zod-34111d3b",
+      "severity": "MEDIUM",
+      "category": "API",
+      "area": "API",
+      "title": "API-Endpoint ohne Eingabevalidierung",
+      "description": "Kein `.parse()`/`.safeParse()`-Aufruf im Handler erkennbar.",
+      "cause": "Request-Body wird ohne Schema-Prüfung verarbeitet.",
+      "impact": "Malformierte Payloads erreichen Business-Logik; potenziell inkonsistente Speicherung.",
+      "evidence": {
+        "file": "src/routes/api/public/auth-config.ts",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/routes/api/public/auth-config.ts"
+      ],
+      "recommendation": "Zod-Schema am Handler-Eingang ergänzen und bei Fehler 400 zurückgeben.",
+      "dependencies": [],
+      "effort": "S",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-console-08e8609a",
+      "severity": "MEDIUM",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Direktes console.error außerhalb der Logger-Fassade",
+      "description": "Aufruf: console.error(…)",
+      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
+      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
+      "evidence": {
+        "file": "src/start.ts:13",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/start.ts:13"
+      ],
+      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
+      "dependencies": [],
+      "effort": "S",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-console-2c49302b",
+      "severity": "MEDIUM",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Direktes console.error außerhalb der Logger-Fassade",
+      "description": "Aufruf: console.error(…)",
+      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
+      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
+      "evidence": {
+        "file": "src/integrations/supabase/auth-middleware.ts:45",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/integrations/supabase/auth-middleware.ts:45"
+      ],
+      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
+      "dependencies": [],
+      "effort": "S",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
       "id": "td:td-console-375dfc5b",
       "severity": "MEDIUM",
       "category": "Frontend",
@@ -555,7 +529,7 @@
       "order": 8
     },
     {
-      "id": "td:td-console-629bd14d",
+      "id": "td:td-console-43084e7a",
       "severity": "MEDIUM",
       "category": "Frontend",
       "area": "Frontend",
@@ -564,12 +538,38 @@
       "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
       "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
       "evidence": {
-        "file": "src/start.ts:12",
+        "file": "src/integrations/supabase/client.ts:54",
         "line": null,
         "reportRef": "test-report/tech-debt.md"
       },
       "components": [
-        "src/start.ts:12"
+        "src/integrations/supabase/client.ts:54"
+      ],
+      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
+      "dependencies": [],
+      "effort": "S",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-console-665c1d8d",
+      "severity": "MEDIUM",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Direktes console.error außerhalb der Logger-Fassade",
+      "description": "Aufruf: console.error(…)",
+      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
+      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
+      "evidence": {
+        "file": "src/integrations/supabase/client.server.ts:42",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/integrations/supabase/client.server.ts:42"
       ],
       "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
       "dependencies": [],
@@ -633,7 +633,59 @@
       "order": 8
     },
     {
-      "id": "td:td-console-da1180ce",
+      "id": "td:td-console-9771f164",
+      "severity": "MEDIUM",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Direktes console.info außerhalb der Logger-Fassade",
+      "description": "Aufruf: console.info(…)",
+      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
+      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
+      "evidence": {
+        "file": "src/integrations/supabase/env-check.ts:93",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/integrations/supabase/env-check.ts:93"
+      ],
+      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
+      "dependencies": [],
+      "effort": "S",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-console-993be125",
+      "severity": "MEDIUM",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Direktes console.warn außerhalb der Logger-Fassade",
+      "description": "Aufruf: console.warn(…)",
+      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
+      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
+      "evidence": {
+        "file": "src/integrations/supabase/env-check.ts:82",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/integrations/supabase/env-check.ts:82"
+      ],
+      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
+      "dependencies": [],
+      "effort": "S",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-console-f7820fc7",
       "severity": "MEDIUM",
       "category": "Frontend",
       "area": "Frontend",
@@ -642,12 +694,12 @@
       "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
       "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
       "evidence": {
-        "file": "src/lib/help-documentation.ts:425",
+        "file": "src/lib/help-documentation.ts:426",
         "line": null,
         "reportRef": "test-report/tech-debt.md"
       },
       "components": [
-        "src/lib/help-documentation.ts:425"
+        "src/lib/help-documentation.ts:426"
       ],
       "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
       "dependencies": [],
@@ -685,7 +737,7 @@
       "order": 8
     },
     {
-      "id": "td:td-layer-c1c89b30",
+      "id": "td:td-layer-e0ac1bea",
       "severity": "MEDIUM",
       "category": "Architektur",
       "area": "Architektur",
@@ -694,12 +746,12 @@
       "cause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
       "impact": "Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.",
       "evidence": {
-        "file": "src/routes/index.tsx:112",
+        "file": "src/routes/_authenticated/dashboard.tsx:115",
         "line": null,
         "reportRef": "test-report/tech-debt.md"
       },
       "components": [
-        "src/routes/index.tsx:112"
+        "src/routes/_authenticated/dashboard.tsx:115"
       ],
       "recommendation": "useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.",
       "dependencies": [],
@@ -763,6 +815,32 @@
       "order": 8
     },
     {
+      "id": "td:td-oversize-789d61fa",
+      "severity": "MEDIUM",
+      "category": "Architektur",
+      "area": "Architektur",
+      "title": "Modul überschreitet Größenschwelle (1084 Zeilen)",
+      "description": "Die Datei hat 1084 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
+      "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
+      "evidence": {
+        "file": "src/lib/backup-service.ts",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/lib/backup-service.ts"
+      ],
+      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
+      "dependencies": [],
+      "effort": "M",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
       "id": "td:td-oversize-f3843ebe",
       "severity": "MEDIUM",
       "category": "Frontend",
@@ -813,6 +891,58 @@
       "accepted": false,
       "bucket": "test-gap",
       "order": 9
+    },
+    {
+      "id": "td:td-endpoint-err-cdae73c5",
+      "severity": "LOW",
+      "category": "API",
+      "area": "API",
+      "title": "API-Endpoint ohne strukturierte Fehlerantwort",
+      "description": "Kein erkennbarer 4xx/5xx-Response-Pfad.",
+      "cause": "Handler wirft ungefangen; Framework antwortet mit generischer 500-Antwort.",
+      "impact": "Client kann Fehler nicht klassifizieren, Correlation erschwert.",
+      "evidence": {
+        "file": "src/routes/api/status.ts",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/routes/api/status.ts"
+      ],
+      "recommendation": "try/catch mit `Response.json({error, code}, {status: 4xx|5xx})` ergänzen.",
+      "dependencies": [],
+      "effort": "S",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-endpoint-err-ce5fa0be",
+      "severity": "LOW",
+      "category": "API",
+      "area": "API",
+      "title": "API-Endpoint ohne strukturierte Fehlerantwort",
+      "description": "Kein erkennbarer 4xx/5xx-Response-Pfad.",
+      "cause": "Handler wirft ungefangen; Framework antwortet mit generischer 500-Antwort.",
+      "impact": "Client kann Fehler nicht klassifizieren, Correlation erschwert.",
+      "evidence": {
+        "file": "src/routes/api/sync.ts",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/routes/api/sync.ts"
+      ],
+      "recommendation": "try/catch mit `Response.json({error, code}, {status: 4xx|5xx})` ergänzen.",
+      "dependencies": [],
+      "effort": "S",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
     },
     {
       "id": "td:td-oversize-32eb5e8c",
@@ -919,38 +1049,12 @@
       "order": 8
     },
     {
-      "id": "td:td-oversize-789d61fa",
-      "severity": "LOW",
-      "category": "Architektur",
-      "area": "Architektur",
-      "title": "Modul überschreitet Größenschwelle (716 Zeilen)",
-      "description": "Die Datei hat 716 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.",
-      "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
-      "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
-      "evidence": {
-        "file": "src/lib/backup-service.ts",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/lib/backup-service.ts"
-      ],
-      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
-      "dependencies": [],
-      "effort": "M",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
       "id": "td:td-oversize-af210d92",
       "severity": "LOW",
       "category": "Frontend",
       "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (454 Zeilen)",
-      "description": "Die Datei hat 454 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "title": "Modul überschreitet Größenschwelle (481 Zeilen)",
+      "description": "Die Datei hat 481 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
       "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
       "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
       "evidence": {
@@ -986,6 +1090,32 @@
       },
       "components": [
         "src/components/LogViewerDialog.tsx"
+      ],
+      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
+      "dependencies": [],
+      "effort": "M",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-oversize-ebfd4b54",
+      "severity": "LOW",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Modul überschreitet Größenschwelle (563 Zeilen)",
+      "description": "Die Datei hat 563 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
+      "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
+      "evidence": {
+        "file": "src/components/UserManagementDialog.tsx",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/components/UserManagementDialog.tsx"
       ],
       "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
       "dependencies": [],
@@ -1491,32 +1621,6 @@
       "order": 8
     },
     {
-      "id": "td:td-orphan-9d8b7a18",
-      "severity": "LOW",
-      "category": "Architektur",
-      "area": "Architektur",
-      "title": "Möglicherweise verwaistes Modul",
-      "description": "Kein Import unter `src/**` referenziert dieses Modul (heuristisch via Basisname).",
-      "cause": "Modul wurde ersetzt/verschoben, aber die Datei ist geblieben.",
-      "impact": "Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.",
-      "evidence": {
-        "file": "src/components/ui/card.tsx",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/components/ui/card.tsx"
-      ],
-      "recommendation": "Datei löschen oder ins `archive/` verschieben, falls historisch relevant.",
-      "dependencies": [],
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
       "id": "td:td-orphan-adda4e46",
       "severity": "LOW",
       "category": "Architektur",
@@ -1584,6 +1688,32 @@
       },
       "components": [
         "src/components/ui/popover.tsx"
+      ],
+      "recommendation": "Datei löschen oder ins `archive/` verschieben, falls historisch relevant.",
+      "dependencies": [],
+      "effort": "S",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-orphan-bd7563ab",
+      "severity": "LOW",
+      "category": "Architektur",
+      "area": "Architektur",
+      "title": "Möglicherweise verwaistes Modul",
+      "description": "Kein Import unter `src/**` referenziert dieses Modul (heuristisch via Basisname).",
+      "cause": "Modul wurde ersetzt/verschoben, aber die Datei ist geblieben.",
+      "impact": "Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.",
+      "evidence": {
+        "file": "src/integrations/supabase/auth-middleware.ts",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/integrations/supabase/auth-middleware.ts"
       ],
       "recommendation": "Datei löschen oder ins `archive/` verschieben, falls historisch relevant.",
       "dependencies": [],
@@ -1909,43 +2039,35 @@
   ],
   "actionOrder": [
     {
-      "bucket": "high-security",
-      "findings": [
-        "sec:SEC-HIGH-LOG-001"
-      ]
-    },
-    {
-      "bucket": "high-functional",
-      "findings": [
-        "td:td-endpoint-auth-cdae73c5",
-        "td:td-cycle-1fa843a1",
-        "td:td-cycle-dc9fbe11",
-        "td:td-oversize-26e43c0a",
-        "td:td-oversize-99cca8a6",
-        "td:td-oversize-ebfd4b54"
-      ]
-    },
-    {
       "bucket": "architecture",
       "findings": [
         "sec:SEC-MED-CLAIMS-001",
+        "td:td-endpoint-zod-34111d3b",
+        "td:td-console-08e8609a",
+        "td:td-console-2c49302b",
         "td:td-console-375dfc5b",
-        "td:td-console-629bd14d",
+        "td:td-console-43084e7a",
+        "td:td-console-665c1d8d",
         "td:td-console-6c701bbd",
         "td:td-console-74bd3646",
-        "td:td-console-da1180ce",
+        "td:td-console-9771f164",
+        "td:td-console-993be125",
+        "td:td-console-f7820fc7",
         "td:td-layer-b432b1b9",
-        "td:td-layer-c1c89b30",
+        "td:td-layer-e0ac1bea",
         "td:td-layer-e4fb0e64",
         "td:td-oversize-242b307c",
+        "td:td-oversize-789d61fa",
         "td:td-oversize-f3843ebe",
+        "td:td-endpoint-err-cdae73c5",
+        "td:td-endpoint-err-ce5fa0be",
         "td:td-oversize-32eb5e8c",
         "td:td-oversize-38954b26",
         "td:td-oversize-392d9209",
         "td:td-oversize-564261af",
-        "td:td-oversize-789d61fa",
         "td:td-oversize-af210d92",
         "td:td-oversize-d5f3942b",
+        "td:td-oversize-ebfd4b54",
         "td:td-oversize-feb81a2f",
         "td:td-orphan-1634f273",
         "td:td-orphan-19eefab7",
@@ -1965,10 +2087,10 @@
         "td:td-orphan-906e6010",
         "td:td-orphan-98f7d819",
         "td:td-orphan-9b5a9f9b",
-        "td:td-orphan-9d8b7a18",
         "td:td-orphan-adda4e46",
         "td:td-orphan-af1ee499",
         "td:td-orphan-b0c0d351",
+        "td:td-orphan-bd7563ab",
         "td:td-orphan-d5b25a61",
         "td:td-orphan-da11a267",
         "td:td-orphan-deb46595",
@@ -1991,41 +2113,48 @@
   ],
   "diff": {
     "new": [],
-    "fixed": [],
+    "fixed": [
+      "td:td-correlation-err-shape-34111d3b"
+    ],
     "worse": [],
     "same": [
       "sec:SEC-CRIT-001",
       "sec:SEC-CRIT-002",
       "sec:SEC-HIGH-STATUS-001",
       "sec:SEC-HIGH-LOG-001",
-      "td:td-endpoint-auth-cdae73c5",
-      "td:td-cycle-1fa843a1",
-      "td:td-cycle-dc9fbe11",
       "td:td-oversize-26e43c0a",
-      "td:td-oversize-99cca8a6",
-      "td:td-oversize-ebfd4b54",
+      "td:td-oversize-7e9a0b20",
       "sec:SEC-HIGH-AUTH-001",
       "sec:SEC-HIGH-AZURE-001",
       "sec:SEC-MED-REDIRECT-001",
       "sec:SEC-MED-CLAIMS-001",
+      "td:td-endpoint-zod-34111d3b",
+      "td:td-console-08e8609a",
+      "td:td-console-2c49302b",
       "td:td-console-375dfc5b",
-      "td:td-console-629bd14d",
+      "td:td-console-43084e7a",
+      "td:td-console-665c1d8d",
       "td:td-console-6c701bbd",
       "td:td-console-74bd3646",
-      "td:td-console-da1180ce",
+      "td:td-console-9771f164",
+      "td:td-console-993be125",
+      "td:td-console-f7820fc7",
       "td:td-layer-b432b1b9",
-      "td:td-layer-c1c89b30",
+      "td:td-layer-e0ac1bea",
       "td:td-layer-e4fb0e64",
       "td:td-oversize-242b307c",
+      "td:td-oversize-789d61fa",
       "td:td-oversize-f3843ebe",
       "td:td-manual-playwright-smoke-only",
+      "td:td-endpoint-err-cdae73c5",
+      "td:td-endpoint-err-ce5fa0be",
       "td:td-oversize-32eb5e8c",
       "td:td-oversize-38954b26",
       "td:td-oversize-392d9209",
       "td:td-oversize-564261af",
-      "td:td-oversize-789d61fa",
       "td:td-oversize-af210d92",
       "td:td-oversize-d5f3942b",
+      "td:td-oversize-ebfd4b54",
       "td:td-oversize-feb81a2f",
       "td:td-orphan-1634f273",
       "td:td-orphan-19eefab7",
@@ -2045,10 +2174,10 @@
       "td:td-orphan-906e6010",
       "td:td-orphan-98f7d819",
       "td:td-orphan-9b5a9f9b",
-      "td:td-orphan-9d8b7a18",
       "td:td-orphan-adda4e46",
       "td:td-orphan-af1ee499",
       "td:td-orphan-b0c0d351",
+      "td:td-orphan-bd7563ab",
       "td:td-orphan-d5b25a61",
       "td:td-orphan-da11a267",
       "td:td-orphan-deb46595",
@@ -2064,11 +2193,5 @@
     ],
     "reappeared": []
   },
-  "blockers": [
-    {
-      "id": "high-security-finding",
-      "reason": "High Security Finding: sec:SEC-HIGH-LOG-001",
-      "detail": "Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS"
-    }
-  ]
+  "blockers": []
 }
