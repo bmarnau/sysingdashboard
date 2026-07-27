@@ -271,10 +271,13 @@ function collectBackup() {
 function collectTechDebt() {
   const rep = readJson(`${OUT_DIR}/tech-debt.json`);
   if (!rep) return { status: "not-run", findings: [] };
+  const acc = readJson("scripts/technical-report/tech-debt-acceptances.json", { acceptances: {} })
+    .acceptances ?? {};
   const findings = (rep.findings ?? [])
     .filter((f) => f.status !== "geschlossen")
-    .map((f) =>
-      makeFinding({
+    .map((f) => {
+      const a = acc[f.id];
+      return makeFinding({
         id: `td:${f.id}`,
         severity: f.severity,
         category: f.category ?? "tech-debt",
@@ -283,15 +286,16 @@ function collectTechDebt() {
         description: f.description,
         cause: f.rootCause,
         impact: f.impact,
-        recommendation: f.recommendation,
+        recommendation: a ? `${f.recommendation}\n\nAkzeptanz: ${a.reason} (Ticket ${a.ticket}, gültig bis ${a.expires}).` : f.recommendation,
         components: [f.location].filter(Boolean),
         evidence: { file: f.location, reportRef: `${OUT_DIR}/tech-debt.md` },
         effort: f.effort === "klein" ? "S" : f.effort === "groß" ? "L" : "M",
         source: f.source === "manual" ? "manual" : "auto",
-        status: f.status === "offen" ? "open" : (f.status ?? "open"),
-      }),
-    );
-  const highCrit = findings.filter((f) => f.severity === "CRITICAL").length;
+        status: a ? "accepted" : (f.status === "offen" ? "open" : (f.status ?? "open")),
+        accepted: !!a,
+      });
+    });
+  const highCrit = findings.filter((f) => f.severity === "CRITICAL" && !f.accepted).length;
   const status = highCrit > 0 ? "failed" : findings.length ? "passed-with-findings" : "passed";
   return { status, findings, summary: rep.summary?.counts ?? {} };
 }
