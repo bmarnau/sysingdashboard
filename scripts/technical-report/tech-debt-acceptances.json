@@ -1,0 +1,19 @@
+{
+  "$comment": "Dokumentierte Akzeptanz-Entscheidungen für automatisch erkannte Tech-Debt-Findings. Die ID entspricht dem `id`-Feld aus `test-report/tech-debt.json` (ohne `td:`-Präfix aus dem Prüfbericht). Jede Akzeptanz benötigt Grund, Ticket und Verfallsdatum, damit sie in Reviews sichtbar bleibt.",
+  "acceptances": {
+    "td-oversize-7e9a0b20": {
+      "reason": "src/routes/_authenticated/dashboard.tsx bündelt den vollständigen Dashboard-Shell (Header, Servicemenü, Suche, Panels). Ein Refactor in Sub-Routen erfordert Route-Split (siehe ADR-0019) und wird in einem separaten UI-Sprint umgesetzt. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit.",
+      "ticket": "SPRINT-04-DASHBOARD-SPLIT",
+      "expires": "2026-12-31",
+      "acceptedAt": "2026-07-27",
+      "acceptedBy": "engineering-lead"
+    },
+    "td-oversize-26e43c0a": {
+      "reason": "src/components/ExportDialog.tsx enthält Wizard, Vorschau, Progress und Download-Logik. Der Refactor in `ExportWizard`/`ExportPreview`/`ExportProgress` ist in ADR-0019 skizziert und wird gemeinsam mit dem Dashboard-Split adressiert. Kein Sicherheits- oder Funktionsrisiko.",
+      "ticket": "SPRINT-04-DASHBOARD-SPLIT",
+      "expires": "2026-12-31",
+      "acceptedAt": "2026-07-27",
+      "acceptedBy": "engineering-lead"
+    }
+  }
+}
