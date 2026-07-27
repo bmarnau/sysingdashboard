@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.1.0",
-  "generatedAt": "2026-07-27T03:15:31.629Z",
+  "generatedAt": "2026-07-27T03:17:06.257Z",
   "identity": {
-    "dashboardVersion": "1.42.0",
-    "commit": "10702c6",
+    "dashboardVersion": "1.42.1",
+    "commit": "eefbcb0",
     "buildTime": null,
-    "testTime": "2026-07-27T03:15:31.520Z",
+    "testTime": "2026-07-27T03:17:06.153Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -18,11 +18,11 @@
     "reason": "4 HIGH-Findings — für Pilot geeignet, für Produktion nicht."
   },
   "summary": {
-    "total": 74,
-    "openTotal": 67,
+    "total": 73,
+    "openTotal": 66,
     "critical": 0,
     "high": 4,
-    "medium": 20,
+    "medium": 19,
     "low": 42,
     "accepted": 7,
     "sources": {
@@ -40,7 +40,7 @@
       },
       "techdebt": {
         "status": "passed-with-findings",
-        "count": 65
+        "count": 64
       },
       "ops": {
         "status": "not-run",
@@ -468,32 +468,6 @@
         "src/routes/api/public/auth-config.ts"
       ],
       "recommendation": "Zod-Schema am Handler-Eingang ergänzen und bei Fehler 400 zurückgeben.",
-      "dependencies": [],
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-correlation-missing-34111d3b",
-      "severity": "MEDIUM",
-      "category": "API",
-      "area": "API",
-      "title": "Aktive API-Route ohne Correlation-ID-Middleware",
-      "description": "Handler ist nicht mit `withCorrelation` umschlossen; Requests laufen ohne nachverfolgbare Referenz-ID.",
-      "cause": "Neue Route wurde ohne Anschluss an `src/lib/correlation-context.server.ts` angelegt.",
-      "impact": "Support-Anfragen können nicht eindeutig zugeordnet werden; Logs/Fehlerantworten/Azure-Aufrufe sind nicht korrelierbar.",
-      "evidence": {
-        "file": "src/routes/api/public/auth-config.ts",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/routes/api/public/auth-config.ts"
-      ],
-      "recommendation": "Handler durch `withCorrelation(...)` wickeln und Fehlerpfade auf `jsonErrorWithCorrelation` umstellen.",
       "dependencies": [],
       "effort": "S",
       "status": "open",
@@ -2109,7 +2083,6 @@
       "findings": [
         "sec:SEC-MED-CLAIMS-001",
         "td:td-endpoint-zod-34111d3b",
-        "td:td-correlation-missing-34111d3b",
         "td:td-console-08e8609a",
         "td:td-console-2c49302b",
         "td:td-console-375dfc5b",
@@ -2183,7 +2156,6 @@
       "td:td-correlation-err-shape-34111d3b",
       "td:td-oversize-7e9a0b20",
       "td:td-endpoint-zod-34111d3b",
-      "td:td-correlation-missing-34111d3b",
       "td:td-console-08e8609a",
       "td:td-console-2c49302b",
       "td:td-console-43084e7a",

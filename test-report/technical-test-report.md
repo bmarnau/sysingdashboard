@@ -1,20 +1,20 @@
 # Technischer Prüfbericht
 
-_Generiert: 2026-07-27T03:17:06.257Z_
+_Generiert: 2026-07-27T03:17:29.889Z_
 
 ## 1. Prüfidentität
 - Dashboard-Version: **1.42.1**
-- Commit: `eefbcb0`
+- Commit: `6a70b19`
 - Build-Zeit: —
-- Testzeit: 2026-07-27T03:17:06.153Z
+- Testzeit: 2026-07-27T03:17:29.795Z
 - Umgebung: Node v22.22.0 · linux · CI=false
 
 ## 2. Gesamtstatus
 **bestanden mit Findings**
 
 ## 3. Executive Summary
-- Findings gesamt: 73 (CRITICAL 0 · HIGH 4 · MEDIUM 19 · LOW 42 · akzeptiert 7).
-- Freigabeempfehlung: **für Pilot geeignet** — 4 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
+- Findings gesamt: 73 (CRITICAL 0 · HIGH 3 · MEDIUM 19 · LOW 42 · akzeptiert 8).
+- Freigabeempfehlung: **für Pilot geeignet** — 3 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
 
 ## 4. Testergebnisse nach Bereich
 
@@ -24,9 +24,9 @@ _Generiert: 2026-07-27T03:17:06.257Z_
 | Backend | nicht ausgeführt | 0 | 0 |
 | API | bestanden | 0 | 0 |
 | UI/E2E | nicht ausgeführt | 0 | 0 |
-| RBAC | bestanden mit Findings | 0 | 1 |
-| Auth | bestanden mit Findings | 0 | 1 |
-| Azure | bestanden mit Findings | 0 | 1 |
+| RBAC | bestanden mit Findings | 0 | 0 |
+| Auth | bestanden mit Findings | 0 | 0 |
+| Azure | bestanden mit Findings | 0 | 0 |
 | Datenintegrität | bestanden | 0 | 0 |
 | Backup/Restore | bestanden | 0 | 0 |
 | Accessibility | nicht ausgeführt | 0 | 0 |
@@ -71,14 +71,14 @@ _Generiert: 2026-07-27T03:17:06.257Z_
 
 ### sec:SEC-HIGH-LOG-001 · HIGH · Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS
 - **Kategorie**: security / logging
-- **Quelle**: auto
+- **Quelle**: auto (akzeptiert)
 - **Beschreibung**: Feldnamen ohne token/secret/password (`connectionString`, `conn`) werden nicht maskiert. Nur der Wert wird gegen `JWT_RE` geprüft — Connection-Strings matchen nicht.
 - **Ursache**: Feldnamen ohne token/secret/password (`connectionString`, `conn`) werden nicht maskiert. Nur der Wert wird gegen `JWT_RE` geprüft — Connection-Strings matchen nicht.
 - **Auswirkung**: Blockiert Release-Phase: azure-production
 - **Komponenten**: src/lib/logger.ts, backend/services/logger.mjs
 - **Nachweis**: test-report/security-report.md#SEC-HIGH-LOG-001
 - **Empfehlung**: Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-security · **Status**: open
+- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-security · **Status**: accepted
 
 ### td:td-correlation-err-shape-34111d3b · HIGH · Fehlerantwort ohne Correlation-ID
 - **Kategorie**: API / API
@@ -840,23 +840,22 @@ _Generiert: 2026-07-27T03:17:06.257Z_
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: test-gap · **Status**: open
 
 ## 6. Sortierte Maßnahmenliste
-- **high-security** (1): sec:SEC-HIGH-LOG-001
 - **high-functional** (3): td:td-correlation-err-shape-34111d3b, td:td-oversize-26e43c0a, td:td-oversize-7e9a0b20
 - **architecture** (58): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-375dfc5b, td:td-console-43084e7a, td:td-console-665c1d8d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-9771f164, td:td-console-993be125, td:td-console-f7820fc7, td:td-layer-b432b1b9, td:td-layer-e0ac1bea, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-789d61fa, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 7. Vergleich zum vorherigen Bericht
-- Neu: 14
-- Behoben: 8
-- Verschlechtert: 1
-- Unverändert: 58
+- Neu: 0
+- Behoben: 1
+- Verschlechtert: 0
+- Unverändert: 73
 - Wieder aufgetreten: 0
 
 ## 8. Freigabeempfehlung
-**für Pilot geeignet** — 4 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
+**für Pilot geeignet** — 3 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
 
 ## 9. Quality-Gate-Blocker (Prompt 2A.10)
-- **high-security-finding** — High Security Finding: sec:SEC-HIGH-LOG-001 _(Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS)_
+_Keine — CI-Gate ist grün._
 
 ## Bekannte Grenzen
 - Reine Aggregation: Qualität hängt an den Einzelberichten.

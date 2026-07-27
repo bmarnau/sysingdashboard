@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.1.0",
-  "generatedAt": "2026-07-27T03:17:06.257Z",
+  "generatedAt": "2026-07-27T03:17:29.889Z",
   "identity": {
     "dashboardVersion": "1.42.1",
-    "commit": "eefbcb0",
+    "commit": "6a70b19",
     "buildTime": null,
-    "testTime": "2026-07-27T03:17:06.153Z",
+    "testTime": "2026-07-27T03:17:29.795Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -15,16 +15,16 @@
   "status": "passed-with-findings",
   "recommendation": {
     "level": "pilot-ready",
-    "reason": "4 HIGH-Findings — für Pilot geeignet, für Produktion nicht."
+    "reason": "3 HIGH-Findings — für Pilot geeignet, für Produktion nicht."
   },
   "summary": {
     "total": 73,
-    "openTotal": 66,
+    "openTotal": 65,
     "critical": 0,
-    "high": 4,
+    "high": 3,
     "medium": 19,
     "low": 42,
-    "accepted": 7,
+    "accepted": 8,
     "sources": {
       "security": {
         "status": "passed-with-findings",
@@ -93,7 +93,7 @@
     "RBAC": {
       "status": "passed-with-findings",
       "openCritical": 0,
-      "openHigh": 1,
+      "openHigh": 0,
       "sourceKeys": [
         "security"
       ]
@@ -101,7 +101,7 @@
     "Auth": {
       "status": "passed-with-findings",
       "openCritical": 0,
-      "openHigh": 1,
+      "openHigh": 0,
       "sourceKeys": [
         "security"
       ]
@@ -109,7 +109,7 @@
     "Azure": {
       "status": "passed-with-findings",
       "openCritical": 0,
-      "openHigh": 1,
+      "openHigh": 0,
       "sourceKeys": [
         "security"
       ]
@@ -262,9 +262,9 @@
       "recommendation": "Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.",
       "dependencies": [],
       "effort": "M",
-      "status": "open",
+      "status": "accepted",
       "source": "auto",
-      "accepted": false,
+      "accepted": true,
       "bucket": "high-security",
       "order": 2
     },
@@ -2065,12 +2065,6 @@
   ],
   "actionOrder": [
     {
-      "bucket": "high-security",
-      "findings": [
-        "sec:SEC-HIGH-LOG-001"
-      ]
-    },
-    {
       "bucket": "high-functional",
       "findings": [
         "td:td-correlation-err-shape-34111d3b",
@@ -2152,53 +2146,43 @@
     }
   ],
   "diff": {
-    "new": [
-      "td:td-correlation-err-shape-34111d3b",
-      "td:td-oversize-7e9a0b20",
-      "td:td-endpoint-zod-34111d3b",
-      "td:td-console-08e8609a",
-      "td:td-console-2c49302b",
-      "td:td-console-43084e7a",
-      "td:td-console-665c1d8d",
-      "td:td-console-9771f164",
-      "td:td-console-993be125",
-      "td:td-console-f7820fc7",
-      "td:td-layer-e0ac1bea",
-      "td:td-endpoint-err-cdae73c5",
-      "td:td-endpoint-err-ce5fa0be",
-      "td:td-orphan-bd7563ab"
-    ],
+    "new": [],
     "fixed": [
-      "td:td-endpoint-auth-cdae73c5",
-      "td:td-cycle-1fa843a1",
-      "td:td-cycle-dc9fbe11",
-      "td:td-oversize-99cca8a6",
-      "td:td-console-629bd14d",
-      "td:td-console-da1180ce",
-      "td:td-layer-c1c89b30",
-      "td:td-orphan-9d8b7a18"
+      "td:td-correlation-missing-34111d3b"
     ],
-    "worse": [
-      "td:td-oversize-789d61fa"
-    ],
+    "worse": [],
     "same": [
       "sec:SEC-CRIT-001",
       "sec:SEC-CRIT-002",
       "sec:SEC-HIGH-STATUS-001",
       "sec:SEC-HIGH-LOG-001",
+      "td:td-correlation-err-shape-34111d3b",
       "td:td-oversize-26e43c0a",
+      "td:td-oversize-7e9a0b20",
       "sec:SEC-HIGH-AUTH-001",
       "sec:SEC-HIGH-AZURE-001",
       "sec:SEC-MED-REDIRECT-001",
       "sec:SEC-MED-CLAIMS-001",
+      "td:td-endpoint-zod-34111d3b",
+      "td:td-console-08e8609a",
+      "td:td-console-2c49302b",
       "td:td-console-375dfc5b",
+      "td:td-console-43084e7a",
+      "td:td-console-665c1d8d",
       "td:td-console-6c701bbd",
       "td:td-console-74bd3646",
+      "td:td-console-9771f164",
+      "td:td-console-993be125",
+      "td:td-console-f7820fc7",
       "td:td-layer-b432b1b9",
+      "td:td-layer-e0ac1bea",
       "td:td-layer-e4fb0e64",
       "td:td-oversize-242b307c",
+      "td:td-oversize-789d61fa",
       "td:td-oversize-f3843ebe",
       "td:td-manual-playwright-smoke-only",
+      "td:td-endpoint-err-cdae73c5",
+      "td:td-endpoint-err-ce5fa0be",
       "td:td-oversize-32eb5e8c",
       "td:td-oversize-38954b26",
       "td:td-oversize-392d9209",
@@ -2228,6 +2212,7 @@
       "td:td-orphan-adda4e46",
       "td:td-orphan-af1ee499",
       "td:td-orphan-b0c0d351",
+      "td:td-orphan-bd7563ab",
       "td:td-orphan-d5b25a61",
       "td:td-orphan-da11a267",
       "td:td-orphan-deb46595",
@@ -2243,11 +2228,5 @@
     ],
     "reappeared": []
   },
-  "blockers": [
-    {
-      "id": "high-security-finding",
-      "reason": "High Security Finding: sec:SEC-HIGH-LOG-001",
-      "detail": "Logger-Redaction erfasst keine Connection-Strings mit AccountKey/SAS"
-    }
-  ]
+  "blockers": []
 }
