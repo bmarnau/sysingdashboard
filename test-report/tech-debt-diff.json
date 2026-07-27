@@ -1,31 +1,10 @@
 {
-  "new": [
-    "td-correlation-err-shape-34111d3b",
-    "td-endpoint-zod-34111d3b",
-    "td-console-08e8609a",
-    "td-console-2c49302b",
-    "td-console-43084e7a",
-    "td-console-665c1d8d",
-    "td-console-9771f164",
-    "td-console-993be125",
-    "td-console-f7820fc7",
-    "td-endpoint-err-cdae73c5",
-    "td-endpoint-err-ce5fa0be",
-    "td-oversize-7e9a0b20",
-    "td-layer-e0ac1bea",
-    "td-orphan-bd7563ab"
-  ],
+  "new": [],
   "resolved": [
-    "td-endpoint-auth-cdae73c5",
-    "td-console-629bd14d",
-    "td-console-da1180ce",
-    "td-cycle-1fa843a1",
-    "td-cycle-dc9fbe11",
-    "td-oversize-99cca8a6",
-    "td-layer-c1c89b30",
-    "td-orphan-9d8b7a18"
+    "td-correlation-err-shape-34111d3b",
+    "td-correlation-missing-34111d3b"
   ],
-  "persistent": 50,
-  "previousVersion": "1.29.0",
+  "persistent": 63,
+  "previousVersion": "1.42.0",
   "currentVersion": "1.42.1"
 }

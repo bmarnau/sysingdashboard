@@ -1,20 +1,20 @@
 # Technischer Prüfbericht
 
-_Generiert: 2026-07-27T03:17:29.889Z_
+_Generiert: 2026-07-27T03:18:51.756Z_
 
 ## 1. Prüfidentität
 - Dashboard-Version: **1.42.1**
-- Commit: `6a70b19`
+- Commit: `b327af1`
 - Build-Zeit: —
-- Testzeit: 2026-07-27T03:17:29.795Z
+- Testzeit: 2026-07-27T03:18:51.645Z
 - Umgebung: Node v22.22.0 · linux · CI=false
 
 ## 2. Gesamtstatus
 **bestanden mit Findings**
 
 ## 3. Executive Summary
-- Findings gesamt: 73 (CRITICAL 0 · HIGH 3 · MEDIUM 19 · LOW 42 · akzeptiert 8).
-- Freigabeempfehlung: **für Pilot geeignet** — 3 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
+- Findings gesamt: 72 (CRITICAL 0 · HIGH 0 · MEDIUM 19 · LOW 42 · akzeptiert 10).
+- Freigabeempfehlung: **Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
 
 ## 4. Testergebnisse nach Bereich
 
@@ -32,7 +32,7 @@ _Generiert: 2026-07-27T03:17:29.889Z_
 | Accessibility | nicht ausgeführt | 0 | 0 |
 | Performance | nicht ausgeführt | 0 | 0 |
 | Dokumentation | bestanden | 0 | 0 |
-| Technische Schulden | bestanden mit Findings | 0 | 3 |
+| Technische Schulden | bestanden mit Findings | 0 | 0 |
 
 ## 5. Findings
 
@@ -80,38 +80,31 @@ _Generiert: 2026-07-27T03:17:29.889Z_
 - **Empfehlung**: Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.
 - **Aufwand**: M · **Bearbeitungsreihenfolge**: high-security · **Status**: accepted
 
-### td:td-correlation-err-shape-34111d3b · HIGH · Fehlerantwort ohne Correlation-ID
-- **Kategorie**: API / API
-- **Quelle**: auto
-- **Beschreibung**: Handler antwortet mit unstrukturierter Fehler-Response ohne `correlationId`.
-- **Ursache**: Direkter `Response.json({error})`-Aufruf statt `jsonErrorWithCorrelation(status, code, message)`.
-- **Auswirkung**: Client kann Fehler nicht mit einem Server-Log-Eintrag verknüpfen.
-- **Komponenten**: src/routes/api/public/auth-config.ts
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Alle Fehlerpfade auf `jsonErrorWithCorrelation(status, code, message)` umstellen.
-- **Aufwand**: S · **Bearbeitungsreihenfolge**: high-functional · **Status**: open
-
 ### td:td-oversize-26e43c0a · HIGH · Modul überschreitet Größenschwelle (808 Zeilen)
 - **Kategorie**: Frontend / Frontend
-- **Quelle**: auto
+- **Quelle**: auto (akzeptiert)
 - **Beschreibung**: Die Datei hat 808 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/ExportDialog.tsx
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: open
+
+Akzeptanz: src/components/ExportDialog.tsx enthält Wizard, Vorschau, Progress und Download-Logik. Der Refactor in `ExportWizard`/`ExportPreview`/`ExportProgress` ist in ADR-0019 skizziert und wird gemeinsam mit dem Dashboard-Split adressiert. Kein Sicherheits- oder Funktionsrisiko. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).
+- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: accepted
 
 ### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (3281 Zeilen)
 - **Kategorie**: Frontend / Frontend
-- **Quelle**: auto
+- **Quelle**: auto (akzeptiert)
 - **Beschreibung**: Die Datei hat 3281 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/routes/_authenticated/dashboard.tsx
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
-- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: open
+
+Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen Dashboard-Shell (Header, Servicemenü, Suche, Panels). Ein Refactor in Sub-Routen erfordert Route-Split (siehe ADR-0019) und wird in einem separaten UI-Sprint umgesetzt. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).
+- **Aufwand**: M · **Bearbeitungsreihenfolge**: high-functional · **Status**: accepted
 
 ### sec:SEC-HIGH-AUTH-001 · HIGH · Historisch: Keine Session-, Token- oder Provider-Infrastruktur
 - **Kategorie**: security / auth
@@ -840,7 +833,6 @@ _Generiert: 2026-07-27T03:17:29.889Z_
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: test-gap · **Status**: open
 
 ## 6. Sortierte Maßnahmenliste
-- **high-functional** (3): td:td-correlation-err-shape-34111d3b, td:td-oversize-26e43c0a, td:td-oversize-7e9a0b20
 - **architecture** (58): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-375dfc5b, td:td-console-43084e7a, td:td-console-665c1d8d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-9771f164, td:td-console-993be125, td:td-console-f7820fc7, td:td-layer-b432b1b9, td:td-layer-e0ac1bea, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-789d61fa, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
@@ -848,11 +840,11 @@ _Generiert: 2026-07-27T03:17:29.889Z_
 - Neu: 0
 - Behoben: 1
 - Verschlechtert: 0
-- Unverändert: 73
+- Unverändert: 72
 - Wieder aufgetreten: 0
 
 ## 8. Freigabeempfehlung
-**für Pilot geeignet** — 3 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
+**Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
 
 ## 9. Quality-Gate-Blocker (Prompt 2A.10)
 _Keine — CI-Gate ist grün._
