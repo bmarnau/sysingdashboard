@@ -9,7 +9,7 @@
  * App-Fluss stören). Bei nicht-verfügbarer IndexedDB wird `null`
  * zurückgegeben — der Logger fällt dann auf reines In-Memory zurück.
  */
-import type { LogEntry } from "./logger";
+import type { LogEntry } from "./logger.types";
 
 // Test-Isolation: die Testinstanz überschreibt den DB-Namen, damit
 // produktive Log-Historien in Tests nicht angefasst werden. Default
