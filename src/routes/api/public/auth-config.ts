@@ -19,6 +19,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   withCorrelation,
   getCurrentCorrelationId,
+  jsonErrorWithCorrelation,
 } from "../../../lib/correlation-context.server";
 
 export const endpointMeta = {
@@ -28,17 +29,15 @@ export const endpointMeta = {
   classification: "public",
 } as const;
 
-function json(body: Record<string, unknown>, init?: ResponseInit): Response {
+function jsonOk(body: Record<string, unknown>): Response {
   const correlationId = getCurrentCorrelationId() ?? "unknown";
   return new Response(
     JSON.stringify({ ...body, correlationId, timestamp: new Date().toISOString() }),
     {
-      ...init,
       headers: {
         "Content-Type": "application/json; charset=utf-8",
         "Cache-Control": "no-store",
         "X-Correlation-Id": correlationId,
-        ...(init?.headers ?? {}),
       },
     },
   );
@@ -52,34 +51,22 @@ export const Route = createFileRoute("/api/public/auth-config")({
         const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
 
         if (!url || !publishableKey) {
-          return json(
-            { status: "missing", provider: "supabase", ok: false, code: "not_configured" },
-            { status: 503 },
-          );
+          return jsonErrorWithCorrelation(503, "not_configured", "Supabase-Konfiguration fehlt.");
         }
         if (publishableKey.startsWith("sb_secret_")) {
           // Defense-in-Depth: niemals einen Service-Role-Key ausliefern.
-          return json(
-            { status: "invalid", provider: "supabase", ok: false, code: "invalid_key" },
-            { status: 500 },
-          );
+          return jsonErrorWithCorrelation(500, "invalid_key", "Ungültiger Publishable-Key.");
         }
         try {
           const parsed = new URL(url);
           if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-            return json(
-              { status: "invalid", provider: "supabase", ok: false, code: "invalid_url" },
-              { status: 500 },
-            );
+            return jsonErrorWithCorrelation(500, "invalid_url", "Ungültige Supabase-URL.");
           }
         } catch {
-          return json(
-            { status: "invalid", provider: "supabase", ok: false, code: "invalid_url" },
-            { status: 500 },
-          );
+          return jsonErrorWithCorrelation(500, "invalid_url", "Ungültige Supabase-URL.");
         }
 
-        return json({
+        return jsonOk({
           status: "configured",
           provider: "supabase",
           url,
