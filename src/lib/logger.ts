@@ -23,23 +23,38 @@
 
 import type { DashboardError } from "@/lib/errors";
 import { isDashboardError } from "@/lib/errors";
+import type { LogEntry, LogLevel } from "@/lib/logger.types";
 
-export type LogLevel = "debug" | "info" | "warn" | "error";
-
-export interface LogEntry {
-  ts: string;
-  level: LogLevel;
-  message: string;
-  context?: Record<string, unknown>;
-  error?: { name: string; message: string; stack?: string; code?: string };
-}
+export type { LogEntry, LogLevel };
 
 const LEVEL_ORDER: Record<LogLevel, number> = { debug: 10, info: 20, warn: 30, error: 40 };
 const RING_MAX = 500;
 
+// Feldnamen, deren Wert grundsätzlich als Secret behandelt wird.
+// SEC-HIGH-LOG-001: erweitert um Connection-String-typische Feldnamen.
 const SECRET_KEY_RE =
-  /(token|secret|password|passwd|authorization|bearer|api[_-]?key|credential|private[_-]?key)/i;
+  /(token|secret|password|passwd|authorization|bearer|api[_-]?key|credential|private[_-]?key|connection[_-]?string|\bconn\b|\bdsn\b|sas[_-]?url|sas[_-]?token)/i;
+
+// String-Werte, die typische Credential-Muster enthalten — auch dann
+// maskieren, wenn der Feldname harmlos ist (`config`, `msg`, `url`, …).
 const JWT_RE = /^eyJ[A-Za-z0-9_-]+?\.[A-Za-z0-9_-]+?\.[A-Za-z0-9_-]+$/;
+const SECRET_VALUE_PATTERNS: RegExp[] = [
+  /AccountKey\s*=\s*[^;\s"']+/i,
+  /SharedAccessSignature\s*=\s*[^;\s"']+/i,
+  /AccountName\s*=\s*[^;\s"']+\s*;\s*AccountKey\s*=/i,
+  /(?:^|[;\s])Password\s*=\s*[^;\s"']+/i,
+  /(?:^|[;\s])Pwd\s*=\s*[^;\s"']+/i,
+  /(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?):\/\/[^:@\s"']+:[^@\s"']+@/i,
+  /\bBearer\s+[A-Za-z0-9._~+/=-]{16,}/i,
+  /\bsb_(?:secret|publishable)_[A-Za-z0-9_-]{8,}/,
+  /\bxox[baprs]-[A-Za-z0-9-]{10,}/, // Slack tokens
+  /\bAIza[0-9A-Za-z_-]{20,}/, // Google API keys
+];
+
+function looksLikeSecretString(value: string): boolean {
+  if (JWT_RE.test(value)) return true;
+  return SECRET_VALUE_PATTERNS.some((re) => re.test(value));
+}
 
 function isDev(): boolean {
   try {
