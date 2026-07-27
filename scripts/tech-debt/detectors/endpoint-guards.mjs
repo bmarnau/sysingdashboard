@@ -18,14 +18,19 @@ export function detectEndpointGuards(ROOT) {
     const text = read(abs);
 
     const hasAuth =
-      /X-Sync-Token|requireSupabaseAuth|Authorization|x-webhook-signature|process\.env\.\w+_TOKEN/i.test(
+      /X-Sync-Token|requireSupabaseAuth|Authorization|x-webhook-signature|process\.env\.\w+_TOKEN|\.auth\.getUser\s*\(|\.rpc\(\s*["'`]has_permission["'`]/i.test(
         text,
       );
     const hasValidation = /\.parse\s*\(|\.safeParse\s*\(|zod|Response\.json\s*\(/i.test(text);
     const hasErrorStructure =
       /new\s+Response\(\s*JSON|Response\.json\(\s*\{\s*error/i.test(text) ||
       /status\s*:\s*(4|5)\d\d/.test(text);
-    const isPublic = /\/api\/public\//.test(relPath);
+    const isPublicByPath = /\/api\/public\//.test(relPath);
+    // `export const endpointMeta = { public: true, ... }` markiert bewusst
+    // öffentliche Endpoints (z. B. `/api/status`) außerhalb `/api/public/`.
+    const isPublicByMeta =
+      /export\s+const\s+endpointMeta\s*=\s*\{[\s\S]*?\bpublic\s*:\s*true\b/.test(text);
+    const isPublic = isPublicByPath || isPublicByMeta;
 
     if (!hasAuth && !isPublic) {
       findings.push({
