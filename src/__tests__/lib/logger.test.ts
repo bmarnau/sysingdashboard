@@ -77,6 +77,17 @@ describe("redact", () => {
       code: "abc-def-123",
     });
   });
+
+  it("should_recurseIntoNestedObjectsAndArrays", () => {
+    const out = redact({
+      list: [{ password: "p" }, { keep: 1 }],
+      nested: { secret: "s", ok: true },
+    });
+    expect(out).toEqual({
+      list: [{ password: "[REDACTED]" }, { keep: 1 }],
+      nested: { secret: "[REDACTED]", ok: true },
+    });
+  });
 });
 
 describe("logger buffer", () => {
