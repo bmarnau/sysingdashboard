@@ -28,44 +28,55 @@ export const endpointMeta = {
   classification: "public",
 } as const;
 
-function json(body: unknown, init?: ResponseInit): Response {
-  return new Response(JSON.stringify(body), {
-    ...init,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
-      ...(init?.headers ?? {}),
+function json(body: Record<string, unknown>, init?: ResponseInit): Response {
+  const correlationId = getCurrentCorrelationId() ?? "unknown";
+  return new Response(
+    JSON.stringify({ ...body, correlationId, timestamp: new Date().toISOString() }),
+    {
+      ...init,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-Correlation-Id": correlationId,
+        ...(init?.headers ?? {}),
+      },
     },
-  });
+  );
 }
 
 export const Route = createFileRoute("/api/public/auth-config")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: withCorrelation(async () => {
         const url = process.env.SUPABASE_URL;
         const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
 
         if (!url || !publishableKey) {
           return json(
-            { status: "missing", provider: "supabase" },
+            { status: "missing", provider: "supabase", ok: false, code: "not_configured" },
             { status: 503 },
           );
         }
         if (publishableKey.startsWith("sb_secret_")) {
           // Defense-in-Depth: niemals einen Service-Role-Key ausliefern.
           return json(
-            { status: "invalid", provider: "supabase" },
+            { status: "invalid", provider: "supabase", ok: false, code: "invalid_key" },
             { status: 500 },
           );
         }
         try {
           const parsed = new URL(url);
           if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-            return json({ status: "invalid", provider: "supabase" }, { status: 500 });
+            return json(
+              { status: "invalid", provider: "supabase", ok: false, code: "invalid_url" },
+              { status: 500 },
+            );
           }
         } catch {
-          return json({ status: "invalid", provider: "supabase" }, { status: 500 });
+          return json(
+            { status: "invalid", provider: "supabase", ok: false, code: "invalid_url" },
+            { status: 500 },
+          );
         }
 
         return json({
@@ -74,7 +85,7 @@ export const Route = createFileRoute("/api/public/auth-config")({
           url,
           publishableKey,
         });
-      },
+      }),
     },
   },
 });
