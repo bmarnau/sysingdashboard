@@ -16,6 +16,17 @@
  */
 
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  withCorrelation,
+  getCurrentCorrelationId,
+} from "../../../lib/correlation-context.server";
+
+export const endpointMeta = {
+  public: true,
+  reason:
+    "Auth-Config-Bootstrap — liefert nur SUPABASE_URL und den öffentlichen Publishable-Key, damit der Browser-Client sich initialisieren kann, wenn der Publish-Build ohne VITE_SUPABASE_* gebaut wurde.",
+  classification: "public",
+} as const;
 
 function json(body: unknown, init?: ResponseInit): Response {
   return new Response(JSON.stringify(body), {
