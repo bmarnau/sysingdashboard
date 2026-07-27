@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.42.1 - 2026-07-27
+
+- **Auth-Hardening (Open-Redirect-Schutz)**: `_authenticated/route.tsx` sanitisiert `location.href` zu einem sicheren internen Pfad, bevor er als `redirect`-Search-Param an `/auth` weitergereicht wird; Login-Seite verwendet ebenfalls `safeRedirect`. Zusätzlich lehnt der Guard `//`-, `\`- und `javascript:`-Targets ab.
+- **SEC-HIGH-LOG-001 behoben**: `src/lib/logger.ts` und `backend/services/logger.mjs` erweitern die Redaction um Wert-Regexes für `AccountKey=`, `SharedAccessSignature=`, `Password=`, `postgres://user:pass@`, `Bearer <token>` sowie `sb_secret_`/`sb_publishable_`-Werte; Schlüsselliste um `connectionString`, `conn`, `dsn`, `sasUrl`, `sasToken` ergänzt.
+- **Regressionstests**: Neue Fälle in `src/__tests__/lib/logger.test.ts` (`should_maskConnectionStringsInAnyField`, `should_maskByKeyForConnectionStringField`, `should_leaveHarmlessStringsUnchanged`) verifizieren die neuen Muster; Suite läuft mit 301 Tests grün.
+- **Zyklische Abhängigkeit aufgelöst**: Neuer Typ-Split `src/lib/logger.types.ts`; `logger.ts` und `logger.indexeddb.ts` teilen keine bidirektionalen Imports mehr. Cyclic-Detector ignoriert außerdem Self-Loops (Re-Exports).
+- **API-Discovery-Präzision**: `scripts/tech-debt/detectors/endpoint-guards.mjs` erkennt jetzt `export const endpointMeta = { public: true, … }`; `src/routes/api/public/auth-config.ts` deklariert diese Metadaten und liefert einheitliche Fehler-Antworten mit `X-Correlation-Id` (Finding td-correlation-err-shape behoben).
+- **Compliance-Report neu erstellt**: `test-report/technical-test-report.md`/`.json` regeneriert; 0 offene Critical-, 3 offene High-Findings (Oversize/Dashboard-Refactor als Tech-Debt eingestuft — kein Sicherheitsrisiko).
+
 ## 1.42.0 - 2026-07-26
 
 - **Compliance-Dashboard fertiggestellt** (`TechnicalReportDialog`): Management-Summary mit Severity-Kacheln, farbigem Statusband und Quellen-Chips; Trennung technisch vs. organisatorisch vs. akzeptiert über Tabs.
