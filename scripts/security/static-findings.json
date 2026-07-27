@@ -74,6 +74,7 @@
       "blocksReleasePhase": "azure-production",
       "accepted": true,
       "acceptanceReason": "Behoben in v1.42.1 (Sprint 03A): SECRET_KEY_RE um connectionString/conn/dsn/sas_url/sas_token erweitert; zusätzlich SECRET_VALUE_PATTERNS für AccountKey=, SharedAccessSignature=, Password=, postgres://user:pass@, Bearer <token>, sb_secret_/sb_publishable_ Werte. Regression durch neue Tests in src/__tests__/lib/logger.test.ts (should_maskConnectionStringsInAnyField, should_maskByKeyForConnectionStringField, should_leaveHarmlessStringsUnchanged) und identische Regeln in backend/services/logger.mjs."
+    },
     {
       "id": "SEC-MED-REDIRECT-001",
       "severity": "medium",
