@@ -1,29 +1,29 @@
 # Management-Zusammenfassung — Technical Debt
 
-**Version 1.42.0** · 2026-07-27
+**Version 1.42.1** · 2026-07-27
 
 | Kategorie | Wert |
 | --------- | ---- |
-| Findings gesamt | 65 |
+| Findings gesamt | 64 |
 | Critical | 0 |
 | High | 3 |
-| Medium | 19 |
+| Medium | 18 |
 | Low + Info | 43 |
-| Neu seit Vorlauf | 15 |
+| Neu seit Vorlauf | 14 |
 | Behoben seit Vorlauf | 8 |
 
 ## Top-10 nach Priorität
 
 1. **[High]** Fehlerantwort ohne Correlation-ID — `src/routes/api/public/auth-config.ts` (`td-correlation-err-shape-34111d3b`)
 2. **[Medium]** API-Endpoint ohne Eingabevalidierung — `src/routes/api/public/auth-config.ts` (`td-endpoint-zod-34111d3b`)
-3. **[Medium]** Aktive API-Route ohne Correlation-ID-Middleware — `src/routes/api/public/auth-config.ts` (`td-correlation-missing-34111d3b`)
-4. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/start.ts:13` (`td-console-08e8609a`)
-5. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/integrations/supabase/auth-middleware.ts:45` (`td-console-2c49302b`)
-6. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/routes/__root.tsx:40` (`td-console-375dfc5b`)
-7. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/integrations/supabase/client.ts:54` (`td-console-43084e7a`)
-8. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/integrations/supabase/client.server.ts:42` (`td-console-665c1d8d`)
-9. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/server.ts:68` (`td-console-6c701bbd`)
-10. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/server.ts:79` (`td-console-74bd3646`)
+3. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/start.ts:13` (`td-console-08e8609a`)
+4. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/integrations/supabase/auth-middleware.ts:45` (`td-console-2c49302b`)
+5. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/routes/__root.tsx:40` (`td-console-375dfc5b`)
+6. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/integrations/supabase/client.ts:54` (`td-console-43084e7a`)
+7. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/integrations/supabase/client.server.ts:42` (`td-console-665c1d8d`)
+8. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/server.ts:68` (`td-console-6c701bbd`)
+9. **[Medium]** Direktes console.error außerhalb der Logger-Fassade — `src/server.ts:79` (`td-console-74bd3646`)
+10. **[Medium]** Direktes console.info außerhalb der Logger-Fassade — `src/integrations/supabase/env-check.ts:93` (`td-console-9771f164`)
 
 ## Interpretation
 

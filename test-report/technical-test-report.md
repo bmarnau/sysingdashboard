@@ -1,19 +1,19 @@
 # Technischer Prüfbericht
 
-_Generiert: 2026-07-27T03:15:31.629Z_
+_Generiert: 2026-07-27T03:17:06.257Z_
 
 ## 1. Prüfidentität
-- Dashboard-Version: **1.42.0**
-- Commit: `10702c6`
+- Dashboard-Version: **1.42.1**
+- Commit: `eefbcb0`
 - Build-Zeit: —
-- Testzeit: 2026-07-27T03:15:31.520Z
+- Testzeit: 2026-07-27T03:17:06.153Z
 - Umgebung: Node v22.22.0 · linux · CI=false
 
 ## 2. Gesamtstatus
 **bestanden mit Findings**
 
 ## 3. Executive Summary
-- Findings gesamt: 74 (CRITICAL 0 · HIGH 4 · MEDIUM 20 · LOW 42 · akzeptiert 7).
+- Findings gesamt: 73 (CRITICAL 0 · HIGH 4 · MEDIUM 19 · LOW 42 · akzeptiert 7).
 - Freigabeempfehlung: **für Pilot geeignet** — 4 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
 
 ## 4. Testergebnisse nach Bereich
@@ -166,17 +166,6 @@ _Generiert: 2026-07-27T03:15:31.629Z_
 - **Komponenten**: src/routes/api/public/auth-config.ts
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Zod-Schema am Handler-Eingang ergänzen und bei Fehler 400 zurückgeben.
-- **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
-
-### td:td-correlation-missing-34111d3b · MEDIUM · Aktive API-Route ohne Correlation-ID-Middleware
-- **Kategorie**: API / API
-- **Quelle**: auto
-- **Beschreibung**: Handler ist nicht mit `withCorrelation` umschlossen; Requests laufen ohne nachverfolgbare Referenz-ID.
-- **Ursache**: Neue Route wurde ohne Anschluss an `src/lib/correlation-context.server.ts` angelegt.
-- **Auswirkung**: Support-Anfragen können nicht eindeutig zugeordnet werden; Logs/Fehlerantworten/Azure-Aufrufe sind nicht korrelierbar.
-- **Komponenten**: src/routes/api/public/auth-config.ts
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Handler durch `withCorrelation(...)` wickeln und Fehlerpfade auf `jsonErrorWithCorrelation` umstellen.
 - **Aufwand**: S · **Bearbeitungsreihenfolge**: architecture · **Status**: open
 
 ### td:td-console-08e8609a · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
@@ -853,11 +842,11 @@ _Generiert: 2026-07-27T03:15:31.629Z_
 ## 6. Sortierte Maßnahmenliste
 - **high-security** (1): sec:SEC-HIGH-LOG-001
 - **high-functional** (3): td:td-correlation-err-shape-34111d3b, td:td-oversize-26e43c0a, td:td-oversize-7e9a0b20
-- **architecture** (59): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-correlation-missing-34111d3b, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-375dfc5b, td:td-console-43084e7a, td:td-console-665c1d8d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-9771f164, td:td-console-993be125, td:td-console-f7820fc7, td:td-layer-b432b1b9, td:td-layer-e0ac1bea, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-789d61fa, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
+- **architecture** (58): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-375dfc5b, td:td-console-43084e7a, td:td-console-665c1d8d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-9771f164, td:td-console-993be125, td:td-console-f7820fc7, td:td-layer-b432b1b9, td:td-layer-e0ac1bea, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-789d61fa, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 7. Vergleich zum vorherigen Bericht
-- Neu: 15
+- Neu: 14
 - Behoben: 8
 - Verschlechtert: 1
 - Unverändert: 58
