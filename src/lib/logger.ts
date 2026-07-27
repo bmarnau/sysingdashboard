@@ -66,7 +66,7 @@ function isDev(): boolean {
 }
 
 function redactValue(value: unknown): unknown {
-  if (typeof value === "string" && JWT_RE.test(value)) return "[REDACTED]";
+  if (typeof value === "string" && looksLikeSecretString(value)) return "[REDACTED]";
   if (Array.isArray(value)) return value.map(redactValue);
   if (value && typeof value === "object") {
     return redact(value as Record<string, unknown>);
