@@ -1,16 +1,16 @@
 # Security Report
 
-Generated: 2026-07-24T05:45:53.045Z
+Generated: 2026-07-27T03:17:25.493Z
 Strict-High: no
 Release blocked: **no**
 
 ## Zusammenfassung
 
 - CRITICAL: **0**
-- HIGH: **1**
+- HIGH: **0**
 - MEDIUM: 1
 - LOW: 0
-- akzeptiert (dokumentiert): 7
+- akzeptiert (dokumentiert): 8
 
 ## Release-Regeln
 - **CRITICAL** — blockiert Release: ja, Phasen: all
@@ -83,6 +83,7 @@ Release blocked: **no**
 - **Reproduktion**: Feldnamen ohne token/secret/password (`connectionString`, `conn`) werden nicht maskiert. Nur der Wert wird gegen `JWT_RE` geprüft — Connection-Strings matchen nicht.
 - **Empfehlung**: Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.
 - **Blockiert Phase**: azure-production
+- **Akzeptiert**: Behoben in v1.42.1 (Sprint 03A): SECRET_KEY_RE um connectionString/conn/dsn/sas_url/sas_token erweitert; zusätzlich SECRET_VALUE_PATTERNS für AccountKey=, SharedAccessSignature=, Password=, postgres://user:pass@, Bearer <token>, sb_secret_/sb_publishable_ Werte. Regression durch neue Tests in src/__tests__/lib/logger.test.ts (should_maskConnectionStringsInAnyField, should_maskByKeyForConnectionStringField, should_leaveHarmlessStringsUnchanged) und identische Regeln in backend/services/logger.mjs.
 
 ### SEC-MED-CLAIMS-001 · MEDIUM · Keine Claims-Whitelist im Logger
 
