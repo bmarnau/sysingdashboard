@@ -15,12 +15,30 @@
  * verwendet wird — alle anderen `.mjs`-Services rufen `logger.*`.
  */
 
+// SEC-HIGH-LOG-001: gleiche Redaction-Regeln wie src/lib/logger.ts.
 const SECRET_KEY_RE =
-  /(token|secret|password|passwd|authorization|bearer|api[_-]?key|credential|private[_-]?key)/i;
+  /(token|secret|password|passwd|authorization|bearer|api[_-]?key|credential|private[_-]?key|connection[_-]?string|\bconn\b|\bdsn\b|sas[_-]?url|sas[_-]?token)/i;
 const JWT_RE = /^eyJ[A-Za-z0-9_-]+?\.[A-Za-z0-9_-]+?\.[A-Za-z0-9_-]+$/;
+const SECRET_VALUE_PATTERNS = [
+  /AccountKey\s*=\s*[^;\s"']+/i,
+  /SharedAccessSignature\s*=\s*[^;\s"']+/i,
+  /AccountName\s*=\s*[^;\s"']+\s*;\s*AccountKey\s*=/i,
+  /(?:^|[;\s])Password\s*=\s*[^;\s"']+/i,
+  /(?:^|[;\s])Pwd\s*=\s*[^;\s"']+/i,
+  /(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?):\/\/[^:@\s"']+:[^@\s"']+@/i,
+  /\bBearer\s+[A-Za-z0-9._~+/=-]{16,}/i,
+  /\bsb_(?:secret|publishable)_[A-Za-z0-9_-]{8,}/,
+  /\bxox[baprs]-[A-Za-z0-9-]{10,}/,
+  /\bAIza[0-9A-Za-z_-]{20,}/,
+];
+
+function looksLikeSecretString(value) {
+  if (JWT_RE.test(value)) return true;
+  return SECRET_VALUE_PATTERNS.some((re) => re.test(value));
+}
 
 function redactValue(value) {
-  if (typeof value === "string" && JWT_RE.test(value)) return "[REDACTED]";
+  if (typeof value === "string" && looksLikeSecretString(value)) return "[REDACTED]";
   if (Array.isArray(value)) return value.map(redactValue);
   if (value && typeof value === "object") return redact(value);
   return value;
