@@ -1,84 +1,79 @@
-# Sprint 03A – Auth- und Security-Regression
 
-Keine neuen Fachfunktionen. Reihenfolge: reproduzieren → analysieren → minimal fixen → Tests → Report.
+# Sprint 03B – Login Recovery und End-to-End-Authentifizierung
 
-## 1. Auth-Regression: reproduzieren & bewerten
+## Beobachteter Zustand (verifiziert vor Planung)
 
-**Erste Beobachtung aus den Quellen:**
-- `src/routes/index.tsx` (Landing, 129 Zeilen) ruft `getSession()`. Bei vorhandener Session `navigate({ to: "/dashboard", replace: true })`. Das ist erwartetes Verhalten für einen **eingeloggten** Benutzer.
-- `_authenticated/route.tsx` erzwingt Session per `getUser()` und `is_account_active` RPC. Ohne Session → Redirect nach `/auth`. Anonymer Zugriff ist damit blockiert.
-- These: Die "verschwundene Anmeldung" ist keine Umgehung, sondern eine **persistierte Session** aus früheren Anmeldungen (`persistSession: true, storage: localStorage` in `client.ts`).
+- Console-Log der laufenden Preview zeigt einen harten Renderfehler **`TypeError: Cannot convert object to primitive value`** im `beforeLoad` von `/_authenticated`, gefolgt von einem Ausschlag der `CatchBoundary` in `__root__/`. Dadurch erscheint die Fehlerseite „This page didn't load" statt einer Weiterleitung nach `/auth`.
+- Session-Replay bestätigt: Aufruf `/dashboard` → sofort Fehlerseite. Es gibt also keine „stumme Auto-Anmeldung"; der Redirect-Guard löst technisch aus, bricht aber vor der eigentlichen `redirect()`-Wirkung ab.
+- Auth-Konfiguration (`config.ts`, `runtime-config.ts`, `/api/public/auth-config`) ist grundsätzlich vorhanden und mit Runtime-Fallback ausgestattet; Publish nutzt ggf. den Runtime-Weg.
+- Ursachenverdacht (unbestätigt): Der neue Open-Redirect-Guard in `_authenticated/route.tsx` konstruiert `combined = \`${path}${search}\`` — wenn TanStack `location.search` in dieser Router-Version als **Objekt** liefert, wirft die Template-Coercion genau diesen `TypeError`. Ebenfalls prüfen: `throw redirect({ … search: { … } })` innerhalb `try/catch` mit `isRedirect`-Fehlprüfung (Property-Check statt `isRedirect()`-Funktion) — kann Redirects verschlucken.
 
-**Vorgehen zur Verifikation** (Playwright im Sandbox):
-1. Preview + Published öffnen mit sauberem Storage → muss auf Landing verharren und Anmelde-CTA zeigen.
-2. Direktaufruf `/_authenticated/dashboard` ohne Session → muss auf `/auth` redirecten.
-3. Direktaufruf `/dashboard` mit vorhandener Session → Dashboard nur mit `is_account_active=true`.
-4. Netzwerk-Trace: prüfen, ob PostgREST-Requests wirklich `Authorization: Bearer <jwt>` tragen (RLS-wirksame Identität).
-5. Logout: `signOut()` + Cache-Teardown → Zurück auf `/auth`, Reload bleibt anonym.
+Diese Hypothesen werden in Schritt 1 des Sprints reproduziert und bestätigt, bevor eine Zeile geändert wird.
 
-**Behebung nur wenn Verifikation Umgehung zeigt.** Andernfalls im Report als "kein Sicherheitsproblem – persistierte Session, wie spezifiziert" schließen und im Handbuch als erwartetes Verhalten dokumentieren. Zusätzlich `search`-Redirect in `_authenticated/route.tsx` von `location.href` auf `location.pathname + location.search` einschränken (Open-Redirect-Härtung), damit externe URLs nicht als Redirect-Ziel eingeschleust werden können.
+## Ziel
 
-## 2. High-Findings validieren
+Preview- und Published-Login sind mit einem realen Supabase-Benutzer end-to-end nachweisbar. Keine Fachfunktionen, kein Refactoring über den Fix hinaus.
 
-| ID | Datei | Bewertung nach Codelese | Aktion |
-|---|---|---|---|
-| SEC-HIGH-LOG-001 | `src/lib/logger.ts`, `backend/services/logger.mjs` | **Echt.** Redaction prüft nur `JWT_RE` auf Werten; `AccountKey=`/`SharedAccessSignature=`/`Server=…Password=` bleiben unmaskiert. | Fix + Tests |
-| td-endpoint-auth-…cdae73c5 | `src/routes/api/status.ts` | **Fehlalarm.** Datei deklariert `endpointMeta.public = true` mit Begründung; Scanner (`scripts/api-discovery/analyzers.mjs`) wertet dieses Marker-Feld nicht aus. | Scanner erweitern, Finding schließen |
-| td-cycle-1fa843a1 | `src/__tests__/mocks/server.ts` | **Fehlalarm.** Self-Loop (Modul → sich selbst) in 16-Zeilen-Testdatei; Detektor zählt Re-Export als Kante. | Detektor: Self-Loop ignorieren |
-| td-cycle-dc9fbe11 | `src/lib/logger.ts ↔ src/lib/logger.indexeddb.ts` | **Echt, klein & risikoarm.** | Sofort auflösen: `LogEntry`-Type nach `src/lib/logger.types.ts` extrahieren |
-| td-oversize-99cca8a6 | `src/routes/index.tsx` (Report sagt 3256, tatsächlich 129) | **Stale Report.** Datei wurde in Sprint 1.40.x geschrumpft. | Reports neu bauen; Finding fällt weg |
-| td-oversize-26e43c0a | `src/components/ExportDialog.tsx` (807 Z.) | **Echt, kein Auth/Security-Bezug.** | Tech-Debt für späteren Sprint, Refactor-Plan skizzieren |
-| td-oversize-ebfd4b54 | `src/components/UserManagementDialog.tsx` (562 Z.) | **Echt, RBAC-nahe – aber Logik in `users-supabase-service.ts` gekapselt.** | Tech-Debt, Refactor-Plan skizzieren |
+## Vorgehen
 
-## 3. Minimale Fixes
+### 1. Fehler reproduzieren und Ursache bestätigen
+- Playwright-Reproskript gegen `http://localhost:8080/dashboard` und `/auth?redirect=/dashboard` (Chromium headless, viewport 1280×1800). Erfasst URL, Screenshot, Console, Netzwerkstatus, `X-Correlation-Id`. Keine Tokens/Passwörter im Log.
+- Zweite Session mit gültigem Supabase-User (`LOVABLE_BROWSER_AUTH_STATUS`) — falls `injected`, Session in localStorage restoren und Verhalten dokumentieren; sonst als „external_unmanaged" markieren und nur öffentliche Route testen.
+- Runtime-Typ von `location.search` in `_authenticated/route.tsx` per gezieltem `console.debug` (temporär) verifizieren, um Hypothese A oder B zu belegen.
 
-### 3.1 Logger-Redaction (SEC-HIGH-LOG-001)
-- `src/lib/logger.ts`: Regex-Set erweitern (`SECRET_VALUE_RE`) für:
-  `AccountKey=…`, `SharedAccessSignature=…`, `Password=…`, `Server=…;.*Password=…`, `AccountName=…;AccountKey=…`, `postgres://…:…@`, `Bearer <opaque/JWT>`, `sb_secret_…`, `sb_publishable_…` (nur in Werten, nicht als Feldname).
-- `SECRET_KEY_RE` um `connectionString`, `conn`, `dsn`, `sasUrl`, `sasToken` ergänzen.
-- `backend/services/logger.mjs`: gleiche Regeln, gemeinsame Definition via reinem Datenmodul `backend/services/redact-rules.mjs` (kein ESM-CJS-Bruch).
-- Tests: `src/__tests__/lib/logger.test.ts` erweitern (positiv: Werte werden `[REDACTED]`; negativ: harmlose Strings wie `"Server=lokaler Testserver"` ohne Credential-Muster bleiben unverändert; Nested Objects/Arrays; Fehler-Messages externer Provider).
-- Snapshot-Guard: `src/__tests__/security/logging.test.ts` — kein Rohwert im Ringpuffer.
+### 2. Minimalfix
+Nur die tatsächlich bestätigte Ursache ändern. Erwartete, minimal-invasive Kandidaten:
+- `src/routes/_authenticated/route.tsx`
+  - `safeInternalTarget` neu: `location.pathname` (String) verwenden, `search` mit `new URLSearchParams` in String konvertieren, statt Template-Coercion auf ein potenziell-Objekt.
+  - `catch`-Block: TanStack-`isRedirect(e)` importieren (statt Property-Check `.isRedirect`), damit legitime Redirects nicht in den Fallback-Redirect kollabieren.
+  - `is_account_active`-RPC in eigenen `try/catch`, damit Netzwerk-/RLS-Fehler nicht die gesamte Session abbrechen (Unterscheidung „Auth ok, Statusprüfung down" vs. „nicht eingeloggt").
+- `src/routes/auth.tsx`
+  - `safeRedirect` analog absichern; `Link to="/"` in „Zurück"-Zeile prüfen — kein Coercion-Risiko, aber Konsistenz.
+- Redirect-Guard bleibt aktiv: Nur same-origin Pfade (`^/[^/\\]`) werden weitergereicht, alles andere fällt auf `/dashboard` zurück.
 
-### 3.2 Endpoint-Auth-Scanner (Fehlalarm)
-- `scripts/api-discovery/analyzers.mjs`: Wenn Modul `endpointMeta.public === true` exportiert, als "public, dokumentiert" führen und aus Auth-Guard-Prüfung ausklammern.
-- Test: `src/__tests__/api-discovery/discovery.test.ts` — Fixture mit `endpointMeta.public = true` erzeugt **kein** Finding; Fixture ohne Marker erzeugt weiterhin Finding.
+Explizit **nicht** angetastet: Supabase-Client, RBAC, RLS, Runtime-Config, Service-Role, Logger-Redaction, Oversize-Refactor.
 
-### 3.3 Zyklen
-- `src/lib/logger.types.ts` (neu): `LogEntry`, `LogLevel`.
-- `src/lib/logger.ts` und `src/lib/logger.indexeddb.ts` importieren daraus; kein Rückimport mehr.
-- `scripts/tech-debt/detectors/cyclic-deps.mjs`: Self-Loops (a→a) verwerfen, weil Re-Exports einer Datei kein Zyklus im Sinne der Initialisierungsreihenfolge sind. Test ergänzen.
+### 3. Auth-Regressionstests
+- **Neuer Unit-/Router-Test** in `src/__tests__/routes/authenticated-guard.test.ts` (oder analog): simuliert `location` mit Objekt-`search` und stellt sicher, dass `beforeLoad` **nicht** wirft und den korrekten Redirect wählt. Reproduziert den heutigen Bug 1:1.
+- **Neuer E2E-Test** `e2e/specs/auth/login-e2e.spec.ts`:
+  - anonym: `/dashboard` → Redirect nach `/auth?redirect=/dashboard`
+  - Login mit Testuser (Supabase-Credentials aus `E2E_SUPABASE_TEST_EMAIL`/`E2E_SUPABASE_TEST_PASSWORD`; wenn nicht gesetzt → Test wird `skip` mit klarer Meldung, kein Fake-Pass)
+  - nach Login: Weiterleitung auf `/dashboard`, Reload behält Session, Logout entfernt Session, Direktaufruf `/dashboard` erneut blockiert
+  - Open-Redirect: `/auth?redirect=//evil.example` landet nach Login auf `/dashboard`
+- Bestehende 301 Vitest- und Playwright-Suiten müssen grün bleiben (`bun run typecheck`, `bun run lint`, `bun run test`, `bun run test:e2e`, `bun run docs:check`).
 
-### 3.4 Open-Redirect-Härtung
-- `src/routes/_authenticated/route.tsx`: `redirect`-Suchparameter auf `location.pathname + location.search` beschränken; Whitelist per `startsWith("/")` und `!startsWith("//")`.
-- `src/routes/auth.tsx`: gleiche Validierung beim Rücksprung nach Login.
+### 4. Manuelle End-to-End-Verifikation
+Ausgeführt und dokumentiert (URL, Zeitpunkt, HTTP-Status, Correlation-ID, sichtbare Meldung, Reload-Verhalten — **keine** Credentials):
+- Preview desktop / Preview mobile Emulation
+- Published desktop / Published mobile Emulation
+- Privates + normales Browserfenster
+- Ohne Session, falsches Passwort, unbekannter User, User ohne Rolle, abgelaufene Session, ungültiger Redirect-Param
 
-### 3.5 Report-Refresh
-- `bun run test-report:build` (bzw. gleichwertiges Script) neu ausführen, damit stale Oversize-Angabe für `src/routes/index.tsx` verschwindet.
+Solange Published-Login nicht real bestätigt ist, bleibt der Sprint offen und der Technical Report führt einen expliziten Gate-Blocker.
 
-## 4. Tech-Debt dokumentieren (nicht beheben)
+### 5. Dokumentation
+- `CHANGELOG.md` → neuer Eintrag `1.42.2`
+- `src/lib/help-documentation.ts` → HelpTopic „Authentifizierung – Fehlerbehebung 03B" (`lastUpdated`)
+- `docs/DEPLOYMENT.md` und `README.md`: Hinweis zu Preview/Published-Login-Verifikationslauf und benötigten E2E-Env-Variablen (nur Variablennamen, keine Werte)
+- `test-report/auth-commissioning-report.md` + Technical Report: neuer Abschnitt „Login End-to-End nachgewiesen" mit Zeitpunkt, Version, Ergebnis Preview, Ergebnis Published
 
-`docs/adr/ADR-0019-oversize-modules.md` (neu): Aufteilungsplan für `ExportDialog.tsx` (Export-Wizard-Steps + `useExportForm`-Hook + `export-formats.ts` Services) und `UserManagementDialog.tsx` (User-Table, Role-Editor-Panel, Invite-Form). Ziel-Sprint benennen.
+### 6. Abschluss-Gate
+Sprint 03B wird nur als „Go" markiert, wenn **alle** Punkte aus Abschnitt „Abnahmekriterien" des Prompts belegt sind, inkl. real durchgeführtem Published-Login. Andernfalls: klarer No-Go mit offenem Gate-Blocker im Technical Report; keine Arbeiten an Sprint 04.
 
-## 5. Tests
+## Technische Details / Betroffene Dateien (voraussichtlich)
 
-- `bun run test` (Vitest, u.a. api/, security/, lib/logger, api-discovery).
-- `bun run docs:check`.
-- `bun run build`.
-- `bunx tsc --noEmit`.
-- Playwright (Sandbox, headless) Szenarien aus Abschnitt 1 gegen `http://localhost:8080`.
+```text
+src/routes/_authenticated/route.tsx     safeInternalTarget-String-Coercion, isRedirect(), RPC-try/catch
+src/routes/auth.tsx                     safeRedirect analog, ggf. reason-Whitelist erweitern
+src/__tests__/routes/…                  neuer Router-Guard-Test
+e2e/specs/auth/login-e2e.spec.ts        neuer real-E2E-Test
+CHANGELOG.md, help-documentation.ts,
+docs/DEPLOYMENT.md, README.md,
+test-report/*                           Doku- und Reportsynchronisation
+```
 
-## 6. Dokumentation
+## Kritische Hinweise
 
-- `CHANGELOG.md`: neuer Eintrag `v1.42.1` mit Bulletliste.
-- `src/lib/help-documentation.ts`: Kapitel "Authentifizierung" (persistierte Session dokumentieren) und "Logging" (Redaction-Regeln) aktualisieren, `lastUpdated` setzen.
-- `docs/SECURITY.md` (falls vorhanden, sonst kurzer Abschnitt in `README.md`): Auth-Verhalten, Public-Endpoint-Konvention (`endpointMeta.public`), Redaction-Regeln.
-
-## 7. Abschlussbericht (im Report + Chat)
-Ursache Auth-"Regression", geänderte Dateien, Ergebnis je High-Finding, geschlossene vs. offene Tech-Debt, Testergebnisse, **Go/No-Go für Sprint 04**.
-
-## Technische Details
-- Keine RLS-Policies berühren; keine Schema-Migration in diesem Sprint.
-- Keine neuen Server-Fns; keine Änderungen an `client.server.ts` oder `auth-middleware.ts`.
-- Änderungen sind additiv (Regex-Set, neuer Types-Splitfile, Scanner-Whitelist) → geringes Regressionsrisiko.
-- Ergebnisartefakte: `test-report/technical-test-report.json` neu; alter Report als `prev` erhalten für Diff-Panel im Compliance-Dashboard.
+- Der reale End-to-End-Login benötigt **Supabase-Test-Credentials im Sandbox-Env**. Ohne diese Variablen kann der Sprint per Definition nicht abgeschlossen werden — bitte im Anschluss an die Plan-Freigabe `E2E_SUPABASE_TEST_EMAIL` und `E2E_SUPABASE_TEST_PASSWORD` als Secrets bereitstellen (Namen ok, Werte niemals in Chat). Ohne diese wird der neue E2E-Test dokumentiert `skip` und ich melde ausdrücklich **No-Go**, statt einen grünen Balken vorzutäuschen.
+- Wenn Schritt 1 zeigt, dass die Ursache **nicht** die Guard-Coercion ist (z. B. RPC `is_account_active` wirft wegen fehlender EXECUTE-Grants nach dem letzten Härtungssprint), verschiebt sich der Fix auf die RPC-Grants — der Sprint bleibt ansonsten identisch.
+- ADR-0019/Oversize-Refactor bleibt außerhalb dieses Sprints.
