@@ -505,6 +505,53 @@ const builtInSettings: SettingDocumentation[] = [
     allowedValues: ["aktiviert", "deaktiviert"],
     affectedAreas: ["Benutzerprofil"],
   },
+  {
+    id: "auth-troubleshooting-03b",
+    title: "Anmeldung — Fehlerbehebung (Sprint 03B)",
+    category: "Sicherheit",
+    keywords: [
+      "Anmeldung",
+      "Login",
+      "Auth",
+      "Redirect",
+      "TypeError",
+      "primitive value",
+      "Dashboard lädt nicht",
+      "This page didn't load",
+    ],
+    lastUpdated: "2026-07-28",
+    content: `## Symptom
+Nach Aufruf einer geschützten Route (z. B. \`/dashboard\`) erscheint die generische Fehlerseite
+\"This page didn't load\" statt der Weiterleitung nach \`/auth\`. Preview und veröffentlichte App
+sind gleichermaßen betroffen.
+
+## Ursache (behoben in 1.42.2)
+Der Auth-Guard in \`_authenticated/route.tsx\` bildete den Rücksprung-Pfad mit dem Template-Literal
+\`\\\`\${path}\${search}\\\`\`. TanStack Router liefert \`location.search\` allerdings als **Objekt**
+(parsed Search-Params), nicht als String. Die implizite String-Coercion warf
+\`TypeError: Cannot convert object to primitive value\` — der Guard brach vor dem Redirect ab und
+die \`ErrorBoundary\` griff.
+
+Zusätzlich prüfte der \`catch\`-Block \`e.isRedirect\` als Property. TanStack exportiert stattdessen
+die Funktion \`isRedirect(e)\`; legitime Redirects konnten dadurch in den generischen Fallback
+kollabieren.
+
+## Fix
+- Neue Hilfsfunktion \`buildSafeInternalTarget\` serialisiert \`location.search\` deterministisch
+  über \`URLSearchParams\`. Open-Redirect-Schutz (\`//\`, \`/\\\\\`) bleibt aktiv.
+- \`catch\`-Block nutzt jetzt \`isRedirect(e)\` aus \`@tanstack/react-router\`.
+- Fehler in \`rpc(\"is_account_active\")\` kippen eine gültige Session nicht mehr in eine
+  Login-Schleife: bei RPC-Ausfall bleibt der Nutzer eingeloggt, die Statusprüfung wird verschoben.
+
+## Prüfen nach dem Fix
+- \`/dashboard\` ohne Session → Redirect nach \`/auth?redirect=%2Fdashboard\`.
+- Nach erfolgreichem Login → Rücksprung auf ursprüngliche Route, Reload behält Session.
+- \`/auth?redirect=//evil.example\` landet nach Login auf \`/dashboard\` (kein externer Redirect).
+
+## Automatisierter Regressionstest
+\`src/__tests__/routes/authenticated-guard.test.ts\` reproduziert den Object-Search-Fall,
+den Open-Redirect-Schutz und exotische Werte im Search-Objekt.`,
+  },
 ];
 
 /* ---------------------------- Registry / API ---------------------------- */
