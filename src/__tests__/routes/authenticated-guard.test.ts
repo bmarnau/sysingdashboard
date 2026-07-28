@@ -31,11 +31,9 @@ describe("buildSafeInternalTarget", () => {
     );
   });
 
-  it("fällt bei leerer/ungültiger pathname auf /dashboard zurück", () => {
-    expect(buildSafeInternalTarget({ pathname: "", search: "" })).toBe("/dashboard");
-    expect(buildSafeInternalTarget({ pathname: undefined, search: undefined })).toBe(
-      "/dashboard",
-    );
+  it("fällt bei leerer/undefinierter pathname auf '/' (Landing) zurück", () => {
+    expect(buildSafeInternalTarget({ pathname: "", search: "" })).toBe("/");
+    expect(buildSafeInternalTarget({ pathname: undefined, search: undefined })).toBe("/");
   });
 
   it("blockiert Protocol-relative Open-Redirect (//evil.example)", () => {
