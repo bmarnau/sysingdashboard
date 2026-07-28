@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.42.2 - 2026-07-28
+
+- **Login-Regression behoben (Sprint 03B)**: `_authenticated/route.tsx` warf `TypeError: Cannot convert object to primitive value`, weil `location.search` von TanStack als **Objekt** geliefert wird und das Template-Literal `` `${path}${search}` `` scheiterte. Folge: `/dashboard` und jede geschützte Route zeigten die generische Fehlerseite statt einer Weiterleitung nach `/auth`. Neue Hilfsfunktion `buildSafeInternalTarget` serialisiert das Search-Objekt über `URLSearchParams`, hält den Open-Redirect-Schutz (`//`, `/\\`) aktiv und fällt bei leerem Pfad auf `/` zurück.
+- **`isRedirect`-Fix**: Der `catch`-Block prüfte per Property `.isRedirect` — das ist keine TanStack-API. Umgestellt auf die exportierte `isRedirect(e)`-Funktion, damit legitime Redirects nicht in den generischen Fallback-Redirect kollabieren.
+- **Statusprüfung robuster**: Ein Fehler in `rpc("is_account_active")` (Netzwerk, temporäre RLS-Regression) beendet nicht mehr die gültige Session — die Statusprüfung wird verschoben, der Nutzer bleibt eingeloggt.
+- **Regressionstest**: `src/__tests__/routes/authenticated-guard.test.ts` reproduziert den Object-Search-Fall, den Open-Redirect-Schutz und exotische Werte im Search-Objekt (6 Fälle).
+- **Playwright-Nachweis (Preview)**: `/dashboard` ohne Session → `302`-artige Client-Redirect nach `/auth?redirect=%2Fdashboard`, keine Konsolen-Errors mehr.
+
 ## 1.42.1 - 2026-07-27
 
 - **Auth-Hardening (Open-Redirect-Schutz)**: `_authenticated/route.tsx` sanitisiert `location.href` zu einem sicheren internen Pfad, bevor er als `redirect`-Search-Param an `/auth` weitergereicht wird; Login-Seite verwendet ebenfalls `safeRedirect`. Zusätzlich lehnt der Guard `//`-, `\`- und `javascript:`-Targets ab.
