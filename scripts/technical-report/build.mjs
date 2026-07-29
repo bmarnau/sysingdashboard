@@ -805,29 +805,54 @@ const REC_LABEL = {
 
 function renderMarkdown(r) {
   const lines = [];
-  lines.push(`# Technischer Prüfbericht`);
+  lines.push(`# Technischer Prüfbericht 2.0`);
   lines.push("");
-  lines.push(`_Generiert: ${r.generatedAt}_`);
+  lines.push(`_Report ID: \`${r.id ?? "—"}\` · Version ${r.version ?? "?"} · Generiert: ${r.generatedAt}_`);
   lines.push("");
   lines.push(`## 1. Prüfidentität`);
+  lines.push(`- Report-ID: \`${r.id ?? "—"}\``);
+  lines.push(`- Reportversion: **${r.version ?? "?"}**`);
+  lines.push(`- Vorgängerbericht: ${r.parentReportId ? `\`${r.parentReportId}\`` : "—"}`);
+  lines.push(`- Schema: \`${r.schemaVersion}\``);
   lines.push(`- Dashboard-Version: **${r.identity.dashboardVersion}**`);
   lines.push(`- Commit: \`${r.identity.commit}\``);
+  lines.push(`- Build-Tag: ${r.identity.buildTag ?? "—"}`);
+  lines.push(`- DB-Migration: ${r.identity.dbMigrationHead ?? "—"}`);
+  lines.push(`- Ersteller: ${r.identity.generatedBy ?? "—"}`);
   lines.push(`- Build-Zeit: ${r.identity.buildTime ?? "—"}`);
   lines.push(`- Testzeit: ${r.identity.testTime}`);
   lines.push(
     `- Umgebung: Node ${r.identity.environment.node} · ${r.identity.environment.platform} · CI=${r.identity.environment.ci}`,
   );
+  lines.push(`- Integrität: \`${r.integrity?.algo ?? "?"}:${r.integrity?.value ?? "?"}\``);
   lines.push("");
-  lines.push(`## 2. Gesamtstatus`);
+  lines.push(`## 2. Freigabestufe`);
+  lines.push(`- Vorschlag: **${r.releaseStage?.proposed ?? "—"}**`);
+  lines.push(`- Effektiv: **${r.releaseStage?.effective ?? r.releaseStage?.proposed ?? "—"}**`);
+  lines.push(`- Begründung: ${r.releaseStage?.reason ?? "—"}`);
+  if (r.releaseStage?.overridden) {
+    lines.push(
+      `- Manuelle Abweichung durch ${r.releaseStage.overridden.by} am ${r.releaseStage.overridden.at} (Ticket ${r.releaseStage.overridden.ticket ?? "—"}): ${r.releaseStage.overridden.reason}`,
+    );
+  }
+  lines.push("");
+  lines.push(`## 3. Gesamtstatus`);
   lines.push(`**${STATUS_LABEL[r.status] ?? r.status}**`);
   lines.push("");
-  lines.push(`## 3. Executive Summary`);
+  lines.push(`## 4. Executive Summary`);
   lines.push(
     `- Findings gesamt: ${r.summary.total} (CRITICAL ${r.summary.critical} · HIGH ${r.summary.high} · MEDIUM ${r.summary.medium} · LOW ${r.summary.low} · akzeptiert ${r.summary.accepted}).`,
   );
-  lines.push(`- Freigabeempfehlung: **${REC_LABEL[r.recommendation.level]}** — ${r.recommendation.reason}`);
+  lines.push(`- Freigabeempfehlung (Legacy): **${REC_LABEL[r.recommendation.level]}** — ${r.recommendation.reason}`);
   lines.push("");
-  lines.push(`## 4. Testergebnisse nach Bereich`);
+  lines.push(`## 5. Prüfbereiche (deklarativ)`);
+  lines.push(`| Bereich | Status | Nachweis |`);
+  lines.push(`| --- | --- | --- |`);
+  for (const [name, sec] of Object.entries(r.sections ?? {})) {
+    lines.push(`| ${name} | ${STATUS_LABEL[sec.status] ?? sec.status} | ${sec.evidence ?? "—"} |`);
+  }
+  lines.push("");
+  lines.push(`## 6. Testergebnisse nach Bereich`);
   lines.push("");
   lines.push(`| Bereich | Status | CRIT offen | HIGH offen |`);
   lines.push(`| --- | --- | ---: | ---: |`);
@@ -836,29 +861,31 @@ function renderMarkdown(r) {
     lines.push(`| ${a} | ${STATUS_LABEL[row.status] ?? row.status} | ${row.openCritical} | ${row.openHigh} |`);
   }
   lines.push("");
-  lines.push(`## 5. Findings`);
+  lines.push(`## 7. Findings`);
   if (!r.findings.length) lines.push("_Keine._");
   for (const f of r.findings) {
     lines.push("");
     lines.push(`### ${f.id} · ${f.severity} · ${f.title}`);
     lines.push(`- **Kategorie**: ${f.category} / ${f.area}`);
+    lines.push(`- **Klassifikation**: ${f.classification} · **Gate-relevant**: ${f.gateRelevant ? "ja" : "nein"}`);
     lines.push(`- **Quelle**: ${f.source}${f.accepted ? " (akzeptiert)" : ""}`);
     if (f.description) lines.push(`- **Beschreibung**: ${f.description}`);
-    if (f.cause) lines.push(`- **Ursache**: ${f.cause}`);
+    if (f.rootCause || f.cause) lines.push(`- **Ursache**: ${f.rootCause || f.cause}`);
     if (f.impact) lines.push(`- **Auswirkung**: ${f.impact}`);
     if (f.components?.length) lines.push(`- **Komponenten**: ${f.components.join(", ")}`);
     if (f.evidence?.reportRef) lines.push(`- **Nachweis**: ${f.evidence.reportRef}`);
     if (f.recommendation) lines.push(`- **Empfehlung**: ${f.recommendation}`);
-    lines.push(`- **Aufwand**: ${f.effort} · **Bearbeitungsreihenfolge**: ${f.bucket} · **Status**: ${f.status}`);
+    if (f.adrRef) lines.push(`- **ADR**: ${f.adrRef}`);
+    lines.push(`- **Aufwand**: ${f.effort} · **Reihenfolge**: ${f.bucket} · **Status**: ${f.status}`);
   }
   lines.push("");
-  lines.push(`## 6. Sortierte Maßnahmenliste`);
+  lines.push(`## 8. Sortierte Maßnahmenliste`);
   for (const b of r.actionOrder) {
     lines.push(`- **${b.bucket}** (${b.findings.length}): ${b.findings.join(", ")}`);
   }
   if (!r.actionOrder.length) lines.push("_Keine offenen Maßnahmen._");
   lines.push("");
-  lines.push(`## 7. Vergleich zum vorherigen Bericht`);
+  lines.push(`## 9. Vergleich zum Vorgängerbericht`);
   if (!r.diff) {
     lines.push("_Kein Vorbericht — dies ist der erste Lauf._");
   } else {
@@ -867,12 +894,22 @@ function renderMarkdown(r) {
     lines.push(`- Verschlechtert: ${r.diff.worse.length}`);
     lines.push(`- Unverändert: ${r.diff.same.length}`);
     lines.push(`- Wieder aufgetreten: ${r.diff.reappeared.length}`);
+    lines.push(`- Schweregrad geändert: ${r.diff.severityChanged?.length ?? 0}`);
+    lines.push(`- Gate-Relevanz geändert: ${r.diff.gateChanged?.length ?? 0}`);
+    lines.push(`- Status geändert: ${r.diff.statusChanged?.length ?? 0}`);
+    if (r.diff.securityRegressions?.length) {
+      lines.push("");
+      lines.push(`### Sicherheits-Regressionen`);
+      for (const s of r.diff.securityRegressions) {
+        lines.push(`- **${s.id}** — ${s.kind}${s.from ? ` (${s.from} → ${s.to})` : ""}`);
+      }
+    }
   }
   lines.push("");
-  lines.push(`## 8. Freigabeempfehlung`);
+  lines.push(`## 10. Freigabeempfehlung (Legacy)`);
   lines.push(`**${REC_LABEL[r.recommendation.level]}** — ${r.recommendation.reason}`);
   lines.push("");
-  lines.push(`## 9. Quality-Gate-Blocker (Prompt 2A.10)`);
+  lines.push(`## 11. Quality-Gate-Blocker (Prompt 2A.10)`);
   if (!r.blockers?.length) {
     lines.push("_Keine — CI-Gate ist grün._");
   } else {
