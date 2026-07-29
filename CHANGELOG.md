@@ -13,6 +13,20 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.43.0 - 2026-07-29
+
+- **Technischer Prüfbericht 2.0 (Sprint 04, Teil 1)**: Schema `2.0.0` mit `id` (UUID pro Lauf), monotoner `version`, `parentReportId`, `integrity.value` (SHA-256 über kanonisch serialisierte Feld-Whitelist) und `releaseStage.{proposed,effective,overridden}`. Kanonische Serialisierung in `scripts/technical-report/canonical.mjs` — Hash ist deterministisch, Zeitstempel/Report-ID/UI-Zustand fließen nicht ein.
+- **Unveränderbare Historie**: Jeder Lauf schreibt einen read-only-Snapshot unter `test-report/history/<utc>-<id>.json` und einen Append-only-Index `test-report/history/index.json`. Freigegebene Berichte werden zusätzlich unter `history/released/` gespiegelt (`scripts/technical-report/history.mjs`).
+- **Freigabelogik**: `scripts/technical-report/release-gate.mjs` schlägt automatisch `development` → `internal-test` → `pilot` → `production` vor. Manuelle Abweichung via `scripts/technical-report/override.mjs --stage=… --reason=… --ticket=…` mit JSONL-Audit-Log.
+- **Erweiterter Vergleich**: `diff` liefert jetzt zusätzlich `severityChanged`, `gateChanged`, `statusChanged` und hervorgehobene `securityRegressions` (neue/wieder aufgetretene sec:-Findings).
+- **Deklarative Prüfbereiche**: `sections` (auth, rls, rbac, apiSecurity, operations, tests, backup, dockerPortability, azureReadiness, docs) — Bereiche ohne Scanner werden über `scripts/technical-report/manual-sections.json` versioniert.
+- **Finding-Schema erweitert**: `classification` (confirmed/false-positive/accepted-debt/fixed/not-applicable), `gateRelevant`, `rootCause`, `adrRef`, `owner`, `dueDate`, `commitRef` sind jetzt Bestandteil des Modells.
+- **UI**: `ComplianceSummary` zeigt Reportversion, effektive Freigabestufe, Integritäts-Hash-Präfix und ein Warn-Panel bei Sicherheitsregressionen oder Freigabe-Override.
+- **CLI-Verifikation**: `node scripts/technical-report/verify.mjs` rechnet den Hash nach und liefert Exit 1 bei Mismatch.
+- **Tests**: `src/__tests__/technical-report/report-2.test.ts` (11 Tests) deckt Hash-Determinismus, Sortierstabilität, Feld-Ausschluss, Freigabestufen-Vorschlag und Override-Logik ab.
+- **Doku**: neue `docs/technical-report-2.md` (Datenmodell, Hash, Historie, Freigabe, Overrides).
+- **Refactoring dashboard.tsx / ExportDialog.tsx (Sprint 04, Teil 2)**: nicht in diesem Sprint umgesetzt — siehe Abschlussbericht und ADR-0019 (Akzeptanz bleibt bis 2026-12-31 gültig).
+
 ## 1.42.2 - 2026-07-28
 
 - **Login-Regression behoben (Sprint 03B)**: `_authenticated/route.tsx` warf `TypeError: Cannot convert object to primitive value`, weil `location.search` von TanStack als **Objekt** geliefert wird und das Template-Literal `` `${path}${search}` `` scheiterte. Folge: `/dashboard` und jede geschützte Route zeigten die generische Fehlerseite statt einer Weiterleitung nach `/auth`. Neue Hilfsfunktion `buildSafeInternalTarget` serialisiert das Search-Objekt über `URLSearchParams`, hält den Open-Redirect-Schutz (`//`, `/\\`) aktiv und fällt bei leerem Pfad auf `/` zurück.
