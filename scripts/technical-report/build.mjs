@@ -625,6 +625,54 @@ function computeBlockers(allFindings, sources) {
 }
 
 
+function collectSections(sources) {
+  const manual = readJson("scripts/technical-report/manual-sections.json", { sections: {} }).sections ?? {};
+  const archStatus = sources.techdebt?.status ?? "not-run";
+  const apiStatus = sources.api?.status ?? "not-run";
+  const opsStatus = sources.ops?.status ?? "not-run";
+  const backupStatus = sources.backup?.status ?? "not-run";
+  const testsStatus = sources.security?.status ?? "not-run";
+  const auto = {
+    architecture: {
+      status: archStatus,
+      evidence: "test-report/tech-debt.md",
+      note: "Aggregiert aus tech-debt-Scannern (Oversize, Cyclic, Coverage, Layer).",
+    },
+    rbac: {
+      status: testsStatus,
+      evidence: "src/__tests__/security/rbac-v2.test.ts, docs/RBAC-MATRIX.md",
+      note: "has_permission() zentralisiert; UI + Backend spiegeln denselben Matrixstand.",
+    },
+    apiSecurity: {
+      status: apiStatus,
+      evidence: "test-report/api-findings.md, test-report/api-matrix.md",
+      note: "Auth-Guards, Zod-Validierung, Correlation-ID pro Route geprüft.",
+    },
+    operations: {
+      status: opsStatus,
+      evidence: "test-report/ops-report.md",
+      note: "Build, Bundle, Health, Backup/Restore aus Ops-Suite.",
+    },
+    tests: {
+      status: testsStatus,
+      evidence: "test-report/security-vitest.json, test-report/backup-vitest.json",
+      note: "Security- und Backup-Vitest-Reports fließen als Roh-Failures in Blocker ein.",
+    },
+    backup: {
+      status: backupStatus,
+      evidence: "test-report/backup-integrity-report.md",
+      note: "Backup-, Restore- und Integritätstests.",
+    },
+  };
+  return { ...auto, ...manual };
+}
+
+function readOverride() {
+  const raw = readJson("test-report/release-override.json", null);
+  if (!raw || raw.cleared) return null;
+  return { stage: raw.stage, by: raw.by, at: raw.at, reason: raw.reason, ticket: raw.ticket };
+}
+
 function main() {
   mkdirSync(OUT_DIR, { recursive: true });
 
@@ -649,20 +697,47 @@ function main() {
   const areas = computeAreaStatuses(sources);
   const status = overallStatus(allFindings, sources);
   const recommendation = releaseRecommendation(allFindings, sources);
-
-  const prev = existsSync(PREV_JSON) || existsSync(OUT_JSON)
-    ? readJson(PREV_JSON) ?? readJson(OUT_JSON)
-    : null;
-
+  const sections = collectSections(sources);
   const blockers = computeBlockers(allFindings, sources);
   const openFindings = allFindings.filter((f) => !f.accepted);
 
+  // Historie: Vorgängerbericht bevorzugt aus history/index.json, sonst prev.json.
+  const historyIndex = loadIndex(ROOT);
+  const historyParent = loadParentReport(historyIndex, ROOT);
+  const legacyPrev = existsSync(PREV_JSON) || existsSync(OUT_JSON)
+    ? readJson(PREV_JSON) ?? readJson(OUT_JSON)
+    : null;
+  const prev = historyParent ?? legacyPrev;
+
+  const reportId = randomUUID();
+  const version = nextReportVersion(historyIndex);
+  const parentReportId = findParentReportId(historyIndex);
+
+  const releaseProposal = proposeReleaseStage({
+    findings: allFindings,
+    sections,
+    sources,
+    blockers,
+  });
+  const override = readOverride();
+  const releaseStage = applyReleaseOverride(releaseProposal, override);
+
   const report = {
-    schemaVersion: "1.1.0",
+    schemaVersion: "2.0.0",
+    id: reportId,
+    version,
+    parentReportId,
     generatedAt: new Date().toISOString(),
-    identity,
+    identity: {
+      ...identity,
+      generatedBy: process.env.USER ?? process.env.GITHUB_ACTOR ?? "unknown",
+      buildTag: process.env.BUILD_TAG ?? null,
+      dbMigrationHead: process.env.DB_MIGRATION_HEAD ?? null,
+    },
     status,
     recommendation,
+    releaseStage,
+    sections,
     summary: {
       total: allFindings.length,
       openTotal: openFindings.length,
@@ -685,7 +760,10 @@ function main() {
     blockers,
   };
 
-  // Rotate: aktueller Bericht wird zur prev.
+  // Integritäts-Hash nach vollständigem Aufbau berechnen.
+  report.integrity = computeIntegrityHash(report);
+
+  // Rotate: aktueller Bericht wird zur prev (Kompatibilität für ältere Konsumenten).
   if (existsSync(OUT_JSON)) {
     try {
       renameSync(OUT_JSON, PREV_JSON);
@@ -696,8 +774,13 @@ function main() {
   writeFileSync(OUT_JSON, JSON.stringify(report, null, 2));
   writeFileSync(OUT_MD, renderMarkdown(report));
 
+  // Historie-Snapshot (unveränderbar, siehe history.mjs).
+  const historyFile = appendHistory(report, ROOT);
+
   console.log(
-    `[technical-report] status=${status} findings=${report.summary.total} (C:${report.summary.critical} H:${report.summary.high} M:${report.summary.medium} L:${report.summary.low}) → ${OUT_JSON}`,
+    `[technical-report] v${version} id=${reportId} status=${status} stage=${releaseStage.effective} hash=${report.integrity.value.slice(0, 8)} → ${OUT_JSON} · history=${historyFile}`,
+  );
+}
   );
 }
 
