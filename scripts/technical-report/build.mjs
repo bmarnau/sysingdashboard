@@ -481,17 +481,54 @@ function diffReports(current, prev) {
   const worse = [];
   const same = [];
   const reappeared = [];
+  const severityChanged = [];
+  const gateChanged = [];
+  const statusChanged = [];
+  const securityRegressions = [];
   for (const [id, f] of curMap) {
     const p = prevMap.get(id);
-    if (!p) newer.push(id);
-    else if (SEV[f.severity] > SEV[p.severity]) worse.push(id);
-    else if (p.status === "closed" && f.status !== "closed") reappeared.push(id);
-    else same.push(id);
+    if (!p) {
+      newer.push(id);
+      if (f.severity === "CRITICAL" || (f.severity === "HIGH" && id.startsWith("sec:"))) {
+        securityRegressions.push({ id, kind: "new", severity: f.severity });
+      }
+      continue;
+    }
+    if (SEV[f.severity] > SEV[p.severity]) {
+      worse.push(id);
+      severityChanged.push({ id, from: p.severity, to: f.severity });
+      if (id.startsWith("sec:") && SEV[f.severity] >= SEV.HIGH) {
+        securityRegressions.push({ id, kind: "severity", from: p.severity, to: f.severity });
+      }
+    } else if (SEV[f.severity] < SEV[p.severity]) {
+      severityChanged.push({ id, from: p.severity, to: f.severity });
+    }
+    if ((p.status === "closed" || p.status === "fixed") && f.status !== "closed" && f.status !== "fixed") {
+      reappeared.push(id);
+      if (id.startsWith("sec:")) {
+        securityRegressions.push({ id, kind: "reopened", severity: f.severity });
+      }
+    }
+    if (!!p.gateRelevant !== !!f.gateRelevant) {
+      gateChanged.push({ id, from: !!p.gateRelevant, to: !!f.gateRelevant });
+    }
+    if (p.status !== f.status) statusChanged.push({ id, from: p.status, to: f.status });
+    if (!worse.includes(id) && !reappeared.includes(id)) same.push(id);
   }
   for (const [id, p] of prevMap) {
     if (!curMap.has(id)) fixed.push(id);
   }
-  return { new: newer, fixed, worse, same, reappeared };
+  return {
+    new: newer,
+    fixed,
+    worse,
+    same,
+    reappeared,
+    severityChanged,
+    gateChanged,
+    statusChanged,
+    securityRegressions,
+  };
 }
 
 // ------------------------------------------------------------------ blockers
