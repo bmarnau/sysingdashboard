@@ -13,8 +13,11 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import path from "node:path";
+import { computeIntegrityHash } from "./canonical.mjs";
+import { proposeReleaseStage, applyReleaseOverride } from "./release-gate.mjs";
+import { appendHistory, loadIndex, loadParentReport, nextReportVersion, findParentReportId } from "./history.mjs";
 
 const ROOT = process.cwd();
 const OUT_DIR = "test-report";
