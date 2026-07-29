@@ -5,8 +5,10 @@ let computeIntegrityHash: any, extractIntegrityPayload: any, stableStringify: an
 let proposeReleaseStage: any, applyReleaseOverride: any, STAGES: any;
 
 beforeAll(async () => {
-  const canonical: any = await import(/* @vite-ignore */ "../../../scripts/technical-report/canonical.mjs");
-  const gate: any = await import(/* @vite-ignore */ "../../../scripts/technical-report/release-gate.mjs");
+  // @ts-expect-error mjs außerhalb tsconfig
+  const canonical: any = await import("../../../scripts/technical-report/canonical.mjs");
+  // @ts-expect-error mjs außerhalb tsconfig
+  const gate: any = await import("../../../scripts/technical-report/release-gate.mjs");
   ({ computeIntegrityHash, extractIntegrityPayload, stableStringify } = canonical);
   ({ proposeReleaseStage, applyReleaseOverride, STAGES } = gate);
 });
