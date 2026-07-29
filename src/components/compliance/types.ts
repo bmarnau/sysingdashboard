@@ -19,19 +19,51 @@ export interface Finding {
   source: "auto" | "manual";
   accepted: boolean;
   effort: string;
+  classification?: "confirmed" | "false-positive" | "accepted-debt" | "fixed" | "not-applicable";
+  gateRelevant?: boolean;
+  rootCause?: string;
+  adrRef?: string | null;
+}
+
+export interface ReportSection {
+  status: string;
+  evidence?: string | null;
+  note?: string;
+}
+
+export interface ReleaseStage {
+  proposed: string;
+  effective?: string;
+  reason: string;
+  overridden?: {
+    by: string;
+    at: string;
+    reason: string;
+    ticket?: string | null;
+  };
 }
 
 export interface Report {
+  schemaVersion?: string;
+  id?: string;
+  version?: number;
+  parentReportId?: string | null;
   generatedAt: string;
   identity: {
     dashboardVersion: string;
     commit: string;
     buildTime: string | null;
     testTime: string;
+    buildTag?: string | null;
+    dbMigrationHead?: string | null;
+    generatedBy?: string;
     environment: { node: string; platform: string; ci: boolean };
   };
   status: string;
   recommendation: { level: string; reason: string };
+  releaseStage?: ReleaseStage;
+  sections?: Record<string, ReportSection>;
+  integrity?: { algo: string; value: string; fields: string[] };
   summary: {
     total: number;
     openTotal?: number;
@@ -50,8 +82,13 @@ export interface Report {
     worse: string[];
     same: string[];
     reappeared: string[];
+    severityChanged?: Array<{ id: string; from: string; to: string }>;
+    gateChanged?: Array<{ id: string; from: boolean; to: boolean }>;
+    statusChanged?: Array<{ id: string; from: string; to: string }>;
+    securityRegressions?: Array<{ id: string; kind: string; severity?: string; from?: string; to?: string }>;
   } | null;
 }
+
 
 export const STATUS_LABEL: Record<string, string> = {
   passed: "bestanden",
