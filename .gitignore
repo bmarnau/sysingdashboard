@@ -35,3 +35,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Technical report history snapshots (Sprint 04)
+test-report/release-override.audit.log

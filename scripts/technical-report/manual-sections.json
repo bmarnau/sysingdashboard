@@ -1,0 +1,35 @@
+{
+  "$comment": "Deklarative Nachweise für Prüfbereiche ohne eigenen Scanner (Sprint 04). Werden vom Aggregator 1:1 in report.sections übernommen. Status: passed | passed-with-findings | failed | not-run | not-applicable.",
+  "sections": {
+    "auth": {
+      "status": "passed-with-findings",
+      "evidence": "e2e/specs/navigation.spec.ts, test-report/security-report.md, docs/adr/ADR-0013-security-release-gate.md",
+      "note": "Login, Logout, Session-Wiederherstellung, Redirect-Sicherheit umgesetzt. Realer Published-Login gegen Supabase außerhalb der CI verifiziert (Sprint 03B)."
+    },
+    "rls": {
+      "status": "passed",
+      "evidence": "supabase/migrations/*, src/__tests__/security/rbac-v2.test.ts",
+      "note": "Policies für profiles, user_roles, audit_log aktiv; sysadmin-Lockout durch DB-Trigger geschützt."
+    },
+    "supabase": {
+      "status": "passed",
+      "evidence": "src/integrations/supabase/config.ts, supabase/config.toml",
+      "note": "Projektzuordnung erfolgt statisch über VITE_SUPABASE_*; Region wird beim Providerwechsel manuell bestätigt."
+    },
+    "dockerPortability": {
+      "status": "not-applicable",
+      "evidence": "docs/DEPLOYMENT.md",
+      "note": "Zielumgebung ist Cloudflare Workers/Lovable Cloud. Docker-Portabilität ist geplant, aktuell nicht aktiviert (Sprint 05+)."
+    },
+    "azureReadiness": {
+      "status": "not-applicable",
+      "evidence": "src/lib/azure/*, docs/ADR/0007-rbac-v2-scopes-and-resources.md",
+      "note": "Provider-Abstraktion vorhanden, Live-Azure-Anbindung nicht aktiviert. Nicht als Finding zu bewerten."
+    },
+    "docs": {
+      "status": "passed",
+      "evidence": "scripts/check-docs-sync.mjs",
+      "note": "Sync-Guard aktiv; CHANGELOG.md ist Single Source of Truth."
+    }
+  }
+}

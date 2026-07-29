@@ -13,8 +13,11 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import path from "node:path";
+import { computeIntegrityHash } from "./canonical.mjs";
+import { proposeReleaseStage, applyReleaseOverride } from "./release-gate.mjs";
+import { appendHistory, loadIndex, loadParentReport, nextReportVersion, findParentReportId } from "./history.mjs";
 
 const ROOT = process.cwd();
 const OUT_DIR = "test-report";
@@ -130,9 +133,21 @@ function bucketFor(f) {
 
 // ------------------------------------------------------------------ collectors
 
-/** Einheitliches Finding-Schema. */
+/** Einheitliches Finding-Schema (Report 2.0 erweitert). */
 function makeFinding(partial) {
   const severity = normalizeSev(partial.severity);
+  const status = partial.status ?? "open";
+  const accepted = partial.accepted ?? false;
+  let classification = partial.classification;
+  if (!classification) {
+    if (accepted) classification = "accepted-debt";
+    else if (status === "closed" || status === "fixed") classification = "fixed";
+    else classification = "confirmed";
+  }
+  const gateRelevant =
+    partial.gateRelevant ??
+    (severity === "CRITICAL" ||
+      (severity === "HIGH" && String(partial.id ?? "").startsWith("sec:")));
   const base = {
     id: partial.id,
     severity,
@@ -142,6 +157,7 @@ function makeFinding(partial) {
     description: truncate(partial.description ?? "", 800),
     cause: truncate(partial.cause ?? "", 400),
     impact: truncate(partial.impact ?? "", 400),
+    rootCause: truncate(partial.rootCause ?? partial.cause ?? "", 400),
     evidence: {
       file: partial.evidence?.file ?? null,
       line: partial.evidence?.line ?? null,
@@ -150,10 +166,18 @@ function makeFinding(partial) {
     components: partial.components ?? [],
     recommendation: truncate(partial.recommendation ?? "", 600),
     dependencies: partial.dependencies ?? [],
+    owner: partial.owner ?? null,
+    dueDate: partial.dueDate ?? null,
+    createdAt: partial.createdAt ?? null,
+    closedAt: partial.closedAt ?? null,
+    commitRef: partial.commitRef ?? null,
+    adrRef: partial.adrRef ?? null,
     effort: partial.effort ?? "M",
-    status: partial.status ?? "open",
+    status,
     source: partial.source ?? "auto",
-    accepted: partial.accepted ?? false,
+    accepted,
+    gateRelevant,
+    classification,
   };
   base.bucket = bucketFor(base);
   base.order = ORDER_BUCKETS.indexOf(base.bucket);
@@ -457,17 +481,54 @@ function diffReports(current, prev) {
   const worse = [];
   const same = [];
   const reappeared = [];
+  const severityChanged = [];
+  const gateChanged = [];
+  const statusChanged = [];
+  const securityRegressions = [];
   for (const [id, f] of curMap) {
     const p = prevMap.get(id);
-    if (!p) newer.push(id);
-    else if (SEV[f.severity] > SEV[p.severity]) worse.push(id);
-    else if (p.status === "closed" && f.status !== "closed") reappeared.push(id);
-    else same.push(id);
+    if (!p) {
+      newer.push(id);
+      if (f.severity === "CRITICAL" || (f.severity === "HIGH" && id.startsWith("sec:"))) {
+        securityRegressions.push({ id, kind: "new", severity: f.severity });
+      }
+      continue;
+    }
+    if (SEV[f.severity] > SEV[p.severity]) {
+      worse.push(id);
+      severityChanged.push({ id, from: p.severity, to: f.severity });
+      if (id.startsWith("sec:") && SEV[f.severity] >= SEV.HIGH) {
+        securityRegressions.push({ id, kind: "severity", from: p.severity, to: f.severity });
+      }
+    } else if (SEV[f.severity] < SEV[p.severity]) {
+      severityChanged.push({ id, from: p.severity, to: f.severity });
+    }
+    if ((p.status === "closed" || p.status === "fixed") && f.status !== "closed" && f.status !== "fixed") {
+      reappeared.push(id);
+      if (id.startsWith("sec:")) {
+        securityRegressions.push({ id, kind: "reopened", severity: f.severity });
+      }
+    }
+    if (!!p.gateRelevant !== !!f.gateRelevant) {
+      gateChanged.push({ id, from: !!p.gateRelevant, to: !!f.gateRelevant });
+    }
+    if (p.status !== f.status) statusChanged.push({ id, from: p.status, to: f.status });
+    if (!worse.includes(id) && !reappeared.includes(id)) same.push(id);
   }
   for (const [id, p] of prevMap) {
     if (!curMap.has(id)) fixed.push(id);
   }
-  return { new: newer, fixed, worse, same, reappeared };
+  return {
+    new: newer,
+    fixed,
+    worse,
+    same,
+    reappeared,
+    severityChanged,
+    gateChanged,
+    statusChanged,
+    securityRegressions,
+  };
 }
 
 // ------------------------------------------------------------------ blockers
@@ -564,6 +625,54 @@ function computeBlockers(allFindings, sources) {
 }
 
 
+function collectSections(sources) {
+  const manual = readJson("scripts/technical-report/manual-sections.json", { sections: {} }).sections ?? {};
+  const archStatus = sources.techdebt?.status ?? "not-run";
+  const apiStatus = sources.api?.status ?? "not-run";
+  const opsStatus = sources.ops?.status ?? "not-run";
+  const backupStatus = sources.backup?.status ?? "not-run";
+  const testsStatus = sources.security?.status ?? "not-run";
+  const auto = {
+    architecture: {
+      status: archStatus,
+      evidence: "test-report/tech-debt.md",
+      note: "Aggregiert aus tech-debt-Scannern (Oversize, Cyclic, Coverage, Layer).",
+    },
+    rbac: {
+      status: testsStatus,
+      evidence: "src/__tests__/security/rbac-v2.test.ts, docs/RBAC-MATRIX.md",
+      note: "has_permission() zentralisiert; UI + Backend spiegeln denselben Matrixstand.",
+    },
+    apiSecurity: {
+      status: apiStatus,
+      evidence: "test-report/api-findings.md, test-report/api-matrix.md",
+      note: "Auth-Guards, Zod-Validierung, Correlation-ID pro Route geprüft.",
+    },
+    operations: {
+      status: opsStatus,
+      evidence: "test-report/ops-report.md",
+      note: "Build, Bundle, Health, Backup/Restore aus Ops-Suite.",
+    },
+    tests: {
+      status: testsStatus,
+      evidence: "test-report/security-vitest.json, test-report/backup-vitest.json",
+      note: "Security- und Backup-Vitest-Reports fließen als Roh-Failures in Blocker ein.",
+    },
+    backup: {
+      status: backupStatus,
+      evidence: "test-report/backup-integrity-report.md",
+      note: "Backup-, Restore- und Integritätstests.",
+    },
+  };
+  return { ...auto, ...manual };
+}
+
+function readOverride() {
+  const raw = readJson("test-report/release-override.json", null);
+  if (!raw || raw.cleared) return null;
+  return { stage: raw.stage, by: raw.by, at: raw.at, reason: raw.reason, ticket: raw.ticket };
+}
+
 function main() {
   mkdirSync(OUT_DIR, { recursive: true });
 
@@ -588,20 +697,47 @@ function main() {
   const areas = computeAreaStatuses(sources);
   const status = overallStatus(allFindings, sources);
   const recommendation = releaseRecommendation(allFindings, sources);
-
-  const prev = existsSync(PREV_JSON) || existsSync(OUT_JSON)
-    ? readJson(PREV_JSON) ?? readJson(OUT_JSON)
-    : null;
-
+  const sections = collectSections(sources);
   const blockers = computeBlockers(allFindings, sources);
   const openFindings = allFindings.filter((f) => !f.accepted);
 
+  // Historie: Vorgängerbericht bevorzugt aus history/index.json, sonst prev.json.
+  const historyIndex = loadIndex(ROOT);
+  const historyParent = loadParentReport(historyIndex, ROOT);
+  const legacyPrev = existsSync(PREV_JSON) || existsSync(OUT_JSON)
+    ? readJson(PREV_JSON) ?? readJson(OUT_JSON)
+    : null;
+  const prev = historyParent ?? legacyPrev;
+
+  const reportId = randomUUID();
+  const version = nextReportVersion(historyIndex);
+  const parentReportId = findParentReportId(historyIndex);
+
+  const releaseProposal = proposeReleaseStage({
+    findings: allFindings,
+    sections,
+    sources,
+    blockers,
+  });
+  const override = readOverride();
+  const releaseStage = applyReleaseOverride(releaseProposal, override);
+
   const report = {
-    schemaVersion: "1.1.0",
+    schemaVersion: "2.0.0",
+    id: reportId,
+    version,
+    parentReportId,
     generatedAt: new Date().toISOString(),
-    identity,
+    identity: {
+      ...identity,
+      generatedBy: process.env.USER ?? process.env.GITHUB_ACTOR ?? "unknown",
+      buildTag: process.env.BUILD_TAG ?? null,
+      dbMigrationHead: process.env.DB_MIGRATION_HEAD ?? null,
+    },
     status,
     recommendation,
+    releaseStage,
+    sections,
     summary: {
       total: allFindings.length,
       openTotal: openFindings.length,
@@ -624,7 +760,10 @@ function main() {
     blockers,
   };
 
-  // Rotate: aktueller Bericht wird zur prev.
+  // Integritäts-Hash nach vollständigem Aufbau berechnen.
+  report.integrity = computeIntegrityHash(report);
+
+  // Rotate: aktueller Bericht wird zur prev (Kompatibilität für ältere Konsumenten).
   if (existsSync(OUT_JSON)) {
     try {
       renameSync(OUT_JSON, PREV_JSON);
@@ -635,10 +774,14 @@ function main() {
   writeFileSync(OUT_JSON, JSON.stringify(report, null, 2));
   writeFileSync(OUT_MD, renderMarkdown(report));
 
+  // Historie-Snapshot (unveränderbar, siehe history.mjs).
+  const historyFile = appendHistory(report, ROOT);
+
   console.log(
-    `[technical-report] status=${status} findings=${report.summary.total} (C:${report.summary.critical} H:${report.summary.high} M:${report.summary.medium} L:${report.summary.low}) → ${OUT_JSON}`,
+    `[technical-report] v${version} id=${reportId} status=${status} stage=${releaseStage.effective} hash=${report.integrity.value.slice(0, 8)} → ${OUT_JSON} · history=${historyFile}`,
   );
 }
+
 
 // ------------------------------------------------------------------ render
 
@@ -661,29 +804,54 @@ const REC_LABEL = {
 
 function renderMarkdown(r) {
   const lines = [];
-  lines.push(`# Technischer Prüfbericht`);
+  lines.push(`# Technischer Prüfbericht 2.0`);
   lines.push("");
-  lines.push(`_Generiert: ${r.generatedAt}_`);
+  lines.push(`_Report ID: \`${r.id ?? "—"}\` · Version ${r.version ?? "?"} · Generiert: ${r.generatedAt}_`);
   lines.push("");
   lines.push(`## 1. Prüfidentität`);
+  lines.push(`- Report-ID: \`${r.id ?? "—"}\``);
+  lines.push(`- Reportversion: **${r.version ?? "?"}**`);
+  lines.push(`- Vorgängerbericht: ${r.parentReportId ? `\`${r.parentReportId}\`` : "—"}`);
+  lines.push(`- Schema: \`${r.schemaVersion}\``);
   lines.push(`- Dashboard-Version: **${r.identity.dashboardVersion}**`);
   lines.push(`- Commit: \`${r.identity.commit}\``);
+  lines.push(`- Build-Tag: ${r.identity.buildTag ?? "—"}`);
+  lines.push(`- DB-Migration: ${r.identity.dbMigrationHead ?? "—"}`);
+  lines.push(`- Ersteller: ${r.identity.generatedBy ?? "—"}`);
   lines.push(`- Build-Zeit: ${r.identity.buildTime ?? "—"}`);
   lines.push(`- Testzeit: ${r.identity.testTime}`);
   lines.push(
     `- Umgebung: Node ${r.identity.environment.node} · ${r.identity.environment.platform} · CI=${r.identity.environment.ci}`,
   );
+  lines.push(`- Integrität: \`${r.integrity?.algo ?? "?"}:${r.integrity?.value ?? "?"}\``);
   lines.push("");
-  lines.push(`## 2. Gesamtstatus`);
+  lines.push(`## 2. Freigabestufe`);
+  lines.push(`- Vorschlag: **${r.releaseStage?.proposed ?? "—"}**`);
+  lines.push(`- Effektiv: **${r.releaseStage?.effective ?? r.releaseStage?.proposed ?? "—"}**`);
+  lines.push(`- Begründung: ${r.releaseStage?.reason ?? "—"}`);
+  if (r.releaseStage?.overridden) {
+    lines.push(
+      `- Manuelle Abweichung durch ${r.releaseStage.overridden.by} am ${r.releaseStage.overridden.at} (Ticket ${r.releaseStage.overridden.ticket ?? "—"}): ${r.releaseStage.overridden.reason}`,
+    );
+  }
+  lines.push("");
+  lines.push(`## 3. Gesamtstatus`);
   lines.push(`**${STATUS_LABEL[r.status] ?? r.status}**`);
   lines.push("");
-  lines.push(`## 3. Executive Summary`);
+  lines.push(`## 4. Executive Summary`);
   lines.push(
     `- Findings gesamt: ${r.summary.total} (CRITICAL ${r.summary.critical} · HIGH ${r.summary.high} · MEDIUM ${r.summary.medium} · LOW ${r.summary.low} · akzeptiert ${r.summary.accepted}).`,
   );
-  lines.push(`- Freigabeempfehlung: **${REC_LABEL[r.recommendation.level]}** — ${r.recommendation.reason}`);
+  lines.push(`- Freigabeempfehlung (Legacy): **${REC_LABEL[r.recommendation.level]}** — ${r.recommendation.reason}`);
   lines.push("");
-  lines.push(`## 4. Testergebnisse nach Bereich`);
+  lines.push(`## 5. Prüfbereiche (deklarativ)`);
+  lines.push(`| Bereich | Status | Nachweis |`);
+  lines.push(`| --- | --- | --- |`);
+  for (const [name, sec] of Object.entries(r.sections ?? {})) {
+    lines.push(`| ${name} | ${STATUS_LABEL[sec.status] ?? sec.status} | ${sec.evidence ?? "—"} |`);
+  }
+  lines.push("");
+  lines.push(`## 6. Testergebnisse nach Bereich`);
   lines.push("");
   lines.push(`| Bereich | Status | CRIT offen | HIGH offen |`);
   lines.push(`| --- | --- | ---: | ---: |`);
@@ -692,29 +860,31 @@ function renderMarkdown(r) {
     lines.push(`| ${a} | ${STATUS_LABEL[row.status] ?? row.status} | ${row.openCritical} | ${row.openHigh} |`);
   }
   lines.push("");
-  lines.push(`## 5. Findings`);
+  lines.push(`## 7. Findings`);
   if (!r.findings.length) lines.push("_Keine._");
   for (const f of r.findings) {
     lines.push("");
     lines.push(`### ${f.id} · ${f.severity} · ${f.title}`);
     lines.push(`- **Kategorie**: ${f.category} / ${f.area}`);
+    lines.push(`- **Klassifikation**: ${f.classification} · **Gate-relevant**: ${f.gateRelevant ? "ja" : "nein"}`);
     lines.push(`- **Quelle**: ${f.source}${f.accepted ? " (akzeptiert)" : ""}`);
     if (f.description) lines.push(`- **Beschreibung**: ${f.description}`);
-    if (f.cause) lines.push(`- **Ursache**: ${f.cause}`);
+    if (f.rootCause || f.cause) lines.push(`- **Ursache**: ${f.rootCause || f.cause}`);
     if (f.impact) lines.push(`- **Auswirkung**: ${f.impact}`);
     if (f.components?.length) lines.push(`- **Komponenten**: ${f.components.join(", ")}`);
     if (f.evidence?.reportRef) lines.push(`- **Nachweis**: ${f.evidence.reportRef}`);
     if (f.recommendation) lines.push(`- **Empfehlung**: ${f.recommendation}`);
-    lines.push(`- **Aufwand**: ${f.effort} · **Bearbeitungsreihenfolge**: ${f.bucket} · **Status**: ${f.status}`);
+    if (f.adrRef) lines.push(`- **ADR**: ${f.adrRef}`);
+    lines.push(`- **Aufwand**: ${f.effort} · **Reihenfolge**: ${f.bucket} · **Status**: ${f.status}`);
   }
   lines.push("");
-  lines.push(`## 6. Sortierte Maßnahmenliste`);
+  lines.push(`## 8. Sortierte Maßnahmenliste`);
   for (const b of r.actionOrder) {
     lines.push(`- **${b.bucket}** (${b.findings.length}): ${b.findings.join(", ")}`);
   }
   if (!r.actionOrder.length) lines.push("_Keine offenen Maßnahmen._");
   lines.push("");
-  lines.push(`## 7. Vergleich zum vorherigen Bericht`);
+  lines.push(`## 9. Vergleich zum Vorgängerbericht`);
   if (!r.diff) {
     lines.push("_Kein Vorbericht — dies ist der erste Lauf._");
   } else {
@@ -723,12 +893,22 @@ function renderMarkdown(r) {
     lines.push(`- Verschlechtert: ${r.diff.worse.length}`);
     lines.push(`- Unverändert: ${r.diff.same.length}`);
     lines.push(`- Wieder aufgetreten: ${r.diff.reappeared.length}`);
+    lines.push(`- Schweregrad geändert: ${r.diff.severityChanged?.length ?? 0}`);
+    lines.push(`- Gate-Relevanz geändert: ${r.diff.gateChanged?.length ?? 0}`);
+    lines.push(`- Status geändert: ${r.diff.statusChanged?.length ?? 0}`);
+    if (r.diff.securityRegressions?.length) {
+      lines.push("");
+      lines.push(`### Sicherheits-Regressionen`);
+      for (const s of r.diff.securityRegressions) {
+        lines.push(`- **${s.id}** — ${s.kind}${s.from ? ` (${s.from} → ${s.to})` : ""}`);
+      }
+    }
   }
   lines.push("");
-  lines.push(`## 8. Freigabeempfehlung`);
+  lines.push(`## 10. Freigabeempfehlung (Legacy)`);
   lines.push(`**${REC_LABEL[r.recommendation.level]}** — ${r.recommendation.reason}`);
   lines.push("");
-  lines.push(`## 9. Quality-Gate-Blocker (Prompt 2A.10)`);
+  lines.push(`## 11. Quality-Gate-Blocker (Prompt 2A.10)`);
   if (!r.blockers?.length) {
     lines.push("_Keine — CI-Gate ist grün._");
   } else {

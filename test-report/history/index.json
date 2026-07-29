@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0.0",
+  "entries": [
+    {
+      "id": "5b9b520a-54af-4d73-a245-b8751a87f890",
+      "version": 1,
+      "parentReportId": null,
+      "generatedAt": "2026-07-29T02:50:49.587Z",
+      "dashboardVersion": "1.42.2",
+      "commit": "b1e8a61",
+      "status": "passed-with-findings",
+      "releaseStage": {
+        "proposed": "production",
+        "effective": "production"
+      },
+      "integrityHash": "8b24bc809bce9f915ba7811aeff98b15c8e12e9e560159e6a58f7bcfb0536261",
+      "released": false,
+      "file": "test-report/history/2026-07-29T02-50-49-587Z-5b9b520a-54af-4d73-a245-b8751a87f890.json"
+    },
+    {
+      "id": "1ee0eeca-0356-43b5-89ec-dd428679900a",
+      "version": 2,
+      "parentReportId": "5b9b520a-54af-4d73-a245-b8751a87f890",
+      "generatedAt": "2026-07-29T02:50:56.420Z",
+      "dashboardVersion": "1.42.2",
+      "commit": "8718ea0",
+      "status": "passed-with-findings",
+      "releaseStage": {
+        "proposed": "production",
+        "effective": "production"
+      },
+      "integrityHash": "78ecec8b53f485b0dccb4ce6bb69ff3fc1b0c5c6e4591358eeec6b6d563fb8c3",
+      "released": false,
+      "file": "test-report/history/2026-07-29T02-50-56-420Z-1ee0eeca-0356-43b5-89ec-dd428679900a.json"
+    }
+  ]
+}

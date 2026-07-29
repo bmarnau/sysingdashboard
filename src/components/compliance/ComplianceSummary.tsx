@@ -66,9 +66,28 @@ export function ComplianceSummary({ report }: Props) {
           <Stat label="Offen" value={openTotal} />
           <Stat label="Gesamt" value={report.summary.total} />
           <Stat label="Akzeptiert" value={report.summary.accepted} />
-          <Stat label="Version" value={report.identity.dashboardVersion} mono />
+          <Stat label="App-Version" value={report.identity.dashboardVersion} mono />
+          {report.version !== undefined && <Stat label="Report v" value={report.version} mono />}
+          {report.releaseStage?.effective && (
+            <Stat label="Freigabe" value={report.releaseStage.effective} mono />
+          )}
+          {report.integrity?.value && (
+            <Stat label="Hash" value={report.integrity.value.slice(0, 8)} mono />
+          )}
         </div>
       </div>
+      {report.releaseStage?.overridden && (
+        <div className="rounded-md border border-warning/40 bg-warning/10 p-2 text-xs">
+          <strong>Manuelle Freigabe-Abweichung</strong> · {report.releaseStage.overridden.by} ·{" "}
+          Ticket {report.releaseStage.overridden.ticket ?? "—"} — {report.releaseStage.overridden.reason}
+        </div>
+      )}
+      {report.diff?.securityRegressions && report.diff.securityRegressions.length > 0 && (
+        <div className="rounded-md border border-destructive/40 bg-destructive/10 p-2 text-xs">
+          <strong>Sicherheits-Regression:</strong>{" "}
+          {report.diff.securityRegressions.map((s) => s.id).join(", ")}
+        </div>
+      )}
 
       {/* Severity-Kacheln */}
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
