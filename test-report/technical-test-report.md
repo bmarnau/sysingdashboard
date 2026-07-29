@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `5b9b520a-54af-4d73-a245-b8751a87f890` · Version 1 · Generiert: 2026-07-29T02:50:49.587Z_
+_Report ID: `1ee0eeca-0356-43b5-89ec-dd428679900a` · Version 2 · Generiert: 2026-07-29T02:50:56.420Z_
 
 ## 1. Prüfidentität
-- Report-ID: `5b9b520a-54af-4d73-a245-b8751a87f890`
-- Reportversion: **1**
-- Vorgängerbericht: —
+- Report-ID: `1ee0eeca-0356-43b5-89ec-dd428679900a`
+- Reportversion: **2**
+- Vorgängerbericht: `5b9b520a-54af-4d73-a245-b8751a87f890`
 - Schema: `2.0.0`
 - Dashboard-Version: **1.42.2**
-- Commit: `b1e8a61`
+- Commit: `8718ea0`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: —
-- Testzeit: 2026-07-29T02:50:49.477Z
+- Testzeit: 2026-07-29T02:50:56.307Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:8b24bc809bce9f915ba7811aeff98b15c8e12e9e560159e6a58f7bcfb0536261`
+- Integrität: `sha256:78ecec8b53f485b0dccb4ce6bb69ff3fc1b0c5c6e4591358eeec6b6d563fb8c3`
 
 ## 2. Freigabestufe
 - Vorschlag: **production**
@@ -939,13 +939,13 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen D
 
 ## 9. Vergleich zum Vorgängerbericht
 - Neu: 0
-- Behoben: 1
+- Behoben: 0
 - Verschlechtert: 0
 - Unverändert: 72
 - Wieder aufgetreten: 0
 - Schweregrad geändert: 0
-- Gate-Relevanz geändert: 6
-- Status geändert: 2
+- Gate-Relevanz geändert: 0
+- Status geändert: 0
 
 ## 10. Freigabeempfehlung (Legacy)
 **Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
