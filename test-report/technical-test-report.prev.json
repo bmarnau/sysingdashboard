@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.1.0",
-  "generatedAt": "2026-07-27T03:17:29.889Z",
+  "generatedAt": "2026-07-27T03:18:51.756Z",
   "identity": {
     "dashboardVersion": "1.42.1",
-    "commit": "6a70b19",
+    "commit": "b327af1",
     "buildTime": null,
-    "testTime": "2026-07-27T03:17:29.795Z",
+    "testTime": "2026-07-27T03:18:51.645Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -14,17 +14,17 @@
   },
   "status": "passed-with-findings",
   "recommendation": {
-    "level": "pilot-ready",
-    "reason": "3 HIGH-Findings — für Pilot geeignet, für Produktion nicht."
+    "level": "continue-development",
+    "reason": "Weiterentwicklung empfohlen."
   },
   "summary": {
-    "total": 73,
-    "openTotal": 65,
+    "total": 72,
+    "openTotal": 62,
     "critical": 0,
-    "high": 3,
+    "high": 0,
     "medium": 19,
     "low": 42,
-    "accepted": 8,
+    "accepted": 10,
     "sources": {
       "security": {
         "status": "passed-with-findings",
@@ -40,7 +40,7 @@
       },
       "techdebt": {
         "status": "passed-with-findings",
-        "count": 64
+        "count": 63
       },
       "ops": {
         "status": "not-run",
@@ -157,7 +157,7 @@
     "Technische Schulden": {
       "status": "passed-with-findings",
       "openCritical": 0,
-      "openHigh": 3,
+      "openHigh": 0,
       "sourceKeys": [
         "techdebt"
       ]
@@ -269,32 +269,6 @@
       "order": 2
     },
     {
-      "id": "td:td-correlation-err-shape-34111d3b",
-      "severity": "HIGH",
-      "category": "API",
-      "area": "API",
-      "title": "Fehlerantwort ohne Correlation-ID",
-      "description": "Handler antwortet mit unstrukturierter Fehler-Response ohne `correlationId`.",
-      "cause": "Direkter `Response.json({error})`-Aufruf statt `jsonErrorWithCorrelation(status, code, message)`.",
-      "impact": "Client kann Fehler nicht mit einem Server-Log-Eintrag verknüpfen.",
-      "evidence": {
-        "file": "src/routes/api/public/auth-config.ts",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/routes/api/public/auth-config.ts"
-      ],
-      "recommendation": "Alle Fehlerpfade auf `jsonErrorWithCorrelation(status, code, message)` umstellen.",
-      "dependencies": [],
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "bucket": "high-functional",
-      "order": 3
-    },
-    {
       "id": "td:td-oversize-26e43c0a",
       "severity": "HIGH",
       "category": "Frontend",
@@ -311,12 +285,12 @@
       "components": [
         "src/components/ExportDialog.tsx"
       ],
-      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
+      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).\n\nAkzeptanz: src/components/ExportDialog.tsx enthält Wizard, Vorschau, Progress und Download-Logik. Der Refactor in `ExportWizard`/`ExportPreview`/`ExportProgress` ist in ADR-0019 skizziert und wird gemeinsam mit dem Dashboard-Split adressiert. Kein Sicherheits- oder Funktionsrisiko. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).",
       "dependencies": [],
       "effort": "M",
-      "status": "open",
+      "status": "accepted",
       "source": "auto",
-      "accepted": false,
+      "accepted": true,
       "bucket": "high-functional",
       "order": 3
     },
@@ -337,12 +311,12 @@
       "components": [
         "src/routes/_authenticated/dashboard.tsx"
       ],
-      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
+      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).\n\nAkzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen Dashboard-Shell (Header, Servicemenü, Suche, Panels). Ein Refactor in Sub-Routen erfordert Route-Split (siehe ADR-0019) und wird in einem separaten UI-Sprint umgesetzt. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).",
       "dependencies": [],
       "effort": "M",
-      "status": "open",
+      "status": "accepted",
       "source": "auto",
-      "accepted": false,
+      "accepted": true,
       "bucket": "high-functional",
       "order": 3
     },
@@ -2065,14 +2039,6 @@
   ],
   "actionOrder": [
     {
-      "bucket": "high-functional",
-      "findings": [
-        "td:td-correlation-err-shape-34111d3b",
-        "td:td-oversize-26e43c0a",
-        "td:td-oversize-7e9a0b20"
-      ]
-    },
-    {
       "bucket": "architecture",
       "findings": [
         "sec:SEC-MED-CLAIMS-001",
@@ -2148,7 +2114,7 @@
   "diff": {
     "new": [],
     "fixed": [
-      "td:td-correlation-missing-34111d3b"
+      "td:td-correlation-err-shape-34111d3b"
     ],
     "worse": [],
     "same": [
@@ -2156,7 +2122,6 @@
       "sec:SEC-CRIT-002",
       "sec:SEC-HIGH-STATUS-001",
       "sec:SEC-HIGH-LOG-001",
-      "td:td-correlation-err-shape-34111d3b",
       "td:td-oversize-26e43c0a",
       "td:td-oversize-7e9a0b20",
       "sec:SEC-HIGH-AUTH-001",
