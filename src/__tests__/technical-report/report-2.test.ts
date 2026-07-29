@@ -1,6 +1,16 @@
-import { describe, expect, it } from "vitest";
-import { computeIntegrityHash, extractIntegrityPayload, stableStringify } from "../../scripts/technical-report/canonical.mjs";
-import { proposeReleaseStage, applyReleaseOverride, STAGES } from "../../scripts/technical-report/release-gate.mjs";
+import { describe, expect, it, beforeAll } from "vitest";
+
+// Dynamische Imports: die Skripte liegen außerhalb von tsconfig include.
+let computeIntegrityHash: any, extractIntegrityPayload: any, stableStringify: any;
+let proposeReleaseStage: any, applyReleaseOverride: any, STAGES: any;
+
+beforeAll(async () => {
+  const canonical: any = await import(/* @vite-ignore */ "../../../scripts/technical-report/canonical.mjs");
+  const gate: any = await import(/* @vite-ignore */ "../../../scripts/technical-report/release-gate.mjs");
+  ({ computeIntegrityHash, extractIntegrityPayload, stableStringify } = canonical);
+  ({ proposeReleaseStage, applyReleaseOverride, STAGES } = gate);
+});
+
 
 const baseReport = {
   schemaVersion: "2.0.0",
