@@ -133,9 +133,21 @@ function bucketFor(f) {
 
 // ------------------------------------------------------------------ collectors
 
-/** Einheitliches Finding-Schema. */
+/** Einheitliches Finding-Schema (Report 2.0 erweitert). */
 function makeFinding(partial) {
   const severity = normalizeSev(partial.severity);
+  const status = partial.status ?? "open";
+  const accepted = partial.accepted ?? false;
+  let classification = partial.classification;
+  if (!classification) {
+    if (accepted) classification = "accepted-debt";
+    else if (status === "closed" || status === "fixed") classification = "fixed";
+    else classification = "confirmed";
+  }
+  const gateRelevant =
+    partial.gateRelevant ??
+    (severity === "CRITICAL" ||
+      (severity === "HIGH" && String(partial.id ?? "").startsWith("sec:")));
   const base = {
     id: partial.id,
     severity,
@@ -145,6 +157,7 @@ function makeFinding(partial) {
     description: truncate(partial.description ?? "", 800),
     cause: truncate(partial.cause ?? "", 400),
     impact: truncate(partial.impact ?? "", 400),
+    rootCause: truncate(partial.rootCause ?? partial.cause ?? "", 400),
     evidence: {
       file: partial.evidence?.file ?? null,
       line: partial.evidence?.line ?? null,
@@ -153,10 +166,18 @@ function makeFinding(partial) {
     components: partial.components ?? [],
     recommendation: truncate(partial.recommendation ?? "", 600),
     dependencies: partial.dependencies ?? [],
+    owner: partial.owner ?? null,
+    dueDate: partial.dueDate ?? null,
+    createdAt: partial.createdAt ?? null,
+    closedAt: partial.closedAt ?? null,
+    commitRef: partial.commitRef ?? null,
+    adrRef: partial.adrRef ?? null,
     effort: partial.effort ?? "M",
-    status: partial.status ?? "open",
+    status,
     source: partial.source ?? "auto",
-    accepted: partial.accepted ?? false,
+    accepted,
+    gateRelevant,
+    classification,
   };
   base.bucket = bucketFor(base);
   base.order = ORDER_BUCKETS.indexOf(base.bucket);
