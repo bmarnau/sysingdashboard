@@ -781,8 +781,7 @@ function main() {
     `[technical-report] v${version} id=${reportId} status=${status} stage=${releaseStage.effective} hash=${report.integrity.value.slice(0, 8)} → ${OUT_JSON} · history=${historyFile}`,
   );
 }
-  );
-}
+
 
 // ------------------------------------------------------------------ render
 
