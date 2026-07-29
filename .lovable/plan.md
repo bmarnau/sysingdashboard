@@ -1,79 +1,154 @@
 
-# Sprint 03B – Login Recovery und End-to-End-Authentifizierung
+# Sprint 04 – Prüfbericht 2.0 & Struktur-Refactoring
 
-## Beobachteter Zustand (verifiziert vor Planung)
+## Kritisches Feedback vorab
 
-- Console-Log der laufenden Preview zeigt einen harten Renderfehler **`TypeError: Cannot convert object to primitive value`** im `beforeLoad` von `/_authenticated`, gefolgt von einem Ausschlag der `CatchBoundary` in `__root__/`. Dadurch erscheint die Fehlerseite „This page didn't load" statt einer Weiterleitung nach `/auth`.
-- Session-Replay bestätigt: Aufruf `/dashboard` → sofort Fehlerseite. Es gibt also keine „stumme Auto-Anmeldung"; der Redirect-Guard löst technisch aus, bricht aber vor der eigentlichen `redirect()`-Wirkung ab.
-- Auth-Konfiguration (`config.ts`, `runtime-config.ts`, `/api/public/auth-config`) ist grundsätzlich vorhanden und mit Runtime-Fallback ausgestattet; Publish nutzt ggf. den Runtime-Weg.
-- Ursachenverdacht (unbestätigt): Der neue Open-Redirect-Guard in `_authenticated/route.tsx` konstruiert `combined = \`${path}${search}\`` — wenn TanStack `location.search` in dieser Router-Version als **Objekt** liefert, wirft die Template-Coercion genau diesen `TypeError`. Ebenfalls prüfen: `throw redirect({ … search: { … } })` innerhalb `try/catch` mit `isRedirect`-Fehlprüfung (Property-Check statt `isRedirect()`-Funktion) — kann Redirects verschlucken.
+Der Sprint bündelt zwei sehr verschiedene Arbeitsstränge (Report-Infrastruktur + großes UI-Refactoring). Ich schlage vor, **Report 2.0 zuerst** abzuschließen und den **Refactor als zweiten, isolierten Schritt** im selben Sprint zu fahren — sonst wird die Regressionsanalyse unlesbar (jede Report-Diff-Änderung überlagert Refactor-Effekte). Alles im Umfang bleibt, aber sequenziell.
 
-Diese Hypothesen werden in Schritt 1 des Sprints reproduziert und bestätigt, bevor eine Zeile geändert wird.
+Zusätzlich: die Prompt-Liste unter §3 (Prüfbereiche) beschreibt weitgehend das, was der Aggregator heute schon zusammenzieht — echte Neuarbeit sind **Historie, Hash, Freigabestufen, Vergleich, Audit**. Ich fokussiere die Umsetzung dort und ergänze fehlende Bereichsfelder (Auth, RLS, Docker, Azure-Readiness) als deklarative Sektionen ohne neue Scanner.
 
-## Ziel
+## Ausgangsanalyse (verifiziert)
 
-Preview- und Published-Login sind mit einem realen Supabase-Benutzer end-to-end nachweisbar. Keine Fachfunktionen, kein Refactoring über den Fix hinaus.
+- `scripts/technical-report/build.mjs` (747 LOC) ist ein reiner Aggregator: liest `test-report/*` + `tech-debt/*`, schreibt `technical-test-report.{json,md}` + `.prev.json`. Diff nur gegen den letzten Lauf, keine Historie, kein Hash, keine Freigabestufe (nur `recommendation.level`), keine Report-ID.
+- Anzeige: `src/components/compliance/*` liest den Report via `?raw`-Import (ADR-0017). UI stabil, kein Umbau nötig außer neue Felder.
+- `src/routes/_authenticated/dashboard.tsx` (3280 LOC): eine `Dashboard()`-Komponente + 4 Views (`ProjectsView`, `WorkPackagesView`, `ActivitiesView`, `BillingView`) + 4 Dialoge (Project/WP/Activity/Engineer) + Helper (`Card`, `TabButton`, `KpiCard`, `SearchInput`, `IconBtn`, `Modal`, `FormActions`, `PeriodToggle`) + Persistenz-Effekte + Validierung. Alle Views/Dialoge sind bereits in sich geschlossen — Extraktion ist mechanisch, verhaltensneutral.
+- `src/components/ExportDialog.tsx` (807 LOC): `ExportDialog` + Prefs-Persistenz + Format-/Gruppierung-/Sort-Konfig + `GroupNode`-Preview + PDF-Lazy. Split entlang bereits vorhandener Blöcke möglich.
+- ADR-0019 akzeptiert beide Findings befristet — muss nach Refactor geschlossen werden.
 
-## Vorgehen
+Risiken: Dashboard-State ist stark verflochten (Persistenz via `initDashboardPersistence`, `dashboardStore` PubSub). Refactor darf State nur **hochreichen**, nicht duplizieren.
 
-### 1. Fehler reproduzieren und Ursache bestätigen
-- Playwright-Reproskript gegen `http://localhost:8080/dashboard` und `/auth?redirect=/dashboard` (Chromium headless, viewport 1280×1800). Erfasst URL, Screenshot, Console, Netzwerkstatus, `X-Correlation-Id`. Keine Tokens/Passwörter im Log.
-- Zweite Session mit gültigem Supabase-User (`LOVABLE_BROWSER_AUTH_STATUS`) — falls `injected`, Session in localStorage restoren und Verhalten dokumentieren; sonst als „external_unmanaged" markieren und nur öffentliche Route testen.
-- Runtime-Typ von `location.search` in `_authenticated/route.tsx` per gezieltem `console.debug` (temporär) verifizieren, um Hypothese A oder B zu belegen.
+## 1. Report 2.0 – Datenmodell
 
-### 2. Minimalfix
-Nur die tatsächlich bestätigte Ursache ändern. Erwartete, minimal-invasive Kandidaten:
-- `src/routes/_authenticated/route.tsx`
-  - `safeInternalTarget` neu: `location.pathname` (String) verwenden, `search` mit `new URLSearchParams` in String konvertieren, statt Template-Coercion auf ein potenziell-Objekt.
-  - `catch`-Block: TanStack-`isRedirect(e)` importieren (statt Property-Check `.isRedirect`), damit legitime Redirects nicht in den Fallback-Redirect kollabieren.
-  - `is_account_active`-RPC in eigenen `try/catch`, damit Netzwerk-/RLS-Fehler nicht die gesamte Session abbrechen (Unterscheidung „Auth ok, Statusprüfung down" vs. „nicht eingeloggt").
-- `src/routes/auth.tsx`
-  - `safeRedirect` analog absichern; `Link to="/"` in „Zurück"-Zeile prüfen — kein Coercion-Risiko, aber Konsistenz.
-- Redirect-Guard bleibt aktiv: Nur same-origin Pfade (`^/[^/\\]`) werden weitergereicht, alles andere fällt auf `/dashboard` zurück.
-
-Explizit **nicht** angetastet: Supabase-Client, RBAC, RLS, Runtime-Config, Service-Role, Logger-Redaction, Oversize-Refactor.
-
-### 3. Auth-Regressionstests
-- **Neuer Unit-/Router-Test** in `src/__tests__/routes/authenticated-guard.test.ts` (oder analog): simuliert `location` mit Objekt-`search` und stellt sicher, dass `beforeLoad` **nicht** wirft und den korrekten Redirect wählt. Reproduziert den heutigen Bug 1:1.
-- **Neuer E2E-Test** `e2e/specs/auth/login-e2e.spec.ts`:
-  - anonym: `/dashboard` → Redirect nach `/auth?redirect=/dashboard`
-  - Login mit Testuser (Supabase-Credentials aus `E2E_SUPABASE_TEST_EMAIL`/`E2E_SUPABASE_TEST_PASSWORD`; wenn nicht gesetzt → Test wird `skip` mit klarer Meldung, kein Fake-Pass)
-  - nach Login: Weiterleitung auf `/dashboard`, Reload behält Session, Logout entfernt Session, Direktaufruf `/dashboard` erneut blockiert
-  - Open-Redirect: `/auth?redirect=//evil.example` landet nach Login auf `/dashboard`
-- Bestehende 301 Vitest- und Playwright-Suiten müssen grün bleiben (`bun run typecheck`, `bun run lint`, `bun run test`, `bun run test:e2e`, `bun run docs:check`).
-
-### 4. Manuelle End-to-End-Verifikation
-Ausgeführt und dokumentiert (URL, Zeitpunkt, HTTP-Status, Correlation-ID, sichtbare Meldung, Reload-Verhalten — **keine** Credentials):
-- Preview desktop / Preview mobile Emulation
-- Published desktop / Published mobile Emulation
-- Privates + normales Browserfenster
-- Ohne Session, falsches Passwort, unbekannter User, User ohne Rolle, abgelaufene Session, ungültiger Redirect-Param
-
-Solange Published-Login nicht real bestätigt ist, bleibt der Sprint offen und der Technical Report führt einen expliziten Gate-Blocker.
-
-### 5. Dokumentation
-- `CHANGELOG.md` → neuer Eintrag `1.42.2`
-- `src/lib/help-documentation.ts` → HelpTopic „Authentifizierung – Fehlerbehebung 03B" (`lastUpdated`)
-- `docs/DEPLOYMENT.md` und `README.md`: Hinweis zu Preview/Published-Login-Verifikationslauf und benötigten E2E-Env-Variablen (nur Variablennamen, keine Werte)
-- `test-report/auth-commissioning-report.md` + Technical Report: neuer Abschnitt „Login End-to-End nachgewiesen" mit Zeitpunkt, Version, Ergebnis Preview, Ergebnis Published
-
-### 6. Abschluss-Gate
-Sprint 03B wird nur als „Go" markiert, wenn **alle** Punkte aus Abschnitt „Abnahmekriterien" des Prompts belegt sind, inkl. real durchgeführtem Published-Login. Andernfalls: klarer No-Go mit offenem Gate-Blocker im Technical Report; keine Arbeiten an Sprint 04.
-
-## Technische Details / Betroffene Dateien (voraussichtlich)
+Neue Felder in `technical-test-report.json` (Schema-Version `2.0.0`):
 
 ```text
-src/routes/_authenticated/route.tsx     safeInternalTarget-String-Coercion, isRedirect(), RPC-try/catch
-src/routes/auth.tsx                     safeRedirect analog, ggf. reason-Whitelist erweitern
-src/__tests__/routes/…                  neuer Router-Guard-Test
-e2e/specs/auth/login-e2e.spec.ts        neuer real-E2E-Test
-CHANGELOG.md, help-documentation.ts,
-docs/DEPLOYMENT.md, README.md,
-test-report/*                           Doku- und Reportsynchronisation
+report:
+  id                 // uuid v4, pro Lauf neu
+  schemaVersion      // "2.0.0"
+  version            // Reportversion, monoton (aus history-index)
+  parentReportId     // Vorgängerbericht oder null
+  integrity: { algo: "sha256", value, fields[] }
+  identity: { dashboardVersion, commit, buildTag?, dbMigrationHead?,
+              environment, generatedAt, generatedBy }
+  releaseStage: { proposed, effective, reason, overridden?, overriddenBy? }
+  sections: { architecture, auth, rbac, rls, supabase, apiSecurity,
+              operations, dockerPortability, azureReadiness, tests, docs }
+  findings[]         // erweitertes Schema (s.u.)
+  diff               // gegen parentReportId
 ```
 
-## Kritische Hinweise
+Finding-Schema (Superset zum jetzigen):
+`id, title, area, category, severity, gateRelevant, status, description, evidence, rootCause, recommendation, owner, effort, dueDate, createdAt, closedAt, commitRef?, adrRef?, classification: confirmed|false-positive|accepted-debt|fixed|not-applicable`.
 
-- Der reale End-to-End-Login benötigt **Supabase-Test-Credentials im Sandbox-Env**. Ohne diese Variablen kann der Sprint per Definition nicht abgeschlossen werden — bitte im Anschluss an die Plan-Freigabe `E2E_SUPABASE_TEST_EMAIL` und `E2E_SUPABASE_TEST_PASSWORD` als Secrets bereitstellen (Namen ok, Werte niemals in Chat). Ohne diese wird der neue E2E-Test dokumentiert `skip` und ich melde ausdrücklich **No-Go**, statt einen grünen Balken vorzutäuschen.
-- Wenn Schritt 1 zeigt, dass die Ursache **nicht** die Guard-Coercion ist (z. B. RPC `is_account_active` wirft wegen fehlender EXECUTE-Grants nach dem letzten Härtungssprint), verschiebt sich der Fix auf die RPC-Grants — der Sprint bleibt ansonsten identisch.
-- ADR-0019/Oversize-Refactor bleibt außerhalb dieses Sprints.
+Bestehende Auto-Findings werden gemappt (kein Datenverlust). Manuelle Nachweise für Sektionen ohne Scanner (Auth E2E, RLS, Docker, Azure-Readiness) leben in `scripts/technical-report/manual-sections.json` und werden versioniert.
+
+## 2. Historie & Integritäts-Hash
+
+- Ablage: `test-report/history/<utc-timestamp>-<reportId>.json` (append-only, nie überschreiben).
+- Index: `test-report/history/index.json` (Report-ID, Version, generatedAt, releaseStage, integrityHash, parentReportId).
+- **Freigegebene Berichte** werden zusätzlich unter `history/released/` gehardlinkt und dürfen von Skripten nicht mehr geschrieben werden (Guard im Build-Skript).
+- Löschung nur via `scripts/technical-report/archive.mjs` mit Audit-Zeile in `audit_log` (Rolle: systemadministrator) — sonst nur archivieren.
+- Hash: `sha256` über kanonisch serialisierten Ausschnitt (`identity` ohne `generatedAt`, `sections`, `findings` sortiert nach `id`, `releaseStage.proposed`). Serialisierung: `JSON.stringify` mit sortierten Keys via `safe-stable-stringify`-Pattern (eigener Sortierer, keine Extra-Dep). Felder-Whitelist im Report unter `integrity.fields[]`, damit die Prüfung reproduzierbar bleibt. Zeitstempel + UI-Zustände sind ausgeschlossen.
+- Verifikation via `scripts/technical-report/verify.mjs <file>` (rechnet Hash nach, exit 1 bei Mismatch, in CI angehakt).
+
+## 3. Freigabelogik & Vergleich
+
+Vorschlagsregel in `scripts/technical-report/release-gate.mjs`:
+
+```text
+production      ← 0 open critical, 0 gate-blocker, security+auth+rls green,
+                  restore-test present, docs complete
+pilot           ← wie production, aber restore-test optional
+internal-test   ← 0 open critical, security+auth green
+development     ← sonst
+```
+
+Manuelle Abweichung: `scripts/technical-report/override.mjs --stage=pilot --reason=… --ticket=…` schreibt in den Report (`releaseStage.overridden`) und in `audit_log`. Nur `systemadministrator` (Prüfung via Env-Guard im Skript, dokumentiert für Server-Seite).
+
+Vergleich (`diff`) erweitert um: `reopened[]`, `severityChanged[]`, `gateChanged[]`, `statusChanged[]`, `expiredAcceptances[]`, `securityRegressions[]` (hervorgehoben in Markdown + UI-Panel).
+
+## 4. UI-Anpassungen (minimal)
+
+- `src/components/compliance/ComplianceSummary.tsx`: Report-ID, Version, Hash, Freigabestufe (proposed/effective), Parent-Link.
+- neuer `ComplianceRegressions.tsx`: Security-Regressionen hervorheben.
+- `ComplianceHistory.tsx`: liest `history/index.json` (via `?raw`-Import wie bisher) statt nur `prev.json`.
+- Keine neuen Fachfunktionen im Dashboard.
+
+## 5. Refactor – dashboard.tsx (verhaltensneutral)
+
+Neue Struktur unter `src/components/dashboard/`:
+
+```text
+dashboard.tsx (Route)     ~150 LOC – nur Route + <DashboardPage/>
+DashboardPage.tsx         State, Persistenz, Dialog-Orchestrierung
+header/DashboardHeader.tsx        Header + Servicemenü + Suche
+header/ServiceMenu.tsx
+tabs/TabBar.tsx                   (nutzt vorh. TabButton)
+kpi/KpiRow.tsx                    (nutzt KpiCard)
+views/ProjectsView.tsx            1:1 aus dashboard.tsx
+views/WorkPackagesView.tsx
+views/ActivitiesView.tsx
+views/BillingView.tsx
+dialogs/ProjectDialog.tsx
+dialogs/WorkPackageDialog.tsx
+dialogs/ActivityDialog.tsx
+dialogs/EngineerDialog.tsx
+primitives/{Card,Modal,FormActions,SearchInput,IconBtn,PeriodToggle}.tsx
+hooks/useDashboardData.ts         (State + storage effects)
+hooks/useDashboardFilters.ts      (Period, Search, Tab)
+lib/validation.ts                 (validateActivity, normalize*)
+lib/format.ts                     (fmtDate, fmtEuro, newId)
+lib/labels.ts                     (wpStatusLabel, priorityStyles, …)
+```
+
+Regeln: keine State-Duplizierung, Persistenz-Keys bleiben identisch, keine Verhaltensänderung. Snapshot- + Playwright-Smoketest belegen Regression-Freiheit.
+
+## 6. Refactor – ExportDialog.tsx
+
+Unter `src/components/export/`:
+
+```text
+ExportDialog.tsx           Shell + Steuerung (~150 LOC)
+ExportFormatSelection.tsx
+ExportScopeSelection.tsx  (Grouping + Sort)
+ExportPreview.tsx         (GroupNode + Formatter)
+ExportProgress.tsx
+ExportResult.tsx
+ExportErrorState.tsx
+hooks/useExportProcess.ts (Prefs, Trigger, Progress)
+lib/export-prefs.ts       (loadPrefs/savePrefs)
+lib/export-filename.ts    (buildFileName, slugify, timestamp)
+lib/export-format.ts      (HOURS_FMT, CURRENCY_FMT, formatters)
+```
+
+Öffentliche Exports (`ExportConfiguration`, `ExportFormat`, `GroupingId`, `SortKey`) bleiben re-exportiert für Import-Kompatibilität.
+
+## 7. ADR-0019 & Akzeptanzen
+
+Nach Refactor: `scripts/technical-report/tech-debt-acceptances.json` beide Einträge entfernen; ADR-0019 auf **abgeschlossen** setzen mit Liste der entstandenen Module und Rest-Zeilenzahlen. Neuer Detektor-Lauf muss keine neuen Oversize-Findings für die Nachfolger produzieren (Schwellen 400/600 bleiben).
+
+## 8. Tests
+
+- Vitest neu: `report-build`, `report-hash`, `report-history`, `report-diff`, `report-release-gate`, `report-override-audit`, `report-integrity-verify`.
+- Vitest neu Refactor: Rendersmoke pro extrahierter View/Dialog + Persistenz-Roundtrip.
+- Playwright: existierende Nav/Search/Login-Suites laufen unverändert.
+- CI: `verify.mjs` in `report`-Stage, Historie-Append in Post-Report-Step.
+
+## 9. Dokumentation
+
+CHANGELOG (`1.43.0`), README (Report-Kapitel), `docs/adr/ADR-0017` fortgeschrieben (Schema 2.0), ADR-0019 geschlossen, neue `docs/technical-report-2.md` (Datenmodell, Hash, Historie, Freigabe), `help-documentation.ts` Kapitel „Technischer Prüfbericht 2.0".
+
+## Reihenfolge der Umsetzung
+
+1. Report-Schema 2.0 + Aggregator anpassen (ohne UI).
+2. Historie + Hash + Verify-Skript.
+3. Release-Gate + Override + Audit.
+4. UI-Erweiterungen (Summary, History, Regressions).
+5. Refactor Dashboard (Snapshot vor/nach vergleichen).
+6. Refactor ExportDialog.
+7. ADR-0019 schließen, Akzeptanzen entfernen.
+8. Volltest, CHANGELOG, Doku, Go/No-Go.
+
+## Nicht enthalten
+
+Keine AVKK-Funktionen, keine Domänen-Migration, keine neuen Scanner, keine State-Management-Umbauten. Report bleibt Datei-basiert (kein DB-Store) — Historie-in-DB wäre Sprint-05-Kandidat.
