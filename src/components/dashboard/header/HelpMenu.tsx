@@ -30,6 +30,10 @@ interface HelpMenuProps {
 
 export function HelpMenu({ openManualTopic }: HelpMenuProps) {
   const [showHelpMenu, setShowHelpMenu] = useState(false);
+  const openTopic = (topicId?: string) => {
+    setShowHelpMenu(false);
+    openManualTopic(topicId);
+  };
   return (
     <div className="relative">
       <button
@@ -52,7 +56,7 @@ export function HelpMenu({ openManualTopic }: HelpMenuProps) {
           />
           <div className="absolute right-0 z-40 mt-2 max-h-[70vh] w-72 overflow-y-auto rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
             <button
-              onClick={() => openManualTopic(undefined)}
+              onClick={() => openTopic(undefined)}
               className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-medium hover:bg-secondary/60"
             >
               Handbuch öffnen
@@ -63,7 +67,7 @@ export function HelpMenu({ openManualTopic }: HelpMenuProps) {
             {HELP_QUICKLINKS.map((q) => (
               <button
                 key={q.id}
-                onClick={() => openManualTopic(q.id)}
+                onClick={() => openTopic(q.id)}
                 className="block w-full px-4 py-2 text-left text-sm hover:bg-secondary/60"
               >
                 {q.label}

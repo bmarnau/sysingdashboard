@@ -194,7 +194,6 @@ function Dashboard() {
   const openManualTopic = (topicId?: string, q?: string) => {
     setManualTopicId(topicId);
     setManualQuery(q);
-    setShowHelpMenu(false);
     setShowManual(true);
   };
   const [showBackupDialog, setShowBackupDialog] = useState(false);
@@ -300,7 +299,6 @@ function Dashboard() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    setShowServiceMenu(false);
   };
 
   /* ---------- Derived ---------- */
