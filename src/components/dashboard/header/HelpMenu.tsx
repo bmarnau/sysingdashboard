@@ -6,23 +6,23 @@ import { useState } from "react";
 import { HelpCircle } from "lucide-react";
 
 const HELP_QUICKLINKS: { id: string; label: string }[] = [
-    { id: "local-operation", label: "Lokaler Betrieb ohne Azure" },
-    { id: "azure-service-area", label: "Azure Servicebereich" },
-    { id: "azure-database-build", label: "Azure Datenbank aufbauen" },
-    { id: "azure-connection-test", label: "Azure Verbindung testen" },
-    { id: "azure-export", label: "Nach Azure exportieren" },
-    { id: "azure-import", label: "Aus Azure importieren" },
-    { id: "azure-conflict-handling", label: "Konflikthandling" },
-    { id: "backup-before-import", label: "Backup vor Import" },
-    { id: "rbac-rollen-berechtigungen", label: "Rollen & Berechtigungen" },
-    { id: "system-status", label: "Systemstatus" },
-    { id: "env-validation", label: "ENV-Validierung" },
-    { id: "security-principles", label: "Sicherheitsprinzipien" },
-    { id: "azure-outage", label: "Was bei Azure-Ausfall passiert" },
-    { id: "test-instance", label: "Testinstanz und Qualitätssicherung" },
-    { id: "tech-debt", label: "Technical-Debt-Analyse" },
-    { id: "api-endpoint-tests", label: "API- und Endpoint-Tests" },
-  ];
+  { id: "local-operation", label: "Lokaler Betrieb ohne Azure" },
+  { id: "azure-service-area", label: "Azure Servicebereich" },
+  { id: "azure-database-build", label: "Azure Datenbank aufbauen" },
+  { id: "azure-connection-test", label: "Azure Verbindung testen" },
+  { id: "azure-export", label: "Nach Azure exportieren" },
+  { id: "azure-import", label: "Aus Azure importieren" },
+  { id: "azure-conflict-handling", label: "Konflikthandling" },
+  { id: "backup-before-import", label: "Backup vor Import" },
+  { id: "rbac-rollen-berechtigungen", label: "Rollen & Berechtigungen" },
+  { id: "system-status", label: "Systemstatus" },
+  { id: "env-validation", label: "ENV-Validierung" },
+  { id: "security-principles", label: "Sicherheitsprinzipien" },
+  { id: "azure-outage", label: "Was bei Azure-Ausfall passiert" },
+  { id: "test-instance", label: "Testinstanz und Qualitätssicherung" },
+  { id: "tech-debt", label: "Technical-Debt-Analyse" },
+  { id: "api-endpoint-tests", label: "API- und Endpoint-Tests" },
+];
 
 interface HelpMenuProps {
   openManualTopic: (topicId?: string, q?: string) => void;

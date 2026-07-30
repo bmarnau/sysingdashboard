@@ -106,10 +106,10 @@ export function GlobalSearch({
                   (a.description ?? "").toLowerCase().includes(q),
               )
               .slice(0, 4);
-            const hRes = HelpDocumentationService.searchTopics(
-              q,
-              currentUser?.role ?? null,
-            ).slice(0, 4);
+            const hRes = HelpDocumentationService.searchTopics(q, currentUser?.role ?? null).slice(
+              0,
+              4,
+            );
             const hasAny = pRes.length + wpRes.length + aRes.length + hRes.length > 0;
             if (!hasAny)
               return (
@@ -150,9 +150,7 @@ export function GlobalSearch({
                       Arbeitspakete
                     </p>
                     {wpRes.map((w) => {
-                      const proj = w.projectId
-                        ? projects.find((p) => p.id === w.projectId)
-                        : null;
+                      const proj = w.projectId ? projects.find((p) => p.id === w.projectId) : null;
                       return (
                         <button
                           key={w.id}

@@ -108,12 +108,7 @@ import { ServiceMenu } from "@/components/dashboard/header/ServiceMenu";
 // Sprint 05: Präsentation, Fachlogik und Konstanten liegen in src/components/dashboard/.
 import { type Tab } from "@/components/dashboard/constants";
 import { fmtDate, fmtEuro } from "@/components/dashboard/formatters";
-import {
-  perfReportKey,
-  periodKey,
-  storageKey,
-  viewmodeKey,
-} from "@/components/dashboard/keys";
+import { perfReportKey, periodKey, storageKey, viewmodeKey } from "@/components/dashboard/keys";
 import {
   emptyActivity,
   emptyProject,
@@ -132,8 +127,6 @@ import { WorkPackageDialog } from "@/components/dashboard/dialogs/WorkPackageDia
 import { ActivityDialog } from "@/components/dashboard/dialogs/ActivityDialog";
 import { EngineerDialog } from "@/components/dashboard/dialogs/EngineerDialog";
 
-
-
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
@@ -148,9 +141,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-
 /* ---------------------------------- Component --------------------------------- */
-
 
 function Dashboard() {
   // Domain-State kommt aus dem zentralen dashboardStore (useSyncExternalStore).
@@ -267,7 +258,6 @@ function Dashboard() {
       /* ignore */
     }
   }, [hydrated, viewMode, periodOffset, showPerfReport]);
-
 
   // (Domain-Persistenz übernimmt initDashboardPersistence() — debounced, kein Full-Blob-Write pro Keystroke mehr.)
 
@@ -948,10 +938,7 @@ function Dashboard() {
 
       {showTechnicalReport && (
         <Suspense fallback={null}>
-          <TechnicalReportDialog
-            open={showTechnicalReport}
-            onOpenChange={setShowTechnicalReport}
-          />
+          <TechnicalReportDialog open={showTechnicalReport} onOpenChange={setShowTechnicalReport} />
         </Suspense>
       )}
 

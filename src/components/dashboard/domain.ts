@@ -2,12 +2,7 @@
  * Fachliche Validierung, Normalisierung und Objekt-Factories des Dashboards.
  * Bewusst frei von React — direkt unit-testbar.
  */
-import type {
-  Activity,
-  BillingStatus,
-  Project,
-  WorkPackage,
-} from "@/lib/dashboard-data";
+import type { Activity, BillingStatus, Project, WorkPackage } from "@/lib/dashboard-data";
 import { newId } from "./formatters";
 import { isValidISODate } from "./formatters";
 
