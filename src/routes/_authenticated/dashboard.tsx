@@ -113,6 +113,34 @@ import {
   useWorkPackages,
 } from "@/lib/store/useDashboardStore";
 import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
+// Sprint 05: Präsentation, Fachlogik und Konstanten liegen in src/components/dashboard/.
+import { type Tab } from "@/components/dashboard/constants";
+import { fmtDate, fmtEuro, newId } from "@/components/dashboard/formatters";
+import {
+  perfReportKey,
+  periodKey,
+  storageKey,
+  viewmodeKey,
+} from "@/components/dashboard/keys";
+import {
+  emptyActivity,
+  emptyProject,
+  emptyWP,
+  normalizeActivity,
+  normalizeWorkPackage,
+  validateActivity,
+} from "@/components/dashboard/domain";
+import { Card, KpiCard, TabButton } from "@/components/dashboard/primitives";
+import { ProjectsView } from "@/components/dashboard/views/ProjectsView";
+import { WorkPackagesView } from "@/components/dashboard/views/WorkPackagesView";
+import { ActivitiesView } from "@/components/dashboard/views/ActivitiesView";
+import { BillingView } from "@/components/dashboard/views/BillingView";
+import { ProjectDialog } from "@/components/dashboard/dialogs/ProjectDialog";
+import { WorkPackageDialog } from "@/components/dashboard/dialogs/WorkPackageDialog";
+import { ActivityDialog } from "@/components/dashboard/dialogs/ActivityDialog";
+import { EngineerDialog } from "@/components/dashboard/dialogs/EngineerDialog";
+
+
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
