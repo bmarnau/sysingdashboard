@@ -31,7 +31,8 @@ export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 ];
 
 export const sortLabel = (k: SortKey) => SORT_OPTIONS.find((o) => o.value === k)?.label ?? k;
-export const groupingLabel = (g: GroupingId) => GROUPING_OPTIONS.find((o) => o.value === g)?.label ?? g;
+export const groupingLabel = (g: GroupingId) =>
+  GROUPING_OPTIONS.find((o) => o.value === g)?.label ?? g;
 
 export const DEFAULTS = {
   format: "pdf" as ExportFormat,
