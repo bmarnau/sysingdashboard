@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.44.0 - 2026-07-30
+
+- Sprint 05 – Architektur-Refactoring: `dashboard.tsx` von 3281 auf 978 Zeilen reduziert.
+- Neue Module unter `src/components/dashboard/` (constants, keys, formatters, domain, primitives, views/, dialogs/, header/).
+- Header zerlegt in `GlobalSearch`, `HelpMenu` und `ServiceMenu` (State jeweils lokal gekapselt).
+- `ExportDialog.tsx` von 807 auf 602 Zeilen reduziert; Optionen, Dateinamens-Logik und Vorschau-Panels in `src/components/export/`.
+- Keine funktionalen Änderungen — alle 318 Tests unverändert grün.
+
 ## 1.43.0 - 2026-07-29
 
 - **Technischer Prüfbericht 2.0 (Sprint 04, Teil 1)**: Schema `2.0.0` mit `id` (UUID pro Lauf), monotoner `version`, `parentReportId`, `integrity.value` (SHA-256 über kanonisch serialisierte Feld-Whitelist) und `releaseStage.{proposed,effective,overridden}`. Kanonische Serialisierung in `scripts/technical-report/canonical.mjs` — Hash ist deterministisch, Zeitstempel/Report-ID/UI-Zustand fließen nicht ein.
