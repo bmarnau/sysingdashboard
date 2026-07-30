@@ -17,7 +17,6 @@ import {
   HardDrive,
   HelpCircle,
   Layers,
-  Pencil,
   Plus,
   Printer,
   ScrollText,
@@ -30,13 +29,9 @@ import {
 import {
   dashboardData,
   type Activity,
-  type BillingStatus,
   type Engineer,
-  type Priority,
   type Project,
-  type ProjectStatus,
   type WorkPackage,
-  type WorkPackageStatus,
 } from "@/lib/dashboard-data";
 // Schwere Dashboard-Dialoge werden lazy geladen, damit `jspdf`, `jspdf-autotable`,
 // `recharts` und ~5.000 LOC Dialog-Code den Initial-Chunk verlassen. Jeder Dialog
@@ -87,12 +82,7 @@ const LogViewerDialog = lazy(() =>
 import { HelpDocumentationService } from "@/lib/help-documentation";
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import {
-  UserManagementService,
-  ROLE_LABEL,
-  initialsOf,
-  type UserProfile,
-} from "@/lib/user-management";
+import { UserManagementService, ROLE_LABEL, initialsOf } from "@/lib/user-management";
 import { can } from "@/lib/rbac/permissions";
 import {
   TimePeriodService,
@@ -102,7 +92,6 @@ import {
 } from "@/lib/time-period";
 import {
   EngineerTargetTimeService,
-  deriveCounterpart,
   type EngineerTargetTimeModel,
 } from "@/lib/engineer-target-time";
 import { dashboardStore } from "@/lib/store/dashboard-store";
@@ -115,7 +104,7 @@ import {
 import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
 // Sprint 05: Präsentation, Fachlogik und Konstanten liegen in src/components/dashboard/.
 import { type Tab } from "@/components/dashboard/constants";
-import { fmtDate, fmtEuro, newId } from "@/components/dashboard/formatters";
+import { fmtDate, fmtEuro } from "@/components/dashboard/formatters";
 import {
   perfReportKey,
   periodKey,
@@ -130,7 +119,7 @@ import {
   normalizeWorkPackage,
   validateActivity,
 } from "@/components/dashboard/domain";
-import { Card, KpiCard, TabButton } from "@/components/dashboard/primitives";
+import { KpiCard, TabButton } from "@/components/dashboard/primitives";
 import { ProjectsView } from "@/components/dashboard/views/ProjectsView";
 import { WorkPackagesView } from "@/components/dashboard/views/WorkPackagesView";
 import { ActivitiesView } from "@/components/dashboard/views/ActivitiesView";
