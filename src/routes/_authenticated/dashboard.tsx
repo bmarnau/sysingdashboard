@@ -102,6 +102,9 @@ import {
   useWorkPackages,
 } from "@/lib/store/useDashboardStore";
 import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
+import { GlobalSearch } from "@/components/dashboard/header/GlobalSearch";
+import { HelpMenu } from "@/components/dashboard/header/HelpMenu";
+import { ServiceMenu } from "@/components/dashboard/header/ServiceMenu";
 // Sprint 05: Präsentation, Fachlogik und Konstanten liegen in src/components/dashboard/.
 import { type Tab } from "@/components/dashboard/constants";
 import { fmtDate, fmtEuro } from "@/components/dashboard/formatters";
@@ -175,7 +178,6 @@ function Dashboard() {
 
   const [tab, setTab] = useState<Tab>("projekte");
   const [showNewMenu, setShowNewMenu] = useState(false);
-  const [showServiceMenu, setShowServiceMenu] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 
@@ -189,31 +191,12 @@ function Dashboard() {
   const [showManual, setShowManual] = useState(false);
   const [manualTopicId, setManualTopicId] = useState<string | undefined>(undefined);
   const [manualQuery, setManualQuery] = useState<string | undefined>(undefined);
-  const [showHelpMenu, setShowHelpMenu] = useState(false);
   const openManualTopic = (topicId?: string, q?: string) => {
     setManualTopicId(topicId);
     setManualQuery(q);
     setShowHelpMenu(false);
     setShowManual(true);
   };
-  const HELP_QUICKLINKS: { id: string; label: string }[] = [
-    { id: "local-operation", label: "Lokaler Betrieb ohne Azure" },
-    { id: "azure-service-area", label: "Azure Servicebereich" },
-    { id: "azure-database-build", label: "Azure Datenbank aufbauen" },
-    { id: "azure-connection-test", label: "Azure Verbindung testen" },
-    { id: "azure-export", label: "Nach Azure exportieren" },
-    { id: "azure-import", label: "Aus Azure importieren" },
-    { id: "azure-conflict-handling", label: "Konflikthandling" },
-    { id: "backup-before-import", label: "Backup vor Import" },
-    { id: "rbac-rollen-berechtigungen", label: "Rollen & Berechtigungen" },
-    { id: "system-status", label: "Systemstatus" },
-    { id: "env-validation", label: "ENV-Validierung" },
-    { id: "security-principles", label: "Sicherheitsprinzipien" },
-    { id: "azure-outage", label: "Was bei Azure-Ausfall passiert" },
-    { id: "test-instance", label: "Testinstanz und Qualitätssicherung" },
-    { id: "tech-debt", label: "Technical-Debt-Analyse" },
-    { id: "api-endpoint-tests", label: "API- und Endpoint-Tests" },
-  ];
   const [showBackupDialog, setShowBackupDialog] = useState(false);
   const [showSystemStatus, setShowSystemStatus] = useState(false);
   const [showTechnicalReport, setShowTechnicalReport] = useState(false);
@@ -223,9 +206,6 @@ function Dashboard() {
   const [showLogViewer, setShowLogViewer] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
-  const [searchQ, setSearchQ] = useState("");
-  const [searchOpen, setSearchOpen] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
 
   const [now, setNow] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState<DashboardViewMode>("month");
@@ -289,15 +269,6 @@ function Dashboard() {
     }
   }, [hydrated, viewMode, periodOffset, showPerfReport]);
 
-  useEffect(() => {
-    function onDocClick(e: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setSearchOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, []);
 
   // (Domain-Persistenz übernimmt initDashboardPersistence() — debounced, kein Full-Blob-Write pro Keystroke mehr.)
 
@@ -540,413 +511,36 @@ function Dashboard() {
           </div>
 
           {/* Global Search */}
-          <div ref={searchRef} className="relative hidden flex-1 max-w-lg md:block">
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                value={searchQ}
-                onChange={(e) => {
-                  setSearchQ(e.target.value);
-                  setSearchOpen(true);
-                }}
-                onFocus={() => setSearchOpen(true)}
-                placeholder="Kunde, Tätigkeit, Arbeitspaket, Projekt…"
-                aria-label="Globale Suche"
-                type="search"
-                suppressHydrationWarning
-                className="h-10 w-full rounded-lg border border-input bg-secondary/40 pl-9 pr-8 text-sm outline-none transition focus:border-ring"
-              />
-              {searchQ && (
-                <button
-                  type="button"
-                  aria-label="Suche zurücksetzen"
-                  onClick={() => {
-                    setSearchQ("");
-                    setSearchOpen(false);
-                  }}
-                  className="absolute right-2 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded text-muted-foreground hover:bg-secondary hover:text-foreground"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-            {searchOpen && searchQ.trim() && (
-              <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[70vh] overflow-hidden overflow-y-auto rounded-xl border border-border bg-background shadow-[var(--shadow-elevated)]">
-                {(() => {
-                  const q = searchQ.toLowerCase().trim();
-                  const pRes = projects
-                    .filter(
-                      (p) =>
-                        p.name.toLowerCase().includes(q) ||
-                        p.client.toLowerCase().includes(q) ||
-                        (p.description ?? "").toLowerCase().includes(q),
-                    )
-                    .slice(0, 4);
-                  const wpRes = workPackages
-                    .filter(
-                      (w) =>
-                        w.title.toLowerCase().includes(q) ||
-                        (w.client ?? "").toLowerCase().includes(q) ||
-                        (w.tags ?? []).some((t) => t.toLowerCase().includes(q)),
-                    )
-                    .slice(0, 4);
-                  const aRes = activities
-                    .filter(
-                      (a) =>
-                        a.title.toLowerCase().includes(q) ||
-                        (a.client ?? "").toLowerCase().includes(q) ||
-                        (a.description ?? "").toLowerCase().includes(q),
-                    )
-                    .slice(0, 4);
-                  const hRes = HelpDocumentationService.searchTopics(
-                    q,
-                    currentUser?.role ?? null,
-                  ).slice(0, 4);
-                  const hasAny = pRes.length + wpRes.length + aRes.length + hRes.length > 0;
-                  if (!hasAny)
-                    return (
-                      <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-                        Keine Ergebnisse.
-                      </div>
-                    );
-                  return (
-                    <>
-                      {pRes.length > 0 && (
-                        <div className="px-3 py-2">
-                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                            Projekte
-                          </p>
-                          {pRes.map((p) => (
-                            <button
-                              key={p.id}
-                              onClick={() => {
-                                setSearchQ("");
-                                setSearchOpen(false);
-                                setTab("projekte");
-                                setEditingProject(p);
-                              }}
-                              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
-                            >
-                              <FolderKanban className="size-4 text-primary opacity-70" />
-                              <div className="min-w-0">
-                                <p className="truncate font-medium">{p.name}</p>
-                                <p className="text-xs text-muted-foreground">{p.client}</p>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                      {wpRes.length > 0 && (
-                        <div className="border-t border-border px-3 py-2">
-                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                            Arbeitspakete
-                          </p>
-                          {wpRes.map((w) => {
-                            const proj = w.projectId
-                              ? projects.find((p) => p.id === w.projectId)
-                              : null;
-                            return (
-                              <button
-                                key={w.id}
-                                onClick={() => {
-                                  setSearchQ("");
-                                  setSearchOpen(false);
-                                  setTab("arbeitspakete");
-                                  setEditingWP(w);
-                                }}
-                                className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
-                              >
-                                <Layers className="size-4 text-info opacity-70" />
-                                <div className="min-w-0">
-                                  <p className="truncate font-medium">{w.title}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {proj ? proj.name : "projektlos"} · {w.client ?? "—"}
-                                  </p>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                      {aRes.length > 0 && (
-                        <div className="border-t border-border px-3 py-2">
-                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                            Tätigkeiten
-                          </p>
-                          {aRes.map((a) => (
-                            <button
-                              key={a.id}
-                              onClick={() => {
-                                setSearchQ("");
-                                setSearchOpen(false);
-                                setTab("taetigkeiten");
-                                setEditingActivity(a);
-                              }}
-                              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
-                            >
-                              <Clock className="size-4 text-success opacity-70" />
-                              <div className="min-w-0">
-                                <p className="truncate font-medium">{a.title}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {fmtDate(a.date)} · {a.client ?? "—"}
-                                </p>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                      {hRes.length > 0 && (
-                        <div className="border-t border-border px-3 py-2">
-                          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                            Handbuch
-                          </p>
-                          {hRes.map((h) => (
-                            <button
-                              key={h.id}
-                              onClick={() => {
-                                const qNow = searchQ;
-                                setSearchQ("");
-                                setSearchOpen(false);
-                                openManualTopic(h.id, qNow);
-                              }}
-                              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
-                            >
-                              <BookOpen className="size-4 text-primary opacity-70" />
-                              <div className="min-w-0">
-                                <p className="truncate font-medium">{h.title}</p>
-                                <p className="text-xs text-muted-foreground">{h.category}</p>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  );
-                })()}
-              </div>
-            )}
-          </div>
+          <GlobalSearch
+            projects={projects}
+            workPackages={workPackages}
+            activities={activities}
+            setTab={setTab}
+            setEditingProject={setEditingProject}
+            setEditingWP={setEditingWP}
+            setEditingActivity={setEditingActivity}
+            openManualTopic={openManualTopic}
+          />
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setShowHelpMenu((v) => !v)}
-                title="Hilfe zu dieser Seite"
-                aria-label="Hilfe zu dieser Seite"
-                aria-expanded={showHelpMenu}
-                suppressHydrationWarning
-                className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
-              >
-                <HelpCircle className="size-4" aria-hidden="true" />
-              </button>
-              {showHelpMenu && (
-                <>
-                  <button
-                    aria-label="Hilfe-Menü schließen"
-                    className="fixed inset-0 z-30 cursor-default"
-                    onClick={() => setShowHelpMenu(false)}
-                  />
-                  <div className="absolute right-0 z-40 mt-2 max-h-[70vh] w-72 overflow-y-auto rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
-                    <button
-                      onClick={() => openManualTopic(undefined)}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-medium hover:bg-secondary/60"
-                    >
-                      Handbuch öffnen
-                    </button>
-                    <div className="border-t border-border px-4 pb-1 pt-2 text-[11px] uppercase tracking-wide text-muted-foreground">
-                      Kapitel direkt öffnen
-                    </div>
-                    {HELP_QUICKLINKS.map((q) => (
-                      <button
-                        key={q.id}
-                        onClick={() => openManualTopic(q.id)}
-                        className="block w-full px-4 py-2 text-left text-sm hover:bg-secondary/60"
-                      >
-                        {q.label}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setShowServiceMenu((v) => !v)}
-                aria-label="Einstellungen und Services"
-                aria-expanded={showServiceMenu}
-                title="Einstellungen"
-                suppressHydrationWarning
-                className="relative grid size-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary"
-              >
-                <Settings className="size-4" aria-hidden="true" />
-              </button>
-              {showServiceMenu && (
-                <>
-                  <button
-                    aria-label="Menü schließen"
-                    className="fixed inset-0 z-30 cursor-default"
-                    onClick={() => setShowServiceMenu(false)}
-                  />
-                  <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        setShowExportDialog(true);
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <Download className="size-4 opacity-70" /> Export…
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        setShowPerfReport((v) => !v);
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      {showPerfReport ? (
-                        <>
-                          <EyeOff className="size-4 opacity-70" /> Leistungsreport ausblenden
-                        </>
-                      ) : (
-                        <>
-                          <Eye className="size-4 opacity-70" /> Leistungsreport anzeigen
-                        </>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        setShowUserDialog(true);
-                      }}
-                      className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <Server className="size-4 opacity-70" /> Benutzer & Profile…
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        setShowEngineer(true);
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <Server className="size-4 opacity-70" /> Engineer-Stammdaten…
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        setShowWorkingTimeDialog(true);
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <Clock className="size-4 opacity-70" /> Arbeitszeitmodell…
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        setShowDownloads(true);
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <Download className="size-4 opacity-70" /> Downloads…
-                    </button>
-                    {can(currentUser, "backup.restore") && (
-                      <button
-                        onClick={() => {
-                          setShowServiceMenu(false);
-                          setShowBackupDialog(true);
-                        }}
-                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                      >
-                        <HardDrive className="size-4 opacity-70" /> Backup…
-                      </button>
-                    )}
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        setShowLogViewer(true);
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <ScrollText className="size-4 opacity-70" /> Log Viewer…
-                    </button>
-                    {can(currentUser, "azure.export") && (
-                      <button
-                        onClick={() => {
-                          setShowServiceMenu(false);
-                          setShowImportExport(true);
-                        }}
-                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                      >
-                        <FileJson className="size-4 opacity-70" /> Import / Export…
-                      </button>
-                    )}
-                    {can(currentUser, "systemstatus.view") && (
-                      <button
-                        onClick={() => {
-                          setShowServiceMenu(false);
-                          setShowAzureData(true);
-                        }}
-                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                      >
-                        <HardDrive className="size-4 opacity-70" /> Azure Daten…
-                      </button>
-                    )}
-                    {can(currentUser, "systemstatus.view") && (
-                      <button
-                        onClick={() => {
-                          setShowServiceMenu(false);
-                          setShowSystemStatus(true);
-                        }}
-                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                      >
-                        <Gauge className="size-4 opacity-70" /> Systemstatus…
-                      </button>
-                    )}
-                    {can(currentUser, "systemstatus.view") && (
-                      <button
-                        onClick={() => {
-                          setShowServiceMenu(false);
-                          setShowTechnicalReport(true);
-                        }}
-                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                      >
-                        <ScrollText className="size-4 opacity-70" /> Technischer Prüfbericht…
-                      </button>
-                    )}
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        window.print();
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <Printer className="size-4 opacity-70" /> PDF Drucken
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        setShowManual(true);
-                      }}
-                      className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <BookOpen className="size-4 opacity-70" /> Handbuch…
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowServiceMenu(false);
-                        resetData();
-                      }}
-                      className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm text-destructive hover:bg-destructive/10"
-                    >
-                      <Trash2 className="size-4 opacity-70" /> Reset
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+            <HelpMenu openManualTopic={openManualTopic} />
+            <ServiceMenu
+              showPerfReport={showPerfReport}
+              setShowPerfReport={setShowPerfReport}
+              resetData={resetData}
+              setShowEngineer={setShowEngineer}
+              setShowWorkingTimeDialog={setShowWorkingTimeDialog}
+              setShowUserDialog={setShowUserDialog}
+              setShowManual={setShowManual}
+              setShowBackupDialog={setShowBackupDialog}
+              setShowSystemStatus={setShowSystemStatus}
+              setShowTechnicalReport={setShowTechnicalReport}
+              setShowDownloads={setShowDownloads}
+              setShowImportExport={setShowImportExport}
+              setShowAzureData={setShowAzureData}
+              setShowLogViewer={setShowLogViewer}
+              setShowExportDialog={setShowExportDialog}
+            />
             <button
               type="button"
               onClick={() => setShowUserDialog(true)}
