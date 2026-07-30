@@ -1,29 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState, useTransition } from "react";
 import {
   Activity as ActivityIcon,
   AlertTriangle,
-  BookOpen,
   CheckCircle2,
   ChevronDown,
   Clock,
-  Download,
   Euro,
-  Eye,
-  EyeOff,
-  FileJson,
   FolderKanban,
-  Gauge,
-  HardDrive,
-  HelpCircle,
   Layers,
   Plus,
-  Printer,
-  ScrollText,
-  Search,
   Server,
-  Settings,
-  Trash2,
   TrendingUp,
 } from "lucide-react";
 import {
@@ -79,11 +66,9 @@ const AzureDataDialog = lazy(() =>
 const LogViewerDialog = lazy(() =>
   import("@/components/LogViewerDialog").then((m) => ({ default: m.LogViewerDialog })),
 );
-import { HelpDocumentationService } from "@/lib/help-documentation";
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { UserManagementService, ROLE_LABEL, initialsOf } from "@/lib/user-management";
-import { can } from "@/lib/rbac/permissions";
 import {
   TimePeriodService,
   getISOWeek,
@@ -107,7 +92,7 @@ import { HelpMenu } from "@/components/dashboard/header/HelpMenu";
 import { ServiceMenu } from "@/components/dashboard/header/ServiceMenu";
 // Sprint 05: Präsentation, Fachlogik und Konstanten liegen in src/components/dashboard/.
 import { type Tab } from "@/components/dashboard/constants";
-import { fmtDate, fmtEuro } from "@/components/dashboard/formatters";
+import { fmtEuro } from "@/components/dashboard/formatters";
 import { perfReportKey, periodKey, storageKey, viewmodeKey } from "@/components/dashboard/keys";
 import {
   emptyActivity,
