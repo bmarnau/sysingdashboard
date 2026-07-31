@@ -6,6 +6,7 @@
  * Bericht ist zur Build-Zeit als JSON-Asset gebunden (ADR-0017), kein Runtime-Fetch.
  */
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,7 @@ import { ComplianceDiff } from "./compliance/ComplianceDiff";
 import { ComplianceHistory } from "./compliance/ComplianceHistory";
 import { ComplianceFilters, EMPTY_FILTER, type FilterState } from "./compliance/ComplianceFilters";
 import { ComplianceFindingList } from "./compliance/ComplianceFindingList";
+import { ComplianceReportPrint } from "./compliance/ComplianceReportPrint";
 import { parseReport, type Finding } from "./compliance/types";
 
 interface Props {
@@ -63,27 +65,63 @@ export function TechnicalReportDialog({ open, onOpenChange }: Props) {
 
   const filtered = useMemo(() => applyFilter(activeSet, filter), [activeSet, filter]);
 
-  // Druck: Body-Klasse + Attribut auf DialogContent, damit CSS-Print-Regel greift.
+  // Druck (Sprint 05B): Der Bericht wird als eigenständiges Dokument in ein
+  // Portal direkt an <body> gerendert. Grund: Der Dialog liegt in einem
+  // Radix-Portal mit `fixed`/`overflow` und wurde von der alten
+  // `:not(:has(...))`-Regel selbst ausgeblendet — der Ausdruck blieb leer.
+  const [printing, setPrinting] = useState(false);
+
   const handlePrint = () => {
     if (typeof document === "undefined") return;
-    document.body.classList.add("printing-compliance");
+    setPrinting(true);
+  };
+
+  useEffect(() => {
+    if (!printing || typeof window === "undefined") return;
+    let done = false;
     const cleanup = () => {
+      if (done) return;
+      done = true;
       document.body.classList.remove("printing-compliance");
       window.removeEventListener("afterprint", cleanup);
+      setPrinting(false);
     };
     window.addEventListener("afterprint", cleanup);
-    window.print();
-  };
+    // Zwei Frames warten, damit das Print-Dokument vollständig im Layout ist.
+    const raf = requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        document.body.classList.add("printing-compliance");
+        window.print();
+        // Fallback für Browser ohne verlässliches afterprint.
+        setTimeout(cleanup, 1000);
+      }),
+    );
+    return () => {
+      cancelAnimationFrame(raf);
+      cleanup();
+    };
+  }, [printing]);
 
   // Sicherheitsnetz: falls Dialog geschlossen wird, Print-Klasse zurücksetzen.
   useEffect(() => {
     if (!open && typeof document !== "undefined") {
       document.body.classList.remove("printing-compliance");
+      setPrinting(false);
     }
   }, [open]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      {printing &&
+        report &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div id="technical-report-print-root">
+            <ComplianceReportPrint report={report} />
+          </div>,
+          document.body,
+        )}
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="max-h-[90vh] w-[min(96vw,56rem)] max-w-4xl overflow-y-auto"
         data-compliance-print-content
@@ -167,7 +205,8 @@ export function TechnicalReportDialog({ open, onOpenChange }: Props) {
           </Button>
         </div>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+    </>
   );
 }
 
