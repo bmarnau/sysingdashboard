@@ -8,6 +8,7 @@
  */
 
 import { getAuthConfigurationStatus } from "./config";
+import { logger } from "@/lib/logger";
 
 // Statischer Zugriff — Vite ersetzt diese Ausdrücke bei jedem Build.
 const RAW_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -79,7 +80,12 @@ export function runStartupEnvCheck(): StartupEnvCheckResult {
 
   if (!ok) {
     // Ein kompakter Header + mehrzeilige Anleitung.
-    console.warn(buildInstruction(missing, invalidReason));
+    // Nur Variablennamen und ein neutraler Grund — niemals Werte (SEC/B4).
+    logger.warn(buildInstruction(missing, invalidReason), {
+      module: "supabase/env-check",
+      missing,
+      invalidReason,
+    });
 
     if (typeof window !== "undefined") {
       try {
@@ -90,8 +96,9 @@ export function runStartupEnvCheck(): StartupEnvCheckResult {
       }
     }
   } else {
-    console.info(
-      "[SysIng] Auth-Konfiguration verifiziert (VITE_SUPABASE_URL, _PUBLISHABLE_KEY, _PROJECT_ID vorhanden).",
+    logger.info(
+      "Auth-Konfiguration verifiziert (VITE_SUPABASE_URL, _PUBLISHABLE_KEY, _PROJECT_ID vorhanden).",
+      { module: "supabase/env-check" },
     );
   }
 
