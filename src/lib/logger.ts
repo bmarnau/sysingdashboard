@@ -49,6 +49,10 @@ const SECRET_VALUE_PATTERNS: RegExp[] = [
   /\bsb_(?:secret|publishable)_[A-Za-z0-9_-]{8,}/,
   /\bxox[baprs]-[A-Za-z0-9-]{10,}/, // Slack tokens
   /\bAIza[0-9A-Za-z_-]{20,}/, // Google API keys
+  /(?:^|[;\s])Server\s*=\s*[^;\s"']+\s*;\s*(?:Database|Initial\s+Catalog|Uid|User\s+Id)\s*=/i,
+  /ConnectionString\s*=\s*[^;\s"']+/i,
+  /Authorization\s*:\s*[A-Za-z]+\s+[A-Za-z0-9._~+/=-]{16,}/i,
+  /\bSharedKey\s+[A-Za-z0-9+/=]{16,}/,
 ];
 
 function looksLikeSecretString(value: string): boolean {

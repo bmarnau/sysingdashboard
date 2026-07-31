@@ -15,6 +15,7 @@
  */
 
 import { isDev, isProd, getMode } from "./env.mjs";
+import { logger } from "../backend/services/logger.mjs";
 
 export { isDev, isProd };
 
@@ -100,10 +101,10 @@ export function getEnv(name, requiredInProd = true) {
     if (requiredInProd) {
       throw new Error(`Missing required ENV variable: ${name}`);
     }
-    console.warn(`[secretManager] Missing ENV variable (prod, optional): ${name}`);
+    logger.warn("Missing optional ENV variable", { module: "secretManager", mode: "prod", name });
     return undefined;
   }
-  console.warn(`[secretManager] Missing ENV variable (dev, optional): ${name}`);
+  logger.warn("Missing optional ENV variable", { module: "secretManager", mode: "dev", name });
   return undefined;
 }
 
@@ -124,9 +125,10 @@ export function validate() {
     if (isProd()) {
       throw new Error(`Missing required ENV variables: ${missing.join(", ")}`);
     }
-    console.warn(
-      `[secretManager] DEV mode — missing optional ENV variables: ${missing.join(", ")}`,
-    );
+    logger.warn("DEV mode — missing optional ENV variables", {
+      module: "secretManager",
+      missing,
+    });
   }
 
   return { mode, missing, ok };

@@ -1,21 +1,15 @@
 /**
- * Detektor: direkte console.*-Nutzung außerhalb der Allowlist.
+ * Detektor: direkte console.*-Nutzung im Produktivcode.
  *
- * Ergänzt den bestehenden `scripts/check-no-console.mjs` (harter Guard) mit
- * einer Trend-Metrik: jede Fundstelle als Finding, damit der Bericht die
- * technische Schuld sichtbar macht. Der harte CI-Gate bleibt bestehen.
+ * Nutzt seit Sprint 05B dieselbe Richtlinie wie der harte CI-Gate
+ * (`scripts/console-policy.mjs`), damit Gate und Bericht nie auseinanderlaufen.
+ * Dokumentierte Ausnahmen erzeugen ein Info-Finding mit Status `akzeptiert`,
+ * unbegründete Aufrufe ein offenes Medium-Finding.
  */
 import { rel, read, walk, stableId, lineOf } from "../util.mjs";
+import { classify } from "../../console-policy.mjs";
 
 const RE = /console\.(log|debug|info|warn|error)\s*\(/g;
-const ALLOW = [
-  /^src\/lib\/logger(\.|-)/,
-  /^src\/lib\/error-capture\.ts$/,
-  /^src\/lib\/error-page\.ts$/,
-  /^backend\//,
-  /^scripts\//,
-  /^src\/__tests__\//,
-];
 
 export function detectConsoleUsage(ROOT) {
   const findings = [];
@@ -27,31 +21,47 @@ export function detectConsoleUsage(ROOT) {
 
   for (const abs of files) {
     const relPath = rel(ROOT, abs);
-    if (ALLOW.some((re) => re.test(relPath))) continue;
+    const verdict = classify(relPath);
+    if (verdict.kind === "logger-internal" || verdict.kind === "non-production") continue;
+
     const text = read(abs);
     let m;
+    RE.lastIndex = 0;
     while ((m = RE.exec(text)) !== null) {
       const line = lineOf(text, m.index);
+      const isException = verdict.kind === "exception";
       findings.push({
         id: stableId("console", relPath, line, m[1]),
-        title: `Direktes console.${m[1]} außerhalb der Logger-Fassade`,
+        title: isException
+          ? `Dokumentierte Konsolen-Ausnahme (${verdict.exception.id})`
+          : `Direktes console.${m[1]} außerhalb der Logger-Fassade`,
         category: "Frontend",
         location: `${relPath}:${line}`,
-        description: `Aufruf: console.${m[1]}(…)`,
-        rootCause: "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-        impact:
-          "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-        severity: "Medium",
-        likelihood: "Mittel",
-        recommendation: "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
-        recommendedOrder: 45,
+        description: isException
+          ? `Aufruf: console.${m[1]}(…) — begründete Ausnahme: ${verdict.exception.reason}`
+          : `Aufruf: console.${m[1]}(…)`,
+        rootCause: isException
+          ? "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung)."
+          : "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
+        impact: isException
+          ? "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink."
+          : "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
+        severity: isException ? "Info" : "Medium",
+        likelihood: isException ? "Gering" : "Mittel",
+        recommendation: isException
+          ? `Ausnahme bleibt gültig bis ${verdict.exception.review} (${verdict.exception.adr}).`
+          : "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
+        recommendedOrder: isException ? 90 : 45,
         effort: "klein",
-        status: "offen",
+        status: isException ? "akzeptiert" : "offen",
+        accepted: isException || undefined,
+        acceptanceReason: isException ? verdict.exception.reason : undefined,
+        acceptanceExpires: isException ? verdict.exception.review : undefined,
         firstDetected: now,
         lastChecked: now,
         version: process.env.TECH_DEBT_VERSION ?? "unknown",
         source: "automated",
-        automatedRule: "console-direct",
+        automatedRule: isException ? "console-documented-exception" : "console-direct",
         priorityTag: "stability",
       });
     }
