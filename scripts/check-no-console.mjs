@@ -1,45 +1,23 @@
 #!/usr/bin/env node
 /**
- * No-Console-Check.
+ * No-Console-Check (Sprint 05B).
  *
- * Verbietet direkte `console.*`-Aufrufe in kritischen Services, in denen
- * ausschließlich der Logger genutzt werden darf. Erlaubt bleiben:
+ * Prüft den gesamten Produktivcode (`src/`, `backend/`, `config/`) auf direkte
+ * `console.*`-Aufrufe. Zulässig sind ausschließlich:
  *
- *   - `src/lib/logger.ts` und `src/lib/logger.indexeddb.ts`
- *   - `backend/services/logger.mjs`
+ *   - Logger-Interna (der Sink selbst)
+ *   - Nicht-Produktivcode (Tests, Skripte, E2E)
+ *   - dokumentierte Ausnahmen aus `scripts/console-policy.mjs`
  *
  * Aufruf: `bun run lint:no-console`. Exit 1 bei Verstoß.
- *
- * Heuristik: nur echte Aufrufe am Zeilenanfang (ggf. mit Einrückung /
- * `void ` / `await `) werden geflaggt — String-Literale mit dem Wort
- * „console" bleiben unangetastet.
  */
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve, join } from "node:path";
+import { classify, CONSOLE_LINE_RE } from "./console-policy.mjs";
 
 const ROOT = resolve(new URL("..", import.meta.url).pathname);
 
-const TARGETS = [
-  "src/lib/backup-service.ts",
-  "src/lib/json-import-service.ts",
-  "src/lib/json-export-service.ts",
-  "src/lib/export-download-service.ts",
-  "src/lib/user-management.ts",
-  "src/lib/azure",
-  "src/components/ExportDialog.tsx",
-  "src/components/SaveTargetDialog.tsx",
-  "src/components/azure",
-  "backend/services",
-
-];
-
-const ALLOW = new Set([
-  "src/lib/logger.ts",
-  "src/lib/logger.indexeddb.ts",
-  "backend/services/logger.mjs",
-]);
-
-const LINE_RE = /^\s*(?:void\s+|await\s+)?console\.(log|debug|info|warn|error)\b/;
+const ROOTS = ["src", "backend", "config"];
 
 function walk(rel) {
   const abs = resolve(ROOT, rel);
@@ -52,7 +30,7 @@ function walk(rel) {
   if (st.isFile()) return [rel];
   const out = [];
   for (const name of readdirSync(abs)) {
-    const child = join(rel, name);
+    const child = join(rel, name).replace(/\\/g, "/");
     const s = statSync(resolve(ROOT, child));
     if (s.isDirectory()) out.push(...walk(child));
     else if (/\.(ts|tsx|mjs|js)$/.test(name)) out.push(child);
@@ -61,26 +39,35 @@ function walk(rel) {
 }
 
 const violations = [];
-for (const t of TARGETS) {
-  for (const file of walk(t)) {
-    if (ALLOW.has(file.replace(/\\/g, "/"))) continue;
+const exceptions = [];
+
+for (const r of ROOTS) {
+  for (const file of walk(r)) {
+    const verdict = classify(file);
     const src = readFileSync(resolve(ROOT, file), "utf8");
-    const lines = src.split(/\r?\n/);
-    lines.forEach((line, i) => {
-      if (LINE_RE.test(line)) {
-        violations.push(`${file}:${i + 1}  ${line.trim()}`);
-      }
+    src.split(/\r?\n/).forEach((line, i) => {
+      if (!CONSOLE_LINE_RE.test(line)) return;
+      const entry = `${file}:${i + 1}  ${line.trim()}`;
+      if (verdict.kind === "violation") violations.push(entry);
+      else if (verdict.kind === "exception")
+        exceptions.push(`${file}:${i + 1}  [${verdict.exception.id}]`);
     });
   }
+}
+
+if (exceptions.length > 0) {
+  console.log(`ℹ No-Console-Check: ${exceptions.length} dokumentierte Ausnahme(n):`);
+  for (const e of exceptions) console.log(`  · ${e}`);
 }
 
 if (violations.length > 0) {
   console.error("\nNo-Console-Check: Verstöße gefunden:");
   for (const v of violations) console.error(`  ✗ ${v}`);
   console.error(
-    "\nBitte `logger.*` aus `src/lib/logger.ts` bzw. `backend/services/logger.mjs` verwenden.",
+    "\nBitte `logger.*` aus `src/lib/logger.ts` bzw. `backend/services/logger.mjs` verwenden\n" +
+      "oder eine begründete Ausnahme in `scripts/console-policy.mjs` eintragen.",
   );
   process.exit(1);
 }
 
-console.log("✓ No-Console-Check: alle Ziel-Dateien nutzen den Logger.");
+console.log("✓ No-Console-Check: Produktivcode nutzt durchgängig den Logger.");
