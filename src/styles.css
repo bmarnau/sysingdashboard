@@ -166,20 +166,116 @@
   display: none;
 }
 
-/* Compliance-Dashboard Druckansicht: nur den Report-Dialog zeigen. */
+/* Compliance-Dashboard Druckansicht (Sprint 05B):
+   Der Bericht wird beim Drucken als eigenes Dokument in
+   #technical-report-print-root an <body> gerendert. Alle anderen
+   Body-Kinder (App-Shell, Dialog-Portal, Overlay) werden ausgeblendet. */
+#technical-report-print-root {
+  display: none;
+}
+
 @media print {
-  body.printing-compliance > *:not(:has([data-compliance-print-content])) {
+  body.printing-compliance > * {
     display: none !important;
   }
-  body.printing-compliance [data-compliance-print-content] {
+  body.printing-compliance > #technical-report-print-root {
+    display: block !important;
     position: static !important;
-    max-height: none !important;
-    max-width: 100% !important;
     width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
     overflow: visible !important;
-    box-shadow: none !important;
-    border: none !important;
-    transform: none !important;
-    inset: auto !important;
+    color: #000;
+    background: #fff;
+    font-size: 10pt;
+    line-height: 1.35;
+  }
+
+  .tr-print h1 {
+    font-size: 15pt;
+    margin: 0 0 4pt;
+  }
+  .tr-print h2 {
+    font-size: 12pt;
+    margin: 12pt 0 4pt;
+    border-bottom: 1px solid #000;
+    padding-bottom: 2pt;
+    break-after: avoid;
+  }
+  .tr-print h3 {
+    font-size: 10.5pt;
+    margin: 8pt 0 3pt;
+    break-after: avoid;
+  }
+  .tr-print-head p {
+    font-size: 9pt;
+    margin: 0;
+  }
+  .tr-sec {
+    break-inside: auto;
+  }
+  .tr-finding {
+    break-inside: avoid;
+    margin-bottom: 8pt;
+    padding-bottom: 4pt;
+    border-bottom: 1px dotted #999;
+  }
+  .tr-kv,
+  .tr-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  .tr-kv th {
+    width: 32%;
+    text-align: left;
+    vertical-align: top;
+    font-weight: 600;
+    padding: 1.5pt 4pt 1.5pt 0;
+  }
+  .tr-kv td,
+  .tr-table th,
+  .tr-table td {
+    vertical-align: top;
+    padding: 1.5pt 4pt;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .tr-table th,
+  .tr-table td {
+    border: 1px solid #666;
+  }
+  .tr-table thead {
+    display: table-header-group;
+  }
+  .tr-table tr {
+    break-inside: avoid;
+  }
+  .tr-mono,
+  .tr-print code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 8.5pt;
+  }
+  .tr-wrap {
+    overflow-wrap: anywhere;
+  }
+  .tr-list {
+    margin: 0 0 0 14pt;
+    padding: 0;
+    list-style: disc;
+  }
+  .tr-note {
+    font-size: 8.5pt;
+    margin-top: 3pt;
+  }
+  .tr-print-foot {
+    margin-top: 10pt;
+    border-top: 1px solid #000;
+    padding-top: 3pt;
+    font-size: 8pt;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 14mm 12mm;
   }
 }
