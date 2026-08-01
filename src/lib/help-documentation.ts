@@ -1968,7 +1968,7 @@ Erster Lauf schreibt \`test-report/ops-baseline.json\`. Folgeläufe warnen bei D
     title: "Technischer Prüfbericht",
     category: "Qualität",
     keywords: ["Prüfbericht", "Findings", "Freigabe", "Aggregator", "Diff", "Maßnahmen"],
-    lastUpdated: "2026-07-26",
+    lastUpdated: "2026-08-01",
     content: `## Zweck
 Der zentrale technische Prüfbericht (Prompt 2A.8, ADR-0017) fasst alle Bereichsberichte (Security, API, Backup/Restore, Tech-Debt, Ops, Docs) zu einem konsolidierten Bericht pro Buildstand zusammen. Reine Aggregation — keine neuen Tests.
 
