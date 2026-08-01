@@ -1982,7 +1982,7 @@ Der zentrale technische Prüfbericht (Prompt 2A.8, ADR-0017) fasst alle Bereichs
 - **Filter** — Volltextsuche über Titel/ID/Beschreibung/Komponenten plus Auswahllisten für Schweregrad, Bereich, Kategorie, Status, Bucket, Aufwand. „Zurücksetzen" leert alle Filter.
 - **Drill-Down** — jede Finding-Zeile ist aufklappbar und zeigt vollständige Beschreibung, Handlungsempfehlung, Komponenten, Evidence (mit Kopieren-Button) und Metadaten-Grid.
 - **Historie** — Delta zwischen aktuellem und vorherigem Buildstand (aus \`technical-test-report.prev.json\`) pro Schweregrad.
-- **Druckansicht** — Button „Drucken / PDF" öffnet die Systemdruckvorschau; nur der Report wird gedruckt.
+- **Druckansicht (vollständig, seit 1.44.3)** — Button „Drucken / PDF" rendert den kompletten Bericht (11 Abschnitte: Prüfidentität, Freigabestufe, Gesamtstatus, Management Summary, Prüfbereiche, Testergebnisse, Änderungen, alle Findings, Maßnahmenliste, technische Schulden, Integritätsnachweis) in ein eigenes Druck-Root direkt am \`body\`. Der Dialog selbst wird dabei ausgeblendet — dadurch entfallen die früheren leeren bzw. abgeschnittenen Ausdrucke. Ablauf: Dialog öffnen → „Drucken / PDF" → Systemdialog („Als PDF speichern"). Nach dem Druck räumt die Anwendung automatisch auf; auch wenn der Systemdialog abgebrochen wird.
 
 ## Schweregrade
 - **CRITICAL** — blockiert Freigabe.
