@@ -7,9 +7,8 @@
  * unbegründete Aufrufe ein offenes Medium-Finding.
  */
 import { rel, read, walk, stableId, lineOf } from "../util.mjs";
-import { classify } from "../../console-policy.mjs";
+import { classify, CONSOLE_LINE_RE } from "../../console-policy.mjs";
 
-const RE = /console\.(log|debug|info|warn|error)\s*\(/g;
 
 export function detectConsoleUsage(ROOT) {
   const findings = [];
@@ -25,10 +24,12 @@ export function detectConsoleUsage(ROOT) {
     if (verdict.kind === "logger-internal" || verdict.kind === "non-production") continue;
 
     const text = read(abs);
-    let m;
-    RE.lastIndex = 0;
-    while ((m = RE.exec(text)) !== null) {
-      const line = lineOf(text, m.index);
+    const lines = text.split(/\r?\n/);
+    for (let i = 0; i < lines.length; i++) {
+      const match = lines[i].match(CONSOLE_LINE_RE);
+      if (!match) continue;
+      const line = i + 1;
+      const m = [null, match[1]];
       const isException = verdict.kind === "exception";
       findings.push({
         id: stableId("console", relPath, line, m[1]),

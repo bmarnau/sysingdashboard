@@ -1,11 +1,9 @@
 {
   "new": [
-    "td-console-eb91ada9",
     "td-layer-9275d7a1",
     "td-oversize-92e5643a"
   ],
   "resolved": [
-    "td-correlation-err-shape-34111d3b",
     "td-console-375dfc5b",
     "td-console-9771f164",
     "td-console-993be125",
