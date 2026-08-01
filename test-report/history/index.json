@@ -32,6 +32,38 @@
       "integrityHash": "78ecec8b53f485b0dccb4ce6bb69ff3fc1b0c5c6e4591358eeec6b6d563fb8c3",
       "released": false,
       "file": "test-report/history/2026-07-29T02-50-56-420Z-1ee0eeca-0356-43b5-89ec-dd428679900a.json"
+    },
+    {
+      "id": "ea1275ec-7be3-47ab-9c33-d5d4ff464046",
+      "version": 3,
+      "parentReportId": "1ee0eeca-0356-43b5-89ec-dd428679900a",
+      "generatedAt": "2026-08-01T03:29:02.948Z",
+      "dashboardVersion": "1.44.0",
+      "commit": "218317c",
+      "status": "passed-with-findings",
+      "releaseStage": {
+        "proposed": "production",
+        "effective": "production"
+      },
+      "integrityHash": "738aee48de4fd95aa88ae3d844496ce87fcc751a18523db1d026fbf6c98a662d",
+      "released": false,
+      "file": "test-report/history/2026-08-01T03-29-02-948Z-ea1275ec-7be3-47ab-9c33-d5d4ff464046.json"
+    },
+    {
+      "id": "b3533f7f-07ac-488a-925d-1e74240306ee",
+      "version": 4,
+      "parentReportId": "ea1275ec-7be3-47ab-9c33-d5d4ff464046",
+      "generatedAt": "2026-08-01T03:30:30.564Z",
+      "dashboardVersion": "1.44.3",
+      "commit": "3b7e7cb",
+      "status": "passed-with-findings",
+      "releaseStage": {
+        "proposed": "production",
+        "effective": "production"
+      },
+      "integrityHash": "24811152c7aaf58edc01f5e7a36c78c2fda078d15eb4ee861828e7929bcaada6",
+      "released": false,
+      "file": "test-report/history/2026-08-01T03-30-30-564Z-b3533f7f-07ac-488a-925d-1e74240306ee.json"
     }
   ]
 }

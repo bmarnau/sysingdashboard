@@ -13,6 +13,26 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.44.3 - 2026-08-01
+
+- **Vollständiger PDF-Druck des technischen Prüfberichts**: Der Bericht wird beim Drucken über ein Portal in ein eigenes Root (`#technical-report-print-root`) direkt am `body` gerendert (`ComplianceReportPrint.tsx`) und ist damit vom Dialog-Layout (fixed/overflow) entkoppelt. Enthalten sind alle 11 Abschnitte inkl. sämtlicher Findings und Maßnahmenliste.
+- Druck-Trigger in `TechnicalReportDialog.tsx` gehärtet: `cancelled`-Guard gegen React StrictMode (kein doppeltes `window.print()`), zwei `requestAnimationFrame` vor dem Druck, `afterprint`-Listener plus 1500-ms-Fallback für zuverlässiges Aufräumen.
+- Print-Stylesheet: Body-Klasse `printing-compliance` blendet die App-Shell aus, statt den Portal-Container über `:not(:has())` mit zu verstecken (Ursache des leeren Ausdrucks).
+- Tech-Debt-Detektor `console-usage` nutzt jetzt dieselbe Zeilen-Regex wie das CI-Gate (`CONSOLE_LINE_RE`) und das Schema-Vokabular `Informational`/`Niedrig` — keine Schema-Fehler und keine Fundstellen mehr aus Dokumentationstexten.
+- Neues Script `bun run typecheck` (`tsc --noEmit`) für die finale Qualitätsprüfung.
+- Handbuch-Kapitel „Technischer Prüfbericht" um den Druckablauf ergänzt; `docs/PRINT-VERIFICATION.md` dokumentiert Architektur und Verifikation.
+
+## 1.44.2 - 2026-07-31
+
+- **Logger-Bereinigung abgeschlossen**: `config/secretManager.mjs` nutzt den Backend-Logger; `bun run lint:no-console` läuft ohne Verstöße (6 dokumentierte Ausnahmen).
+- Redaction erweitert (`src/lib/logger.ts`, `backend/services/logger.mjs`): `Server=`, `ConnectionString=`, `Authorization:`, `SharedKey`.
+- `scripts/console-policy.mjs` als gemeinsame Richtlinie für CI-Gate und Tech-Debt-Detektor.
+
+## 1.44.1 - 2026-07-30
+
+- Abschluss Sprint 05: `ExportDialog.tsx` von 602 auf 308 Zeilen reduziert (`src/components/export/`, `useExportDialog.ts`).
+- Compliance-Ansicht in Teilkomponenten unter `src/components/compliance/` zerlegt.
+
 ## 1.44.0 - 2026-07-30
 
 - Sprint 05 – Architektur-Refactoring: `dashboard.tsx` von 3281 auf 978 Zeilen reduziert.

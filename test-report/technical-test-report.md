@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `1ee0eeca-0356-43b5-89ec-dd428679900a` · Version 2 · Generiert: 2026-07-29T02:50:56.420Z_
+_Report ID: `b3533f7f-07ac-488a-925d-1e74240306ee` · Version 4 · Generiert: 2026-08-01T03:30:30.564Z_
 
 ## 1. Prüfidentität
-- Report-ID: `1ee0eeca-0356-43b5-89ec-dd428679900a`
-- Reportversion: **2**
-- Vorgängerbericht: `5b9b520a-54af-4d73-a245-b8751a87f890`
+- Report-ID: `b3533f7f-07ac-488a-925d-1e74240306ee`
+- Reportversion: **4**
+- Vorgängerbericht: `ea1275ec-7be3-47ab-9c33-d5d4ff464046`
 - Schema: `2.0.0`
-- Dashboard-Version: **1.42.2**
-- Commit: `8718ea0`
+- Dashboard-Version: **1.44.3**
+- Commit: `3b7e7cb`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: —
-- Testzeit: 2026-07-29T02:50:56.307Z
+- Testzeit: 2026-08-01T03:30:30.463Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:78ecec8b53f485b0dccb4ce6bb69ff3fc1b0c5c6e4591358eeec6b6d563fb8c3`
+- Integrität: `sha256:24811152c7aaf58edc01f5e7a36c78c2fda078d15eb4ee861828e7929bcaada6`
 
 ## 2. Freigabestufe
 - Vorschlag: **production**
@@ -26,7 +26,7 @@ _Report ID: `1ee0eeca-0356-43b5-89ec-dd428679900a` · Version 2 · Generiert: 20
 **bestanden mit Findings**
 
 ## 4. Executive Summary
-- Findings gesamt: 72 (CRITICAL 0 · HIGH 0 · MEDIUM 19 · LOW 42 · akzeptiert 10).
+- Findings gesamt: 68 (CRITICAL 0 · HIGH 0 · MEDIUM 9 · LOW 43 · akzeptiert 9).
 - Freigabeempfehlung (Legacy): **Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
 
 ## 5. Prüfbereiche (deklarativ)
@@ -113,32 +113,18 @@ _Report ID: `1ee0eeca-0356-43b5-89ec-dd428679900a` · Version 2 · Generiert: 20
 - **Empfehlung**: Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.
 - **Aufwand**: M · **Reihenfolge**: high-security · **Status**: accepted
 
-### td:td-oversize-26e43c0a · HIGH · Modul überschreitet Größenschwelle (808 Zeilen)
+### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (979 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Klassifikation**: accepted-debt · **Gate-relevant**: nein
 - **Quelle**: auto (akzeptiert)
-- **Beschreibung**: Die Datei hat 808 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
-- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
-- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
-- **Komponenten**: src/components/ExportDialog.tsx
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
-
-Akzeptanz: src/components/ExportDialog.tsx enthält Wizard, Vorschau, Progress und Download-Logik. Der Refactor in `ExportWizard`/`ExportPreview`/`ExportProgress` ist in ADR-0019 skizziert und wird gemeinsam mit dem Dashboard-Split adressiert. Kein Sicherheits- oder Funktionsrisiko. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).
-- **Aufwand**: M · **Reihenfolge**: high-functional · **Status**: accepted
-
-### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (3281 Zeilen)
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: accepted-debt · **Gate-relevant**: nein
-- **Quelle**: auto (akzeptiert)
-- **Beschreibung**: Die Datei hat 3281 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 979 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/routes/_authenticated/dashboard.tsx
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 
-Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen Dashboard-Shell (Header, Servicemenü, Suche, Panels). Ein Refactor in Sub-Routen erfordert Route-Split (siehe ADR-0019) und wird in einem separaten UI-Sprint umgesetzt. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).
+Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf 979 Zeilen reduziert worden (Extraktion nach src/components/dashboard/), liegt aber weiter über der 500-Zeilen-Schwelle. Der verbleibende Split in Sub-Routen erfordert Route-Umbau (ADR-0019) und folgt im UI-Sprint. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).
 - **Aufwand**: M · **Reihenfolge**: high-functional · **Status**: accepted
 
 ### sec:SEC-HIGH-AUTH-001 · HIGH · Historisch: Keine Session-, Token- oder Provider-Infrastruktur
@@ -201,124 +187,16 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen D
 - **Empfehlung**: Zod-Schema am Handler-Eingang ergänzen und bei Fehler 400 zurückgeben.
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-console-08e8609a · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
-- **Kategorie**: Frontend / Frontend
+### td:td-layer-9275d7a1 · MEDIUM · UI-Direktzugriff auf Persistenz-Schicht
+- **Kategorie**: Architektur / Architektur
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
 - **Quelle**: auto
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/start.ts:13
+- **Beschreibung**: Datei importiert ein verbotenes Modul: from "@/lib/store/dashboard-persistence"
+- **Ursache**: Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.
+- **Auswirkung**: Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.
+- **Komponenten**: src/routes/_authenticated/dashboard.tsx:89
 - **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-console-2c49302b · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/integrations/supabase/auth-middleware.ts:45
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-console-375dfc5b · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/routes/__root.tsx:40
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-console-43084e7a · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/integrations/supabase/client.ts:54
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-console-665c1d8d · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/integrations/supabase/client.server.ts:42
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-console-6c701bbd · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/server.ts:68
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-console-74bd3646 · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/server.ts:79
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-console-9771f164 · MEDIUM · Direktes console.info außerhalb der Logger-Fassade
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.info(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/integrations/supabase/env-check.ts:93
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-console-993be125 · MEDIUM · Direktes console.warn außerhalb der Logger-Fassade
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.warn(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/integrations/supabase/env-check.ts:82
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-console-f7820fc7 · MEDIUM · Direktes console.error außerhalb der Logger-Fassade
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Komponenten**: src/lib/help-documentation.ts:426
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
+- **Empfehlung**: useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
 
 ### td:td-layer-b432b1b9 · MEDIUM · UI-Direktzugriff auf Azure-Interna
@@ -331,18 +209,6 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen D
 - **Komponenten**: src/components/azure/AzureActionsPanel.tsx:7
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Ausschließlich `@/lib/azure/azure-service` importieren.
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-layer-e0ac1bea · MEDIUM · UI-Direktzugriff auf Persistenz-Schicht
-- **Kategorie**: Architektur / Architektur
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Datei importiert ein verbotenes Modul: from "@/lib/store/dashboard-persistence"
-- **Ursache**: Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.
-- **Auswirkung**: Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.
-- **Komponenten**: src/routes/_authenticated/dashboard.tsx:115
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
 
 ### td:td-layer-e4fb0e64 · MEDIUM · UI-Direktzugriff auf Azure-Interna
@@ -473,6 +339,18 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen D
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/ImportPreviewDialog.tsx
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
+- **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
+
+### td:td-oversize-92e5643a · LOW · Modul überschreitet Größenschwelle (423 Zeilen)
+- **Kategorie**: Frontend / Frontend
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Die Datei hat 423 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
+- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
+- **Komponenten**: src/components/compliance/ComplianceReportPrint.tsx
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
@@ -921,6 +799,78 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen D
 - **Empfehlung**: Kapitel "Sicherheits- und RBAC-Tests" gepflegt halten, damit keine Zertifizierungs-Fehlannahmen entstehen.
 - **Aufwand**: M · **Reihenfolge**: documentation · **Status**: accepted
 
+### td:td-console-08e8609a · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
+- **Kategorie**: Frontend / Frontend
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Komponenten**: src/start.ts:13
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
+
+### td:td-console-2c49302b · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
+- **Kategorie**: Frontend / Frontend
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Komponenten**: src/integrations/supabase/auth-middleware.ts:45
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
+
+### td:td-console-43084e7a · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
+- **Kategorie**: Frontend / Frontend
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Komponenten**: src/integrations/supabase/client.ts:54
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
+
+### td:td-console-665c1d8d · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
+- **Kategorie**: Frontend / Frontend
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Komponenten**: src/integrations/supabase/client.server.ts:42
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
+
+### td:td-console-6c701bbd · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
+- **Kategorie**: Frontend / Frontend
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Komponenten**: src/server.ts:68
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
+
+### td:td-console-74bd3646 · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
+- **Kategorie**: Frontend / Frontend
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Komponenten**: src/server.ts:79
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
+
 ### td:td-coverage-027fe478 · INFO · Kein Coverage-Report vorhanden
 - **Kategorie**: Tests / Tests
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
@@ -934,14 +884,14 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen D
 - **Aufwand**: S · **Reihenfolge**: test-gap · **Status**: open
 
 ## 8. Sortierte Maßnahmenliste
-- **architecture** (58): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-375dfc5b, td:td-console-43084e7a, td:td-console-665c1d8d, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-9771f164, td:td-console-993be125, td:td-console-f7820fc7, td:td-layer-b432b1b9, td:td-layer-e0ac1bea, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-789d61fa, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a
+- **architecture** (55): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-layer-9275d7a1, td:td-layer-b432b1b9, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-789d61fa, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-92e5643a, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-43084e7a, td:td-console-665c1d8d, td:td-console-6c701bbd, td:td-console-74bd3646
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 9. Vergleich zum Vorgängerbericht
 - Neu: 0
 - Behoben: 0
 - Verschlechtert: 0
-- Unverändert: 72
+- Unverändert: 68
 - Wieder aufgetreten: 0
 - Schweregrad geändert: 0
 - Gate-Relevanz geändert: 0

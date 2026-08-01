@@ -6,10 +6,9 @@
  * Dokumentierte Ausnahmen erzeugen ein Info-Finding mit Status `akzeptiert`,
  * unbegründete Aufrufe ein offenes Medium-Finding.
  */
-import { rel, read, walk, stableId, lineOf } from "../util.mjs";
-import { classify } from "../../console-policy.mjs";
+import { rel, read, walk, stableId } from "../util.mjs";
+import { classify, CONSOLE_LINE_RE } from "../../console-policy.mjs";
 
-const RE = /console\.(log|debug|info|warn|error)\s*\(/g;
 
 export function detectConsoleUsage(ROOT) {
   const findings = [];
@@ -25,10 +24,12 @@ export function detectConsoleUsage(ROOT) {
     if (verdict.kind === "logger-internal" || verdict.kind === "non-production") continue;
 
     const text = read(abs);
-    let m;
-    RE.lastIndex = 0;
-    while ((m = RE.exec(text)) !== null) {
-      const line = lineOf(text, m.index);
+    const lines = text.split(/\r?\n/);
+    for (let i = 0; i < lines.length; i++) {
+      const match = lines[i].match(CONSOLE_LINE_RE);
+      if (!match) continue;
+      const line = i + 1;
+      const m = [null, match[1]];
       const isException = verdict.kind === "exception";
       findings.push({
         id: stableId("console", relPath, line, m[1]),
@@ -46,8 +47,8 @@ export function detectConsoleUsage(ROOT) {
         impact: isException
           ? "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink."
           : "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-        severity: isException ? "Info" : "Medium",
-        likelihood: isException ? "Gering" : "Mittel",
+        severity: isException ? "Informational" : "Medium",
+        likelihood: isException ? "Niedrig" : "Mittel",
         recommendation: isException
           ? `Ausnahme bleibt gültig bis ${verdict.exception.review} (${verdict.exception.adr}).`
           : "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",

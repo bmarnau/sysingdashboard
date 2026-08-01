@@ -78,29 +78,43 @@ export function TechnicalReportDialog({ open, onOpenChange }: Props) {
 
   useEffect(() => {
     if (!printing || typeof window === "undefined") return;
+    let cancelled = false;
     let done = false;
-    const cleanup = () => {
+    let raf2 = 0;
+    let fallback = 0;
+    const finish = () => {
       if (done) return;
       done = true;
+      window.clearTimeout(fallback);
+      window.removeEventListener("afterprint", finish);
       document.body.classList.remove("printing-compliance");
-      window.removeEventListener("afterprint", cleanup);
       setPrinting(false);
     };
-    window.addEventListener("afterprint", cleanup);
+    window.addEventListener("afterprint", finish);
     // Zwei Frames warten, damit das Print-Dokument vollständig im Layout ist.
-    const raf = requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        if (cancelled) return;
         document.body.classList.add("printing-compliance");
-        window.print();
-        // Fallback für Browser ohne verlässliches afterprint.
-        setTimeout(cleanup, 1000);
-      }),
-    );
+        try {
+          window.print();
+        } finally {
+          // Fallback für Browser ohne verlässliches `afterprint`.
+          fallback = window.setTimeout(finish, 1500);
+        }
+      });
+    });
+    // Wichtig: Der Teardown darf den Druckzustand NICHT zurücksetzen
+    // (React StrictMode führt Effekte doppelt aus — sonst wird der
+    // Print-Root sofort wieder entfernt und `window.print()` doppelt gerufen).
     return () => {
-      cancelAnimationFrame(raf);
-      cleanup();
+      cancelled = true;
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+      window.removeEventListener("afterprint", finish);
     };
   }, [printing]);
+
 
   // Sicherheitsnetz: falls Dialog geschlossen wird, Print-Klasse zurücksetzen.
   useEffect(() => {

@@ -1,14 +1,16 @@
 # Security-Scan-Report
 
-- **Generiert:** 2026-07-13T05:19:43.599Z
-- **Dateien geprüft:** 205
+- **Generiert:** 2026-08-01T03:28:09.216Z
+- **Dateien geprüft:** 285
 - **Regeln:** 22
-- **CRITICAL:** 0 · **HIGH:** 0 · **MEDIUM:** 0
-- **Build-Status:** ✅ PASS
+- **CRITICAL:** 1 · **HIGH:** 0 · **MEDIUM:** 0
+- **Build-Status:** ❌ FAIL (CRITICAL/HIGH)
 
-## CRITICAL
+## CRITICAL (1)
 
-_Keine Funde._
+| Regel | Fundstelle | Beschreibung | Snippet |
+| --- | --- | --- | --- |
+| `azure-storage-conn` | src/__tests__/lib/logger.test.ts:38 | Azure Storage Connection-String | `"DefaultEndpointsProtocol=https;AccountName=demo;AccountKey=aGVsbG9zZWNyZXQ=;EndpointSuffix=core.windows.net";` |
 
 ## HIGH
 
