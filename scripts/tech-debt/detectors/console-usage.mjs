@@ -6,7 +6,7 @@
  * Dokumentierte Ausnahmen erzeugen ein Info-Finding mit Status `akzeptiert`,
  * unbegründete Aufrufe ein offenes Medium-Finding.
  */
-import { rel, read, walk, stableId, lineOf } from "../util.mjs";
+import { rel, read, walk, stableId } from "../util.mjs";
 import { classify, CONSOLE_LINE_RE } from "../../console-policy.mjs";
 
 
