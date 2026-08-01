@@ -46,8 +46,8 @@ export function detectConsoleUsage(ROOT) {
         impact: isException
           ? "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink."
           : "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-        severity: isException ? "Info" : "Medium",
-        likelihood: isException ? "Gering" : "Mittel",
+        severity: isException ? "Informational" : "Medium",
+        likelihood: isException ? "Niedrig" : "Mittel",
         recommendation: isException
           ? `Ausnahme bleibt gültig bis ${verdict.exception.review} (${verdict.exception.adr}).`
           : "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",

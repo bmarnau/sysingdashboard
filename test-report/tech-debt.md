@@ -1,10 +1,10 @@
 # Technical-Debt-Bericht
 
-- **Version**: 1.42.1
-- **Erzeugt**: 2026-07-27T03:18:51.520Z
-- **Findings gesamt**: 63 (automated: 60, manual: 3)
-- **Severity-Verteilung**: Critical 0 · High 2 · Medium 18 · Low 42 · Informational 1
-- **Diff zum Vorlauf**: 0 neu, 2 behoben, 63 bestehend
+- **Version**: 1.44.0
+- **Erzeugt**: 2026-08-01T03:28:20.617Z
+- **Findings gesamt**: 60 (automated: 57, manual: 3)
+- **Severity-Verteilung**: Critical 0 · High 1 · Medium 9 · Low 43 · Informational 7
+- **Diff zum Vorlauf**: 3 neu, 7 behoben, 57 bestehend
 
 > Analyseverfahren und Grenzen: siehe Handbuch-Kapitel „Technical-Debt-Analyse".
 
@@ -19,7 +19,7 @@
 - **Auswirkung**: Malformierte Payloads erreichen Business-Logik; potenziell inkonsistente Speicherung.
 - **Empfehlung**: Zod-Schema am Handler-Eingang ergänzen und bei Fehler 400 zurückgeben.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.471Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.471Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.578Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.578Z · **Version**: 1.44.0
 
 ### [Low] API-Endpoint ohne strukturierte Fehlerantwort
 - **ID**: `td-endpoint-err-cdae73c5`
@@ -30,7 +30,7 @@
 - **Auswirkung**: Client kann Fehler nicht klassifizieren, Correlation erschwert.
 - **Empfehlung**: try/catch mit `Response.json({error, code}, {status: 4xx|5xx})` ergänzen.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.471Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.471Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.578Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.578Z · **Version**: 1.44.0
 
 ### [Low] API-Endpoint ohne strukturierte Fehlerantwort
 - **ID**: `td-endpoint-err-ce5fa0be`
@@ -41,141 +41,97 @@
 - **Auswirkung**: Client kann Fehler nicht klassifizieren, Correlation erschwert.
 - **Empfehlung**: try/catch mit `Response.json({error, code}, {status: 4xx|5xx})` ergänzen.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.471Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.471Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.578Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.578Z · **Version**: 1.44.0
 
-## Frontend (21)
+## Frontend (18)
 
 ### [Medium] Direktes console.error außerhalb der Logger-Fassade
+- **ID**: `td-console-eb91ada9`
+- **Location**: src/lib/help-documentation.ts:473
+- **Quelle**: automated (`console-direct`)
+- **Beschreibung**: Aufruf: console.error(…)
+- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
+- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
+- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
+- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
+- **Erstmals**: 2026-08-01T03:28:20.595Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.595Z · **Version**: 1.44.0
+
+### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
 - **ID**: `td-console-08e8609a`
 - **Location**: src/start.ts:13
-- **Quelle**: automated (`console-direct`)
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.493Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.493Z · **Version**: 1.42.1
+- **Quelle**: automated (`console-documented-exception`)
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
+- **Erstmals**: 2026-08-01T03:28:20.595Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.595Z · **Version**: 1.44.0
 
-### [Medium] Direktes console.error außerhalb der Logger-Fassade
+### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
 - **ID**: `td-console-2c49302b`
 - **Location**: src/integrations/supabase/auth-middleware.ts:45
-- **Quelle**: automated (`console-direct`)
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.493Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.493Z · **Version**: 1.42.1
+- **Quelle**: automated (`console-documented-exception`)
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
+- **Erstmals**: 2026-08-01T03:28:20.595Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.595Z · **Version**: 1.44.0
 
-### [Medium] Direktes console.error außerhalb der Logger-Fassade
-- **ID**: `td-console-375dfc5b`
-- **Location**: src/routes/__root.tsx:40
-- **Quelle**: automated (`console-direct`)
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.493Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.493Z · **Version**: 1.42.1
-
-### [Medium] Direktes console.error außerhalb der Logger-Fassade
+### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
 - **ID**: `td-console-43084e7a`
 - **Location**: src/integrations/supabase/client.ts:54
-- **Quelle**: automated (`console-direct`)
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.493Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.493Z · **Version**: 1.42.1
+- **Quelle**: automated (`console-documented-exception`)
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
+- **Erstmals**: 2026-08-01T03:28:20.595Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.595Z · **Version**: 1.44.0
 
-### [Medium] Direktes console.error außerhalb der Logger-Fassade
+### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
 - **ID**: `td-console-665c1d8d`
 - **Location**: src/integrations/supabase/client.server.ts:42
-- **Quelle**: automated (`console-direct`)
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.493Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.493Z · **Version**: 1.42.1
+- **Quelle**: automated (`console-documented-exception`)
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
+- **Erstmals**: 2026-08-01T03:28:20.595Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.595Z · **Version**: 1.44.0
 
-### [Medium] Direktes console.error außerhalb der Logger-Fassade
+### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
 - **ID**: `td-console-6c701bbd`
 - **Location**: src/server.ts:68
-- **Quelle**: automated (`console-direct`)
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.493Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.493Z · **Version**: 1.42.1
+- **Quelle**: automated (`console-documented-exception`)
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
+- **Erstmals**: 2026-08-01T03:28:20.595Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.595Z · **Version**: 1.44.0
 
-### [Medium] Direktes console.error außerhalb der Logger-Fassade
+### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
 - **ID**: `td-console-74bd3646`
 - **Location**: src/server.ts:79
-- **Quelle**: automated (`console-direct`)
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.493Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.493Z · **Version**: 1.42.1
+- **Quelle**: automated (`console-documented-exception`)
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
+- **Erstmals**: 2026-08-01T03:28:20.595Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.595Z · **Version**: 1.44.0
 
-### [Medium] Direktes console.info außerhalb der Logger-Fassade
-- **ID**: `td-console-9771f164`
-- **Location**: src/integrations/supabase/env-check.ts:93
-- **Quelle**: automated (`console-direct`)
-- **Beschreibung**: Aufruf: console.info(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.493Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.493Z · **Version**: 1.42.1
-
-### [Medium] Direktes console.warn außerhalb der Logger-Fassade
-- **ID**: `td-console-993be125`
-- **Location**: src/integrations/supabase/env-check.ts:82
-- **Quelle**: automated (`console-direct`)
-- **Beschreibung**: Aufruf: console.warn(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.493Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.493Z · **Version**: 1.42.1
-
-### [Medium] Direktes console.error außerhalb der Logger-Fassade
-- **ID**: `td-console-f7820fc7`
-- **Location**: src/lib/help-documentation.ts:426
-- **Quelle**: automated (`console-direct`)
-- **Beschreibung**: Aufruf: console.error(…)
-- **Ursache**: Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).
-- **Auswirkung**: Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.
-- **Empfehlung**: Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.493Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.493Z · **Version**: 1.42.1
-
-### [High] Modul überschreitet Größenschwelle (808 Zeilen)
-- **ID**: `td-oversize-26e43c0a`
-- **Location**: src/components/ExportDialog.tsx
-- **Quelle**: automated (`oversize-module`)
-- **Beschreibung**: Die Datei hat 808 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
-- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
-- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
-- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
-- **Aufwand**: gross · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
-
-### [High] Modul überschreitet Größenschwelle (3281 Zeilen)
+### [High] Modul überschreitet Größenschwelle (979 Zeilen)
 - **ID**: `td-oversize-7e9a0b20`
 - **Location**: src/routes/_authenticated/dashboard.tsx
 - **Quelle**: automated (`oversize-module`)
-- **Beschreibung**: Die Datei hat 3281 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 979 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: gross · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Medium] Modul überschreitet Größenschwelle (745 Zeilen)
 - **ID**: `td-oversize-242b307c`
@@ -186,7 +142,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Medium] Modul überschreitet Größenschwelle (731 Zeilen)
 - **ID**: `td-oversize-f3843ebe`
@@ -197,7 +153,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Low] Modul überschreitet Größenschwelle (436 Zeilen)
 - **ID**: `td-oversize-32eb5e8c`
@@ -208,7 +164,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Low] Modul überschreitet Größenschwelle (560 Zeilen)
 - **ID**: `td-oversize-38954b26`
@@ -219,7 +175,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Low] Modul überschreitet Größenschwelle (466 Zeilen)
 - **ID**: `td-oversize-564261af`
@@ -230,7 +186,18 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
+
+### [Low] Modul überschreitet Größenschwelle (423 Zeilen)
+- **ID**: `td-oversize-92e5643a`
+- **Location**: src/components/compliance/ComplianceReportPrint.tsx
+- **Quelle**: automated (`oversize-module`)
+- **Beschreibung**: Die Datei hat 423 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
+- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
+- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
+- **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Low] Modul überschreitet Größenschwelle (481 Zeilen)
 - **ID**: `td-oversize-af210d92`
@@ -241,7 +208,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Low] Modul überschreitet Größenschwelle (496 Zeilen)
 - **ID**: `td-oversize-d5f3942b`
@@ -252,7 +219,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Low] Modul überschreitet Größenschwelle (563 Zeilen)
 - **ID**: `td-oversize-ebfd4b54`
@@ -263,7 +230,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Low] Modul überschreitet Größenschwelle (490 Zeilen)
 - **ID**: `td-oversize-feb81a2f`
@@ -274,7 +241,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ## Tests (4)
 
@@ -320,9 +287,20 @@
 - **Auswirkung**: Trend-Analyse der Testabdeckung blind.
 - **Empfehlung**: In CI vor `test:debt` `bun run test:coverage` ausführen (bereits konfiguriert).
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.492Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.492Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.595Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.595Z · **Version**: 1.44.0
 
 ## Architektur (35)
+
+### [Medium] UI-Direktzugriff auf Persistenz-Schicht
+- **ID**: `td-layer-9275d7a1`
+- **Location**: src/routes/_authenticated/dashboard.tsx:89
+- **Quelle**: automated (`ui-imports-persistence`)
+- **Beschreibung**: Datei importiert ein verbotenes Modul: from "@/lib/store/dashboard-persistence"
+- **Ursache**: Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.
+- **Auswirkung**: Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.
+- **Empfehlung**: useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.
+- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
+- **Erstmals**: 2026-08-01T03:28:20.550Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.550Z · **Version**: 1.44.0
 
 ### [Medium] UI-Direktzugriff auf Azure-Interna
 - **ID**: `td-layer-b432b1b9`
@@ -333,18 +311,7 @@
 - **Auswirkung**: Bricht die Azure-Facade auf; Änderungen am Azure-Schema propagieren ungefiltert in die UI.
 - **Empfehlung**: Ausschließlich `@/lib/azure/azure-service` importieren.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.443Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.443Z · **Version**: 1.42.1
-
-### [Medium] UI-Direktzugriff auf Persistenz-Schicht
-- **ID**: `td-layer-e0ac1bea`
-- **Location**: src/routes/_authenticated/dashboard.tsx:115
-- **Quelle**: automated (`ui-imports-persistence`)
-- **Beschreibung**: Datei importiert ein verbotenes Modul: from "@/lib/store/dashboard-persistence"
-- **Ursache**: Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.
-- **Auswirkung**: Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.
-- **Empfehlung**: useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.
-- **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.443Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.443Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.550Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.550Z · **Version**: 1.44.0
 
 ### [Medium] UI-Direktzugriff auf Azure-Interna
 - **ID**: `td-layer-e4fb0e64`
@@ -355,7 +322,7 @@
 - **Auswirkung**: Bricht die Azure-Facade auf; Änderungen am Azure-Schema propagieren ungefiltert in die UI.
 - **Empfehlung**: Ausschließlich `@/lib/azure/azure-service` importieren.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.443Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.443Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.550Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.550Z · **Version**: 1.44.0
 
 ### [Medium] Modul überschreitet Größenschwelle (1084 Zeilen)
 - **ID**: `td-oversize-789d61fa`
@@ -366,7 +333,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Low] Modul überschreitet Größenschwelle (702 Zeilen)
 - **ID**: `td-oversize-392d9209`
@@ -377,7 +344,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.452Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.452Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.560Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.560Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-1634f273`
@@ -388,7 +355,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-19eefab7`
@@ -399,7 +366,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-242b307c`
@@ -410,7 +377,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-2452737a`
@@ -421,7 +388,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-2900775b`
@@ -432,7 +399,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-2c46e416`
@@ -443,7 +410,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-432c9ba1`
@@ -454,7 +421,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-47d5b07c`
@@ -465,7 +432,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-4c5ab6a6`
@@ -476,7 +443,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-4fae0654`
@@ -487,7 +454,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-539cbbad`
@@ -498,7 +465,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-60027755`
@@ -509,7 +476,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-7ed7cbb9`
@@ -520,7 +487,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-8152e2df`
@@ -531,7 +498,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-8b8d7a5b`
@@ -542,7 +509,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-906e6010`
@@ -553,7 +520,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-98f7d819`
@@ -564,7 +531,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-9b5a9f9b`
@@ -575,7 +542,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-adda4e46`
@@ -586,7 +553,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-af1ee499`
@@ -597,7 +564,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-b0c0d351`
@@ -608,7 +575,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-bd7563ab`
@@ -619,7 +586,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-d5b25a61`
@@ -630,7 +597,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-da11a267`
@@ -641,7 +608,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-deb46595`
@@ -652,7 +619,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-ded2d8d0`
@@ -663,7 +630,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-e4656c7f`
@@ -674,7 +641,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-e89d394d`
@@ -685,7 +652,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-f35c0af6`
@@ -696,7 +663,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-fee5a79a`
@@ -707,4 +674,4 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-07-27T03:18:51.487Z · **Zuletzt geprüft**: 2026-07-27T03:18:51.487Z · **Version**: 1.42.1
+- **Erstmals**: 2026-08-01T03:28:20.591Z · **Zuletzt geprüft**: 2026-08-01T03:28:20.591Z · **Version**: 1.44.0
