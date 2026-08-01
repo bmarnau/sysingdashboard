@@ -1,14 +1,23 @@
 {
   "summary": {
-    "generatedAt": "2026-07-13T05:19:43.599Z",
-    "filesScanned": 205,
+    "generatedAt": "2026-08-01T03:28:09.216Z",
+    "filesScanned": 285,
     "rulesEvaluated": 22,
     "counts": {
-      "CRITICAL": 0,
+      "CRITICAL": 1,
       "HIGH": 0,
       "MEDIUM": 0
     },
-    "failed": false
+    "failed": true
   },
-  "findings": []
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "rule": "azure-storage-conn",
+      "title": "Azure Storage Connection-String",
+      "file": "src/__tests__/lib/logger.test.ts",
+      "line": 38,
+      "snippet": "\"DefaultEndpointsProtocol=https;AccountName=demo;AccountKey=aGVsbG9zZWNyZXQ=;EndpointSuffix=core.windows.net\";"
+    }
+  ]
 }
