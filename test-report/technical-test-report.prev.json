@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "5b9b520a-54af-4d73-a245-b8751a87f890",
-  "version": 1,
-  "parentReportId": null,
-  "generatedAt": "2026-07-29T02:50:49.587Z",
+  "id": "1ee0eeca-0356-43b5-89ec-dd428679900a",
+  "version": 2,
+  "parentReportId": "5b9b520a-54af-4d73-a245-b8751a87f890",
+  "generatedAt": "2026-07-29T02:50:56.420Z",
   "identity": {
     "dashboardVersion": "1.42.2",
-    "commit": "b1e8a61",
+    "commit": "8718ea0",
     "buildTime": null,
-    "testTime": "2026-07-29T02:50:49.477Z",
+    "testTime": "2026-07-29T02:50:56.307Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -2834,9 +2834,7 @@
   ],
   "diff": {
     "new": [],
-    "fixed": [
-      "td:td-correlation-err-shape-34111d3b"
-    ],
+    "fixed": [],
     "worse": [],
     "same": [
       "sec:SEC-CRIT-001",
@@ -2914,56 +2912,14 @@
     ],
     "reappeared": [],
     "severityChanged": [],
-    "gateChanged": [
-      {
-        "id": "sec:SEC-CRIT-001",
-        "from": false,
-        "to": true
-      },
-      {
-        "id": "sec:SEC-CRIT-002",
-        "from": false,
-        "to": true
-      },
-      {
-        "id": "sec:SEC-HIGH-STATUS-001",
-        "from": false,
-        "to": true
-      },
-      {
-        "id": "sec:SEC-HIGH-LOG-001",
-        "from": false,
-        "to": true
-      },
-      {
-        "id": "sec:SEC-HIGH-AUTH-001",
-        "from": false,
-        "to": true
-      },
-      {
-        "id": "sec:SEC-HIGH-AZURE-001",
-        "from": false,
-        "to": true
-      }
-    ],
-    "statusChanged": [
-      {
-        "id": "td:td-oversize-26e43c0a",
-        "from": "open",
-        "to": "accepted"
-      },
-      {
-        "id": "td:td-oversize-7e9a0b20",
-        "from": "open",
-        "to": "accepted"
-      }
-    ],
+    "gateChanged": [],
+    "statusChanged": [],
     "securityRegressions": []
   },
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "8b24bc809bce9f915ba7811aeff98b15c8e12e9e560159e6a58f7bcfb0536261",
+    "value": "78ecec8b53f485b0dccb4ce6bb69ff3fc1b0c5c6e4591358eeec6b6d563fb8c3",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",
