@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `ea1275ec-7be3-47ab-9c33-d5d4ff464046` · Version 3 · Generiert: 2026-08-01T03:29:02.948Z_
+_Report ID: `b3533f7f-07ac-488a-925d-1e74240306ee` · Version 4 · Generiert: 2026-08-01T03:30:30.564Z_
 
 ## 1. Prüfidentität
-- Report-ID: `ea1275ec-7be3-47ab-9c33-d5d4ff464046`
-- Reportversion: **3**
-- Vorgängerbericht: `1ee0eeca-0356-43b5-89ec-dd428679900a`
+- Report-ID: `b3533f7f-07ac-488a-925d-1e74240306ee`
+- Reportversion: **4**
+- Vorgängerbericht: `ea1275ec-7be3-47ab-9c33-d5d4ff464046`
 - Schema: `2.0.0`
-- Dashboard-Version: **1.44.0**
-- Commit: `218317c`
+- Dashboard-Version: **1.44.3**
+- Commit: `3b7e7cb`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: —
-- Testzeit: 2026-08-01T03:29:02.829Z
+- Testzeit: 2026-08-01T03:30:30.463Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:738aee48de4fd95aa88ae3d844496ce87fcc751a18523db1d026fbf6c98a662d`
+- Integrität: `sha256:24811152c7aaf58edc01f5e7a36c78c2fda078d15eb4ee861828e7929bcaada6`
 
 ## 2. Freigabestufe
 - Vorschlag: **production**
@@ -124,7 +124,7 @@ _Report ID: `ea1275ec-7be3-47ab-9c33-d5d4ff464046` · Version 3 · Generiert: 20
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 
-Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen Dashboard-Shell (Header, Servicemenü, Suche, Panels). Ein Refactor in Sub-Routen erfordert Route-Split (siehe ADR-0019) und wird in einem separaten UI-Sprint umgesetzt. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).
+Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf 979 Zeilen reduziert worden (Extraktion nach src/components/dashboard/), liegt aber weiter über der 500-Zeilen-Schwelle. Der verbleibende Split in Sub-Routen erfordert Route-Umbau (ADR-0019) und folgt im UI-Sprint. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).
 - **Aufwand**: M · **Reihenfolge**: high-functional · **Status**: accepted
 
 ### sec:SEC-HIGH-AUTH-001 · HIGH · Historisch: Keine Session-, Token- oder Provider-Infrastruktur
@@ -888,14 +888,14 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen D
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 9. Vergleich zum Vorgängerbericht
-- Neu: 2
-- Behoben: 6
+- Neu: 0
+- Behoben: 0
 - Verschlechtert: 0
-- Unverändert: 66
+- Unverändert: 68
 - Wieder aufgetreten: 0
-- Schweregrad geändert: 6
+- Schweregrad geändert: 0
 - Gate-Relevanz geändert: 0
-- Status geändert: 6
+- Status geändert: 0
 
 ## 10. Freigabeempfehlung (Legacy)
 **Entwicklung fortsetzen** — Weiterentwicklung empfohlen.

@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "1ee0eeca-0356-43b5-89ec-dd428679900a",
-  "version": 2,
-  "parentReportId": "5b9b520a-54af-4d73-a245-b8751a87f890",
-  "generatedAt": "2026-07-29T02:50:56.420Z",
+  "id": "ea1275ec-7be3-47ab-9c33-d5d4ff464046",
+  "version": 3,
+  "parentReportId": "1ee0eeca-0356-43b5-89ec-dd428679900a",
+  "generatedAt": "2026-08-01T03:29:02.948Z",
   "identity": {
-    "dashboardVersion": "1.42.2",
-    "commit": "8718ea0",
+    "dashboardVersion": "1.44.0",
+    "commit": "218317c",
     "buildTime": null,
-    "testTime": "2026-07-29T02:50:56.307Z",
+    "testTime": "2026-08-01T03:29:02.829Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -91,13 +91,13 @@
     }
   },
   "summary": {
-    "total": 72,
-    "openTotal": 62,
+    "total": 68,
+    "openTotal": 59,
     "critical": 0,
     "high": 0,
-    "medium": 19,
-    "low": 42,
-    "accepted": 10,
+    "medium": 9,
+    "low": 43,
+    "accepted": 9,
     "sources": {
       "security": {
         "status": "passed-with-findings",
@@ -113,7 +113,7 @@
       },
       "techdebt": {
         "status": "passed-with-findings",
-        "count": 63
+        "count": 59
       },
       "ops": {
         "status": "not-run",
@@ -378,47 +378,12 @@
       "order": 2
     },
     {
-      "id": "td:td-oversize-26e43c0a",
-      "severity": "HIGH",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (808 Zeilen)",
-      "description": "Die Datei hat 808 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
-      "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
-      "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
-      "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
-      "evidence": {
-        "file": "src/components/ExportDialog.tsx",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/components/ExportDialog.tsx"
-      ],
-      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).\n\nAkzeptanz: src/components/ExportDialog.tsx enthält Wizard, Vorschau, Progress und Download-Logik. Der Refactor in `ExportWizard`/`ExportPreview`/`ExportProgress` ist in ADR-0019 skizziert und wird gemeinsam mit dem Dashboard-Split adressiert. Kein Sicherheits- oder Funktionsrisiko. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "M",
-      "status": "accepted",
-      "source": "auto",
-      "accepted": true,
-      "gateRelevant": false,
-      "classification": "accepted-debt",
-      "bucket": "high-functional",
-      "order": 3
-    },
-    {
       "id": "td:td-oversize-7e9a0b20",
       "severity": "HIGH",
       "category": "Frontend",
       "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (3281 Zeilen)",
-      "description": "Die Datei hat 3281 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "title": "Modul überschreitet Größenschwelle (979 Zeilen)",
+      "description": "Die Datei hat 979 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
       "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
       "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
       "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
@@ -623,339 +588,24 @@
       "order": 8
     },
     {
-      "id": "td:td-console-08e8609a",
+      "id": "td:td-layer-9275d7a1",
       "severity": "MEDIUM",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Direktes console.error außerhalb der Logger-Fassade",
-      "description": "Aufruf: console.error(…)",
-      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-      "rootCause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
+      "category": "Architektur",
+      "area": "Architektur",
+      "title": "UI-Direktzugriff auf Persistenz-Schicht",
+      "description": "Datei importiert ein verbotenes Modul: from \"@/lib/store/dashboard-persistence\"",
+      "cause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
+      "impact": "Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.",
+      "rootCause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
       "evidence": {
-        "file": "src/start.ts:13",
+        "file": "src/routes/_authenticated/dashboard.tsx:89",
         "line": null,
         "reportRef": "test-report/tech-debt.md"
       },
       "components": [
-        "src/start.ts:13"
+        "src/routes/_authenticated/dashboard.tsx:89"
       ],
-      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-console-2c49302b",
-      "severity": "MEDIUM",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Direktes console.error außerhalb der Logger-Fassade",
-      "description": "Aufruf: console.error(…)",
-      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-      "rootCause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "evidence": {
-        "file": "src/integrations/supabase/auth-middleware.ts:45",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/integrations/supabase/auth-middleware.ts:45"
-      ],
-      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-console-375dfc5b",
-      "severity": "MEDIUM",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Direktes console.error außerhalb der Logger-Fassade",
-      "description": "Aufruf: console.error(…)",
-      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-      "rootCause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "evidence": {
-        "file": "src/routes/__root.tsx:40",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/routes/__root.tsx:40"
-      ],
-      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-console-43084e7a",
-      "severity": "MEDIUM",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Direktes console.error außerhalb der Logger-Fassade",
-      "description": "Aufruf: console.error(…)",
-      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-      "rootCause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "evidence": {
-        "file": "src/integrations/supabase/client.ts:54",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/integrations/supabase/client.ts:54"
-      ],
-      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-console-665c1d8d",
-      "severity": "MEDIUM",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Direktes console.error außerhalb der Logger-Fassade",
-      "description": "Aufruf: console.error(…)",
-      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-      "rootCause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "evidence": {
-        "file": "src/integrations/supabase/client.server.ts:42",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/integrations/supabase/client.server.ts:42"
-      ],
-      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-console-6c701bbd",
-      "severity": "MEDIUM",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Direktes console.error außerhalb der Logger-Fassade",
-      "description": "Aufruf: console.error(…)",
-      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-      "rootCause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "evidence": {
-        "file": "src/server.ts:68",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/server.ts:68"
-      ],
-      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-console-74bd3646",
-      "severity": "MEDIUM",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Direktes console.error außerhalb der Logger-Fassade",
-      "description": "Aufruf: console.error(…)",
-      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-      "rootCause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "evidence": {
-        "file": "src/server.ts:79",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/server.ts:79"
-      ],
-      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-console-9771f164",
-      "severity": "MEDIUM",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Direktes console.info außerhalb der Logger-Fassade",
-      "description": "Aufruf: console.info(…)",
-      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-      "rootCause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "evidence": {
-        "file": "src/integrations/supabase/env-check.ts:93",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/integrations/supabase/env-check.ts:93"
-      ],
-      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-console-993be125",
-      "severity": "MEDIUM",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Direktes console.warn außerhalb der Logger-Fassade",
-      "description": "Aufruf: console.warn(…)",
-      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-      "rootCause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "evidence": {
-        "file": "src/integrations/supabase/env-check.ts:82",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/integrations/supabase/env-check.ts:82"
-      ],
-      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-console-f7820fc7",
-      "severity": "MEDIUM",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Direktes console.error außerhalb der Logger-Fassade",
-      "description": "Aufruf: console.error(…)",
-      "cause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "impact": "Kein zentraler Sink (IndexedDB, Redaction). Sensible Werte können ungefiltert in Browser-Console landen.",
-      "rootCause": "Logger-Nutzung wurde übersprungen (Convenience oder Legacy-Code).",
-      "evidence": {
-        "file": "src/lib/help-documentation.ts:426",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/lib/help-documentation.ts:426"
-      ],
-      "recommendation": "Auf `logger.info/warn/error` umstellen (`src/lib/logger.ts`).",
+      "recommendation": "useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.",
       "dependencies": [],
       "owner": null,
       "dueDate": null,
@@ -991,41 +641,6 @@
         "src/components/azure/AzureActionsPanel.tsx:7"
       ],
       "recommendation": "Ausschließlich `@/lib/azure/azure-service` importieren.",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-layer-e0ac1bea",
-      "severity": "MEDIUM",
-      "category": "Architektur",
-      "area": "Architektur",
-      "title": "UI-Direktzugriff auf Persistenz-Schicht",
-      "description": "Datei importiert ein verbotenes Modul: from \"@/lib/store/dashboard-persistence\"",
-      "cause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
-      "impact": "Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.",
-      "rootCause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
-      "evidence": {
-        "file": "src/routes/_authenticated/dashboard.tsx:115",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/routes/_authenticated/dashboard.tsx:115"
-      ],
-      "recommendation": "useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.",
       "dependencies": [],
       "owner": null,
       "dueDate": null,
@@ -1409,6 +1024,41 @@
       },
       "components": [
         "src/components/ImportPreviewDialog.tsx"
+      ],
+      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "M",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-oversize-92e5643a",
+      "severity": "LOW",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Modul überschreitet Größenschwelle (423 Zeilen)",
+      "description": "Die Datei hat 423 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
+      "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
+      "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
+      "evidence": {
+        "file": "src/components/compliance/ComplianceReportPrint.tsx",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/components/compliance/ComplianceReportPrint.tsx"
       ],
       "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
       "dependencies": [],
@@ -2723,6 +2373,216 @@
       "order": 11
     },
     {
+      "id": "td:td-console-08e8609a",
+      "severity": "INFO",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)",
+      "description": "Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.",
+      "cause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "impact": "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.",
+      "rootCause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "evidence": {
+        "file": "src/start.ts:13",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/start.ts:13"
+      ],
+      "recommendation": "Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "S",
+      "status": "akzeptiert",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-console-2c49302b",
+      "severity": "INFO",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)",
+      "description": "Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.",
+      "cause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "impact": "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.",
+      "rootCause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "evidence": {
+        "file": "src/integrations/supabase/auth-middleware.ts:45",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/integrations/supabase/auth-middleware.ts:45"
+      ],
+      "recommendation": "Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "S",
+      "status": "akzeptiert",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-console-43084e7a",
+      "severity": "INFO",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)",
+      "description": "Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.",
+      "cause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "impact": "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.",
+      "rootCause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "evidence": {
+        "file": "src/integrations/supabase/client.ts:54",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/integrations/supabase/client.ts:54"
+      ],
+      "recommendation": "Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "S",
+      "status": "akzeptiert",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-console-665c1d8d",
+      "severity": "INFO",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)",
+      "description": "Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.",
+      "cause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "impact": "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.",
+      "rootCause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "evidence": {
+        "file": "src/integrations/supabase/client.server.ts:42",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/integrations/supabase/client.server.ts:42"
+      ],
+      "recommendation": "Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "S",
+      "status": "akzeptiert",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-console-6c701bbd",
+      "severity": "INFO",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)",
+      "description": "Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.",
+      "cause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "impact": "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.",
+      "rootCause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "evidence": {
+        "file": "src/server.ts:68",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/server.ts:68"
+      ],
+      "recommendation": "Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "S",
+      "status": "akzeptiert",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-console-74bd3646",
+      "severity": "INFO",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)",
+      "description": "Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.",
+      "cause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "impact": "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.",
+      "rootCause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "evidence": {
+        "file": "src/server.ts:79",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/server.ts:79"
+      ],
+      "recommendation": "Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "S",
+      "status": "akzeptiert",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
       "id": "td:td-coverage-027fe478",
       "severity": "INFO",
       "category": "Tests",
@@ -2764,18 +2624,8 @@
       "findings": [
         "sec:SEC-MED-CLAIMS-001",
         "td:td-endpoint-zod-34111d3b",
-        "td:td-console-08e8609a",
-        "td:td-console-2c49302b",
-        "td:td-console-375dfc5b",
-        "td:td-console-43084e7a",
-        "td:td-console-665c1d8d",
-        "td:td-console-6c701bbd",
-        "td:td-console-74bd3646",
-        "td:td-console-9771f164",
-        "td:td-console-993be125",
-        "td:td-console-f7820fc7",
+        "td:td-layer-9275d7a1",
         "td:td-layer-b432b1b9",
-        "td:td-layer-e0ac1bea",
         "td:td-layer-e4fb0e64",
         "td:td-oversize-242b307c",
         "td:td-oversize-789d61fa",
@@ -2786,6 +2636,7 @@
         "td:td-oversize-38954b26",
         "td:td-oversize-392d9209",
         "td:td-oversize-564261af",
+        "td:td-oversize-92e5643a",
         "td:td-oversize-af210d92",
         "td:td-oversize-d5f3942b",
         "td:td-oversize-ebfd4b54",
@@ -2819,7 +2670,13 @@
         "td:td-orphan-e4656c7f",
         "td:td-orphan-e89d394d",
         "td:td-orphan-f35c0af6",
-        "td:td-orphan-fee5a79a"
+        "td:td-orphan-fee5a79a",
+        "td:td-console-08e8609a",
+        "td:td-console-2c49302b",
+        "td:td-console-43084e7a",
+        "td:td-console-665c1d8d",
+        "td:td-console-6c701bbd",
+        "td:td-console-74bd3646"
       ]
     },
     {
@@ -2833,33 +2690,31 @@
     }
   ],
   "diff": {
-    "new": [],
-    "fixed": [],
+    "new": [
+      "td:td-layer-9275d7a1",
+      "td:td-oversize-92e5643a"
+    ],
+    "fixed": [
+      "td:td-oversize-26e43c0a",
+      "td:td-console-375dfc5b",
+      "td:td-console-9771f164",
+      "td:td-console-993be125",
+      "td:td-console-f7820fc7",
+      "td:td-layer-e0ac1bea"
+    ],
     "worse": [],
     "same": [
       "sec:SEC-CRIT-001",
       "sec:SEC-CRIT-002",
       "sec:SEC-HIGH-STATUS-001",
       "sec:SEC-HIGH-LOG-001",
-      "td:td-oversize-26e43c0a",
       "td:td-oversize-7e9a0b20",
       "sec:SEC-HIGH-AUTH-001",
       "sec:SEC-HIGH-AZURE-001",
       "sec:SEC-MED-REDIRECT-001",
       "sec:SEC-MED-CLAIMS-001",
       "td:td-endpoint-zod-34111d3b",
-      "td:td-console-08e8609a",
-      "td:td-console-2c49302b",
-      "td:td-console-375dfc5b",
-      "td:td-console-43084e7a",
-      "td:td-console-665c1d8d",
-      "td:td-console-6c701bbd",
-      "td:td-console-74bd3646",
-      "td:td-console-9771f164",
-      "td:td-console-993be125",
-      "td:td-console-f7820fc7",
       "td:td-layer-b432b1b9",
-      "td:td-layer-e0ac1bea",
       "td:td-layer-e4fb0e64",
       "td:td-oversize-242b307c",
       "td:td-oversize-789d61fa",
@@ -2908,18 +2763,86 @@
       "td:td-manual-msw-coverage-gap",
       "td:td-manual-ci-playwright-cache",
       "sec:SEC-LOW-DOCS-001",
+      "td:td-console-08e8609a",
+      "td:td-console-2c49302b",
+      "td:td-console-43084e7a",
+      "td:td-console-665c1d8d",
+      "td:td-console-6c701bbd",
+      "td:td-console-74bd3646",
       "td:td-coverage-027fe478"
     ],
     "reappeared": [],
-    "severityChanged": [],
+    "severityChanged": [
+      {
+        "id": "td:td-console-08e8609a",
+        "from": "MEDIUM",
+        "to": "INFO"
+      },
+      {
+        "id": "td:td-console-2c49302b",
+        "from": "MEDIUM",
+        "to": "INFO"
+      },
+      {
+        "id": "td:td-console-43084e7a",
+        "from": "MEDIUM",
+        "to": "INFO"
+      },
+      {
+        "id": "td:td-console-665c1d8d",
+        "from": "MEDIUM",
+        "to": "INFO"
+      },
+      {
+        "id": "td:td-console-6c701bbd",
+        "from": "MEDIUM",
+        "to": "INFO"
+      },
+      {
+        "id": "td:td-console-74bd3646",
+        "from": "MEDIUM",
+        "to": "INFO"
+      }
+    ],
     "gateChanged": [],
-    "statusChanged": [],
+    "statusChanged": [
+      {
+        "id": "td:td-console-08e8609a",
+        "from": "open",
+        "to": "akzeptiert"
+      },
+      {
+        "id": "td:td-console-2c49302b",
+        "from": "open",
+        "to": "akzeptiert"
+      },
+      {
+        "id": "td:td-console-43084e7a",
+        "from": "open",
+        "to": "akzeptiert"
+      },
+      {
+        "id": "td:td-console-665c1d8d",
+        "from": "open",
+        "to": "akzeptiert"
+      },
+      {
+        "id": "td:td-console-6c701bbd",
+        "from": "open",
+        "to": "akzeptiert"
+      },
+      {
+        "id": "td:td-console-74bd3646",
+        "from": "open",
+        "to": "akzeptiert"
+      }
+    ],
     "securityRegressions": []
   },
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "78ecec8b53f485b0dccb4ce6bb69ff3fc1b0c5c6e4591358eeec6b6d563fb8c3",
+    "value": "738aee48de4fd95aa88ae3d844496ce87fcc751a18523db1d026fbf6c98a662d",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",
