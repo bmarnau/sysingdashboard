@@ -1,6 +1,9 @@
 import { createFileRoute, Outlet, redirect, isRedirect } from "@tanstack/react-router";
 import { trySupabase } from "@/integrations/supabase/safe-client";
 import { loadAuthConfig } from "@/integrations/supabase/runtime-config";
+import { useIdleLogout } from "@/hooks/useIdleLogout";
+import { IdleWarningDialog } from "@/components/session/IdleWarningDialog";
+
 
 /**
  * Auth-Gate für alle Routen unter `_authenticated/`.
