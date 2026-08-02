@@ -10,6 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import {
+  loadIdleTimeoutConfig,
+  DEFAULT_IDLE_TIMEOUT_MINUTES,
+} from "@/lib/session/idle-config";
+
 
 /**
  * Anmeldung / Registrierung / Passwort-Reset.
@@ -21,7 +26,13 @@ import { toast } from "sonner";
 const SearchSchema = z.object({
   redirect: z.string().optional(),
   reason: z
-    .enum(["unavailable", "account_inactive", "account_locked", "account_archived"])
+    .enum([
+      "unavailable",
+      "account_inactive",
+      "account_locked",
+      "account_archived",
+      "idle_timeout",
+    ])
     .optional(),
 });
 
@@ -38,7 +49,9 @@ const REASON_MESSAGES: Record<string, string> = {
   account_locked: "Konto ist gesperrt. Bitte einen Administrator kontaktieren.",
   account_archived: "Konto wurde archiviert. Zugriff ist nicht möglich.",
   unavailable: "Anmeldedienst war kurzzeitig nicht erreichbar. Bitte erneut versuchen.",
+  idle_timeout: "Sie wurden wegen Inaktivität automatisch abgemeldet.",
 };
+
 
 export const Route = createFileRoute("/auth")({
   validateSearch: SearchSchema,
@@ -52,6 +65,18 @@ function AuthPage() {
   const redirectTo = safeRedirect(search.redirect);
   const [busy, setBusy] = useState(false);
   const [configError, setConfigError] = useState<AuthConfiguration | null>(null);
+  const [idleMinutes, setIdleMinutes] = useState(DEFAULT_IDLE_TIMEOUT_MINUTES);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadIdleTimeoutConfig().then((c) => {
+      if (!cancelled) setIdleMinutes(c.minutes);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
 
   useEffect(() => {
     let unsub: (() => void) | undefined;
@@ -210,9 +235,12 @@ function AuthPage() {
               role="alert"
               className="mb-4 rounded-md border border-warning/40 bg-warning/5 p-3 text-sm"
             >
-              {REASON_MESSAGES[search.reason]}
+              {search.reason === "idle_timeout"
+                ? `Sie wurden nach ${idleMinutes} Minuten Inaktivität automatisch abgemeldet. Bitte erneut anmelden.`
+                : REASON_MESSAGES[search.reason]}
             </div>
           )}
+
           <Tabs defaultValue="login">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login">Anmelden</TabsTrigger>

@@ -93,6 +93,68 @@ export const DASHBOARD_VERSION_HINT = `Engineer Console ${DASHBOARD_VERSION}`;
 
 const builtInTopics: HelpTopic[] = [
   {
+    id: "idle-logout",
+    title: "Automatische Abmeldung bei Inaktivität",
+    category: "Sicherheit",
+    component: "IdleWarningDialog",
+    keywords: [
+      "Abmeldung",
+      "Logout",
+      "Inaktivität",
+      "Timeout",
+      "Sitzung",
+      "Session",
+      "Sperre",
+      "Angemeldet bleiben",
+    ],
+    lastUpdated: "2026-08-02",
+    content: `## Für Benutzer
+Bleibt das Dashboard eine festgelegte Zeit ohne Aktivität (Maus, Tastatur, Scrollen,
+Touch), wird die Sitzung automatisch beendet. **Standard: 5 Minuten.**
+
+Kurz vor Ablauf erscheint der Hinweis *„Ihre Sitzung läuft wegen Inaktivität ab."*
+mit Countdown und zwei Schaltflächen:
+
+- **Angemeldet bleiben** — die Zeit startet neu, es geht nichts verloren.
+- **Jetzt abmelden** — sofortige Abmeldung.
+
+Nach automatischer Abmeldung landet man auf der Anmeldeseite mit dem Hinweis
+„Sie wurden nach X Minuten Inaktivität automatisch abgemeldet."
+Geschützte Seiten sind danach nicht mehr erreichbar; auch der Zurück-Button
+öffnet keine Inhalte mehr.
+
+**Mehrere Tabs**: Aktivität in einem Tab hält alle Tabs angemeldet. Läuft die Zeit
+ab, werden alle Tabs gemeinsam abgemeldet.
+
+**Manuelle Abmeldung**: Servicemenü → *Abmelden* (gleicher Ablauf wie die
+automatische Abmeldung).
+
+## Für Administratoren
+Servicemenü → *Automatische Abmeldung…* (\`SessionSettingsDialog\`) zeigt den
+wirksamen Wert, die Herkunft und die Vorwarnzeit. Änderbar ist der Wert nur mit
+der Berechtigung \`users.manage\` (Systemadministrator, Administrator);
+serverseitig erzwingt dies zusätzlich eine Datenbank-Regel.
+
+Wirksamer Wert nach Priorität:
+
+1. Systemeinstellung in der Datenbank (\`app_settings.idle_timeout_minutes\`)
+2. Umgebungsvariable \`VITE_IDLE_TIMEOUT_MINUTES\`
+3. Standardwert 5 Minuten
+
+Erlaubt sind ganze Zahlen von 1 bis 480 Minuten. Ungültige Werte (leer, Text, 0,
+negativ, Dezimalzahl, größer 480) werden verworfen — es gilt dann der nächste
+Wert in der Reihenfolge. Eine Deaktivierung der Abmeldung ist bewusst **nicht**
+möglich. Änderungen werden im Prüfprotokoll (\`audit_log\`) erfasst und in anderen
+Sitzungen beim nächsten Laden wirksam.
+
+## Grenze der Maßnahme
+Die Überwachung läuft im Browser. Sie schützt vor unbeaufsichtigten Arbeitsplätzen,
+ersetzt aber keine serverseitige Sitzungsbegrenzung: ein bereits entwendetes
+Zugriffstoken bleibt bis zu seinem eigenen Ablauf gültig. Siehe
+\`docs/SESSION-TIMEOUT.md\` und ADR-0020.`,
+  },
+  {
+
     id: "auth-troubleshooting-03b",
     title: "Anmeldung — Fehlerbehebung (Sprint 03B)",
     category: "Sicherheit",

@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.audit_app_settings_change() FROM anon, authenticated;

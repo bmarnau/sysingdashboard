@@ -1,63 +1,59 @@
-## Ziel
+## Analyse des Ist-Zustands (verifiziert)
 
-Sprint 05B abschließen — keine neuen Funktionen. Nur fehlende Nachweise, Berichte, Dokumentation und Qualitätsgates. Version steigt auf **1.44.3**.
+- **Kein zentraler Logout vorhanden.** `supabase.auth.signOut()` wird heute nur an zwei Stellen aufgerufen: `src/routes/reset-password.tsx:36` und im Auth-Gate `src/routes/_authenticated/route.tsx:91` (Konto inaktiv). Im Dashboard gibt es **keine** manuelle Abmelde-Schaltfläche.
+- **Auth-Gate**: `src/routes/_authenticated/route.tsx` (`ssr:false`) prüft `getUser()` + RPC `is_account_active` und leitet mit `?redirect=…&reason=…` nach `/auth`.
+- **Anmeldeseite** `src/routes/auth.tsx` besitzt bereits ein validiertes `reason`-Search-Param (`unavailable | account_inactive | account_locked | account_archived`) und eine Meldungstabelle → hier wird `idle_timeout` ergänzt.
+- **Benutzerzustand**: `src/hooks/useCurrentUser.ts` (Session + Profil + Rolle, `onAuthStateChange`), Dashboard-Store `src/lib/store/dashboard-store.ts`, IndexedDB-Downloads/Logs.
+- **RBAC**: Matrix in `src/lib/rbac/permissions.ts`, gespiegelt in `backend/services/rbac.mjs` (Drift-Check `scripts/check-rbac.mjs`). Passende bestehende administrative Berechtigung: **`users.manage`** (SysAdmin + Administrator) – keine neue Rolle/Permission.
+- **Konfiguration**: Namenskonvention `VITE_*` für Client, dokumentiert in `.env.example`; keine Systemeinstellungs-Tabelle vorhanden.
+- **Logging**: zentraler Logger `src/lib/logger.ts`, `lint:no-console` mit Policy in `scripts/console-policy.mjs`.
 
-## Ausgangslage (verifiziert)
+## Umzusetzen
 
-- `src/components/TechnicalReportDialog.tsx` (254 Z.) rendert den Print-Root via Portal an `document.body` (`#technical-report-print-root`), setzt `body.printing-compliance`, wartet zwei `requestAnimationFrame`, ruft `window.print()` und räumt über `afterprint` + Fallback auf.
-- `src/components/compliance/ComplianceReportPrint.tsx` (422 Z.) enthält alle 11 Pflichtabschnitte inkl. Maßnahmenliste und Integritätsnachweis.
-- Modulgrößen: `dashboard.tsx` 978, `ExportDialog.tsx` 308.
-- `CHANGELOG.md` oberster Eintrag ist **1.44.0** — die Sprint-05B-Arbeiten (1.44.1 Export-Hook, 1.44.2 Logger, Print-Fix) sind dort noch **nicht** eingetragen.
-- In `package.json` existiert **kein** `typecheck`-Script (Teil F fordert es).
+### 1. Datenbank (Migration)
+Neue Tabelle `public.app_settings` (`key text PK`, `value jsonb`, `updated_at`, `updated_by`), inkl. GRANTs, RLS:
+- SELECT für `authenticated` (nicht `anon`) – jeder Angemeldete muss den wirksamen Timeout kennen.
+- INSERT/UPDATE nur wenn `has_permission(auth.uid(),'users.manage')`.
+- `set_updated_at`-Trigger; Audit-Eintrag über bestehendes `audit_log`-Muster (Trigger).
+Kein Eingriff in bestehende RLS/RBAC-Objekte.
 
-## Teil A – Druckpfad verifizieren
+### 2. Zentrale Konfiguration
+`src/lib/session/idle-config.ts`:
+- `DEFAULT_IDLE_TIMEOUT_MINUTES = 5`, `MIN = 1`, `MAX = 480`, `DEFAULT_WARNING_SECONDS = 60`.
+- `parseIdleTimeout(raw): { minutes, source, invalidReason? }` – verwirft leer/Text/0/negativ/>480/Dezimal, fällt auf Standard zurück und meldet über `logger.warn` (ohne Rohwert-Ausgabe).
+- Priorität: `app_settings.idle_timeout_minutes` → `VITE_IDLE_TIMEOUT_MINUTES` → Standard; Warnzeit = `min(60s, 20 % des Timeouts)`.
+- Hook `useIdleTimeoutConfig()` lädt die Einstellung einmalig, liefert Wert + Herkunft.
 
-1. Neuer Playwright-Spec `e2e/specs/compliance-print.spec.ts`:
-   - `page.emulateMedia({ media: "print" })`, Dialog öffnen, „Drucken / PDF" klicken.
-   - `window.print` vorher im Page-Kontext stubben (Aufruf zählen), damit der reale Klickpfad ohne blockierenden Browserdialog durchläuft.
-   - Assertions: `#technical-report-print-root` existiert als direktes Kind von `document.body`, `body` trägt `printing-compliance`, alle 11 `section.tr-sec`-Überschriften vorhanden, Dialog-Chrome (`.no-print`) hat `display: none` im Print-Medium, nach `afterprint`-Dispatch ist Root wieder entfernt.
-   - Screenshot des Print-Roots im Print-Medium als visueller Nachweis.
-2. Ergänzend `page.pdf()` **nach** dem Klick (Print-Root im DOM) — liefert das echte A4-PDF zur Sichtprüfung.
-3. Vitest-Ergänzung: Print-Root-Portal-Lebenszyklus (Mount/Cleanup) als DOM-Test.
+### 3. Zentraler Logout (Provider-Adapter)
+`src/lib/session/logout-service.ts` – **einziger** Logout-Pfad für manuell und automatisch:
+`Guard gegen Mehrfachaufruf → App-/Query-Caches und benutzerbezogene Zustände leeren → supabase.auth.signOut() (Fehler geloggt, aber nicht blockierend) → lokale Auth-Storage-Reste entfernen → Navigation nach /auth mit reason`. Netzwerkfehler führen trotzdem zu vollständiger lokaler Bereinigung und Redirect.
 
-## Teil B – Visueller Nachweis
+### 4. Inaktivitätslogik (providerneutral)
+`src/lib/session/idle-monitor.ts` – reines TS ohne Supabase-Bezug: absolute Zeitstempel (`Date.now()`), Aktivitätsereignisse (`mousemove`, `mousedown`, `keydown`, `scroll`, `touchstart`, `pointerdown`, `visibilitychange`→sichtbar, Router-Navigation) mit 2 s Throttle, 1 s Tick-Prüfung (erkennt Standby/Zeitsprünge), Warn- und Ablauf-Callbacks, Listener-Cleanup.
+`src/lib/session/idle-channel.ts` – `BroadcastChannel` mit `storage`-Event-Fallback; verteilt ausschließlich `{ lastActivity: number }` und `{ type: "logout" }`, niemals Tokens. Ältere Zeitstempel werden verworfen. Reload liest den letzten Zeitstempel (Plausibilitätsprüfung: nicht in der Zukunft, nicht älter als Timeout×2 → sonst sofortiger Logout).
+`src/hooks/useIdleLogout.ts` verdrahtet Monitor + Kanal + Logout-Service; **nur** innerhalb `_authenticated` aktiv (Mount in `src/routes/_authenticated/route.tsx`), also nicht auf `/auth`, `/reset-password`, `/`.
 
-- PDF via `pdftoppm` in Seitenbilder wandeln und **jede** Seite prüfen: Seiten-/Tabellenumbrüche, Überschriften, A4-Ränder, keine abgeschnittenen Zellen, Findings- und Maßnahmenlisten vollständig, Integritätsblock am Ende.
-- Gefundene Layoutfehler in `src/styles.css` (Print-Block) korrigieren und erneut prüfen, bis sauber.
-- Nachweis nach `docs/PRINT-VERIFICATION.md` (Ablauf, DOM-Struktur, Screenshots-Beschreibung, Befunde) und Bilder unter `test-report/print/`.
+### 5. UI
+- `src/components/session/IdleWarningDialog.tsx`: „Ihre Sitzung läuft wegen Inaktivität ab.", Countdown, `Angemeldet bleiben` / `Jetzt abmelden`; Fokus-Trap, ARIA-Live-Countdown, kein Schließen durch Hintergrundaktivität, hell/dunkel, responsiv.
+- `src/routes/auth.tsx`: `reason`-Enum um `idle_timeout` erweitert; Text mit wirksamem Minutenwert („Sie wurden nach X Minuten Inaktivität automatisch abgemeldet."), Wert aus der Konfiguration.
+- `src/components/dashboard/header/ServiceMenu.tsx`: neuer Eintrag **Abmelden** (nutzt denselben Logout-Service).
+- `src/components/SystemStatusDialog.tsx` bzw. Servicebereich: Abschnitt **Automatische Abmeldung bei Inaktivität** mit Zahlenfeld (1–480), Hilfetext, wirksamem Wert, Herkunft (Systemeinstellung/Umgebungsvariable/Standard) und Hinweis zur Wirksamkeit; Schreibzugriff via `PermissionGate permission="users.manage"` **plus** serverseitige Durchsetzung durch RLS.
 
-## Teil C – Technischer Prüfbericht
+### 6. Tests
+- Unit (Vitest, Fake-Timer): Konfig-Parsing (Standard, gültig, Min/Max, ungültige Varianten), Aktivität setzt Timer zurück, Hintergrundereignisse nicht, Warnzeitpunkt, Countdown, „Angemeldet bleiben", „Jetzt abmelden", genau ein Logout, Listener-Cleanup, Reload-Zeitstempel, Standby-Zeitsprung, veraltete Zeitstempel.
+- Auth-Tests: `signOut()` aufgerufen, Zustandsbereinigung, Redirect mit `reason`, Fehlerfall lässt keinen zugänglichen Dashboardzustand.
+- Tab-Tests: Kanal-Nachrichten synchronisieren Aktivität und Logout, nur ein Logout, Fallback-Pfad.
+- Playwright (`e2e/specs/session/idle-logout.spec.ts`): mit verkürztem Timeout (Testkonfiguration, produktiv bleibt 5 Min) Warnung → Angemeldet bleiben → Ablauf → `/auth` mit Hinweis → geschützte Route bleibt gesperrt; zweiter Test für `Jetzt abmelden`.
 
-- `bun run test:debt`, `security:report`, `api:report`, `ops:report` soweit ohne externe Abhängigkeit lauffähig, danach `bun run report:technical`.
-- `scripts/technical-report/manual-sections.json` und `manual-findings.json` aktualisieren: Logger-Bereinigung, Print-Architektur, neue Modulgrößen; erledigte Findings entfernen statt neu zu bewerten.
-- `scripts/technical-report/tech-debt-acceptances.json`: Akzeptanzen für `dashboard.tsx`/`ExportDialog.tsx` prüfen — `ExportDialog` ist unter Schwelle, Akzeptanz entfällt.
-- Integrität mit `node scripts/technical-report/verify.mjs` bestätigen; Historien-Snapshot entsteht automatisch.
+### 7. Prüfbericht und Dokumentation
+- Neuer Prüfbereich **Sitzungs- und Inaktivitätsmanagement** in der Report-Pipeline (`scripts/technical-report/`), Bericht neu erzeugen, Hash und Historieneintrag; nicht ausgeführte Prüfungen explizit als „nicht verifiziert".
+- `CHANGELOG.md` (v1.45.0), `README.md`, `.env.example` (`VITE_IDLE_TIMEOUT_MINUTES`), `docs/ARCHITECTURE.md`, `docs/RBAC-MATRIX.md`-Hinweis, neue `docs/SESSION-TIMEOUT.md`, ADR-0020 (Providertrennung Inaktivität vs. Auth-Adapter), Handbuchkapitel (Benutzer + Administration) in `src/lib/help-documentation.ts`, `docs:check`.
 
-## Teil D – ADR-0019
+### 8. Gates
+`bun run typecheck`, `lint`, `lint:no-console`, `test`, `build`, `docs:check` – bestehende 318 Tests bleiben unverändert grün; Abschlussbericht mit den 26 geforderten Nachweispunkten und Go/No-Go für 05D.
 
-`docs/adr/ADR-0019-oversize-refactor-plan.md` fortschreiben mit Statusmatrix **erledigt / akzeptiert / offen**: Dashboard-Split (erledigt, 3281→978), ExportDialog-Split (erledigt, 807→308), verbleibende Rest-Schulden, neue Print-Architektur, Logger-Bereinigung, Restrisiken.
+## Bewusst nicht enthalten
+Entra ID, MFA, Azure-Themen, Änderungen an Supabase-Session-Laufzeit, neue Rollen/Permissions, `backup-service.ts`-Refactoring.
 
-## Teil E – Dokumentation
-
-- `CHANGELOG.md`: Einträge 1.44.1, 1.44.2 und **1.44.3** (Sprint-05B-Abschluss) nachtragen — 1.44.3 wird damit `DASHBOARD_VERSION`.
-- `docs/LOGGING.md` (Redaction-Muster, Console-Policy, dokumentierte Ausnahmen).
-- `docs/PRINT-VERIFICATION.md`: Ursache des Druckfehlers, Portal-/Print-Root-Lösung, Print-CSS, Playwright-Grenzen (`page.pdf()` löst `window.print()` nicht aus; kein echter Browser-Druckdialog automatisierbar).
-- `README.md` + `docs/ARCHITECTURE.md`: Verweise auf Print-Architektur und Modulstruktur.
-- Handbuch `src/lib/help-documentation.ts`: Kapitel „Prüfbericht drucken / als PDF sichern" ergänzen bzw. aktualisieren, `lastUpdated` setzen.
-
-## Teil F – Qualitätsprüfung
-
-`typecheck`-Script (`tsc --noEmit` via vorhandener TS-Konfiguration) in `package.json` ergänzen, dann ausführen und Ergebnisse protokollieren: `lint`, `typecheck`, `test`, `build`, `docs:check`, zusätzlich `lint:no-console`.
-
-## Teil G/H – Konsistenz und Abschlussbewertung
-
-Versionsstand in CHANGELOG, Handbuch, Systemstatus, `technical-test-report.json`/`.md` und UI abgleichen; Widersprüche beheben. Danach Checkliste aus Teil H Punkt für Punkt mit Nachweis belegen.
-
-## Abschlussbericht
-
-Antwort in Chat mit den 13 geforderten Punkten inkl. konkreter Zahlen (Testanzahl, Modulgrößen, Findings) und einer expliziten, belegten Aussage, ob Sprint 05C starten darf — mit ehrlicher Nennung jedes Punkts, der nicht automatisiert nachweisbar ist (insbesondere echter Browser-Druckdialog).
-
-## Technische Details
-
-- Keine Änderung an Geschäftslogik; Codeänderungen beschränkt auf Print-CSS-Korrekturen (falls die Sichtprüfung Fehler zeigt), neues Testfile, `package.json`-Script.
-- Playwright-Screenshots und PDFs liegen unter `test-report/print/`, nicht im Bundle.
+## Kritische Anmerkung
+Die automatische Abmeldung ist rein clientseitig — ein Angreifer mit gestohlenem Token bleibt bis zum serverseitigen Token-Ablauf gültig. Das wird als bekannte Grenze dokumentiert; eine echte serverseitige Idle-Durchsetzung wäre ein eigener Sprint (kürzere JWT-Laufzeit + serverseitige Aktivitätsprüfung).
