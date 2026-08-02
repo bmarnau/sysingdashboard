@@ -16,10 +16,15 @@ import {
   ScrollText,
   Server,
   Settings,
+  Timer,
+  LogOut,
   Trash2,
 } from "lucide-react";
 import { can } from "@/lib/rbac/permissions";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { SessionSettingsDialog } from "@/components/session/SessionSettingsDialog";
+import { performLogout } from "@/lib/session/logout-service";
+import { useNavigate } from "@tanstack/react-router";
 
 interface ServiceMenuProps {
   showPerfReport: boolean;
@@ -57,7 +62,9 @@ export function ServiceMenu({
   setShowExportDialog,
 }: ServiceMenuProps) {
   const currentUser = useCurrentUser();
+  const navigate = useNavigate();
   const [showServiceMenu, setShowServiceMenu] = useState(false);
+  const [showSessionSettings, setShowSessionSettings] = useState(false);
   return (
     <div className="relative">
       <button
@@ -226,6 +233,29 @@ export function ServiceMenu({
             <button
               onClick={() => {
                 setShowServiceMenu(false);
+                setShowSessionSettings(true);
+              }}
+              className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+            >
+              <Timer className="size-4 opacity-70" /> Automatische Abmeldung…
+            </button>
+            <button
+              onClick={() => {
+                setShowServiceMenu(false);
+                void performLogout({
+                  reason: "manual",
+                  navigate: (target) => {
+                    void navigate({ to: target, replace: true });
+                  },
+                });
+              }}
+              className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+            >
+              <LogOut className="size-4 opacity-70" /> Abmelden
+            </button>
+            <button
+              onClick={() => {
+                setShowServiceMenu(false);
                 resetData();
               }}
               className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm text-destructive hover:bg-destructive/10"
@@ -235,6 +265,7 @@ export function ServiceMenu({
           </div>
         </>
       )}
+      <SessionSettingsDialog open={showSessionSettings} onOpenChange={setShowSessionSettings} />
     </div>
   );
 }
