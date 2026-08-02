@@ -60,6 +60,18 @@ function AuthPage() {
   const redirectTo = safeRedirect(search.redirect);
   const [busy, setBusy] = useState(false);
   const [configError, setConfigError] = useState<AuthConfiguration | null>(null);
+  const [idleMinutes, setIdleMinutes] = useState(DEFAULT_IDLE_TIMEOUT_MINUTES);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadIdleTimeoutConfig().then((c) => {
+      if (!cancelled) setIdleMinutes(c.minutes);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
 
   useEffect(() => {
     let unsub: (() => void) | undefined;
