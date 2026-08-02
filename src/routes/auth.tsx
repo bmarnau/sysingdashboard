@@ -10,6 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import {
+  loadIdleTimeoutConfig,
+  DEFAULT_IDLE_TIMEOUT_MINUTES,
+} from "@/lib/session/idle-config";
+
 
 /**
  * Anmeldung / Registrierung / Passwort-Reset.
