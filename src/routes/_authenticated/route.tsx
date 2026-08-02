@@ -107,8 +107,28 @@ export const Route = createFileRoute("/_authenticated")({
       throw redirect({ to: "/auth", search: { redirect: safeInternalTarget } });
     }
   },
-  component: () => <Outlet />,
+  component: AuthenticatedLayout,
 });
+
+/**
+ * Layout des geschützten Bereichs. Nur hier läuft die Inaktivitätsüberwachung —
+ * öffentliche Routen (`/`, `/auth`, `/reset-password`) bleiben unberührt.
+ */
+function AuthenticatedLayout() {
+  const idle = useIdleLogout(true);
+  return (
+    <>
+      <Outlet />
+      <IdleWarningDialog
+        open={idle.warning}
+        secondsRemaining={idle.secondsRemaining}
+        onStay={idle.staySignedIn}
+        onLogout={idle.logoutNow}
+      />
+    </>
+  );
+}
+
 
 /** Test-Export: interne Redirect-Ziel-Bildung. Nicht in Produktcode nutzen. */
 export const __test = { buildSafeInternalTarget };
