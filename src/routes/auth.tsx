@@ -218,9 +218,12 @@ function AuthPage() {
               role="alert"
               className="mb-4 rounded-md border border-warning/40 bg-warning/5 p-3 text-sm"
             >
-              {REASON_MESSAGES[search.reason]}
+              {search.reason === "idle_timeout"
+                ? `Sie wurden nach ${idleMinutes} Minuten Inaktivität automatisch abgemeldet. Bitte erneut anmelden.`
+                : REASON_MESSAGES[search.reason]}
             </div>
           )}
+
           <Tabs defaultValue="login">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="login">Anmelden</TabsTrigger>
