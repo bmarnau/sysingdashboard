@@ -13,7 +13,18 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.45.0 - 2026-08-02
+
+- **Automatische Abmeldung bei Inaktivität** (Standard 5 Minuten): Überwachung von Maus-, Tastatur-, Scroll- und Touch-Aktivität im geschützten Bereich; Vorwarndialog mit Countdown, „Angemeldet bleiben" und „Jetzt abmelden".
+- Tab-übergreifende Synchronisierung über `BroadcastChannel` (Fallback: `storage`-Event) — es werden ausschließlich Zeitstempel und ein Logout-Signal übertragen, niemals Tokens.
+- Neuer zentraler Logout (`src/lib/session/logout-service.ts`) für manuelle und automatische Abmeldung inkl. Bereinigung lokaler Sitzungsreste; Backend-Fehler verhindern die lokale Abmeldung nicht.
+- Servicemenü: neue Einträge **Abmelden** und **Automatische Abmeldung…**; Anmeldeseite zeigt den Grund „Inaktivität" mit dem wirksamen Minutenwert.
+- Neue Systemeinstellung `app_settings.idle_timeout_minutes` (1–480 Minuten); Änderung nur mit Berechtigung `users.manage`, serverseitig per Datenbank-Regel erzwungen und im Prüfprotokoll erfasst.
+- Neue Umgebungsvariable `VITE_IDLE_TIMEOUT_MINUTES` als Fallback; ungültige Werte werden verworfen, eine Deaktivierung ist nicht möglich.
+- Dokumentation: neues Handbuchkapitel „Automatische Abmeldung bei Inaktivität", `docs/SESSION-TIMEOUT.md`, ADR-0020.
+
 ## 1.44.3 - 2026-08-01
+
 
 - **Vollständiger PDF-Druck des technischen Prüfberichts**: Der Bericht wird beim Drucken über ein Portal in ein eigenes Root (`#technical-report-print-root`) direkt am `body` gerendert (`ComplianceReportPrint.tsx`) und ist damit vom Dialog-Layout (fixed/overflow) entkoppelt. Enthalten sind alle 11 Abschnitte inkl. sämtlicher Findings und Maßnahmenliste.
 - Druck-Trigger in `TechnicalReportDialog.tsx` gehärtet: `cancelled`-Guard gegen React StrictMode (kein doppeltes `window.print()`), zwei `requestAnimationFrame` vor dem Druck, `afterprint`-Listener plus 1500-ms-Fallback für zuverlässiges Aufräumen.
