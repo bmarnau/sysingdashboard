@@ -21,7 +21,13 @@ import { toast } from "sonner";
 const SearchSchema = z.object({
   redirect: z.string().optional(),
   reason: z
-    .enum(["unavailable", "account_inactive", "account_locked", "account_archived"])
+    .enum([
+      "unavailable",
+      "account_inactive",
+      "account_locked",
+      "account_archived",
+      "idle_timeout",
+    ])
     .optional(),
 });
 
@@ -38,7 +44,9 @@ const REASON_MESSAGES: Record<string, string> = {
   account_locked: "Konto ist gesperrt. Bitte einen Administrator kontaktieren.",
   account_archived: "Konto wurde archiviert. Zugriff ist nicht möglich.",
   unavailable: "Anmeldedienst war kurzzeitig nicht erreichbar. Bitte erneut versuchen.",
+  idle_timeout: "Sie wurden wegen Inaktivität automatisch abgemeldet.",
 };
+
 
 export const Route = createFileRoute("/auth")({
   validateSearch: SearchSchema,
