@@ -66,6 +66,9 @@ const AzureDataDialog = lazy(() =>
 const LogViewerDialog = lazy(() =>
   import("@/components/LogViewerDialog").then((m) => ({ default: m.LogViewerDialog })),
 );
+const DevDiaryDialog = lazy(() =>
+  import("@/components/DevDiaryDialog").then((m) => ({ default: m.DevDiaryDialog })),
+);
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { UserManagementService, ROLE_LABEL, initialsOf } from "@/lib/user-management";
