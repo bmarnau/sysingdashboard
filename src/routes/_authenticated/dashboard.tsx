@@ -978,6 +978,11 @@ function Dashboard() {
           <LogViewerDialog open={showLogViewer} onOpenChange={setShowLogViewer} />
         </Suspense>
       )}
+      {showDevDiary && (
+        <Suspense fallback={null}>
+          <DevDiaryDialog open={showDevDiary} onOpenChange={setShowDevDiary} />
+        </Suspense>
+      )}
     </div>
   );
 }
