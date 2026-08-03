@@ -43,6 +43,7 @@ interface ServiceMenuProps {
   setShowAzureData: (v: boolean) => void;
   setShowLogViewer: (v: boolean) => void;
   setShowExportDialog: (v: boolean) => void;
+  setShowDevDiary: (v: boolean) => void;
 }
 
 export function ServiceMenu({
