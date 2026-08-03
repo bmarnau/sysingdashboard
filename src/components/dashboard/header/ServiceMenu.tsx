@@ -62,6 +62,7 @@ export function ServiceMenu({
   setShowAzureData,
   setShowLogViewer,
   setShowExportDialog,
+  setShowDevDiary,
 }: ServiceMenuProps) {
   const currentUser = useCurrentUser();
   const navigate = useNavigate();
