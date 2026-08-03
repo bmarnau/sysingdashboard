@@ -182,6 +182,7 @@ function Dashboard() {
   const [showImportExport, setShowImportExport] = useState(false);
   const [showAzureData, setShowAzureData] = useState(false);
   const [showLogViewer, setShowLogViewer] = useState(false);
+  const [showDevDiary, setShowDevDiary] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
 
