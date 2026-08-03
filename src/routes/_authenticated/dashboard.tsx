@@ -517,6 +517,7 @@ function Dashboard() {
               setShowAzureData={setShowAzureData}
               setShowLogViewer={setShowLogViewer}
               setShowExportDialog={setShowExportDialog}
+              setShowDevDiary={setShowDevDiary}
             />
             <button
               type="button"
