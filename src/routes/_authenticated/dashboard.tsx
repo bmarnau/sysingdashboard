@@ -66,6 +66,9 @@ const AzureDataDialog = lazy(() =>
 const LogViewerDialog = lazy(() =>
   import("@/components/LogViewerDialog").then((m) => ({ default: m.LogViewerDialog })),
 );
+const DevDiaryDialog = lazy(() =>
+  import("@/components/DevDiaryDialog").then((m) => ({ default: m.DevDiaryDialog })),
+);
 import { BackupService } from "@/lib/backup-service";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { UserManagementService, ROLE_LABEL, initialsOf } from "@/lib/user-management";
@@ -179,6 +182,7 @@ function Dashboard() {
   const [showImportExport, setShowImportExport] = useState(false);
   const [showAzureData, setShowAzureData] = useState(false);
   const [showLogViewer, setShowLogViewer] = useState(false);
+  const [showDevDiary, setShowDevDiary] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
 
@@ -513,6 +517,7 @@ function Dashboard() {
               setShowAzureData={setShowAzureData}
               setShowLogViewer={setShowLogViewer}
               setShowExportDialog={setShowExportDialog}
+              setShowDevDiary={setShowDevDiary}
             />
             <button
               type="button"
@@ -971,6 +976,11 @@ function Dashboard() {
       {showLogViewer && (
         <Suspense fallback={null}>
           <LogViewerDialog open={showLogViewer} onOpenChange={setShowLogViewer} />
+        </Suspense>
+      )}
+      {showDevDiary && (
+        <Suspense fallback={null}>
+          <DevDiaryDialog open={showDevDiary} onOpenChange={setShowDevDiary} />
         </Suspense>
       )}
     </div>

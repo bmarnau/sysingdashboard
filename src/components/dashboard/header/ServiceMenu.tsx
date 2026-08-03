@@ -4,6 +4,7 @@
  */
 import { useState } from "react";
 import {
+  BookMarked,
   BookOpen,
   Clock,
   Download,
@@ -42,6 +43,7 @@ interface ServiceMenuProps {
   setShowAzureData: (v: boolean) => void;
   setShowLogViewer: (v: boolean) => void;
   setShowExportDialog: (v: boolean) => void;
+  setShowDevDiary: (v: boolean) => void;
 }
 
 export function ServiceMenu({
@@ -60,6 +62,7 @@ export function ServiceMenu({
   setShowAzureData,
   setShowLogViewer,
   setShowExportDialog,
+  setShowDevDiary,
 }: ServiceMenuProps) {
   const currentUser = useCurrentUser();
   const navigate = useNavigate();
@@ -230,6 +233,17 @@ export function ServiceMenu({
             >
               <BookOpen className="size-4 opacity-70" /> Handbuch…
             </button>
+            {can(currentUser, "documentation.view") && (
+              <button
+                onClick={() => {
+                  setShowServiceMenu(false);
+                  setShowDevDiary(true);
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+              >
+                <BookMarked className="size-4 opacity-70" /> Entwicklungstagebuch…
+              </button>
+            )}
             <button
               onClick={() => {
                 setShowServiceMenu(false);

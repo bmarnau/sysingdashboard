@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `b3533f7f-07ac-488a-925d-1e74240306ee` · Version 4 · Generiert: 2026-08-01T03:30:30.564Z_
+_Report ID: `b23cc3d0-6801-4450-a2ff-9ce8bedb0d19` · Version 5 · Generiert: 2026-08-03T03:01:21.164Z_
 
 ## 1. Prüfidentität
-- Report-ID: `b3533f7f-07ac-488a-925d-1e74240306ee`
-- Reportversion: **4**
-- Vorgängerbericht: `ea1275ec-7be3-47ab-9c33-d5d4ff464046`
+- Report-ID: `b23cc3d0-6801-4450-a2ff-9ce8bedb0d19`
+- Reportversion: **5**
+- Vorgängerbericht: `b3533f7f-07ac-488a-925d-1e74240306ee`
 - Schema: `2.0.0`
-- Dashboard-Version: **1.44.3**
-- Commit: `3b7e7cb`
+- Dashboard-Version: **1.46.0**
+- Commit: `a1e9f2e`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: —
-- Testzeit: 2026-08-01T03:30:30.463Z
+- Testzeit: 2026-08-03T03:01:21.057Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:24811152c7aaf58edc01f5e7a36c78c2fda078d15eb4ee861828e7929bcaada6`
+- Integrität: `sha256:88673291e6d95ed414aac99a1856ee4c55aa58d4c88fa1a14da7ef8d1ce6081e`
 
 ## 2. Freigabestufe
 - Vorschlag: **production**

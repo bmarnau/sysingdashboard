@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "ea1275ec-7be3-47ab-9c33-d5d4ff464046",
-  "version": 3,
-  "parentReportId": "1ee0eeca-0356-43b5-89ec-dd428679900a",
-  "generatedAt": "2026-08-01T03:29:02.948Z",
+  "id": "b3533f7f-07ac-488a-925d-1e74240306ee",
+  "version": 4,
+  "parentReportId": "ea1275ec-7be3-47ab-9c33-d5d4ff464046",
+  "generatedAt": "2026-08-01T03:30:30.564Z",
   "identity": {
-    "dashboardVersion": "1.44.0",
-    "commit": "218317c",
+    "dashboardVersion": "1.44.3",
+    "commit": "3b7e7cb",
     "buildTime": null,
-    "testTime": "2026-08-01T03:29:02.829Z",
+    "testTime": "2026-08-01T03:30:30.463Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -395,7 +395,7 @@
       "components": [
         "src/routes/_authenticated/dashboard.tsx"
       ],
-      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).\n\nAkzeptanz: src/routes/_authenticated/dashboard.tsx bündelt den vollständigen Dashboard-Shell (Header, Servicemenü, Suche, Panels). Ein Refactor in Sub-Routen erfordert Route-Split (siehe ADR-0019) und wird in einem separaten UI-Sprint umgesetzt. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).",
+      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).\n\nAkzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf 979 Zeilen reduziert worden (Extraktion nach src/components/dashboard/), liegt aber weiter über der 500-Zeilen-Schwelle. Der verbleibende Split in Sub-Routen erfordert Route-Umbau (ADR-0019) und folgt im UI-Sprint. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).",
       "dependencies": [],
       "owner": null,
       "dueDate": null,
@@ -2690,18 +2690,8 @@
     }
   ],
   "diff": {
-    "new": [
-      "td:td-layer-9275d7a1",
-      "td:td-oversize-92e5643a"
-    ],
-    "fixed": [
-      "td:td-oversize-26e43c0a",
-      "td:td-console-375dfc5b",
-      "td:td-console-9771f164",
-      "td:td-console-993be125",
-      "td:td-console-f7820fc7",
-      "td:td-layer-e0ac1bea"
-    ],
+    "new": [],
+    "fixed": [],
     "worse": [],
     "same": [
       "sec:SEC-CRIT-001",
@@ -2714,6 +2704,7 @@
       "sec:SEC-MED-REDIRECT-001",
       "sec:SEC-MED-CLAIMS-001",
       "td:td-endpoint-zod-34111d3b",
+      "td:td-layer-9275d7a1",
       "td:td-layer-b432b1b9",
       "td:td-layer-e4fb0e64",
       "td:td-oversize-242b307c",
@@ -2726,6 +2717,7 @@
       "td:td-oversize-38954b26",
       "td:td-oversize-392d9209",
       "td:td-oversize-564261af",
+      "td:td-oversize-92e5643a",
       "td:td-oversize-af210d92",
       "td:td-oversize-d5f3942b",
       "td:td-oversize-ebfd4b54",
@@ -2772,77 +2764,15 @@
       "td:td-coverage-027fe478"
     ],
     "reappeared": [],
-    "severityChanged": [
-      {
-        "id": "td:td-console-08e8609a",
-        "from": "MEDIUM",
-        "to": "INFO"
-      },
-      {
-        "id": "td:td-console-2c49302b",
-        "from": "MEDIUM",
-        "to": "INFO"
-      },
-      {
-        "id": "td:td-console-43084e7a",
-        "from": "MEDIUM",
-        "to": "INFO"
-      },
-      {
-        "id": "td:td-console-665c1d8d",
-        "from": "MEDIUM",
-        "to": "INFO"
-      },
-      {
-        "id": "td:td-console-6c701bbd",
-        "from": "MEDIUM",
-        "to": "INFO"
-      },
-      {
-        "id": "td:td-console-74bd3646",
-        "from": "MEDIUM",
-        "to": "INFO"
-      }
-    ],
+    "severityChanged": [],
     "gateChanged": [],
-    "statusChanged": [
-      {
-        "id": "td:td-console-08e8609a",
-        "from": "open",
-        "to": "akzeptiert"
-      },
-      {
-        "id": "td:td-console-2c49302b",
-        "from": "open",
-        "to": "akzeptiert"
-      },
-      {
-        "id": "td:td-console-43084e7a",
-        "from": "open",
-        "to": "akzeptiert"
-      },
-      {
-        "id": "td:td-console-665c1d8d",
-        "from": "open",
-        "to": "akzeptiert"
-      },
-      {
-        "id": "td:td-console-6c701bbd",
-        "from": "open",
-        "to": "akzeptiert"
-      },
-      {
-        "id": "td:td-console-74bd3646",
-        "from": "open",
-        "to": "akzeptiert"
-      }
-    ],
+    "statusChanged": [],
     "securityRegressions": []
   },
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "738aee48de4fd95aa88ae3d844496ce87fcc751a18523db1d026fbf6c98a662d",
+    "value": "24811152c7aaf58edc01f5e7a36c78c2fda078d15eb4ee861828e7929bcaada6",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",

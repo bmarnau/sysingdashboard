@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.46.0 - 2026-08-03
+
+- **Entwicklungstagebuch** im Servicemenü (`Service → Entwicklungstagebuch…`): Vision, Managementübersicht, Zeitstrahl Idee→Prototyp→MVP, Sprintübersicht bis heute, Schwierigkeiten und Architekturentscheidungen — sichtbar mit Berechtigung `documentation.view`.
+- Einzige Quelle ist `docs/ENTWICKLUNGSTAGEBUCH.md`; die Datei wird zur Build-Zeit eingelesen, keine zweite Kopie im Code und keine Datenbanktabelle.
+- Neuer sicherer Markdown-Renderer `src/lib/markdown/render-basic.tsx` (Überschriften, Listen, Tabellen, Codeblöcke, Fettdruck) ohne externe Bibliothek und ohne HTML-Injektion.
+- Dialog mit Kapitelnavigation und Kapitel-Suche; Handbuchkapitel „Entwicklungstagebuch" ergänzt.
+
 ## 1.45.0 - 2026-08-02
 
 - **Automatische Abmeldung bei Inaktivität** (Standard 5 Minuten): Überwachung von Maus-, Tastatur-, Scroll- und Touch-Aktivität im geschützten Bereich; Vorwarndialog mit Countdown, „Angemeldet bleiben" und „Jetzt abmelden".
