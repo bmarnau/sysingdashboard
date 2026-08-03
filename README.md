@@ -152,6 +152,7 @@ Alternativ über die Browser-DevTools:
 
 - [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — Systemübersicht, Modulgrenzen, Datenfluss
 - [`docs/ADR/`](./docs/ADR/) — Architecture Decision Records (Entscheidungshistorie)
+- [`docs/ENTWICKLUNGSTAGEBUCH.md`](./docs/ENTWICKLUNGSTAGEBUCH.md) — Projektchronik (Service → Entwicklungstagebuch)
 - [`docs/API.md`](./docs/API.md) — Server-Routen (`/api/status`, `/api/sync`)
 - [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) — Build, Cloudflare Worker, ENV, CI
 - [`docs/DATA-SCHEMA.md`](./docs/DATA-SCHEMA.md) — Export-Format & Migrationsregeln
