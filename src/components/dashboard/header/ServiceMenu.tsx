@@ -233,6 +233,17 @@ export function ServiceMenu({
             >
               <BookOpen className="size-4 opacity-70" /> Handbuch…
             </button>
+            {can(currentUser, "documentation.view") && (
+              <button
+                onClick={() => {
+                  setShowServiceMenu(false);
+                  setShowDevDiary(true);
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+              >
+                <BookMarked className="size-4 opacity-70" /> Entwicklungstagebuch…
+              </button>
+            )}
             <button
               onClick={() => {
                 setShowServiceMenu(false);
