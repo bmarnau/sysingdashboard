@@ -2189,6 +2189,39 @@ Pflichtbestandteile:
 - Reine Akzeptanz ohne Guard-Test wird im nächsten CI-Lauf als Prozess-Verstoß markiert (offen für Tech-Debt-Scanner-Erweiterung).`,
     relatedTopics: ["security-rbac-tests", "ci-quality-gates", "technical-test-report"],
   },
+  {
+    id: "dev-diary",
+    title: "Entwicklungstagebuch",
+    category: "Service",
+    component: "DevDiaryDialog.tsx",
+    keywords: [
+      "Entwicklungstagebuch", "Chronik", "Historie", "Sprint", "Vision",
+      "Zeitstrahl", "Projektgeschichte", "ADR",
+    ],
+    lastUpdated: "2026-08-03",
+    content: `## Zweck
+Das Entwicklungstagebuch dokumentiert die Projektgeschichte: Vision, Managementübersicht, Zeitstrahl von der Idee bis zur Betriebsreife, Sprintübersicht, aufgetretene Schwierigkeiten und die getroffenen Architekturentscheidungen.
+
+## Aufruf
+Servicemenü → **Entwicklungstagebuch…**. Sichtbar für Rollen mit der Berechtigung \`documentation.view\`.
+
+## Bedienung
+- Linke Spalte: Sprung zu einem Kapitel.
+- Suchfeld: filtert auf Kapitel, die den Begriff enthalten.
+- Inhalt ist schreibgeschützt; Pflege erfolgt in der Quelldatei.
+
+## Quelle und Pflege
+Einzige Quelle ist \`docs/ENTWICKLUNGSTAGEBUCH.md\`. Die Datei wird zur Build-Zeit eingelesen — es gibt keine zweite Kopie im Code und keine Datenbanktabelle. Pro Sprint wird unter „Sprintprotokoll" ein neuer Abschnitt ergänzt, gemeinsam mit dem CHANGELOG-Eintrag.
+
+## Darstellung
+Gerendert wird ein bewusst begrenztes Markdown-Subset (Überschriften, Listen, Tabellen, Codeblöcke, Fettdruck) über \`src/lib/markdown/render-basic.tsx\` — ohne externe Bibliothek und ohne HTML-Injektion.
+
+## Grenzen
+- Keine Bearbeitung aus der Oberfläche.
+- Keine automatische Erzeugung aus Commits; die Chronik wird redaktionell gepflegt.
+- Keine personenbezogenen Daten und keine Zugangsdaten in der Datei.`,
+    relatedTopics: ["changelog", "technical-test-report", "ci-quality-gates"],
+  },
 ];
 
 
