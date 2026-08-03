@@ -1,0 +1,198 @@
+# Entwicklungstagebuch – Sysing Dashboard
+
+Fortschreibbare Projektchronik. Diese Datei ist die **einzige Quelle** für die
+Ansicht *Service → Entwicklungstagebuch* im Dashboard.
+
+Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam mit
+dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
+Zugangsdaten, keine internen Adressen in dieser Datei.
+
+Stand: 2026-08-03 · Dashboard-Version 1.46.0
+
+## Vision
+
+Das Sysing Dashboard ist das Arbeits- und Steuerungswerkzeug für die
+Systemingenieurs-Projektabwicklung: Projekte, Arbeitspakete, Tätigkeiten und
+Zeiten an einer Stelle, mit belastbaren Auswertungen für Abrechnung und
+Leistungsbewertung.
+
+Leitplanken von Anfang an:
+
+- **Nachvollziehbarkeit vor Funktionsumfang.** Jede Änderung ist in CHANGELOG,
+  Handbuch und – bei Architekturrelevanz – in einer ADR dokumentiert.
+- **Betriebsfähigkeit statt Demo.** Prüfberichte, Qualitätstore und
+  Sicherheitsprüfungen laufen automatisiert in der CI.
+- **Datenhoheit.** Lokale Arbeitsfähigkeit (Offline), Exporte in offene
+  Formate, Azure-Anbindung als Option statt als Zwang.
+- **Sicherheit als Standardzustand.** Rollenmodell, serverseitig erzwungene
+  Regeln, keine Geheimnisse im Client, Protokollierung ohne sensible Inhalte.
+
+## Managementübersicht
+
+| Frage | Antwort |
+| --- | --- |
+| Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Rollenmodell, Backup/Restore, Import/Export, Reporting und integriertem Handbuch. |
+| Zeitraum | Mai 2026 bis August 2026 |
+| Aktueller Stand | Version 1.46.0, alle automatisierten Tests grün, technischer Prüfbericht ohne offene kritische Befunde |
+| Größte Hürden | Inbetriebnahme der Anmeldung, vollständiger PDF-Druck, Aufräumen technischer Schulden bei wachsendem Umfang |
+| Nächster Nutzen | Mehrsprachigkeit, serverseitige Sitzungsdurchsetzung, Azure-Produktivbetrieb |
+
+Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
+Anwendung mit Anmeldung, Rechteverwaltung, Prüfpfad und automatisierter
+Qualitätssicherung gewachsen. Der Schwerpunkt lag ab Juli 2026 nicht mehr auf
+neuen Funktionen, sondern auf Betriebsreife: Tests, Prüfberichte, Sicherheit und
+Dokumentation.
+
+## Zeitstrahl: Idee → Prototyp → MVP → Betriebsreife
+
+| Phase | Zeitraum | Versionen | Ergebnis |
+| --- | --- | --- | --- |
+| Idee | 2026-05 | – | Dashboard für Systemingenieur als einzelne Auswertungsansicht |
+| Prototyp | 2026-06-05 bis 2026-06-16 | 1.0–1.9 | Persistenz, Druckansicht, Arbeitszeitmodell, Handbuch, Backup |
+| MVP | 2026-06-17 bis 2026-07-02 | 1.10–1.19 | Downloads, JSON-Schnittstelle, Betriebsmodi, Backend-Routen, RBAC, Azure-Bereich |
+| Härtung | 2026-07-04 bis 2026-07-16 | 1.20–1.38 | Tests, Logger, Store, ADRs, Prüfbericht, Qualitätstore |
+| Betriebsreife | 2026-07-17 bis 2026-08-03 | 1.39–1.46 | Anmeldung, Compliance-Bericht, Refactoring, Sitzungs-Timeout, Chronik |
+
+## Sprintübersicht
+
+| Version | Datum | Schwerpunkt | Ergebnis |
+| --- | --- | --- | --- |
+| 1.7.0 | 2026-06-14 | Arbeitszeitmodell | Engineurprofil übernimmt Modellwerte |
+| 1.8.0 | 2026-06-14 | Handbuch | Integriertes, suchbares Benutzerhandbuch |
+| 1.8.1 | 2026-06-15 | Sprache | Deutsch als Standard, i18n vorbereitet |
+| 1.9.0 | 2026-06-15 | Backup | Tägliches ZIP-Backup mit Protokoll |
+| 1.9.1 | 2026-06-16 | Doku-Sync | `CHANGELOG.md` als Single Source, `docs:check` |
+| 1.10–1.13 | 2026-06-16 bis 06-19 | Downloadbereich | PDF/CSV/JSON-Exporte, Vorschau, Aufbewahrungsregeln |
+| 1.14.0 | 2026-06-20 | JSON-Import | Vierstufiger Assistent mit Vorschau, Snapshot und Rollback |
+| 1.15–1.16 | 2026-06-22 | Betrieb & Backend | Betriebsmodi, Secret-Verwaltung, Server-Routen |
+| 1.17.x | 2026-06-23 bis 06-27 | Systemstatus & Sicherheit | Statusprüfung, Sicherheitsscan in CI, Env-Validierung |
+| 1.18.x | 2026-06-28 bis 07-01 | RBAC v1 | Sieben Rollen, Rechtematrix, Handbuchkapitel, globale Suche |
+| 1.19.0 | 2026-07-02 | Azure | Servicebereich für Azure-Daten |
+| 1.20–1.23 | 2026-07-04 bis 07-07 | Qualität | Tests, Logger mit IndexedDB, zentraler Store, Barrierefreiheit |
+| 1.24–1.26 | 2026-07-08 bis 07-11 | Architektur | ADR-Prozess, Performance, Log Viewer |
+| 1.27–1.29 | 2026-07-12 bis 07-13 | RBAC v2 & Testinstanz | Akteurskontext, zentrale Testinstanz, Technical-Debt-Scanner |
+| 1.30–1.34 | 2026-07-13 | Prüfsuiten | API-Vertragstests, E2E, Correlation-ID, Security-Suite, API-Discovery |
+| 1.35–1.37 | 2026-07-13 bis 07-15 | Betrieb | Restore-Tests, Ops-Baselines, zentraler technischer Prüfbericht |
+| 1.38.0 | 2026-07-16 | CI | Qualitätstore in 14 Stufen |
+| 1.39.0 | 2026-07-17 | Anmeldung | Auth über Lovable Cloud, geschützter Bereich, DB-gestützte Rollen |
+| 1.40.x | 2026-07-18 bis 07-19 | Benutzerverwaltung | Rollen aus der Oberfläche, robuster App-Start |
+| 1.41.x | 2026-07-20 bis 07-25 | Auth-Inbetriebnahme | Konfigurationsprüfung, Laufzeit-Fallback, kritische Befunde geschlossen |
+| 1.42.x | 2026-07-26 bis 07-28 | Compliance & Regression | Compliance-Bericht, Open-Redirect-Schutz, Guard-Fehler behoben |
+| 1.43.0 | 2026-07-29 | Prüfbericht 2.0 | Schema 2.0, SHA-256-Integrität, Release-Gate |
+| 1.44.x | 2026-07-30 bis 08-01 | Refactoring | Dashboard und Export modularisiert, Logger-Bereinigung, PDF-Druck |
+| 1.45.0 | 2026-08-02 | Sitzung | Automatische Abmeldung bei Inaktivität |
+| 1.46.0 | 2026-08-03 | Chronik | Entwicklungstagebuch im Servicebereich |
+
+## Schwierigkeiten und ihre Lösung
+
+### Anmeldung meldete „noch nicht konfiguriert" (1.41.x)
+
+Nach der Umstellung auf echte Authentifizierung erschien im veröffentlichten
+Build hartnäckig der Hinweis, die Anmeldung sei nicht konfiguriert. Ursache war
+nicht der Code, sondern die Art des Variablenzugriffs: nur statische Zugriffe
+werden beim Bauen ersetzt. Lösung in drei Schritten — statische Zugriffe, eine
+Startprüfung der erforderlichen Werte und zusätzlich ein Laufzeit-Fallback, der
+die öffentliche Konfiguration vom Server nachlädt.
+
+**Lehre:** Bei Build-Zeit-Ersetzung ist die Schreibweise Teil der Funktion.
+
+### Leerer PDF-Ausdruck des Prüfberichts (1.44.3)
+
+Der Bericht wurde innerhalb eines Dialogs gerendert; dessen Positionierung und
+Überlauf schnitten den Ausdruck ab. Lösung: Rendern über ein eigenes Portal
+direkt am Dokumentkörper plus eine Druckklasse, die die Anwendungshülle
+ausblendet, statt den Berichtscontainer indirekt zu verstecken.
+
+**Lehre:** Drucken ist ein eigener Renderpfad und braucht eine eigene Prüfung
+(siehe `docs/PRINT-VERIFICATION.md`).
+
+### Fehlerhafter Guard nach Auth-Umstellung (1.42.2)
+
+Ein Fehler beim Serialisieren des Rücksprungziels legte den geschützten Bereich
+lahm. Behoben durch eine geprüfte Hilfsfunktion für interne Sprungziele, die
+zugleich offene Weiterleitungen ausschließt.
+
+### Wachsende Dateien (1.44.0)
+
+Die Dashboard-Route war auf über 3200 Zeilen gewachsen. Der Umbau in Teilviews,
+Dialoge und Hooks reduzierte sie auf unter 1000 Zeilen, ohne das Verhalten zu
+ändern — abgesichert durch die vorhandene Testsuite.
+
+### Abhängigkeiten in der CI (1.17.2)
+
+Die Pipeline scheiterte an unterschiedlichen Abhängigkeitsdateien. Vereinheitlicht
+auf einen Paketmanager mit fixierter Sperrdatei.
+
+### Protokolle ohne Geheimnisse (1.42.1, 1.44.2)
+
+Protokolleinträge konnten Verbindungszeichenfolgen enthalten. Die Redaktionsregeln
+wurden erweitert und die Konsolennutzung projektweit auf den zentralen Logger
+umgestellt, überwacht durch ein CI-Tor.
+
+## Architekturentscheidungen
+
+| ADR | Entscheidung |
+| --- | --- |
+| 0001 | TanStack Start als Framework |
+| 0002 | Rechteprüfung im Frontend als Spiegel der Serverregeln |
+| 0003 | Lokale Datenhaltung zuerst |
+| 0004 | Eigener Publish/Subscribe-Store statt zusätzlicher Bibliothek |
+| 0005 | Eigener Logger statt externem Fehlerdienst |
+| 0006 | Kein virtuelles Scrollen |
+| 0007 | RBAC v2 mit Geltungsbereichen und Ressourcen |
+| 0008 | Zuweisungsarchitektur für Rollen |
+| 0009 | Zentrale Testinstanz |
+| 0010 | Hybrides Vorgehen bei technischen Schulden |
+| 0011 | Vertragstests für API-Endpunkte |
+| 0012 | Umfang der E2E-Tests |
+| 0013 | Sicherheits-Release-Gate |
+| 0014 | API-Discovery per statischer Analyse |
+| 0015 | Backup- und Restore-Tests |
+| 0016 | Betriebs-Baselines |
+| 0017 | Technischer Prüfbericht |
+| 0018 | Qualitätstore in der CI |
+| 0019 | Refactoring-Plan für zu große Module |
+| 0020 | Providerneutrale Abmeldung bei Inaktivität |
+
+## Offene Punkte und Ausblick
+
+- **Serverseitige Sitzungsdurchsetzung.** Die Abmeldung bei Inaktivität wirkt
+  clientseitig; ein bereits entwendetes Zugriffstoken bleibt bis zum Ablauf
+  gültig (ADR-0020).
+- **E2E-Test der Abmeldung.** Erfordert eine echte Sitzung im Testlauf und ist
+  bewusst zurückgestellt.
+- **Mehrsprachigkeit.** Vorbereitet, aber nur Deutsch gepflegt.
+- **Azure-Produktivbetrieb.** Verbindungen sind im Entwicklungsmodus gesperrt.
+
+## Sprintprotokoll
+
+### Sprint 05D – Entwicklungstagebuch (1.46.0, 2026-08-03)
+
+Ziel: dauerhaft fortschreibbare Projektchronik im Dashboard.
+Ergebnis: diese Datei plus die Ansicht *Service → Entwicklungstagebuch* mit
+eigenem, sicherem Markdown-Renderer ohne zusätzliche Abhängigkeit.
+Bewertung: Go für Sprint 05E.
+
+### Sprint 05C – Automatische Abmeldung (1.45.0, 2026-08-02)
+
+Ziel: konfigurierbare Abmeldung bei Inaktivität.
+Ergebnis: Überwachung, Vorwarndialog, tabübergreifende Synchronisierung,
+Systemeinstellung mit serverseitiger Regel, ADR-0020.
+Bewertung: Go, mit dokumentierter E2E-Grenze.
+
+### Sprint 05B – Refactoring-Abschluss und Druck (1.44.3, 2026-08-01)
+
+Ziel: Logger-Bereinigung und vollständiger PDF-Druck.
+Ergebnis: Druck über eigenes Portal, Konsolennutzung bereinigt, `typecheck`
+als eigener Prüfschritt.
+
+### Sprint 05 – Modularisierung (1.44.0, 2026-07-30)
+
+Ziel: zu große Module aufteilen.
+Ergebnis: Dashboard 3281 → 978 Zeilen, Export 807 → 308 Zeilen.
+
+### Sprint 04 – Prüfbericht 2.0 (1.43.0, 2026-07-29)
+
+Ziel: manipulationssicherer, versionierter Prüfbericht.
+Ergebnis: Schema 2.0.0, kanonische Hashbildung, unveränderliche Historie,
+Release-Gate.
