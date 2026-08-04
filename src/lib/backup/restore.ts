@@ -13,12 +13,7 @@ import { BackupError } from "../errors";
 import { writeRestoreLog } from "./audit";
 import { PROJECT_NAME, looksSensitive } from "./constants";
 import { applyRestoreEntries, collectTouchedKeys, type DesiredEntry } from "./merge";
-import {
-  listCurrentAppKeys,
-  registerSnapshot,
-  rollbackSnapshot,
-  takeSnapshotOf,
-} from "./rollback";
+import { listCurrentAppKeys, registerSnapshot, rollbackSnapshot, takeSnapshotOf } from "./rollback";
 import type { RestoreOptions, RestoreResult, Snapshot } from "./types";
 
 function parseSemverMajor(v: string): number {
