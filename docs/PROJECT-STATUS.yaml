@@ -1,4 +1,4 @@
-schemaVersion: "1.0.0"
+schemaVersion: "1.1.0"
 lastUpdated: "2026-08-04"
 
 project:
@@ -7,6 +7,7 @@ project:
   productionApp: "https://sysingdashboard.lovable.app"
   localWorkspace: "C:\\Users\\bmarn\\OneDrive\\HTML\\sysingdashboard"
   sourceOfTruth: "github"
+  lifecyclePhase: "mvp-hardening"
   description: >-
     Persönliches Arbeits-, Reporting- und zukünftiges Management-Dashboard
     für Systemingenieure mit sicherer Authentifizierung, rollenbasiertem Zugriff,
@@ -44,26 +45,80 @@ architecturePrinciples:
   - id: "no-secrets"
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
+versions:
+  dashboard: "1.47.0"
+  projectManifestSchema: "1.1.0"
+  technicalReportSchema: "2.0.0"
+  technicalReportVersion: 5
+  backupFormat: "1.x"
+  backupManifestTarget: "2.0"
+  api: "not-versioned"
+  databaseSchema: "managed-by-supabase-migrations"
+
 currentState:
-  version: "1.47.0"
   currentSprint: "06"
   currentSprintTitle: "Produktive Supabase-Inbetriebnahme und persönliches Benutzerkonto"
   previousSprint: "05E"
   previousSprintStatus: "completed"
+  releaseReadiness: "passed-with-findings"
   testsPassing: 357
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
     noConsole: "passed"
+    build: "not-recorded-in-manifest"
   knownVerificationLimits:
     - id: "session-server-enforcement"
       status: "open"
+      severity: "medium"
       description: "Serverseitige Sitzungsdurchsetzung ist noch nicht vollständig umgesetzt."
       reference: "ADR-0020"
+      targetSprint: "06"
     - id: "session-e2e"
       status: "unverified"
+      severity: "medium"
       description: "Echter E2E-Test der automatischen Abmeldung benötigt eine kontrollierte Supabase-Testsession."
       reference: "ADR-0020"
+      targetSprint: "06"
+
+platforms:
+  development:
+    lovable:
+      role: "Rapid UI- und Feature-Entwicklung"
+      required: true
+    github:
+      role: "Maßgebliche Quelle für Code und Dokumentation"
+      required: true
+    localWorkspace:
+      role: "Lokale Entwicklung mit Codex und VS Code"
+      required: true
+  runtime:
+    current:
+      - "Lovable App"
+      - "Supabase"
+    future:
+      - "Docker"
+      - "Microsoft Entra ID"
+      - "Azure SQL"
+      - "Azure Table Storage"
+      - "Microsoft 365"
+
+supabase:
+  role: "Führende Authentifizierungs- und Datenplattform des MVP"
+  projectRef: "to-be-verified-in-sprint-06"
+  environments:
+    local: "to-be-verified"
+    preview: "to-be-verified"
+    production: "to-be-verified"
+  auth:
+    status: "implemented-needs-production-verification"
+    providers:
+      - "email-password"
+  rbac:
+    status: "implemented-needs-real-user-verification"
+  rls:
+    status: "implemented-needs-real-user-verification"
+  secretsPolicy: "Public client values only in frontend; no service-role key in client or documentation."
 
 completedSprints:
   - id: "05"
@@ -96,6 +151,7 @@ roadmap:
   - id: "06"
     title: "Produktive Supabase-Inbetriebnahme und persönliches Benutzerkonto"
     status: "next"
+    priority: "high"
     goal: >-
       Lovable-, GitHub- und Supabase-Zuordnung, persönliches Auth-Konto,
       Profil, Rollen, RBAC, RLS, Preview und Produktion vollständig prüfen.
@@ -110,6 +166,7 @@ roadmap:
   - id: "06A"
     title: "Backupformat 2.0 und manifestbasierte Restore-Zuordnung"
     status: "planned"
+    priority: "high"
     goal: >-
       Explizite entries[]-Liste im Backupmanifest einführen und die
       Rekonstruktion von Storage-Keys aus maskierten Dateinamen ablösen.
@@ -123,6 +180,7 @@ roadmap:
   - id: "07"
     title: "AVKK-Datenmodell"
     status: "planned"
+    priority: "high"
     goal: "AVKK als fachliche Erweiterung der bestehenden Arbeitspakete einführen."
     dependencies:
       - "06"
@@ -130,24 +188,28 @@ roadmap:
   - id: "08"
     title: "AVKK-Arbeitsansicht"
     status: "planned"
+    priority: "high"
     goal: "AVKK im persönlichen Arbeitsdashboard nutzbar machen."
     dependencies:
       - "07"
   - id: "09"
     title: "AVKK-Management-Cockpit"
     status: "planned"
+    priority: "medium"
     goal: "Rollenbasierte Führungssicht auf Verantwortungen, Kommunikation und Kontrollen bereitstellen."
     dependencies:
       - "08"
   - id: "10"
     title: "Microsoft-365-Integration"
     status: "planned"
+    priority: "medium"
     goal: "Outlook und SharePoint providerbasiert anbinden."
     dependencies:
       - "09"
   - id: "11"
     title: "Arbeitspaket-Assistent"
     status: "planned"
+    priority: "medium"
     goal: "Zuweisungs-E-Mails erkennen und geprüfte Arbeitspaketentwürfe erzeugen."
     dependencies:
       - "10"
@@ -156,7 +218,7 @@ backlog:
   - id: "BACKLOG-ARCH-002"
     title: "Backupformat 2.0 – Manifestbasierte Storage-Key-Zuordnung"
     category: "architecture"
-    priority: "medium"
+    priority: "high"
     status: "planned-for-sprint-06A"
     problem: >-
       Die Restore-Logik rekonstruiert Storage-Keys derzeit aus maskierten
@@ -165,8 +227,124 @@ backlog:
     targetOutcome: >-
       Eine versionierte entries[]-Struktur beschreibt jede Backupdatei explizit
       einschließlich logicalName, storageKey, checksum, size und contentType.
+  - id: "BACKLOG-SEC-001"
+    title: "Serverseitige Sitzungsdurchsetzung"
+    category: "security"
+    priority: "high"
+    status: "planned-for-sprint-06"
+    problem: "Der Inaktivitätstimeout wird clientseitig durchgesetzt."
+    targetOutcome: "Serverseitige Sessiongrenzen und Sperrverhalten nachvollziehbar verifizieren."
+  - id: "BACKLOG-TEST-001"
+    title: "Supabase-E2E-Test mit kontrollierter Testsession"
+    category: "testing"
+    priority: "high"
+    status: "planned-for-sprint-06"
+    problem: "Der echte Browser-E2E-Test benötigt eine sichere Supabase-Testsession."
+    targetOutcome: "Reproduzierbarer Login-, Timeout-, Logout- und RBAC-Test mit dediziertem Testkonto."
+
+technicalDebt:
+  - id: "TD-DASHBOARD-ORCHESTRATION"
+    status: "accepted"
+    severity: "medium"
+    reference: "ADR-0019"
+    description: "Verbleibende Dashboard-Orchestrierung ist dokumentiert und weiterhin zu beobachten."
+  - id: "TD-SESSION-SERVER"
+    status: "open"
+    severity: "medium"
+    reference: "ADR-0020"
+    description: "Serverseitige Sitzungsdurchsetzung ist noch nicht vollständig verifiziert."
+  - id: "TD-BACKUP-MANIFEST-V1"
+    status: "planned"
+    severity: "medium"
+    reference: "BACKLOG-ARCH-002"
+    description: "Storage-Keys werden aktuell aus maskierten Dateinamen rekonstruiert."
+
+adrs:
+  - id: "ADR-0019"
+    status: "accepted"
+    topic: "Modularisierung großer UI-Module"
+    path: "docs/adr/ADR-0019*"
+  - id: "ADR-0020"
+    status: "accepted-with-limitations"
+    topic: "Konfigurierbare automatische Abmeldung"
+    path: "docs/adr/ADR-0020*"
+  - id: "ADR-0021"
+    status: "accepted"
+    topic: "Modularisierung Backup-Service"
+    path: "docs/adr/ADR-0021*"
+
+quality:
+  tests:
+    passing: 357
+    failing: 0
+    skipped: "not-recorded"
+    coverage: "not-recorded"
+  findings:
+    source: "test-report/technical-test-report.json"
+    currentCount: "not-synchronized"
+    criticalOpen: 0
+    blockersOpen: 0
+  gates:
+    typecheck: "passed"
+    lint: "not-recorded-in-manifest"
+    noConsole: "passed"
+    build: "not-recorded-in-manifest"
+    docsCheck: "passed"
+  updateRule: "Quality metrics are updated after each sprint or release."
+
+releaseManagement:
+  currentRelease: "1.47.0"
+  stage: "production"
+  status: "passed-with-findings"
+  releaseEvidence:
+    - "CHANGELOG.md"
+    - "test-report/technical-test-report.json"
+    - "test-report/technical-test-report.md"
+    - "docs/ENTWICKLUNGSTAGEBUCH.md"
+  nextReleaseTarget: "Sprint 06 completion"
+
+risks:
+  - id: "RISK-AUTH-ENV-MISMATCH"
+    category: "configuration"
+    probability: "medium"
+    impact: "high"
+    status: "open"
+    mitigation: "Preview-, Produktion- und lokale Supabase-Zuordnung in Sprint 06 vollständig verifizieren."
+  - id: "RISK-SESSION-CLIENT-ONLY"
+    category: "security"
+    probability: "medium"
+    impact: "medium"
+    status: "open"
+    mitigation: "Serverseitige Sitzungsgrenzen und Verhalten bei Kontosperre in Sprint 06 prüfen."
+  - id: "RISK-BACKUP-KEY-RECONSTRUCTION"
+    category: "data-integrity"
+    probability: "low"
+    impact: "high"
+    status: "planned"
+    mitigation: "Backupmanifest Version 2 in Sprint 06A einführen."
+
+mcpAndAgents:
+  status: "planned"
+  mcpClient:
+    target: "SharePoint and enterprise data access"
+    earliestSprint: "10"
+  agentUseCases:
+    - id: "AGENT-WORKPACKAGE-MAIL"
+      title: "Arbeitspaket-Assistent"
+      status: "planned"
+      earliestSprint: "11"
+    - id: "AGENT-MANAGEMENT-SUMMARY"
+      title: "Management-Zusammenfassung"
+      status: "future"
+      earliestSprint: "after-11"
+  guardrails:
+    - "Keine autonome Anlage produktiver Arbeitspakete ohne Benutzerbestätigung."
+    - "Keine Secrets oder personenbezogenen Inhalte in Prompts oder Logs."
+    - "Provider- und Fachlogik getrennt halten."
 
 artifacts:
+  projectManifest: "docs/PROJECT-STATUS.yaml"
+  projectManifestDocumentation: "docs/PROJECT-STATUS.md"
   changelog: "CHANGELOG.md"
   developmentDiary: "docs/ENTWICKLUNGSTAGEBUCH.md"
   technicalReportJson: "test-report/technical-test-report.json"
@@ -174,12 +352,39 @@ artifacts:
   sessionTimeoutDocumentation: "docs/SESSION-TIMEOUT.md"
   printVerification: "docs/PRINT-VERIFICATION.md"
   adrDirectory: "docs/adr"
+  plannedSupabaseCommissioningReport: "docs/SUPABASE-INBETRIEBNAHME.md"
+
+consumers:
+  human:
+    - "Projektverantwortliche"
+    - "Entwickler"
+    - "Management"
+    - "Prüfer"
+  machine:
+    - "Lovable"
+    - "ChatGPT"
+    - "Codex"
+    - "GitHub Actions"
+    - "MCP-Clients"
+    - "Zukünftige KI-Agenten"
+
+validation:
+  requiredChecks:
+    - "YAML ist syntaktisch gültig"
+    - "schemaVersion ist vorhanden"
+    - "lastUpdated ist vorhanden"
+    - "currentState.currentSprint ist in roadmap enthalten"
+    - "Version in versions.dashboard entspricht releaseManagement.currentRelease"
+    - "Keine Secrets oder produktiven Schlüssel enthalten"
+  recommendedCommand: "bun run project-status:check"
+  automationStatus: "planned"
 
 sprintGovernance:
   startConditions:
     - "Vorheriger Sprint ist abgeschlossen und verifiziert."
     - "CHANGELOG und Entwicklungstagebuch sind aktuell."
     - "Technischer Prüfbericht bildet den aktuellen Stand ab."
+    - "PROJECT-STATUS.yaml bildet Version, Sprint und Roadmap korrekt ab."
   definitionOfDone:
     - "Akzeptanzkriterien erfüllt"
     - "Tests grün"
@@ -189,8 +394,16 @@ sprintGovernance:
     - "Dokumentationsprüfung grün"
     - "CHANGELOG aktualisiert"
     - "Entwicklungstagebuch fortgeschrieben"
+    - "PROJECT-STATUS.yaml aktualisiert und validiert"
     - "Technischer Prüfbericht neu erzeugt und verifiziert"
     - "Go-/No-Go für den Folgesprint dokumentiert"
+  updateTriggers:
+    - "Sprintabschluss"
+    - "Release"
+    - "Roadmapänderung"
+    - "Neue oder geschlossene technische Schuld"
+    - "ADR-Entscheidung"
+    - "Änderung an Authentifizierung, Datenplattform oder Backupformat"
   updatePolicy: >-
     Diese Datei wird nach jedem Sprintabschluss, bei wesentlichen
     Architekturentscheidungen und bei Änderungen der Roadmap aktualisiert.
