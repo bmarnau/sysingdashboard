@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-03 · Dashboard-Version 1.46.0
+Stand: 2026-08-03 · Dashboard-Version 1.47.0
 
 ## Vision
 
@@ -33,7 +33,7 @@ Leitplanken von Anfang an:
 | --- | --- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Rollenmodell, Backup/Restore, Import/Export, Reporting und integriertem Handbuch. |
 | Zeitraum | Mai 2026 bis August 2026 |
-| Aktueller Stand | Version 1.46.0, alle automatisierten Tests grün, technischer Prüfbericht ohne offene kritische Befunde |
+| Aktueller Stand | Version 1.47.0, alle automatisierten Tests grün, technischer Prüfbericht ohne offene kritische Befunde |
 | Größte Hürden | Inbetriebnahme der Anmeldung, vollständiger PDF-Druck, Aufräumen technischer Schulden bei wachsendem Umfang |
 | Nächster Nutzen | Mehrsprachigkeit, serverseitige Sitzungsdurchsetzung, Azure-Produktivbetrieb |
 
@@ -51,7 +51,7 @@ Dokumentation.
 | Prototyp | 2026-06-05 bis 2026-06-16 | 1.0–1.9 | Persistenz, Druckansicht, Arbeitszeitmodell, Handbuch, Backup |
 | MVP | 2026-06-17 bis 2026-07-02 | 1.10–1.19 | Downloads, JSON-Schnittstelle, Betriebsmodi, Backend-Routen, RBAC, Azure-Bereich |
 | Härtung | 2026-07-04 bis 2026-07-16 | 1.20–1.38 | Tests, Logger, Store, ADRs, Prüfbericht, Qualitätstore |
-| Betriebsreife | 2026-07-17 bis 2026-08-03 | 1.39–1.46 | Anmeldung, Compliance-Bericht, Refactoring, Sitzungs-Timeout, Chronik |
+| Betriebsreife | 2026-07-17 bis 2026-08-03 | 1.39–1.47 | Anmeldung, Compliance-Bericht, Refactoring, Sitzungs-Timeout, Chronik, Backup-Modularisierung |
 
 ## Sprintübersicht
 
@@ -82,6 +82,7 @@ Dokumentation.
 | 1.44.x | 2026-07-30 bis 08-01 | Refactoring | Dashboard und Export modularisiert, Logger-Bereinigung, PDF-Druck |
 | 1.45.0 | 2026-08-02 | Sitzung | Automatische Abmeldung bei Inaktivität |
 | 1.46.0 | 2026-08-03 | Chronik | Entwicklungstagebuch im Servicebereich |
+| 1.47.0 | 2026-08-03 | Wartbarkeit | Backup-/Restore-Service modularisiert (ADR-0021) |
 
 ## Schwierigkeiten und ihre Lösung
 
@@ -153,6 +154,7 @@ umgestellt, überwacht durch ein CI-Tor.
 | 0018 | Qualitätstore in der CI |
 | 0019 | Refactoring-Plan für zu große Module |
 | 0020 | Providerneutrale Abmeldung bei Inaktivität |
+| 0021 | Modularisierung des Backup-/Restore-Service |
 
 ## Offene Punkte und Ausblick
 
@@ -165,6 +167,15 @@ umgestellt, überwacht durch ein CI-Tor.
 - **Azure-Produktivbetrieb.** Verbindungen sind im Entwicklungsmodus gesperrt.
 
 ## Sprintprotokoll
+
+### Sprint 05E – Modularisierung Backup-Service (1.47.0, 2026-08-03)
+
+Ziel: verhaltensneutrales Refactoring des Backup-/Restore-/Import-Service.
+Ergebnis: `backup-service.ts` (1083 Zeilen) aufgeteilt in dreizehn Module unter
+`src/lib/backup/`; die alte Datei bleibt als Fassade, die öffentliche
+Schnittstelle ist unverändert. Secret-Filterung und Rollback sind nun isoliert
+prüfbar. Absicherung ausschließlich über die bestehende Regressionssuite.
+Bewertung: Go.
 
 ### Sprint 05D – Entwicklungstagebuch (1.46.0, 2026-08-03)
 
