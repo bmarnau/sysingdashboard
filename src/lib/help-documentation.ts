@@ -659,7 +659,7 @@ const generatedTopics: HelpTopic[] = [
     title: "Backup-, Restore- und IO-Tests",
     category: "Service",
     keywords: ["Backup", "Restore", "Wiederherstellung", "Integrität", "Import", "Export", "ADR-0015"],
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-08-03",
     content: `## Zweck
 Nachweis, dass Daten exportiert, gesichert, wiederhergestellt und importiert werden können — automatisiert und mit Integritätsbericht.
 
@@ -671,7 +671,10 @@ Nachweis, dass Daten exportiert, gesichert, wiederhergestellt und importiert wer
 - \`src/__tests__/io/export.suite.test.ts\` — JSON/CSV, Schema, Dateiname, Sonderzeichen (UTF-8/Emoji), leere Daten, große Menge, Scope-Begrenzung.
 
 ## Restore-API
-\`restoreFromZip(bytes, { actor, mode })\` in \`src/lib/backup-service.ts\` — Modi: \`empty\` (leerer Zielzustand erforderlich), \`overwrite\` (ersetzt alle App-Keys), \`merge\` (nur Backup-Keys). Fehler rollen den Pre-Snapshot zurück; jedes Restore wird in \`backup:restoreLog\` (max. 100) protokolliert.
+\`restoreFromZip(bytes, { actor, mode })\` — importierbar über \`src/lib/backup-service.ts\` (stabile Fassade) oder direkt aus \`src/lib/backup/\`. Modi: \`empty\` (leerer Zielzustand erforderlich), \`overwrite\` (ersetzt alle App-Keys), \`merge\` (nur Backup-Keys). Fehler rollen den Pre-Snapshot zurück; jedes Restore wird in \`backup:restoreLog\` (max. 100) protokolliert.
+
+## Modulstruktur (seit 1.47.0, ADR-0021)
+Der frühere Einzelbaustein \`backup-service.ts\` (1083 Zeilen) ist in \`src/lib/backup/\` aufgeteilt: \`constants\`, \`storage\`, \`snapshot\`, \`templates\`, \`zip\`, \`integrity\`, \`audit\`, \`rollback\`, \`merge\`, \`restore\`, \`create-backup\`. Verhalten und öffentliche API sind unverändert; bestehende Importe funktionieren weiter.
 
 ## Integritätsbericht
 \`bun run test:backup:integrity\` erzeugt \`test-report/backup-integrity-report.{json,md}\` mit Kategorien (backup/restore/import/export), Anzahl geprüfter Fälle, Findings, Schweregrad und Empfehlung.

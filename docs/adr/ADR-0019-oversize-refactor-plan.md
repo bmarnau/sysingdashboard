@@ -33,9 +33,13 @@ Beide Findings werden befristet bis **2026-12-31** über `scripts/technical-repo
 | `src/components/ExportDialog.tsx` | 808 | 308 | erledigt — Akzeptanz entfernt (`ExportSortControls`, `ExportSummary`, `export-options`, `export-naming`, `useExportDialog`) |
 
 Verbleibende Oversize-Findings ohne Akzeptanz (Medium, kein Gate-Blocker):
-`src/lib/backup-service.ts` (1084), `src/components/ui/sidebar.tsx` (745, Fremdcode
-shadcn), `src/components/UserManualDialog.tsx` (731). Sie werden im nächsten
+`src/components/ui/sidebar.tsx` (745, Fremdcode shadcn) und
+`src/components/UserManualDialog.tsx` (731). Sie werden im nächsten
 Wartungssprint bewertet.
+
+`src/lib/backup-service.ts` (1084) ist in Sprint 05E erledigt: aufgeteilt nach
+`src/lib/backup/` (größtes Modul `restore.ts`), Fassade bleibt bestehen —
+siehe ADR-0021.
 
 ## Nachtrag Sprint 05B — Print-Architektur
 

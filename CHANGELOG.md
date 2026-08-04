@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.47.0 - 2026-08-03
+
+- **Backup-/Restore-Service modularisiert** (verhaltensneutral): `src/lib/backup-service.ts` (1083 Zeilen) aufgeteilt in `src/lib/backup/` mit `constants`, `storage`, `snapshot`, `templates`, `zip`, `integrity`, `audit`, `rollback`, `merge`, `restore`, `create-backup`, `types`, `index`.
+- Öffentliche API und alle bestehenden Importpfade unverändert — `src/lib/backup-service.ts` bleibt als reine Fassade erhalten.
+- Secret-Filterung (Allowlist/Denylist) und Rollback-Logik liegen jetzt in eigenen, isoliert prüfbaren Modulen; jedes Modul unter der 500-Zeilen-Schwelle.
+- Neue Entscheidung **ADR-0021**; ADR-0019 um den Umsetzungsstand ergänzt.
+
 ## 1.46.0 - 2026-08-03
 
 - **Entwicklungstagebuch** im Servicemenü (`Service → Entwicklungstagebuch…`): Vision, Managementübersicht, Zeitstrahl Idee→Prototyp→MVP, Sprintübersicht bis heute, Schwierigkeiten und Architekturentscheidungen — sichtbar mit Berechtigung `documentation.view`.
