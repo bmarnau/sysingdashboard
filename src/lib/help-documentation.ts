@@ -659,7 +659,7 @@ const generatedTopics: HelpTopic[] = [
     title: "Backup-, Restore- und IO-Tests",
     category: "Service",
     keywords: ["Backup", "Restore", "Wiederherstellung", "Integrität", "Import", "Export", "ADR-0015"],
-    lastUpdated: "2026-07-13",
+    lastUpdated: "2026-08-03",
     content: `## Zweck
 Nachweis, dass Daten exportiert, gesichert, wiederhergestellt und importiert werden können — automatisiert und mit Integritätsbericht.
 
