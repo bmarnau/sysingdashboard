@@ -1,11 +1,83 @@
 /**
- * Prüfungen: Konsistenz des Snapshots vor dem Packen und Validierung des
- * erzeugten Archivs nach dem Packen.
+ * Prüfungen: Konsistenz des Snapshots vor dem Packen, Validierung des
+ * erzeugten Archivs nach dem Packen sowie die manifestbasierte
+ * Eintragsprüfung des Backupformats 2.0.
  */
 
 import { strFromU8, unzipSync } from "fflate";
-import { PROJECT_NAME, looksSensitive, safeKeyFileName } from "./constants";
-import type { BackupCheckResult, BackupCheckStatus, Snapshot } from "./types";
+import { checksumOf } from "./checksum";
+import { PROJECT_NAME, contentTypeForPath, looksSensitive } from "./constants";
+import { loadManifest } from "./manifest";
+import type { BackupCheckResult, BackupCheckStatus, BackupManifestV2, Snapshot } from "./types";
+
+/**
+ * Prüft die Zuordnungstabelle des Manifests gegen den tatsächlichen
+ * Archivinhalt. Jede Abweichung ist ein harter Fehler — damit werden
+ * manipulierte Manifeste erkannt.
+ */
+export async function validateManifestEntries(
+  manifest: BackupManifestV2,
+  zip: Record<string, Uint8Array>,
+): Promise<BackupCheckResult> {
+  const msgs: string[] = [];
+  const entries = manifest.entries ?? [];
+
+  if (entries.length === 0) {
+    return { status: "failed", messages: ["Manifest enthält keine Einträge (`entries` leer)."] };
+  }
+
+  const seenLogical = new Set<string>();
+  const seenStorage = new Set<string>();
+  const seenPath = new Set<string>();
+
+  for (const e of entries) {
+    if (seenLogical.has(e.logicalName)) {
+      msgs.push(`Doppelter logischer Name im Manifest: ${e.logicalName}`);
+    }
+    seenLogical.add(e.logicalName);
+
+    if (e.storageKey !== null) {
+      if (seenStorage.has(e.storageKey)) {
+        msgs.push(`Doppelter Storage-Key im Manifest: ${e.storageKey}`);
+      }
+      seenStorage.add(e.storageKey);
+    }
+
+    if (seenPath.has(e.path)) {
+      msgs.push(`Doppelte Speicheradresse im Manifest: ${e.path}`);
+    }
+    seenPath.add(e.path);
+
+    const bytes = zip[e.path];
+    if (!bytes) {
+      msgs.push(`Im Manifest gelistete Datei fehlt im Archiv: ${e.path}`);
+      continue;
+    }
+    if (bytes.length !== e.size) {
+      msgs.push(`Größe weicht ab für ${e.path}: erwartet ${e.size}, gefunden ${bytes.length}.`);
+    }
+    const actual = await checksumOf(bytes);
+    if (actual !== e.checksum) {
+      msgs.push(`Prüfsumme weicht ab für ${e.path}.`);
+    }
+    const expectedType = contentTypeForPath(e.path);
+    if (e.contentType !== expectedType) {
+      msgs.push(
+        `Dateityp unplausibel für ${e.path}: Manifest meldet ${e.contentType}, erwartet ${expectedType}.`,
+      );
+    }
+  }
+
+  for (const path of Object.keys(zip)) {
+    if (path === "manifest.json") continue;
+    if (!seenPath.has(path)) {
+      msgs.push(`Datei ohne Manifest-Eintrag im Archiv: ${path}`);
+    }
+  }
+
+  return msgs.length > 0 ? { status: "failed", messages: msgs } : { status: "ok", messages: [] };
+}
+
 
 export function runConsistencyCheck(snapshot: Snapshot): BackupCheckResult {
   const msgs: string[] = [];
