@@ -110,5 +110,5 @@ export async function loadManifest(zip: Record<string, Uint8Array>): Promise<Loa
     entries,
   };
 
-  return { manifest, migrated: !hasEntries, sourceVersion };
+  return { manifest, migrated: !declaresEntries, sourceVersion };
 }
