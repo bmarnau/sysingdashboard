@@ -84,14 +84,20 @@ export async function loadManifest(zip: Record<string, Uint8Array>): Promise<Loa
     typeof parsed.createdAt === "string" ? parsed.createdAt : new Date().toISOString();
 
   const rawEntries = parsed.entries;
-  const hasEntries = Array.isArray(rawEntries) && rawEntries.length > 0;
-  if (hasEntries && !(rawEntries as unknown[]).every(isEntry)) {
+  // Nur ein komplett fehlendes `entries` gilt als Altformat. Ein vorhandenes,
+  // aber leeres Feld ist ein defektes v2-Manifest und wird abgewiesen.
+  const declaresEntries = Array.isArray(rawEntries);
+  if (declaresEntries && (rawEntries as unknown[]).length === 0) {
+    throw new Error("Manifest enthält keine Einträge (`entries` leer).");
+  }
+  if (declaresEntries && !(rawEntries as unknown[]).every(isEntry)) {
     throw new Error("Manifest enthält ungültige Einträge in `entries`.");
   }
 
-  const entries = hasEntries
+  const entries = declaresEntries
     ? (rawEntries as BackupEntryV2[])
     : await synthesizeEntries(zip, createdAt);
+
 
   const manifest: BackupManifestV2 = {
     version: MANIFEST_VERSION as "2.0",
