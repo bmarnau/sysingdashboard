@@ -11,10 +11,12 @@ import { strFromU8, unzipSync } from "fflate";
 import { logger } from "../logger";
 import { BackupError } from "../errors";
 import { writeRestoreLog } from "./audit";
-import { PROJECT_NAME, looksSensitive } from "./constants";
+import { EXPECTED_MANIFEST_MAJOR, PROJECT_NAME, looksSensitive } from "./constants";
+import { validateManifestEntries } from "./integrity";
+import { loadManifest, type LoadedManifest } from "./manifest";
 import { applyRestoreEntries, collectTouchedKeys, type DesiredEntry } from "./merge";
 import { listCurrentAppKeys, registerSnapshot, rollbackSnapshot, takeSnapshotOf } from "./rollback";
-import type { RestoreOptions, RestoreResult, Snapshot } from "./types";
+import type { RestoreOptions, RestoreResult } from "./types";
 
 function parseSemverMajor(v: string): number {
   const m = /^(\d+)/.exec(v);
