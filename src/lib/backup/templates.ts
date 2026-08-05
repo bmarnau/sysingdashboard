@@ -8,8 +8,11 @@ Dieses ZIP enthält ein vollständiges Daten-Backup des Systemingenieur-Dashboar
 
 ## Inhalt
 
-- \`manifest.json\` – Metadaten (Zeitstempel, Versions-Info, Schlüsselzahl)
-- \`data/<key>.json\` – jeder gesicherte localStorage-Eintrag als eigene Datei
+- \`manifest.json\` – Metadaten und die vollständige Zuordnungstabelle
+  \`entries[]\` (logischer Name, Ziel-Schlüssel, Speicheradresse, SHA-256-Prüfsumme,
+  Größe, Dateityp). Nur darüber erfolgt die Wiederherstellung.
+- \`data/…\` – die gesicherten localStorage-Einträge; die Dateinamen sind reine
+  Speicheradressen ohne fachliche Bedeutung
 - \`archive-index.json\` – Index der lokalen Export-Ablage (ohne Blobs)
 - \`INSTALL.md\` – Anleitung zur Wiederherstellung und zum Quellcode-Export
 - \`.env.example\` – Platzhalter für umgebungsspezifische Werte
@@ -33,8 +36,9 @@ Zum Wiederherstellen können sie in einem neuen Dashboard über die geplante
 
 1. Öffnen Sie das Dashboard in Ihrem Browser.
 2. Öffnen Sie die DevTools (F12) → Application → Local Storage.
-3. Für jede Datei in \`data/\`: Schlüssel = Dateiname ohne \`.json\`,
-   Wert = Dateiinhalt.
+3. Für jeden Eintrag in \`manifest.json\` → \`entries[]\` mit gesetztem
+   \`storageKey\`: Schlüssel = \`storageKey\`, Wert = Inhalt der Datei unter
+   \`path\`. Der Dateiname selbst ist bedeutungslos.
 4. Seite neu laden.
 
 ## 2. Quellcode für eigenen Webserver

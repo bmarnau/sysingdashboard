@@ -42,16 +42,56 @@ export interface BackupRecord extends BackupRecordMeta {
   bytes: Uint8Array;
 }
 
+/**
+ * Ein Eintrag im Manifest 2.0. Die fachliche Zuordnung erfolgt ausschließlich
+ * über dieses Objekt — der Pfad im Archiv ist reine Speicheradresse.
+ */
+export interface BackupEntryV2 {
+  /** Fachlicher Name des Inhalts (eindeutig im Archiv). */
+  logicalName: string;
+  /** Ziel-Schlüssel im localStorage; `null` für reine Dokumente. */
+  storageKey: string | null;
+  /** Speicheradresse innerhalb des ZIP. */
+  path: string;
+  /** `sha256:<hex>` über den unkomprimierten Dateiinhalt. */
+  checksum: string;
+  /** Größe in Byte (unkomprimiert). */
+  size: number;
+  contentType: string;
+  createdAt: string;
+  description?: string;
+}
+
+/** Manifest-Kopf ohne Einträge — gemeinsame Basis von v1 und v2. */
+export interface BackupManifestBase {
+  version: string;
+  project: string;
+  createdAt: string;
+  keyCount: number;
+  excludedKeys: string[];
+  archiveItemCount: number;
+  note: string;
+}
+
+/** Manifest der Version 2.0 mit vollständiger Zuordnungstabelle. */
+export interface BackupManifestV2 extends BackupManifestBase {
+  version: "2.0";
+  entries: BackupEntryV2[];
+}
+
+/** Historisches Manifest (nur noch lesend, wird intern migriert). */
+export interface BackupManifestV1 {
+  version: number | string;
+  project: string;
+  createdAt: string;
+  keyCount: number;
+  excludedKeys: string[];
+  archiveItemCount: number;
+  note: string;
+}
+
 export interface Snapshot {
-  manifest: {
-    version: 1;
-    project: string;
-    createdAt: string;
-    keyCount: number;
-    excludedKeys: string[];
-    archiveItemCount: number;
-    note: string;
-  };
+  manifest: BackupManifestBase;
   data: Record<string, unknown>;
   archive: Array<{
     id: string;

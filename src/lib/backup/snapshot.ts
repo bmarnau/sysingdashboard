@@ -3,7 +3,7 @@
  */
 
 import { ExportArchive } from "../export-archive";
-import { PROJECT_NAME, isAppKey, looksSensitive } from "./constants";
+import { MANIFEST_VERSION, PROJECT_NAME, isAppKey, looksSensitive } from "./constants";
 import type { Snapshot } from "./types";
 
 export async function collectSnapshot(): Promise<Snapshot> {
@@ -50,7 +50,7 @@ export async function collectSnapshot(): Promise<Snapshot> {
 
   return {
     manifest: {
-      version: 1,
+      version: MANIFEST_VERSION,
       project: PROJECT_NAME,
       createdAt: new Date().toISOString(),
       keyCount: Object.keys(data).length,

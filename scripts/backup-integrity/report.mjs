@@ -106,7 +106,7 @@ function main() {
   md.push("");
   md.push("## Bekannte Einschränkungen");
   md.push(
-    "- **Keine Prüfsumme im Manifest** — Integrität rein über Struktur/Manifest/Nachvalidierung, siehe ADR-0015.",
+    "- **Prüfsummen im Manifest** — seit Backupformat 2.0 trägt jeder Eintrag SHA-256, Größe und Dateityp; die Zuordnung erfolgt ausschließlich über `entries[]` (ADR-0022). Archive im Altformat werden rein lesend migriert.",
   );
   md.push(
     "- **PDF-Export** wird in dieser Suite nicht semantisch validiert (nur Struktur-Tests der Text-Exports); der PDF-Pfad ist über E2E abgedeckt.",

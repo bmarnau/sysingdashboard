@@ -66,3 +66,44 @@ Jede neue Migration:
   (siehe [ADR-0005](./ADR/0005-frontend-logger-no-sentry.md)).
 - **Kein Delta-Format** — alle Exports sind Full-Snapshots. Delta-Sync ist
   offenes Thema für später (CRDT-Kandidat).
+
+## Backup-Archiv — Manifest 2.0
+
+Das ZIP-Backup (Service → Backup) nutzt ein eigenes, vom JSON-Exportschema
+unabhängiges Format. Seit Dashboard 1.48.0 gilt Manifest-Version `2.0`
+(ADR-0022).
+
+```jsonc
+{
+  "version": "2.0",
+  "project": "dashboard",
+  "createdAt": "2026-08-05T10:00:00.000Z",
+  "keyCount": 12,
+  "excludedKeys": ["engineer-dashboard:password_token"],
+  "archiveItemCount": 3,
+  "note": "…",
+  "entries": [
+    {
+      "logicalName": "storage:engineer-dashboard:profile",
+      "storageKey": "engineer-dashboard:profile", // null bei reinen Dokumenten
+      "path": "data/engineer-dashboard_profile.json", // reine Speicheradresse
+      "checksum": "sha256:…",
+      "size": 128,
+      "contentType": "application/json",
+      "createdAt": "2026-08-05T10:00:00.000Z",
+      "description": "optional"
+    }
+  ]
+}
+```
+
+Regeln:
+
+- `entries[]` ist die **einzige** fachliche Zuordnung. `path` trägt keine
+  Bedeutung und darf frei gewählt werden.
+- `logicalName`, `storageKey` (sofern nicht `null`) und `path` sind jeweils
+  eindeutig.
+- Jede Datei im Archiv außer `manifest.json` besitzt genau einen Eintrag.
+- Abweichende Prüfsumme, Größe oder Dateityp bricht den Restore ab.
+- Archive ohne `entries[]` (Format 1) werden beim Lesen migriert und mit einer
+  Warnung im Restore-Protokoll versehen; sie werden nicht umgeschrieben.

@@ -91,3 +91,19 @@ export function looksSensitive(key: string, value: string): boolean {
 export function safeKeyFileName(key: string): string {
   return key.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
+
+/** Aktuelle Manifest-Version (Backupformat 2.0). */
+export const MANIFEST_VERSION = "2.0";
+
+/** MAJOR-Version, die dieser Client schreibt und primär versteht. */
+export const EXPECTED_MANIFEST_MAJOR = 2;
+
+/** Speicherpräfix der Datendateien im Archiv. */
+export const DATA_DIR = "data/";
+
+/** Ableitung des Inhaltstyps aus der Speicheradresse. */
+export function contentTypeForPath(path: string): string {
+  if (path.endsWith(".json")) return "application/json";
+  if (path.endsWith(".md")) return "text/markdown";
+  return "text/plain";
+}

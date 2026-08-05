@@ -19,6 +19,8 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 | 0009 | [Zentrale Testinstanz — Vitest-Projects + Playwright + MSW](./0009-central-test-instance.md) | Accepted |
 | 0010 | [Technical-Debt-Hybrid-Ansatz](./0010-tech-debt-hybrid.md) | Accepted |
 | 0011 | [API-/Endpoint-Contract-Tests via Registry](./0011-api-endpoint-contract-tests.md) | Accepted |
+| 0021 | [Modularisierung des Backup-/Restore-Service](./0021-backup-service-modularisierung.md) | Accepted |
+| 0022 | [Backupformat 2.0 — manifestbasierte Zuordnung](./0022-backupformat-2.md) | Accepted |
 
 ## Template
 

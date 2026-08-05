@@ -1,17 +1,12 @@
 {
   "new": [
-    "td-layer-9275d7a1",
-    "td-oversize-92e5643a"
+    "td-layer-d1e551ce"
   ],
   "resolved": [
-    "td-console-375dfc5b",
-    "td-console-9771f164",
-    "td-console-993be125",
-    "td-console-f7820fc7",
-    "td-oversize-26e43c0a",
-    "td-layer-e0ac1bea"
+    "td-layer-9275d7a1",
+    "td-oversize-789d61fa"
   ],
   "persistent": 57,
-  "previousVersion": "1.42.1",
-  "currentVersion": "1.44.0"
+  "previousVersion": "1.44.0",
+  "currentVersion": "1.48.0"
 }

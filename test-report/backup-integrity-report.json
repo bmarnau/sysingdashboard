@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-14T03:23:48.931Z",
+  "generatedAt": "2026-08-05T03:17:51.071Z",
   "summary": {
-    "checked": 48,
-    "passed": 48,
+    "checked": 59,
+    "passed": 59,
     "failed": 0,
     "restorable": true
   },
@@ -28,7 +28,7 @@
       "findings": []
     },
     "other": {
-      "passed": 1,
+      "passed": 12,
       "failed": 0,
       "findings": []
     }

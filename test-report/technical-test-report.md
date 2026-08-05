@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `b23cc3d0-6801-4450-a2ff-9ce8bedb0d19` · Version 5 · Generiert: 2026-08-03T03:01:21.164Z_
+_Report ID: `65e565e0-a9ff-4fb7-84e7-52e9bc3ed248` · Version 6 · Generiert: 2026-08-05T03:17:59.362Z_
 
 ## 1. Prüfidentität
-- Report-ID: `b23cc3d0-6801-4450-a2ff-9ce8bedb0d19`
-- Reportversion: **5**
-- Vorgängerbericht: `b3533f7f-07ac-488a-925d-1e74240306ee`
+- Report-ID: `65e565e0-a9ff-4fb7-84e7-52e9bc3ed248`
+- Reportversion: **6**
+- Vorgängerbericht: `b23cc3d0-6801-4450-a2ff-9ce8bedb0d19`
 - Schema: `2.0.0`
-- Dashboard-Version: **1.46.0**
-- Commit: `a1e9f2e`
+- Dashboard-Version: **1.48.0**
+- Commit: `5edcaf6`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: —
-- Testzeit: 2026-08-03T03:01:21.057Z
+- Testzeit: 2026-08-05T03:17:59.259Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:88673291e6d95ed414aac99a1856ee4c55aa58d4c88fa1a14da7ef8d1ce6081e`
+- Integrität: `sha256:90030f22710742f5d2b9fc102b356ad72628197568e73389f1cb5dabdd1ef6cc`
 
 ## 2. Freigabestufe
 - Vorschlag: **production**
@@ -26,7 +26,7 @@ _Report ID: `b23cc3d0-6801-4450-a2ff-9ce8bedb0d19` · Version 5 · Generiert: 20
 **bestanden mit Findings**
 
 ## 4. Executive Summary
-- Findings gesamt: 68 (CRITICAL 0 · HIGH 0 · MEDIUM 9 · LOW 43 · akzeptiert 9).
+- Findings gesamt: 67 (CRITICAL 0 · HIGH 0 · MEDIUM 8 · LOW 43 · akzeptiert 9).
 - Freigabeempfehlung (Legacy): **Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
 
 ## 5. Prüfbereiche (deklarativ)
@@ -113,11 +113,11 @@ _Report ID: `b23cc3d0-6801-4450-a2ff-9ce8bedb0d19` · Version 5 · Generiert: 20
 - **Empfehlung**: Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.
 - **Aufwand**: M · **Reihenfolge**: high-security · **Status**: accepted
 
-### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (979 Zeilen)
+### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (989 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Klassifikation**: accepted-debt · **Gate-relevant**: nein
 - **Quelle**: auto (akzeptiert)
-- **Beschreibung**: Die Datei hat 979 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 989 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/routes/_authenticated/dashboard.tsx
@@ -187,18 +187,6 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Zod-Schema am Handler-Eingang ergänzen und bei Fehler 400 zurückgeben.
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-layer-9275d7a1 · MEDIUM · UI-Direktzugriff auf Persistenz-Schicht
-- **Kategorie**: Architektur / Architektur
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Datei importiert ein verbotenes Modul: from "@/lib/store/dashboard-persistence"
-- **Ursache**: Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.
-- **Auswirkung**: Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.
-- **Komponenten**: src/routes/_authenticated/dashboard.tsx:89
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
 ### td:td-layer-b432b1b9 · MEDIUM · UI-Direktzugriff auf Azure-Interna
 - **Kategorie**: Architektur / Architektur
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
@@ -209,6 +197,18 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Komponenten**: src/components/azure/AzureActionsPanel.tsx:7
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Ausschließlich `@/lib/azure/azure-service` importieren.
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
+
+### td:td-layer-d1e551ce · MEDIUM · UI-Direktzugriff auf Persistenz-Schicht
+- **Kategorie**: Architektur / Architektur
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Datei importiert ein verbotenes Modul: from "@/lib/store/dashboard-persistence"
+- **Ursache**: Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.
+- **Auswirkung**: Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.
+- **Komponenten**: src/routes/_authenticated/dashboard.tsx:92
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
 
 ### td:td-layer-e4fb0e64 · MEDIUM · UI-Direktzugriff auf Azure-Interna
@@ -231,18 +231,6 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/ui/sidebar.tsx
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
-- **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-oversize-789d61fa · MEDIUM · Modul überschreitet Größenschwelle (1084 Zeilen)
-- **Kategorie**: Architektur / Architektur
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Die Datei hat 1084 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
-- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
-- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
-- **Komponenten**: src/lib/backup-service.ts
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
@@ -884,14 +872,14 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Aufwand**: S · **Reihenfolge**: test-gap · **Status**: open
 
 ## 8. Sortierte Maßnahmenliste
-- **architecture** (55): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-layer-9275d7a1, td:td-layer-b432b1b9, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-789d61fa, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-92e5643a, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-43084e7a, td:td-console-665c1d8d, td:td-console-6c701bbd, td:td-console-74bd3646
+- **architecture** (54): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-layer-b432b1b9, td:td-layer-d1e551ce, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-92e5643a, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-43084e7a, td:td-console-665c1d8d, td:td-console-6c701bbd, td:td-console-74bd3646
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 9. Vergleich zum Vorgängerbericht
-- Neu: 0
-- Behoben: 0
+- Neu: 1
+- Behoben: 2
 - Verschlechtert: 0
-- Unverändert: 68
+- Unverändert: 66
 - Wieder aufgetreten: 0
 - Schweregrad geändert: 0
 - Gate-Relevanz geändert: 0

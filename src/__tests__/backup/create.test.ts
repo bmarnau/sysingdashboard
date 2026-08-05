@@ -44,7 +44,19 @@ describe("BackupService.createBackup", () => {
     }
     const manifest = JSON.parse(entries["manifest.json"]);
     expect(manifest.project).toBe("dashboard");
-    expect(manifest.version).toBe(1);
+    expect(manifest.version).toBe("2.0");
+    expect(Array.isArray(manifest.entries)).toBe(true);
+    // Jede Datei im Archiv (außer dem Manifest selbst) ist im Manifest gelistet.
+    const listed = new Set(manifest.entries.map((e: { path: string }) => e.path));
+    for (const path of Object.keys(entries)) {
+      if (path === "manifest.json") continue;
+      expect(listed.has(path), `${path} fehlt im Manifest`).toBe(true);
+    }
+    // Storage-Keys stehen unmaskiert im Manifest.
+    const keys = manifest.entries
+      .map((e: { storageKey: string | null }) => e.storageKey)
+      .filter(Boolean);
+    expect(keys).toContain("engineer-dashboard:profile");
     expect(typeof manifest.createdAt).toBe("string");
     expect(manifest.keyCount).toBeGreaterThanOrEqual(3);
   });
@@ -55,8 +67,8 @@ describe("BackupService.createBackup", () => {
     const rec = await BackupService.get(res.record!.id);
     const buf = new Uint8Array(await rec!.blob.arrayBuffer());
     const entries = readZipEntries(buf);
-    const rbacFile = Object.keys(entries).find((p) =>
-      p.startsWith("data/") && p.includes("user-management_assignments"),
+    const rbacFile = Object.keys(entries).find(
+      (p) => p.startsWith("data/") && p.includes("user-management_assignments"),
     );
     expect(rbacFile, "RBAC-Assignments-Datei fehlt").toBeTruthy();
   });
@@ -87,9 +99,7 @@ describe("BackupService.createBackup", () => {
     const rec = await BackupService.get(res.record!.id);
     const buf = new Uint8Array(await rec!.blob.arrayBuffer());
     const entries = readZipEntries(buf);
-    const sensitiveHit = Object.keys(entries).some((p) =>
-      p.toLowerCase().includes("password"),
-    );
+    const sensitiveHit = Object.keys(entries).some((p) => p.toLowerCase().includes("password"));
     expect(sensitiveHit).toBe(false);
     const manifest = JSON.parse(entries["manifest.json"]);
     expect(manifest.excludedKeys).toContain("engineer-dashboard:password_token");

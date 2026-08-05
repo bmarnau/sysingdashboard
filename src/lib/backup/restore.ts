@@ -11,10 +11,12 @@ import { strFromU8, unzipSync } from "fflate";
 import { logger } from "../logger";
 import { BackupError } from "../errors";
 import { writeRestoreLog } from "./audit";
-import { PROJECT_NAME, looksSensitive } from "./constants";
+import { EXPECTED_MANIFEST_MAJOR, PROJECT_NAME, looksSensitive } from "./constants";
+import { validateManifestEntries } from "./integrity";
+import { loadManifest, type LoadedManifest } from "./manifest";
 import { applyRestoreEntries, collectTouchedKeys, type DesiredEntry } from "./merge";
 import { listCurrentAppKeys, registerSnapshot, rollbackSnapshot, takeSnapshotOf } from "./rollback";
-import type { RestoreOptions, RestoreResult, Snapshot } from "./types";
+import type { RestoreOptions, RestoreResult } from "./types";
 
 function parseSemverMajor(v: string): number {
   const m = /^(\d+)/.exec(v);
@@ -80,26 +82,23 @@ export async function restoreFromZip(
     return fail(`ZIP konnte nicht entpackt werden: ${(err as Error).message}`);
   }
 
-  // 2. Pflichtdateien
-  const required = ["manifest.json"];
-  for (const r of required) {
-    if (!entries[r]) return fail(`Pflichtdatei fehlt: ${r}`);
-  }
-
-  // 3. Manifest parsen und prüfen
-  let manifest: Snapshot["manifest"];
+  // 2. Manifest laden (inkl. stiller Migration von Altformaten)
+  let loaded: LoadedManifest;
   try {
-    manifest = JSON.parse(strFromU8(entries["manifest.json"])) as Snapshot["manifest"];
+    loaded = await loadManifest(entries);
   } catch (err) {
-    return fail(`Manifest ist beschädigt: ${(err as Error).message}`);
+    return fail((err as Error).message);
   }
+  const manifest = loaded.manifest;
+
+  // 3. Herkunft und Version prüfen
   if (manifest.project !== expectedProject) {
     return fail(
       `Projektname im Manifest ("${manifest.project}") passt nicht zu "${expectedProject}".`,
     );
   }
-  const localMajor = parseSemverMajor(String(manifest.version ?? "1"));
-  const expectedMajor = 1;
+  const localMajor = parseSemverMajor(loaded.sourceVersion);
+  const expectedMajor = EXPECTED_MANIFEST_MAJOR;
   if (Number.isFinite(localMajor)) {
     if (localMajor > expectedMajor && !allowNewer) {
       return fail(
@@ -113,29 +112,32 @@ export async function restoreFromZip(
     }
     if (localMajor < expectedMajor) {
       warnings.push(
-        `Älteres Schema (MAJOR ${localMajor}) — nur additive Wiederherstellung möglich.`,
+        `Älteres Schema (MAJOR ${localMajor}) — Einträge wurden intern auf Format 2.0 migriert.`,
       );
     }
   }
+  if (loaded.migrated) {
+    warnings.push(
+      "Manifest ohne `entries[]` — Zuordnung wurde aus den Speicheradressen abgeleitet.",
+    );
+  }
 
-  // 4. Datendateien einsammeln
-  const dataEntries = Object.entries(entries).filter(([p]) => p.startsWith("data/"));
-  if (dataEntries.length === 0) {
+  // 4. Zuordnungstabelle gegen den Archivinhalt prüfen
+  const entryCheck = await validateManifestEntries(manifest, entries);
+  if (entryCheck.status === "failed") {
+    return fail(`Manifest-Prüfung fehlgeschlagen: ${entryCheck.messages.join("; ")}`);
+  }
+
+  // 5. Restoreplan ausschließlich aus dem Manifest bilden
+  const restorable = manifest.entries.filter((e) => e.storageKey !== null);
+  if (restorable.length === 0) {
     return fail("Backup enthält keine Datendateien unter data/.");
   }
 
-  const desiredKeyValues: DesiredEntry[] = [];
-  for (const [path, u8] of dataEntries) {
-    // Dateiname → Storage-Key rekonstruieren. Wir verlassen uns auf das
-    // Manifest, wenn der Original-Key nicht mehr rekonstruierbar ist.
-    const safe = path.replace(/^data\//, "").replace(/\.json$/, "");
-    // Der ursprüngliche Key wird beim Backup mit `[^a-zA-Z0-9._-] → _`
-    // maskiert. Für eine perfekte Umkehr müsste er im Manifest stehen —
-    // additiv gepflegt in `manifest.entries[]` (nicht rückwärtskompatibel
-    // erzwungen). Ohne diese Info nutzen wir den maskierten Namen 1:1;
-    // App-Keys sind ohnehin ohne Sonderzeichen definiert (Prefix-basiert).
-    desiredKeyValues.push({ key: safe, raw: strFromU8(u8) });
-  }
+  const desiredKeyValues: DesiredEntry[] = restorable.map((e) => ({
+    key: e.storageKey as string,
+    raw: strFromU8(entries[e.path]),
+  }));
   counts.keysConsidered = desiredKeyValues.length;
 
   // 5. Modus-abhängige Vor-Bedingungen
