@@ -168,6 +168,17 @@ umgestellt, überwacht durch ein CI-Tor.
 
 ## Sprintprotokoll
 
+### Sprint 06A – Backupformat 2.0 (1.48.0, 2026-08-05)
+
+Ziel: Zuordnung der Backup-Inhalte vom Dateinamen lösen.
+Ergebnis: Manifest 2.0 mit `entries[]` (Storage-Key, Speicheradresse,
+SHA-256-Prüfsumme, Größe, Dateityp). Restore arbeitet ausschließlich über das
+Manifest; Originalschlüssel werden unmaskiert zurückgeschrieben. Manipulierte
+Archive werden vor dem ersten Schreibvorgang abgelehnt. Altformate bleiben über
+eine rein lesende Migration einspielbar. ADR-0022.
+Bewertung: Go — Voraussetzung für spätere Speicherziele (Objektspeicher,
+Mandantenablagen) ist damit geschaffen.
+
 ### Sprint 05E – Modularisierung Backup-Service (1.47.0, 2026-08-03)
 
 Ziel: verhaltensneutrales Refactoring des Backup-/Restore-/Import-Service.
