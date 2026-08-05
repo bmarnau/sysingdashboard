@@ -119,7 +119,10 @@ export function runConsistencyCheck(snapshot: Snapshot): BackupCheckResult {
   return { status, messages: msgs };
 }
 
-export function validateZip(bytes: Uint8Array, snapshot: Snapshot): BackupCheckResult {
+export async function validateZip(
+  bytes: Uint8Array,
+  snapshot: Snapshot,
+): Promise<BackupCheckResult> {
   const msgs: string[] = [];
   let status: BackupCheckStatus = "ok";
 
@@ -146,31 +149,43 @@ export function validateZip(bytes: Uint8Array, snapshot: Snapshot): BackupCheckR
     }
   }
 
-  // Datenkeys vollständig?
-  const expected = Object.keys(snapshot.data).length;
-  const actual = Object.keys(entries).filter((p) => p.startsWith("data/")).length;
-  if (expected !== actual) {
-    msgs.push(`Erwartet ${expected} Datendateien, im ZIP gefunden: ${actual}.`);
-    status = "failed";
-  }
-
-  // Manifest gegenprüfen
+  // Manifest laden und Zuordnungstabelle prüfen
+  let manifest: BackupManifestV2 | null = null;
   try {
-    const m = JSON.parse(strFromU8(entries["manifest.json"]));
-    if (m.project !== PROJECT_NAME) {
+    manifest = (await loadManifest(entries)).manifest;
+    if (manifest.project !== PROJECT_NAME) {
       msgs.push("Projektname im Manifest stimmt nicht überein.");
       status = "failed";
     }
-  } catch {
-    msgs.push("Manifest konnte nicht geparst werden.");
+  } catch (err) {
+    msgs.push(`Manifest konnte nicht gelesen werden: ${(err as Error).message}`);
     status = "failed";
   }
 
-  // Ausgeschlossene Schlüssel dürfen wirklich nicht enthalten sein
-  for (const ex of snapshot.manifest.excludedKeys) {
-    if (entries[`data/${safeKeyFileName(ex)}.json`]) {
-      msgs.push(`Sensibler Schlüssel doch im Backup: ${ex}`);
+  if (manifest) {
+    const entryCheck = await validateManifestEntries(manifest, entries);
+    if (entryCheck.status === "failed") {
+      msgs.push(...entryCheck.messages);
       status = "failed";
+    }
+
+    // Datenkeys vollständig?
+    const expected = Object.keys(snapshot.data).length;
+    const actual = manifest.entries.filter((e) => e.storageKey !== null).length;
+    if (expected !== actual) {
+      msgs.push(`Erwartet ${expected} Datendateien, im Manifest gefunden: ${actual}.`);
+      status = "failed";
+    }
+
+    // Ausgeschlossene Schlüssel dürfen wirklich nicht enthalten sein
+    const storageKeys = new Set(
+      manifest.entries.map((e) => e.storageKey).filter((k): k is string => k !== null),
+    );
+    for (const ex of snapshot.manifest.excludedKeys) {
+      if (storageKeys.has(ex)) {
+        msgs.push(`Sensibler Schlüssel doch im Backup: ${ex}`);
+        status = "failed";
+      }
     }
   }
 
@@ -183,3 +198,4 @@ export function validateZip(bytes: Uint8Array, snapshot: Snapshot): BackupCheckR
 
   return { status, messages: msgs };
 }
+
