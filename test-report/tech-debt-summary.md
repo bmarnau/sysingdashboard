@@ -10,7 +10,7 @@
 | Medium | 7 |
 | Low + Info | 50 |
 | Neu seit Vorlauf | 1 |
-| Behoben seit Vorlauf | 3 |
+| Behoben seit Vorlauf | 2 |
 
 ## Top-10 nach Priorität
 
