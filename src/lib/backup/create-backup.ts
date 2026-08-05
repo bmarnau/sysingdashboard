@@ -44,12 +44,12 @@ export const BackupService = {
       }
 
       // 3. ZIP bauen
-      const bytes = buildZip(snapshot);
+      const bytes = await buildZip(snapshot);
       sizeBytes = bytes.length;
       const blob = new Blob([new Uint8Array(bytes)], { type: "application/zip" });
 
       // 4. ZIP validieren
-      zipValidation = validateZip(bytes, snapshot);
+      zipValidation = await validateZip(bytes, snapshot);
       if (zipValidation.status === "failed") {
         throw new Error("ZIP-Validierung fehlgeschlagen: " + zipValidation.messages.join("; "));
       }
