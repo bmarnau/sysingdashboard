@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.48.0 - 2026-08-05
+
+- **Backupformat 2.0**: `manifest.json` enthält jetzt eine vollständige Zuordnungstabelle `entries[]` (logischer Name, Storage-Key, Speicheradresse, SHA-256-Prüfsumme, Größe, Dateityp, Zeitstempel).
+- Dateinamen im Archiv haben keine fachliche Bedeutung mehr — die Wiederherstellung arbeitet ausschließlich über das Manifest; Originalschlüssel werden unmaskiert exakt zurückgeschrieben.
+- Manifestbasierte Integritätsprüfung: fehlende oder verwaiste Dateien, falsche Prüfsummen, falsche Größen, unplausible Dateitypen sowie doppelte Storage-Keys/logische Namen brechen den Restore vor jedem Schreibvorgang ab.
+- Ältere Backups (Manifest ohne `entries[]`) bleiben lesbar; die Zuordnung wird intern migriert und als Warnung im Restore-Protokoll ausgewiesen.
+- Neue Module `src/lib/backup/checksum.ts` und `src/lib/backup/manifest.ts`; ADR-0022 ergänzt. Handbuchkapitel „Backup" aktualisiert.
+
 ## 1.47.0 - 2026-08-03
 
 - **Backup-/Restore-Service modularisiert** (verhaltensneutral): `src/lib/backup-service.ts` (1083 Zeilen) aufgeteilt in `src/lib/backup/` mit `constants`, `storage`, `snapshot`, `templates`, `zip`, `integrity`, `audit`, `rollback`, `merge`, `restore`, `create-backup`, `types`, `index`.
