@@ -3,7 +3,7 @@
  */
 
 import { ExportArchive } from "../export-archive";
-import { PROJECT_NAME, isAppKey, looksSensitive } from "./constants";
+import { MANIFEST_VERSION, PROJECT_NAME, isAppKey, looksSensitive } from "./constants";
 import type { Snapshot } from "./types";
 
 export async function collectSnapshot(): Promise<Snapshot> {
