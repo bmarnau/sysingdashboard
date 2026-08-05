@@ -50,7 +50,7 @@ export async function collectSnapshot(): Promise<Snapshot> {
 
   return {
     manifest: {
-      version: 1,
+      version: MANIFEST_VERSION,
       project: PROJECT_NAME,
       createdAt: new Date().toISOString(),
       keyCount: Object.keys(data).length,
