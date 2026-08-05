@@ -866,13 +866,31 @@ Manche Extensions (Dashlane, LastPass, Grammarly) injizieren \`data-*\`-Attribut
     category: "Service",
     route: "/",
     component: "BackupDialog",
-    keywords: ["Backup", "Sicherung", "ZIP", "Download", "Wiederherstellung", "Quellcode"],
-    lastUpdated: "2026-06-18",
+    keywords: [
+      "Backup",
+      "Sicherung",
+      "ZIP",
+      "Download",
+      "Wiederherstellung",
+      "Quellcode",
+      "Manifest",
+      "Backupformat 2.0",
+      "Prüfsumme",
+    ],
+    lastUpdated: "2026-08-05",
     content: `## Daten-Backup
 Das Dashboard erzeugt einmal pro Kalendertag automatisch ein vollständiges ZIP-Backup aller Dashboard-Daten (Engineure, Arbeitszeitmodelle, Benutzer, Einstellungen, Berichte, Export-Ablage-Index).
 
 ## Manuelles Backup
 Über "Backup jetzt erstellen" wird sofort ein neues Backup erzeugt. Vor dem Packen läuft eine Konsistenzprüfung, nach dem Packen wird das ZIP testweise entpackt und validiert.
+
+## Backupformat 2.0 (Manifest)
+Seit Version 1.48.0 schreibt das Dashboard Archive im **Format 2.0**. Das \`manifest.json\` enthält eine vollständige Zuordnungstabelle \`entries[]\`; jeder Eintrag beschreibt eine Datei mit logischem Namen, Ziel-Schlüssel (\`storageKey\`), Speicheradresse im Archiv, SHA-256-Prüfsumme, Größe, Dateityp und Zeitstempel.
+
+Daraus folgt: **Dateinamen im Archiv haben keine fachliche Bedeutung mehr.** Die Wiederherstellung liest ausschließlich das Manifest. Weicht eine Prüfsumme, Größe oder ein Dateityp ab, fehlt eine gelistete Datei oder liegt eine Datei ohne Manifest-Eintrag im Archiv, wird der Restore vollständig abgelehnt — es entsteht kein Teilzustand.
+
+## Ältere Backups
+Archive im alten Format (Manifest ohne \`entries[]\`) bleiben lesbar. Beim Restore wird die Zuordnung intern aus den Dateinamen abgeleitet und als Warnung im Restore-Protokoll ausgewiesen. Bestehende Archive werden dabei nicht verändert.
 
 ## Downloadbereich
 Jedes Backup zeigt Dateiname, Erstellungsdatum, Größe und Prüfstatus. Über den Download-Button wird das ZIP heruntergeladen.
