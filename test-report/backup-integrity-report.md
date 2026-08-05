@@ -1,5 +1,5 @@
 # Backup-/Restore-/IO-Integritätsbericht
-_Generiert: 2026-08-05T03:17:32.326Z_
+_Generiert: 2026-08-05T03:17:51.071Z_
 
 - Geprüfte Fälle: **59**
 - Bestanden: **59**
@@ -16,6 +16,6 @@ _Generiert: 2026-08-05T03:17:32.326Z_
 | other | 12 | 0 | 0 |
 
 ## Bekannte Einschränkungen
-- **Keine Prüfsumme im Manifest** — Integrität rein über Struktur/Manifest/Nachvalidierung, siehe ADR-0015.
+- **Prüfsummen im Manifest** — seit Backupformat 2.0 trägt jeder Eintrag SHA-256, Größe und Dateityp; die Zuordnung erfolgt ausschließlich über `entries[]` (ADR-0022). Archive im Altformat werden rein lesend migriert.
 - **PDF-Export** wird in dieser Suite nicht semantisch validiert (nur Struktur-Tests der Text-Exports); der PDF-Pfad ist über E2E abgedeckt.
 - **Rollen-/Scope-Enforcement** rein clientseitig — Backend-RBAC steht offen (SEC-CRIT-001).
