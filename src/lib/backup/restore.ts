@@ -140,7 +140,6 @@ export async function restoreFromZip(
   }));
   counts.keysConsidered = desiredKeyValues.length;
 
-
   // 5. Modus-abhängige Vor-Bedingungen
   if (typeof window === "undefined") {
     return fail("Restore ist nur im Browser (localStorage) verfügbar.");

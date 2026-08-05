@@ -78,7 +78,6 @@ export async function validateManifestEntries(
   return msgs.length > 0 ? { status: "failed", messages: msgs } : { status: "ok", messages: [] };
 }
 
-
 export function runConsistencyCheck(snapshot: Snapshot): BackupCheckResult {
   const msgs: string[] = [];
   let status: BackupCheckStatus = "ok";
@@ -198,4 +197,3 @@ export async function validateZip(
 
   return { status, messages: msgs };
 }
-

@@ -75,11 +75,7 @@ export function replaceManifest(
   return zipSync(entries, { level: 6 });
 }
 
-export function injectDataFile(
-  bytes: Uint8Array,
-  key: string,
-  value: unknown,
-): Uint8Array {
+export function injectDataFile(bytes: Uint8Array, key: string, value: unknown): Uint8Array {
   const entries = unzipSync(bytes);
   const safe = key.replace(/[^a-zA-Z0-9._-]/g, "_");
   entries[`data/${safe}.json`] = strToU8(JSON.stringify(value, null, 2));

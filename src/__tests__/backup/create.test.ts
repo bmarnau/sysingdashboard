@@ -67,8 +67,8 @@ describe("BackupService.createBackup", () => {
     const rec = await BackupService.get(res.record!.id);
     const buf = new Uint8Array(await rec!.blob.arrayBuffer());
     const entries = readZipEntries(buf);
-    const rbacFile = Object.keys(entries).find((p) =>
-      p.startsWith("data/") && p.includes("user-management_assignments"),
+    const rbacFile = Object.keys(entries).find(
+      (p) => p.startsWith("data/") && p.includes("user-management_assignments"),
     );
     expect(rbacFile, "RBAC-Assignments-Datei fehlt").toBeTruthy();
   });
@@ -99,9 +99,7 @@ describe("BackupService.createBackup", () => {
     const rec = await BackupService.get(res.record!.id);
     const buf = new Uint8Array(await rec!.blob.arrayBuffer());
     const entries = readZipEntries(buf);
-    const sensitiveHit = Object.keys(entries).some((p) =>
-      p.toLowerCase().includes("password"),
-    );
+    const sensitiveHit = Object.keys(entries).some((p) => p.toLowerCase().includes("password"));
     expect(sensitiveHit).toBe(false);
     const manifest = JSON.parse(entries["manifest.json"]);
     expect(manifest.excludedKeys).toContain("engineer-dashboard:password_token");

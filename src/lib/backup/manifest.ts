@@ -98,7 +98,6 @@ export async function loadManifest(zip: Record<string, Uint8Array>): Promise<Loa
     ? (rawEntries as BackupEntryV2[])
     : await synthesizeEntries(zip, createdAt);
 
-
   const manifest: BackupManifestV2 = {
     version: MANIFEST_VERSION as "2.0",
     project: String(parsed.project ?? ""),

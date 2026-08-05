@@ -103,7 +103,6 @@ export interface Snapshot {
   }>;
 }
 
-
 export interface CreateBackupOptions {
   manual?: boolean;
 }
