@@ -236,14 +236,24 @@ backlog:
     title: "Backupformat 2.0 – Manifestbasierte Storage-Key-Zuordnung"
     category: "architecture"
     priority: "high"
-    status: "planned-for-sprint-06A"
+    status: "completed-in-sprint-06A"
     problem: >-
-      Die Restore-Logik rekonstruiert Storage-Keys derzeit aus maskierten
-      Dateinamen. Das ist funktional getestet, aber kein langfristig stabiler
-      Austauschvertrag.
+      Die Restore-Logik rekonstruierte Storage-Keys aus maskierten Dateinamen.
+      Das war funktional getestet, aber kein stabiler Austauschvertrag.
     targetOutcome: >-
       Eine versionierte entries[]-Struktur beschreibt jede Backupdatei explizit
       einschließlich logicalName, storageKey, checksum, size und contentType.
+  - id: "BACKLOG-ARCH-003"
+    title: "Automatisierte Layer-Architekturregeln"
+    category: "architecture"
+    priority: "medium"
+    status: "partially-completed-in-sprint-06B"
+    problem: >-
+      Layerverstöße werden bislang nur nachträglich durch den Tech-Debt-Detektor
+      gemeldet, nicht bereits beim Linten verhindert.
+    targetOutcome: >-
+      ESLint-Regel `no-restricted-imports` verbietet UI-Direktimporte der
+      Persistenz- und Azure-Interna bereits im Editor.
   - id: "BACKLOG-SEC-001"
     title: "Serverseitige Sitzungsdurchsetzung"
     category: "security"
@@ -271,10 +281,18 @@ technicalDebt:
     reference: "ADR-0020"
     description: "Serverseitige Sitzungsdurchsetzung ist noch nicht vollständig verifiziert."
   - id: "TD-BACKUP-MANIFEST-V1"
-    status: "planned"
+    status: "resolved"
     severity: "medium"
-    reference: "BACKLOG-ARCH-002"
-    description: "Storage-Keys werden aktuell aus maskierten Dateinamen rekonstruiert."
+    reference: "ADR-0022"
+    description: "Mit Backupformat 2.0 erfolgt die Zuordnung ausschließlich über das Manifest."
+  - id: "TD-LAYER-PERSISTENCE-IMPORT"
+    status: "resolved"
+    severity: "medium"
+    reference: "BACKLOG-ARCH-003"
+    description: >-
+      Die Dashboard-Route importierte die Persistenzschicht direkt
+      (Finding td-layer-d1e551ce). Hydration läuft jetzt über die Facade
+      src/hooks/useDashboardPersistence.ts.
 
 adrs:
   - id: "ADR-0019"
@@ -288,7 +306,11 @@ adrs:
   - id: "ADR-0021"
     status: "accepted"
     topic: "Modularisierung Backup-Service"
-    path: "docs/adr/ADR-0021*"
+    path: "docs/ADR/0021-backup-service-modularisierung.md"
+  - id: "ADR-0022"
+    status: "accepted"
+    topic: "Backupformat 2.0 und manifestbasierte Zuordnung"
+    path: "docs/ADR/0022-backupformat-2.md"
 
 quality:
   tests:
