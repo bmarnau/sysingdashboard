@@ -182,6 +182,10 @@ roadmap:
     dependencies:
       - "06"
       - "06A"
+    exitCriteria:
+      - "Datenmodell dokumentiert und in docs/DATA-SCHEMA.md beschrieben"
+      - "Migration inklusive RLS-Policies und Grants angelegt"
+      - "Import-, Export- und Backupformat berücksichtigen AVKK"
   - id: "08"
     title: "AVKK-Arbeitsansicht"
     status: "planned"
@@ -189,6 +193,10 @@ roadmap:
     goal: "AVKK im persönlichen Arbeitsdashboard nutzbar machen."
     dependencies:
       - "07"
+    exitCriteria:
+      - "AVKK-Ansicht im Dashboard verfügbar und RBAC-gesteuert"
+      - "Handbuchkapitel ergänzt"
+      - "UI- und E2E-Tests grün"
   - id: "09"
     title: "AVKK-Management-Cockpit"
     status: "planned"
@@ -196,6 +204,10 @@ roadmap:
     goal: "Rollenbasierte Führungssicht auf Verantwortungen, Kommunikation und Kontrollen bereitstellen."
     dependencies:
       - "08"
+    exitCriteria:
+      - "Führungssicht mit Kennzahlen und Filtern umgesetzt"
+      - "Zugriff ausschließlich über Rollenrechte"
+      - "Exportierbarer Managementbericht vorhanden"
   - id: "10"
     title: "Microsoft-365-Integration"
     status: "planned"
@@ -203,6 +215,10 @@ roadmap:
     goal: "Outlook und SharePoint providerbasiert anbinden."
     dependencies:
       - "09"
+    exitCriteria:
+      - "Providerabstraktion ohne Fachlogik-Kopplung"
+      - "Secrets ausschließlich serverseitig"
+      - "Fehler- und Offlineverhalten dokumentiert"
   - id: "11"
     title: "Arbeitspaket-Assistent"
     status: "planned"
@@ -210,6 +226,10 @@ roadmap:
     goal: "Zuweisungs-E-Mails erkennen und geprüfte Arbeitspaketentwürfe erzeugen."
     dependencies:
       - "10"
+    exitCriteria:
+      - "Entwürfe nur nach Benutzerbestätigung übernommen"
+      - "Keine personenbezogenen Inhalte in Logs"
+      - "Nachvollziehbare Protokollierung jeder Übernahme"
 
 backlog:
   - id: "BACKLOG-ARCH-002"
