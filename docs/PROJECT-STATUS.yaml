@@ -422,13 +422,15 @@ consumers:
 validation:
   requiredChecks:
     - "YAML ist syntaktisch gültig"
-    - "schemaVersion ist vorhanden"
-    - "lastUpdated ist vorhanden"
-    - "currentState.currentSprint ist in roadmap enthalten"
-    - "Version in versions.dashboard entspricht releaseManagement.currentRelease"
+    - "Struktur entspricht docs/project-status.schema.json"
+    - "schemaVersion und lastUpdated sind vorhanden"
+    - "currentState.currentSprint ist in roadmap oder completedSprints enthalten"
+    - "versions.dashboard entspricht der obersten CHANGELOG-Version"
+    - "versions.dashboard entspricht releaseManagement.currentRelease"
+    - "IDs sind eindeutig und Abhängigkeiten auflösbar"
     - "Keine Secrets oder produktiven Schlüssel enthalten"
   recommendedCommand: "bun run project-status:check"
-  automationStatus: "planned"
+  automationStatus: "active"
 
 sprintGovernance:
   startConditions:
