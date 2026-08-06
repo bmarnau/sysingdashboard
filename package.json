@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "docs:check": "node scripts/check-docs-sync.mjs",
+    "project-status:check": "node scripts/project-status/check.mjs",
     "security:check": "node scripts/security-check.mjs --json security-report/findings.json --markdown security-report/findings.md",
     "test": "vitest run",
     "test:watch": "vitest",
