@@ -1,5 +1,5 @@
 /**
- * Facade-Hook für die Dashboard-Persistenz (Sprint 06B, Layer-Trennung).
+ * Facade für die Dashboard-Persistenz (Sprint 06B, Layer-Trennung).
  *
  * Die UI-Schicht (`src/routes`, `src/components`) darf die Persistenz-Schicht
  * `@/lib/store/dashboard-persistence` nicht direkt importieren — siehe
@@ -7,24 +7,22 @@
  * `scripts/tech-debt/detectors/layer-violations.mjs` (Finding
  * `td-layer-d1e551ce`).
  *
- * Der Hook kapselt den einmaligen Hydrations-Start. Verhalten identisch zum
- * bisherigen direkten `initDashboardPersistence()`-Aufruf im Mount-Effekt:
- * genau ein Aufruf pro Mount, synchron vor der weiteren Effektlogik.
+ * Die Facade kapselt den Hydrations-Start, ohne das Verhalten zu ändern:
+ * ein Aufruf pro Mount, synchron im Mount-Effekt, damit direkt danach ein
+ * normalisiertes Zurückschreiben auf dem hydratisierten Store möglich ist.
  */
-import { useRef } from "react";
+import { useCallback } from "react";
 import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
 
 /**
- * Startet die Store-Hydration idempotent und liefert `true` zurück,
- * sobald sie in diesem Komponentenbaum ausgelöst wurde.
+ * Startet die Store-Hydration (user-scoped Blob, storage-Event, User-Wechsel).
+ * Direkt im Mount-Effekt aufrufen — nicht während des Renderns.
  */
-export function useDashboardPersistence(): boolean {
-  const started = useRef(false);
-  if (!started.current) {
-    // Kein useEffect: der Aufrufer erwartet einen hydratisierten Store,
-    // bevor er im selben Mount-Effekt normalisiert zurückschreibt.
-    started.current = true;
-    initDashboardPersistence();
-  }
-  return started.current;
+export function hydrateDashboardStore(): void {
+  initDashboardPersistence();
+}
+
+/** Hook-Variante mit stabiler Referenz für Effekt-Abhängigkeitslisten. */
+export function useDashboardPersistence(): () => void {
+  return useCallback(hydrateDashboardStore, []);
 }
