@@ -204,7 +204,7 @@ function Dashboard() {
   useEffect(() => {
     UserManagementService.bootstrap();
     // Store einmalig hydratisieren (liest user-scoped Blob, storage-Event, User-Wechsel).
-    initDashboardPersistence();
+    hydrateDashboardStore();
     // Nach Hydration: Referenzielle Integrität sicherstellen und normalisiert zurückschreiben.
     const s = dashboardStore.getState();
     const projectIds = new Set<string>(s.projects.map((x) => x.id));
