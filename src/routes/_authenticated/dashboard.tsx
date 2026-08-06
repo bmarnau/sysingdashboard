@@ -89,7 +89,7 @@ import {
   useProjects,
   useWorkPackages,
 } from "@/lib/store/useDashboardStore";
-import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
+import { hydrateDashboardStore } from "@/hooks/useDashboardPersistence";
 import { GlobalSearch } from "@/components/dashboard/header/GlobalSearch";
 import { HelpMenu } from "@/components/dashboard/header/HelpMenu";
 import { ServiceMenu } from "@/components/dashboard/header/ServiceMenu";
