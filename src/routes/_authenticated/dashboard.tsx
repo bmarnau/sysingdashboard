@@ -89,7 +89,7 @@ import {
   useProjects,
   useWorkPackages,
 } from "@/lib/store/useDashboardStore";
-import { initDashboardPersistence } from "@/lib/store/dashboard-persistence";
+import { hydrateDashboardStore } from "@/hooks/useDashboardPersistence";
 import { GlobalSearch } from "@/components/dashboard/header/GlobalSearch";
 import { HelpMenu } from "@/components/dashboard/header/HelpMenu";
 import { ServiceMenu } from "@/components/dashboard/header/ServiceMenu";
@@ -204,7 +204,7 @@ function Dashboard() {
   useEffect(() => {
     UserManagementService.bootstrap();
     // Store einmalig hydratisieren (liest user-scoped Blob, storage-Event, User-Wechsel).
-    initDashboardPersistence();
+    hydrateDashboardStore();
     // Nach Hydration: Referenzielle Integrität sicherstellen und normalisiert zurückschreiben.
     const s = dashboardStore.getState();
     const projectIds = new Set<string>(s.projects.map((x) => x.id));

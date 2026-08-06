@@ -1,0 +1,335 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sysingdashboard.lovable.app/schema/project-status-1.2.0.json",
+  "title": "Sysing Dashboard Project Manifest",
+  "description": "Formaler Vertrag für docs/PROJECT-STATUS.yaml. Geprüft durch scripts/project-status/check.mjs.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "lastUpdated",
+    "project",
+    "vision",
+    "architecturePrinciples",
+    "versions",
+    "currentState",
+    "roadmap",
+    "backlog",
+    "technicalDebt",
+    "quality",
+    "releaseManagement",
+    "risks",
+    "artifacts",
+    "validation",
+    "sprintGovernance"
+  ],
+  "additionalProperties": true,
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "isoDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "minLength": 1
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "itemStatus": {
+      "type": "string",
+      "enum": [
+        "open",
+        "planned",
+        "next",
+        "in-progress",
+        "completed",
+        "accepted",
+        "resolved",
+        "rejected",
+        "future",
+        "unverified"
+      ]
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "properties": {
+    "schemaVersion": { "$ref": "#/$defs/semver" },
+    "lastUpdated": { "$ref": "#/$defs/isoDate" },
+    "project": {
+      "type": "object",
+      "required": ["name", "repository", "sourceOfTruth", "lifecyclePhase", "description"],
+      "properties": {
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "repository": { "type": "string", "minLength": 1 },
+        "productionApp": { "type": "string" },
+        "localWorkspace": { "type": "string" },
+        "sourceOfTruth": { "type": "string", "enum": ["github", "lovable", "local"] },
+        "lifecyclePhase": { "$ref": "#/$defs/nonEmptyString" },
+        "description": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": true
+    },
+    "vision": {
+      "type": "object",
+      "required": ["statement", "targetState"],
+      "properties": {
+        "statement": { "$ref": "#/$defs/nonEmptyString" },
+        "targetState": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "architecturePrinciples": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "rule"],
+        "properties": {
+          "id": { "$ref": "#/$defs/identifier" },
+          "rule": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "versions": {
+      "type": "object",
+      "required": ["dashboard", "projectManifestSchema"],
+      "properties": {
+        "dashboard": { "$ref": "#/$defs/semver" },
+        "projectManifestSchema": { "$ref": "#/$defs/semver" },
+        "technicalReportSchema": { "type": "string" },
+        "technicalReportVersion": { "type": "integer", "minimum": 1 },
+        "backupFormat": { "type": "string" },
+        "backupManifestTarget": { "type": "string" },
+        "api": { "type": "string" },
+        "databaseSchema": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "currentState": {
+      "type": "object",
+      "required": ["currentSprint", "currentSprintTitle", "releaseReadiness", "testsPassing"],
+      "properties": {
+        "currentSprint": { "$ref": "#/$defs/identifier" },
+        "currentSprintTitle": { "$ref": "#/$defs/nonEmptyString" },
+        "previousSprint": { "$ref": "#/$defs/identifier" },
+        "previousSprintStatus": { "$ref": "#/$defs/itemStatus" },
+        "releaseReadiness": {
+          "type": "string",
+          "enum": ["passed", "passed-with-findings", "blocked", "not-assessed"]
+        },
+        "testsPassing": { "type": "integer", "minimum": 0 },
+        "qualityGates": { "type": "object" },
+        "knownVerificationLimits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "status", "severity", "description"],
+            "properties": {
+              "id": { "$ref": "#/$defs/identifier" },
+              "status": { "$ref": "#/$defs/itemStatus" },
+              "severity": { "$ref": "#/$defs/severity" },
+              "description": { "$ref": "#/$defs/nonEmptyString" },
+              "reference": { "type": "string" },
+              "targetSprint": { "$ref": "#/$defs/identifier" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "platforms": { "type": "object" },
+    "supabase": { "type": "object" },
+    "completedSprints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "version", "status"],
+        "properties": {
+          "id": { "$ref": "#/$defs/identifier" },
+          "title": { "$ref": "#/$defs/nonEmptyString" },
+          "version": { "$ref": "#/$defs/semver" },
+          "status": { "$ref": "#/$defs/itemStatus" },
+          "summary": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "roadmap": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "status", "priority", "goal"],
+        "properties": {
+          "id": { "$ref": "#/$defs/identifier" },
+          "title": { "$ref": "#/$defs/nonEmptyString" },
+          "status": { "$ref": "#/$defs/itemStatus" },
+          "priority": { "$ref": "#/$defs/priority" },
+          "goal": { "$ref": "#/$defs/nonEmptyString" },
+          "dependencies": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/identifier" }
+          },
+          "exitCriteria": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/nonEmptyString" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "backlog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "category", "priority", "status"],
+        "properties": {
+          "id": { "$ref": "#/$defs/identifier" },
+          "title": { "$ref": "#/$defs/nonEmptyString" },
+          "category": { "type": "string" },
+          "priority": { "$ref": "#/$defs/priority" },
+          "status": { "type": "string", "minLength": 1 },
+          "problem": { "type": "string" },
+          "targetOutcome": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "technicalDebt": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "severity", "description"],
+        "properties": {
+          "id": { "$ref": "#/$defs/identifier" },
+          "status": { "$ref": "#/$defs/itemStatus" },
+          "severity": { "$ref": "#/$defs/severity" },
+          "reference": { "type": "string" },
+          "description": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "adrs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "topic"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^ADR-[0-9]{4}$" },
+          "status": { "type": "string" },
+          "topic": { "$ref": "#/$defs/nonEmptyString" },
+          "path": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "quality": {
+      "type": "object",
+      "required": ["tests", "gates"],
+      "properties": {
+        "tests": {
+          "type": "object",
+          "required": ["passing", "failing"],
+          "properties": {
+            "passing": { "type": "integer", "minimum": 0 },
+            "failing": { "type": "integer", "minimum": 0 },
+            "skipped": { "type": ["integer", "string"] },
+            "coverage": { "type": ["number", "string"] }
+          },
+          "additionalProperties": true
+        },
+        "findings": { "type": "object" },
+        "gates": { "type": "object" },
+        "updateRule": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "releaseManagement": {
+      "type": "object",
+      "required": ["currentRelease", "stage", "status"],
+      "properties": {
+        "currentRelease": { "$ref": "#/$defs/semver" },
+        "stage": { "type": "string", "enum": ["development", "preview", "production"] },
+        "status": {
+          "type": "string",
+          "enum": ["passed", "passed-with-findings", "blocked", "not-assessed"]
+        },
+        "releaseEvidence": { "type": "array", "items": { "type": "string" } },
+        "nextReleaseTarget": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "category", "probability", "impact", "status", "mitigation"],
+        "properties": {
+          "id": { "$ref": "#/$defs/identifier" },
+          "category": { "type": "string" },
+          "probability": { "type": "string", "enum": ["low", "medium", "high"] },
+          "impact": { "type": "string", "enum": ["low", "medium", "high"] },
+          "status": { "$ref": "#/$defs/itemStatus" },
+          "mitigation": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "mcpAndAgents": { "type": "object" },
+    "artifacts": {
+      "type": "object",
+      "required": ["projectManifest", "changelog"],
+      "properties": {
+        "projectManifest": { "type": "string" },
+        "changelog": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "consumers": { "type": "object" },
+    "validation": {
+      "type": "object",
+      "required": ["requiredChecks", "recommendedCommand"],
+      "properties": {
+        "requiredChecks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "recommendedCommand": { "type": "string" },
+        "automationStatus": { "type": "string", "enum": ["planned", "active", "disabled"] }
+      },
+      "additionalProperties": true
+    },
+    "sprintGovernance": {
+      "type": "object",
+      "required": ["startConditions", "definitionOfDone", "updateTriggers"],
+      "properties": {
+        "startConditions": { "type": "array", "items": { "type": "string" } },
+        "definitionOfDone": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "updateTriggers": { "type": "array", "items": { "type": "string" } },
+        "updatePolicy": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

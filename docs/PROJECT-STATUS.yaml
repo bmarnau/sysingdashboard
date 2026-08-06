@@ -1,5 +1,5 @@
-schemaVersion: "1.1.0"
-lastUpdated: "2026-08-04"
+schemaVersion: "1.2.0"
+lastUpdated: "2026-08-06"
 
 project:
   name: "Sysing Dashboard"
@@ -46,26 +46,27 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.47.0"
-  projectManifestSchema: "1.1.0"
+  dashboard: "1.49.0"
+  projectManifestSchema: "1.2.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 5
-  backupFormat: "1.x"
+  backupFormat: "2.0"
   backupManifestTarget: "2.0"
   api: "not-versioned"
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "06"
-  currentSprintTitle: "Produktive Supabase-Inbetriebnahme und persönliches Benutzerkonto"
-  previousSprint: "05E"
+  currentSprint: "06B"
+  currentSprintTitle: "Project Governance, Architekturkonsolidierung und Project Manifest"
+  previousSprint: "06A"
   previousSprintStatus: "completed"
   releaseReadiness: "passed-with-findings"
-  testsPassing: 357
+  testsPassing: 368
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
     noConsole: "passed"
+    projectStatusCheck: "passed"
     build: "not-recorded-in-manifest"
   knownVerificationLimits:
     - id: "session-server-enforcement"
@@ -146,6 +147,16 @@ completedSprints:
     version: "1.47.0"
     status: "completed"
     summary: "Backup-Service in 13 Module zerlegt; öffentliche API unverändert."
+  - id: "06A"
+    title: "Backupformat 2.0 und manifestbasierte Restore-Zuordnung"
+    version: "1.48.0"
+    status: "completed"
+    summary: "Manifest 2.0 mit entries[], Prüfsummen und manifestbasiertem Restore; Altformat lesbar."
+  - id: "06B"
+    title: "Project Governance, Architekturkonsolidierung und Project Manifest"
+    version: "1.49.0"
+    status: "completed"
+    summary: "Governance, Projektmanifest mit Schema und Validator, CI-Gate und Layer-Trennung der Persistenz."
 
 roadmap:
   - id: "06"
@@ -163,20 +174,6 @@ roadmap:
       - "Preview und Produktion geprüft"
       - "RBAC und RLS mit realen Testrollen verifiziert"
       - "Inbetriebnahmebericht erstellt"
-  - id: "06A"
-    title: "Backupformat 2.0 und manifestbasierte Restore-Zuordnung"
-    status: "planned"
-    priority: "high"
-    goal: >-
-      Explizite entries[]-Liste im Backupmanifest einführen und die
-      Rekonstruktion von Storage-Keys aus maskierten Dateinamen ablösen.
-    dependencies:
-      - "06"
-    exitCriteria:
-      - "Manifest Version 2 eingeführt"
-      - "Neue Backups verwenden entries[]"
-      - "Alte Backups bleiben lesbar"
-      - "Restore nutzt manifestbasierte Storage-Keys"
   - id: "07"
     title: "AVKK-Datenmodell"
     status: "planned"
@@ -185,6 +182,10 @@ roadmap:
     dependencies:
       - "06"
       - "06A"
+    exitCriteria:
+      - "Datenmodell dokumentiert und in docs/DATA-SCHEMA.md beschrieben"
+      - "Migration inklusive RLS-Policies und Grants angelegt"
+      - "Import-, Export- und Backupformat berücksichtigen AVKK"
   - id: "08"
     title: "AVKK-Arbeitsansicht"
     status: "planned"
@@ -192,6 +193,10 @@ roadmap:
     goal: "AVKK im persönlichen Arbeitsdashboard nutzbar machen."
     dependencies:
       - "07"
+    exitCriteria:
+      - "AVKK-Ansicht im Dashboard verfügbar und RBAC-gesteuert"
+      - "Handbuchkapitel ergänzt"
+      - "UI- und E2E-Tests grün"
   - id: "09"
     title: "AVKK-Management-Cockpit"
     status: "planned"
@@ -199,6 +204,10 @@ roadmap:
     goal: "Rollenbasierte Führungssicht auf Verantwortungen, Kommunikation und Kontrollen bereitstellen."
     dependencies:
       - "08"
+    exitCriteria:
+      - "Führungssicht mit Kennzahlen und Filtern umgesetzt"
+      - "Zugriff ausschließlich über Rollenrechte"
+      - "Exportierbarer Managementbericht vorhanden"
   - id: "10"
     title: "Microsoft-365-Integration"
     status: "planned"
@@ -206,6 +215,10 @@ roadmap:
     goal: "Outlook und SharePoint providerbasiert anbinden."
     dependencies:
       - "09"
+    exitCriteria:
+      - "Providerabstraktion ohne Fachlogik-Kopplung"
+      - "Secrets ausschließlich serverseitig"
+      - "Fehler- und Offlineverhalten dokumentiert"
   - id: "11"
     title: "Arbeitspaket-Assistent"
     status: "planned"
@@ -213,20 +226,34 @@ roadmap:
     goal: "Zuweisungs-E-Mails erkennen und geprüfte Arbeitspaketentwürfe erzeugen."
     dependencies:
       - "10"
+    exitCriteria:
+      - "Entwürfe nur nach Benutzerbestätigung übernommen"
+      - "Keine personenbezogenen Inhalte in Logs"
+      - "Nachvollziehbare Protokollierung jeder Übernahme"
 
 backlog:
   - id: "BACKLOG-ARCH-002"
     title: "Backupformat 2.0 – Manifestbasierte Storage-Key-Zuordnung"
     category: "architecture"
     priority: "high"
-    status: "planned-for-sprint-06A"
+    status: "completed-in-sprint-06A"
     problem: >-
-      Die Restore-Logik rekonstruiert Storage-Keys derzeit aus maskierten
-      Dateinamen. Das ist funktional getestet, aber kein langfristig stabiler
-      Austauschvertrag.
+      Die Restore-Logik rekonstruierte Storage-Keys aus maskierten Dateinamen.
+      Das war funktional getestet, aber kein stabiler Austauschvertrag.
     targetOutcome: >-
       Eine versionierte entries[]-Struktur beschreibt jede Backupdatei explizit
       einschließlich logicalName, storageKey, checksum, size und contentType.
+  - id: "BACKLOG-ARCH-003"
+    title: "Automatisierte Layer-Architekturregeln"
+    category: "architecture"
+    priority: "medium"
+    status: "partially-completed-in-sprint-06B"
+    problem: >-
+      Layerverstöße werden bislang nur nachträglich durch den Tech-Debt-Detektor
+      gemeldet, nicht bereits beim Linten verhindert.
+    targetOutcome: >-
+      ESLint-Regel `no-restricted-imports` verbietet UI-Direktimporte der
+      Persistenz- und Azure-Interna bereits im Editor.
   - id: "BACKLOG-SEC-001"
     title: "Serverseitige Sitzungsdurchsetzung"
     category: "security"
@@ -254,10 +281,18 @@ technicalDebt:
     reference: "ADR-0020"
     description: "Serverseitige Sitzungsdurchsetzung ist noch nicht vollständig verifiziert."
   - id: "TD-BACKUP-MANIFEST-V1"
-    status: "planned"
+    status: "resolved"
     severity: "medium"
-    reference: "BACKLOG-ARCH-002"
-    description: "Storage-Keys werden aktuell aus maskierten Dateinamen rekonstruiert."
+    reference: "ADR-0022"
+    description: "Mit Backupformat 2.0 erfolgt die Zuordnung ausschließlich über das Manifest."
+  - id: "TD-LAYER-PERSISTENCE-IMPORT"
+    status: "resolved"
+    severity: "medium"
+    reference: "BACKLOG-ARCH-003"
+    description: >-
+      Die Dashboard-Route importierte die Persistenzschicht direkt
+      (Finding td-layer-d1e551ce). Hydration läuft jetzt über die Facade
+      src/hooks/useDashboardPersistence.ts.
 
 adrs:
   - id: "ADR-0019"
@@ -271,11 +306,15 @@ adrs:
   - id: "ADR-0021"
     status: "accepted"
     topic: "Modularisierung Backup-Service"
-    path: "docs/adr/ADR-0021*"
+    path: "docs/ADR/0021-backup-service-modularisierung.md"
+  - id: "ADR-0022"
+    status: "accepted"
+    topic: "Backupformat 2.0 und manifestbasierte Zuordnung"
+    path: "docs/ADR/0022-backupformat-2.md"
 
 quality:
   tests:
-    passing: 357
+    passing: 368
     failing: 0
     skipped: "not-recorded"
     coverage: "not-recorded"
@@ -290,14 +329,17 @@ quality:
     noConsole: "passed"
     build: "not-recorded-in-manifest"
     docsCheck: "passed"
+    projectStatusCheck: "passed"
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.47.0"
+  currentRelease: "1.49.0"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
     - "CHANGELOG.md"
+    - "docs/PROJECT-GOVERNANCE.md"
+    - "docs/PROJECT-STATUS.md"
     - "test-report/technical-test-report.json"
     - "test-report/technical-test-report.md"
     - "docs/ENTWICKLUNGSTAGEBUCH.md"
@@ -320,8 +362,14 @@ risks:
     category: "data-integrity"
     probability: "low"
     impact: "high"
-    status: "planned"
-    mitigation: "Backupmanifest Version 2 in Sprint 06A einführen."
+    status: "resolved"
+    mitigation: "Backupmanifest Version 2 ist in Sprint 06A eingeführt; Restore arbeitet ausschließlich über entries[]."
+  - id: "RISK-DOC-DRIFT"
+    category: "governance"
+    probability: "medium"
+    impact: "medium"
+    status: "open"
+    mitigation: "Manifest-, Doku- und Tech-Debt-Prüfungen laufen als CI-Gate bei jedem Push."
 
 mcpAndAgents:
   status: "planned"
@@ -345,6 +393,9 @@ mcpAndAgents:
 artifacts:
   projectManifest: "docs/PROJECT-STATUS.yaml"
   projectManifestDocumentation: "docs/PROJECT-STATUS.md"
+  projectManifestSchema: "docs/project-status.schema.json"
+  projectGovernance: "docs/PROJECT-GOVERNANCE.md"
+  architecture: "docs/ARCHITECTURE.md"
   changelog: "CHANGELOG.md"
   developmentDiary: "docs/ENTWICKLUNGSTAGEBUCH.md"
   technicalReportJson: "test-report/technical-test-report.json"
@@ -371,13 +422,15 @@ consumers:
 validation:
   requiredChecks:
     - "YAML ist syntaktisch gültig"
-    - "schemaVersion ist vorhanden"
-    - "lastUpdated ist vorhanden"
-    - "currentState.currentSprint ist in roadmap enthalten"
-    - "Version in versions.dashboard entspricht releaseManagement.currentRelease"
+    - "Struktur entspricht docs/project-status.schema.json"
+    - "schemaVersion und lastUpdated sind vorhanden"
+    - "currentState.currentSprint ist in roadmap oder completedSprints enthalten"
+    - "versions.dashboard entspricht der obersten CHANGELOG-Version"
+    - "versions.dashboard entspricht releaseManagement.currentRelease"
+    - "IDs sind eindeutig und Abhängigkeiten auflösbar"
     - "Keine Secrets oder produktiven Schlüssel enthalten"
   recommendedCommand: "bun run project-status:check"
-  automationStatus: "planned"
+  automationStatus: "active"
 
 sprintGovernance:
   startConditions:
