@@ -314,7 +314,7 @@ adrs:
 
 quality:
   tests:
-    passing: 357
+    passing: 368
     failing: 0
     skipped: "not-recorded"
     coverage: "not-recorded"
@@ -329,14 +329,17 @@ quality:
     noConsole: "passed"
     build: "not-recorded-in-manifest"
     docsCheck: "passed"
+    projectStatusCheck: "passed"
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.47.0"
+  currentRelease: "1.49.0"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
     - "CHANGELOG.md"
+    - "docs/PROJECT-GOVERNANCE.md"
+    - "docs/PROJECT-STATUS.md"
     - "test-report/technical-test-report.json"
     - "test-report/technical-test-report.md"
     - "docs/ENTWICKLUNGSTAGEBUCH.md"
