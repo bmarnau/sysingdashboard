@@ -73,7 +73,7 @@
       "required": ["name", "repository", "sourceOfTruth", "lifecyclePhase", "description"],
       "properties": {
         "name": { "$ref": "#/$defs/nonEmptyString" },
-        "repository": { "type": "string", "format": "uri" },
+        "repository": { "type": "string", "minLength": 1 },
         "productionApp": { "type": "string" },
         "localWorkspace": { "type": "string" },
         "sourceOfTruth": { "type": "string", "enum": ["github", "lovable", "local"] },
