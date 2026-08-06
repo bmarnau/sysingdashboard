@@ -362,8 +362,14 @@ risks:
     category: "data-integrity"
     probability: "low"
     impact: "high"
-    status: "planned"
-    mitigation: "Backupmanifest Version 2 in Sprint 06A einführen."
+    status: "resolved"
+    mitigation: "Backupmanifest Version 2 ist in Sprint 06A eingeführt; Restore arbeitet ausschließlich über entries[]."
+  - id: "RISK-DOC-DRIFT"
+    category: "governance"
+    probability: "medium"
+    impact: "medium"
+    status: "open"
+    mitigation: "Manifest-, Doku- und Tech-Debt-Prüfungen laufen als CI-Gate bei jedem Push."
 
 mcpAndAgents:
   status: "planned"
