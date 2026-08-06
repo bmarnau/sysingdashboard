@@ -68,6 +68,8 @@ jobs:
         run: bun run lint:no-console
       - name: Docs sync check
         run: bun run docs:check
+      - name: Project manifest check
+        run: bun run project-status:check
 
   # 3+4 – Unit- und Komponenten-Tests -------------------------------------
   unit:
