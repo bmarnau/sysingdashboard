@@ -46,26 +46,27 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.47.0"
-  projectManifestSchema: "1.1.0"
+  dashboard: "1.49.0"
+  projectManifestSchema: "1.2.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 5
-  backupFormat: "1.x"
+  backupFormat: "2.0"
   backupManifestTarget: "2.0"
   api: "not-versioned"
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "06"
-  currentSprintTitle: "Produktive Supabase-Inbetriebnahme und persönliches Benutzerkonto"
-  previousSprint: "05E"
+  currentSprint: "06B"
+  currentSprintTitle: "Project Governance, Architekturkonsolidierung und Project Manifest"
+  previousSprint: "06A"
   previousSprintStatus: "completed"
   releaseReadiness: "passed-with-findings"
-  testsPassing: 357
+  testsPassing: 368
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
     noConsole: "passed"
+    projectStatusCheck: "passed"
     build: "not-recorded-in-manifest"
   knownVerificationLimits:
     - id: "session-server-enforcement"
