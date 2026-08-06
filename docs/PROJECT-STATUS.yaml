@@ -147,6 +147,16 @@ completedSprints:
     version: "1.47.0"
     status: "completed"
     summary: "Backup-Service in 13 Module zerlegt; öffentliche API unverändert."
+  - id: "06A"
+    title: "Backupformat 2.0 und manifestbasierte Restore-Zuordnung"
+    version: "1.48.0"
+    status: "completed"
+    summary: "Manifest 2.0 mit entries[], Prüfsummen und manifestbasiertem Restore; Altformat lesbar."
+  - id: "06B"
+    title: "Project Governance, Architekturkonsolidierung und Project Manifest"
+    version: "1.49.0"
+    status: "completed"
+    summary: "Governance, Projektmanifest mit Schema und Validator, CI-Gate und Layer-Trennung der Persistenz."
 
 roadmap:
   - id: "06"
@@ -164,20 +174,6 @@ roadmap:
       - "Preview und Produktion geprüft"
       - "RBAC und RLS mit realen Testrollen verifiziert"
       - "Inbetriebnahmebericht erstellt"
-  - id: "06A"
-    title: "Backupformat 2.0 und manifestbasierte Restore-Zuordnung"
-    status: "planned"
-    priority: "high"
-    goal: >-
-      Explizite entries[]-Liste im Backupmanifest einführen und die
-      Rekonstruktion von Storage-Keys aus maskierten Dateinamen ablösen.
-    dependencies:
-      - "06"
-    exitCriteria:
-      - "Manifest Version 2 eingeführt"
-      - "Neue Backups verwenden entries[]"
-      - "Alte Backups bleiben lesbar"
-      - "Restore nutzt manifestbasierte Storage-Keys"
   - id: "07"
     title: "AVKK-Datenmodell"
     status: "planned"
