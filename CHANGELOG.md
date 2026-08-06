@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.49.0 - 2026-08-06
+
+- **Project Governance**: Neues verbindliches Regelwerk `docs/PROJECT-GOVERNANCE.md` (Vision, Architekturprinzipien, Definition of Done, Versionierungsregeln, Dokumentenhierarchie).
+- **Project Manifest**: `docs/PROJECT-STATUS.yaml` ist formal als Single Source of Truth definiert — beschrieben in `docs/PROJECT-STATUS.md`, geprüft gegen `docs/project-status.schema.json`.
+- Neuer Validator `bun run project-status:check`: prüft YAML-Gültigkeit, Schemakonformität, Versionsgleichheit mit dem CHANGELOG, eindeutige IDs, auflösbare Sprint-Abhängigkeiten und Referenzen.
+- CI-Gate: Die Manifestprüfung läuft im Static-Job der Pipeline und in `bun run test:full`.
+- **Layer-Architektur**: Die Dashboard-Route greift nicht mehr direkt auf die Persistenzschicht zu; Hydration läuft über die Facade `src/hooks/useDashboardPersistence.ts` (Tech-Debt-Finding `td-layer-d1e551ce`).
+
 ## 1.48.0 - 2026-08-05
 
 - **Backupformat 2.0**: `manifest.json` enthält jetzt eine vollständige Zuordnungstabelle `entries[]` (logischer Name, Storage-Key, Speicheradresse, SHA-256-Prüfsumme, Größe, Dateityp, Zeitstempel).
