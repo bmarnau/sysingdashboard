@@ -393,6 +393,9 @@ mcpAndAgents:
 artifacts:
   projectManifest: "docs/PROJECT-STATUS.yaml"
   projectManifestDocumentation: "docs/PROJECT-STATUS.md"
+  projectManifestSchema: "docs/project-status.schema.json"
+  projectGovernance: "docs/PROJECT-GOVERNANCE.md"
+  architecture: "docs/ARCHITECTURE.md"
   changelog: "CHANGELOG.md"
   developmentDiary: "docs/ENTWICKLUNGSTAGEBUCH.md"
   technicalReportJson: "test-report/technical-test-report.json"
