@@ -11,8 +11,8 @@ const SECRET_PATTERNS = [
   /DefaultEndpointsProtocol=/i,
   /AccountKey=/i,
   /SharedAccessSignature=/i,
-  /Bearer\s+[A-Za-z0-9\-_\.]+/,
-  /eyJ[A-Za-z0-9_\-]{20,}/, // JWT-Kopf
+  /Bearer\s+[A-Za-z0-9._-]+/,
+  /eyJ[A-Za-z0-9_-]{20,}/, // JWT-Kopf
 ];
 
 test("status endpoint is safe & healthy", async ({ request }) => {

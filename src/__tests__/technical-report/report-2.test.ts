@@ -1,14 +1,16 @@
 import { describe, expect, it, beforeAll } from "vitest";
 
 // Dynamische Imports: die Skripte liegen außerhalb von tsconfig include.
-let computeIntegrityHash: any, extractIntegrityPayload: any, stableStringify: any;
-let proposeReleaseStage: any, applyReleaseOverride: any, STAGES: any;
+/* eslint-disable @typescript-eslint/no-explicit-any -- dynamisch geladene .mjs-Skripte ohne Typdeklaration */
+type Fn = (...args: any[]) => any;
+let computeIntegrityHash: Fn, extractIntegrityPayload: Fn, stableStringify: Fn;
+let proposeReleaseStage: Fn, applyReleaseOverride: Fn, STAGES: readonly string[];
 
 beforeAll(async () => {
   // @ts-expect-error mjs außerhalb tsconfig
-  const canonical: any = await import("../../../scripts/technical-report/canonical.mjs");
+  const canonical: Record<string, Fn> = await import("../../../scripts/technical-report/canonical.mjs");
   // @ts-expect-error mjs außerhalb tsconfig
-  const gate: any = await import("../../../scripts/technical-report/release-gate.mjs");
+  const gate: Record<string, any> = await import("../../../scripts/technical-report/release-gate.mjs");
   ({ computeIntegrityHash, extractIntegrityPayload, stableStringify } = canonical);
   ({ proposeReleaseStage, applyReleaseOverride, STAGES } = gate);
 });
