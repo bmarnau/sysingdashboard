@@ -7,12 +7,10 @@ let computeIntegrityHash: Fn, extractIntegrityPayload: Fn, stableStringify: Fn;
 let proposeReleaseStage: Fn, applyReleaseOverride: Fn, STAGES: readonly string[];
 
 beforeAll(async () => {
-  // @ts-expect-error mjs außerhalb tsconfig
-  const canonical: Record<string, Fn> =
-    await import("../../../scripts/technical-report/canonical.mjs");
-  // @ts-expect-error mjs außerhalb tsconfig
-  const gate: Record<string, any> =
-    await import("../../../scripts/technical-report/release-gate.mjs");
+  const canonicalPath = "../../../scripts/technical-report/canonical.mjs";
+  const gatePath = "../../../scripts/technical-report/release-gate.mjs";
+  const canonical: Record<string, any> = await import(/* @vite-ignore */ canonicalPath);
+  const gate: Record<string, any> = await import(/* @vite-ignore */ gatePath);
   ({ computeIntegrityHash, extractIntegrityPayload, stableStringify } = canonical);
   ({ proposeReleaseStage, applyReleaseOverride, STAGES } = gate);
 });
