@@ -21,6 +21,8 @@ Format pro Eintrag:
 - **Qualität**: Neue Testsuite `src/__tests__/scripts/project-status-validator.test.ts` prüft den Manifest-Validator (gültiges Manifest, YAML-Fehler, Schemaverstoß, doppelte IDs, unbekannter Sprint, Roadmap-Referenz, fehlende Pflichtfelder, Versionskonflikt) und validiert zusätzlich das reale Manifest.
 - **Project Manifest**: Neuer Abschnitt `phases` im Manifest und Schema (schemaVersion 1.3.0); Sprint 06B als abgeschlossen geführt, Roadmap und Risiken aktualisiert.
 - **Prüfbericht**: Technischer Prüfbericht neu erzeugt und Integrität erneut verifiziert.
+- Qualitätsgates repariert: Prettier/ESLint projektweit fehlerfrei (0 Errors), generierte Berichtsartefakte in `.prettierignore`, `report-2.test.ts` typsicher, CI-Workflow-YAML gültig formatiert.
+- Technischer Prüfbericht v7 neu erzeugt; Manifest-Nachweise für Governance, Projektmanifest, Layer-Architektur, Backupformat 2.0 und Infrastrukturabschluss ergänzt.
 
 ## 1.49.0 - 2026-08-06
 
