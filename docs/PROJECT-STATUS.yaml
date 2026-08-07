@@ -364,7 +364,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.49.0"
+  currentRelease: "1.50.0"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
@@ -374,7 +374,9 @@ releaseManagement:
     - "test-report/technical-test-report.json"
     - "test-report/technical-test-report.md"
     - "docs/ENTWICKLUNGSTAGEBUCH.md"
-  nextReleaseTarget: "Sprint 06 completion"
+    - "docs/ARCHITECTURE.md"
+    - "docs/ADR/0023-phasenmodell-infrastrukturabschluss.md"
+  nextReleaseTarget: "Sprint 06 completion (Phase 2 Start)"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"
