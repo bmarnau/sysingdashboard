@@ -7,7 +7,10 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
 
-export async function runAxe(page: Page, opts?: { include?: string }): Promise<{
+export async function runAxe(
+  page: Page,
+  opts?: { include?: string },
+): Promise<{
   violationCount: number;
   violations: { id: string; impact?: string | null; nodes: number }[];
 }> {

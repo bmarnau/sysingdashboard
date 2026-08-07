@@ -15,14 +15,7 @@
  *  - Secrets sind bereits im Logger redigiert (siehe `logger.ts`) —
  *    hier keine zusätzliche Verarbeitung.
  */
-import {
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -147,9 +140,7 @@ export function LogViewerDialog({ open, onOpenChange }: LogViewerDialogProps) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
-  const [enabledLevels, setEnabledLevels] = useState<Set<LogLevel>>(
-    new Set<LogLevel>(LEVELS),
-  );
+  const [enabledLevels, setEnabledLevels] = useState<Set<LogLevel>>(new Set<LogLevel>(LEVELS));
   const [range, setRange] = useState<Range>("24h");
   const [source, setSource] = useState<string>("__all__");
   const [rawQuery, setRawQuery] = useState("");
@@ -253,8 +244,7 @@ export function LogViewerDialog({ open, onOpenChange }: LogViewerDialogProps) {
           </DialogTitle>
           <DialogDescription>
             Anzeige der Logger-Einträge aus dem aktuellen Ringpuffer und dem persistierten
-            IndexedDB-Sink (letzte 1000 Einträge / 7 Tage). Secrets sind bereits im Logger
-            maskiert.
+            IndexedDB-Sink (letzte 1000 Einträge / 7 Tage). Secrets sind bereits im Logger maskiert.
           </DialogDescription>
         </DialogHeader>
 
@@ -280,7 +270,12 @@ export function LogViewerDialog({ open, onOpenChange }: LogViewerDialogProps) {
               <RefreshCw className={`mr-1 size-4 ${busy ? "animate-spin" : ""}`} />
               Aktualisieren
             </Button>
-            <Button variant="outline" size="sm" onClick={handleExport} disabled={filtered.length === 0}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExport}
+              disabled={filtered.length === 0}
+            >
               <DownloadIcon className="mr-1 size-4" />
               Export
             </Button>
@@ -325,7 +320,10 @@ export function LogViewerDialog({ open, onOpenChange }: LogViewerDialogProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="log-range" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <Label
+                htmlFor="log-range"
+                className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+              >
                 Zeitraum
               </Label>
               <Select value={range} onValueChange={(v) => setRange(v as Range)}>
@@ -344,7 +342,10 @@ export function LogViewerDialog({ open, onOpenChange }: LogViewerDialogProps) {
 
             {sources.length > 0 && (
               <div className="space-y-2">
-                <Label htmlFor="log-source" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Label
+                  htmlFor="log-source"
+                  className="text-xs font-medium uppercase tracking-wide text-muted-foreground"
+                >
                   Quelle
                 </Label>
                 <Select value={source} onValueChange={setSource}>

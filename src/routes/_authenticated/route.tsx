@@ -4,7 +4,6 @@ import { loadAuthConfig } from "@/integrations/supabase/runtime-config";
 import { useIdleLogout } from "@/hooks/useIdleLogout";
 import { IdleWarningDialog } from "@/components/session/IdleWarningDialog";
 
-
 /**
  * Auth-Gate für alle Routen unter `_authenticated/`.
  *
@@ -28,13 +27,9 @@ import { IdleWarningDialog } from "@/components/session/IdleWarningDialog";
  * niemals `location.href` (absolute URL) oder Protocol-relative
  * Doppel-Slash-Werte wie `//evil.example`.
  */
-function buildSafeInternalTarget(location: {
-  pathname?: string;
-  search?: unknown;
-}): string {
-  const path = typeof location.pathname === "string" && location.pathname.length > 0
-    ? location.pathname
-    : "/";
+function buildSafeInternalTarget(location: { pathname?: string; search?: unknown }): string {
+  const path =
+    typeof location.pathname === "string" && location.pathname.length > 0 ? location.pathname : "/";
 
   let searchString = "";
   const raw = location.search;
@@ -55,11 +50,7 @@ function buildSafeInternalTarget(location: {
   }
 
   const combined = `${path}${searchString}`;
-  if (
-    !combined.startsWith("/") ||
-    combined.startsWith("//") ||
-    combined.startsWith("/\\")
-  ) {
+  if (!combined.startsWith("/") || combined.startsWith("//") || combined.startsWith("/\\")) {
     return "/dashboard";
   }
   return combined;
@@ -86,10 +77,9 @@ export const Route = createFileRoute("/_authenticated")({
       // Zugriff NICHT als "nicht eingeloggt" behandeln — sonst kippt eine
       // reine Statusprüfung eine gültige Session in eine Login-Schleife.
       try {
-        const { data: active, error: activeErr } = await result.client.rpc(
-          "is_account_active",
-          { _user_id: data.user.id },
-        );
+        const { data: active, error: activeErr } = await result.client.rpc("is_account_active", {
+          _user_id: data.user.id,
+        });
         if (!activeErr && active === false) {
           await result.client.auth.signOut().catch(() => undefined);
           throw redirect({
@@ -128,7 +118,6 @@ function AuthenticatedLayout() {
     </>
   );
 }
-
 
 /** Test-Export: interne Redirect-Ziel-Bildung. Nicht in Produktcode nutzen. */
 export const __test = { buildSafeInternalTarget };

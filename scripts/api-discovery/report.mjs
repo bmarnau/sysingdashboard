@@ -59,15 +59,12 @@ function buildSmoke(inv, raw) {
     notImplemented: results.filter((r) => r.status === "not-implemented").length,
     notConfigured: results.filter((r) => r.status === "not-configured").length,
     unclassified: inv.endpoints.filter((e) => e.classification === "unclassified").length,
-    withoutAuthTest: results.filter(
-      (r) => !r.scenarios?.some((s) => s.category === "auth"),
-    ).length,
+    withoutAuthTest: results.filter((r) => !r.scenarios?.some((s) => s.category === "auth")).length,
     withoutValidationTest: results.filter(
       (r) => !r.scenarios?.some((s) => s.category === "validation"),
     ).length,
-    withoutSchemaCheck: results.filter(
-      (r) => !r.scenarios?.some((s) => s.category === "schema"),
-    ).length,
+    withoutSchemaCheck: results.filter((r) => !r.scenarios?.some((s) => s.category === "schema"))
+      .length,
   };
   return {
     schemaVersion: "1.0.0",
@@ -151,7 +148,6 @@ function buildFindingsMarkdown(inv, smoke, func) {
 
 function main() {
   if (!existsSync(INVENTORY)) {
-    // eslint-disable-next-line no-console
     console.error("[api-report] no inventory found — run `bun run api:discover` first");
     process.exit(1);
   }
@@ -166,7 +162,6 @@ function main() {
   writeFileSync(FUNC_OUT, JSON.stringify(func, null, 2) + "\n");
   writeFileSync(FINDINGS_OUT, buildFindingsMarkdown(inv, smoke, func));
 
-  // eslint-disable-next-line no-console
   console.log(
     `[api-report] smoke=${SMOKE_OUT.replace(ROOT + "/", "")} functional=${FUNC_OUT.replace(ROOT + "/", "")}`,
   );
@@ -181,7 +176,6 @@ function main() {
         ),
     ).length;
     if (critical > 0 || highSecurity > 0) {
-      // eslint-disable-next-line no-console
       console.error(
         `[api-report] gate failed — critical=${critical}, highSecurity=${highSecurity}`,
       );

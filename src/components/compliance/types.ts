@@ -85,10 +85,15 @@ export interface Report {
     severityChanged?: Array<{ id: string; from: string; to: string }>;
     gateChanged?: Array<{ id: string; from: boolean; to: boolean }>;
     statusChanged?: Array<{ id: string; from: string; to: string }>;
-    securityRegressions?: Array<{ id: string; kind: string; severity?: string; from?: string; to?: string }>;
+    securityRegressions?: Array<{
+      id: string;
+      kind: string;
+      severity?: string;
+      from?: string;
+      to?: string;
+    }>;
   } | null;
 }
-
 
 export const STATUS_LABEL: Record<string, string> = {
   passed: "bestanden",

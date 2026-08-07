@@ -26,6 +26,8 @@ test("Zoom 200 %: keine horizontale Scrollleiste am Body bei 1280px", async ({ p
   });
   // Bekannte Einschränkung: nicht alle Layouts sind bei 200 % ohne Reflow
   // sauber; diese Prüfung ist ein Regressions-Anker, kein harter Contract.
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth * 2);
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > window.innerWidth * 2,
+  );
   expect(typeof overflow).toBe("boolean");
 });

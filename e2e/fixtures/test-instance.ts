@@ -17,7 +17,10 @@ type Fixtures = {
 export const test = base.extend<Fixtures>({
   role: [null, { option: true }],
   seededPage: [
-    async ({ page, role }: { page: Page; role: SeedRole | null }, use: (v: void) => Promise<void>) => {
+    async (
+      { page, role }: { page: Page; role: SeedRole | null },
+      use: (v: void) => Promise<void>,
+    ) => {
       if (role) await seedRole(page, role);
       await page.addInitScript(() => {
         try {

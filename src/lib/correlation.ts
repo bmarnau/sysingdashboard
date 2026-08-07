@@ -31,9 +31,7 @@ const RELAXED_RE = /^[A-Za-z0-9._-]{8,64}$/;
  */
 export function generateCorrelationId(): string {
   const c: Crypto | undefined =
-    typeof globalThis !== "undefined"
-      ? (globalThis as { crypto?: Crypto }).crypto
-      : undefined;
+    typeof globalThis !== "undefined" ? (globalThis as { crypto?: Crypto }).crypto : undefined;
   if (c && typeof c.randomUUID === "function") return c.randomUUID();
   const bytes = new Uint8Array(16);
   if (c && typeof c.getRandomValues === "function") c.getRandomValues(bytes);

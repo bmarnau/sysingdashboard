@@ -115,7 +115,6 @@ export function TechnicalReportDialog({ open, onOpenChange }: Props) {
     };
   }, [printing]);
 
-
   // Sicherheitsnetz: falls Dialog geschlossen wird, Print-Klasse zurücksetzen.
   useEffect(() => {
     if (!open && typeof document !== "undefined") {
@@ -136,89 +135,91 @@ export function TechnicalReportDialog({ open, onOpenChange }: Props) {
           document.body,
         )}
       <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="max-h-[90vh] w-[min(96vw,56rem)] max-w-4xl overflow-y-auto"
-        data-compliance-print-content
-      >
-        <DialogHeader className="no-print">
-          <DialogTitle className="flex items-center gap-2">
-            <ClipboardList className="size-5" /> Compliance-Dashboard · Technischer Prüfbericht
-          </DialogTitle>
-          <DialogDescription>
-            Konsolidierte Sicht auf alle Testbereiche zum aktuellen Buildstand (ADR-0017).
-          </DialogDescription>
-        </DialogHeader>
+        <DialogContent
+          className="max-h-[90vh] w-[min(96vw,56rem)] max-w-4xl overflow-y-auto"
+          data-compliance-print-content
+        >
+          <DialogHeader className="no-print">
+            <DialogTitle className="flex items-center gap-2">
+              <ClipboardList className="size-5" /> Compliance-Dashboard · Technischer Prüfbericht
+            </DialogTitle>
+            <DialogDescription>
+              Konsolidierte Sicht auf alle Testbereiche zum aktuellen Buildstand (ADR-0017).
+            </DialogDescription>
+          </DialogHeader>
 
-        {!report ? (
-          <div className="rounded border border-warning/40 bg-warning/10 p-4 text-sm">
-            <div className="flex items-center gap-2 font-medium">
-              <ShieldAlert className="size-4" /> Kein Bericht verfügbar
-            </div>
-            <p className="mt-2 text-muted-foreground">
-              <code>bun run report:technical</code> ausführen, um{" "}
-              <code>test-report/technical-test-report.json</code> zu erzeugen und das Dashboard neu
-              zu bauen.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {/* Identität — als kompakte Meta-Zeile über der Summary */}
-            <section className="no-print grid grid-cols-1 gap-1 rounded border border-border bg-secondary/20 p-2 text-xs sm:grid-cols-4">
-              <Meta k="Version" v={report.identity.dashboardVersion} mono />
-              <Meta k="Commit" v={report.identity.commit} mono />
-              <Meta k="Testzeit" v={report.identity.testTime} />
-              <Meta
-                k="Umgebung"
-                v={`Node ${report.identity.environment.node} · ${report.identity.environment.platform}${
-                  report.identity.environment.ci ? " · CI" : ""
-                }`}
-              />
-            </section>
-
-            <ComplianceSummary report={report} />
-
-            <ComplianceAreaTable areas={report.areas} />
-
-            <ComplianceHistory current={report} />
-            {report.diff && <ComplianceDiff diff={report.diff} />}
-
-            {/* Findings-Bereich */}
-            <section className="space-y-2">
-              <div className="no-print flex flex-wrap items-center justify-between gap-2">
-                <h3 className="font-semibold">Findings</h3>
-                <div className="text-xs text-muted-foreground">
-                  {filtered.length} von {activeSet.length} angezeigt
-                </div>
+          {!report ? (
+            <div className="rounded border border-warning/40 bg-warning/10 p-4 text-sm">
+              <div className="flex items-center gap-2 font-medium">
+                <ShieldAlert className="size-4" /> Kein Bericht verfügbar
               </div>
+              <p className="mt-2 text-muted-foreground">
+                <code>bun run report:technical</code> ausführen, um{" "}
+                <code>test-report/technical-test-report.json</code> zu erzeugen und das Dashboard
+                neu zu bauen.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Identität — als kompakte Meta-Zeile über der Summary */}
+              <section className="no-print grid grid-cols-1 gap-1 rounded border border-border bg-secondary/20 p-2 text-xs sm:grid-cols-4">
+                <Meta k="Version" v={report.identity.dashboardVersion} mono />
+                <Meta k="Commit" v={report.identity.commit} mono />
+                <Meta k="Testzeit" v={report.identity.testTime} />
+                <Meta
+                  k="Umgebung"
+                  v={`Node ${report.identity.environment.node} · ${report.identity.environment.platform}${
+                    report.identity.environment.ci ? " · CI" : ""
+                  }`}
+                />
+              </section>
 
-              <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)} className="no-print">
-                <TabsList className="flex-wrap">
-                  <TabsTrigger value="all">Alle ({buckets.all.length})</TabsTrigger>
-                  <TabsTrigger value="auto">Technisch ({buckets.auto.length})</TabsTrigger>
-                  <TabsTrigger value="manual">
-                    Organisatorisch ({buckets.manual.length})
-                  </TabsTrigger>
-                  <TabsTrigger value="accepted">Akzeptiert ({buckets.accepted.length})</TabsTrigger>
-                </TabsList>
-                <TabsContent value={tab} className="mt-3" />
-              </Tabs>
+              <ComplianceSummary report={report} />
 
-              <ComplianceFilters value={filter} onChange={setFilter} options={options} />
+              <ComplianceAreaTable areas={report.areas} />
 
-              <ComplianceFindingList findings={filtered} expanded={expanded} onToggle={toggle} />
-            </section>
+              <ComplianceHistory current={report} />
+              {report.diff && <ComplianceDiff diff={report.diff} />}
+
+              {/* Findings-Bereich */}
+              <section className="space-y-2">
+                <div className="no-print flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="font-semibold">Findings</h3>
+                  <div className="text-xs text-muted-foreground">
+                    {filtered.length} von {activeSet.length} angezeigt
+                  </div>
+                </div>
+
+                <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)} className="no-print">
+                  <TabsList className="flex-wrap">
+                    <TabsTrigger value="all">Alle ({buckets.all.length})</TabsTrigger>
+                    <TabsTrigger value="auto">Technisch ({buckets.auto.length})</TabsTrigger>
+                    <TabsTrigger value="manual">
+                      Organisatorisch ({buckets.manual.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="accepted">
+                      Akzeptiert ({buckets.accepted.length})
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value={tab} className="mt-3" />
+                </Tabs>
+
+                <ComplianceFilters value={filter} onChange={setFilter} options={options} />
+
+                <ComplianceFindingList findings={filtered} expanded={expanded} onToggle={toggle} />
+              </section>
+            </div>
+          )}
+
+          <div className="no-print mt-4 flex flex-wrap justify-end gap-2">
+            <Button variant="outline" size="sm" onClick={handlePrint} disabled={!report}>
+              <Printer className="mr-1.5 size-4" /> Drucken / PDF
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+              Schließen
+            </Button>
           </div>
-        )}
-
-        <div className="no-print mt-4 flex flex-wrap justify-end gap-2">
-          <Button variant="outline" size="sm" onClick={handlePrint} disabled={!report}>
-            <Printer className="mr-1.5 size-4" /> Drucken / PDF
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
-            Schließen
-          </Button>
-        </div>
-      </DialogContent>
+        </DialogContent>
       </Dialog>
     </>
   );

@@ -16,9 +16,7 @@ function baseDoc(overrides: Record<string, unknown> = {}): Record<string, unknow
     exportedAt: "2026-01-01T00:00:00.000Z",
     exportedBy: "test",
     dashboardVersion: "1.0.0",
-    projects: [
-      { id: "p1", name: "Projekt A", client: "Kunde A", status: "on_track" },
-    ],
+    projects: [{ id: "p1", name: "Projekt A", client: "Kunde A", status: "on_track" }],
     workPackages: [
       { id: "w1", title: "AP 1", projectId: "p1", status: "offen", priority: "mittel" },
     ],
@@ -118,9 +116,7 @@ describe("JsonImportService", () => {
   it("erkennt Kunden-Duplikate über Normalisierung (Vorschau)", async () => {
     expect(normalizeCustomerName("Kunde  Ä")).toBe(normalizeCustomerName("kunde a"));
     expect(levenshtein("kunde", "kunden", 2)).toBeLessThanOrEqual(1);
-    const file = await fileFromObject(
-      baseDoc({ customers: [{ id: "c1", name: "Kunde  Ä" }] }),
-    );
+    const file = await fileFromObject(baseDoc({ customers: [{ id: "c1", name: "Kunde  Ä" }] }));
     // Zielzustand: es gibt bereits Kunde A durch p1.client
     JsonImportService.applyPlan(
       JsonImportService.buildPlan(
@@ -136,7 +132,9 @@ describe("JsonImportService", () => {
 
   it("führt bei Abbruch (throw im Apply) einen Rollback aus — keine stillen Löschungen", async () => {
     // Vorzustand persistieren
-    const initial = { projects: [{ id: "keep", name: "Bestand", client: "K", status: "on_track" }] };
+    const initial = {
+      projects: [{ id: "keep", name: "Bestand", client: "K", status: "on_track" }],
+    };
     // Storage-Key via readDashboardState-Logik: aktiver Benutzer = default → "northbit-dashboard-v2::default"
     window.localStorage.setItem(
       "northbit-dashboard-v2::default",

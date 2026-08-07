@@ -28,7 +28,8 @@ export const TEST_SEED = 0xc0ffee;
 
 // (1) Guard: darf nur unter Vitest laufen.
 const isVitest =
-  typeof process !== "undefined" && (process.env.VITEST === "true" || process.env.NODE_ENV === "test");
+  typeof process !== "undefined" &&
+  (process.env.VITEST === "true" || process.env.NODE_ENV === "test");
 if (!isVitest) {
   throw new Error(
     "test-instance.ts wurde außerhalb von Vitest geladen — Isolationsgarantien nicht gewährleistet.",

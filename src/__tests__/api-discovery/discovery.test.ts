@@ -118,9 +118,9 @@ describe("api-discovery analyzers", () => {
     const meta2 = analyzeEndpointMeta(
       `export const endpointMeta = { public: true, classification: "internal" } as const;`,
     );
-    expect(
-      classify({ path: "/api/x", methods: ["GET"], authRequired: false, meta: meta2 }),
-    ).toBe("internal");
+    expect(classify({ path: "/api/x", methods: ["GET"], authRequired: false, meta: meta2 })).toBe(
+      "internal",
+    );
     expect(analyzeEndpointMeta("no meta here")).toBeNull();
   });
 });
@@ -227,9 +227,7 @@ export const Route = createFileRoute("/api/ping")({
     ).toBe(false);
     // /api/ping is public but has no reason → low finding
     expect(
-      inv.findings.some(
-        (f) => f.category === "public-without-reason" && f.id.includes("api-ping"),
-      ),
+      inv.findings.some((f) => f.category === "public-without-reason" && f.id.includes("api-ping")),
     ).toBe(true);
 
     resetFixtures();

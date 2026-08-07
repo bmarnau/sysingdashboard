@@ -83,7 +83,7 @@ export function extractIntegrityPayload(report) {
     blockers: [...(report.blockers ?? [])]
       .map((b) => ({ id: b.id, reason: b.reason }))
       .sort((a, b) =>
-        (a.id + a.reason) < (b.id + b.reason) ? -1 : (a.id + a.reason) > (b.id + b.reason) ? 1 : 0,
+        a.id + a.reason < b.id + b.reason ? -1 : a.id + a.reason > b.id + b.reason ? 1 : 0,
       ),
   };
 }

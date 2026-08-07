@@ -32,8 +32,7 @@ export function useCurrentUser(): UserProfile | null {
         supabase.from("user_roles").select("role").eq("user_id", authUser.id),
       ]);
 
-      const role: UserRole =
-        (roles?.[0]?.role as UserRole | undefined) ?? "viewer";
+      const role: UserRole = (roles?.[0]?.role as UserRole | undefined) ?? "viewer";
 
       const p = profile ?? {
         id: authUser.id,

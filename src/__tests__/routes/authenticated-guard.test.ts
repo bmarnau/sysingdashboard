@@ -17,9 +17,9 @@ describe("buildSafeInternalTarget", () => {
     expect(() =>
       buildSafeInternalTarget({ pathname: "/dashboard", search: { tab: "overview" } }),
     ).not.toThrow();
-    expect(
-      buildSafeInternalTarget({ pathname: "/dashboard", search: { tab: "overview" } }),
-    ).toBe("/dashboard?tab=overview");
+    expect(buildSafeInternalTarget({ pathname: "/dashboard", search: { tab: "overview" } })).toBe(
+      "/dashboard?tab=overview",
+    );
   });
 
   it("akzeptiert String-search konsistent", () => {
@@ -37,18 +37,12 @@ describe("buildSafeInternalTarget", () => {
   });
 
   it("blockiert Protocol-relative Open-Redirect (//evil.example)", () => {
-    expect(buildSafeInternalTarget({ pathname: "//evil.example", search: "" })).toBe(
-      "/dashboard",
-    );
-    expect(buildSafeInternalTarget({ pathname: "/\\evil", search: "" })).toBe(
-      "/dashboard",
-    );
+    expect(buildSafeInternalTarget({ pathname: "//evil.example", search: "" })).toBe("/dashboard");
+    expect(buildSafeInternalTarget({ pathname: "/\\evil", search: "" })).toBe("/dashboard");
   });
 
   it("gibt reinen Pfad zurück, wenn search leer ist", () => {
-    expect(buildSafeInternalTarget({ pathname: "/dashboard", search: {} })).toBe(
-      "/dashboard",
-    );
+    expect(buildSafeInternalTarget({ pathname: "/dashboard", search: {} })).toBe("/dashboard");
   });
 
   it("überlebt exotische Werte im search-Objekt", () => {

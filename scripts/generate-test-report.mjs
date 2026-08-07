@@ -30,10 +30,18 @@ const summary = {
     coverage: coverage ? { present: true, total: coverage.total ?? null } : { present: false },
     bundle: bundle ? { present: true, totalSize: bundle.totalSize } : { present: false },
     techDebt: debt
-      ? { present: true, todos: debt.todos, tsIgnores: debt.tsIgnores, bigFiles: debt.bigFiles.length }
+      ? {
+          present: true,
+          todos: debt.todos,
+          tsIgnores: debt.tsIgnores,
+          bigFiles: debt.bigFiles.length,
+        }
       : { present: false },
     security: security
-      ? { present: true, findings: Array.isArray(security) ? security.length : (security.findings?.length ?? 0) }
+      ? {
+          present: true,
+          findings: Array.isArray(security) ? security.length : (security.findings?.length ?? 0),
+        }
       : { present: false },
   },
 };
@@ -48,10 +56,14 @@ const md = [
   "| Bereich | Status | Kennzahl |",
   "| ------- | ------ | -------- |",
   `| Coverage | ${summary.sections.coverage.present ? "OK" : "fehlt"} | ${
-    summary.sections.coverage.total ? JSON.stringify(summary.sections.coverage.total).slice(0, 80) : "—"
+    summary.sections.coverage.total
+      ? JSON.stringify(summary.sections.coverage.total).slice(0, 80)
+      : "—"
   } |`,
   `| Bundle | ${summary.sections.bundle.present ? "OK" : "fehlt"} | ${
-    summary.sections.bundle.totalSize ? (summary.sections.bundle.totalSize / 1024).toFixed(1) + " KB" : "—"
+    summary.sections.bundle.totalSize
+      ? (summary.sections.bundle.totalSize / 1024).toFixed(1) + " KB"
+      : "—"
   } |`,
   `| Technical Debt | ${summary.sections.techDebt.present ? "OK" : "fehlt"} | ${
     summary.sections.techDebt.present

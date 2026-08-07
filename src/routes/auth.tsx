@@ -10,11 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import {
-  loadIdleTimeoutConfig,
-  DEFAULT_IDLE_TIMEOUT_MINUTES,
-} from "@/lib/session/idle-config";
-
+import { loadIdleTimeoutConfig, DEFAULT_IDLE_TIMEOUT_MINUTES } from "@/lib/session/idle-config";
 
 /**
  * Anmeldung / Registrierung / Passwort-Reset.
@@ -26,13 +22,7 @@ import {
 const SearchSchema = z.object({
   redirect: z.string().optional(),
   reason: z
-    .enum([
-      "unavailable",
-      "account_inactive",
-      "account_locked",
-      "account_archived",
-      "idle_timeout",
-    ])
+    .enum(["unavailable", "account_inactive", "account_locked", "account_archived", "idle_timeout"])
     .optional(),
 });
 
@@ -51,7 +41,6 @@ const REASON_MESSAGES: Record<string, string> = {
   unavailable: "Anmeldedienst war kurzzeitig nicht erreichbar. Bitte erneut versuchen.",
   idle_timeout: "Sie wurden wegen Inaktivität automatisch abgemeldet.",
 };
-
 
 export const Route = createFileRoute("/auth")({
   validateSearch: SearchSchema,
@@ -76,7 +65,6 @@ function AuthPage() {
       cancelled = true;
     };
   }, []);
-
 
   useEffect(() => {
     let unsub: (() => void) | undefined;
@@ -167,11 +155,15 @@ function AuthPage() {
       if (error) {
         toast.error(error.message || "Registrierung fehlgeschlagen");
       } else if (data.user && (data.user.identities?.length ?? 0) === 0) {
-        toast.info("Ein Konto mit dieser E-Mail existiert bereits. Bitte anmelden oder Passwort zurücksetzen.");
+        toast.info(
+          "Ein Konto mit dieser E-Mail existiert bereits. Bitte anmelden oder Passwort zurücksetzen.",
+        );
       } else if (data.session) {
         toast.success("Registrierung erfolgreich. Du bist angemeldet.");
       } else {
-        toast.success("Registrierung erfolgreich. Bitte E-Mail-Bestätigungslink öffnen, dann anmelden.");
+        toast.success(
+          "Registrierung erfolgreich. Bitte E-Mail-Bestätigungslink öffnen, dann anmelden.",
+        );
       }
     } catch {
       toast.error("Registrierung fehlgeschlagen. Bitte später erneut versuchen.");
@@ -216,9 +208,7 @@ function AuthPage() {
               className="mb-4 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive"
             >
               <p className="font-medium">Die Anmeldung ist noch nicht konfiguriert.</p>
-              <p className="mt-1 text-xs opacity-80">
-                Bitte den Administrator kontaktieren.
-              </p>
+              <p className="mt-1 text-xs opacity-80">Bitte den Administrator kontaktieren.</p>
               {import.meta.env.DEV && (
                 <p className="mt-2 text-xs opacity-70">
                   Detail (nur DEV): {configError.status}

@@ -76,9 +76,7 @@ function readRegistryHints() {
     entries.push({
       id: idM?.[1] ?? "",
       path: pathM[1],
-      methods: methodsM
-        ? [...methodsM[1].matchAll(/["'`]([A-Z]+)["'`]/g)].map((m) => m[1])
-        : [],
+      methods: methodsM ? [...methodsM[1].matchAll(/["'`]([A-Z]+)["'`]/g)].map((m) => m[1]) : [],
       authRequired: authM ? authM[1] === "true" : null,
       permission: permM?.[1] ?? null,
       status: statusM?.[1] ?? "active",
@@ -209,7 +207,7 @@ export function discover(scanDir = DEFAULT_SCAN_DIR) {
         description:
           "Keine Auth, keine Permission, kein /api/public/ Prefix — Klassifizierung explizit setzen.",
         recommendation:
-          "`export const endpointMeta = { public: true, reason: \"…\" } as const` in der Route setzen, in der Registry `permission`/`authRequired` pflegen oder unter `/api/public/*` mit Signaturprüfung ablegen.",
+          '`export const endpointMeta = { public: true, reason: "…" } as const` in der Route setzen, in der Registry `permission`/`authRequired` pflegen oder unter `/api/public/*` mit Signaturprüfung ablegen.',
         status: "open",
       });
     }
@@ -225,7 +223,7 @@ export function discover(scanDir = DEFAULT_SCAN_DIR) {
         description:
           "`endpointMeta.public = true` ohne `reason` — die Ausnahme ist nicht dokumentiert.",
         recommendation:
-          "`reason: \"…\"` in `endpointMeta` ergänzen (kurze fachliche Begründung, warum anonym zulässig).",
+          '`reason: "…"` in `endpointMeta` ergänzen (kurze fachliche Begründung, warum anonym zulässig).',
         status: "open",
       });
     }
@@ -252,10 +250,8 @@ export function discover(scanDir = DEFAULT_SCAN_DIR) {
         methods,
         file: relFile,
         title: `Endpoint mit Wirkung ${impact} ohne Authentifizierung`,
-        description:
-          "Anonymer Aufruf verändert Daten oder löst schreibende Operationen aus.",
-        recommendation:
-          "Auth-Middleware ergänzen und Permission-Guard serverseitig prüfen.",
+        description: "Anonymer Aufruf verändert Daten oder löst schreibende Operationen aus.",
+        recommendation: "Auth-Middleware ergänzen und Permission-Guard serverseitig prüfen.",
         status: "open",
       });
     }
@@ -297,7 +293,9 @@ export function discover(scanDir = DEFAULT_SCAN_DIR) {
 
   // Determinismus
   endpoints.sort((a, b) =>
-    a.path === b.path ? a.methods.join(",").localeCompare(b.methods.join(",")) : a.path.localeCompare(b.path),
+    a.path === b.path
+      ? a.methods.join(",").localeCompare(b.methods.join(","))
+      : a.path.localeCompare(b.path),
   );
   findings.sort((a, b) => a.id.localeCompare(b.id));
 
@@ -329,13 +327,12 @@ export function writeInventory(inventory, outFile) {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const inv = discover();
   const out = writeInventory(inv);
-  // eslint-disable-next-line no-console
+
   console.log(
     `[api-discovery] ${inv.counts.endpoints} endpoints, ${inv.counts.findings} findings → ${relative(ROOT, out)}`,
   );
   const criticals = inv.findings.filter((f) => f.severity === "critical");
   if (process.argv.includes("--gate") && criticals.length > 0) {
-    // eslint-disable-next-line no-console
     console.error(`[api-discovery] gate failed: ${criticals.length} critical finding(s)`);
     process.exit(1);
   }

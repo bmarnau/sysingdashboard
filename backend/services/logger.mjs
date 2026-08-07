@@ -106,7 +106,7 @@ function emit(level, message, error, ctx) {
     context: redact(Object.keys(enriched).length ? enriched : undefined),
     error: normalizeError(error),
   };
-  // eslint-disable-next-line no-console
+
   const fn = (console[level] ?? console.log).bind(console);
   if (entry.error) fn(`[${level}] ${message}`, entry.context ?? {}, entry.error);
   else fn(`[${level}] ${message}`, entry.context ?? {});

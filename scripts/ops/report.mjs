@@ -14,7 +14,11 @@ const OUT_JSON = "test-report/ops-report.json";
 const OUT_MD = "test-report/ops-report.md";
 
 function readJson(p, fallback = null) {
-  try { return JSON.parse(readFileSync(p, "utf8")); } catch { return fallback; }
+  try {
+    return JSON.parse(readFileSync(p, "utf8"));
+  } catch {
+    return fallback;
+  }
 }
 
 const build = readJson("test-report/build-report.json", { results: [] });
@@ -50,7 +54,9 @@ const warnings = [];
 if (baseline && bundle) {
   const d = pctDelta(bundle.totals.totalKB, baseline.bundle?.totalKB);
   if (d != null && Math.abs(d) > 20)
-    warnings.push(`Bundle-Gesamtgröße ${d > 0 ? "+" : ""}${d}% gegenüber Baseline (${baseline.bundle.totalKB} KB → ${bundle.totals.totalKB} KB).`);
+    warnings.push(
+      `Bundle-Gesamtgröße ${d > 0 ? "+" : ""}${d}% gegenüber Baseline (${baseline.bundle.totalKB} KB → ${bundle.totals.totalKB} KB).`,
+    );
 }
 if (baseline && perf?.startupMs && baseline.perf?.startupMs) {
   const d = pctDelta(perf.startupMs, baseline.perf.startupMs);
@@ -74,16 +80,22 @@ const md = [
     : "- Kein Bundle-Report verfügbar.",
   "",
   "## Performance",
-  perf ? `- Startzeit (ms): ${perf.startupMs ?? "n/a"}` : "- Kein Perf-Raw verfügbar (Playwright-Suite noch nicht gelaufen).",
+  perf
+    ? `- Startzeit (ms): ${perf.startupMs ?? "n/a"}`
+    : "- Kein Perf-Raw verfügbar (Playwright-Suite noch nicht gelaufen).",
   "",
   "## Stabilität",
-  stability ? `- Dialog-Loop (ms): ${stability.dialogLoopMs ?? "n/a"}` : "- Kein Stability-Raw verfügbar.",
+  stability
+    ? `- Dialog-Loop (ms): ${stability.dialogLoopMs ?? "n/a"}`
+    : "- Kein Stability-Raw verfügbar.",
   "",
   "## Kompatibilität",
   "- Chromium (Standard). Firefox opt-in via `RUN_FIREFOX=1`, WebKit via `RUN_WEBKIT=1`.",
   "",
   "## Betrieb",
-  ops ? `- Health OK: ${ops.healthOk} · Secrets in Payload: ${ops.secretLeaks} · Rollback-Doku vorhanden: ${ops.rollbackDocumented}` : "- Kein Ops-Check verfügbar.",
+  ops
+    ? `- Health OK: ${ops.healthOk} · Secrets in Payload: ${ops.secretLeaks} · Rollback-Doku vorhanden: ${ops.rollbackDocumented}`
+    : "- Kein Ops-Check verfügbar.",
   "",
   "## Trends / Warnungen",
   warnings.length === 0 ? "Keine." : warnings.map((w) => `- ${w}`).join("\n"),

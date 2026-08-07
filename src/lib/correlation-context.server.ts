@@ -19,10 +19,7 @@
  * Server-Modul über den TSS-Bundler geschützt (Handler-Body-Split).
  */
 import { AsyncLocalStorage } from "node:async_hooks";
-import {
-  CORRELATION_HEADER,
-  acceptOrGenerateCorrelationId,
-} from "./correlation";
+import { CORRELATION_HEADER, acceptOrGenerateCorrelationId } from "./correlation";
 
 interface CorrelationContext {
   correlationId: string;
@@ -105,11 +102,7 @@ export function withCorrelation(handler: RouteHandler): RouteHandler {
  * Baut einen einheitlichen Fehler-Body mit Correlation-ID. Wird von
  * den Route-Handlern anstelle `jsonError()` verwendet.
  */
-export function jsonErrorWithCorrelation(
-  status: number,
-  code: string,
-  message: string,
-): Response {
+export function jsonErrorWithCorrelation(status: number, code: string, message: string): Response {
   const correlationId = getCurrentCorrelationId() ?? "unknown";
   const body = {
     ok: false,

@@ -159,10 +159,9 @@ export function ComplianceReportPrint({ report }: { report: Report }) {
         <h2>4. Management Summary</h2>
         <ul className="tr-list">
           <li>
-            Gesamtstatus <strong>{statusText(report.status)}</strong> mit{" "}
-            {report.summary.total} Findings ({report.summary.critical} kritisch,{" "}
-            {report.summary.high} hoch, {report.summary.medium} mittel, {report.summary.low}{" "}
-            niedrig).
+            Gesamtstatus <strong>{statusText(report.status)}</strong> mit {report.summary.total}{" "}
+            Findings ({report.summary.critical} kritisch, {report.summary.high} hoch,{" "}
+            {report.summary.medium} mittel, {report.summary.low} niedrig).
           </li>
           <li>
             Freigabefähigkeit: effektive Stufe{" "}
@@ -180,8 +179,8 @@ export function ComplianceReportPrint({ report }: { report: Report }) {
             dokumentierte Ausnahmen.
           </li>
           <li>
-            Änderungen gegenüber dem Vorgängerbericht: {report.diff?.new.length ?? 0} neu,{" "}
-            {closed} geschlossen, {report.diff?.reappeared.length ?? 0} wieder geöffnet.
+            Änderungen gegenüber dem Vorgängerbericht: {report.diff?.new.length ?? 0} neu, {closed}{" "}
+            geschlossen, {report.diff?.reappeared.length ?? 0} wieder geöffnet.
           </li>
         </ul>
       </section>
@@ -246,11 +245,7 @@ export function ComplianceReportPrint({ report }: { report: Report }) {
           <tbody>
             <Row k="Neue Findings" v={report.diff?.new.join(", ") || "keine"} wrap />
             <Row k="Geschlossene Findings" v={report.diff?.fixed.join(", ") || "keine"} wrap />
-            <Row
-              k="Wieder geöffnet"
-              v={report.diff?.reappeared.join(", ") || "keine"}
-              wrap
-            />
+            <Row k="Wieder geöffnet" v={report.diff?.reappeared.join(", ") || "keine"} wrap />
             <Row
               k="Schweregrad geändert"
               v={
@@ -281,9 +276,9 @@ export function ComplianceReportPrint({ report }: { report: Report }) {
             <Row
               k="Sicherheitsregressionen"
               v={
-                (report.diff?.securityRegressions ?? []).map((r) => `${r.id} (${r.kind})`).join(
-                  "; ",
-                ) || "keine"
+                (report.diff?.securityRegressions ?? [])
+                  .map((r) => `${r.id} (${r.kind})`)
+                  .join("; ") || "keine"
               }
               wrap
             />
@@ -310,12 +305,7 @@ export function ComplianceReportPrint({ report }: { report: Report }) {
                 <Row k="Beschreibung" v={f.description ?? "—"} wrap />
                 <Row k="Ursache / Auswirkung" v={f.rootCause ?? "—"} wrap />
                 <Row k="Betroffene Komponenten" v={(f.components ?? []).join(", ") || "—"} wrap />
-                <Row
-                  k="Nachweis"
-                  v={f.evidence?.file ?? f.evidence?.reportRef ?? "—"}
-                  mono
-                  wrap
-                />
+                <Row k="Nachweis" v={f.evidence?.file ?? f.evidence?.reportRef ?? "—"} mono wrap />
                 <Row k="Empfehlung" v={f.recommendation ?? "—"} wrap />
                 <Row k="Aufwand" v={f.effort} />
                 <Row k="Quelle" v={f.source === "auto" ? "automatisch" : "manuell"} />
@@ -402,17 +392,7 @@ export function ComplianceReportPrint({ report }: { report: Report }) {
   );
 }
 
-function Row({
-  k,
-  v,
-  mono,
-  wrap,
-}: {
-  k: string;
-  v: string;
-  mono?: boolean;
-  wrap?: boolean;
-}) {
+function Row({ k, v, mono, wrap }: { k: string; v: string; mono?: boolean; wrap?: boolean }) {
   return (
     <tr>
       <th scope="row">{k}</th>

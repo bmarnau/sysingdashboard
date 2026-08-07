@@ -6,7 +6,11 @@ import {
   DEFAULT_IDLE_TIMEOUT_MINUTES,
 } from "@/lib/session/idle-config";
 import { startIdleMonitor } from "@/lib/session/idle-monitor";
-import { readLastActivity, persistLastActivity, clearLastActivity } from "@/lib/session/idle-channel";
+import {
+  readLastActivity,
+  persistLastActivity,
+  clearLastActivity,
+} from "@/lib/session/idle-channel";
 
 describe("idle-config", () => {
   it("should_useDefaultWhenNothingConfigured", () => {
@@ -30,13 +34,17 @@ describe("idle-config", () => {
     expect(out.invalidReason).toContain("Systemeinstellung");
   });
 
-  it.each([["", "leer"], ["abc", "keine Zahl"], ["0", "kleiner"], ["-5", "kleiner"], ["481", "größer"], ["2.5", "ganze"]])(
-    "should_rejectInvalidValue_%s",
-    (raw) => {
-      const parsed = parseIdleTimeoutValue(raw);
-      expect(parsed.minutes).toBeNull();
-    },
-  );
+  it.each([
+    ["", "leer"],
+    ["abc", "keine Zahl"],
+    ["0", "kleiner"],
+    ["-5", "kleiner"],
+    ["481", "größer"],
+    ["2.5", "ganze"],
+  ])("should_rejectInvalidValue_%s", (raw) => {
+    const parsed = parseIdleTimeoutValue(raw);
+    expect(parsed.minutes).toBeNull();
+  });
 
   it("should_acceptBoundaryValues", () => {
     expect(parseIdleTimeoutValue(1).minutes).toBe(1);

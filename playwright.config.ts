@@ -37,7 +37,9 @@ export default defineConfig({
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    ...(process.env.RUN_FIREFOX ? [{ name: "firefox", use: { ...devices["Desktop Firefox"] } }] : []),
+    ...(process.env.RUN_FIREFOX
+      ? [{ name: "firefox", use: { ...devices["Desktop Firefox"] } }]
+      : []),
     ...(process.env.RUN_WEBKIT ? [{ name: "webkit", use: { ...devices["Desktop Safari"] } }] : []),
     ...(process.env.RUN_MOBILE ? [{ name: "mobile-chrome", use: { ...devices["Pixel 7"] } }] : []),
   ],

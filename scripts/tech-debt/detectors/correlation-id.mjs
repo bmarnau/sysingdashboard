@@ -65,8 +65,7 @@ export function detectCorrelationId(ROOT) {
         title: "Fehlerantwort ohne Correlation-ID",
         category: "API",
         location: relPath,
-        description:
-          "Handler antwortet mit unstrukturierter Fehler-Response ohne `correlationId`.",
+        description: "Handler antwortet mit unstrukturierter Fehler-Response ohne `correlationId`.",
         rootCause:
           "Direkter `Response.json({error})`-Aufruf statt `jsonErrorWithCorrelation(status, code, message)`.",
         impact: "Client kann Fehler nicht mit einem Server-Log-Eintrag verknüpfen.",
@@ -92,8 +91,7 @@ export function detectCorrelationId(ROOT) {
         title: "Correlation-ID ungeprüft aus Client übernommen",
         category: "API",
         location: relPath,
-        description:
-          "Route liest den Correlation-ID-Header direkt, ohne die zentrale Validierung.",
+        description: "Route liest den Correlation-ID-Header direkt, ohne die zentrale Validierung.",
         rootCause: "Direkter Zugriff auf `headers.get('x-correlation-id')`.",
         impact:
           "Client kann beliebige Zeichen, überlange Werte oder gefährliche Inhalte in Logs und Antworten einschleusen.",

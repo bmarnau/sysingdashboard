@@ -79,7 +79,8 @@ export function ComplianceSummary({ report }: Props) {
       {report.releaseStage?.overridden && (
         <div className="rounded-md border border-warning/40 bg-warning/10 p-2 text-xs">
           <strong>Manuelle Freigabe-Abweichung</strong> · {report.releaseStage.overridden.by} ·{" "}
-          Ticket {report.releaseStage.overridden.ticket ?? "—"} — {report.releaseStage.overridden.reason}
+          Ticket {report.releaseStage.overridden.ticket ?? "—"} —{" "}
+          {report.releaseStage.overridden.reason}
         </div>
       )}
       {report.diff?.securityRegressions && report.diff.securityRegressions.length > 0 && (

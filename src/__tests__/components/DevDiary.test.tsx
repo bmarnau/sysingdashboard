@@ -75,8 +75,10 @@ describe("Entwicklungstagebuch", () => {
   });
 
   it("enthält keine Zugangsdaten oder Tokens", () => {
-    expect(/sb_secret_|SERVICE_ROLE|BEGIN [A-Z ]*PRIVATE KEY|eyJ[A-Za-z0-9_-]{20,}/.test(DEV_DIARY_SOURCE)).toBe(
-      false,
-    );
+    expect(
+      /sb_secret_|SERVICE_ROLE|BEGIN [A-Z ]*PRIVATE KEY|eyJ[A-Za-z0-9_-]{20,}/.test(
+        DEV_DIARY_SOURCE,
+      ),
+    ).toBe(false);
   });
 });

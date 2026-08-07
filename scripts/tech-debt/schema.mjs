@@ -68,7 +68,8 @@ export function validateFinding(f) {
   if (!f || typeof f !== "object") return { ok: false, errors: ["not-an-object"] };
   for (const key of REQUIRED) if (!(key in f)) errors.push(`missing:${key}`);
   if (f.severity && !SEVERITIES.includes(f.severity)) errors.push(`severity:${f.severity}`);
-  if (f.likelihood && !LIKELIHOODS.includes(f.likelihood)) errors.push(`likelihood:${f.likelihood}`);
+  if (f.likelihood && !LIKELIHOODS.includes(f.likelihood))
+    errors.push(`likelihood:${f.likelihood}`);
   if (f.effort && !EFFORTS.includes(f.effort)) errors.push(`effort:${f.effort}`);
   if (f.status && !STATUSES.includes(f.status)) errors.push(`status:${f.status}`);
   if (f.source && !SOURCES.includes(f.source)) errors.push(`source:${f.source}`);

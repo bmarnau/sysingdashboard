@@ -20,9 +20,7 @@ describe("<IdleWarningDialog>", () => {
   });
 
   it("should_showCountdownAndActions", () => {
-    render(
-      <IdleWarningDialog open secondsRemaining={45} onStay={onStay} onLogout={onLogout} />,
-    );
+    render(<IdleWarningDialog open secondsRemaining={45} onStay={onStay} onLogout={onLogout} />);
     expect(screen.getByRole("alertdialog")).toBeInTheDocument();
     expect(screen.getByTestId("idle-countdown")).toHaveTextContent("45 Sekunden");
     expect(screen.getByRole("button", { name: "Angemeldet bleiben" })).toBeInTheDocument();

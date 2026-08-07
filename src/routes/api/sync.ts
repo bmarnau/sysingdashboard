@@ -73,7 +73,11 @@ export const Route = createFileRoute("/api/sync")({
 
         const authEnv = readAuthEnv();
         if (!authEnv) {
-          return jsonErrorWithCorrelation(500, "AUTH_SERVICE_NOT_CONFIGURED", "Auth service not configured");
+          return jsonErrorWithCorrelation(
+            500,
+            "AUTH_SERVICE_NOT_CONFIGURED",
+            "Auth service not configured",
+          );
         }
 
         const client = buildAuthedClient(authEnv, token);

@@ -76,15 +76,12 @@ describe("RBAC v1 – verbotene Berechtigungen", () => {
     },
   );
 
-  it.each(adminOrSysOnly)(
-    "should_grantOnlyToSysadminOrAdmin_when_permissionIs_%s",
-    (perm) => {
-      for (const [role, perms] of Object.entries(ROLE_PERMISSIONS)) {
-        if (role === "systemadministrator" || role === "administrator") continue;
-        expect(perms, `${role} darf ${perm} NICHT haben`).not.toContain(perm);
-      }
-    },
-  );
+  it.each(adminOrSysOnly)("should_grantOnlyToSysadminOrAdmin_when_permissionIs_%s", (perm) => {
+    for (const [role, perms] of Object.entries(ROLE_PERMISSIONS)) {
+      if (role === "systemadministrator" || role === "administrator") continue;
+      expect(perms, `${role} darf ${perm} NICHT haben`).not.toContain(perm);
+    }
+  });
 
   it("should_notGrantAnyEditOrAzurePermission_when_roleIsViewerOrCustomer", () => {
     for (const role of ["viewer", "customer"] as const) {
@@ -105,9 +102,17 @@ describe("RBAC v1 – verbotene Berechtigungen", () => {
 
   it("should_throw_when_requirePermissionMissesPermission", () => {
     const viewer: UserProfile = {
-      id: "v1", firstName: "V", lastName: "iewer", displayName: "V", email: "", phone: "",
-      role: "viewer", status: "active", mfaEnabled: false,
-      createdAt: "2026-01-01T00:00:00Z", updatedAt: "2026-01-01T00:00:00Z",
+      id: "v1",
+      firstName: "V",
+      lastName: "iewer",
+      displayName: "V",
+      email: "",
+      phone: "",
+      role: "viewer",
+      status: "active",
+      mfaEnabled: false,
+      createdAt: "2026-01-01T00:00:00Z",
+      updatedAt: "2026-01-01T00:00:00Z",
     };
     expect(() => requirePermission(viewer, "users.manage")).toThrow(/Permission denied/);
   });

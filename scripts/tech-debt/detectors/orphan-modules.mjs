@@ -56,8 +56,7 @@ export function detectOrphanModules(ROOT) {
       impact: "Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.",
       severity: "Low",
       likelihood: "Niedrig",
-      recommendation:
-        "Datei löschen oder ins `archive/` verschieben, falls historisch relevant.",
+      recommendation: "Datei löschen oder ins `archive/` verschieben, falls historisch relevant.",
       recommendedOrder: 85,
       effort: "klein",
       status: "offen",

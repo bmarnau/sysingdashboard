@@ -16,9 +16,7 @@ import { join } from "node:path";
 
 const SRC = join(process.cwd(), "src");
 
-const IGNORE_DIRS = new Set([
-  "node_modules", ".git", "dist", "build", "coverage",
-]);
+const IGNORE_DIRS = new Set(["node_modules", ".git", "dist", "build", "coverage"]);
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
@@ -45,7 +43,8 @@ describe("Source-Scan – direkte Rollen-Vergleiche", () => {
     join(SRC, "components", "PermissionGate.tsx"),
   ]);
 
-  const OFFENDING = /\brole\s*===\s*["'](systemadministrator|administrator|teamlead|projectmanager|engineer|customer|viewer)["']/;
+  const OFFENDING =
+    /\brole\s*===\s*["'](systemadministrator|administrator|teamlead|projectmanager|engineer|customer|viewer)["']/;
 
   it("should_notHaveDirectRoleEqualityChecks_outsideRbacModules", () => {
     const offenders: string[] = [];
@@ -60,7 +59,10 @@ describe("Source-Scan – direkte Rollen-Vergleiche", () => {
         .join("\n");
       if (OFFENDING.test(stripped)) offenders.push(file.replace(process.cwd(), ""));
     }
-    expect(offenders, `Nutze can()/PermissionGate statt role===. Offenders:\n${offenders.join("\n")}`).toEqual([]);
+    expect(
+      offenders,
+      `Nutze can()/PermissionGate statt role===. Offenders:\n${offenders.join("\n")}`,
+    ).toEqual([]);
   });
 });
 
@@ -75,7 +77,10 @@ describe("Source-Scan – keine Auth-Tokens in Browser-Storage", () => {
       const src = readFileSync(file, "utf8");
       if (STORAGE_TOKEN_RE.test(src)) offenders.push(file.replace(process.cwd(), ""));
     }
-    expect(offenders, `Auth-Tokens gehören nicht in localStorage/sessionStorage:\n${offenders.join("\n")}`).toEqual([]);
+    expect(
+      offenders,
+      `Auth-Tokens gehören nicht in localStorage/sessionStorage:\n${offenders.join("\n")}`,
+    ).toEqual([]);
   });
 
   it("should_notImportLocalStorageForAuth_inClientCode", () => {

@@ -22,7 +22,12 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { RELEASE_RULES, SEVERITY_ORDER, shouldBlockRelease, countBySeverity } from "./release-rules.mjs";
+import {
+  RELEASE_RULES,
+  SEVERITY_ORDER,
+  shouldBlockRelease,
+  countBySeverity,
+} from "./release-rules.mjs";
 
 const ROOT = process.cwd();
 const STATIC = join(ROOT, "scripts/security/static-findings.json");
@@ -107,18 +112,26 @@ function buildMarkdown(findings, counts) {
   lines.push("## Release-Regeln");
   for (const sev of SEVERITY_ORDER) {
     const rule = RELEASE_RULES[sev];
-    lines.push(`- **${sev.toUpperCase()}** — blockiert Release: ${rule.blocksRelease ? "ja" : "nein"}${rule.blocksPhases ? `, Phasen: ${rule.blocksPhases.join(", ")}` : ""}${rule.requiresAcceptance ? ", benötigt dokumentierte Akzeptanz" : ""}`);
+    lines.push(
+      `- **${sev.toUpperCase()}** — blockiert Release: ${rule.blocksRelease ? "ja" : "nein"}${rule.blocksPhases ? `, Phasen: ${rule.blocksPhases.join(", ")}` : ""}${rule.requiresAcceptance ? ", benötigt dokumentierte Akzeptanz" : ""}`,
+    );
   }
   lines.push("");
   lines.push("## Grenzen der Suite");
   lines.push("");
   lines.push("- Keine Pen-Test-Ersatzleistung, kein Fuzzing, keine Kryptoanalyse.");
-  lines.push("- Auth ist aktiv; Browser-/E2E-Sign-in wird nur ausgeführt, wenn eine Test-Session bereitsteht.");
-  lines.push("- UI-Sichtbarkeit ist kein Sicherheitsnachweis; schreibende Server-Routen müssen Session und Permission serverseitig prüfen.");
+  lines.push(
+    "- Auth ist aktiv; Browser-/E2E-Sign-in wird nur ausgeführt, wenn eine Test-Session bereitsteht.",
+  );
+  lines.push(
+    "- UI-Sichtbarkeit ist kein Sicherheitsnachweis; schreibende Server-Routen müssen Session und Permission serverseitig prüfen.",
+  );
   lines.push("- Kein Anspruch auf Zertifizierung (ISO/IEC 27001, SOC 2, BSI o. ä.).");
   lines.push("");
   const byArea = new Map();
-  for (const f of [...findings].sort((a, b) => severityRank(a.severity) - severityRank(b.severity))) {
+  for (const f of [...findings].sort(
+    (a, b) => severityRank(a.severity) - severityRank(b.severity),
+  )) {
     if (!byArea.has(f.area)) byArea.set(f.area, []);
     byArea.get(f.area).push(f);
   }
@@ -155,18 +168,16 @@ ensureDir(OUT_MD);
 writeFileSync(OUT_MD, md, "utf8");
 writeFileSync(OUT_JSON, JSON.stringify(json, null, 2), "utf8");
 
-// eslint-disable-next-line no-console
 console.log(
   `[security-report] critical=${counts.critical} high=${counts.high} medium=${counts.medium} low=${counts.low} accepted=${counts.accepted} → ${OUT_MD}`,
 );
 
 if ((gate || soft) && json.blocked) {
-  const msg = "[security-report] Release GEBLOCKT durch offene Findings (siehe test-report/security-report.md).";
+  const msg =
+    "[security-report] Release GEBLOCKT durch offene Findings (siehe test-report/security-report.md).";
   if (soft) {
-    // eslint-disable-next-line no-console
     console.warn(msg);
   } else {
-    // eslint-disable-next-line no-console
     console.error(msg);
     process.exit(1);
   }

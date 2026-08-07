@@ -29,13 +29,20 @@ test("status endpoint is safe & healthy", async ({ request }) => {
     : {};
   writeFileSync(
     "test-report/ops-checks.json",
-    JSON.stringify({ ...prev, healthOk: true, secretLeaks: leaks.length, checkedAt: new Date().toISOString() }, null, 2),
+    JSON.stringify(
+      { ...prev, healthOk: true, secretLeaks: leaks.length, checkedAt: new Date().toISOString() },
+      null,
+      2,
+    ),
   );
   expect(leaks, `Secrets im /api/status-Payload: ${leaks.map(String).join(", ")}`).toHaveLength(0);
 });
 
 test("500 responses do not leak stack traces", async ({ request }) => {
-  const res = await request.post("/api/sync", { data: "not-json" as unknown as object, headers: { "Content-Type": "application/json" } });
+  const res = await request.post("/api/sync", {
+    data: "not-json" as unknown as object,
+    headers: { "Content-Type": "application/json" },
+  });
   const body = await res.text();
   expect(body).not.toMatch(/at\s+\S+\s+\(.+:\d+:\d+\)/);
 });

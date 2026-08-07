@@ -15,7 +15,9 @@ const rollbackDocumented = (() => {
   try {
     const src = readFileSync("docs/DEPLOYMENT.md", "utf8").toLowerCase();
     return src.includes("rollback");
-  } catch { return false; }
+  } catch {
+    return false;
+  }
 })();
 
 const secretLeaks = (() => {
@@ -23,9 +25,12 @@ const secretLeaks = (() => {
     const src = readFileSync("backend/services/statusService.mjs", "utf8");
     // Payload darf keine Werte von AZURE_*_CONNECTION o.ä. herausgeben — nur Booleans.
     // Wir prüfen: kein `process.env.AZURE_*_CONNECTION` wird direkt in den return-payload gestreamt.
-    const dangerous = /return[\s\S]*?process\.env\.(AZURE_[A-Z_]+_CONNECTION|AZURE_STORAGE_SAS|AZURE_CLIENT_SECRET)/;
+    const dangerous =
+      /return[\s\S]*?process\.env\.(AZURE_[A-Z_]+_CONNECTION|AZURE_STORAGE_SAS|AZURE_CLIENT_SECRET)/;
     return dangerous.test(src) ? 1 : 0;
-  } catch { return 0; }
+  } catch {
+    return 0;
+  }
 })();
 
 const backupAvailable = existsSync("src/lib/backup-service.ts");
@@ -41,4 +46,6 @@ const report = {
 };
 
 writeFileSync(OUT, JSON.stringify(report, null, 2));
-console.log(`[ops-checks] Rollback-Doku: ${rollbackDocumented} · Secret-Leak-Signale: ${secretLeaks} · Backup: ${backupAvailable}`);
+console.log(
+  `[ops-checks] Rollback-Doku: ${rollbackDocumented} · Secret-Leak-Signale: ${secretLeaks} · Backup: ${backupAvailable}`,
+);
