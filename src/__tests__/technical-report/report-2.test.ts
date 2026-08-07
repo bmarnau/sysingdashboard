@@ -8,9 +8,11 @@ let proposeReleaseStage: Fn, applyReleaseOverride: Fn, STAGES: readonly string[]
 
 beforeAll(async () => {
   // @ts-expect-error mjs außerhalb tsconfig
-  const canonical: Record<string, Fn> = await import("../../../scripts/technical-report/canonical.mjs");
+  const canonical: Record<string, Fn> =
+    await import("../../../scripts/technical-report/canonical.mjs");
   // @ts-expect-error mjs außerhalb tsconfig
-  const gate: Record<string, any> = await import("../../../scripts/technical-report/release-gate.mjs");
+  const gate: Record<string, any> =
+    await import("../../../scripts/technical-report/release-gate.mjs");
   ({ computeIntegrityHash, extractIntegrityPayload, stableStringify } = canonical);
   ({ proposeReleaseStage, applyReleaseOverride, STAGES } = gate);
 });
