@@ -150,7 +150,9 @@ Alternativ über die Browser-DevTools:
 
 ## Weiterführende Dokumentation
 
-- [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — Systemübersicht, Modulgrenzen, Datenfluss
+- [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — Ist- und Zielarchitektur, Schichtenmodell, Supabase/RBAC/RLS, Backup 2.0, geplante Bausteine
+- [`docs/PROJECT-GOVERNANCE.md`](./docs/PROJECT-GOVERNANCE.md) — Regelwerk: Prinzipien, Definition of Done, Phasen
+- [`docs/PROJECT-STATUS.md`](./docs/PROJECT-STATUS.md) / [`docs/PROJECT-STATUS.yaml`](./docs/PROJECT-STATUS.yaml) — Projektmanifest (Single Source of Truth für Status und Roadmap), geprüft mit `bun run project-status:check`
 - [`docs/ADR/`](./docs/ADR/) — Architecture Decision Records (Entscheidungshistorie)
 - [`docs/ENTWICKLUNGSTAGEBUCH.md`](./docs/ENTWICKLUNGSTAGEBUCH.md) — Projektchronik (Service → Entwicklungstagebuch)
 - [`docs/API.md`](./docs/API.md) — Server-Routen (`/api/status`, `/api/sync`)
@@ -158,6 +160,9 @@ Alternativ über die Browser-DevTools:
 - [`docs/DATA-SCHEMA.md`](./docs/DATA-SCHEMA.md) — Export-Format & Migrationsregeln
 - [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md) — Dev-Workflow, Branch-Strategie, Doku-Sync-Pflicht
 - [`CHANGELOG.md`](./CHANGELOG.md) — Single Source of Truth der Dashboard-Version
+
+**Projektphasen**: Phase 1 „Technische Plattform" ist mit Version 1.50.0 abgeschlossen
+(ADR-0023). Phase 2 „AVKK-Fachmodell" beginnt mit Sprint 07.
 
 ---
 

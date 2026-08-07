@@ -1,6 +1,6 @@
 # Project Manifest — `docs/PROJECT-STATUS.yaml`
 
-Stand: 2026-08-06 · Schema: [`docs/project-status.schema.json`](./project-status.schema.json)
+Stand: 2026-08-07 · Schema: [`docs/project-status.schema.json`](./project-status.schema.json)
 · Prüfbefehl: `bun run project-status:check`
 
 `PROJECT-STATUS.yaml` ist die **verbindliche, maschinenlesbare Single Source of
@@ -21,6 +21,7 @@ nur gespiegelt. Der Validator erzwingt die Übereinstimmung.
 | `vision` | Zielaussage und Zielzustand | ja |
 | `architecturePrinciples` | ID + Regel, identisch mit Governance Abschnitt 3 | ja |
 | `versions` | Dashboard, Schemata, Formate | ja |
+| `phases` | Projektphasen mit Ziel, Status, Start- und Abschlussversion (ab schemaVersion 1.3.0) | nein |
 | `currentState` | aktueller Sprint, Testanzahl, Gates, Verifikationsgrenzen | ja |
 | `platforms` | Entwicklungs- und Laufzeitplattformen | nein |
 | `supabase` | Rolle, Umgebungen, Auth-/RBAC-/RLS-Stand | nein |

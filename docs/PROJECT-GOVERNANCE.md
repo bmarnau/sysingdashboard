@@ -214,6 +214,25 @@ Backlog, technische Schulden.
 
 ---
 
+## 11a. Phasenmodell
+
+Das Projekt ist in Phasen gegliedert, die im Manifest (`phases`) geführt und vom
+Validator geprüft werden (ADR-0023).
+
+| Phase | Titel | Status | Abschluss |
+| --- | --- | --- | --- |
+| 1 | Technische Plattform | completed | v1.50.0 |
+| 2 | AVKK-Fachmodell | next | offen |
+
+Regeln:
+
+- Nach Abschluss einer Phase ist Arbeit an deren Gegenstand nur noch als Wartung,
+  Fehlerbehebung oder begründete Voraussetzung eines Sprints der Folgephase zulässig.
+- Ein Phasenwechsel erfordert grüne Quality Gates, einen neu erzeugten Prüfbericht,
+  einen Tagebucheintrag und ein aktualisiertes Manifest.
+
+---
+
 ## 12. Rollen der Projektdokumente
 
 | Dokument | Rolle | Pflegeanlass |
