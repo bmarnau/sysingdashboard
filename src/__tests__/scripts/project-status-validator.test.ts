@@ -56,12 +56,19 @@ function baseDoc(): Record<string, unknown> {
     completedSprints: [{ id: "S1", title: "Sprint 1", version: "9.9.9", status: "completed" }],
     backlog: [],
     technicalDebt: [],
-    quality: { tests: { total: 1 }, gates: {} },
-    releaseManagement: { currentRelease: "9.9.9", status: "passed" },
+    quality: { tests: { total: 1, passing: 1, failing: 0 }, gates: {} },
+    releaseManagement: { currentRelease: "9.9.9", stage: "production", status: "passed" },
     risks: [],
-    artifacts: {},
-    validation: { command: "bun run project-status:check", checks: ["schema"] },
-    sprintGovernance: { definitionOfDone: ["Tests grün"] },
+    artifacts: { projectManifest: "docs/PROJECT-STATUS.yaml", changelog: "CHANGELOG.md" },
+    validation: {
+      requiredChecks: ["schema"],
+      recommendedCommand: "bun run project-status:check",
+    },
+    sprintGovernance: {
+      startConditions: ["Vorsprint abgeschlossen"],
+      definitionOfDone: ["Tests grün"],
+      updateTriggers: ["Sprintabschluss"],
+    },
   };
 }
 
