@@ -2243,6 +2243,109 @@ Gerendert wird ein bewusst begrenztes Markdown-Subset (Überschriften, Listen, T
 - Keine personenbezogenen Daten und keine Zugangsdaten in der Datei.`,
     relatedTopics: ["changelog", "technical-test-report", "ci-quality-gates"],
   },
+  {
+    id: "dialog-referenz",
+    title: "Dialog-Referenz (Zweck, Rollen, Ergebnis)",
+    category: "Referenz",
+    keywords: [
+      "Dialog", "Referenz", "Übersicht", "Berechtigung", "Vorschau",
+      "Import", "Export", "Azure", "Prüfbericht", "Arbeitszeitmodell",
+    ],
+    lastUpdated: "2026-08-07",
+    content: `## Zweck dieses Kapitels
+Vollständige Referenz aller Dialoge, die nicht bereits ein eigenes Kapitel besitzen.
+Je Dialog: Zweck, Benutzergruppe, Berechtigung, Eingaben, Ergebnis, Besonderheiten.
+
+## UserManualDialog.tsx — Benutzerhandbuch
+- **Zweck**: Anzeige dieses Handbuchs inkl. Suche, Kategorien und Änderungshistorie.
+- **Benutzergruppe**: alle angemeldeten Benutzer.
+- **Berechtigung**: keine gesonderte — Sichtbarkeit über das Hilfemenü.
+- **Eingaben**: Suchbegriff, Kapitelauswahl.
+- **Ergebnis**: gerenderter Kapiteltext, Versions- und Pflegestand.
+- **Besonderheiten**: Inhalte stammen aus \`src/lib/help-documentation.ts\`; Rollen-gefilterte Kapitel werden ausgeblendet.
+
+## TechnicalReportDialog.tsx — Technischer Prüfbericht
+- **Zweck**: Anzeige des aggregierten technischen Prüfberichts (Schema 2.0) inkl. Findings, Integritäts-Hash und Druckansicht.
+- **Benutzergruppe**: technische Rollen und Management.
+- **Berechtigung**: \`documentation.view\`; Freigaberelevante Aktionen bleiben lesend.
+- **Eingaben**: Filter nach Kategorie/Severity, Auswahl Historie, Druck.
+- **Ergebnis**: Bericht am Bildschirm, optional Druck-/PDF-Ausgabe über \`#technical-report-print-root\`.
+- **Besonderheiten**: Daten kommen aus \`test-report/technical-test-report.json\`; keine Bearbeitung aus der Oberfläche.
+
+## WorkingTimeModelsDialog.tsx — Arbeitszeitmodelle
+- **Zweck**: Pflege der Arbeitszeitmodelle, die Soll-Zeiten und Auslastungsberechnung bestimmen.
+- **Benutzergruppe**: Administratoren, Teamleiter.
+- **Berechtigung**: \`settings.manage\`.
+- **Eingaben**: Modellname, Wochenstunden, Arbeitstage, Gültigkeitszeitraum.
+- **Ergebnis**: geändertes Modell wirkt unmittelbar auf Zielzeit- und Leistungsberechnung.
+- **Besonderheiten**: Änderungen sind lokal persistiert (user-scoped) und fließen in Exporte ein.
+
+## SaveTargetDialog.tsx — Speicherziel wählen
+- **Zweck**: Auswahl, ob eine erzeugte Datei heruntergeladen oder im Downloadbereich abgelegt wird.
+- **Benutzergruppe**: alle Benutzer mit Exportrecht.
+- **Berechtigung**: abgeleitet vom auslösenden Export (\`export.*\`).
+- **Eingaben**: Zielauswahl, Dateiname.
+- **Ergebnis**: Datei im Browser-Download oder als Eintrag im Downloadbereich (IndexedDB, mit Aufbewahrungsfrist).
+- **Besonderheiten**: Dateinamen werden normalisiert (\`export-naming.ts\`); Kollisionen erhalten einen Zeitstempel.
+
+## PdfPreviewDialog.tsx — PDF-Vorschau
+- **Zweck**: Vorschau erzeugter PDF-Berichte vor Download oder Druck.
+- **Benutzergruppe**: alle Benutzer mit Report-Zugriff.
+- **Berechtigung**: \`export.pdf\` bzw. Recht des auslösenden Berichts.
+- **Eingaben**: Seitennavigation, Zoom.
+- **Ergebnis**: Sichtprüfung; anschließend Download oder Ablage im Downloadbereich.
+- **Besonderheiten**: Rendering über \`PdfCanvasViewer\`; \`jspdf\` wird erst beim Öffnen nachgeladen (Lazy-Chunk).
+
+## TextPreviewDialog.tsx — Text-/CSV-/JSON-Vorschau
+- **Zweck**: Vorschau textbasierter Exporte (CSV, JSON, Azure-Table-Format).
+- **Benutzergruppe**: alle Benutzer mit Exportrecht.
+- **Berechtigung**: Recht des auslösenden Exports.
+- **Eingaben**: keine — reine Anzeige mit Scrollen und Kopieren.
+- **Ergebnis**: Inhaltsprüfung vor Weitergabe.
+- **Besonderheiten**: Große Dateien werden gekürzt angezeigt; sensible Felder sind bereits im Export entfernt (\`stripSensitiveFields\`).
+
+## ImportPreviewDialog.tsx — Importvorschau und Diff
+- **Zweck**: Schritt 3 des Import-Assistenten: Gegenüberstellung von Bestand und Importdatei.
+- **Benutzergruppe**: Administratoren, Projektmanager.
+- **Berechtigung**: \`import.execute\`.
+- **Eingaben**: Bestätigung je Bereich, Konfliktstrategie (überschreiben / überspringen / zusammenführen).
+- **Ergebnis**: Freigabe des Imports; erst danach werden Daten geschrieben.
+- **Besonderheiten**: Vor dem Schreiben wird automatisch ein Sicherheits-Snapshot erzeugt (Rollback möglich); jeder Lauf landet im Importprotokoll.
+
+## AzureDataDialog.tsx — Azure-Datenbereich
+- **Zweck**: Zentrale Oberfläche für Azure-Status, Aktionen und Historie.
+- **Benutzergruppe**: System-Administrator, Administrator, Teamleiter, Projektmanager (aktionsabhängig).
+- **Berechtigung**: \`azure.*\` je Aktion (siehe Kapitel „Azure Servicebereich").
+- **Eingaben**: Auswahl der Aktion, Zeitraum, Bereiche.
+- **Ergebnis**: Statusanzeige, ausgelöster Verbindungstest, Export oder Import.
+- **Besonderheiten**: Im Runtime-Mode \`development\` sind alle Azure-Aufrufe blockiert (\`assertAzureAllowed\`); es werden nie Secrets angezeigt.
+
+## AzureConfirmDialog.tsx — Azure-Aktion bestätigen
+- **Zweck**: Zwei-Schritt-Bestätigung für risikobehaftete Azure-Operationen (Datenbankaufbau, Import, Überschreiben).
+- **Benutzergruppe**: ausschließlich Rollen mit der jeweiligen Azure-Berechtigung.
+- **Berechtigung**: identisch zur bestätigten Aktion.
+- **Eingaben**: explizite Bestätigung, bei destruktiven Aktionen Eingabe des Zielnamens.
+- **Ergebnis**: Freigabe oder Abbruch der Operation.
+- **Besonderheiten**: Zielumgebung wird ohne Credentials angezeigt; Abbruch ist der Default.
+
+## AzureImportPreviewDialog.tsx — Azure-Importvorschau
+- **Zweck**: Vorschau der aus Azure gelesenen Datensätze vor Übernahme in den lokalen Bestand.
+- **Benutzergruppe**: System-Administrator, Administrator.
+- **Berechtigung**: \`azure.import\`.
+- **Eingaben**: Auswahl der zu übernehmenden Bereiche, Konfliktstrategie.
+- **Ergebnis**: Übernahme in den Store nach Snapshot; Protokolleintrag in der Sync-Historie.
+- **Besonderheiten**: Read-only-Vorschau — ohne Bestätigung wird nichts geschrieben.
+
+## Pflegehinweis
+Neue Dialoge werden hier oder in einem eigenen Kapitel dokumentiert. \`bun run docs:check\` meldet jeden Dialog, der im Handbuch nicht vorkommt.`,
+    relatedTopics: [
+      "import-export",
+      "downloads",
+      "azure-service-area",
+      "technical-test-report",
+      "working-time-model",
+    ],
+  },
 ];
 
 
