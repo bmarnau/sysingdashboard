@@ -13,31 +13,31 @@ nur gespiegelt. Der Validator erzwingt die Übereinstimmung.
 
 ## 1. Aufbau
 
-| Abschnitt | Inhalt | Pflicht |
-| --- | --- | --- |
-| `schemaVersion` | Semver des Manifest-Schemas | ja |
-| `lastUpdated` | ISO-Datum der letzten Pflege | ja |
-| `project` | Name, Repository, Quelle der Wahrheit, Lebenszyklus | ja |
-| `vision` | Zielaussage und Zielzustand | ja |
-| `architecturePrinciples` | ID + Regel, identisch mit Governance Abschnitt 3 | ja |
-| `versions` | Dashboard, Schemata, Formate | ja |
-| `phases` | Projektphasen mit Ziel, Status, Start- und Abschlussversion (ab schemaVersion 1.3.0) | nein |
-| `currentState` | aktueller Sprint, Testanzahl, Gates, Verifikationsgrenzen | ja |
-| `platforms` | Entwicklungs- und Laufzeitplattformen | nein |
-| `supabase` | Rolle, Umgebungen, Auth-/RBAC-/RLS-Stand | nein |
-| `completedSprints` | abgeschlossene Sprints mit Version | nein |
-| `roadmap` | geplante Sprints mit Ziel, Priorität, Abhängigkeiten | ja |
-| `backlog` | thematische Rückstände | ja |
-| `technicalDebt` | bekannte Schulden mit Referenz | ja |
-| `adrs` | Verzeichnis der Entscheidungen | nein |
-| `quality` | Tests, Findings, Gates | ja |
-| `releaseManagement` | aktueller Release und Nachweise | ja |
-| `risks` | Risiken mit Eintrittswahrscheinlichkeit und Wirkung | ja |
-| `mcpAndAgents` | geplante Agentennutzung und Leitplanken | nein |
-| `artifacts` | Pfade zu allen Projektartefakten | ja |
-| `consumers` | menschliche und maschinelle Nutzer | nein |
-| `validation` | Pflichtprüfungen und Prüfbefehl | ja |
-| `sprintGovernance` | Startbedingungen, Definition of Done, Auslöser | ja |
+| Abschnitt                | Inhalt                                                                               | Pflicht |
+| ------------------------ | ------------------------------------------------------------------------------------ | ------- |
+| `schemaVersion`          | Semver des Manifest-Schemas                                                          | ja      |
+| `lastUpdated`            | ISO-Datum der letzten Pflege                                                         | ja      |
+| `project`                | Name, Repository, Quelle der Wahrheit, Lebenszyklus                                  | ja      |
+| `vision`                 | Zielaussage und Zielzustand                                                          | ja      |
+| `architecturePrinciples` | ID + Regel, identisch mit Governance Abschnitt 3                                     | ja      |
+| `versions`               | Dashboard, Schemata, Formate                                                         | ja      |
+| `phases`                 | Projektphasen mit Ziel, Status, Start- und Abschlussversion (ab schemaVersion 1.3.0) | nein    |
+| `currentState`           | aktueller Sprint, Testanzahl, Gates, Verifikationsgrenzen                            | ja      |
+| `platforms`              | Entwicklungs- und Laufzeitplattformen                                                | nein    |
+| `supabase`               | Rolle, Umgebungen, Auth-/RBAC-/RLS-Stand                                             | nein    |
+| `completedSprints`       | abgeschlossene Sprints mit Version                                                   | nein    |
+| `roadmap`                | geplante Sprints mit Ziel, Priorität, Abhängigkeiten                                 | ja      |
+| `backlog`                | thematische Rückstände                                                               | ja      |
+| `technicalDebt`          | bekannte Schulden mit Referenz                                                       | ja      |
+| `adrs`                   | Verzeichnis der Entscheidungen                                                       | nein    |
+| `quality`                | Tests, Findings, Gates                                                               | ja      |
+| `releaseManagement`      | aktueller Release und Nachweise                                                      | ja      |
+| `risks`                  | Risiken mit Eintrittswahrscheinlichkeit und Wirkung                                  | ja      |
+| `mcpAndAgents`           | geplante Agentennutzung und Leitplanken                                              | nein    |
+| `artifacts`              | Pfade zu allen Projektartefakten                                                     | ja      |
+| `consumers`              | menschliche und maschinelle Nutzer                                                   | nein    |
+| `validation`             | Pflichtprüfungen und Prüfbefehl                                                      | ja      |
+| `sprintGovernance`       | Startbedingungen, Definition of Done, Auslöser                                       | ja      |
 
 ---
 
@@ -177,12 +177,12 @@ risks:
 
 ## 8. Nutzung durch Werkzeuge und Agenten
 
-| Konsument | Nutzung |
-| --- | --- |
-| **Lovable** | Liest Sprintstand, Roadmap und Nicht-Ziele, bevor Änderungen geplant werden; schreibt den Manifest-Stand am Sprintende fort. |
-| **ChatGPT** | Nutzt das Manifest als Kontextanker für Sprintplanung und Abnahmeprüfung, statt sich auf Chatverlauf zu stützen. |
-| **Codex / lokale IDE** | Liest Architekturprinzipien, technische Schulden und Definition of Done vor lokalen Änderungen. |
-| **GitHub Actions** | Führt `project-status:check` im Job `static` aus; ein ungültiges Manifest bricht den Build ab. |
+| Konsument                 | Nutzung                                                                                                                                                                                                  |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Lovable**               | Liest Sprintstand, Roadmap und Nicht-Ziele, bevor Änderungen geplant werden; schreibt den Manifest-Stand am Sprintende fort.                                                                             |
+| **ChatGPT**               | Nutzt das Manifest als Kontextanker für Sprintplanung und Abnahmeprüfung, statt sich auf Chatverlauf zu stützen.                                                                                         |
+| **Codex / lokale IDE**    | Liest Architekturprinzipien, technische Schulden und Definition of Done vor lokalen Änderungen.                                                                                                          |
+| **GitHub Actions**        | Führt `project-status:check` im Job `static` aus; ein ungültiges Manifest bricht den Build ab.                                                                                                           |
 | **Zukünftige KI-Agenten** | Verwenden `artifacts`, `consumers` und `mcpAndAgents.guardrails` als Einstiegs- und Leitplankenquelle. Agenten dürfen das Manifest lesen; Schreibzugriff nur über einen regulären, überprüfbaren Commit. |
 
 Regel für alle Konsumenten: **Nie aus dem Manifest ableiten, was im Code

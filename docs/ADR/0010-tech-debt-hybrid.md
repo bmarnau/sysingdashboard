@@ -49,11 +49,13 @@ Hybrider Ansatz mit einer gemeinsamen Datenstruktur:
 ## Konsequenzen
 
 **Positiv**
+
 - Berichte sind über Runs reproduzierbar (stabile IDs, Diff).
 - Subjektive Debt bleibt sichtbar und pflegbar, ohne Auto-Rauschen.
 - Critical-Gate zieht harten Boden ein, ohne die Trend-Sicht zu vergiften.
 
 **Negativ / Trade-offs**
+
 - Manual-Katalog braucht Team-Disziplin — verwaist er, fällt der Hybrid
   auf das Niveau eines reinen Auto-Scanners zurück.
 - Deterministische IDs sind gegen Datei-Renamings empfindlich (Fund gilt

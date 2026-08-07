@@ -15,6 +15,7 @@ als Wahrheitsquelle nimmt.
 ## Optionen
 
 ### A) AST-freie statische Analyse (gewählt)
+
 Ein Discovery-Skript scannt `src/routes/api/**/*.ts` per Regex und extrahiert
 Pfad, HTTP-Methoden, Middleware-Wrapper, Validierung und Auth-Guards.
 Registry bleibt als Anreicherungsquelle bestehen.
@@ -25,11 +26,13 @@ Registry bleibt als Anreicherungsquelle bestehen.
 - (−) Reagiert auf neue Muster nur mit erweitertem Analyzer.
 
 ### B) Voller AST (@babel/parser oder ts-morph)
+
 - (+) Robuster gegenüber ungewöhnlichen Formatierungen.
 - (−) Zusätzliche Build-Kosten, transitive Dependency-Belastung.
 - (−) Für die aktuelle Angriffsfläche (2 Routen) massiv überdimensioniert.
 
 ### C) Konventions-Meta-Export
+
 Jede Route exportiert `endpointMeta = { auth, permission, scope, ... }`.
 Discovery liest nur die Exports.
 
@@ -67,13 +70,14 @@ für einfache Fälle zu umständlich und trennt die Ausnahmebegründung
 räumlich vom Handler.
 
 ### Regel
+
 Routen dürfen optional exportieren:
 
 ```ts
 export const endpointMeta = {
   public: true,
-  reason: "…",              // Pflicht bei public:true — sonst LOW-Finding
-  classification: "public",  // optional, überschreibt Heuristik
+  reason: "…", // Pflicht bei public:true — sonst LOW-Finding
+  classification: "public", // optional, überschreibt Heuristik
   permission: null,
   authRequired: false,
 } as const;
@@ -85,7 +89,8 @@ Objekte — bewusst tolerante Regex-Extraktion, kein AST (siehe Kern-ADR).
 `public-without-reason`, damit die Ausnahme dokumentiert bleibt.
 
 ### Warum kein Widerspruch zur ursprünglichen Entscheidung
-Option C wurde ursprünglich als *Ersatz* für die Auto-Discovery bewertet
+
+Option C wurde ursprünglich als _Ersatz_ für die Auto-Discovery bewertet
 und daher verworfen (Bricht bei jeder neuen Route ohne Meta). Die
 additive Einführung ändert daran nichts: fehlt `endpointMeta`, greift
 weiter die Heuristik.

@@ -5,25 +5,25 @@ Stand: 2026-08-07 · Version: siehe `CHANGELOG.md` (Single Source of Truth)
 [`docs/PROJECT-STATUS.yaml`](./PROJECT-STATUS.yaml)
 
 Dieses Dokument beschreibt den **Ist-Zustand** der Codebasis. Geplante Bausteine sind
-ausdrücklich als *geplant* gekennzeichnet und besitzen heute keinen Code.
+ausdrücklich als _geplant_ gekennzeichnet und besitzen heute keinen Code.
 Entscheidungen mit Trade-offs stehen einzeln in [`docs/ADR/`](./ADR/).
 
 ---
 
 ## 1. Architekturübersicht
 
-| Ebene       | Technologie / Ort                                                        |
-| ----------- | ------------------------------------------------------------------------ |
-| Frontend    | React 19 + TanStack Start v1 (SSR, File-based Routing) + Vite 7           |
-| Styling     | Tailwind CSS v4 + oklch-Design-Tokens in `src/styles.css`                 |
-| UI-Kit      | shadcn/ui (Radix Primitives) + Lucide Icons                               |
-| State       | Pub-Sub-Store (`src/lib/store/`) + `useSyncExternalStore`                 |
-| Persistenz  | `localStorage` (user-scoped) · IndexedDB (Logs, Downloads) · Supabase     |
-| Identität   | Supabase Auth (E-Mail/Passwort), Profile + Rollen in Postgres mit RLS     |
-| Server      | TanStack Server-Routes auf Cloudflare Worker (`nodejs_compat`)            |
-| Services    | `src/lib/*` (Client) · `backend/services/*` (framework-freie ESM-Module)  |
-| Governance  | Project Manifest + Validator + CI-Gates                                   |
-| CI          | GitHub Actions: static, lint, docs, tests, security, tech-debt, build     |
+| Ebene      | Technologie / Ort                                                        |
+| ---------- | ------------------------------------------------------------------------ |
+| Frontend   | React 19 + TanStack Start v1 (SSR, File-based Routing) + Vite 7          |
+| Styling    | Tailwind CSS v4 + oklch-Design-Tokens in `src/styles.css`                |
+| UI-Kit     | shadcn/ui (Radix Primitives) + Lucide Icons                              |
+| State      | Pub-Sub-Store (`src/lib/store/`) + `useSyncExternalStore`                |
+| Persistenz | `localStorage` (user-scoped) · IndexedDB (Logs, Downloads) · Supabase    |
+| Identität  | Supabase Auth (E-Mail/Passwort), Profile + Rollen in Postgres mit RLS    |
+| Server     | TanStack Server-Routes auf Cloudflare Worker (`nodejs_compat`)           |
+| Services   | `src/lib/*` (Client) · `backend/services/*` (framework-freie ESM-Module) |
+| Governance | Project Manifest + Validator + CI-Gates                                  |
+| CI         | GitHub Actions: static, lint, docs, tests, security, tech-debt, build    |
 
 ```text
 ┌──────────────────────────── Browser ────────────────────────────┐
@@ -58,13 +58,13 @@ Entscheidungen mit Trade-offs stehen einzeln in [`docs/ADR/`](./ADR/).
 
 ## 2. Schichtenmodell
 
-| Schicht | Ort | Darf importieren | Darf **nicht** importieren |
-| --- | --- | --- | --- |
-| Routen / UI | `src/routes`, `src/components` | Hooks, Services (öffentliche API), UI-Kit | Persistenzmodule direkt (`src/lib/store/*-persistence`), `*.server.ts` |
-| Hooks / Facades | `src/hooks` | Services, Store, Persistenz | UI-Komponenten |
-| Services | `src/lib/*` | andere Services, Persistenz, Plattform-Clients | Routen, Komponenten |
-| Persistenz / Repository | `src/lib/store/*`, `src/integrations/supabase/*` | Plattform-SDKs | UI, Hooks |
-| Serverseite | `src/routes/api/*`, `backend/services/*` | Node-/Worker-APIs, `config/*` | Browser-Code |
+| Schicht                 | Ort                                              | Darf importieren                               | Darf **nicht** importieren                                             |
+| ----------------------- | ------------------------------------------------ | ---------------------------------------------- | ---------------------------------------------------------------------- |
+| Routen / UI             | `src/routes`, `src/components`                   | Hooks, Services (öffentliche API), UI-Kit      | Persistenzmodule direkt (`src/lib/store/*-persistence`), `*.server.ts` |
+| Hooks / Facades         | `src/hooks`                                      | Services, Store, Persistenz                    | UI-Komponenten                                                         |
+| Services                | `src/lib/*`                                      | andere Services, Persistenz, Plattform-Clients | Routen, Komponenten                                                    |
+| Persistenz / Repository | `src/lib/store/*`, `src/integrations/supabase/*` | Plattform-SDKs                                 | UI, Hooks                                                              |
+| Serverseite             | `src/routes/api/*`, `backend/services/*`         | Node-/Worker-APIs, `config/*`                  | Browser-Code                                                           |
 
 Durchsetzung: `scripts/tech-debt/detectors/layer-violations.mjs`
 (Finding-Klasse `td-layer-*`), CI-Job `tech-debt`.
@@ -125,12 +125,12 @@ bewusst ausgelöster Vorgang, kein Live-Two-Way-Sync.
 
 ## 6. Supabase
 
-| Objekt | Zweck | Zugriff |
-| --- | --- | --- |
-| `auth.users` | Identität (E-Mail/Passwort) | Supabase-verwaltet |
-| `public.profiles` | Anzeigename, Kontostatus | RLS: eigener Datensatz, Admin über `has_role` |
-| `public.user_roles` | Rollenzuordnung (separate Tabelle, nie am Profil) | RLS + Security-Definer-Funktion |
-| `public.app_settings` | globale Einstellungen (z. B. Idle-Timeout) | Lesen authentifiziert, Schreiben Admin |
+| Objekt                | Zweck                                             | Zugriff                                       |
+| --------------------- | ------------------------------------------------- | --------------------------------------------- |
+| `auth.users`          | Identität (E-Mail/Passwort)                       | Supabase-verwaltet                            |
+| `public.profiles`     | Anzeigename, Kontostatus                          | RLS: eigener Datensatz, Admin über `has_role` |
+| `public.user_roles`   | Rollenzuordnung (separate Tabelle, nie am Profil) | RLS + Security-Definer-Funktion               |
+| `public.app_settings` | globale Einstellungen (z. B. Idle-Timeout)        | Lesen authentifiziert, Schreiben Admin        |
 
 - Rollenprüfung über die Security-Definer-Funktion `has_role(uuid, app_role)`,
   Kontostatus über `is_account_active(uuid)`; `EXECUTE` ist von `PUBLIC` entzogen.
@@ -195,13 +195,13 @@ Phasenmodell: [ADR-0023](./ADR/0023-phasenmodell-infrastrukturabschluss.md).
 
 ## 10. Geplante Bausteine (heute kein Code)
 
-| Baustein | Zielbild | Sprint |
-| --- | --- | --- |
-| **Reference Data** | Zentrale Stammdatenschicht (Kataloge, Klassifizierungen) als eigener Service mit eigener Supabase-Tabelle und Cache im Store | nach 07 |
-| **AVKK** | Fachliche Erweiterung der Arbeitspakete: eigenes Datenmodell, Migration mit RLS/Grants, Berücksichtigung in Import/Export/Backup | 07 |
-| **Report Service** | Serverseitig erzeugte, versionierte Berichte statt clientseitigem PDF-Bau | nach 08 |
-| **Microsoft 365** | Graph-Anbindung (Kalender, Aufgaben, SharePoint) über Server-Routes, Entra-ID-Identität | später |
-| **KI-Agenten** | Lesende Agenten auf Manifest, Prüfbericht und Tagebuch; Schreibzugriff nur über regulären Commit (`mcpAndAgents.guardrails`) | später |
+| Baustein           | Zielbild                                                                                                                         | Sprint  |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| **Reference Data** | Zentrale Stammdatenschicht (Kataloge, Klassifizierungen) als eigener Service mit eigener Supabase-Tabelle und Cache im Store     | nach 07 |
+| **AVKK**           | Fachliche Erweiterung der Arbeitspakete: eigenes Datenmodell, Migration mit RLS/Grants, Berücksichtigung in Import/Export/Backup | 07      |
+| **Report Service** | Serverseitig erzeugte, versionierte Berichte statt clientseitigem PDF-Bau                                                        | nach 08 |
+| **Microsoft 365**  | Graph-Anbindung (Kalender, Aufgaben, SharePoint) über Server-Routes, Entra-ID-Identität                                          | später  |
+| **KI-Agenten**     | Lesende Agenten auf Manifest, Prüfbericht und Tagebuch; Schreibzugriff nur über regulären Commit (`mcpAndAgents.guardrails`)     | später  |
 
 Regel: Kein geplanter Baustein darf implizit über UI-Code entstehen — er beginnt mit ADR
 und Manifest-Eintrag.
@@ -229,13 +229,13 @@ serverseitig und sind im Runtime-Mode `development` durch `assertAzureAllowed` b
 
 ## 12. Trust-Boundaries und Runtime-Grenzen
 
-| Boundary | Wer vertraut wem | Enforcement |
-| --- | --- | --- |
-| Browser ↔ Server-Route | Server vertraut Browser **nicht** | Zod-Validierung, Bearer-Prüfung in `/api/sync` |
-| Browser ↔ Supabase | Datenbank vertraut Client nicht | RLS + Grants + Security-Definer-Funktionen |
-| Server-Route ↔ Azure | beidseitig authentifiziert | `config/secretManager.mjs` |
-| Frontend-RBAC | UI-Komfort, keine Sicherheitsgrenze | ADR-0002 |
-| Logs → IndexedDB | lokal, Redaction aktiv | `logger.ts` (Credential-Redaction) |
+| Boundary               | Wer vertraut wem                    | Enforcement                                    |
+| ---------------------- | ----------------------------------- | ---------------------------------------------- |
+| Browser ↔ Server-Route | Server vertraut Browser **nicht**   | Zod-Validierung, Bearer-Prüfung in `/api/sync` |
+| Browser ↔ Supabase     | Datenbank vertraut Client nicht     | RLS + Grants + Security-Definer-Funktionen     |
+| Server-Route ↔ Azure   | beidseitig authentifiziert          | `config/secretManager.mjs`                     |
+| Frontend-RBAC          | UI-Komfort, keine Sicherheitsgrenze | ADR-0002                                       |
+| Logs → IndexedDB       | lokal, Redaction aktiv              | `logger.ts` (Credential-Redaction)             |
 
 **Cloudflare Worker (`nodejs_compat`)**: erlaubt sind `fs`, `path`, `crypto`, `Buffer`,
 `stream`, `url`, `zlib`, `http(s)`, `net`; nicht erlaubt sind `child_process`,

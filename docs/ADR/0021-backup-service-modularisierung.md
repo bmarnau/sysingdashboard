@@ -18,21 +18,21 @@ sicherheitsrelevanten Teilen (Secret-Denylist, Rollback) war die Datei zu groß.
 Verhaltensneutrale Aufteilung in `src/lib/backup/` entlang der
 Verantwortlichkeiten:
 
-| Modul | Verantwortung |
-| --- | --- |
-| `types.ts` | Gemeinsame Typen, kein Laufzeitcode |
-| `constants.ts` | Speicherorte, Key-Allowlist, Secret-Denylist, Dateinamen |
-| `storage.ts` | IndexedDB-Zugriff (`openBackupDB`, `dbTx`) |
-| `snapshot.ts` | Sammeln und Filtern des App-Zustands |
-| `templates.ts` | README / INSTALL / `.env.example` |
-| `zip.ts` | ZIP-Erzeugung inkl. eingebetteter `dashboard.json` |
-| `integrity.ts` | Konsistenzprüfung und ZIP-Validierung |
-| `audit.ts` | Backup- und Restore-Protokoll |
-| `rollback.ts` | Pre-Snapshot, Rücknahme, Registry |
-| `merge.ts` | Modusabhängige Schreibstrategie + Nachvalidierung |
-| `restore.ts` | Orchestrierung der Wiederherstellung |
-| `create-backup.ts` | `BackupService`, Zeitplan, Download-Helfer |
-| `index.ts` | Öffentliche API |
+| Modul              | Verantwortung                                            |
+| ------------------ | -------------------------------------------------------- |
+| `types.ts`         | Gemeinsame Typen, kein Laufzeitcode                      |
+| `constants.ts`     | Speicherorte, Key-Allowlist, Secret-Denylist, Dateinamen |
+| `storage.ts`       | IndexedDB-Zugriff (`openBackupDB`, `dbTx`)               |
+| `snapshot.ts`      | Sammeln und Filtern des App-Zustands                     |
+| `templates.ts`     | README / INSTALL / `.env.example`                        |
+| `zip.ts`           | ZIP-Erzeugung inkl. eingebetteter `dashboard.json`       |
+| `integrity.ts`     | Konsistenzprüfung und ZIP-Validierung                    |
+| `audit.ts`         | Backup- und Restore-Protokoll                            |
+| `rollback.ts`      | Pre-Snapshot, Rücknahme, Registry                        |
+| `merge.ts`         | Modusabhängige Schreibstrategie + Nachvalidierung        |
+| `restore.ts`       | Orchestrierung der Wiederherstellung                     |
+| `create-backup.ts` | `BackupService`, Zeitplan, Download-Helfer               |
+| `index.ts`         | Öffentliche API                                          |
 
 `src/lib/backup-service.ts` bleibt als **reine Fassade** bestehen und leitet
 ohne eigene Logik weiter. Alle bestehenden Importpfade und Signaturen sind
@@ -51,6 +51,7 @@ unverändert.
 ## Konsequenzen
 
 Positiv:
+
 - Jedes Modul liegt deutlich unter der 500-Zeilen-Schwelle (größtes Modul:
   `restore.ts`).
 - Secret-Denylist (`constants.ts`) und Rollback (`rollback.ts`) sind isoliert
@@ -58,6 +59,7 @@ Positiv:
 - Oversize-Finding für `backup-service.ts` entfällt.
 
 Negativ:
+
 - Mehr Dateien; Einstieg erfordert den Blick in `index.ts`.
 - Die Fassade ist ein zusätzlicher Indirektionsschritt, der langfristig
   entfallen sollte, sobald alle Aufrufer auf `@/lib/backup` umgestellt sind.

@@ -40,11 +40,13 @@ einzige `signOut()`-Pfad lag im Auth-Guard für inaktive Konten.
 ## Konsequenzen
 
 Positiv:
+
 - Providerwechsel betrifft eine Datei.
 - Einheitliches Abmeldeverhalten, keine divergierenden Logout-Pfade.
 - Administrativ steuerbar, revisionssicher protokolliert (`audit_log`).
 
 Negativ:
+
 - **Rein clientseitige Durchsetzung.** Ein entwendetes Token bleibt bis zu
   seinem serverseitigen Ablauf gültig.
 - Zusätzliche Datenbanktabelle und ein Lesezugriff beim Laden des geschützten

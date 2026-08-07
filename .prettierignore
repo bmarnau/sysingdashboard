@@ -6,3 +6,13 @@ pnpm-lock.yaml
 package-lock.json
 bun.lock
 routeTree.gen.ts
+
+# Generierte Prüf- und Berichtsartefakte (Maschinenausgabe, nicht handformatiert)
+test-report
+security-report
+tech-debt
+e2e/reports
+
+# Agenten-/Workspace-Metadaten
+.lovable
+.workspace

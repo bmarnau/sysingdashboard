@@ -10,15 +10,15 @@ die Sitzung beendet und der Benutzer auf die Anmeldeseite geleitet.
 
 ## Architektur
 
-| Modul | Verantwortung |
-| --- | --- |
-| `src/lib/session/idle-config.ts` | Wirksamer Timeout (Systemeinstellung → Env → Standard), Validierung, Speichern |
-| `src/lib/session/idle-monitor.ts` | Providerneutrale Inaktivitätslogik (absolute Zeitstempel, Aktivitätsereignisse, Warn-/Ablauf-Callbacks) |
-| `src/lib/session/idle-channel.ts` | Tab-Synchronisierung (`BroadcastChannel`, Fallback `storage`), Persistenz des letzten Aktivitätszeitpunkts |
-| `src/lib/session/logout-service.ts` | Auth-Adapter: einziger Abmeldepfad (Supabase `signOut` + lokale Bereinigung + Redirect) |
-| `src/hooks/useIdleLogout.ts` | Verdrahtung; nur unter `_authenticated/` gemountet |
-| `src/components/session/IdleWarningDialog.tsx` | Warnung mit Countdown |
-| `src/components/session/SessionSettingsDialog.tsx` | Administrative Einstellung |
+| Modul                                              | Verantwortung                                                                                              |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `src/lib/session/idle-config.ts`                   | Wirksamer Timeout (Systemeinstellung → Env → Standard), Validierung, Speichern                             |
+| `src/lib/session/idle-monitor.ts`                  | Providerneutrale Inaktivitätslogik (absolute Zeitstempel, Aktivitätsereignisse, Warn-/Ablauf-Callbacks)    |
+| `src/lib/session/idle-channel.ts`                  | Tab-Synchronisierung (`BroadcastChannel`, Fallback `storage`), Persistenz des letzten Aktivitätszeitpunkts |
+| `src/lib/session/logout-service.ts`                | Auth-Adapter: einziger Abmeldepfad (Supabase `signOut` + lokale Bereinigung + Redirect)                    |
+| `src/hooks/useIdleLogout.ts`                       | Verdrahtung; nur unter `_authenticated/` gemountet                                                         |
+| `src/components/session/IdleWarningDialog.tsx`     | Warnung mit Countdown                                                                                      |
+| `src/components/session/SessionSettingsDialog.tsx` | Administrative Einstellung                                                                                 |
 
 Nur `logout-service.ts` kennt Supabase. Ein Providerwechsel (z. B. Entra ID)
 betrifft ausschließlich diese Datei.

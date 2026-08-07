@@ -70,12 +70,14 @@ und wird abgewiesen.
 ## Konsequenzen
 
 Positiv:
+
 - Originalschlüssel werden exakt wiederhergestellt.
 - Manipulierte oder beschädigte Archive werden vor dem Schreiben erkannt.
 - Speicheradressen sind frei wählbar — Voraussetzung für Azure-Blob-,
   Docker-Volume- und mandantenfähige Ablagen.
 
 Negativ:
+
 - `buildZip()` und `validateZip()` sind asynchron (WebCrypto).
 - Archive der Version 1 benötigen beim Lesen einen Migrationsschritt, der
   Prüfsummen erst zur Laufzeit berechnet.

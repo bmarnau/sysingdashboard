@@ -4,6 +4,7 @@
 - **Datum**: 2026-07-13
 
 ## Kontext
+
 Für den technischen Prüfbericht wird eine reproduzierbare Testumgebung
 gefordert, die den **aktuellen Buildstand** des Dashboards prüft — nicht
 eine gespiegelte zweite App. Bestehende Infrastruktur: Vitest, Testing
@@ -13,6 +14,7 @@ isolierte Daten, kein Zugriff auf produktives Azure, ausführbar lokal
 und in CI, Ergebnisse als strukturierter Report.
 
 ## Entscheidung
+
 1. **Vitest bleibt Runner.** Neue Modi werden über Pfad-Filter
    (`vitest run src/__tests__/<modus>`) und ein zentrales
    Test-Instance-Modul (`src/__tests__/env/test-instance.ts`) getrennt.
@@ -28,6 +30,7 @@ und in CI, Ergebnisse als strukturierter Report.
    echte Endpunkte anzusprechen. Default: MSW-Mock.
 
 ## Alternativen
+
 - **Separate Test-App**: verworfen — würde Prüfen des aktuellen
   Buildstands unmöglich machen.
 - **Cypress**: verworfen — Playwright ist bereits in der Sandbox
@@ -38,6 +41,7 @@ und in CI, Ergebnisse als strukturierter Report.
   Pfad-Filter-Lösung; kann später bei Bedarf nachgezogen werden.
 
 ## Konsequenzen
+
 - Positiv: Ein Runner, ein Fixtures-Verzeichnis, ein Guard-Modul.
   Kein Drift zwischen Test-App und Produktion.
 - Positiv: Neue Modi kosten nur ein Verzeichnis + ein Script.
@@ -46,6 +50,7 @@ und in CI, Ergebnisse als strukturierter Report.
 - Negativ: Playwright zieht Chromium in CI (~200 MB Cache).
 
 ## Trust-Boundary / Security-Note
+
 - `test-instance.ts` bricht mit Throw ab, wenn außerhalb Vitest geladen.
 - MSW-Handler enthalten keine echten Credentials/Endpunkte.
 - `AZURE_TEST_LIVE`-Gate verhindert versehentliche Live-Aufrufe.

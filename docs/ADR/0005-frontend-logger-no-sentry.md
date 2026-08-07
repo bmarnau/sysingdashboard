@@ -4,12 +4,14 @@
 - **Datum**: 2026-07-08
 
 ## Kontext
+
 Debugging beim Kunden vor Ort erfordert nachvollziehbare Logs, aber das
 Dashboard verarbeitet potenziell projekt- und kundenspezifische Daten
 (Arbeitspaket-Titel, Kundennamen). Ein automatischer Log-Upload zu einem
 US-basierten SaaS ist datenschutzrechtlich problematisch.
 
 ## Entscheidung
+
 Eigener strukturierter Logger (`src/lib/logger.ts`) mit Levels
 `debug` / `info` / `warn` / `error`. In DEV zusätzlich Console-Ausgabe, in PROD
 persistiert ein **Ringbuffer in IndexedDB** (`src/lib/logger.indexeddb.ts`,
@@ -20,6 +22,7 @@ Systemstatus-Dialog.
 außerhalb der Logger-Interna.
 
 ## Alternativen
+
 - **Sentry / Datadog RUM** — automatische Fehlererfassung, aber DSGVO-Aufwand
   (AVV, Sub-Prozessor-Register), monatliche Kosten, PII-Scrubbing wäre unsere
   Verantwortung.
@@ -29,13 +32,16 @@ außerhalb der Logger-Interna.
   Policy; unverhältnismäßig für aktuelle Betriebsgröße.
 
 ## Konsequenzen
+
 Positiv:
+
 - Keine Kundendaten verlassen den Browser ohne explizite Nutzeraktion.
 - Zero externe Kosten.
 - Logger-API zwingt zu strukturiertem Kontext (`{ userId, operation, … }`)
   statt String-Concat.
 
 Negativ:
+
 - **Keine automatische Fehler-Alerting** — Bugs werden erst gemeldet, wenn ein
   Nutzer sich beschwert.
 - Aggregierte Fehlerstatistik über alle Nutzer fehlt.
@@ -43,6 +49,7 @@ Negativ:
   „forensisch sicher".
 
 ## Trust-Boundary / Security-Note
+
 **Nie Secrets/Tokens loggen.** Nur IDs. Der Logger schwärzt selbst nicht —
 Aufrufer sind verantwortlich. Ein zukünftiger PII-Scrubber (Regex-basiert vor
 dem IndexedDB-Write) ist offen.

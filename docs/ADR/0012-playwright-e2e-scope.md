@@ -4,12 +4,14 @@
 - **Datum**: 2026-07-13
 
 ## Kontext
+
 Prompt 2A.4 fordert eine vollständige UI- und End-to-End-Suite über 7
 Bereiche (Navigation, Dashboard, Services, Fehler, Responsive, A11y, RBAC).
 Zielumgebung ist Cloudflare Worker, produktive Preview läuft in Wrangler.
 CI-Budget: < 6 min pro Job.
 
 ## Entscheidung
+
 1. **Playwright** bleibt als E2E-Werkzeug (bereits produktiv seit v1.30.0).
 2. Suite läuft gegen den lokalen **Vite-Dev-Server**, nicht gegen einen
    Wrangler-Preview. Worker-spezifische Regressionen deckt `build:dev` +
@@ -25,6 +27,7 @@ CI-Budget: < 6 min pro Job.
    Screenshots und Videos nur bei Fehlern (Cost-Optimierung).
 
 ## Begründung
+
 - Wrangler-Preview + Playwright verdoppelt die CI-Laufzeit (Startup ~30 s,
   keine HMR). Nutzen ist gering, weil der Worker-Runtime-Unterschied bei
   UI-Interaktion nicht sichtbar wird – er greift nur bei Server-Fn-/API-
@@ -36,6 +39,7 @@ CI-Budget: < 6 min pro Job.
   werden – dann gehört auch „abgelaufene Session" in die Fehlerzustände.
 
 ## Konsequenzen
+
 - **+** Schnelle Feedback-Schleife, wenig Setup-Fläche.
 - **+** Klare Trennung: Contract-Tests (Vitest-Runner), API-Smoke
   (Playwright HTTP), UI-Smoke/Funktion (Playwright Browser).

@@ -9,7 +9,6 @@ Server-Routen des Dashboards. Alle Endpoints liegen unter `src/routes/api/`
 > vertragsrelevante Details (Payload-Beispiele, Fehlercodes) und wird
 > gegen das Inventar per CI abgeglichen.
 
-
 **Auth-Status (Stand 2026-07-24)**: Lovable-Cloud-Auth ist aktiv. Öffentliche
 Health-Routen bleiben anonym und secret-frei; schreibende Routen benötigen eine
 gültige Bearer-Session und prüfen Berechtigungen serverseitig.
@@ -20,6 +19,7 @@ Health-/Systemstatus, secret-frei. Wird vom Dashboard-Dialog
 „Service → Systemstatus…" und externen Uptime-Checks konsumiert.
 
 **Response 200** (`application/json`):
+
 ```json
 {
   "status": "ok",
@@ -36,6 +36,7 @@ Response-Shape wird von `backend/services/statusService.mjs` +
 Tokens.
 
 **Fehler**:
+
 - `405` bei anderer HTTP-Methode als `GET`.
 - `500` nur bei unerwartetem Handler-Fehler; fehlende optionale Azure-ENV wird
   im Payload als Status gemeldet und blockiert Health nicht.
@@ -47,6 +48,7 @@ Table Storage / Blob). Aufrufer ist typischerweise der Sync-Button im
 Dashboard.
 
 **Request Body** (`application/json`):
+
 ```json
 {
   "engineers": [...],
@@ -55,9 +57,11 @@ Dashboard.
   "activities": [...]
 }
 ```
+
 Shape: siehe [`DATA-SCHEMA.md`](./DATA-SCHEMA.md) und `src/lib/json-schema.ts`.
 
 **Response 200**:
+
 ```json
 {
   "ok": true,
@@ -71,6 +75,7 @@ Shape: siehe [`DATA-SCHEMA.md`](./DATA-SCHEMA.md) und `src/lib/json-schema.ts`.
   `has_permission(user, 'azure.export')` bzw. `has_permission(user, 'azure.import')`.
 
 **Fehler**:
+
 - `401` ohne gültige Session.
 - `403` bei fehlender Azure-Berechtigung.
 - `400` bei Schema-Verletzung (Zod-Validation).
@@ -92,7 +97,6 @@ für lokale Entwicklung. Ersetzt durch die TanStack-Server-Routen oben.
 Die framework-freien Services unter `backend/services/` sind geblieben und
 werden von beiden Wegen importiert. Die alten Server-/Routes-Dateien liegen
 zu Referenzzwecken unter `archive/legacy-standalone-backend/`.
-
 
 ## Endpoint-Selbstdeklaration (`endpointMeta`)
 
