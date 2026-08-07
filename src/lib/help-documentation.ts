@@ -154,7 +154,6 @@ Zugriffstoken bleibt bis zu seinem eigenen Ablauf gültig. Siehe
 \`docs/SESSION-TIMEOUT.md\` und ADR-0020.`,
   },
   {
-
     id: "auth-troubleshooting-03b",
     title: "Anmeldung — Fehlerbehebung (Sprint 03B)",
     category: "Sicherheit",
@@ -658,7 +657,15 @@ const generatedTopics: HelpTopic[] = [
     id: "backup-restore-tests",
     title: "Backup-, Restore- und IO-Tests",
     category: "Service",
-    keywords: ["Backup", "Restore", "Wiederherstellung", "Integrität", "Import", "Export", "ADR-0015"],
+    keywords: [
+      "Backup",
+      "Restore",
+      "Wiederherstellung",
+      "Integrität",
+      "Import",
+      "Export",
+      "ADR-0015",
+    ],
     lastUpdated: "2026-08-03",
     content: `## Zweck
 Nachweis, dass Daten exportiert, gesichert, wiederhergestellt und importiert werden können — automatisiert und mit Integritätsbericht.
@@ -1807,7 +1814,15 @@ Der Runner schreibt \`test-report/api-matrix.{md,json}\` nach jedem Lauf.
     id: "ui-e2e-tests",
     title: "UI- und End-to-End-Tests",
     category: "Service",
-    keywords: ["Playwright", "E2E", "UI-Tests", "axe", "Rollen-Matrix", "Responsive", "Fehlerzustände"],
+    keywords: [
+      "Playwright",
+      "E2E",
+      "UI-Tests",
+      "axe",
+      "Rollen-Matrix",
+      "Responsive",
+      "Fehlerzustände",
+    ],
     lastUpdated: "2026-07-13",
     content: `## Zweck
 Die Anwendung wird aus Sicht eines tatsächlichen Benutzers automatisiert geprüft: Navigation, Dashboard, Servicefunktionen, Fehlerzustände, Responsive-Verhalten, Barrierefreiheit und Rollen-Sichtbarkeit. Ergänzt die Handler-direct-Suite aus dem API-Kapitel um echte Browser-Interaktion.
@@ -1881,15 +1896,30 @@ Jeder Server-Request bekommt eine eindeutige **Correlation-ID** (auch Referenz-I
 - Client-Anfragen ohne Header bekommen ihre erste ID erst mit der Server-Antwort; Client-eigene ID (\`X-Correlation-Id\` im Fetch) wird empfohlen für Ende-zu-Ende-Traces.
 - Azure- und Key-Vault-Adapter sind Stubs — Correlation wird bereits durch den Logger propagiert und ab produktiver Anbindung sichtbar.
 - Persistente Log-Suche über Neustarts hinweg braucht den serverseitigen Sink (offen, siehe Tech-Debt).`,
-    relatedTopics: ["system-status", "log-viewer", "api-endpoint-tests", "fehlerbehandlung-logging"],
+    relatedTopics: [
+      "system-status",
+      "log-viewer",
+      "api-endpoint-tests",
+      "fehlerbehandlung-logging",
+    ],
   },
   {
     id: "security-rbac-tests",
     title: "Sicherheits- und RBAC-Tests",
     category: "Service",
     keywords: [
-      "Security", "RBAC", "Rollen", "Assignments", "Scope", "Manipulation",
-      "Lockout", "Logger", "Redaction", "Findings", "Release-Gate", "ADR-0013",
+      "Security",
+      "RBAC",
+      "Rollen",
+      "Assignments",
+      "Scope",
+      "Manipulation",
+      "Lockout",
+      "Logger",
+      "Redaction",
+      "Findings",
+      "Release-Gate",
+      "ADR-0013",
     ],
     lastUpdated: "2026-07-13",
     content: `## Zweck
@@ -1923,8 +1953,12 @@ Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine 
 - \`bun run security:report\` — Report neu bauen.
 - \`bun run security:gate\` — Exit != 0 bei offenen Blockern (CI-Nutzung).`,
     relatedTopics: [
-      "system-status", "log-viewer", "api-endpoint-tests", "ui-end-to-end-tests",
-      "test-instance", "security-findings-acceptance",
+      "system-status",
+      "log-viewer",
+      "api-endpoint-tests",
+      "ui-end-to-end-tests",
+      "test-instance",
+      "security-findings-acceptance",
     ],
   },
   {
@@ -1932,8 +1966,16 @@ Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine 
     title: "API Discovery und Testabdeckung",
     category: "Service",
     keywords: [
-      "API", "Discovery", "Inventar", "Smoke", "Functional", "Endpoint",
-      "Klassifizierung", "Correlation", "Findings", "ADR-0014",
+      "API",
+      "Discovery",
+      "Inventar",
+      "Smoke",
+      "Functional",
+      "Endpoint",
+      "Klassifizierung",
+      "Correlation",
+      "Findings",
+      "ADR-0014",
     ],
     lastUpdated: "2026-07-13",
     content: `## Zweck
@@ -2007,8 +2049,11 @@ Vorrang bei der Klassifizierung: **\`endpointMeta\` > Registry > Heuristik**. Fe
 - \`bun run api:report\` — konsolidierte Berichte + Findings.
 - \`bun run api:gate\` — Exit != 0 bei blockierenden Findings (CI-Nutzung).`,
     relatedTopics: [
-      "security-rbac-tests", "api-endpoint-tests", "system-status",
-      "correlation-id", "test-instance",
+      "security-rbac-tests",
+      "api-endpoint-tests",
+      "system-status",
+      "correlation-id",
+      "test-instance",
     ],
   },
   {
@@ -2091,7 +2136,12 @@ Der Aggregator rotiert den vorherigen Bericht nach \`technical-test-report.prev.
 - Qualität hängt an den Eingaben — fehlt ein Bereichsbericht, gilt der Bereich als \`not-run\`.
 - Bericht ist zur Build-Zeit im Bundle eingefroren, nicht Runtime-Fetch.
 - Keine Prüfsummen, keine Ticket-System-Anbindung, keine Secrets im Report.`,
-    relatedTopics: ["system-status", "security-rbac-tests", "api-endpoint-tests", "performance-build-ops"],
+    relatedTopics: [
+      "system-status",
+      "security-rbac-tests",
+      "api-endpoint-tests",
+      "performance-build-ops",
+    ],
   },
   {
     id: "ci-pipeline-quality-gates",
@@ -2146,15 +2196,27 @@ Jeder Job lädt seinen Report als GitHub-Artefakt hoch (\`coverage/\`, \`api-rep
 - Job-Split erhöht Install-Zeit; per Bun- und Playwright-Cache reduziert, aber nicht eliminiert.
 - Kein automatisches Ticket-System — Blocker müssen im PR-Verlauf adressiert oder als akzeptiert markiert werden.
 - Firefox/WebKit/Mobile-Chrome bleiben opt-in (\`RUN_FIREFOX=1\`, siehe ADR-0012).`,
-    relatedTopics: ["technical-test-report", "security-rbac-tests", "performance-build-ops", "api-endpoint-tests"],
+    relatedTopics: [
+      "technical-test-report",
+      "security-rbac-tests",
+      "performance-build-ops",
+      "api-endpoint-tests",
+    ],
   },
   {
     id: "security-findings-acceptance",
     title: "Security-Findings akzeptieren (accepted:true)",
     category: "Service",
     keywords: [
-      "Security", "Findings", "accepted", "Ausnahme", "Ticket", "Begründung",
-      "static-findings", "Quality Gate", "Blocker",
+      "Security",
+      "Findings",
+      "accepted",
+      "Ausnahme",
+      "Ticket",
+      "Begründung",
+      "static-findings",
+      "Quality Gate",
+      "Blocker",
     ],
     lastUpdated: "2026-07-18",
     content: `## Zweck
@@ -2216,8 +2278,14 @@ Pflichtbestandteile:
     category: "Service",
     component: "DevDiaryDialog.tsx",
     keywords: [
-      "Entwicklungstagebuch", "Chronik", "Historie", "Sprint", "Vision",
-      "Zeitstrahl", "Projektgeschichte", "ADR",
+      "Entwicklungstagebuch",
+      "Chronik",
+      "Historie",
+      "Sprint",
+      "Vision",
+      "Zeitstrahl",
+      "Projektgeschichte",
+      "ADR",
     ],
     lastUpdated: "2026-08-03",
     content: `## Zweck
@@ -2248,8 +2316,16 @@ Gerendert wird ein bewusst begrenztes Markdown-Subset (Überschriften, Listen, T
     title: "Dialog-Referenz (Zweck, Rollen, Ergebnis)",
     category: "Referenz",
     keywords: [
-      "Dialog", "Referenz", "Übersicht", "Berechtigung", "Vorschau",
-      "Import", "Export", "Azure", "Prüfbericht", "Arbeitszeitmodell",
+      "Dialog",
+      "Referenz",
+      "Übersicht",
+      "Berechtigung",
+      "Vorschau",
+      "Import",
+      "Export",
+      "Azure",
+      "Prüfbericht",
+      "Arbeitszeitmodell",
     ],
     lastUpdated: "2026-08-07",
     content: `## Zweck dieses Kapitels
@@ -2347,8 +2423,6 @@ Neue Dialoge werden hier oder in einem eigenen Kapitel dokumentiert. \`bun run d
     ],
   },
 ];
-
-
 
 function allTopicsBase(): HelpTopic[] {
   const merged = new Map<string, HelpTopic>();
