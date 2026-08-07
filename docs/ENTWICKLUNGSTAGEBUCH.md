@@ -166,7 +166,56 @@ umgestellt, überwacht durch ein CI-Tor.
 - **Mehrsprachigkeit.** Vorbereitet, aber nur Deutsch gepflegt.
 - **Azure-Produktivbetrieb.** Verbindungen sind im Entwicklungsmodus gesperrt.
 
+## Meilenstein: Abschluss der Infrastrukturphase (1.50.0, 2026-08-07)
+
+**Wichtigste Ergebnisse.** Mit Sprint 06B endet Phase 1 „Technische Plattform".
+Erreicht wurden: Supabase-Authentifizierung mit Profilen, Rollentabelle, RLS und
+Grants; RBAC in zwei Ebenen mit CI-geprüfter Spiegelung; Backupformat 2.0 mit
+manifestbasierter Restore-Zuordnung und Prüfsummen; technischer Prüfbericht nach
+Schema 2.0 mit kanonischem Hash, unveränderlicher Historie und Release-Gate;
+Project Governance und ein maschinengeprüftes Projektmanifest; CI mit gestaffelten
+Qualitätsgates (Lint, Typecheck, Doku, Manifest, Tests, Sicherheit, Tech-Debt, Build).
+
+**Erreichte Architektur.** Fünf klar getrennte Schichten (Routen/UI → Hooks/Facades
+→ Services → Persistenz/Repository → Plattform), deren Grenzen automatisiert geprüft
+werden. Local-First-Datenhaltung mit user-scoped Schlüsseln, serverseitige Aufrufe
+ausschließlich über TanStack-Server-Routes auf dem Cloudflare Worker. Anbieterdetails
+sind aus der Fachlogik herausgehalten — Voraussetzung für den späteren Wechsel nach
+Docker, Entra ID und Azure. Vollständig beschrieben in `docs/ARCHITECTURE.md`.
+
+**Technische Reife.** Die Plattform ist test- und nachweisgestützt: automatisierte
+Suiten für Backup/Restore, API-Vertrag, Sicherheit, RBAC, Barrierefreiheit und
+Manifest-Validierung; Prüfbericht und Tech-Debt-Scanner erzeugen bei jedem Lauf
+vergleichbare Artefakte. Offene Restpunkte sind benannt statt verschwiegen: die
+serverseitige Sitzungsdurchsetzung und der echte Supabase-E2E-Test mit kontrollierter
+Testsession bleiben offen (TD-SESSION-SERVER, BACKLOG-TEST-001).
+
+**Übergang zur Fachentwicklungsphase.** Infrastrukturarbeit ist ab Version 1.50.0 nur
+noch als Wartung, Fehlerbehebung oder ausdrücklich begründete Voraussetzung eines
+Fachsprints zulässig (ADR-0023). Phasen werden im Manifest geführt und vom Validator
+geprüft.
+
+**Beginn AVKK.** Phase 2 startet mit dem AVKK-Datenmodell (Sprint 07): fachliche
+Erweiterung der Arbeitspakete, Migration mit RLS und Grants, Berücksichtigung in
+Import, Export und Backupformat. Erst danach folgt die AVKK-Arbeitsansicht (Sprint 08).
+
+---
+
 ## Sprintprotokoll
+
+### Sprint 06B – Governance, Manifest und Abschluss der Plattform (1.49.0 / 1.50.0, 2026-08-06/07)
+
+Ziel: Steuerungsebene über dem Code etablieren und die Infrastrukturphase sauber
+abschließen.
+Ergebnis: `docs/PROJECT-GOVERNANCE.md`, Projektmanifest mit JSON Schema und
+Validator (`bun run project-status:check`, jetzt durch dreizehn Tests abgesichert),
+CI-Gate, Layer-Facade für die Store-Hydration (Finding `td-layer-d1e551ce`),
+vollständig neu aufgebautes Architekturdokument, Dialog-Referenz im Handbuch
+(zehn zuvor undokumentierte Dialoge) und neu erzeugter Prüfbericht. Phasenmodell
+nach ADR-0023.
+Bewertung: Go für Sprint 07 (AVKK-Datenmodell).
+
+
 
 ### Sprint 06A – Backupformat 2.0 (1.48.0, 2026-08-05)
 
