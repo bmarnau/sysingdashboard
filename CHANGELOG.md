@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.50.0 - 2026-08-07
+
+- **Abschluss der Infrastrukturphase**: Phase 1 „Technische Plattform" ist abgeschlossen; Phase 2 „AVKK-Fachmodell" ist die nächste Phase (ADR-0023).
+- **Architektur**: `docs/ARCHITECTURE.md` vollständig neu aufgebaut — Schichtenmodell, Supabase, RBAC, RLS, Backup/Restore, Project Manifest, Governance, geplante Bausteine (Reference Data, AVKK, Report Service, Microsoft 365, KI-Agenten), Docker- und Azure-Zielarchitektur.
+- **Handbuch**: Neues Kapitel „Dialog-Referenz" dokumentiert die zehn bislang nicht beschriebenen Dialoge mit Zweck, Benutzergruppe, Berechtigung, Eingaben, Ergebnis und Besonderheiten; `docs:check` meldet keine offenen Dialoge mehr.
+- **Qualität**: Neue Testsuite `src/__tests__/scripts/project-status-validator.test.ts` prüft den Manifest-Validator (gültiges Manifest, YAML-Fehler, Schemaverstoß, doppelte IDs, unbekannter Sprint, Roadmap-Referenz, fehlende Pflichtfelder, Versionskonflikt) und validiert zusätzlich das reale Manifest.
+- **Project Manifest**: Neuer Abschnitt `phases` im Manifest und Schema (schemaVersion 1.3.0); Sprint 06B als abgeschlossen geführt, Roadmap und Risiken aktualisiert.
+- **Prüfbericht**: Technischer Prüfbericht neu erzeugt und Integrität erneut verifiziert.
+
 ## 1.49.0 - 2026-08-06
 
 - **Project Governance**: Neues verbindliches Regelwerk `docs/PROJECT-GOVERNANCE.md` (Vision, Architekturprinzipien, Definition of Done, Versionierungsregeln, Dokumentenhierarchie).
