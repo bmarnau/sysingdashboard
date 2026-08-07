@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "b23cc3d0-6801-4450-a2ff-9ce8bedb0d19",
-  "version": 5,
-  "parentReportId": "b3533f7f-07ac-488a-925d-1e74240306ee",
-  "generatedAt": "2026-08-03T03:01:21.164Z",
+  "id": "65e565e0-a9ff-4fb7-84e7-52e9bc3ed248",
+  "version": 6,
+  "parentReportId": "b23cc3d0-6801-4450-a2ff-9ce8bedb0d19",
+  "generatedAt": "2026-08-05T03:17:59.362Z",
   "identity": {
-    "dashboardVersion": "1.46.0",
-    "commit": "a1e9f2e",
+    "dashboardVersion": "1.48.0",
+    "commit": "5edcaf6",
     "buildTime": null,
-    "testTime": "2026-08-03T03:01:21.057Z",
+    "testTime": "2026-08-05T03:17:59.259Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -91,11 +91,11 @@
     }
   },
   "summary": {
-    "total": 68,
-    "openTotal": 59,
+    "total": 67,
+    "openTotal": 58,
     "critical": 0,
     "high": 0,
-    "medium": 9,
+    "medium": 8,
     "low": 43,
     "accepted": 9,
     "sources": {
@@ -113,7 +113,7 @@
       },
       "techdebt": {
         "status": "passed-with-findings",
-        "count": 59
+        "count": 58
       },
       "ops": {
         "status": "not-run",
@@ -382,8 +382,8 @@
       "severity": "HIGH",
       "category": "Frontend",
       "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (979 Zeilen)",
-      "description": "Die Datei hat 979 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "title": "Modul überschreitet Größenschwelle (989 Zeilen)",
+      "description": "Die Datei hat 989 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
       "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
       "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
       "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
@@ -588,41 +588,6 @@
       "order": 8
     },
     {
-      "id": "td:td-layer-9275d7a1",
-      "severity": "MEDIUM",
-      "category": "Architektur",
-      "area": "Architektur",
-      "title": "UI-Direktzugriff auf Persistenz-Schicht",
-      "description": "Datei importiert ein verbotenes Modul: from \"@/lib/store/dashboard-persistence\"",
-      "cause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
-      "impact": "Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.",
-      "rootCause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
-      "evidence": {
-        "file": "src/routes/_authenticated/dashboard.tsx:89",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/routes/_authenticated/dashboard.tsx:89"
-      ],
-      "recommendation": "useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
       "id": "td:td-layer-b432b1b9",
       "severity": "MEDIUM",
       "category": "Architektur",
@@ -641,6 +606,41 @@
         "src/components/azure/AzureActionsPanel.tsx:7"
       ],
       "recommendation": "Ausschließlich `@/lib/azure/azure-service` importieren.",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "S",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
+      "id": "td:td-layer-d1e551ce",
+      "severity": "MEDIUM",
+      "category": "Architektur",
+      "area": "Architektur",
+      "title": "UI-Direktzugriff auf Persistenz-Schicht",
+      "description": "Datei importiert ein verbotenes Modul: from \"@/lib/store/dashboard-persistence\"",
+      "cause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
+      "impact": "Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.",
+      "rootCause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
+      "evidence": {
+        "file": "src/routes/_authenticated/dashboard.tsx:92",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/routes/_authenticated/dashboard.tsx:92"
+      ],
+      "recommendation": "useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.",
       "dependencies": [],
       "owner": null,
       "dueDate": null,
@@ -709,41 +709,6 @@
       },
       "components": [
         "src/components/ui/sidebar.tsx"
-      ],
-      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "M",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-oversize-789d61fa",
-      "severity": "MEDIUM",
-      "category": "Architektur",
-      "area": "Architektur",
-      "title": "Modul überschreitet Größenschwelle (1084 Zeilen)",
-      "description": "Die Datei hat 1084 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.",
-      "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
-      "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
-      "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
-      "evidence": {
-        "file": "src/lib/backup-service.ts",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/lib/backup-service.ts"
       ],
       "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
       "dependencies": [],
@@ -2624,11 +2589,10 @@
       "findings": [
         "sec:SEC-MED-CLAIMS-001",
         "td:td-endpoint-zod-34111d3b",
-        "td:td-layer-9275d7a1",
         "td:td-layer-b432b1b9",
+        "td:td-layer-d1e551ce",
         "td:td-layer-e4fb0e64",
         "td:td-oversize-242b307c",
-        "td:td-oversize-789d61fa",
         "td:td-oversize-f3843ebe",
         "td:td-endpoint-err-cdae73c5",
         "td:td-endpoint-err-ce5fa0be",
@@ -2690,8 +2654,13 @@
     }
   ],
   "diff": {
-    "new": [],
-    "fixed": [],
+    "new": [
+      "td:td-layer-d1e551ce"
+    ],
+    "fixed": [
+      "td:td-layer-9275d7a1",
+      "td:td-oversize-789d61fa"
+    ],
     "worse": [],
     "same": [
       "sec:SEC-CRIT-001",
@@ -2704,11 +2673,9 @@
       "sec:SEC-MED-REDIRECT-001",
       "sec:SEC-MED-CLAIMS-001",
       "td:td-endpoint-zod-34111d3b",
-      "td:td-layer-9275d7a1",
       "td:td-layer-b432b1b9",
       "td:td-layer-e4fb0e64",
       "td:td-oversize-242b307c",
-      "td:td-oversize-789d61fa",
       "td:td-oversize-f3843ebe",
       "td:td-manual-playwright-smoke-only",
       "td:td-endpoint-err-cdae73c5",
@@ -2772,7 +2739,7 @@
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "88673291e6d95ed414aac99a1856ee4c55aa58d4c88fa1a14da7ef8d1ce6081e",
+    "value": "90030f22710742f5d2b9fc102b356ad72628197568e73389f1cb5dabdd1ef6cc",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",
