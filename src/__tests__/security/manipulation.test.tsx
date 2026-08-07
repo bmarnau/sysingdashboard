@@ -62,7 +62,6 @@ describe("Manipulation – localStorage-Tampering (SEC-CRIT-002 behoben)", () =>
     expect(screen.getByText("denied")).toBeInTheDocument();
   });
 
-
   it("should_denyUiGate_when_activeUserRoleIsViewer", () => {
     seedAs("viewer");
     render(

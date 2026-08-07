@@ -56,7 +56,9 @@ describe("CI Quality Gate", () => {
   });
 
   it("should_exitOne_when_criticalFindingBlockerPresent", () => {
-    writeReport([{ id: "critical-finding", reason: "Critical Finding offen: sec:X", detail: "SQL-Injection" }]);
+    writeReport([
+      { id: "critical-finding", reason: "Critical Finding offen: sec:X", detail: "SQL-Injection" },
+    ]);
     const r = runGate();
     expect(r.code).toBe(1);
     expect(r.stderr).toMatch(/critical-finding/);

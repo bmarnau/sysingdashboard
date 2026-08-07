@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.17.0";
+export const DOCUMENTATION_VERSION = "1.18.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -154,7 +154,6 @@ Zugriffstoken bleibt bis zu seinem eigenen Ablauf gültig. Siehe
 \`docs/SESSION-TIMEOUT.md\` und ADR-0020.`,
   },
   {
-
     id: "auth-troubleshooting-03b",
     title: "Anmeldung — Fehlerbehebung (Sprint 03B)",
     category: "Sicherheit",
@@ -658,7 +657,15 @@ const generatedTopics: HelpTopic[] = [
     id: "backup-restore-tests",
     title: "Backup-, Restore- und IO-Tests",
     category: "Service",
-    keywords: ["Backup", "Restore", "Wiederherstellung", "Integrität", "Import", "Export", "ADR-0015"],
+    keywords: [
+      "Backup",
+      "Restore",
+      "Wiederherstellung",
+      "Integrität",
+      "Import",
+      "Export",
+      "ADR-0015",
+    ],
     lastUpdated: "2026-08-03",
     content: `## Zweck
 Nachweis, dass Daten exportiert, gesichert, wiederhergestellt und importiert werden können — automatisiert und mit Integritätsbericht.
@@ -1807,7 +1814,15 @@ Der Runner schreibt \`test-report/api-matrix.{md,json}\` nach jedem Lauf.
     id: "ui-e2e-tests",
     title: "UI- und End-to-End-Tests",
     category: "Service",
-    keywords: ["Playwright", "E2E", "UI-Tests", "axe", "Rollen-Matrix", "Responsive", "Fehlerzustände"],
+    keywords: [
+      "Playwright",
+      "E2E",
+      "UI-Tests",
+      "axe",
+      "Rollen-Matrix",
+      "Responsive",
+      "Fehlerzustände",
+    ],
     lastUpdated: "2026-07-13",
     content: `## Zweck
 Die Anwendung wird aus Sicht eines tatsächlichen Benutzers automatisiert geprüft: Navigation, Dashboard, Servicefunktionen, Fehlerzustände, Responsive-Verhalten, Barrierefreiheit und Rollen-Sichtbarkeit. Ergänzt die Handler-direct-Suite aus dem API-Kapitel um echte Browser-Interaktion.
@@ -1881,15 +1896,30 @@ Jeder Server-Request bekommt eine eindeutige **Correlation-ID** (auch Referenz-I
 - Client-Anfragen ohne Header bekommen ihre erste ID erst mit der Server-Antwort; Client-eigene ID (\`X-Correlation-Id\` im Fetch) wird empfohlen für Ende-zu-Ende-Traces.
 - Azure- und Key-Vault-Adapter sind Stubs — Correlation wird bereits durch den Logger propagiert und ab produktiver Anbindung sichtbar.
 - Persistente Log-Suche über Neustarts hinweg braucht den serverseitigen Sink (offen, siehe Tech-Debt).`,
-    relatedTopics: ["system-status", "log-viewer", "api-endpoint-tests", "fehlerbehandlung-logging"],
+    relatedTopics: [
+      "system-status",
+      "log-viewer",
+      "api-endpoint-tests",
+      "fehlerbehandlung-logging",
+    ],
   },
   {
     id: "security-rbac-tests",
     title: "Sicherheits- und RBAC-Tests",
     category: "Service",
     keywords: [
-      "Security", "RBAC", "Rollen", "Assignments", "Scope", "Manipulation",
-      "Lockout", "Logger", "Redaction", "Findings", "Release-Gate", "ADR-0013",
+      "Security",
+      "RBAC",
+      "Rollen",
+      "Assignments",
+      "Scope",
+      "Manipulation",
+      "Lockout",
+      "Logger",
+      "Redaction",
+      "Findings",
+      "Release-Gate",
+      "ADR-0013",
     ],
     lastUpdated: "2026-07-13",
     content: `## Zweck
@@ -1923,8 +1953,12 @@ Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine 
 - \`bun run security:report\` — Report neu bauen.
 - \`bun run security:gate\` — Exit != 0 bei offenen Blockern (CI-Nutzung).`,
     relatedTopics: [
-      "system-status", "log-viewer", "api-endpoint-tests", "ui-end-to-end-tests",
-      "test-instance", "security-findings-acceptance",
+      "system-status",
+      "log-viewer",
+      "api-endpoint-tests",
+      "ui-end-to-end-tests",
+      "test-instance",
+      "security-findings-acceptance",
     ],
   },
   {
@@ -1932,8 +1966,16 @@ Diese Suite prüft die im Dashboard umgesetzten Sicherheits- und RBAC-Bausteine 
     title: "API Discovery und Testabdeckung",
     category: "Service",
     keywords: [
-      "API", "Discovery", "Inventar", "Smoke", "Functional", "Endpoint",
-      "Klassifizierung", "Correlation", "Findings", "ADR-0014",
+      "API",
+      "Discovery",
+      "Inventar",
+      "Smoke",
+      "Functional",
+      "Endpoint",
+      "Klassifizierung",
+      "Correlation",
+      "Findings",
+      "ADR-0014",
     ],
     lastUpdated: "2026-07-13",
     content: `## Zweck
@@ -2007,8 +2049,11 @@ Vorrang bei der Klassifizierung: **\`endpointMeta\` > Registry > Heuristik**. Fe
 - \`bun run api:report\` — konsolidierte Berichte + Findings.
 - \`bun run api:gate\` — Exit != 0 bei blockierenden Findings (CI-Nutzung).`,
     relatedTopics: [
-      "security-rbac-tests", "api-endpoint-tests", "system-status",
-      "correlation-id", "test-instance",
+      "security-rbac-tests",
+      "api-endpoint-tests",
+      "system-status",
+      "correlation-id",
+      "test-instance",
     ],
   },
   {
@@ -2091,7 +2136,12 @@ Der Aggregator rotiert den vorherigen Bericht nach \`technical-test-report.prev.
 - Qualität hängt an den Eingaben — fehlt ein Bereichsbericht, gilt der Bereich als \`not-run\`.
 - Bericht ist zur Build-Zeit im Bundle eingefroren, nicht Runtime-Fetch.
 - Keine Prüfsummen, keine Ticket-System-Anbindung, keine Secrets im Report.`,
-    relatedTopics: ["system-status", "security-rbac-tests", "api-endpoint-tests", "performance-build-ops"],
+    relatedTopics: [
+      "system-status",
+      "security-rbac-tests",
+      "api-endpoint-tests",
+      "performance-build-ops",
+    ],
   },
   {
     id: "ci-pipeline-quality-gates",
@@ -2146,15 +2196,27 @@ Jeder Job lädt seinen Report als GitHub-Artefakt hoch (\`coverage/\`, \`api-rep
 - Job-Split erhöht Install-Zeit; per Bun- und Playwright-Cache reduziert, aber nicht eliminiert.
 - Kein automatisches Ticket-System — Blocker müssen im PR-Verlauf adressiert oder als akzeptiert markiert werden.
 - Firefox/WebKit/Mobile-Chrome bleiben opt-in (\`RUN_FIREFOX=1\`, siehe ADR-0012).`,
-    relatedTopics: ["technical-test-report", "security-rbac-tests", "performance-build-ops", "api-endpoint-tests"],
+    relatedTopics: [
+      "technical-test-report",
+      "security-rbac-tests",
+      "performance-build-ops",
+      "api-endpoint-tests",
+    ],
   },
   {
     id: "security-findings-acceptance",
     title: "Security-Findings akzeptieren (accepted:true)",
     category: "Service",
     keywords: [
-      "Security", "Findings", "accepted", "Ausnahme", "Ticket", "Begründung",
-      "static-findings", "Quality Gate", "Blocker",
+      "Security",
+      "Findings",
+      "accepted",
+      "Ausnahme",
+      "Ticket",
+      "Begründung",
+      "static-findings",
+      "Quality Gate",
+      "Blocker",
     ],
     lastUpdated: "2026-07-18",
     content: `## Zweck
@@ -2216,8 +2278,14 @@ Pflichtbestandteile:
     category: "Service",
     component: "DevDiaryDialog.tsx",
     keywords: [
-      "Entwicklungstagebuch", "Chronik", "Historie", "Sprint", "Vision",
-      "Zeitstrahl", "Projektgeschichte", "ADR",
+      "Entwicklungstagebuch",
+      "Chronik",
+      "Historie",
+      "Sprint",
+      "Vision",
+      "Zeitstrahl",
+      "Projektgeschichte",
+      "ADR",
     ],
     lastUpdated: "2026-08-03",
     content: `## Zweck
@@ -2243,9 +2311,118 @@ Gerendert wird ein bewusst begrenztes Markdown-Subset (Überschriften, Listen, T
 - Keine personenbezogenen Daten und keine Zugangsdaten in der Datei.`,
     relatedTopics: ["changelog", "technical-test-report", "ci-quality-gates"],
   },
+  {
+    id: "dialog-referenz",
+    title: "Dialog-Referenz (Zweck, Rollen, Ergebnis)",
+    category: "Referenz",
+    keywords: [
+      "Dialog",
+      "Referenz",
+      "Übersicht",
+      "Berechtigung",
+      "Vorschau",
+      "Import",
+      "Export",
+      "Azure",
+      "Prüfbericht",
+      "Arbeitszeitmodell",
+    ],
+    lastUpdated: "2026-08-07",
+    content: `## Zweck dieses Kapitels
+Vollständige Referenz aller Dialoge, die nicht bereits ein eigenes Kapitel besitzen.
+Je Dialog: Zweck, Benutzergruppe, Berechtigung, Eingaben, Ergebnis, Besonderheiten.
+
+## UserManualDialog.tsx — Benutzerhandbuch
+- **Zweck**: Anzeige dieses Handbuchs inkl. Suche, Kategorien und Änderungshistorie.
+- **Benutzergruppe**: alle angemeldeten Benutzer.
+- **Berechtigung**: keine gesonderte — Sichtbarkeit über das Hilfemenü.
+- **Eingaben**: Suchbegriff, Kapitelauswahl.
+- **Ergebnis**: gerenderter Kapiteltext, Versions- und Pflegestand.
+- **Besonderheiten**: Inhalte stammen aus \`src/lib/help-documentation.ts\`; Rollen-gefilterte Kapitel werden ausgeblendet.
+
+## TechnicalReportDialog.tsx — Technischer Prüfbericht
+- **Zweck**: Anzeige des aggregierten technischen Prüfberichts (Schema 2.0) inkl. Findings, Integritäts-Hash und Druckansicht.
+- **Benutzergruppe**: technische Rollen und Management.
+- **Berechtigung**: \`documentation.view\`; Freigaberelevante Aktionen bleiben lesend.
+- **Eingaben**: Filter nach Kategorie/Severity, Auswahl Historie, Druck.
+- **Ergebnis**: Bericht am Bildschirm, optional Druck-/PDF-Ausgabe über \`#technical-report-print-root\`.
+- **Besonderheiten**: Daten kommen aus \`test-report/technical-test-report.json\`; keine Bearbeitung aus der Oberfläche.
+
+## WorkingTimeModelsDialog.tsx — Arbeitszeitmodelle
+- **Zweck**: Pflege der Arbeitszeitmodelle, die Soll-Zeiten und Auslastungsberechnung bestimmen.
+- **Benutzergruppe**: Administratoren, Teamleiter.
+- **Berechtigung**: \`settings.manage\`.
+- **Eingaben**: Modellname, Wochenstunden, Arbeitstage, Gültigkeitszeitraum.
+- **Ergebnis**: geändertes Modell wirkt unmittelbar auf Zielzeit- und Leistungsberechnung.
+- **Besonderheiten**: Änderungen sind lokal persistiert (user-scoped) und fließen in Exporte ein.
+
+## SaveTargetDialog.tsx — Speicherziel wählen
+- **Zweck**: Auswahl, ob eine erzeugte Datei heruntergeladen oder im Downloadbereich abgelegt wird.
+- **Benutzergruppe**: alle Benutzer mit Exportrecht.
+- **Berechtigung**: abgeleitet vom auslösenden Export (\`export.*\`).
+- **Eingaben**: Zielauswahl, Dateiname.
+- **Ergebnis**: Datei im Browser-Download oder als Eintrag im Downloadbereich (IndexedDB, mit Aufbewahrungsfrist).
+- **Besonderheiten**: Dateinamen werden normalisiert (\`export-naming.ts\`); Kollisionen erhalten einen Zeitstempel.
+
+## PdfPreviewDialog.tsx — PDF-Vorschau
+- **Zweck**: Vorschau erzeugter PDF-Berichte vor Download oder Druck.
+- **Benutzergruppe**: alle Benutzer mit Report-Zugriff.
+- **Berechtigung**: \`export.pdf\` bzw. Recht des auslösenden Berichts.
+- **Eingaben**: Seitennavigation, Zoom.
+- **Ergebnis**: Sichtprüfung; anschließend Download oder Ablage im Downloadbereich.
+- **Besonderheiten**: Rendering über \`PdfCanvasViewer\`; \`jspdf\` wird erst beim Öffnen nachgeladen (Lazy-Chunk).
+
+## TextPreviewDialog.tsx — Text-/CSV-/JSON-Vorschau
+- **Zweck**: Vorschau textbasierter Exporte (CSV, JSON, Azure-Table-Format).
+- **Benutzergruppe**: alle Benutzer mit Exportrecht.
+- **Berechtigung**: Recht des auslösenden Exports.
+- **Eingaben**: keine — reine Anzeige mit Scrollen und Kopieren.
+- **Ergebnis**: Inhaltsprüfung vor Weitergabe.
+- **Besonderheiten**: Große Dateien werden gekürzt angezeigt; sensible Felder sind bereits im Export entfernt (\`stripSensitiveFields\`).
+
+## ImportPreviewDialog.tsx — Importvorschau und Diff
+- **Zweck**: Schritt 3 des Import-Assistenten: Gegenüberstellung von Bestand und Importdatei.
+- **Benutzergruppe**: Administratoren, Projektmanager.
+- **Berechtigung**: \`import.execute\`.
+- **Eingaben**: Bestätigung je Bereich, Konfliktstrategie (überschreiben / überspringen / zusammenführen).
+- **Ergebnis**: Freigabe des Imports; erst danach werden Daten geschrieben.
+- **Besonderheiten**: Vor dem Schreiben wird automatisch ein Sicherheits-Snapshot erzeugt (Rollback möglich); jeder Lauf landet im Importprotokoll.
+
+## AzureDataDialog.tsx — Azure-Datenbereich
+- **Zweck**: Zentrale Oberfläche für Azure-Status, Aktionen und Historie.
+- **Benutzergruppe**: System-Administrator, Administrator, Teamleiter, Projektmanager (aktionsabhängig).
+- **Berechtigung**: \`azure.*\` je Aktion (siehe Kapitel „Azure Servicebereich").
+- **Eingaben**: Auswahl der Aktion, Zeitraum, Bereiche.
+- **Ergebnis**: Statusanzeige, ausgelöster Verbindungstest, Export oder Import.
+- **Besonderheiten**: Im Runtime-Mode \`development\` sind alle Azure-Aufrufe blockiert (\`assertAzureAllowed\`); es werden nie Secrets angezeigt.
+
+## AzureConfirmDialog.tsx — Azure-Aktion bestätigen
+- **Zweck**: Zwei-Schritt-Bestätigung für risikobehaftete Azure-Operationen (Datenbankaufbau, Import, Überschreiben).
+- **Benutzergruppe**: ausschließlich Rollen mit der jeweiligen Azure-Berechtigung.
+- **Berechtigung**: identisch zur bestätigten Aktion.
+- **Eingaben**: explizite Bestätigung, bei destruktiven Aktionen Eingabe des Zielnamens.
+- **Ergebnis**: Freigabe oder Abbruch der Operation.
+- **Besonderheiten**: Zielumgebung wird ohne Credentials angezeigt; Abbruch ist der Default.
+
+## AzureImportPreviewDialog.tsx — Azure-Importvorschau
+- **Zweck**: Vorschau der aus Azure gelesenen Datensätze vor Übernahme in den lokalen Bestand.
+- **Benutzergruppe**: System-Administrator, Administrator.
+- **Berechtigung**: \`azure.import\`.
+- **Eingaben**: Auswahl der zu übernehmenden Bereiche, Konfliktstrategie.
+- **Ergebnis**: Übernahme in den Store nach Snapshot; Protokolleintrag in der Sync-Historie.
+- **Besonderheiten**: Read-only-Vorschau — ohne Bestätigung wird nichts geschrieben.
+
+## Pflegehinweis
+Neue Dialoge werden hier oder in einem eigenen Kapitel dokumentiert. \`bun run docs:check\` meldet jeden Dialog, der im Handbuch nicht vorkommt.`,
+    relatedTopics: [
+      "import-export",
+      "downloads",
+      "azure-service-area",
+      "technical-test-report",
+      "working-time-model",
+    ],
+  },
 ];
-
-
 
 function allTopicsBase(): HelpTopic[] {
   const merged = new Map<string, HelpTopic>();

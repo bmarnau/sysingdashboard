@@ -6,7 +6,15 @@
  * mit Gesamt-/Chunk-Größen, Trend gegen letzten Lauf und einer Heuristik,
  * welche schweren Libs im Initial-Bundle landen.
  */
-import { existsSync, readdirSync, readFileSync, statSync, mkdirSync, writeFileSync, renameSync } from "node:fs";
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  mkdirSync,
+  writeFileSync,
+  renameSync,
+} from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
@@ -26,14 +34,21 @@ function walk(dir) {
     const full = join(dir, n);
     const st = statSync(full);
     if (st.isDirectory()) out.push(...walk(full));
-    else if (/\.(js|mjs|css)$/.test(n)) out.push({ path: full.slice(DIST.length + 1), size: st.size });
+    else if (/\.(js|mjs|css)$/.test(n))
+      out.push({ path: full.slice(DIST.length + 1), size: st.size });
   }
   return out;
 }
 
 const HEAVY_LIBS = [
-  "jspdf", "jspdf-autotable", "pdfjs", "react-pdf",
-  "recharts", "embla-carousel", "fflate", "date-fns",
+  "jspdf",
+  "jspdf-autotable",
+  "pdfjs",
+  "react-pdf",
+  "recharts",
+  "embla-carousel",
+  "fflate",
+  "date-fns",
 ];
 
 const files = walk(DIST).sort((a, b) => b.size - a.size);
@@ -53,7 +68,11 @@ for (const f of entryFiles) {
   try {
     const src = readFileSync(join(DIST, f.path), "utf8");
     for (const lib of HEAVY_LIBS) {
-      if (src.includes(`node_modules/${lib}/`) || src.includes(`from"${lib}"`) || src.includes(`from'${lib}'`)) {
+      if (
+        src.includes(`node_modules/${lib}/`) ||
+        src.includes(`from"${lib}"`) ||
+        src.includes(`from'${lib}'`)
+      ) {
         heavyInEntry.push({ chunk: f.path, lib });
       }
     }
@@ -87,7 +106,11 @@ try {
 const generatedAt = new Date().toISOString();
 const report = {
   generatedAt,
-  totals: { totalKB: +(totalSize / 1024).toFixed(1), entryKB: +(entrySize / 1024).toFixed(1), lazyKB: +(lazySize / 1024).toFixed(1) },
+  totals: {
+    totalKB: +(totalSize / 1024).toFixed(1),
+    entryKB: +(entrySize / 1024).toFixed(1),
+    lazyKB: +(lazySize / 1024).toFixed(1),
+  },
   counts: { files: files.length, entryChunks: entryFiles.length, lazyChunks: lazyFiles.length },
   topChunks: files.slice(0, 20).map((f) => ({ path: f.path, kb: +(f.size / 1024).toFixed(1) })),
   heavyInEntry,
@@ -98,7 +121,9 @@ const report = {
 let prev = null;
 try {
   prev = JSON.parse(readFileSync(PREV, "utf8"));
-} catch { /* first run */ }
+} catch {
+  /* first run */
+}
 const trend = prev
   ? {
       totalKBDelta: +(report.totals.totalKB - prev.totals.totalKB).toFixed(1),
@@ -112,7 +137,9 @@ mkdirSync("test-report", { recursive: true });
 // letzten Report vor Überschreiben nach .prev.json sichern
 try {
   if (existsSync(OUT_JSON)) renameSync(OUT_JSON, PREV);
-} catch { /* ignore */ }
+} catch {
+  /* ignore */
+}
 writeFileSync(OUT_JSON, JSON.stringify(report, null, 2));
 
 const md = [
@@ -142,10 +169,16 @@ const md = [
   "## Doppelte Abhängigkeiten (Major-Konflikt)",
   duplicates.length === 0
     ? "Keine erkannt."
-    : duplicates.map((d) => `- \`${d.name}\`: ${d.majors.map((m) => `v${m}.x`).join(", ")}`).join("\n"),
+    : duplicates
+        .map((d) => `- \`${d.name}\`: ${d.majors.map((m) => `v${m}.x`).join(", ")}`)
+        .join("\n"),
 ].join("\n");
 writeFileSync(OUT_MD, md);
 
-console.log(`[ops-bundle] Gesamt ${report.totals.totalKB} KB · Entry ${report.totals.entryKB} KB · Lazy ${report.totals.lazyKB} KB`);
-console.log(`[ops-bundle] Heavy-Libs in Entry: ${heavyInEntry.length} · Duplikate: ${duplicates.length}`);
+console.log(
+  `[ops-bundle] Gesamt ${report.totals.totalKB} KB · Entry ${report.totals.entryKB} KB · Lazy ${report.totals.lazyKB} KB`,
+);
+console.log(
+  `[ops-bundle] Heavy-Libs in Entry: ${heavyInEntry.length} · Duplikate: ${duplicates.length}`,
+);
 console.log(`[ops-bundle] Report: ${OUT_MD}`);

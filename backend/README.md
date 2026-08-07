@@ -9,13 +9,13 @@ verschoben — Kontext und Rollback-Anleitung dort.
 
 ## Module
 
-| Datei                    | Rolle                                                       |
-| ------------------------ | ----------------------------------------------------------- |
-| `services/syncService.mjs`   | Dashboard-Sync-Logik (Azure/Local), Fehler via `SyncError` |
-| `services/statusService.mjs` | Secret-freies `/api/status`-Payload                        |
-| `services/ensure-env.mjs`    | Lazy ENV-Guard für Server-Routes (cached)                  |
+| Datei                        | Rolle                                                                           |
+| ---------------------------- | ------------------------------------------------------------------------------- |
+| `services/syncService.mjs`   | Dashboard-Sync-Logik (Azure/Local), Fehler via `SyncError`                      |
+| `services/statusService.mjs` | Secret-freies `/api/status`-Payload                                             |
+| `services/ensure-env.mjs`    | Lazy ENV-Guard für Server-Routes (cached)                                       |
 | `services/rbac.mjs`          | Mirror der Frontend-Permission-Matrix (via `scripts/check-rbac.mjs` verglichen) |
-| `services/logger.mjs`        | ESM-Pendant zum Frontend-Logger, gleiche Redaction-Regeln  |
+| `services/logger.mjs`        | ESM-Pendant zum Frontend-Logger, gleiche Redaction-Regeln                       |
 
 ## Regeln
 

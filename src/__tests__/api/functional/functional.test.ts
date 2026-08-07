@@ -58,7 +58,8 @@ const KNOWN: Record<string, Coverage> = {
   },
   sync: {
     endpointId: "sync",
-    purpose: "Manueller Sync-Trigger; Bearer-Session plus DB-Permission `azure.export`/`azure.import`.",
+    purpose:
+      "Manueller Sync-Trigger; Bearer-Session plus DB-Permission `azure.export`/`azure.import`.",
     coverage: "partial",
     positive: true,
     negative: true,

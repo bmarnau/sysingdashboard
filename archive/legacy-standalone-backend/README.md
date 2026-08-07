@@ -7,12 +7,12 @@ kein npm-Script referenziert ihn.
 
 ## Inhalt
 
-| Datei                 | Zweck                                                |
-| --------------------- | ---------------------------------------------------- |
-| `server.mjs`          | Node-`http`-Listener + CORS + Route-Dispatch         |
-| `routes/status.mjs`   | Adapter `/api/status` → `backend/services/statusService.mjs` |
-| `routes/sync.mjs`     | Adapter `/api/sync`   → `backend/services/syncService.mjs`   |
-| `README-original.md`  | Original-README des `backend/`-Verzeichnisses        |
+| Datei                | Zweck                                                        |
+| -------------------- | ------------------------------------------------------------ |
+| `server.mjs`         | Node-`http`-Listener + CORS + Route-Dispatch                 |
+| `routes/status.mjs`  | Adapter `/api/status` → `backend/services/statusService.mjs` |
+| `routes/sync.mjs`    | Adapter `/api/sync` → `backend/services/syncService.mjs`     |
+| `README-original.md` | Original-README des `backend/`-Verzeichnisses                |
 
 ## Was blieb produktiv?
 

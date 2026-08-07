@@ -44,7 +44,10 @@ export function filterDiary(markdown: string, query: string): string {
 
 export function DevDiaryDialog({ open, onOpenChange }: Props) {
   const [query, setQuery] = useState("");
-  const headings = useMemo(() => extractHeadings(DEV_DIARY_SOURCE).filter((h) => h.level === 2), []);
+  const headings = useMemo(
+    () => extractHeadings(DEV_DIARY_SOURCE).filter((h) => h.level === 2),
+    [],
+  );
   const filtered = useMemo(() => filterDiary(DEV_DIARY_SOURCE, query), [query]);
   const blocks = useMemo(() => renderMarkdown(filtered), [filtered]);
 

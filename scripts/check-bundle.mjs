@@ -27,7 +27,8 @@ function walk(dir) {
     const full = join(dir, name);
     const st = statSync(full);
     if (st.isDirectory()) out.push(...walk(full));
-    else if (/\.(js|mjs|css)$/.test(name)) out.push({ path: full.slice(DIST.length + 1), size: st.size });
+    else if (/\.(js|mjs|css)$/.test(name))
+      out.push({ path: full.slice(DIST.length + 1), size: st.size });
   }
   return out;
 }

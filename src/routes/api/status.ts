@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getStatus } from "../../../backend/services/statusService.mjs";
-import {
-  withCorrelation,
-  getCurrentCorrelationId,
-} from "../../lib/correlation-context.server";
+import { withCorrelation, getCurrentCorrelationId } from "../../lib/correlation-context.server";
 
 export const endpointMeta = {
   public: true,

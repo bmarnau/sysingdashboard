@@ -211,8 +211,7 @@ function ProfileEditor({ user, onSaved }: { user: UserProfile; onSaved: () => vo
       await updateOwnProfile(user.id, {
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
-        displayName:
-          form.displayName.trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
+        displayName: form.displayName.trim() || `${form.firstName.trim()} ${form.lastName.trim()}`,
         phone: form.phone.trim(),
         profileImage: form.profileImage || null,
       });
@@ -244,7 +243,11 @@ function ProfileEditor({ user, onSaved }: { user: UserProfile; onSaved: () => vo
       <div className="flex items-center gap-4">
         <div className="relative">
           {form.profileImage ? (
-            <img src={form.profileImage} alt="Profilbild" className="size-16 rounded-full object-cover" />
+            <img
+              src={form.profileImage}
+              alt="Profilbild"
+              className="size-16 rounded-full object-cover"
+            />
           ) : (
             <div
               className="grid size-16 place-items-center rounded-full font-mono text-lg font-bold text-primary-foreground"
@@ -289,10 +292,18 @@ function ProfileEditor({ user, onSaved }: { user: UserProfile; onSaved: () => vo
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label="Vorname">
-          <input value={form.firstName} onChange={(e) => set("firstName", e.target.value)} className="ipt" />
+          <input
+            value={form.firstName}
+            onChange={(e) => set("firstName", e.target.value)}
+            className="ipt"
+          />
         </Field>
         <Field label="Nachname">
-          <input value={form.lastName} onChange={(e) => set("lastName", e.target.value)} className="ipt" />
+          <input
+            value={form.lastName}
+            onChange={(e) => set("lastName", e.target.value)}
+            className="ipt"
+          />
         </Field>
         <Field label="Anzeigename" className="sm:col-span-2">
           <input
@@ -306,7 +317,11 @@ function ProfileEditor({ user, onSaved }: { user: UserProfile; onSaved: () => vo
           <input type="email" value={user.email} readOnly className="ipt opacity-70" />
         </Field>
         <Field label="Telefon">
-          <input value={form.phone} onChange={(e) => set("phone", e.target.value)} className="ipt" />
+          <input
+            value={form.phone}
+            onChange={(e) => set("phone", e.target.value)}
+            className="ipt"
+          />
         </Field>
       </div>
 
@@ -472,7 +487,11 @@ function UserAdmin({
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-2">
                         {u.profileImage ? (
-                          <img src={u.profileImage} alt="" className="size-7 rounded-full object-cover" />
+                          <img
+                            src={u.profileImage}
+                            alt=""
+                            className="size-7 rounded-full object-cover"
+                          />
                         ) : (
                           <div
                             className="grid size-7 place-items-center rounded-full font-mono text-[10px] font-bold text-primary-foreground"
@@ -528,7 +547,10 @@ function UserAdmin({
                           disabled={busy}
                           onClick={() =>
                             run(u.id, () =>
-                              svcSetUserStatus(u.id, u.status === "archived" ? "active" : "archived"),
+                              svcSetUserStatus(
+                                u.id,
+                                u.status === "archived" ? "active" : "archived",
+                              ),
                             )
                           }
                           title={u.status === "archived" ? "Reaktivieren" : "Archivieren"}

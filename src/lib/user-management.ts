@@ -490,7 +490,6 @@ export function deleteUser(id: string, actor?: ActorContext): { ok: boolean; rea
   return { ok: true };
 }
 
-
 export function setUserStatus(
   id: string,
   status: UserStatus,
@@ -499,14 +498,9 @@ export function setUserStatus(
   return updateUser(id, { status }, actor);
 }
 
-export function setUserRole(
-  id: string,
-  role: UserRole,
-  actor?: ActorContext,
-): UserProfile | null {
+export function setUserRole(id: string, role: UserRole, actor?: ActorContext): UserProfile | null {
   return updateUser(id, { role }, actor);
 }
-
 
 /* ------------------------------ Auth Helpers ------------------------------ */
 

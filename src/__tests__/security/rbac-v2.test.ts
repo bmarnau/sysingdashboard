@@ -30,19 +30,30 @@ function mkAssignment(patch: Partial<RoleAssignment>): RoleAssignment {
 }
 
 const anyUser: UserProfile = {
-  id: "usr-1", firstName: "T", lastName: "U", displayName: "TU", email: "", phone: "",
-  role: "engineer", status: "active", mfaEnabled: false,
-  createdAt: "2026-01-01T00:00:00Z", updatedAt: "2026-01-01T00:00:00Z",
+  id: "usr-1",
+  firstName: "T",
+  lastName: "U",
+  displayName: "TU",
+  email: "",
+  phone: "",
+  role: "engineer",
+  status: "active",
+  mfaEnabled: false,
+  createdAt: "2026-01-01T00:00:00Z",
+  updatedAt: "2026-01-01T00:00:00Z",
 };
 
 describe("RBAC v2 – Scope-Utilities", () => {
   it.each([
     ["*", []],
     ["tenant:acme", [{ type: "tenant", id: "acme" }]],
-    ["tenant:acme/customer:c-42", [
-      { type: "tenant", id: "acme" },
-      { type: "customer", id: "c-42" },
-    ]],
+    [
+      "tenant:acme/customer:c-42",
+      [
+        { type: "tenant", id: "acme" },
+        { type: "customer", id: "c-42" },
+      ],
+    ],
   ])("should_parseAndRoundtrip_when_scopeIs_%s", (scope, expected) => {
     expect(parseScope(scope)).toEqual(expected);
     expect(serializeScope(expected as never)).toBe(scope);
@@ -66,13 +77,12 @@ describe("RBAC v2 – Scope-Utilities", () => {
     expect(narrowestScope("tenant:a", "tenant:b")).toBeNull();
   });
 
-  it.each([
-    "customer:c-42",
-    "azure.subscription:sub-01",
-    "azure.resourceGroup:rg-prod",
-  ])("should_acceptFixtureScope_when_parsingRealWorldExample_%s", (scope) => {
-    expect(() => parseScope(scope)).not.toThrow();
-  });
+  it.each(["customer:c-42", "azure.subscription:sub-01", "azure.resourceGroup:rg-prod"])(
+    "should_acceptFixtureScope_when_parsingRealWorldExample_%s",
+    (scope) => {
+      expect(() => parseScope(scope)).not.toThrow();
+    },
+  );
 });
 
 describe("RBAC v2 – Assignment-Auswertung", () => {
@@ -82,7 +92,9 @@ describe("RBAC v2 – Assignment-Auswertung", () => {
       expiresAt: "2026-05-01T00:00:00Z",
     });
     const ok = evaluateAccess(anyUser, "users.manage", {
-      assignments: [expired], scope: "*", now: REF_NOW,
+      assignments: [expired],
+      scope: "*",
+      now: REF_NOW,
     });
     expect(ok).toBe(false);
   });
@@ -90,7 +102,9 @@ describe("RBAC v2 – Assignment-Auswertung", () => {
   it("should_allowActiveAssignment_when_scopeMatches", () => {
     const active = mkAssignment({ role: "administrator", scope: "tenant:a" });
     const ok = evaluateAccess(anyUser, "users.manage", {
-      assignments: [active], scope: "tenant:a/customer:c", now: REF_NOW,
+      assignments: [active],
+      scope: "tenant:a/customer:c",
+      now: REF_NOW,
     });
     expect(ok).toBe(true);
   });
@@ -98,7 +112,9 @@ describe("RBAC v2 – Assignment-Auswertung", () => {
   it("should_denyAssignment_when_scopeDoesNotInclude", () => {
     const foreign = mkAssignment({ role: "administrator", scope: "tenant:b" });
     const ok = evaluateAccess(anyUser, "users.manage", {
-      assignments: [foreign], scope: "tenant:a", now: REF_NOW,
+      assignments: [foreign],
+      scope: "tenant:a",
+      now: REF_NOW,
     });
     expect(ok).toBe(false);
   });
@@ -107,7 +123,9 @@ describe("RBAC v2 – Assignment-Auswertung", () => {
     const a1 = mkAssignment({ id: "a1", role: "viewer", scope: "tenant:a" });
     const a2 = mkAssignment({ id: "a2", role: "administrator", scope: "tenant:a" });
     const ok = evaluateAccess(anyUser, "users.manage", {
-      assignments: [a1, a2], scope: "tenant:a", now: REF_NOW,
+      assignments: [a1, a2],
+      scope: "tenant:a",
+      now: REF_NOW,
     });
     expect(ok).toBe(true);
   });
@@ -117,7 +135,9 @@ describe("RBAC v2 – Assignment-Auswertung", () => {
     (source) => {
       const a = mkAssignment({ role: "administrator", source });
       const ok = evaluateAccess(anyUser, "users.manage", {
-        assignments: [a], scope: "*", now: REF_NOW,
+        assignments: [a],
+        scope: "*",
+        now: REF_NOW,
       });
       expect(ok).toBe(true);
     },
@@ -139,9 +159,9 @@ describe("RBAC v2 – evaluateAccessV2 (native)", () => {
       role: "administrator",
       expiresAt: "2026-01-01T00:00:00Z", // vor REF_NOW
     });
-    expect(
-      evaluateAccessV2("project:edit", [revoked], "*", rolePerms as never, REF_NOW),
-    ).toBe(false);
+    expect(evaluateAccessV2("project:edit", [revoked], "*", rolePerms as never, REF_NOW)).toBe(
+      false,
+    );
   });
 
   it("should_grant_when_assignmentHasMatchingPermissionAndScope", () => {
@@ -158,7 +178,9 @@ describe("RBAC v2 – Sysadmin-Schutz kann nicht via v2 umgangen werden", () => 
     // auch wenn Scope = Root. v2 delegiert an v1 → v1 sagt Nein.
     const a = mkAssignment({ role: "engineer", scope: SCOPE_ROOT });
     const ok = evaluateAccess(anyUser, "roles.manage", {
-      assignments: [a], scope: SCOPE_ROOT, now: REF_NOW,
+      assignments: [a],
+      scope: SCOPE_ROOT,
+      now: REF_NOW,
     });
     expect(ok).toBe(false);
   });

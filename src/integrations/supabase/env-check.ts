@@ -66,8 +66,7 @@ export function runStartupEnvCheck(): StartupEnvCheckResult {
   if (!present(RAW_PROJECT_ID)) missing.push("VITE_SUPABASE_PROJECT_ID");
 
   const authStatus = getAuthConfigurationStatus();
-  const invalidReason =
-    authStatus.status === "invalid" ? authStatus.invalidReason : undefined;
+  const invalidReason = authStatus.status === "invalid" ? authStatus.invalidReason : undefined;
 
   const ok = missing.length === 0 && authStatus.status === "configured";
 

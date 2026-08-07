@@ -35,7 +35,8 @@ export function detectCoverageGaps(ROOT) {
       impact: "Trend-Analyse der Testabdeckung blind.",
       severity: "Informational",
       likelihood: "Niedrig",
-      recommendation: "In CI vor `test:debt` `bun run test:coverage` ausführen (bereits konfiguriert).",
+      recommendation:
+        "In CI vor `test:debt` `bun run test:coverage` ausführen (bereits konfiguriert).",
       recommendedOrder: 99,
       effort: "klein",
       status: "offen",

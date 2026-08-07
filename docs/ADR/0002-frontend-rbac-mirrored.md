@@ -4,12 +4,14 @@
 - **Datum**: 2026-07-08
 
 ## Kontext
+
 Das Dashboard hat Rollen (System-Admin, Admin, Teamleiter, Projektmanager,
 Engineer, Kunde, Viewer). UI-Elemente (Buttons, Menüs, Dialoge) müssen abhängig
 von der Rolle ein-/ausblendbar sein, ohne für jede Aktion einen Server-Roundtrip
 zu machen.
 
 ## Entscheidung
+
 Die Permission-Matrix lebt zweimal:
 
 - **Frontend**: `src/lib/rbac/permissions.ts` — `can(user, permission)` +
@@ -21,6 +23,7 @@ divergieren. Komponenten prüfen **nie** direkt `user.role === '…'`, sondern
 immer `can()` oder `<PermissionGate permission="…">`.
 
 ## Alternativen
+
 - **Nur Backend-RBAC** — jeder UI-Refresh triggert Requests; UX schlecht.
 - **Nur Frontend-RBAC** — Server vertraut Client, klassische Privilege-Escalation.
 - **RBAC in einer JSON-Datei, beide Runtimes laden** — vermeidet Duplikation,
@@ -28,12 +31,15 @@ immer `can()` oder `<PermissionGate permission="…">`.
   Type-Safety verloren).
 
 ## Konsequenzen
+
 Positiv:
+
 - UI-Updates sind sofort ohne Latenz.
 - Type-safe Permissions in beiden Runtimes.
 - Automatisierter Drift-Check.
 
 Negativ:
+
 - Zwei Files pflegen — vergessen des Backend-Updates bricht CI (gewollt).
 
 ## Trust-Boundary / Security-Note
@@ -45,6 +51,7 @@ UX-Komfort und KEINE Sicherheitsgrenze**. `getActiveUser()` liest aus
 Permissions derzeit nicht durchgängig — Server-Routen sind offen.
 
 Sobald Auth eingeführt wird:
+
 1. `requireSupabaseAuth`-Middleware (o. ä.) auf allen Server-Functions.
 2. `can()` **zusätzlich** server-seitig — nie „nur weil Frontend prüft".
 3. Ownership-Filter (`ownerId`) server-seitig durchsetzen; die im Code

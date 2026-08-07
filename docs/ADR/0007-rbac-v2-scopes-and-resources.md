@@ -33,7 +33,7 @@ Wir führen **v2 additiv** ein, ohne die v1-Matrix zu verändern:
 4. **Permission Groups**: benannte Bündel — UI-Composer und Ziel für
    Entra-Gruppen-Mappings. Rollen bleiben primär.
 5. **RoleAssignment**: Datenmodell `principal × role × scope × source ×
-   expiresAt`. Ersetzt später den impliziten „eine Rolle pro User"-Wert
+expiresAt`. Ersetzt später den impliziten „eine Rolle pro User"-Wert
    aus `UserProfile.role`.
 6. **`evaluateAccess()`** ist der zukünftige Ersatz für `can()`. Solange
    keine Assignments existieren, delegiert die Funktion 1:1 an v1 → keine
@@ -87,10 +87,10 @@ Signaturprüfung. Mit Aktivierung von Entra ID / OAuth2 muss zusätzlich:
 
 ## Migrationspfad
 
-| Iteration | Änderung |
-| --------- | -------- |
-| v1 (heute) | Matrix flach, `can()` global. |
-| v2 (dieses ADR) | Typen, Groups, Assignments, `evaluateAccess()` als Fallback → kein Aufrufer-Umbau. |
-| v3 | v1-Permission-Strings alias auf v2, Aufrufer schrittweise auf `evaluateAccess(user, perm, { scope })` umstellen. |
-| v4 | Backend-Mirror für Assignments; `check-rbac.mjs` erweitert um Scope-Invarianten. |
-| v5 | Entra-ID-Sync aktiv; `RoleAssignment.source = "entra"` durchgereicht. |
+| Iteration       | Änderung                                                                                                         |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| v1 (heute)      | Matrix flach, `can()` global.                                                                                    |
+| v2 (dieses ADR) | Typen, Groups, Assignments, `evaluateAccess()` als Fallback → kein Aufrufer-Umbau.                               |
+| v3              | v1-Permission-Strings alias auf v2, Aufrufer schrittweise auf `evaluateAccess(user, perm, { scope })` umstellen. |
+| v4              | Backend-Mirror für Assignments; `check-rbac.mjs` erweitert um Scope-Invarianten.                                 |
+| v5              | Entra-ID-Sync aktiv; `RoleAssignment.source = "entra"` durchgereicht.                                            |

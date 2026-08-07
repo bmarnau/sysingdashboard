@@ -9,7 +9,6 @@
 import { rel, read, walk, stableId } from "../util.mjs";
 import { classify, CONSOLE_LINE_RE } from "../../console-policy.mjs";
 
-
 export function detectConsoleUsage(ROOT) {
   const findings = [];
   const now = new Date().toISOString();

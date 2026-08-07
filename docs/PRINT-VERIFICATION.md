@@ -50,16 +50,16 @@ Skript-Ablauf: Dashboard öffnen → Servicemenü → „Technischer Prüfberich
 
 Beobachtet:
 
-| Prüfung | Ergebnis |
-| --- | --- |
-| `#technical-report-print-root` vorhanden | ja |
-| direktes Kind von `body` | ja |
-| `body.class` enthält `printing-compliance` | ja |
-| Abschnitte im Print-Root | 11 von 11 |
-| Findings im Print-Root | 72 (= Reportstand) |
-| übrige Body-Kinder im Print-Medium | `display: none` |
-| `window.print()`-Aufrufe pro Klick | 1 (StrictMode-sicher) |
-| PDF-Seiten | 49, Kopf-, Findings- und Nachweisabschnitte vollständig |
+| Prüfung                                    | Ergebnis                                                |
+| ------------------------------------------ | ------------------------------------------------------- |
+| `#technical-report-print-root` vorhanden   | ja                                                      |
+| direktes Kind von `body`                   | ja                                                      |
+| `body.class` enthält `printing-compliance` | ja                                                      |
+| Abschnitte im Print-Root                   | 11 von 11                                               |
+| Findings im Print-Root                     | 72 (= Reportstand)                                      |
+| übrige Body-Kinder im Print-Medium         | `display: none`                                         |
+| `window.print()`-Aufrufe pro Klick         | 1 (StrictMode-sicher)                                   |
+| PDF-Seiten                                 | 49, Kopf-, Findings- und Nachweisabschnitte vollständig |
 
 Hinweis: `page.pdf()` löst `window.print()` nicht aus. Für automatisierte
 Cleanup-Tests muss `afterprint` manuell dispatcht werden oder der 1500-ms-

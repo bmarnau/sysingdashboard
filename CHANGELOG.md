@@ -13,6 +13,17 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.50.0 - 2026-08-07
+
+- **Abschluss der Infrastrukturphase**: Phase 1 „Technische Plattform" ist abgeschlossen; Phase 2 „AVKK-Fachmodell" ist die nächste Phase (ADR-0023).
+- **Architektur**: `docs/ARCHITECTURE.md` vollständig neu aufgebaut — Schichtenmodell, Supabase, RBAC, RLS, Backup/Restore, Project Manifest, Governance, geplante Bausteine (Reference Data, AVKK, Report Service, Microsoft 365, KI-Agenten), Docker- und Azure-Zielarchitektur.
+- **Handbuch**: Neues Kapitel „Dialog-Referenz" dokumentiert die zehn bislang nicht beschriebenen Dialoge mit Zweck, Benutzergruppe, Berechtigung, Eingaben, Ergebnis und Besonderheiten; `docs:check` meldet keine offenen Dialoge mehr.
+- **Qualität**: Neue Testsuite `src/__tests__/scripts/project-status-validator.test.ts` prüft den Manifest-Validator (gültiges Manifest, YAML-Fehler, Schemaverstoß, doppelte IDs, unbekannter Sprint, Roadmap-Referenz, fehlende Pflichtfelder, Versionskonflikt) und validiert zusätzlich das reale Manifest.
+- **Project Manifest**: Neuer Abschnitt `phases` im Manifest und Schema (schemaVersion 1.3.0); Sprint 06B als abgeschlossen geführt, Roadmap und Risiken aktualisiert.
+- **Prüfbericht**: Technischer Prüfbericht neu erzeugt und Integrität erneut verifiziert.
+- Qualitätsgates repariert: Prettier/ESLint projektweit fehlerfrei (0 Errors), generierte Berichtsartefakte in `.prettierignore`, `report-2.test.ts` typsicher, CI-Workflow-YAML gültig formatiert.
+- Technischer Prüfbericht v7 neu erzeugt; Manifest-Nachweise für Governance, Projektmanifest, Layer-Architektur, Backupformat 2.0 und Infrastrukturabschluss ergänzt.
+
 ## 1.49.0 - 2026-08-06
 
 - **Project Governance**: Neues verbindliches Regelwerk `docs/PROJECT-GOVERNANCE.md` (Vision, Architekturprinzipien, Definition of Done, Versionierungsregeln, Dokumentenhierarchie).
@@ -54,7 +65,6 @@ Format pro Eintrag:
 - Dokumentation: neues Handbuchkapitel „Automatische Abmeldung bei Inaktivität", `docs/SESSION-TIMEOUT.md`, ADR-0020.
 
 ## 1.44.3 - 2026-08-01
-
 
 - **Vollständiger PDF-Druck des technischen Prüfberichts**: Der Bericht wird beim Drucken über ein Portal in ein eigenes Root (`#technical-report-print-root`) direkt am `body` gerendert (`ComplianceReportPrint.tsx`) und ist damit vom Dialog-Layout (fixed/overflow) entkoppelt. Enthalten sind alle 11 Abschnitte inkl. sämtlicher Findings und Maßnahmenliste.
 - Druck-Trigger in `TechnicalReportDialog.tsx` gehärtet: `cancelled`-Guard gegen React StrictMode (kein doppeltes `window.print()`), zwei `requestAnimationFrame` vor dem Druck, `afterprint`-Listener plus 1500-ms-Fallback für zuverlässiges Aufräumen.
@@ -173,8 +183,6 @@ Format pro Eintrag:
 - **Session-basierte Identität**: `useCurrentUser` liest ausschließlich aus Supabase-Session + `public.profiles`/`user_roles`. `localStorage`-Manipulation (`northbit-active-user`) hat keine Wirkung mehr — Finding im Security-Report auf `accepted:true` gesetzt (Historie bleibt erhalten).
 - **Tests**: `manipulation.test.tsx` invertiert (grüner Test = Bug gefixt); `api-direct-call.spec.ts` bleibt als Regressionsschutz; `static-findings.json` dokumentiert Nachweis und Verweise.
 
-
-
 - **CI-Integration und Quality Gates (Prompt 2A.10, ADR-0018)**: `.github/workflows/ci.yml` in 14 geordnete Stufen aufgeteilt (Setup → Static → Unit → Backend → API → Security → IO → Backup → Build → E2E → A11y → Debt → Report). `needs:`-Kette stoppt Folgejobs bei frühem Fehler; Concurrency-Cancel für PRs; Bun- und Playwright-Browser-Cache pro Job.
 - **Zentraler Quality-Gate**: neues Skript `scripts/ci/quality-gate.mjs` (Script `bun run ci:gate`) liest ausschließlich `test-report/technical-test-report.json` → neues Feld `blockers[]`. Blocker-Definition ist damit einmal in `scripts/technical-report/build.mjs` gepflegt (Single Source of Truth).
 - **Harte Blocker** exakt gemäß Prompt: fehlgeschlagener Build, TypeScript-Fehler, Critical Finding (jede Kategorie), High Security Finding, Datenintegritätsfehler, offener privilegierter Endpoint, Secret Leak, fehlgeschlagener RBAC-Lockout-Test, fehlgeschlagener Backup-/Restore-Kerntest, fehlender Pflichtbereich (Security/Backup/Docs).
@@ -202,8 +210,6 @@ Format pro Eintrag:
 - **Neue npm-Scripts**: `test:ops`, `ops:build`, `ops:bundle`, `ops:checks`, `ops:e2e`, `ops:report`.
 - **Handbuch**: Kapitel „Performance-, Build- und Betriebsprüfung" (`DOCUMENTATION_VERSION` → 1.15.0).
 
-
-
 ## 1.35.0 - 2026-07-13
 
 - **Backup-, Restore-, Import- und Export-Test-Suite (Prompt 2A.6, ADR-0015)**: neue Vitest-Suiten unter `src/__tests__/backup/` (create, integrity, restore) und `src/__tests__/io/` (import.suite, export.suite) mit deterministischen Fixtures (`src/__tests__/fixtures/backup.ts`) für gültige, beschädigte, unvollständige und version-inkompatible Backups.
@@ -218,8 +224,6 @@ Format pro Eintrag:
 - **Discovery Self-Tests** erweitert (10/10 grün): Extraktion von `endpointMeta`, Vorrang von `meta.classification`, Unterdrückung des Unclassified-Findings, Erzeugung des Public-without-reason-Findings.
 - **ADR-0014 Amendment**: dokumentiert die additive Aufnahme des Konventions-Meta-Export (ehemals verworfene Option C) als opt-in ergänzend zur Regex-Heuristik.
 - **Handbuch** Kapitel „API Discovery" um Abschnitt „Endpoint-Selbstdeklaration (`endpointMeta`)" ergänzt.
-
-
 
 - **API Discovery Framework (ADR-0014)**: neues Framework unter `scripts/api-discovery/` erkennt aktive Server-Routen (`src/routes/api/**`) automatisch per statischer Analyse und schreibt das deterministische Inventar nach `test-report/api-inventory.json`. Archivierte Verzeichnisse (`archive/**`) und Tests werden strikt ausgeschlossen; Imports aus `archive/**` in aktiven Routen erzeugen ein Critical-Finding.
 - **Discovery-Analyzer** erkennen HTTP-Methoden, `withCorrelation`-Wrapper, Zod-Validierung, Auth-Guards (`checkAuth`, `X-Sync-Token`, `requireSupabaseAuth`), Permissions, Logger-Nutzung und destruktive Wirkung. Endpoints werden als `public | authenticated | privileged | unclassified` klassifiziert.
@@ -249,7 +253,6 @@ Format pro Eintrag:
 - **Tests**: neue Suite `src/__tests__/api/correlation.test.ts` (Utils, Wrapper, Header-Handling, parallele Requests, Fehler-Shape, Logger-Enrichment) und E2E `e2e/specs/correlation.spec.ts` gegen den Dev-Server. Contract-Schemas (`endpoints.ts`) erwarten das neue Feld.
 - **Tech-Debt-Detektor** `correlation-id.mjs`: markiert neue TSS-Routes ohne `withCorrelation`, unstrukturierte Fehlerantworten und ungeprüften Rohzugriff auf den Client-Header.
 - **Systemstatus**-Abschnitt „Sicherheit" ergänzt um `correlationId.middlewareActive` / Anzahl unterstützter Routen. Handbuch-Kapitel „Correlation-ID & Nachverfolgung" hinzugefügt, `DOCUMENTATION_VERSION` auf **1.11.0**.
-
 
 ## 1.31.0 - 2026-07-13
 
@@ -346,7 +349,6 @@ Format pro Eintrag:
 
 ## 1.21.0 - 2026-07-05
 
-
 - Zentraler **Logger** (`src/lib/logger.ts`) mit Level `debug|info|warn|error`, In-Memory-Ringpuffer (500 Einträge), asynchronem IndexedDB-Sink (`dashboard-logs`, Rotation nach 1000 Zeilen / 7 Tagen) und automatischer Secret-Redaction (Token/Password/Authorization/Bearer/API-Key, JWT-ähnliche Strings). ESM-Pendant `backend/services/logger.mjs` für Node/Worker.
 - Neue **Error-Klassen** (`src/lib/errors.ts`): `DashboardError` + `SyncError`, `ValidationError`, `ImportError`, `ExportError`, `AzureError`, `BackupError`, `RbacError` mit stabilen `code`-Feldern und `toJSON()` für sicheres Logging.
 - Kritische Services umgestellt: `backend/services/syncService.mjs` wirft `SyncError` mit Codes, `src/lib/backup-service.ts` nutzt `logger.*` + `BackupError`, `src/lib/azure/azure-service.ts` loggt Stub-Aufrufe.
@@ -378,7 +380,6 @@ Format pro Eintrag:
 - Deep-linkable Suche: aktive Kapitel-ID und Suchbegriff werden als `?help=<id>&hq=<query>` in der URL persistiert und beim Öffnen des Dialogs wieder eingelesen; beim Schließen entfernt.
 
 ## 1.18.3 - 2026-07-01
-
 
 - Neue **Managementübersicht** (`docs/MANAGEMENT_OVERVIEW.md`) mit 14 Sektionen für nicht-technische Entscheider: Zielbild, Sicherheitsarchitektur, ENV-Validierung, Fail-Fast in Produktion, DEV ohne Azure, kein automatischer Sync, lokaler Betrieb bleibt führend, Rollenmodell, Export-/Import, Konflikthandling, Systemstatus, Entra-ID- und Key-Vault-Roadmap, Risiken und Gegenmaßnahmen.
 - Handbuch-Kapitel **Managementübersicht** ergänzt (Kategorie „Betrieb"), verweist auf die versionierte MD-Datei.

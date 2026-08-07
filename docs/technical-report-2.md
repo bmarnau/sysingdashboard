@@ -5,19 +5,19 @@ Nachweis-, Steuerungs- und Freigabeinstrument.
 
 ## Neue Felder im Report
 
-| Feld | Zweck |
-| --- | --- |
-| `id` | UUID pro Lauf, kollisionsfrei |
-| `version` | monoton wachsend aus `history/index.json` |
-| `parentReportId` | Verweis auf jüngsten Historie-Eintrag |
-| `integrity.value` | SHA-256 über kanonisch serialisierten Auszug |
-| `integrity.fields` | Whitelist der einfließenden Felder |
-| `releaseStage.proposed` | automatisch vorgeschlagene Freigabestufe |
-| `releaseStage.effective` | tatsächliche Stufe (nach Override) |
-| `releaseStage.overridden` | Abweichung inkl. Ticket, Aktor, Zeitstempel |
-| `sections` | deklarative Bereiche (auth, rls, docker, azure-readiness…) |
-| `diff.securityRegressions` | hervorgehobene Sicherheitsregressionen |
-| `diff.severityChanged/gateChanged/statusChanged` | strukturierter Vergleich |
+| Feld                                             | Zweck                                                      |
+| ------------------------------------------------ | ---------------------------------------------------------- |
+| `id`                                             | UUID pro Lauf, kollisionsfrei                              |
+| `version`                                        | monoton wachsend aus `history/index.json`                  |
+| `parentReportId`                                 | Verweis auf jüngsten Historie-Eintrag                      |
+| `integrity.value`                                | SHA-256 über kanonisch serialisierten Auszug               |
+| `integrity.fields`                               | Whitelist der einfließenden Felder                         |
+| `releaseStage.proposed`                          | automatisch vorgeschlagene Freigabestufe                   |
+| `releaseStage.effective`                         | tatsächliche Stufe (nach Override)                         |
+| `releaseStage.overridden`                        | Abweichung inkl. Ticket, Aktor, Zeitstempel                |
+| `sections`                                       | deklarative Bereiche (auth, rls, docker, azure-readiness…) |
+| `diff.securityRegressions`                       | hervorgehobene Sicherheitsregressionen                     |
+| `diff.severityChanged/gateChanged/statusChanged` | strukturierter Vergleich                                   |
 
 ## Historie
 

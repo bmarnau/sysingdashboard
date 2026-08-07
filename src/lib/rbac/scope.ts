@@ -60,10 +60,7 @@ export function scopeIncludes(outer: ResourceScope, inner: ResourceScope): boole
  * Liefert den engeren (spezifischeren) der beiden Scopes.
  * `null` wenn keiner den anderen einschließt.
  */
-export function narrowestScope(
-  a: ResourceScope,
-  b: ResourceScope,
-): ResourceScope | null {
+export function narrowestScope(a: ResourceScope, b: ResourceScope): ResourceScope | null {
   if (scopeIncludes(a, b)) return b;
   if (scopeIncludes(b, a)) return a;
   return null;

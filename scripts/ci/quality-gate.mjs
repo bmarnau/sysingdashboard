@@ -22,7 +22,9 @@ function fail(msg) {
 }
 
 if (!existsSync(REPORT)) {
-  fail(`Kein technischer Prüfbericht gefunden (${REPORT}). Führe zuerst \`bun run report:technical\` aus.`);
+  fail(
+    `Kein technischer Prüfbericht gefunden (${REPORT}). Führe zuerst \`bun run report:technical\` aus.`,
+  );
 }
 
 let report;
@@ -39,7 +41,9 @@ const lines = [];
 lines.push(`# CI Quality Gate`);
 lines.push("");
 lines.push(`- Status: **${report.status}**`);
-lines.push(`- Findings: total ${summary.total ?? 0} · CRIT ${summary.critical ?? 0} · HIGH ${summary.high ?? 0}`);
+lines.push(
+  `- Findings: total ${summary.total ?? 0} · CRIT ${summary.critical ?? 0} · HIGH ${summary.high ?? 0}`,
+);
 lines.push(`- Blocker: **${blockers.length}**`);
 lines.push("");
 

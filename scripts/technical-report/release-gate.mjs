@@ -26,7 +26,8 @@ export function proposeReleaseStage(report) {
 
   const authOk =
     (sections.auth?.status ?? "unknown") === "passed" ||
-    (sources.security?.status === "passed" || sources.security?.status === "passed-with-findings");
+    sources.security?.status === "passed" ||
+    sources.security?.status === "passed-with-findings";
   const rlsOk =
     (sections.rls?.status ?? "unknown") === "passed" ||
     !findings.some(
@@ -34,7 +35,7 @@ export function proposeReleaseStage(report) {
     );
   const restoreOk =
     (sections.operations?.evidence ?? "").includes("restore") ||
-    (sources.backup?.status === "passed");
+    sources.backup?.status === "passed";
   const docsOk = sources.docs?.status === "passed" || (sections.docs?.status ?? "") === "passed";
 
   if (openCritical > 0 || blockers.length > 0) {
@@ -44,7 +45,10 @@ export function proposeReleaseStage(report) {
     };
   }
   if (!authOk) {
-    return { proposed: "development", reason: "Authentifizierung nicht als bestanden nachgewiesen." };
+    return {
+      proposed: "development",
+      reason: "Authentifizierung nicht als bestanden nachgewiesen.",
+    };
   }
   if (openGate > 0) {
     return { proposed: "internal-test", reason: `${openGate} offene gate-relevante Findings.` };

@@ -13,11 +13,29 @@ import { mkdirSync, writeFileSync } from "node:fs";
 const CHECKS = [
   { id: "typescript", label: "TypeScript", cmd: "bunx", args: ["tsgo", "--noEmit"], soft: false },
   { id: "eslint", label: "ESLint", cmd: "bun", args: ["run", "lint"], soft: true },
-  { id: "prettier", label: "Prettier", cmd: "bunx", args: ["prettier", "--check", "."], soft: true },
+  {
+    id: "prettier",
+    label: "Prettier",
+    cmd: "bunx",
+    args: ["prettier", "--check", "."],
+    soft: true,
+  },
   { id: "docs-sync", label: "Doku-Sync", cmd: "bun", args: ["run", "docs:check"], soft: false },
-  { id: "no-console", label: "No-Console-Guard", cmd: "bun", args: ["run", "lint:no-console"], soft: false },
+  {
+    id: "no-console",
+    label: "No-Console-Guard",
+    cmd: "bun",
+    args: ["run", "lint:no-console"],
+    soft: false,
+  },
   { id: "rbac", label: "RBAC-Parität", cmd: "bun", args: ["run", "rbac:check"], soft: false },
-  { id: "security", label: "Security-Scan", cmd: "bun", args: ["run", "security:check"], soft: true },
+  {
+    id: "security",
+    label: "Security-Scan",
+    cmd: "bun",
+    args: ["run", "security:check"],
+    soft: true,
+  },
 ];
 
 function run(check) {

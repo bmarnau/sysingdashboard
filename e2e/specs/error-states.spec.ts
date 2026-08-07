@@ -19,7 +19,9 @@ test.describe("Fehlerzustände", () => {
     await expect(page.locator("main").first()).toBeVisible();
   });
 
-  test("App startet, wenn localStorage-Writes werfen (Quota / privater Modus)", async ({ page }) => {
+  test("App startet, wenn localStorage-Writes werfen (Quota / privater Modus)", async ({
+    page,
+  }) => {
     await page.addInitScript(() => {
       const originalSet = Storage.prototype.setItem;
       Storage.prototype.setItem = function () {

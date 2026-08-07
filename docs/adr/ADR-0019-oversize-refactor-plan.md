@@ -27,10 +27,10 @@ Beide Findings werden befristet bis **2026-12-31** über `scripts/technical-repo
 
 ## Umsetzungsstand (Sprint 05 / 05B, Stand 1.44.3)
 
-| Modul | vorher | jetzt | Status |
-| --- | --- | --- | --- |
-| `src/routes/_authenticated/dashboard.tsx` | 3281 | 979 | Teilerfolg — weiterhin über der 500-Zeilen-Schwelle, Akzeptanz `td-oversize-7e9a0b20` bleibt bis 2026-12-31 gültig |
-| `src/components/ExportDialog.tsx` | 808 | 308 | erledigt — Akzeptanz entfernt (`ExportSortControls`, `ExportSummary`, `export-options`, `export-naming`, `useExportDialog`) |
+| Modul                                     | vorher | jetzt | Status                                                                                                                      |
+| ----------------------------------------- | ------ | ----- | --------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/_authenticated/dashboard.tsx` | 3281   | 979   | Teilerfolg — weiterhin über der 500-Zeilen-Schwelle, Akzeptanz `td-oversize-7e9a0b20` bleibt bis 2026-12-31 gültig          |
+| `src/components/ExportDialog.tsx`         | 808    | 308   | erledigt — Akzeptanz entfernt (`ExportSortControls`, `ExportSummary`, `export-options`, `export-naming`, `useExportDialog`) |
 
 Verbleibende Oversize-Findings ohne Akzeptanz (Medium, kein Gate-Blocker):
 `src/components/ui/sidebar.tsx` (745, Fremdcode shadcn) und
@@ -47,4 +47,3 @@ Der vollständige PDF-Druck des Prüfberichts wurde bewusst **nicht** im Dialogb
 gelöst, sondern über ein eigenes Print-Root am `body`
 (`src/components/compliance/ComplianceReportPrint.tsx`). Begründung und
 Verifikationsergebnisse: `docs/PRINT-VERIFICATION.md`.
-

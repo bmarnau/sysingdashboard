@@ -340,17 +340,7 @@ export function useExportDialog({
       return;
     }
     await runPdfExport(periodLabel);
-  }, [
-    clientId,
-    format,
-    grouping,
-    hasData,
-    month,
-    projectId,
-    runPdfExport,
-    runTextExport,
-    sorting,
-  ]);
+  }, [clientId, format, grouping, hasData, month, projectId, runPdfExport, runTextExport, sorting]);
 
   /** Wiederholung nach Fehler — setzt den Fehlerzustand zurück. */
   const retryExport = useCallback(async () => {

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://sysingdashboard.lovable.app/schema/project-status-1.2.0.json",
+  "$id": "https://sysingdashboard.lovable.app/schema/project-status-1.3.0.json",
   "title": "Sysing Dashboard Project Manifest",
   "description": "Formaler Vertrag für docs/PROJECT-STATUS.yaml. Geprüft durch scripts/project-status/check.mjs.",
   "type": "object",
@@ -158,6 +158,24 @@
     },
     "platforms": { "type": "object" },
     "supabase": { "type": "object" },
+    "phases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "status", "goal"],
+        "properties": {
+          "id": { "$ref": "#/$defs/identifier" },
+          "number": { "type": "integer", "minimum": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "status": { "$ref": "#/$defs/itemStatus" },
+          "startedVersion": { "$ref": "#/$defs/semver" },
+          "completedVersion": { "$ref": "#/$defs/semver" },
+          "goal": { "type": "string", "minLength": 1 },
+          "outcomes": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
     "completedSprints": {
       "type": "array",
       "items": {

@@ -49,16 +49,16 @@ Die maßgebliche, maschinenlesbare Fassung von Vision, Roadmap und Status ist
 
 ## 3. Architekturprinzipien
 
-| ID | Regel |
-| --- | --- |
-| `source-of-truth` | GitHub ist die maßgebliche Quelle für Code, Dokumentation und Versionsstand. |
-| `supabase-mvp` | Supabase ist die führende Daten- und Authentifizierungsplattform des MVP. |
-| `provider-separation` | Fachlogik, Authentifizierung, Datenzugriff und providerspezifische Implementierungen sind getrennt. |
-| `portable-runtime` | Keine unersetzbare Laufzeitabhängigkeit zu einer einzelnen Hostingplattform. |
-| `container-ready` | Die Anwendung muss langfristig als Docker-Container autonom betreibbar sein. |
-| `security-by-design` | Änderungen sind sicher, testbar, dokumentiert sowie RBAC- und RLS-konform. |
-| `no-secrets` | Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation. |
-| `layered-access` | UI greift nie direkt auf Persistenz- oder Providerinterna zu (siehe Abschnitt 4). |
+| ID                    | Regel                                                                                                       |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `source-of-truth`     | GitHub ist die maßgebliche Quelle für Code, Dokumentation und Versionsstand.                                |
+| `supabase-mvp`        | Supabase ist die führende Daten- und Authentifizierungsplattform des MVP.                                   |
+| `provider-separation` | Fachlogik, Authentifizierung, Datenzugriff und providerspezifische Implementierungen sind getrennt.         |
+| `portable-runtime`    | Keine unersetzbare Laufzeitabhängigkeit zu einer einzelnen Hostingplattform.                                |
+| `container-ready`     | Die Anwendung muss langfristig als Docker-Container autonom betreibbar sein.                                |
+| `security-by-design`  | Änderungen sind sicher, testbar, dokumentiert sowie RBAC- und RLS-konform.                                  |
+| `no-secrets`          | Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation. |
+| `layered-access`      | UI greift nie direkt auf Persistenz- oder Providerinterna zu (siehe Abschnitt 4).                           |
 
 Diese IDs sind identisch mit `architecturePrinciples[].id` in
 `PROJECT-STATUS.yaml` und werden dort gepflegt.
@@ -146,17 +146,17 @@ Ein Sprint gilt erst als abgeschlossen, wenn **alle** Punkte erfüllt und belegt
 
 ## 8. Qualitätsregeln
 
-| Regel | Prüfung |
-| --- | --- |
-| Kein `console.*` in Produktivcode | `bun run lint:no-console` |
-| Typen vollständig, kein impliziter `any` an Modulgrenzen | `bun run typecheck` |
-| Module unter 500 Zeilen (Ausnahme mit ADR und Ablaufdatum) | `test:debt` (oversize) |
-| Keine Zyklen zwischen Modulen | `test:debt` (cyclic-deps) |
-| Keine Layer-Verletzungen | `test:debt` (layer-violations) |
-| RBAC-Matrix Frontend = Backend | `bun run rbac:check` |
-| Dokumentation synchron | `bun run docs:check` |
-| Projektmanifest gültig | `bun run project-status:check` |
-| Endpunkte inventarisiert und getestet | `bun run api:gate` |
+| Regel                                                      | Prüfung                        |
+| ---------------------------------------------------------- | ------------------------------ |
+| Kein `console.*` in Produktivcode                          | `bun run lint:no-console`      |
+| Typen vollständig, kein impliziter `any` an Modulgrenzen   | `bun run typecheck`            |
+| Module unter 500 Zeilen (Ausnahme mit ADR und Ablaufdatum) | `test:debt` (oversize)         |
+| Keine Zyklen zwischen Modulen                              | `test:debt` (cyclic-deps)      |
+| Keine Layer-Verletzungen                                   | `test:debt` (layer-violations) |
+| RBAC-Matrix Frontend = Backend                             | `bun run rbac:check`           |
+| Dokumentation synchron                                     | `bun run docs:check`           |
+| Projektmanifest gültig                                     | `bun run project-status:check` |
+| Endpunkte inventarisiert und getestet                      | `bun run api:gate`             |
 
 Findings werden nicht stillschweigend ignoriert. Ein akzeptiertes Finding
 braucht Begründung, Ticket und Verfallsdatum.
@@ -214,21 +214,40 @@ Backlog, technische Schulden.
 
 ---
 
+## 11a. Phasenmodell
+
+Das Projekt ist in Phasen gegliedert, die im Manifest (`phases`) geführt und vom
+Validator geprüft werden (ADR-0023).
+
+| Phase | Titel                | Status    | Abschluss |
+| ----- | -------------------- | --------- | --------- |
+| 1     | Technische Plattform | completed | v1.50.0   |
+| 2     | AVKK-Fachmodell      | next      | offen     |
+
+Regeln:
+
+- Nach Abschluss einer Phase ist Arbeit an deren Gegenstand nur noch als Wartung,
+  Fehlerbehebung oder begründete Voraussetzung eines Sprints der Folgephase zulässig.
+- Ein Phasenwechsel erfordert grüne Quality Gates, einen neu erzeugten Prüfbericht,
+  einen Tagebucheintrag und ein aktualisiertes Manifest.
+
+---
+
 ## 12. Rollen der Projektdokumente
 
-| Dokument | Rolle | Pflegeanlass |
-| --- | --- | --- |
-| `docs/PROJECT-GOVERNANCE.md` | Oberste Regelquelle: wie gearbeitet wird | Regeländerung |
-| `docs/PROJECT-STATUS.yaml` | Maschinenlesbare Single Source of Truth für Status, Roadmap, Risiken | jeder Sprint |
-| `docs/PROJECT-STATUS.md` | Menschliche Erläuterung des Manifests | Schemaänderung |
-| `docs/project-status.schema.json` | Formaler Vertrag des Manifests | Schemaänderung |
-| `CHANGELOG.md` | Einzige Quelle der Dashboard-Version und Änderungshistorie | jede sichtbare Änderung |
-| `docs/ARCHITECTURE.md` | Ist-Architektur und Zielarchitektur | Strukturänderung |
-| `docs/ADR/`, `docs/adr/` | Einzelentscheidungen mit Trade-offs | Entscheidung |
-| `src/lib/help-documentation.ts` | Benutzerhandbuch in der Anwendung | jede Funktionsänderung |
-| `docs/ENTWICKLUNGSTAGEBUCH.md` | Chronik des Projektverlaufs | jeder Sprint |
-| `test-report/technical-test-report.*` | Prüfbericht, Findings, Release-Gate | jeder Sprint |
-| `docs/CONTRIBUTING.md` | Konkreter Entwickler-Workflow | Workflowänderung |
+| Dokument                              | Rolle                                                                | Pflegeanlass            |
+| ------------------------------------- | -------------------------------------------------------------------- | ----------------------- |
+| `docs/PROJECT-GOVERNANCE.md`          | Oberste Regelquelle: wie gearbeitet wird                             | Regeländerung           |
+| `docs/PROJECT-STATUS.yaml`            | Maschinenlesbare Single Source of Truth für Status, Roadmap, Risiken | jeder Sprint            |
+| `docs/PROJECT-STATUS.md`              | Menschliche Erläuterung des Manifests                                | Schemaänderung          |
+| `docs/project-status.schema.json`     | Formaler Vertrag des Manifests                                       | Schemaänderung          |
+| `CHANGELOG.md`                        | Einzige Quelle der Dashboard-Version und Änderungshistorie           | jede sichtbare Änderung |
+| `docs/ARCHITECTURE.md`                | Ist-Architektur und Zielarchitektur                                  | Strukturänderung        |
+| `docs/ADR/`, `docs/adr/`              | Einzelentscheidungen mit Trade-offs                                  | Entscheidung            |
+| `src/lib/help-documentation.ts`       | Benutzerhandbuch in der Anwendung                                    | jede Funktionsänderung  |
+| `docs/ENTWICKLUNGSTAGEBUCH.md`        | Chronik des Projektverlaufs                                          | jeder Sprint            |
+| `test-report/technical-test-report.*` | Prüfbericht, Findings, Release-Gate                                  | jeder Sprint            |
+| `docs/CONTRIBUTING.md`                | Konkreter Entwickler-Workflow                                        | Workflowänderung        |
 
 ---
 

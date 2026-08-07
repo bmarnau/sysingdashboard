@@ -14,13 +14,16 @@ test("dashboard startup timing", async ({ page }) => {
   const loadedAt = Date.now() - t0;
 
   const timing = await page.evaluate(() => {
-    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    const nav = performance.getEntriesByType("navigation")[0] as
+      | PerformanceNavigationTiming
+      | undefined;
     const paint = performance.getEntriesByType("paint");
     return {
       domContentLoaded: nav ? nav.domContentLoadedEventEnd : null,
       loadEvent: nav ? nav.loadEventEnd : null,
       firstPaint: paint.find((p) => p.name === "first-paint")?.startTime ?? null,
-      firstContentfulPaint: paint.find((p) => p.name === "first-contentful-paint")?.startTime ?? null,
+      firstContentfulPaint:
+        paint.find((p) => p.name === "first-contentful-paint")?.startTime ?? null,
     };
   });
 

@@ -173,8 +173,7 @@ describe("api smoke (inventory-driven)", () => {
           if (!ep.methods.includes(notAllowedMethod)) {
             const wrongRes = await (
               pickHandler(mod, notAllowedMethod) ??
-              (async () =>
-                new Response("method-not-allowed", { status: 405 }))
+              (async () => new Response("method-not-allowed", { status: 405 }))
             )({
               request: new Request(`http://localhost${ep.path}`, {
                 method: notAllowedMethod,

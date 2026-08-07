@@ -30,7 +30,9 @@ for (const exp of EXPECTED) {
       await page.goto("/");
       await expect(page.locator("main").first()).toBeVisible();
     });
-    test(`Servicemenü-Button ${exp.serviceMenuVisible ? "sichtbar" : "verborgen"}`, async ({ page }) => {
+    test(`Servicemenü-Button ${exp.serviceMenuVisible ? "sichtbar" : "verborgen"}`, async ({
+      page,
+    }) => {
       await page.goto("/");
       const btn = page.getByRole("button", { name: /Einstellungen und Services/i });
       if (exp.serviceMenuVisible) {

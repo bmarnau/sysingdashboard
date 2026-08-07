@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `65e565e0-a9ff-4fb7-84e7-52e9bc3ed248` · Version 6 · Generiert: 2026-08-05T03:17:59.362Z_
+_Report ID: `dfb75b8e-1271-453f-8f78-2357fc5fe9ec` · Version 7 · Generiert: 2026-08-07T03:25:49.837Z_
 
 ## 1. Prüfidentität
-- Report-ID: `65e565e0-a9ff-4fb7-84e7-52e9bc3ed248`
-- Reportversion: **6**
-- Vorgängerbericht: `b23cc3d0-6801-4450-a2ff-9ce8bedb0d19`
+- Report-ID: `dfb75b8e-1271-453f-8f78-2357fc5fe9ec`
+- Reportversion: **7**
+- Vorgängerbericht: `65e565e0-a9ff-4fb7-84e7-52e9bc3ed248`
 - Schema: `2.0.0`
-- Dashboard-Version: **1.48.0**
-- Commit: `5edcaf6`
+- Dashboard-Version: **1.50.0**
+- Commit: `e45cf08`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: —
-- Testzeit: 2026-08-05T03:17:59.259Z
+- Testzeit: 2026-08-07T03:25:49.706Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:90030f22710742f5d2b9fc102b356ad72628197568e73389f1cb5dabdd1ef6cc`
+- Integrität: `sha256:516c0dfb8edecc4175daf782bcc84de9791ba6e0e555e649eb42db70cc6d5f3f`
 
 ## 2. Freigabestufe
 - Vorschlag: **production**
@@ -43,7 +43,13 @@ _Report ID: `65e565e0-a9ff-4fb7-84e7-52e9bc3ed248` · Version 6 · Generiert: 20
 | supabase | bestanden | src/integrations/supabase/config.ts, supabase/config.toml |
 | dockerPortability | not-applicable | docs/DEPLOYMENT.md |
 | azureReadiness | not-applicable | src/lib/azure/*, docs/ADR/0007-rbac-v2-scopes-and-resources.md |
-| docs | bestanden | scripts/check-docs-sync.mjs |
+| docs | bestanden | scripts/check-docs-sync.mjs, src/lib/help-documentation.ts, docs/ARCHITECTURE.md |
+| governance | bestanden | docs/PROJECT-GOVERNANCE.md, docs/PROJECT-STATUS.yaml, docs/project-status.schema.json, docs/ADR/0023-phasenmodell-infrastrukturabschluss.md |
+| projectManifest | bestanden | scripts/project-status/check.mjs, src/__tests__/scripts/project-status-validator.test.ts |
+| ci | bestanden | .github/workflows/ci.yml, scripts/ci/quality-gate.mjs |
+| backupFormat | bestanden | src/lib/backup/manifest.ts, src/__tests__/backup/manifest-v2.test.ts, docs/ADR/0022-backupformat-2.md |
+| layerArchitecture | bestanden | scripts/tech-debt/detectors/layer-violations.mjs, src/hooks/useDashboardPersistence.ts |
+| infrastructurePhase | bestanden | docs/ENTWICKLUNGSTAGEBUCH.md, CHANGELOG.md (1.50.0), docs/PROJECT-STATUS.yaml (phases) |
 
 ## 6. Testergebnisse nach Bereich
 
@@ -876,10 +882,10 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 9. Vergleich zum Vorgängerbericht
-- Neu: 1
-- Behoben: 2
+- Neu: 0
+- Behoben: 0
 - Verschlechtert: 0
-- Unverändert: 66
+- Unverändert: 67
 - Wieder aufgetreten: 0
 - Schweregrad geändert: 0
 - Gate-Relevanz geändert: 0

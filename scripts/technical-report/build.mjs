@@ -17,7 +17,13 @@ import { createHash, randomUUID } from "node:crypto";
 import path from "node:path";
 import { computeIntegrityHash } from "./canonical.mjs";
 import { proposeReleaseStage, applyReleaseOverride } from "./release-gate.mjs";
-import { appendHistory, loadIndex, loadParentReport, nextReportVersion, findParentReportId } from "./history.mjs";
+import {
+  appendHistory,
+  loadIndex,
+  loadParentReport,
+  nextReportVersion,
+  findParentReportId,
+} from "./history.mjs";
 
 const ROOT = process.cwd();
 const OUT_DIR = "test-report";
@@ -41,8 +47,7 @@ const readText = (p, fallback = "") => {
     return fallback;
   }
 };
-const truncate = (s, n = 200) =>
-  typeof s === "string" && s.length > n ? `${s.slice(0, n)}…` : s;
+const truncate = (s, n = 200) => (typeof s === "string" && s.length > n ? `${s.slice(0, n)}…` : s);
 const sha8 = (s) => createHash("sha1").update(s).digest("hex").slice(0, 8);
 
 // ------------------------------------------------------------------ identity
@@ -207,7 +212,8 @@ function collectSecurity() {
     }),
   );
   return {
-    status: rep.counts?.critical > 0 ? "failed" : findings.length ? "passed-with-findings" : "passed",
+    status:
+      rep.counts?.critical > 0 ? "failed" : findings.length ? "passed-with-findings" : "passed",
     findings,
     summary: rep.counts,
   };
@@ -295,8 +301,9 @@ function collectBackup() {
 function collectTechDebt() {
   const rep = readJson(`${OUT_DIR}/tech-debt.json`);
   if (!rep) return { status: "not-run", findings: [] };
-  const acc = readJson("scripts/technical-report/tech-debt-acceptances.json", { acceptances: {} })
-    .acceptances ?? {};
+  const acc =
+    readJson("scripts/technical-report/tech-debt-acceptances.json", { acceptances: {} })
+      .acceptances ?? {};
   const findings = (rep.findings ?? [])
     .filter((f) => f.status !== "geschlossen")
     .map((f) => {
@@ -310,12 +317,14 @@ function collectTechDebt() {
         description: f.description,
         cause: f.rootCause,
         impact: f.impact,
-        recommendation: a ? `${f.recommendation}\n\nAkzeptanz: ${a.reason} (Ticket ${a.ticket}, gültig bis ${a.expires}).` : f.recommendation,
+        recommendation: a
+          ? `${f.recommendation}\n\nAkzeptanz: ${a.reason} (Ticket ${a.ticket}, gültig bis ${a.expires}).`
+          : f.recommendation,
         components: [f.location].filter(Boolean),
         evidence: { file: f.location, reportRef: `${OUT_DIR}/tech-debt.md` },
         effort: f.effort === "klein" ? "S" : f.effort === "groß" ? "L" : "M",
         source: f.source === "manual" ? "manual" : "auto",
-        status: a ? "accepted" : (f.status === "offen" ? "open" : (f.status ?? "open")),
+        status: a ? "accepted" : f.status === "offen" ? "open" : (f.status ?? "open"),
         accepted: !!a,
       });
     });
@@ -357,7 +366,8 @@ function collectOps() {
       }),
     );
   }
-  const status = build.hardFails > 0 ? "failed" : findings.length ? "passed-with-findings" : "passed";
+  const status =
+    build.hardFails > 0 ? "failed" : findings.length ? "passed-with-findings" : "passed";
   return {
     status,
     findings,
@@ -381,7 +391,8 @@ function collectDocs() {
           area: "documentation",
           title: "Doku-Sync-Prüfung fehlgeschlagen",
           description: "`scripts/check-docs-sync.mjs` liefert Non-Zero-Exit.",
-          recommendation: "`bun run docs:check` lokal ausführen und Handbuch/Changelog synchronisieren.",
+          recommendation:
+            "`bun run docs:check` lokal ausführen und Handbuch/Changelog synchronisieren.",
           evidence: { reportRef: "scripts/check-docs-sync.mjs" },
           effort: "S",
         }),
@@ -445,8 +456,7 @@ function computeAreaStatuses(sources) {
 }
 
 function overallStatus(allFindings, sources) {
-  if (Object.values(sources).some((s) => s.status === "not-run" && s.mandatory))
-    return "blocked";
+  if (Object.values(sources).some((s) => s.status === "not-run" && s.mandatory)) return "blocked";
   const openCritical = allFindings.filter((f) => f.severity === "CRITICAL" && !f.accepted).length;
   if (openCritical > 0) return "failed";
   const openIssues = allFindings.filter((f) => f.severity !== "INFO" && !f.accepted).length;
@@ -457,15 +467,31 @@ function releaseRecommendation(allFindings, sources) {
   const openCrit = allFindings.filter((f) => f.severity === "CRITICAL" && !f.accepted).length;
   const openHigh = allFindings.filter((f) => f.severity === "HIGH" && !f.accepted).length;
   const authOpen = allFindings.some(
-    (f) => !f.accepted && ["CRITICAL", "HIGH"].includes(f.severity) && /auth|identity|rbac/i.test(f.area),
+    (f) =>
+      !f.accepted &&
+      ["CRITICAL", "HIGH"].includes(f.severity) &&
+      /auth|identity|rbac/i.test(f.area),
   );
   const azureOpen = allFindings.some(
     (f) => !f.accepted && ["CRITICAL", "HIGH"].includes(f.severity) && /azure/i.test(f.area),
   );
-  if (openCrit > 0) return { level: "not-production", reason: `${openCrit} offene CRITICAL-Findings.` };
-  if (authOpen) return { level: "restricted-pilot", reason: "Auth-/RBAC-Blocker offen — Pilot nur ohne Produktivdaten." };
-  if (azureOpen) return { level: "restricted-pilot", reason: "Azure-Blocker offen — Pilot ohne Live-Azure-Anbindung." };
-  if (openHigh > 0) return { level: "pilot-ready", reason: `${openHigh} HIGH-Findings — für Pilot geeignet, für Produktion nicht.` };
+  if (openCrit > 0)
+    return { level: "not-production", reason: `${openCrit} offene CRITICAL-Findings.` };
+  if (authOpen)
+    return {
+      level: "restricted-pilot",
+      reason: "Auth-/RBAC-Blocker offen — Pilot nur ohne Produktivdaten.",
+    };
+  if (azureOpen)
+    return {
+      level: "restricted-pilot",
+      reason: "Azure-Blocker offen — Pilot ohne Live-Azure-Anbindung.",
+    };
+  if (openHigh > 0)
+    return {
+      level: "pilot-ready",
+      reason: `${openHigh} HIGH-Findings — für Pilot geeignet, für Produktion nicht.`,
+    };
   if (sources.security?.status === "passed" && sources.backup?.status === "passed")
     return { level: "next-phase", reason: "Alle Pflichtbereiche grün." };
   return { level: "continue-development", reason: "Weiterentwicklung empfohlen." };
@@ -503,7 +529,11 @@ function diffReports(current, prev) {
     } else if (SEV[f.severity] < SEV[p.severity]) {
       severityChanged.push({ id, from: p.severity, to: f.severity });
     }
-    if ((p.status === "closed" || p.status === "fixed") && f.status !== "closed" && f.status !== "fixed") {
+    if (
+      (p.status === "closed" || p.status === "fixed") &&
+      f.status !== "closed" &&
+      f.status !== "fixed"
+    ) {
       reappeared.push(id);
       if (id.startsWith("sec:")) {
         securityRegressions.push({ id, kind: "reopened", severity: f.severity });
@@ -591,8 +621,16 @@ function computeBlockers(allFindings, sources) {
   }
   // 4. Offener privilegierter Endpoint
   for (const f of allFindings) {
-    if (!f.accepted && f.id.startsWith("api:") && /unprotected|privileged|open-endpoint/i.test(`${f.id} ${f.title}`)) {
-      push("unprotected-privileged-endpoint", `Privilegierter Endpoint ungeschützt: ${f.id}`, f.title);
+    if (
+      !f.accepted &&
+      f.id.startsWith("api:") &&
+      /unprotected|privileged|open-endpoint/i.test(`${f.id} ${f.title}`)
+    ) {
+      push(
+        "unprotected-privileged-endpoint",
+        `Privilegierter Endpoint ungeschützt: ${f.id}`,
+        f.title,
+      );
     }
   }
   // 5. Secret Leak
@@ -624,9 +662,9 @@ function computeBlockers(allFindings, sources) {
   return blockers;
 }
 
-
 function collectSections(sources) {
-  const manual = readJson("scripts/technical-report/manual-sections.json", { sections: {} }).sections ?? {};
+  const manual =
+    readJson("scripts/technical-report/manual-sections.json", { sections: {} }).sections ?? {};
   const archStatus = sources.techdebt?.status ?? "not-run";
   const apiStatus = sources.api?.status ?? "not-run";
   const opsStatus = sources.ops?.status ?? "not-run";
@@ -704,9 +742,10 @@ function main() {
   // Historie: Vorgängerbericht bevorzugt aus history/index.json, sonst prev.json.
   const historyIndex = loadIndex(ROOT);
   const historyParent = loadParentReport(historyIndex, ROOT);
-  const legacyPrev = existsSync(PREV_JSON) || existsSync(OUT_JSON)
-    ? readJson(PREV_JSON) ?? readJson(OUT_JSON)
-    : null;
+  const legacyPrev =
+    existsSync(PREV_JSON) || existsSync(OUT_JSON)
+      ? (readJson(PREV_JSON) ?? readJson(OUT_JSON))
+      : null;
   const prev = historyParent ?? legacyPrev;
 
   const reportId = randomUUID();
@@ -747,7 +786,10 @@ function main() {
       low: openFindings.filter((f) => f.severity === "LOW").length,
       accepted: allFindings.filter((f) => f.accepted).length,
       sources: Object.fromEntries(
-        Object.entries(sources).map(([k, v]) => [k, { status: v.status, count: v.findings.length }]),
+        Object.entries(sources).map(([k, v]) => [
+          k,
+          { status: v.status, count: v.findings.length },
+        ]),
       ),
     },
     areas,
@@ -782,7 +824,6 @@ function main() {
   );
 }
 
-
 // ------------------------------------------------------------------ render
 
 const AREA_LABELS = Object.keys(AREA_MAP);
@@ -806,7 +847,9 @@ function renderMarkdown(r) {
   const lines = [];
   lines.push(`# Technischer Prüfbericht 2.0`);
   lines.push("");
-  lines.push(`_Report ID: \`${r.id ?? "—"}\` · Version ${r.version ?? "?"} · Generiert: ${r.generatedAt}_`);
+  lines.push(
+    `_Report ID: \`${r.id ?? "—"}\` · Version ${r.version ?? "?"} · Generiert: ${r.generatedAt}_`,
+  );
   lines.push("");
   lines.push(`## 1. Prüfidentität`);
   lines.push(`- Report-ID: \`${r.id ?? "—"}\``);
@@ -842,7 +885,9 @@ function renderMarkdown(r) {
   lines.push(
     `- Findings gesamt: ${r.summary.total} (CRITICAL ${r.summary.critical} · HIGH ${r.summary.high} · MEDIUM ${r.summary.medium} · LOW ${r.summary.low} · akzeptiert ${r.summary.accepted}).`,
   );
-  lines.push(`- Freigabeempfehlung (Legacy): **${REC_LABEL[r.recommendation.level]}** — ${r.recommendation.reason}`);
+  lines.push(
+    `- Freigabeempfehlung (Legacy): **${REC_LABEL[r.recommendation.level]}** — ${r.recommendation.reason}`,
+  );
   lines.push("");
   lines.push(`## 5. Prüfbereiche (deklarativ)`);
   lines.push(`| Bereich | Status | Nachweis |`);
@@ -857,7 +902,9 @@ function renderMarkdown(r) {
   lines.push(`| --- | --- | ---: | ---: |`);
   for (const a of AREA_LABELS) {
     const row = r.areas[a];
-    lines.push(`| ${a} | ${STATUS_LABEL[row.status] ?? row.status} | ${row.openCritical} | ${row.openHigh} |`);
+    lines.push(
+      `| ${a} | ${STATUS_LABEL[row.status] ?? row.status} | ${row.openCritical} | ${row.openHigh} |`,
+    );
   }
   lines.push("");
   lines.push(`## 7. Findings`);
@@ -866,7 +913,9 @@ function renderMarkdown(r) {
     lines.push("");
     lines.push(`### ${f.id} · ${f.severity} · ${f.title}`);
     lines.push(`- **Kategorie**: ${f.category} / ${f.area}`);
-    lines.push(`- **Klassifikation**: ${f.classification} · **Gate-relevant**: ${f.gateRelevant ? "ja" : "nein"}`);
+    lines.push(
+      `- **Klassifikation**: ${f.classification} · **Gate-relevant**: ${f.gateRelevant ? "ja" : "nein"}`,
+    );
     lines.push(`- **Quelle**: ${f.source}${f.accepted ? " (akzeptiert)" : ""}`);
     if (f.description) lines.push(`- **Beschreibung**: ${f.description}`);
     if (f.rootCause || f.cause) lines.push(`- **Ursache**: ${f.rootCause || f.cause}`);
@@ -875,7 +924,9 @@ function renderMarkdown(r) {
     if (f.evidence?.reportRef) lines.push(`- **Nachweis**: ${f.evidence.reportRef}`);
     if (f.recommendation) lines.push(`- **Empfehlung**: ${f.recommendation}`);
     if (f.adrRef) lines.push(`- **ADR**: ${f.adrRef}`);
-    lines.push(`- **Aufwand**: ${f.effort} · **Reihenfolge**: ${f.bucket} · **Status**: ${f.status}`);
+    lines.push(
+      `- **Aufwand**: ${f.effort} · **Reihenfolge**: ${f.bucket} · **Status**: ${f.status}`,
+    );
   }
   lines.push("");
   lines.push(`## 8. Sortierte Maßnahmenliste`);
@@ -920,7 +971,9 @@ function renderMarkdown(r) {
   lines.push(`## Bekannte Grenzen`);
   lines.push(`- Reine Aggregation: Qualität hängt an den Einzelberichten.`);
   lines.push(`- Bereichs-Status \`not-run\` heißt fehlender Vorbericht, nicht „grün".`);
-  lines.push(`- Diff-Match über Finding-ID; Bereichsberichte ohne stabile IDs erhalten einen Titel-Hash.`);
+  lines.push(
+    `- Diff-Match über Finding-ID; Bereichsberichte ohne stabile IDs erhalten einen Titel-Hash.`,
+  );
   return lines.join("\n") + "\n";
 }
 

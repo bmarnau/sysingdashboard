@@ -7,13 +7,7 @@
  * - Löschungen erfolgen nur über archive.mjs (siehe Prompt-§5), damit ein
  *   Audit-Nachweis erzwungen bleibt.
  */
-import {
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-  chmodSync,
-} from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, chmodSync } from "node:fs";
 import path from "node:path";
 
 export const HISTORY_DIR = "test-report/history";

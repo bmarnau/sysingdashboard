@@ -26,8 +26,7 @@ export function detectOversizeModules(ROOT) {
     if (lines <= threshold) continue;
 
     const overshoot = lines - threshold;
-    const severity =
-      overshoot > threshold ? "High" : overshoot > threshold / 2 ? "Medium" : "Low";
+    const severity = overshoot > threshold ? "High" : overshoot > threshold / 2 ? "Medium" : "Low";
 
     findings.push({
       id: stableId("oversize", relPath),

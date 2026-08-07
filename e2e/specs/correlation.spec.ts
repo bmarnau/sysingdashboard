@@ -50,9 +50,7 @@ test.describe("Correlation-ID Middleware", () => {
   });
 
   test("parallele Requests bekommen verschiedene IDs", async ({ request }) => {
-    const results = await Promise.all(
-      Array.from({ length: 10 }, () => request.get("/api/status")),
-    );
+    const results = await Promise.all(Array.from({ length: 10 }, () => request.get("/api/status")));
     const ids = results.map((r) => r.headers()[HEADER]);
     expect(new Set(ids).size).toBe(10);
   });

@@ -16,9 +16,9 @@ Bei Änderungen am Datenmodell **immer** dort ändern, nicht hier.
 ```ts
 export type DashboardExport = {
   metadata: {
-    version: string;      // Semver, siehe Versionierungsregeln unten
-    exportedAt: string;   // ISO-8601
-    exportedBy: string;   // userId
+    version: string; // Semver, siehe Versionierungsregeln unten
+    exportedAt: string; // ISO-8601
+    exportedBy: string; // userId
   };
   data: {
     engineers: Engineer[];
@@ -35,13 +35,13 @@ Das Export-Format nutzt eine **eigene Semver** unabhängig von der Dashboard-
 Version (`CHANGELOG.md`), weil Nutzer alte Backups auch nach mehreren Dashboard-
 Releases importieren.
 
-| Änderung                                            | Version-Bump |
-| --------------------------------------------------- | ------------ |
-| Neues optionales Feld                               | `MINOR`      |
-| Neue Enum-Werte (abwärtskompatibel)                 | `MINOR`      |
-| Neues Pflichtfeld                                   | `MAJOR`      |
-| Umbenennung / Typwechsel eines Felds                | `MAJOR`      |
-| Bugfix ohne Schema-Effekt                           | `PATCH`      |
+| Änderung                             | Version-Bump |
+| ------------------------------------ | ------------ |
+| Neues optionales Feld                | `MINOR`      |
+| Neue Enum-Werte (abwärtskompatibel)  | `MINOR`      |
+| Neues Pflichtfeld                    | `MAJOR`      |
+| Umbenennung / Typwechsel eines Felds | `MAJOR`      |
+| Bugfix ohne Schema-Effekt            | `PATCH`      |
 
 ## Migrations-Policy
 
@@ -54,6 +54,7 @@ Releases importieren.
 - **Import neuerer MAJOR** → wird abgelehnt mit klarem Fehler.
 
 Jede neue Migration:
+
 1. Migration-Funktion in `json-import-service.ts` ergänzen (`migrateV<N>toV<N+1>`).
 2. Testcase in `src/__tests__/integration/import.test.ts`.
 3. Handbuch-Kapitel `changelog` mit Import-Kompatibilitätsnotiz.
@@ -91,9 +92,9 @@ unabhängiges Format. Seit Dashboard 1.48.0 gilt Manifest-Version `2.0`
       "size": 128,
       "contentType": "application/json",
       "createdAt": "2026-08-05T10:00:00.000Z",
-      "description": "optional"
-    }
-  ]
+      "description": "optional",
+    },
+  ],
 }
 ```
 

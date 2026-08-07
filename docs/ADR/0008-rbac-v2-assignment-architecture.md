@@ -153,13 +153,13 @@ fehlender Actor → `warn`, konsistent zu v1.27.0.
 
 Fünf Phasen, jede einzeln reversibel:
 
-| Phase | Umfang                                                                                                                                            | Rollback                             |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| M1    | Dieses ADR + additive Typ-Erweiterungen (`revokedAt`, `revokedBy`, `reason`, `sourceRef`). Kein Verhalten.                                        | Datei löschen.                       |
-| M2    | `LocalAssignmentRepository` + Store-Slice + Backup-Integration. Read-only Anzeige im Systemstatus („X aktive Assignments").                       | Slice leeren, Repo deaktivieren.     |
-| M3    | `AssignmentService.grantRole/revoke` + Invarianten-Tests + Actor-Logging. Noch **kein** Aufrufer setzt `AccessContext.assignments`.               | Service ausbauen; v1 bleibt aktiv.   |
-| M4    | Erster Aufrufer (Vorschlag: `azure.subscription:import`) nutzt `evaluateAccess(user, perm, { scope, assignments })`. Feature-Flag `RBAC_V2_ENFORCE`. | Flag off → v1-Fallback greift.       |
-| M5    | Schrittweise Migration weiterer Aufrufer; `scripts/check-rbac.mjs` um Scope-Invarianten erweitert; `backend/services/rbac.mjs` prüft Assignments. | Aufrufer einzeln zurücksetzen.       |
+| Phase | Umfang                                                                                                                                               | Rollback                           |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| M1    | Dieses ADR + additive Typ-Erweiterungen (`revokedAt`, `revokedBy`, `reason`, `sourceRef`). Kein Verhalten.                                           | Datei löschen.                     |
+| M2    | `LocalAssignmentRepository` + Store-Slice + Backup-Integration. Read-only Anzeige im Systemstatus („X aktive Assignments").                          | Slice leeren, Repo deaktivieren.   |
+| M3    | `AssignmentService.grantRole/revoke` + Invarianten-Tests + Actor-Logging. Noch **kein** Aufrufer setzt `AccessContext.assignments`.                  | Service ausbauen; v1 bleibt aktiv. |
+| M4    | Erster Aufrufer (Vorschlag: `azure.subscription:import`) nutzt `evaluateAccess(user, perm, { scope, assignments })`. Feature-Flag `RBAC_V2_ENFORCE`. | Flag off → v1-Fallback greift.     |
+| M5    | Schrittweise Migration weiterer Aufrufer; `scripts/check-rbac.mjs` um Scope-Invarianten erweitert; `backend/services/rbac.mjs` prüft Assignments.    | Aufrufer einzeln zurücksetzen.     |
 
 Der **Entra-Sync-Pfad** (ADR-0007 v5) hakt in M3 ein: der Import legt
 Assignments mit `source: "entra"` und `sourceRef: <groupObjectId>` an;

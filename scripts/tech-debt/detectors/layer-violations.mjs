@@ -49,7 +49,8 @@ export function detectLayerViolations(ROOT) {
           category: "Architektur",
           location: `${relPath}:${line}`,
           description: `Datei importiert ein verbotenes Modul: ${m[0]}`,
-          rootCause: "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
+          rootCause:
+            "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
           impact: rule.impact,
           severity: "Medium",
           likelihood: "Mittel",
