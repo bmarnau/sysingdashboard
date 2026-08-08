@@ -6,21 +6,23 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 
 ## Index
 
-| Nr.  | Titel                                                                                            | Status   |
-| ---- | ------------------------------------------------------------------------------------------------ | -------- |
-| 0001 | [TanStack Start v1 als Framework](./0001-tanstack-start.md)                                      | Accepted |
-| 0002 | [Frontend-RBAC gespiegelt zum Backend](./0002-frontend-rbac-mirrored.md)                         | Accepted |
-| 0003 | [Local-First mit localStorage](./0003-local-first-localstorage.md)                               | Accepted |
-| 0004 | [Pub-Sub-Store statt Zustand/Redux](./0004-pubsub-store-no-zustand.md)                           | Accepted |
-| 0005 | [Frontend-Logger statt Sentry](./0005-frontend-logger-no-sentry.md)                              | Accepted |
-| 0006 | [Kein Virtual Scrolling (bis Messnachweis)](./0006-no-virtual-scrolling.md)                      | Accepted |
-| 0007 | [RBAC v2 — Resource Types, Scopes und Permission Groups](./0007-rbac-v2-scopes-and-resources.md) | Accepted |
-| 0008 | [RBAC v2 — Assignment-Architektur](./0008-rbac-v2-assignment-architecture.md)                    | Accepted |
-| 0009 | [Zentrale Testinstanz — Vitest-Projects + Playwright + MSW](./0009-central-test-instance.md)     | Accepted |
-| 0010 | [Technical-Debt-Hybrid-Ansatz](./0010-tech-debt-hybrid.md)                                       | Accepted |
-| 0011 | [API-/Endpoint-Contract-Tests via Registry](./0011-api-endpoint-contract-tests.md)               | Accepted |
-| 0021 | [Modularisierung des Backup-/Restore-Service](./0021-backup-service-modularisierung.md)          | Accepted |
-| 0022 | [Backupformat 2.0 — manifestbasierte Zuordnung](./0022-backupformat-2.md)                        | Accepted |
+| Nr.  | Titel                                                                                              | Status   |
+| ---- | -------------------------------------------------------------------------------------------------- | -------- |
+| 0001 | [TanStack Start v1 als Framework](./0001-tanstack-start.md)                                        | Accepted |
+| 0002 | [Frontend-RBAC gespiegelt zum Backend](./0002-frontend-rbac-mirrored.md)                           | Accepted |
+| 0003 | [Local-First mit localStorage](./0003-local-first-localstorage.md)                                 | Accepted |
+| 0004 | [Pub-Sub-Store statt Zustand/Redux](./0004-pubsub-store-no-zustand.md)                             | Accepted |
+| 0005 | [Frontend-Logger statt Sentry](./0005-frontend-logger-no-sentry.md)                                | Accepted |
+| 0006 | [Kein Virtual Scrolling (bis Messnachweis)](./0006-no-virtual-scrolling.md)                        | Accepted |
+| 0007 | [RBAC v2 — Resource Types, Scopes und Permission Groups](./0007-rbac-v2-scopes-and-resources.md)   | Accepted |
+| 0008 | [RBAC v2 — Assignment-Architektur](./0008-rbac-v2-assignment-architecture.md)                      | Accepted |
+| 0009 | [Zentrale Testinstanz — Vitest-Projects + Playwright + MSW](./0009-central-test-instance.md)       | Accepted |
+| 0010 | [Technical-Debt-Hybrid-Ansatz](./0010-tech-debt-hybrid.md)                                         | Accepted |
+| 0011 | [API-/Endpoint-Contract-Tests via Registry](./0011-api-endpoint-contract-tests.md)                 | Accepted |
+| 0021 | [Modularisierung des Backup-/Restore-Service](./0021-backup-service-modularisierung.md)            | Accepted |
+| 0022 | [Backupformat 2.0 — manifestbasierte Zuordnung](./0022-backupformat-2.md)                          | Accepted |
+| 0023 | [Phasenmodell und Abschluss der Infrastrukturphase](./0023-phasenmodell-infrastrukturabschluss.md) | Accepted |
+| 0024 | [AVKK-Führungsmodell und Reference Data als Plattformdienst](./0024-avkk-und-reference-data.md)    | Accepted |
 
 ## Template
 

@@ -13,6 +13,16 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.51.0 - 2026-08-08
+
+- **Phase 2 gestartet**: Beginn der Fachmodellphase; Phase 1 „Technische Plattform" bleibt abgeschlossen (v1.50.0).
+- **AVKK-Führungsmodell**: Neues Dokument `docs/AVKK.md` definiert AVKK (Aufgabe, Verantwortung, Kompetenz, Konsequenz) als Führungs- und Steuerungsmethodik inklusive Nutzenbeschreibung, Aufgabentypen, Verantwortungsarten, Kompetenzdimensionen, Konsequenzbewertung, Datenmodellentwurf, RBAC-/RLS-Zielkonzept und Reportvorbereitung.
+- **Kontextindikatoren abgegrenzt**: Stress, Belastung und vergleichbare Indikatoren sind ausdrücklich nicht Teil von AVKK, sondern eine spätere, getrennt berechtigte Ebene mit Aggregationspflicht und Datenschutzprüfung.
+- **Reference Data**: Neues Dokument `docs/REFERENCE-DATA.md` beschreibt Referenzdaten als allgemeinen Plattformdienst mit Katalogen, Versionierung, Historie, Deaktivierung statt Löschung, Caching und Servicevertrag.
+- **Architekturentscheidung**: ADR-0024 „AVKK als Führungsmodell und Reference Data als Plattformdienst" angenommen; ADR-Index um ADR-0023 und ADR-0024 ergänzt.
+- **Handbuch**: Neue Kapitel „AVKK — Führungsmodell" und „Referenzdaten" erklären Methodik, Nutzen und Abgrenzung zur Leistungsüberwachung.
+- **Project Manifest**: Sprint 07A als abgeschlossen geführt, Sprint 07B (produktive AVKK- und Reference-Data-Implementierung) in die Roadmap aufgenommen, Phase 2 auf „in-progress" gesetzt.
+
 ## 1.50.0 - 2026-08-07
 
 - **Abschluss der Infrastrukturphase**: Phase 1 „Technische Plattform" ist abgeschlossen; Phase 2 „AVKK-Fachmodell" ist die nächste Phase (ADR-0023).
