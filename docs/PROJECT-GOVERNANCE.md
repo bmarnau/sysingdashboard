@@ -1,6 +1,6 @@
 # Sysing Dashboard — Project Governance
 
-Stand: 2026-08-06 · Gültig ab Version 1.49.0 · Verbindlich für alle Beitragenden
+Stand: 2026-08-08 · Gültig ab Version 1.49.0 · Verbindlich für alle Beitragenden
 (Mensch und KI-Agent).
 
 Dieses Dokument ist die **oberste Regelquelle** des Projekts. Es beschreibt, wie
@@ -25,7 +25,9 @@ Zielbild:
   KI-Agenten — jeweils als klar abgegrenzte Ausbaustufe.
 
 Die maßgebliche, maschinenlesbare Fassung von Vision, Roadmap und Status ist
-[`docs/PROJECT-STATUS.yaml`](./PROJECT-STATUS.yaml).
+[`docs/PROJECT-STATUS.yaml`](./PROJECT-STATUS.yaml). Die MVP-Zieldefinition,
+Abnahmestrategie und aktuelle Planungslogik sind in
+[`docs/MVP-PLAN.md`](./MVP-PLAN.md) festgelegt.
 
 ---
 
@@ -44,6 +46,9 @@ Die maßgebliche, maschinenlesbare Fassung von Vision, Roadmap und Status ist
    archiviert gekennzeichnet (`archive/`).
 6. **Nachweis statt Erfolgsmeldung.** Jede Abschlussmeldung nennt Zahlen:
    Testanzahl, Findings vorher/nachher, Version, Reportstand.
+7. **MVP-Fortschritt sichtbar halten.** Nach jedem Sprint-Prompt wird zusätzlich
+   ein kompakter Status zu Reifegrad, Weg zum MVP, offenen Themen, Risiken und
+   geschätzter Zahl verbleibender Prompts erstellt.
 
 ---
 
@@ -60,9 +65,6 @@ Die maßgebliche, maschinenlesbare Fassung von Vision, Roadmap und Status ist
 | `no-secrets`          | Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation. |
 | `layered-access`      | UI greift nie direkt auf Persistenz- oder Providerinterna zu (siehe Abschnitt 4).                           |
 
-Diese IDs sind identisch mit `architecturePrinciples[].id` in
-`PROJECT-STATUS.yaml` und werden dort gepflegt.
-
 ---
 
 ## 4. Trennung Fachlogik / Infrastruktur
@@ -77,20 +79,12 @@ Fachlogik         src/lib/*-service.ts, src/lib/backup/, src/lib/rbac/
 Infrastruktur     src/lib/store/dashboard-persistence.ts, src/integrations/supabase/, src/lib/azure/
 ```
 
-Harte Regeln, maschinell geprüft durch `scripts/tech-debt/detectors/layer-violations.mjs`:
+Harte Regeln:
 
-- `src/routes` und `src/components` importieren **nicht**
-  `@/lib/store/dashboard-persistence`. Einstieg ist der Facade-Hook
-  `useDashboardPersistence()`.
-- `src/routes` und `src/components` importieren aus `@/lib/azure` ausschließlich
-  `azure-service` und `types`.
+- `src/routes` und `src/components` importieren nicht direkt die Persistenzschicht.
 - Fachlogik kennt keine React-Imports.
-- Infrastruktur kennt keine Fachbegriffe der UI (Tabs, Dialoge, Views).
-
-Ein Verstoß ist ein Finding der Kategorie „Architektur" und blockiert die
-Definition of Done, sofern er nicht über
-`scripts/technical-report/tech-debt-acceptances.json` befristet und mit Ticket
-akzeptiert wurde.
+- Infrastruktur kennt keine Fachbegriffe der UI.
+- Provider-spezifische Details bleiben außerhalb der Fachlogik.
 
 ---
 
@@ -104,6 +98,8 @@ akzeptiert wurde.
    bleiben. Manuelle Verifikation wird schriftlich dokumentiert.
 4. **Dokumentation** — CHANGELOG, Handbuch, Entwicklungstagebuch,
    `PROJECT-STATUS.yaml`, bei Entscheidungen zusätzlich ein ADR.
+5. **MVP-Status** — Reifegrad und verbleibender Weg zum MVP werden nach jedem
+   Sprintabschluss neu eingeschätzt und kompakt berichtet.
 
 Kein Schritt darf übersprungen werden. Dokumentation ist Teil der Umsetzung,
 nicht Nacharbeit.
@@ -112,7 +108,7 @@ nicht Nacharbeit.
 
 ## 6. Definition of Done
 
-Ein Sprint gilt erst als abgeschlossen, wenn **alle** Punkte erfüllt und belegt sind:
+Ein Sprint gilt erst als abgeschlossen, wenn alle Punkte erfüllt und belegt sind:
 
 - [ ] Akzeptanzkriterien des Sprints erfüllt
 - [ ] `bun run test` grün (Anzahl im Abschlussbericht genannt)
@@ -122,25 +118,25 @@ Ein Sprint gilt erst als abgeschlossen, wenn **alle** Punkte erfüllt und belegt
 - [ ] `bun run docs:check` ohne unbegründete Warnung
 - [ ] `bun run project-status:check` grün
 - [ ] `CHANGELOG.md` mit neuer Version ergänzt
-- [ ] Handbuch (`src/lib/help-documentation.ts`) aktualisiert
+- [ ] Handbuch aktualisiert, sofern betroffen
 - [ ] `docs/ENTWICKLUNGSTAGEBUCH.md` fortgeschrieben
 - [ ] `docs/PROJECT-STATUS.yaml` aktualisiert und validiert
 - [ ] Technischer Prüfbericht neu erzeugt
 - [ ] Go-/No-Go für den Folgesprint schriftlich dokumentiert
+- [ ] Kompakter MVP-Statusbericht gemäß Abschnitt 11b erstellt
 
 ---
 
 ## 7. Dokumentationsstrategie
 
 - **Eine Quelle je Aussage.** Versionsstand steht ausschließlich in
-  `CHANGELOG.md`; `DASHBOARD_VERSION` wird daraus abgeleitet. Projekt- und
-  Roadmapstand steht ausschließlich in `PROJECT-STATUS.yaml`.
-- **Doku-Sync-Pflicht.** Jede neue oder geänderte Seite, Komponente, Einstellung,
-  Rolle, Funktion oder Datenstruktur erzeugt einen Handbucheintrag mit
-  aktualisiertem `lastUpdated` und einen CHANGELOG-Eintrag.
+  `CHANGELOG.md`; Projekt- und Roadmapstand steht in `PROJECT-STATUS.yaml`.
+- **Doku-Sync-Pflicht.** Neue oder geänderte Funktionen werden dokumentiert.
 - **Entscheidungen gehören in ein ADR**, nicht in Codekommentare.
 - **Dokumentation beschreibt den Ist-Zustand.** Geplantes wird ausdrücklich als
   „geplant" markiert.
+- **MVP-Planung** wird in `docs/MVP-PLAN.md` geführt und bei wesentlichen
+  Roadmap- oder Abnahmeänderungen aktualisiert.
 
 ---
 
@@ -149,10 +145,8 @@ Ein Sprint gilt erst als abgeschlossen, wenn **alle** Punkte erfüllt und belegt
 | Regel                                                      | Prüfung                        |
 | ---------------------------------------------------------- | ------------------------------ |
 | Kein `console.*` in Produktivcode                          | `bun run lint:no-console`      |
-| Typen vollständig, kein impliziter `any` an Modulgrenzen   | `bun run typecheck`            |
-| Module unter 500 Zeilen (Ausnahme mit ADR und Ablaufdatum) | `test:debt` (oversize)         |
-| Keine Zyklen zwischen Modulen                              | `test:debt` (cyclic-deps)      |
-| Keine Layer-Verletzungen                                   | `test:debt` (layer-violations) |
+| Typen vollständig                                          | `bun run typecheck`            |
+| Keine Layer-Verletzungen                                   | Tech-Debt-/Architekturprüfung  |
 | RBAC-Matrix Frontend = Backend                             | `bun run rbac:check`           |
 | Dokumentation synchron                                     | `bun run docs:check`           |
 | Projektmanifest gültig                                     | `bun run project-status:check` |
@@ -165,34 +159,21 @@ braucht Begründung, Ticket und Verfallsdatum.
 
 ## 9. Sicherheitsregeln
 
-1. Keine Secrets in Code, Doku, Prompts, Logs oder Tests. Nur öffentliche
-   Clientwerte (`VITE_SUPABASE_URL`, Publishable Key) dürfen im Frontend stehen.
-2. Serverseitige Endpunkte validieren jede Eingabe (Zod) und vertrauen dem
-   Browser nicht.
-3. Frontend-RBAC ist Bedienkomfort, **keine** Sicherheitsgrenze. Durchsetzung
-   erfolgt über RLS und serverseitige Prüfungen (ADR-0002).
+1. Keine Secrets in Code, Doku, Prompts, Logs oder Tests.
+2. Serverseitige Endpunkte validieren jede Eingabe und vertrauen dem Browser nicht.
+3. Frontend-RBAC ist Bedienkomfort, keine Sicherheitsgrenze. Durchsetzung erfolgt
+   über RLS und serverseitige Prüfungen.
 4. Jede neue Tabelle: RLS aktiviert, Policies definiert, Grants gesetzt.
-5. Logs werden redigiert (Tokens, Passwörter, Keys) und verlassen das Gerät
-   nicht ohne Benutzeraktion.
-6. Sicherheitsbefunde der Stufe „critical" blockieren jedes Release.
+5. Logs werden redigiert.
+6. Sicherheitsbefunde der Stufe `critical` blockieren jedes Release.
 
 ---
 
 ## 10. Versionierungsstrategie
 
-Semantische Versionierung `MAJOR.MINOR.PATCH` für das Dashboard:
-
-- **MAJOR** — Bruch eines externen Vertrags (Backup-/Exportformat, API) ohne
-  Migrationspfad.
-- **MINOR** — neue Funktion, neuer Sprintabschluss, neues Format mit
-  Migrationspfad.
-- **PATCH** — Fehlerbehebung, Dokumentation, interne Aufräumarbeiten.
-
-Unabhängig davon versioniert werden: Backup-Manifest (`2.0`),
-Prüfbericht-Schema (`2.0.0`), Projektmanifest-Schema (`schemaVersion`),
-Dokumentationsversion (`DOCUMENTATION_VERSION`).
-
-Jeder Sprintabschluss erzeugt mindestens eine neue MINOR-Version.
+Semantische Versionierung `MAJOR.MINOR.PATCH` für das Dashboard. Jeder
+Sprintabschluss erzeugt mindestens eine neue MINOR-Version. Backup-, Prüfbericht-
+und Projektmanifest-Schemata werden unabhängig versioniert.
 
 ---
 
@@ -202,56 +183,71 @@ Jeder Sprintabschluss erzeugt mindestens eine neue MINOR-Version.
 CHANGELOG, Tagebuch, Prüfbericht und `PROJECT-STATUS.yaml` aktuell.
 
 **Sprintstruktur**: Ziel → Teilaufgaben → Nicht-Bestandteil →
-Abnahmekriterien → Abschlussbericht.
+Abnahmekriterien → Abschlussbericht → MVP-Status.
 
-**Abschlussbericht** (Pflichtinhalte): neue Dokumente, geänderte Dokumente,
-Ergebnis je Teilaufgabe, Testergebnisse mit Zahlen, Versionsnummer, Stand des
-Prüfberichts, verbleibende Risiken, Go-/No-Go für den Folgesprint.
+**Abschlussbericht**: neue/geänderte Dokumente, Ergebnis je Teilaufgabe,
+Testergebnisse mit Zahlen, Versionsnummer, Prüfbericht, verbleibende Risiken und
+Go-/No-Go für den Folgesprint.
 
-**Aktualisierungspflicht** für `PROJECT-STATUS.yaml` nach jedem Sprint:
-Version, Sprint, Roadmap, Risiken, Tests, Release, bekannte Einschränkungen,
-Backlog, technische Schulden.
+### 11a. Phasenmodell
 
----
+Phase 1 „Technische Plattform" ist mit v1.50.0 abgeschlossen. Phase 2 entwickelt
+AVKK, Reference Data, operative Arbeitsansicht, Kontextindikatoren,
+Management-Cockpit und Reporting bis zur MVP-Abnahme. Microsoft Graph, Entra ID
+und Azure-Datenplattformen sind nicht Bestandteil des MVP.
 
-## 11a. Phasenmodell
+### 11b. Verbindlicher MVP-Status nach jedem Sprint-Prompt
 
-Das Projekt ist in Phasen gegliedert, die im Manifest (`phases`) geführt und vom
-Validator geprüft werden (ADR-0023).
+Nach jedem Sprintabschluss ist folgender kompakter Managementstatus Pflicht:
 
-| Phase | Titel                | Status    | Abschluss |
-| ----- | -------------------- | --------- | --------- |
-| 1     | Technische Plattform | completed | v1.50.0   |
-| 2     | AVKK-Fachmodell      | next      | offen     |
+```text
+Projektphase:
+Aktueller Reifegrad: <Schätzung in %>
+MVP-Ziel: vollständig funktionsfähiges Sysing Dashboard auf Supabase ohne Azure/MS Graph
+Dieser Sprint: abgeschlossen | teilweise | blockiert
+Wesentliche Fortschritte:
+- ...
+Offene MVP-Themen:
+- ...
+Kritische Risiken:
+- ...
+Geschätzte verbleibende Prompts bis MVP: <Zahl oder Bandbreite>
+Nächster Sprint: <ID und Titel>
+MVP-Prognose: im Plan | gefährdet | blockiert
+```
 
-Regeln:
+Der Prozentwert ist eine begründete Managementschätzung, keine mathematisch
+exakte Metrik. Ausgangspunkt nach Sprint 07A: ca. 65–70 % und etwa sechs größere
+Prompts bis zur MVP-Abnahme.
 
-- Nach Abschluss einer Phase ist Arbeit an deren Gegenstand nur noch als Wartung,
-  Fehlerbehebung oder begründete Voraussetzung eines Sprints der Folgephase zulässig.
-- Ein Phasenwechsel erfordert grüne Quality Gates, einen neu erzeugten Prüfbericht,
-  einen Tagebucheintrag und ein aktualisiertes Manifest.
+### 11c. MVP-Abnahme
+
+Die integrierte MVP-Abnahme erfolgt in Sprint 09B. Sie umfasst insbesondere alle
+UI-Komponenten, Auth/Session, AVKK, Kontextindikatoren, RBAC/RLS, PDF/Druck,
+Exporte, Corporate Document Templates, Backup/Restore und fachliche
+Report-Plausibilität. Ergebnis ist `docs/MVP-ACCEPTANCE-REPORT.md` mit
+GO, GO WITH FINDINGS oder NO-GO und konkreten Empfehlungen. Details stehen in
+`docs/MVP-PLAN.md`.
 
 ---
 
 ## 12. Rollen der Projektdokumente
 
-| Dokument                              | Rolle                                                                | Pflegeanlass            |
-| ------------------------------------- | -------------------------------------------------------------------- | ----------------------- |
-| `docs/PROJECT-GOVERNANCE.md`          | Oberste Regelquelle: wie gearbeitet wird                             | Regeländerung           |
-| `docs/PROJECT-STATUS.yaml`            | Maschinenlesbare Single Source of Truth für Status, Roadmap, Risiken | jeder Sprint            |
-| `docs/PROJECT-STATUS.md`              | Menschliche Erläuterung des Manifests                                | Schemaänderung          |
-| `docs/project-status.schema.json`     | Formaler Vertrag des Manifests                                       | Schemaänderung          |
-| `CHANGELOG.md`                        | Einzige Quelle der Dashboard-Version und Änderungshistorie           | jede sichtbare Änderung |
-| `docs/ARCHITECTURE.md`                | Ist-Architektur und Zielarchitektur                                  | Strukturänderung        |
-| `docs/ADR/`, `docs/adr/`              | Einzelentscheidungen mit Trade-offs                                  | Entscheidung            |
-| `src/lib/help-documentation.ts`       | Benutzerhandbuch in der Anwendung                                    | jede Funktionsänderung  |
-| `docs/ENTWICKLUNGSTAGEBUCH.md`        | Chronik des Projektverlaufs                                          | jeder Sprint            |
-| `test-report/technical-test-report.*` | Prüfbericht, Findings, Release-Gate                                  | jeder Sprint            |
-| `docs/CONTRIBUTING.md`                | Konkreter Entwickler-Workflow                                        | Workflowänderung        |
+| Dokument | Rolle |
+| --- | --- |
+| `docs/PROJECT-GOVERNANCE.md` | Oberste Regelquelle |
+| `docs/PROJECT-STATUS.yaml` | Maschinenlesbare Single Source of Truth für Status und Roadmap |
+| `docs/MVP-PLAN.md` | MVP-Ziel, Restweg, Gesamttest und Freigaberegeln |
+| `CHANGELOG.md` | Version und Änderungshistorie |
+| `docs/ARCHITECTURE.md` | Ist- und Zielarchitektur |
+| `docs/ADR/` | Architekturentscheidungen |
+| `docs/ENTWICKLUNGSTAGEBUCH.md` | Projektchronik |
+| `test-report/technical-test-report.*` | Technischer Prüf- und Freigabenachweis |
 
 ---
 
 ## 13. Änderung dieser Governance
 
-Änderungen an diesem Dokument erfordern einen CHANGELOG-Eintrag und — sofern
-eine Architektur- oder Qualitätsregel betroffen ist — ein ADR.
+Änderungen an diesem Dokument erfordern bei der nächsten regulären
+Sprintversion einen CHANGELOG-Eintrag und — sofern eine Architektur- oder
+Qualitätsregel betroffen ist — ein ADR.
