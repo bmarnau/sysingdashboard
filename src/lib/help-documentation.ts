@@ -183,6 +183,7 @@ Seit Version 1.51.0 ist die Architektur in \`docs/REFERENCE-DATA.md\` und
 ADR-0024 festgelegt. Die produktive Umsetzung folgt im nächsten Sprint.`,
     relatedTopics: ["avkk-modell"],
   },
+  {
     id: "idle-logout",
     title: "Automatische Abmeldung bei Inaktivität",
     category: "Sicherheit",
