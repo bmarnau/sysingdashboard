@@ -93,6 +93,96 @@ export const DASHBOARD_VERSION_HINT = `Engineer Console ${DASHBOARD_VERSION}`;
 
 const builtInTopics: HelpTopic[] = [
   {
+    id: "avkk-modell",
+    title: "AVKK — Führungs- und Steuerungsmodell",
+    category: "Fachmodell",
+    keywords: [
+      "AVKK",
+      "Aufgabe",
+      "Verantwortung",
+      "Kompetenz",
+      "Konsequenz",
+      "Führung",
+      "Steuerung",
+      "Priorisierung",
+      "Unterstützungsbedarf",
+    ],
+    lastUpdated: "2026-08-08",
+    content: `## Was ist AVKK?
+AVKK ist die fachliche Führungsmethodik des Dashboards. Sie beschreibt jede
+steuerbare Aufgabe über vier Fragen:
+
+- **A – Aufgabe**: Was soll erreicht werden?
+- **V – Verantwortung**: Wer ist wofür verantwortlich?
+- **K – Kompetenz**: Sind die notwendigen Voraussetzungen vorhanden?
+- **K – Konsequenz**: Welche Auswirkungen entstehen bei Nichterfüllung?
+
+AVKK ist ausdrücklich **nicht nur ein Datenmodell**, sondern eine Methodik zur
+transparenten Steuerung von Tätigkeiten, Arbeitspaketen, Projekten und Maßnahmen.
+
+## Nutzen
+- Mitarbeitende können Unterstützungsbedarf sachlich melden.
+- Projektverantwortliche erkennen Verantwortungs- und Kompetenzlücken, bevor
+  Termine reißen.
+- Führungskräfte erhalten eine begründete Priorisierung, weil die Auswirkung
+  des Nichterfüllens dokumentiert ist.
+
+## Wichtige Aussage: „zugeordnet, aber gefährdet"
+Eine Aufgabe kann klar zugewiesen und trotzdem gefährdet sein — etwa weil Zeit,
+Material, Budget oder eine Berechtigung fehlt. Genau das macht AVKK sichtbar.
+
+## Abgrenzung
+AVKK dient **nicht** der personenbezogenen Leistungsüberwachung. Eine
+Kompetenzlücke ist eine Aussage über die Aufgabe und ihre Rahmenbedingungen,
+nicht über die Person. Kontextindikatoren (z. B. Belastung, Stimmung) sind
+**kein** Teil von AVKK, sondern eine spätere, getrennt berechtigte Ebene, die in
+Führungssichten nur aggregiert dargestellt wird.
+
+## Stand
+Seit Version 1.51.0 ist das Fachmodell definiert und in \`docs/AVKK.md\` sowie
+ADR-0024 dokumentiert. Datenbank, Services und Oberfläche folgen in den
+nächsten Sprints.`,
+    relatedTopics: ["reference-data"],
+  },
+  {
+    id: "reference-data",
+    title: "Referenzdaten (Kataloge)",
+    category: "Fachmodell",
+    keywords: [
+      "Referenzdaten",
+      "Reference Data",
+      "Katalog",
+      "Stammdaten",
+      "Auswahlwerte",
+      "Status",
+      "Priorität",
+      "Versionierung",
+    ],
+    lastUpdated: "2026-08-08",
+    content: `## Zweck
+Referenzdaten sind alle fachlich gepflegten Auswahlwerte des Dashboards —
+Projektstatus, Prioritäten, Tätigkeitskategorien, Verantwortungsarten,
+Kompetenzdimensionen und weitere. Sie werden künftig zentral als Kataloge
+geführt statt im Programmcode festgeschrieben.
+
+## Regeln
+- **Keine Löschung**: Werte werden deaktiviert, damit bestehende Datensätze und
+  Berichte lesbar bleiben.
+- **Versionierung**: Jede Änderung erhöht die Katalogversion; Berichte geben den
+  verwendeten Katalogstand mit aus.
+- **Historie**: Änderungen werden protokolliert (wer, wann, was).
+- **Berechtigung**: Lesen für alle angemeldeten Benutzer, Pflege nur für
+  ausdrücklich berechtigte Rollen.
+
+## Warum das wichtig ist
+Neue Statuswerte oder Kategorien lassen sich ohne Softwarerelease ergänzen, und
+Auswertungen bleiben nachvollziehbar, weil der Katalogstand mitgeführt wird.
+
+## Stand
+Seit Version 1.51.0 ist die Architektur in \`docs/REFERENCE-DATA.md\` und
+ADR-0024 festgelegt. Die produktive Umsetzung folgt im nächsten Sprint.`,
+    relatedTopics: ["avkk-modell"],
+  },
     id: "idle-logout",
     title: "Automatische Abmeldung bei Inaktivität",
     category: "Sicherheit",
