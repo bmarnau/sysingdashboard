@@ -6,12 +6,12 @@
 
 AVKK steht verbindlich für:
 
-| Buchstabe | Bedeutung        | Leitfrage                                                       |
-| --------- | ---------------- | --------------------------------------------------------------- |
-| **A**     | **Aufgabe**      | Was ist konkret zu erledigen bzw. zu erreichen?                 |
-| **V**     | **Verantwortung**| Wer ist wofür verantwortlich?                                   |
-| **K**     | **Kompetenz**    | Sind die Voraussetzungen zur erfolgreichen Umsetzung vorhanden? |
-| **K**     | **Konsequenz**   | Welche Auswirkungen entstehen bei Nichterfüllung?               |
+| Buchstabe | Bedeutung         | Leitfrage                                                       |
+| --------- | ----------------- | --------------------------------------------------------------- |
+| **A**     | **Aufgabe**       | Was ist konkret zu erledigen bzw. zu erreichen?                 |
+| **V**     | **Verantwortung** | Wer ist wofür verantwortlich?                                   |
+| **K**     | **Kompetenz**     | Sind die Voraussetzungen zur erfolgreichen Umsetzung vorhanden? |
+| **K**     | **Konsequenz**    | Welche Auswirkungen entstehen bei Nichterfüllung?               |
 
 AVKK ist **nicht nur ein Datenmodell**, sondern eine Führungsmethodik. Das
 Datenmodell (Abschnitt 8) ist lediglich die technische Abbildung dieser
@@ -23,7 +23,7 @@ Methodik.
 
 ### 1.1 Warum klassische Aufgabenlisten nicht ausreichen
 
-Eine klassische Aufgabenliste beantwortet genau eine Frage: *Was ist offen?*
+Eine klassische Aufgabenliste beantwortet genau eine Frage: _Was ist offen?_
 Sie beantwortet nicht, ob die Aufgabe überhaupt umsetzbar ist, wer für welchen
 Teilaspekt einsteht und was passiert, wenn sie liegen bleibt. In der Praxis
 entstehen daraus drei wiederkehrende Fehlerbilder:
@@ -43,19 +43,19 @@ entstehen daraus drei wiederkehrende Fehlerbilder:
   „Person X macht das", sondern „Person X verantwortet das Ergebnis, Person Y
   die Freigabe".
 - **Kompetenz** macht Umsetzbarkeit prüfbar. Erst dadurch wird der wichtigste
-  Frühindikator sichtbar: *Aufgabe ist verantwortlich zugeordnet, aber wegen
-  fehlender Voraussetzungen gefährdet.*
+  Frühindikator sichtbar: _Aufgabe ist verantwortlich zugeordnet, aber wegen
+  fehlender Voraussetzungen gefährdet._
 - **Konsequenz** macht Priorisierung begründbar, weil die Auswirkung auf Kunde,
   Projekt, Vertrag, SLA, Compliance oder Informationssicherheit dokumentiert
   ist.
 
 ### 1.3 Nutzen je Zielgruppe
 
-| Zielgruppe             | Nutzen                                                                                                                                  |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Zielgruppe             | Nutzen                                                                                                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Mitarbeitende          | Können Unterstützungsbedarf sachlich melden, ohne sich rechtfertigen zu müssen. Fehlende Voraussetzungen sind ein Attribut der Aufgabe, keine Bewertung der Person. |
-| Projektverantwortliche | Sehen Kompetenzlücken und Verantwortungslücken, bevor Termine reißen; können Zuständigkeiten belastbar nachweisen.                       |
-| Führungskräfte         | Erhalten eine begründete Priorisierung und eine Risikosicht, die auf dokumentierten Auswirkungen beruht statt auf Bauchgefühl.           |
+| Projektverantwortliche | Sehen Kompetenzlücken und Verantwortungslücken, bevor Termine reißen; können Zuständigkeiten belastbar nachweisen.                                                  |
+| Führungskräfte         | Erhalten eine begründete Priorisierung und eine Risikosicht, die auf dokumentierten Auswirkungen beruht statt auf Bauchgefühl.                                      |
 
 ### 1.4 Führungsgrundsatz und Abgrenzung
 
@@ -80,12 +80,12 @@ Die Aufgabe ist der Gegenstand, auf den AVKK angewendet wird.
 
 ### 2.1 Aufgabentypen
 
-| Typ             | Schlüssel     | Bestehende Entsprechung im Dashboard                 |
-| --------------- | ------------- | ---------------------------------------------------- |
-| Tätigkeit       | `activity`    | `Activity` (`src/lib/dashboard-data.ts`)             |
-| Arbeitspaket    | `workpackage` | `WorkPackage`                                        |
-| Projekt         | `project`     | `Project`                                            |
-| Maßnahme        | `measure`     | **neu** — bisher keine Entsprechung                  |
+| Typ          | Schlüssel     | Bestehende Entsprechung im Dashboard     |
+| ------------ | ------------- | ---------------------------------------- |
+| Tätigkeit    | `activity`    | `Activity` (`src/lib/dashboard-data.ts`) |
+| Arbeitspaket | `workpackage` | `WorkPackage`                            |
+| Projekt      | `project`     | `Project`                                |
+| Maßnahme     | `measure`     | **neu** — bisher keine Entsprechung      |
 
 Die bestehende Struktur wird **erweitert, nicht ersetzt**. Es entsteht keine
 zweite Facharchitektur: AVKK legt sich als eigene Ebene über die vorhandenen
@@ -120,23 +120,23 @@ Verantwortung beschreibt **wer** und zusätzlich **wofür**.
 
 ### 3.1 Verantwortungsarten (Reference-Data-Katalog `avkk.responsibility_type`)
 
-| Schlüssel        | Anzeigename    |
-| ---------------- | -------------- |
-| `result`         | Ergebnis       |
-| `deadline`       | Termin         |
-| `quality`        | Qualität       |
-| `communication`  | Kommunikation  |
-| `documentation`  | Dokumentation  |
-| `budget`         | Budget         |
-| `approval`       | Freigabe       |
-| `coordination`   | Koordination   |
+| Schlüssel       | Anzeigename   |
+| --------------- | ------------- |
+| `result`        | Ergebnis      |
+| `deadline`      | Termin        |
+| `quality`       | Qualität      |
+| `communication` | Kommunikation |
+| `documentation` | Dokumentation |
+| `budget`        | Budget        |
+| `approval`      | Freigabe      |
+| `coordination`  | Koordination  |
 
 ### 3.2 Personenbezogene Rolle (Katalog `avkk.responsibility_role`)
 
-| Schlüssel   | Anzeigename    |
-| ----------- | -------------- |
-| `owner`     | Verantwortlicher |
-| `deputy`    | Stellvertreter |
+| Schlüssel | Anzeigename      |
+| --------- | ---------------- |
+| `owner`   | Verantwortlicher |
+| `deputy`  | Stellvertreter   |
 
 ### 3.3 Regeln
 
@@ -153,14 +153,14 @@ Verantwortung beschreibt **wer** und zusätzlich **wofür**.
 
 ## 4. K — Kompetenz
 
-Kompetenz beantwortet: *Sind die Voraussetzungen vorhanden, um die Aufgabe
-erfolgreich umzusetzen?* Kompetenz ist ausdrücklich **nicht** auf persönliches
+Kompetenz beantwortet: _Sind die Voraussetzungen vorhanden, um die Aufgabe
+erfolgreich umzusetzen?_ Kompetenz ist ausdrücklich **nicht** auf persönliches
 Fachwissen reduziert.
 
 ### 4.1 Kompetenzdimensionen (Katalog `avkk.competence_dimension`)
 
-| Schlüssel       | Anzeigename   | Beispielhafte Prüffrage                                  |
-| --------------- | ------------- | -------------------------------------------------------- |
+| Schlüssel       | Anzeigename   | Beispielhafte Prüffrage                                   |
+| --------------- | ------------- | --------------------------------------------------------- |
 | `knowledge`     | Fachwissen    | Ist das nötige Fachwissen verfügbar?                      |
 | `experience`    | Erfahrung     | Gibt es Erfahrung mit vergleichbaren Aufgaben?            |
 | `time`          | Zeit          | Ist die notwendige Zeit eingeplant und frei?              |
@@ -172,11 +172,11 @@ Fachwissen reduziert.
 
 ### 4.2 Bewertung (Katalog `avkk.competence_rating`)
 
-| Schlüssel   | Anzeigename            | Gewicht (für Auswertung) |
-| ----------- | ---------------------- | ------------------------ |
-| `available` | vorhanden              | 2                        |
-| `partial`   | teilweise vorhanden    | 1                        |
-| `missing`   | nicht vorhanden        | 0                        |
+| Schlüssel   | Anzeigename         | Gewicht (für Auswertung) |
+| ----------- | ------------------- | ------------------------ |
+| `available` | vorhanden           | 2                        |
+| `partial`   | teilweise vorhanden | 1                        |
+| `missing`   | nicht vorhanden     | 0                        |
 
 Das Gewicht ist ein Attribut des Referenzwerts, damit Auswertungen nicht erneut
 im Code kodiert werden müssen.
@@ -197,8 +197,8 @@ meldbar, ohne dass daraus eine Personenbewertung wird.
 
 ## 5. K — Konsequenz
 
-Konsequenz beantwortet: *Welche Auswirkungen entstehen, wenn die Aufgabe nicht,
-nicht vollständig oder verspätet umgesetzt wird?*
+Konsequenz beantwortet: _Welche Auswirkungen entstehen, wenn die Aufgabe nicht,
+nicht vollständig oder verspätet umgesetzt wird?_
 
 ### 5.1 Betroffene Bereiche (Katalog `avkk.consequence_area`)
 
@@ -219,13 +219,13 @@ nicht vollständig oder verspätet umgesetzt wird?*
 
 ### 5.3 Terminwirkung (Katalog `avkk.schedule_impact`)
 
-| Schlüssel        | Anzeigename                        | Rang |
-| ---------------- | ---------------------------------- | ---- |
-| `none`           | keine                              | 0    |
-| `minor`          | gering                             | 1    |
-| `delay`          | Verzögerung                        | 2    |
-| `major_delay`    | erhebliche Verzögerung / Eskalation | 3    |
-| `project_stop`   | Projektstopp                       | 4    |
+| Schlüssel      | Anzeigename                         | Rang |
+| -------------- | ----------------------------------- | ---- |
+| `none`         | keine                               | 0    |
+| `minor`        | gering                              | 1    |
+| `delay`        | Verzögerung                         | 2    |
+| `major_delay`  | erhebliche Verzögerung / Eskalation | 3    |
+| `project_stop` | Projektstopp                        | 4    |
 
 ### 5.4 Regeln
 
@@ -332,25 +332,25 @@ avkk_subject (1) ──< avkk_responsibility (n) >── profiles
 avkk_subject.subjectType/subjectId → project | workpackage | activity | measure
 ```
 
-| Entität               | Zweck                                    | Wesentliche Felder                                                                                                       |
-| --------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `avkk_subject`        | AVKK-Kopf zu genau einer Aufgabe         | `id` (PK, uuid), `subject_type`, `subject_id`, `title_snapshot`, `state`, `created_by`, `created_at`, `updated_at`         |
-| `avkk_responsibility` | Verantwortungszuordnung                  | `id` (PK), `subject_id` (FK), `person_id` (FK profiles), `role_value_id` (FK reference_value), `type_value_ids` (Array/Join), `valid_from`, `valid_to` |
-| `avkk_competence`     | Bewertung je Dimension                   | `id` (PK), `subject_id` (FK), `dimension_value_id` (FK), `rating_value_id` (FK), `support_needed` (bool), `note`, `assessed_by`, `assessed_at` |
-| `avkk_consequence`    | Auswirkung je Bereich                    | `id` (PK), `subject_id` (FK), `area_value_id` (FK), `severity_value_id` (FK), `schedule_impact_value_id` (FK), `note`      |
-| `reference_catalog`   | Katalogdefinition                        | siehe [REFERENCE-DATA.md](./REFERENCE-DATA.md)                                                                             |
-| `reference_value`     | Katalogwert                              | siehe [REFERENCE-DATA.md](./REFERENCE-DATA.md)                                                                             |
+| Entität               | Zweck                            | Wesentliche Felder                                                                                                                                     |
+| --------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `avkk_subject`        | AVKK-Kopf zu genau einer Aufgabe | `id` (PK, uuid), `subject_type`, `subject_id`, `title_snapshot`, `state`, `created_by`, `created_at`, `updated_at`                                     |
+| `avkk_responsibility` | Verantwortungszuordnung          | `id` (PK), `subject_id` (FK), `person_id` (FK profiles), `role_value_id` (FK reference_value), `type_value_ids` (Array/Join), `valid_from`, `valid_to` |
+| `avkk_competence`     | Bewertung je Dimension           | `id` (PK), `subject_id` (FK), `dimension_value_id` (FK), `rating_value_id` (FK), `support_needed` (bool), `note`, `assessed_by`, `assessed_at`         |
+| `avkk_consequence`    | Auswirkung je Bereich            | `id` (PK), `subject_id` (FK), `area_value_id` (FK), `severity_value_id` (FK), `schedule_impact_value_id` (FK), `note`                                  |
+| `reference_catalog`   | Katalogdefinition                | siehe [REFERENCE-DATA.md](./REFERENCE-DATA.md)                                                                                                         |
+| `reference_value`     | Katalogwert                      | siehe [REFERENCE-DATA.md](./REFERENCE-DATA.md)                                                                                                         |
 
 ### 8.2 Kardinalitäten
 
-| Beziehung                                   | Kardinalität |
-| ------------------------------------------- | ------------ |
-| Aufgabe → `avkk_subject`                    | 1 : 0..1     |
-| `avkk_subject` → `avkk_responsibility`      | 1 : n        |
-| `avkk_subject` → `avkk_competence`          | 1 : n (max. eine aktive Bewertung je Dimension) |
-| `avkk_subject` → `avkk_consequence`         | 1 : n (max. ein aktiver Eintrag je Bereich)     |
-| `avkk_responsibility` → `profiles`          | n : 1        |
-| jede AVKK-Zeile → `reference_value`         | n : 1 je Katalogbezug |
+| Beziehung                              | Kardinalität                                    |
+| -------------------------------------- | ----------------------------------------------- |
+| Aufgabe → `avkk_subject`               | 1 : 0..1                                        |
+| `avkk_subject` → `avkk_responsibility` | 1 : n                                           |
+| `avkk_subject` → `avkk_competence`     | 1 : n (max. eine aktive Bewertung je Dimension) |
+| `avkk_subject` → `avkk_consequence`    | 1 : n (max. ein aktiver Eintrag je Bereich)     |
+| `avkk_responsibility` → `profiles`     | n : 1                                           |
+| jede AVKK-Zeile → `reference_value`    | n : 1 je Katalogbezug                           |
 
 ### 8.3 Schlüssel und Integrität
 
@@ -381,14 +381,14 @@ avkk_subject.subjectType/subjectId → project | workpackage | activity | measur
 
 ### 8.5 Beziehung zu weiteren Bestandsobjekten
 
-| Objekt              | Beziehung zu AVKK                                                                 |
-| ------------------- | ---------------------------------------------------------------------------------- |
-| Benutzer (`profiles`) | Ziel der Verantwortungszuordnung                                                   |
-| Rollen (`user_roles`) | Steuern Sichtbarkeit und Änderungsrechte (Abschnitt 9)                            |
-| Dokumente           | später über Reference-Data-Katalog `document_type` und eine Verknüpfungstabelle    |
-| Risiken             | Projektmanifest-Risiken bleiben Governance-Artefakt; operative Risiken werden als Aufgabentyp `measure` geführt |
-| Maßnahmen           | neuer Aufgabentyp `measure`                                                        |
-| Audit/Historie      | bestehendes `audit_log` plus fachliche Gültigkeitsfelder                            |
+| Objekt                | Beziehung zu AVKK                                                                                               |
+| --------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Benutzer (`profiles`) | Ziel der Verantwortungszuordnung                                                                                |
+| Rollen (`user_roles`) | Steuern Sichtbarkeit und Änderungsrechte (Abschnitt 9)                                                          |
+| Dokumente             | später über Reference-Data-Katalog `document_type` und eine Verknüpfungstabelle                                 |
+| Risiken               | Projektmanifest-Risiken bleiben Governance-Artefakt; operative Risiken werden als Aufgabentyp `measure` geführt |
+| Maßnahmen             | neuer Aufgabentyp `measure`                                                                                     |
+| Audit/Historie        | bestehendes `audit_log` plus fachliche Gültigkeitsfelder                                                        |
 
 ---
 
@@ -401,26 +401,26 @@ Diese Strings sind **entworfen, aber noch nicht** in
 Migration in Sprint 07B, damit `check-rbac.mjs` und die Security-Suite in 07A
 unverändert grün bleiben.
 
-| v1-String                   | v2-Form                       | Bedeutung                              |
-| --------------------------- | ----------------------------- | -------------------------------------- |
-| `avkk.view`                 | `avkk:view`                   | AVKK-Daten lesen                       |
-| `avkk.edit`                 | `avkk:edit`                   | AVKK-Daten anlegen/ändern              |
-| `avkk.responsibility.assign`| `avkk.responsibility:assign`  | Verantwortung zuweisen                 |
-| `avkk.management.view`      | `avkk:manage-view`            | Aggregierte Führungssicht              |
-| `referencedata.view`        | `referenceData:view`          | Kataloge lesen                         |
-| `referencedata.manage`      | `referenceData:manage`        | Kataloge pflegen                       |
+| v1-String                    | v2-Form                      | Bedeutung                 |
+| ---------------------------- | ---------------------------- | ------------------------- |
+| `avkk.view`                  | `avkk:view`                  | AVKK-Daten lesen          |
+| `avkk.edit`                  | `avkk:edit`                  | AVKK-Daten anlegen/ändern |
+| `avkk.responsibility.assign` | `avkk.responsibility:assign` | Verantwortung zuweisen    |
+| `avkk.management.view`       | `avkk:manage-view`           | Aggregierte Führungssicht |
+| `referencedata.view`         | `referenceData:view`         | Kataloge lesen            |
+| `referencedata.manage`       | `referenceData:manage`       | Kataloge pflegen          |
 
 ### 9.2 Rollenmatrix (Ziel)
 
-| Rolle                  | avkk.view | avkk.edit | responsibility.assign | management.view | referencedata.view | referencedata.manage |
-| ---------------------- | :-------: | :-------: | :-------------------: | :-------------: | :----------------: | :------------------: |
-| systemadministrator    | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| administrator          | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| teamlead               | ✓ | ✓ | ✓ | ✓ | ✓ | — |
-| projectmanager         | ✓ | ✓ | ✓ | ✓ | ✓ | — |
-| engineer               | ✓ | ✓ (eigene Zuordnung) | — | — | ✓ | — |
-| customer               | ✓ (nur eigene Projekte, lesend) | — | — | — | ✓ | — |
-| viewer                 | ✓ (lesend) | — | — | — | ✓ | — |
+| Rolle               |            avkk.view            |      avkk.edit       | responsibility.assign | management.view | referencedata.view | referencedata.manage |
+| ------------------- | :-----------------------------: | :------------------: | :-------------------: | :-------------: | :----------------: | :------------------: |
+| systemadministrator |                ✓                |          ✓           |           ✓           |        ✓        |         ✓          |          ✓           |
+| administrator       |                ✓                |          ✓           |           ✓           |        ✓        |         ✓          |          ✓           |
+| teamlead            |                ✓                |          ✓           |           ✓           |        ✓        |         ✓          |          —           |
+| projectmanager      |                ✓                |          ✓           |           ✓           |        ✓        |         ✓          |          —           |
+| engineer            |                ✓                | ✓ (eigene Zuordnung) |           —           |        —        |         ✓          |          —           |
+| customer            | ✓ (nur eigene Projekte, lesend) |          —           |           —           |        —        |         ✓          |          —           |
+| viewer              |           ✓ (lesend)            |          —           |           —           |        —        |         ✓          |          —           |
 
 ### 9.3 RLS-Zielregeln
 
@@ -429,7 +429,7 @@ unverändert grün bleiben.
   kein `DELETE` (nur Deaktivierung). `GRANT` an `authenticated` und
   `service_role`; **kein** `anon`-Grant.
 - **AVKK-Daten**: `SELECT` für `authenticated` mit `has_permission(...,
-  'avkk.view')`; Schreiben nur mit `avkk.edit`; Zuweisung von Verantwortung
+'avkk.view')`; Schreiben nur mit `avkk.edit`; Zuweisung von Verantwortung
   zusätzlich mit `avkk.responsibility.assign`. Engineers dürfen nur Zeilen
   ändern, in denen sie selbst verantwortlich sind (`person_id = auth.uid()`)
   oder die sie erstellt haben.
@@ -446,15 +446,15 @@ unverändert grün bleiben.
 Der geplante konfigurierbare Report-Service muss AVKK strukturiert auswerten
 können. Vorgesehene Auswertungen:
 
-| Report               | Basis                                                              |
-| -------------------- | ------------------------------------------------------------------ |
-| Verantwortungsmatrix | Aufgabe × Verantwortungsart × Person                               |
-| Kompetenzübersicht   | Aufgabe × Dimension × Bewertung                                    |
-| Kompetenzlücken      | Bewertungen `missing`/`partial` mit `support_needed`               |
-| Konsequenzanalyse    | Bereich × Schweregrad × Terminwirkung                              |
-| Kritische Aufgaben   | max. Schweregradrang ≥ hoch **und** Kompetenzlücke                 |
-| Projektstatus        | Aggregation über Projekt/Arbeitspaket                              |
-| Managementübersicht  | Aggregation über alle Aufgaben, inkl. „AVKK verstehen"-Erklärung   |
+| Report               | Basis                                                            |
+| -------------------- | ---------------------------------------------------------------- |
+| Verantwortungsmatrix | Aufgabe × Verantwortungsart × Person                             |
+| Kompetenzübersicht   | Aufgabe × Dimension × Bewertung                                  |
+| Kompetenzlücken      | Bewertungen `missing`/`partial` mit `support_needed`             |
+| Konsequenzanalyse    | Bereich × Schweregrad × Terminwirkung                            |
+| Kritische Aufgaben   | max. Schweregradrang ≥ hoch **und** Kompetenzlücke               |
+| Projektstatus        | Aggregation über Projekt/Arbeitspaket                            |
+| Managementübersicht  | Aggregation über alle Aufgaben, inkl. „AVKK verstehen"-Erklärung |
 
 Kontextindikatoren müssen später **gemeinsam mit** AVKK auswertbar sein, bleiben
 aber logisch und berechtigungstechnisch getrennt (eigene Tabellen, eigene

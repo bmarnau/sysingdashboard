@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-03 · Dashboard-Version 1.47.0
+Stand: 2026-08-08 · Dashboard-Version 1.51.0
 
 ## Vision
 
@@ -265,3 +265,36 @@ Ergebnis: Dashboard 3281 → 978 Zeilen, Export 807 → 308 Zeilen.
 Ziel: manipulationssicherer, versionierter Prüfbericht.
 Ergebnis: Schema 2.0.0, kanonische Hashbildung, unveränderliche Historie,
 Release-Gate.
+
+## Sprint 07A – Start der Fachmodellphase (Version 1.51.0)
+
+Mit Abschluss der technischen Plattform (Version 1.50.0) beginnt Phase 2. Der
+erste Sprint dieser Phase liefert bewusst **keinen** Code, sondern das
+fachliche Fundament: AVKK.
+
+AVKK steht für Aufgabe, Verantwortung, Kompetenz und Konsequenz. Es ist eine
+Führungsmethodik, kein Datenmodell mit hübschem Namen. Der entscheidende
+Unterschied zu einer Aufgabenliste: Eine Aufgabe kann eindeutig zugewiesen und
+trotzdem gefährdet sein, weil Zeit, Material, Budget oder eine Berechtigung
+fehlen. Genau diese Aussage — „zugeordnet, aber gefährdet" — war bisher nirgends
+abbildbar und ist der wichtigste Frühindikator des Modells.
+
+Bewusst getroffene Entscheidungen:
+
+- AVKK erweitert die bestehenden Objekte (Projekt, Arbeitspaket, Tätigkeit) und
+  ersetzt sie nicht. Neu ist lediglich der Aufgabentyp „Maßnahme".
+- Kontextindikatoren wie Belastung oder Stimmung sind **nicht** Teil von AVKK.
+  Sie kommen später als eigene, getrennt berechtigte Ebene mit
+  Aggregationspflicht — sonst hätte die Datenschutzprüfung das gesamte
+  Fachmodell blockiert.
+- Referenzdaten werden ein allgemeiner Plattformdienst, kein AVKK-Anhängsel.
+  Auswahlwerte sollen ohne Softwarerelease pflegbar, versioniert und
+  historisiert sein.
+- AVKK ist ausdrücklich kein Instrument zur Leistungsüberwachung. Eine
+  Kompetenzlücke beschreibt die Aufgabe, nicht die Person.
+
+Offene Punkte für Sprint 07B: Migrationen für Kataloge und AVKK-Tabellen,
+RBAC-Permissions und RLS-Policies, Reference-Data-Service mit Cache sowie die
+wertegleiche Migration der heutigen Statuswerte.
+
+Dokumentation: `docs/AVKK.md`, `docs/REFERENCE-DATA.md`, ADR-0024.

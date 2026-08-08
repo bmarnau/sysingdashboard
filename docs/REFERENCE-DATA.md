@@ -27,14 +27,14 @@ Reference Data löst das an einer Stelle, für alle Fachbereiche.
 
 ## 2. Geltungsbereich
 
-| Bereich                    | Beispiele                                                                   |
-| -------------------------- | ---------------------------------------------------------------------------- |
-| AVKK                       | Verantwortungsarten, Kompetenzdimensionen, Bewertungen, Konsequenzbereiche   |
-| Projektmanagement          | Projektstatus, Arbeitspaketstatus, Prioritäten, Tätigkeitskategorien         |
-| Organisation               | Abteilungen, Standorte, Teams, Kostenstellen                                 |
-| Kunden/Verträge            | Kundenkategorien, Vertragsarten, SLA-Stufen                                  |
-| Dokumente                  | Dokumenttypen, Klassifizierungen                                             |
-| Betrieb                    | Umgebungen, Systemklassen, Kritikalitätsstufen                               |
+| Bereich           | Beispiele                                                                  |
+| ----------------- | -------------------------------------------------------------------------- |
+| AVKK              | Verantwortungsarten, Kompetenzdimensionen, Bewertungen, Konsequenzbereiche |
+| Projektmanagement | Projektstatus, Arbeitspaketstatus, Prioritäten, Tätigkeitskategorien       |
+| Organisation      | Abteilungen, Standorte, Teams, Kostenstellen                               |
+| Kunden/Verträge   | Kundenkategorien, Vertragsarten, SLA-Stufen                                |
+| Dokumente         | Dokumenttypen, Klassifizierungen                                           |
+| Betrieb           | Umgebungen, Systemklassen, Kritikalitätsstufen                             |
 
 Ein Katalog wird nur dann angelegt, wenn der Wertebereich fachlich gepflegt
 werden soll. Technische Aufzählungen ohne fachliche Pflege (z. B.
@@ -52,35 +52,35 @@ reference_catalog (1) ──< reference_value (n) ──< reference_value_histor
 
 ### 3.1 `reference_catalog`
 
-| Feld            | Typ         | Bedeutung                                              |
-| --------------- | ----------- | ------------------------------------------------------- |
-| `id`            | uuid PK     |                                                         |
-| `key`           | text UNIQUE | technischer Schlüssel, z. B. `avkk.competence_dimension` |
-| `name`          | text        | Anzeigename                                             |
-| `description`   | text        | Zweck des Katalogs                                      |
-| `domain`        | text        | Fachbereich (`avkk`, `project`, `org`, …)               |
-| `is_system`     | bool        | Systemkatalog: Werte dürfen nicht gelöscht werden       |
-| `is_hierarchical` | bool      | erlaubt `parent_value_id`                               |
-| `version`       | int         | wird bei jeder Wertänderung erhöht                      |
-| `created_at` / `updated_at` | timestamptz |                                             |
+| Feld                        | Typ         | Bedeutung                                                |
+| --------------------------- | ----------- | -------------------------------------------------------- |
+| `id`                        | uuid PK     |                                                          |
+| `key`                       | text UNIQUE | technischer Schlüssel, z. B. `avkk.competence_dimension` |
+| `name`                      | text        | Anzeigename                                              |
+| `description`               | text        | Zweck des Katalogs                                       |
+| `domain`                    | text        | Fachbereich (`avkk`, `project`, `org`, …)                |
+| `is_system`                 | bool        | Systemkatalog: Werte dürfen nicht gelöscht werden        |
+| `is_hierarchical`           | bool        | erlaubt `parent_value_id`                                |
+| `version`                   | int         | wird bei jeder Wertänderung erhöht                       |
+| `created_at` / `updated_at` | timestamptz |                                                          |
 
 ### 3.2 `reference_value`
 
-| Feld             | Typ         | Bedeutung                                                    |
-| ---------------- | ----------- | ------------------------------------------------------------- |
-| `id`             | uuid PK     |                                                               |
-| `catalog_id`     | uuid FK     | → `reference_catalog`, `ON DELETE RESTRICT`                   |
-| `key`            | text        | Schlüssel, eindeutig **je Katalog**                           |
-| `label`          | text        | Anzeigename (deutsch)                                         |
-| `description`    | text        | optional                                                      |
-| `sort_order`     | int         | Reihenfolge in Auswahlfeldern                                 |
-| `is_active`      | bool        | Deaktivierung statt Löschung                                  |
-| `is_default`     | bool        | Vorbelegung                                                   |
-| `parent_value_id`| uuid FK     | optional, Selbstreferenz für Hierarchien                      |
-| `attributes`     | jsonb       | Zusatzattribute, z. B. `{ "weight": 2 }` oder `{ "rank": 3 }` |
-| `valid_from` / `valid_to` | timestamptz | fachliche Gültigkeit                                 |
-| `created_by` / `updated_by` | uuid | → `profiles`                                           |
-| `created_at` / `updated_at` | timestamptz |                                                 |
+| Feld                        | Typ         | Bedeutung                                                     |
+| --------------------------- | ----------- | ------------------------------------------------------------- |
+| `id`                        | uuid PK     |                                                               |
+| `catalog_id`                | uuid FK     | → `reference_catalog`, `ON DELETE RESTRICT`                   |
+| `key`                       | text        | Schlüssel, eindeutig **je Katalog**                           |
+| `label`                     | text        | Anzeigename (deutsch)                                         |
+| `description`               | text        | optional                                                      |
+| `sort_order`                | int         | Reihenfolge in Auswahlfeldern                                 |
+| `is_active`                 | bool        | Deaktivierung statt Löschung                                  |
+| `is_default`                | bool        | Vorbelegung                                                   |
+| `parent_value_id`           | uuid FK     | optional, Selbstreferenz für Hierarchien                      |
+| `attributes`                | jsonb       | Zusatzattribute, z. B. `{ "weight": 2 }` oder `{ "rank": 3 }` |
+| `valid_from` / `valid_to`   | timestamptz | fachliche Gültigkeit                                          |
+| `created_by` / `updated_by` | uuid        | → `profiles`                                                  |
+| `created_at` / `updated_at` | timestamptz |                                                               |
 
 `UNIQUE (catalog_id, key)`.
 
@@ -119,12 +119,12 @@ Es entsteht **keine zweite Auditinfrastruktur**.
 
 ### 5.1 Entscheidung: Supabase-Tabellen (MVP)
 
-| Option                | Bewertung                                                                                                     |
+| Option                | Bewertung                                                                                                      |
 | --------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **Supabase-Tabellen** | **Gewählt.** Relationale Integrität, RLS, Audit-Trigger, gemeinsame Sicht für alle Benutzer, sofort verfügbar. |
 | JSON-Dateien im Repo  | Verworfen: jede fachliche Änderung wäre ein Deployment, keine Laufzeitpflege, keine Benutzerhistorie.          |
 | Statische Konstanten  | Verworfen: exakt der heutige Zustand, den dieser Dienst ablösen soll.                                          |
-| Externes MDM-System   | Verworfen für den MVP: Betriebs- und Integrationsaufwand steht in keinem Verhältnis zum Nutzen.               |
+| Externes MDM-System   | Verworfen für den MVP: Betriebs- und Integrationsaufwand steht in keinem Verhältnis zum Nutzen.                |
 
 Kritische Anmerkung: Supabase-Kataloge stehen im Widerspruch zum Local-First-
 Ansatz aus ADR-0003. Das ist bewusst so entschieden — Kataloge sind gemeinsame
@@ -151,13 +151,13 @@ nur die Datenquelle wird ausgetauscht.
 
 ## 6. Servicevertrag (Zielbild, Sprint 07B)
 
-| Funktion                                    | Zweck                                            |
-| ------------------------------------------- | ------------------------------------------------- |
-| `listCatalogs(domain?)`                     | Kataloge auflisten                                |
-| `listValues(catalogKey, { includeInactive })` | Werte sortiert nach `sort_order`                |
-| `getValue(catalogKey, valueKey)`            | Einzelwert inkl. `attributes`                     |
-| `createValue` / `updateValue` / `deactivateValue` | Pflege, nur mit `referencedata.manage`      |
-| `getCatalogVersion(catalogKey)`             | Version für Cache-Invalidierung und Reportkopf    |
+| Funktion                                          | Zweck                                          |
+| ------------------------------------------------- | ---------------------------------------------- |
+| `listCatalogs(domain?)`                           | Kataloge auflisten                             |
+| `listValues(catalogKey, { includeInactive })`     | Werte sortiert nach `sort_order`               |
+| `getValue(catalogKey, valueKey)`                  | Einzelwert inkl. `attributes`                  |
+| `createValue` / `updateValue` / `deactivateValue` | Pflege, nur mit `referencedata.manage`         |
+| `getCatalogVersion(catalogKey)`                   | Version für Cache-Invalidierung und Reportkopf |
 
 Der Service liegt in der Service-Schicht des Schichtenmodells
 (`docs/ARCHITECTURE.md`); UI greift ausschließlich über eine Facade/Hook zu,

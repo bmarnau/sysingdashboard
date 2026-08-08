@@ -153,6 +153,8 @@ Alternativ über die Browser-DevTools:
 - [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — Ist- und Zielarchitektur, Schichtenmodell, Supabase/RBAC/RLS, Backup 2.0, geplante Bausteine
 - [`docs/PROJECT-GOVERNANCE.md`](./docs/PROJECT-GOVERNANCE.md) — Regelwerk: Prinzipien, Definition of Done, Phasen
 - [`docs/PROJECT-STATUS.md`](./docs/PROJECT-STATUS.md) / [`docs/PROJECT-STATUS.yaml`](./docs/PROJECT-STATUS.yaml) — Projektmanifest (Single Source of Truth für Status und Roadmap), geprüft mit `bun run project-status:check`
+- [`docs/AVKK.md`](./docs/AVKK.md) — AVKK-Führungsmodell (Aufgabe, Verantwortung, Kompetenz, Konsequenz), Datenmodell- und RBAC-Zielkonzept
+- [`docs/REFERENCE-DATA.md`](./docs/REFERENCE-DATA.md) — Referenzdaten als Plattformdienst: Kataloge, Versionierung, Historie, Servicevertrag
 - [`docs/ADR/`](./docs/ADR/) — Architecture Decision Records (Entscheidungshistorie)
 - [`docs/ENTWICKLUNGSTAGEBUCH.md`](./docs/ENTWICKLUNGSTAGEBUCH.md) — Projektchronik (Service → Entwicklungstagebuch)
 - [`docs/API.md`](./docs/API.md) — Server-Routen (`/api/status`, `/api/sync`)
@@ -162,7 +164,9 @@ Alternativ über die Browser-DevTools:
 - [`CHANGELOG.md`](./CHANGELOG.md) — Single Source of Truth der Dashboard-Version
 
 **Projektphasen**: Phase 1 „Technische Plattform" ist mit Version 1.50.0 abgeschlossen
-(ADR-0023). Phase 2 „AVKK-Fachmodell" beginnt mit Sprint 07.
+(ADR-0023). Phase 2 „AVKK-Fachmodell" läuft seit Sprint 07A (Version 1.51.0): das
+Fachmodell und die Reference-Data-Architektur sind definiert (ADR-0024), die
+produktive Umsetzung folgt in Sprint 07B.
 
 ---
 
