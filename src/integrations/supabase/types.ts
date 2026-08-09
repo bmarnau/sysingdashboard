@@ -71,6 +71,325 @@ export type Database = {
         }
         Relationships: []
       }
+      avkk_competence: {
+        Row: {
+          avkk_subject_id: string
+          created_at: string
+          created_by: string | null
+          dimension_key_snapshot: string
+          dimension_label_snapshot: string
+          dimension_value_id: string
+          id: string
+          note: string
+          rating_key_snapshot: string
+          rating_label_snapshot: string
+          rating_value_id: string
+          superseded_at: string | null
+          support_needed: boolean
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          avkk_subject_id: string
+          created_at?: string
+          created_by?: string | null
+          dimension_key_snapshot: string
+          dimension_label_snapshot: string
+          dimension_value_id: string
+          id?: string
+          note?: string
+          rating_key_snapshot: string
+          rating_label_snapshot: string
+          rating_value_id: string
+          superseded_at?: string | null
+          support_needed?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          avkk_subject_id?: string
+          created_at?: string
+          created_by?: string | null
+          dimension_key_snapshot?: string
+          dimension_label_snapshot?: string
+          dimension_value_id?: string
+          id?: string
+          note?: string
+          rating_key_snapshot?: string
+          rating_label_snapshot?: string
+          rating_value_id?: string
+          superseded_at?: string | null
+          support_needed?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avkk_competence_avkk_subject_id_fkey"
+            columns: ["avkk_subject_id"]
+            isOneToOne: false
+            referencedRelation: "avkk_subject"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avkk_competence_dimension_value_id_fkey"
+            columns: ["dimension_value_id"]
+            isOneToOne: false
+            referencedRelation: "reference_value"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avkk_competence_rating_value_id_fkey"
+            columns: ["rating_value_id"]
+            isOneToOne: false
+            referencedRelation: "reference_value"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      avkk_consequence: {
+        Row: {
+          area_key_snapshot: string
+          area_label_snapshot: string
+          area_value_id: string
+          avkk_subject_id: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          schedule_impact_key_snapshot: string
+          schedule_impact_label_snapshot: string
+          schedule_impact_value_id: string
+          severity_key_snapshot: string
+          severity_label_snapshot: string
+          severity_value_id: string
+          superseded_at: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          area_key_snapshot: string
+          area_label_snapshot: string
+          area_value_id: string
+          avkk_subject_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          schedule_impact_key_snapshot: string
+          schedule_impact_label_snapshot: string
+          schedule_impact_value_id: string
+          severity_key_snapshot: string
+          severity_label_snapshot: string
+          severity_value_id: string
+          superseded_at?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          area_key_snapshot?: string
+          area_label_snapshot?: string
+          area_value_id?: string
+          avkk_subject_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          schedule_impact_key_snapshot?: string
+          schedule_impact_label_snapshot?: string
+          schedule_impact_value_id?: string
+          severity_key_snapshot?: string
+          severity_label_snapshot?: string
+          severity_value_id?: string
+          superseded_at?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avkk_consequence_area_value_id_fkey"
+            columns: ["area_value_id"]
+            isOneToOne: false
+            referencedRelation: "reference_value"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avkk_consequence_avkk_subject_id_fkey"
+            columns: ["avkk_subject_id"]
+            isOneToOne: false
+            referencedRelation: "avkk_subject"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avkk_consequence_schedule_impact_value_id_fkey"
+            columns: ["schedule_impact_value_id"]
+            isOneToOne: false
+            referencedRelation: "reference_value"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avkk_consequence_severity_value_id_fkey"
+            columns: ["severity_value_id"]
+            isOneToOne: false
+            referencedRelation: "reference_value"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      avkk_responsibility: {
+        Row: {
+          avkk_subject_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string
+          person_id: string
+          role_key_snapshot: string
+          role_label_snapshot: string
+          role_value_id: string
+          updated_at: string
+          updated_by: string | null
+          valid_from: string
+          valid_to: string | null
+        }
+        Insert: {
+          avkk_subject_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string
+          person_id: string
+          role_key_snapshot: string
+          role_label_snapshot: string
+          role_value_id: string
+          updated_at?: string
+          updated_by?: string | null
+          valid_from?: string
+          valid_to?: string | null
+        }
+        Update: {
+          avkk_subject_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string
+          person_id?: string
+          role_key_snapshot?: string
+          role_label_snapshot?: string
+          role_value_id?: string
+          updated_at?: string
+          updated_by?: string | null
+          valid_from?: string
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avkk_responsibility_avkk_subject_id_fkey"
+            columns: ["avkk_subject_id"]
+            isOneToOne: false
+            referencedRelation: "avkk_subject"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avkk_responsibility_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avkk_responsibility_role_value_id_fkey"
+            columns: ["role_value_id"]
+            isOneToOne: false
+            referencedRelation: "reference_value"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      avkk_responsibility_type: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          responsibility_id: string
+          type_key_snapshot: string
+          type_label_snapshot: string
+          type_value_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          responsibility_id: string
+          type_key_snapshot: string
+          type_label_snapshot: string
+          type_value_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          responsibility_id?: string
+          type_key_snapshot?: string
+          type_label_snapshot?: string
+          type_value_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avkk_responsibility_type_responsibility_id_fkey"
+            columns: ["responsibility_id"]
+            isOneToOne: false
+            referencedRelation: "avkk_responsibility"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "avkk_responsibility_type_type_value_id_fkey"
+            columns: ["type_value_id"]
+            isOneToOne: false
+            referencedRelation: "reference_value"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      avkk_subject: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          status: string
+          subject_id: string
+          subject_title_snapshot: string
+          subject_type: string
+          updated_at: string
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          status?: string
+          subject_id: string
+          subject_title_snapshot?: string
+          subject_type: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          status?: string
+          subject_id?: string
+          subject_title_snapshot?: string
+          subject_type?: string
+          updated_at?: string
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -113,6 +432,147 @@ export type Database = {
         }
         Relationships: []
       }
+      reference_catalog: {
+        Row: {
+          created_at: string
+          description: string
+          domain: string
+          id: string
+          is_hierarchical: boolean
+          is_system: boolean
+          key: string
+          name: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          domain: string
+          id?: string
+          is_hierarchical?: boolean
+          is_system?: boolean
+          key: string
+          name: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          domain?: string
+          id?: string
+          is_hierarchical?: boolean
+          is_system?: boolean
+          key?: string
+          name?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      reference_value: {
+        Row: {
+          attributes: Json
+          catalog_id: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          is_active: boolean
+          is_default: boolean
+          key: string
+          label: string
+          parent_value_id: string | null
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+          valid_from: string
+          valid_to: string | null
+        }
+        Insert: {
+          attributes?: Json
+          catalog_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          key: string
+          label: string
+          parent_value_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+          valid_from?: string
+          valid_to?: string | null
+        }
+        Update: {
+          attributes?: Json
+          catalog_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          key?: string
+          label?: string
+          parent_value_id?: string | null
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+          valid_from?: string
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reference_value_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "reference_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reference_value_parent_value_id_fkey"
+            columns: ["parent_value_id"]
+            isOneToOne: false
+            referencedRelation: "reference_value"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reference_value_history: {
+        Row: {
+          catalog_id: string
+          changed_at: string
+          changed_by: string | null
+          id: string
+          operation: string
+          snapshot: Json
+          value_id: string
+        }
+        Insert: {
+          catalog_id: string
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          operation: string
+          snapshot: Json
+          value_id: string
+        }
+        Update: {
+          catalog_id?: string
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          operation?: string
+          snapshot?: Json
+          value_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           granted_at: string
@@ -142,6 +602,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      avkk_can_write: { Args: { _subject: string }; Returns: boolean }
+      avkk_responsibility_subject: {
+        Args: { _responsibility: string }
+        Returns: string
+      }
       has_any_role: {
         Args: {
           _roles: Database["public"]["Enums"]["app_role"][]
