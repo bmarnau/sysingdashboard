@@ -603,10 +603,6 @@ export type Database = {
     }
     Functions: {
       avkk_can_write: { Args: { _subject: string }; Returns: boolean }
-      avkk_responsibility_subject: {
-        Args: { _responsibility: string }
-        Returns: string
-      }
       has_any_role: {
         Args: {
           _roles: Database["public"]["Enums"]["app_role"][]
