@@ -13,14 +13,7 @@ import { logger } from "@/lib/logger";
 import { isOnline, onReconnect } from "@/lib/online-status";
 import * as repository from "./repository";
 import { clearCache } from "./cache";
-import type {
-  ReferenceCatalog,
-  ReferenceDataState,
-  ReferenceValue,
-  ValueSortOrder,
-} from "./types";
-
-export type { ValueSortOrder };
+import type { ReferenceCatalog, ReferenceDataState, ReferenceValue } from "./types";
 
 let state: ReferenceDataState | null = null;
 

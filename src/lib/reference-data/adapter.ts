@@ -6,6 +6,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Json, TablesUpdate } from "@/integrations/supabase/types";
 import { ReferenceDataError } from "@/lib/errors";
 import type { ReferenceCatalog, ReferenceValue } from "./types";
 
@@ -111,7 +112,7 @@ export async function insertValue(payload: ValueWritePayload, actorId: string): 
     description: payload.description ?? "",
     sort_order: payload.sortOrder ?? 0,
     is_default: payload.isDefault ?? false,
-    attributes: payload.attributes ?? {},
+    attributes: (payload.attributes ?? {}) as Json,
     created_by: actorId,
     updated_by: actorId,
   });
@@ -125,13 +126,13 @@ export async function updateValueRow(
   patch: Partial<Omit<ValueWritePayload, "catalogId">> & { isActive?: boolean; validTo?: string },
   actorId: string,
 ): Promise<void> {
-  const row: Record<string, unknown> = { updated_by: actorId };
+  const row: TablesUpdate<"reference_value"> = { updated_by: actorId };
   if (patch.key !== undefined) row["key"] = patch.key;
   if (patch.label !== undefined) row["label"] = patch.label;
   if (patch.description !== undefined) row["description"] = patch.description;
   if (patch.sortOrder !== undefined) row["sort_order"] = patch.sortOrder;
   if (patch.isDefault !== undefined) row["is_default"] = patch.isDefault;
-  if (patch.attributes !== undefined) row["attributes"] = patch.attributes;
+  if (patch.attributes !== undefined) row["attributes"] = patch.attributes as Json;
   if (patch.isActive !== undefined) row["is_active"] = patch.isActive;
   if (patch.validTo !== undefined) row["valid_to"] = patch.validTo;
 
