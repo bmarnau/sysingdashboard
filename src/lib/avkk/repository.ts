@@ -4,12 +4,7 @@
  */
 
 import * as adapter from "./adapter";
-import type {
-  AvkkCompetence,
-  AvkkConsequence,
-  AvkkResponsibility,
-  AvkkSubject,
-} from "./types";
+import type { AvkkCompetence, AvkkConsequence, AvkkResponsibility, AvkkSubject } from "./types";
 
 export const subjects = {
   create: adapter.insertSubject,

@@ -11,15 +11,15 @@
 
 ### 1.1 Datenbank
 
-| Objekt                                                                                                                                                          | Stand                                                          |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `public.profiles`                                                                                                                                               | vorhanden, 1:1 zu Auth-Benutzer, Status `active/inactive/…`    |
-| `public.user_roles`                                                                                                                                             | vorhanden, Enum `app_role` mit 7 Rollen, RLS aktiv             |
-| `public.app_settings`                                                                                                                                           | vorhanden, Key/Value (jsonb), Audit-Trigger                    |
-| `public.audit_log`                                                                                                                                              | vorhanden, Client-Insert blockiert, nur Trigger schreiben      |
-| `has_permission()`, `has_role()`, `has_any_role()`, `is_account_active()`                                                                                       | vorhanden, `STABLE`, `search_path = public`                    |
-| AVKK-Tabellen, Reference-Data-Tabellen                                                                                                                          | **nicht vorhanden**                                            |
-| Projekte, Arbeitspakete, Tätigkeiten                                                                                                                            | **nicht in der Datenbank** — ausschließlich lokal (Local-First) |
+| Objekt                                                                    | Stand                                                           |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `public.profiles`                                                         | vorhanden, 1:1 zu Auth-Benutzer, Status `active/inactive/…`     |
+| `public.user_roles`                                                       | vorhanden, Enum `app_role` mit 7 Rollen, RLS aktiv              |
+| `public.app_settings`                                                     | vorhanden, Key/Value (jsonb), Audit-Trigger                     |
+| `public.audit_log`                                                        | vorhanden, Client-Insert blockiert, nur Trigger schreiben       |
+| `has_permission()`, `has_role()`, `has_any_role()`, `is_account_active()` | vorhanden, `STABLE`, `search_path = public`                     |
+| AVKK-Tabellen, Reference-Data-Tabellen                                    | **nicht vorhanden**                                             |
+| Projekte, Arbeitspakete, Tätigkeiten                                      | **nicht in der Datenbank** — ausschließlich lokal (Local-First) |
 
 `has_permission()` kodiert die Rollenmatrix heute als `IN (...)`-Liste je Rolle. Neue
 Permissions müssen dort **und** in `src/lib/rbac/permissions.ts` **und** in
@@ -55,11 +55,11 @@ folgen exakt diesem Muster.
 
 Bewertet wurden die drei Optionen aus dem Sprintauftrag:
 
-| Option                                        | Umfang        | Risiko                                                             | FK-Integrität | Bewertung   |
-| --------------------------------------------- | ------------- | ------------------------------------------------------------------ | ------------- | ----------- |
-| **A** — Übergangsmodell `subject_type` + `id` | klein         | verwaiste Referenzen möglich                                       | nein          | **gewählt** |
-| **B** — gemeinsame `work_item`-Tabelle        | sehr groß     | Bruch von Import/Export, Backup 2.0, Merge/Rollback, allen Ansichten | ja            | verworfen   |
-| **C** — Teilmigration einzelner Objekttypen   | mittel--groß  | zwei Wahrheiten für dieselbe Objektfamilie                          | teilweise     | verworfen   |
+| Option                                        | Umfang       | Risiko                                                               | FK-Integrität | Bewertung   |
+| --------------------------------------------- | ------------ | -------------------------------------------------------------------- | ------------- | ----------- |
+| **A** — Übergangsmodell `subject_type` + `id` | klein        | verwaiste Referenzen möglich                                         | nein          | **gewählt** |
+| **B** — gemeinsame `work_item`-Tabelle        | sehr groß    | Bruch von Import/Export, Backup 2.0, Merge/Rollback, allen Ansichten | ja            | verworfen   |
+| **C** — Teilmigration einzelner Objekttypen   | mittel--groß | zwei Wahrheiten für dieselbe Objektfamilie                           | teilweise     | verworfen   |
 
 Begründung: Alle AVKK-fähigen Objekte liegen heute lokal. B und C würden die
 Local-First-Persistenz, Import/Export, Backup 2.0 und sämtliche

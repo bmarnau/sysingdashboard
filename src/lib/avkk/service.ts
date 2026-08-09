@@ -190,9 +190,7 @@ export async function getDossier(
  * Integritätsprüfung für die bewusst fehlende FK-Integrität: meldet
  * AVKK-Datensätze, deren Aufgabenobjekt lokal nicht (mehr) existiert.
  */
-export async function findOrphanSubjects(
-  existing: ReadonlySet<string>,
-): Promise<AvkkSubject[]> {
+export async function findOrphanSubjects(existing: ReadonlySet<string>): Promise<AvkkSubject[]> {
   const all = await repository.subjects.list();
   return all.filter((s) => !existing.has(`${s.subjectType}:${s.subjectId}`));
 }

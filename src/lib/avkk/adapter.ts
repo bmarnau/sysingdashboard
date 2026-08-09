@@ -118,7 +118,8 @@ export async function insertResponsibility(input: {
     })
     .select("id")
     .single();
-  if (error || !data) fail("AVKK_RESPONSIBILITY_INSERT_FAILED", error?.message ?? "unbekannt", error);
+  if (error || !data)
+    fail("AVKK_RESPONSIBILITY_INSERT_FAILED", error?.message ?? "unbekannt", error);
   return data.id;
 }
 

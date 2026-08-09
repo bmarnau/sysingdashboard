@@ -7,11 +7,7 @@
  * (`missing` >= missingCount ODER `partial` >= partialCount).
  */
 
-import type {
-  AvkkCompetence,
-  AvkkResponsibility,
-  RiskThreshold,
-} from "./types";
+import type { AvkkCompetence, AvkkResponsibility, RiskThreshold } from "./types";
 import { DEFAULT_RISK_THRESHOLD } from "./types";
 
 export interface RiskEvaluation {
