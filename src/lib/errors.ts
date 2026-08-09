@@ -94,6 +94,20 @@ export class RbacError extends DashboardError {
   }
 }
 
+export class ReferenceDataError extends DashboardError {
+  constructor(code: string, message: string, init?: DashboardErrorInit) {
+    super(code, message, init);
+    this.name = "ReferenceDataError";
+  }
+}
+
+export class AvkkError extends DashboardError {
+  constructor(code: string, message: string, init?: DashboardErrorInit) {
+    super(code, message, init);
+    this.name = "AvkkError";
+  }
+}
+
 export function isDashboardError(x: unknown): x is DashboardError {
   return x instanceof DashboardError;
 }
