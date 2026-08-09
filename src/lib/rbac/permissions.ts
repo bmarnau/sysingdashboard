@@ -36,7 +36,13 @@ export type Permission =
   | "backup.restore"
   | "users.manage"
   | "roles.manage"
-  | "auditlog.view";
+  | "auditlog.view"
+  | "avkk.view"
+  | "avkk.edit"
+  | "avkk.responsibility.assign"
+  | "avkk.management.view"
+  | "referencedata.view"
+  | "referencedata.manage";
 
 export const ALL_PERMISSIONS: readonly Permission[] = [
   "dashboard.view",
@@ -53,6 +59,12 @@ export const ALL_PERMISSIONS: readonly Permission[] = [
   "users.manage",
   "roles.manage",
   "auditlog.view",
+  "avkk.view",
+  "avkk.edit",
+  "avkk.responsibility.assign",
+  "avkk.management.view",
+  "referencedata.view",
+  "referencedata.manage",
 ] as const;
 
 export const PERMISSION_LABEL: Record<Permission, string> = {
@@ -70,6 +82,12 @@ export const PERMISSION_LABEL: Record<Permission, string> = {
   "users.manage": "Benutzer verwalten",
   "roles.manage": "Rollen verwalten",
   "auditlog.view": "Audit Logs ansehen",
+  "avkk.view": "AVKK ansehen",
+  "avkk.edit": "AVKK bearbeiten",
+  "avkk.responsibility.assign": "Verantwortung zuweisen",
+  "avkk.management.view": "AVKK-Führungssicht ansehen",
+  "referencedata.view": "Kataloge lesen",
+  "referencedata.manage": "Kataloge pflegen",
 };
 
 /**
@@ -98,6 +116,12 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "users.manage",
     "roles.manage",
     "auditlog.view",
+      "avkk.view",
+      "avkk.edit",
+      "avkk.responsibility.assign",
+      "avkk.management.view",
+      "referencedata.view",
+      "referencedata.manage",
   ],
   administrator: [
     "dashboard.view",
@@ -112,6 +136,12 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "backup.restore",
     "users.manage",
     "auditlog.view",
+      "avkk.view",
+      "avkk.edit",
+      "avkk.responsibility.assign",
+      "avkk.management.view",
+      "referencedata.view",
+      "referencedata.manage",
   ],
   teamlead: [
     "dashboard.view",
@@ -121,6 +151,11 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "workpackage.edit",
     "activity.edit",
     "azure.export",
+      "avkk.view",
+      "avkk.edit",
+      "avkk.responsibility.assign",
+      "avkk.management.view",
+      "referencedata.view",
   ],
   projectmanager: [
     "dashboard.view",
@@ -129,10 +164,15 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "workpackage.edit",
     "activity.edit",
     "azure.export",
+      "avkk.view",
+      "avkk.edit",
+      "avkk.responsibility.assign",
+      "avkk.management.view",
+      "referencedata.view",
   ],
-  engineer: ["dashboard.view", "documentation.view", "workpackage.edit", "activity.edit"],
-  customer: ["dashboard.view", "documentation.view"],
-  viewer: ["dashboard.view", "documentation.view"],
+  engineer: ["dashboard.view", "documentation.view", "workpackage.edit", "activity.edit", "avkk.view", "avkk.edit", "referencedata.view"],
+  customer: ["dashboard.view", "documentation.view", "referencedata.view"],
+  viewer: ["dashboard.view", "documentation.view", "avkk.view", "referencedata.view"],
 };
 
 /** Privileg-Rangordnung (hoch → niedrig). Für Entra-Mapping bei Mehrfachgruppen. */

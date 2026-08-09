@@ -32,6 +32,12 @@ export const ALL_PERMISSIONS = Object.freeze([
   "users.manage",
   "roles.manage",
   "auditlog.view",
+  "avkk.view",
+  "avkk.edit",
+  "avkk.responsibility.assign",
+  "avkk.management.view",
+  "referencedata.view",
+  "referencedata.manage",
 ]);
 
 export const ROLE_PERMISSIONS = Object.freeze({
@@ -50,6 +56,12 @@ export const ROLE_PERMISSIONS = Object.freeze({
     "users.manage",
     "roles.manage",
     "auditlog.view",
+      "avkk.view",
+      "avkk.edit",
+      "avkk.responsibility.assign",
+      "avkk.management.view",
+      "referencedata.view",
+      "referencedata.manage",
   ],
   administrator: [
     "dashboard.view",
@@ -64,6 +76,12 @@ export const ROLE_PERMISSIONS = Object.freeze({
     "backup.restore",
     "users.manage",
     "auditlog.view",
+      "avkk.view",
+      "avkk.edit",
+      "avkk.responsibility.assign",
+      "avkk.management.view",
+      "referencedata.view",
+      "referencedata.manage",
   ],
   teamlead: [
     "dashboard.view",
@@ -73,6 +91,11 @@ export const ROLE_PERMISSIONS = Object.freeze({
     "workpackage.edit",
     "activity.edit",
     "azure.export",
+      "avkk.view",
+      "avkk.edit",
+      "avkk.responsibility.assign",
+      "avkk.management.view",
+      "referencedata.view",
   ],
   projectmanager: [
     "dashboard.view",
@@ -81,10 +104,15 @@ export const ROLE_PERMISSIONS = Object.freeze({
     "workpackage.edit",
     "activity.edit",
     "azure.export",
+      "avkk.view",
+      "avkk.edit",
+      "avkk.responsibility.assign",
+      "avkk.management.view",
+      "referencedata.view",
   ],
-  engineer: ["dashboard.view", "documentation.view", "workpackage.edit", "activity.edit"],
-  customer: ["dashboard.view", "documentation.view"],
-  viewer: ["dashboard.view", "documentation.view"],
+  engineer: ["dashboard.view", "documentation.view", "workpackage.edit", "activity.edit", "avkk.view", "avkk.edit", "referencedata.view"],
+  customer: ["dashboard.view", "documentation.view", "referencedata.view"],
+  viewer: ["dashboard.view", "documentation.view", "avkk.view", "referencedata.view"],
 });
 
 /** Prüft, ob die Rolle eine bestimmte Permission besitzt. */
