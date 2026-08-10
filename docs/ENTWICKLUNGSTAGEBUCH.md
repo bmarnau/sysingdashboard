@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-08 · Dashboard-Version 1.51.0
+Stand: 2026-08-10 · Dashboard-Version 1.52.0
 
 ## Vision
 
@@ -298,3 +298,16 @@ RBAC-Permissions und RLS-Policies, Reference-Data-Service mit Cache sowie die
 wertegleiche Migration der heutigen Statuswerte.
 
 Dokumentation: `docs/AVKK.md`, `docs/REFERENCE-DATA.md`, ADR-0024.
+
+## Sprint 07B — AVKK-Datenbank und Reference Data (1.52.0)
+
+AVKK und Reference Data sind in der Datenbank produktiv: Tabellen mit Grants,
+RLS, Audit-Triggern und Historie, dazu Fachdienste mit Katalog-Cache und dem
+abgeleiteten Frühindikator. Sechs neue Berechtigungen sind in Datenbank,
+Frontend und Server gespiegelt.
+
+Bewusst offen geblieben: Es gibt keine Fremdschlüsselbeziehung zwischen
+AVKK-Datensätzen und den weiterhin lokal geführten Aufgabenobjekten. Verwaiste
+Zuordnungen werden erkannt, nicht verhindert (ADR-0025). Die Ausführbarkeit von
+`avkk_can_write` für angemeldete Benutzer ist geprüft und als begründete
+Ausnahme dokumentiert. Eine Oberfläche entsteht erst in Sprint 08.
