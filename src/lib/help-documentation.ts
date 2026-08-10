@@ -139,10 +139,21 @@ nicht über die Person. Kontextindikatoren (z. B. Belastung, Stimmung) sind
 Führungssichten nur aggregiert dargestellt wird.
 
 ## Stand
-Seit Version 1.51.0 ist das Fachmodell definiert und in \`docs/AVKK.md\` sowie
-ADR-0024 dokumentiert. Datenbank, Services und Oberfläche folgen in den
-nächsten Sprints.`,
+Seit Version 1.51.0 ist das Fachmodell definiert (\`docs/AVKK.md\`, ADR-0024).
+Mit Version 1.52.0 sind Datenmodell, Berechtigungen und Fachdienste in der
+Datenbank produktiv: AVKK-Sachverhalte, Verantwortungen, Kompetenzbewertungen
+und Konsequenzen werden gespeichert, jede Änderung wird protokolliert, und der
+Frühindikator „zugeordnet, aber gefährdet" wird abgeleitet (mindestens eine
+fehlende Kompetenz oder mindestens zwei nur teilweise erfüllte).
+
+**Einschränkungen in 1.52.0**: Es gibt noch **keine AVKK-Oberfläche** — sie
+folgt in Sprint 08. AVKK-Daten sind nicht Teil des JSON-Exports und des
+ZIP-Backups, weil sie in der Datenbank liegen. Da Projekte, Arbeitspakete und
+Tätigkeiten weiterhin lokal geführt werden, kann die Datenbank die Verknüpfung
+zu einer Aufgabe nicht erzwingen; verwaiste Zuordnungen werden erkannt und
+gemeldet, nicht verhindert.`,
     relatedTopics: ["reference-data"],
+
   },
   {
     id: "reference-data",
