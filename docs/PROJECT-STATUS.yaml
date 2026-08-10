@@ -214,20 +214,20 @@ roadmap:
       - "Preview und Produktion geprüft"
       - "RBAC und RLS mit realen Testrollen verifiziert"
       - "Inbetriebnahmebericht erstellt"
-  - id: "07"
-    title: "AVKK-Datenmodell (UI und Arbeitsansicht)"
-    status: "planned"
+  - id: "08"
+    title: "Persönlicher AVKK-Arbeitsplatz"
+    status: "next"
     priority: "high"
     goal: >-
-      Reference-Data- und AVKK-Tabellen produktiv anlegen, Services, RBAC-Permissions
-      und RLS-Policies gemäß ADR-0024 umsetzen.
+      AVKK im persönlichen Arbeitsdashboard nutzbar machen: Ansicht, Erfassung
+      und Frühindikator rollenbasiert bereitstellen.
     dependencies:
-      - "07A"
+      - "07B"
     exitCriteria:
-      - "Kataloge und AVKK-Tabellen migriert, inklusive GRANTs und RLS-Policies"
-      - "Reference-Data-Service mit Cache und Versionsausgabe verfügbar"
-      - "AVKK-Permissions in RBAC-Matrix und Security-Suite ergänzt"
-      - "Bestehende Statuswerte wertegleich nach Reference Data migriert"
+      - "AVKK-Ansicht im Dashboard verfügbar und RBAC-gesteuert"
+      - "Handbuchkapitel zur AVKK-Bedienung ergänzt"
+      - "UI- und E2E-Tests grün"
+
   - id: "07"
     title: "AVKK-Datenmodell (UI und Arbeitsansicht)"
     status: "planned"
