@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "65e565e0-a9ff-4fb7-84e7-52e9bc3ed248",
-  "version": 6,
-  "parentReportId": "b23cc3d0-6801-4450-a2ff-9ce8bedb0d19",
-  "generatedAt": "2026-08-05T03:17:59.362Z",
+  "id": "dfb75b8e-1271-453f-8f78-2357fc5fe9ec",
+  "version": 7,
+  "parentReportId": "65e565e0-a9ff-4fb7-84e7-52e9bc3ed248",
+  "generatedAt": "2026-08-07T03:25:49.837Z",
   "identity": {
-    "dashboardVersion": "1.48.0",
-    "commit": "5edcaf6",
+    "dashboardVersion": "1.50.0",
+    "commit": "e45cf08",
     "buildTime": null,
-    "testTime": "2026-08-05T03:17:59.259Z",
+    "testTime": "2026-08-07T03:25:49.706Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -86,8 +86,38 @@
     },
     "docs": {
       "status": "passed",
-      "evidence": "scripts/check-docs-sync.mjs",
-      "note": "Sync-Guard aktiv; CHANGELOG.md ist Single Source of Truth."
+      "evidence": "scripts/check-docs-sync.mjs, src/lib/help-documentation.ts, docs/ARCHITECTURE.md",
+      "note": "Sync-Guard ohne Warnungen; alle Dialoge sind im Handbuch dokumentiert (Kapitel Dialog-Referenz); Architekturdokument in v1.50.0 vollständig neu aufgebaut."
+    },
+    "governance": {
+      "status": "passed",
+      "evidence": "docs/PROJECT-GOVERNANCE.md, docs/PROJECT-STATUS.yaml, docs/project-status.schema.json, docs/ADR/0023-phasenmodell-infrastrukturabschluss.md",
+      "note": "Regelwerk, Phasenmodell und Dokumentenhierarchie verbindlich festgelegt; Phase 1 (Technische Plattform) mit v1.50.0 abgeschlossen."
+    },
+    "projectManifest": {
+      "status": "passed",
+      "evidence": "scripts/project-status/check.mjs, src/__tests__/scripts/project-status-validator.test.ts",
+      "note": "Manifest gegen JSON Schema 2020-12 (schemaVersion 1.3.0) geprüft; Validator durch 13 Tests abgesichert (inkl. realem Manifest)."
+    },
+    "ci": {
+      "status": "passed",
+      "evidence": ".github/workflows/ci.yml, scripts/ci/quality-gate.mjs",
+      "note": "Gestaffelte Jobs: static (inkl. project-status:check und docs:check), lint, tests, security, tech-debt, build."
+    },
+    "backupFormat": {
+      "status": "passed",
+      "evidence": "src/lib/backup/manifest.ts, src/__tests__/backup/manifest-v2.test.ts, docs/ADR/0022-backupformat-2.md",
+      "note": "Backupformat 2.0: Zuordnung ausschließlich über entries[]; SHA-256 je Eintrag; Altformat lesend migriert."
+    },
+    "layerArchitecture": {
+      "status": "passed",
+      "evidence": "scripts/tech-debt/detectors/layer-violations.mjs, src/hooks/useDashboardPersistence.ts",
+      "note": "UI-Direktimport der Persistenz beseitigt (td-layer-d1e551ce); Grenzen automatisiert geprüft."
+    },
+    "infrastructurePhase": {
+      "status": "passed",
+      "evidence": "docs/ENTWICKLUNGSTAGEBUCH.md, CHANGELOG.md (1.50.0), docs/PROJECT-STATUS.yaml (phases)",
+      "note": "Abschluss der Infrastrukturphase dokumentiert. Restrisiken: serverseitige Sitzungsdurchsetzung (TD-SESSION-SERVER) und Supabase-E2E mit kontrollierter Testsession (BACKLOG-TEST-001). Go fuer Sprint 07 (AVKK-Datenmodell)."
     }
   },
   "summary": {
@@ -2654,13 +2684,8 @@
     }
   ],
   "diff": {
-    "new": [
-      "td:td-layer-d1e551ce"
-    ],
-    "fixed": [
-      "td:td-layer-9275d7a1",
-      "td:td-oversize-789d61fa"
-    ],
+    "new": [],
+    "fixed": [],
     "worse": [],
     "same": [
       "sec:SEC-CRIT-001",
@@ -2674,6 +2699,7 @@
       "sec:SEC-MED-CLAIMS-001",
       "td:td-endpoint-zod-34111d3b",
       "td:td-layer-b432b1b9",
+      "td:td-layer-d1e551ce",
       "td:td-layer-e4fb0e64",
       "td:td-oversize-242b307c",
       "td:td-oversize-f3843ebe",
@@ -2739,7 +2765,7 @@
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "90030f22710742f5d2b9fc102b356ad72628197568e73389f1cb5dabdd1ef6cc",
+    "value": "516c0dfb8edecc4175daf782bcc84de9791ba6e0e555e649eb42db70cc6d5f3f",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",

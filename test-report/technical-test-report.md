@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `dfb75b8e-1271-453f-8f78-2357fc5fe9ec` · Version 7 · Generiert: 2026-08-07T03:25:49.837Z_
+_Report ID: `b9e48162-39e8-4889-9001-34888a434363` · Version 8 · Generiert: 2026-08-10T04:27:43.359Z_
 
 ## 1. Prüfidentität
-- Report-ID: `dfb75b8e-1271-453f-8f78-2357fc5fe9ec`
-- Reportversion: **7**
-- Vorgängerbericht: `65e565e0-a9ff-4fb7-84e7-52e9bc3ed248`
+- Report-ID: `b9e48162-39e8-4889-9001-34888a434363`
+- Reportversion: **8**
+- Vorgängerbericht: `dfb75b8e-1271-453f-8f78-2357fc5fe9ec`
 - Schema: `2.0.0`
-- Dashboard-Version: **1.50.0**
-- Commit: `e45cf08`
+- Dashboard-Version: **1.52.0**
+- Commit: `dcffe47`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: —
-- Testzeit: 2026-08-07T03:25:49.706Z
+- Testzeit: 2026-08-10T04:27:43.248Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:516c0dfb8edecc4175daf782bcc84de9791ba6e0e555e649eb42db70cc6d5f3f`
+- Integrität: `sha256:e059219e281951c751272ac99162c65fa70c36e45e0f64fddf444c17da8b2737`
 
 ## 2. Freigabestufe
 - Vorschlag: **production**
@@ -26,7 +26,7 @@ _Report ID: `dfb75b8e-1271-453f-8f78-2357fc5fe9ec` · Version 7 · Generiert: 20
 **bestanden mit Findings**
 
 ## 4. Executive Summary
-- Findings gesamt: 67 (CRITICAL 0 · HIGH 0 · MEDIUM 8 · LOW 43 · akzeptiert 9).
+- Findings gesamt: 68 (CRITICAL 0 · HIGH 0 · MEDIUM 8 · LOW 43 · akzeptiert 10).
 - Freigabeempfehlung (Legacy): **Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
 
 ## 5. Prüfbereiche (deklarativ)
@@ -757,6 +757,19 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
 
+### man:avkk-can-write-execute · LOW · avkk_can_write ist für die Rolle authenticated ausführbar
+- **Kategorie**: RBAC / RBAC
+- **Klassifikation**: accepted-debt · **Gate-relevant**: nein
+- **Quelle**: manual (akzeptiert)
+- **Beschreibung**: Der Datenbank-Linter meldet, dass public.avkk_can_write(uuid) von der Rolle authenticated ausgeführt werden darf. Das ist zwingend erforderlich, weil die Funktion in den RLS-Policies der AVKK-Tabellen ausgewertet wird; ohne EXECUTE scheitert jeder Schreibvorgang. Bewertung und Begründung: ADR-0025, Abschnitt „avkk_can_write“.
+- **Ursache**: Notwendige Rechtevergabe für policybasierte Autorisierung, keine Fehlkonfiguration.
+- **Auswirkung**: Ein angemeldeter Nutzer kann für eine geratene Subject-UUID die boolesche Antwort „darf ich schreiben“ erfragen. Die Funktion liefert ausschließlich true/false, keine Tabelleninhalte, keine Fremddaten und keine Existenzaussage über konkrete Sachdaten.
+- **Komponenten**: public.avkk_can_write, RLS AVKK
+- **Nachweis**: supabase linter: function_execute_grant
+- **Empfehlung**: Beibehalten. EXECUTE bleibt auf authenticated und service_role beschränkt (kein anon). Funktion bleibt SECURITY DEFINER, STABLE, mit search_path = public und boolescher Rückgabe. Abgesichert durch src/__tests__/security/avkk-rls.test.ts.
+- **ADR**: ADR-0025
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: accepted
+
 ### td:td-manual-msw-coverage-gap · LOW · MSW-Handler decken nur wenige Azure-Endpunkte
 - **Kategorie**: Tests / Tests
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
@@ -882,7 +895,7 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 9. Vergleich zum Vorgängerbericht
-- Neu: 0
+- Neu: 1
 - Behoben: 0
 - Verschlechtert: 0
 - Unverändert: 67
