@@ -56,11 +56,11 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "07A"
-  currentSprintTitle: "AVKK-Führungsmodell und Reference-Data-Architektur"
+  currentSprint: "07B"
+  currentSprintTitle: "AVKK-Datenbank, Reference Data, Services und RBAC/RLS"
   currentSprintStatus: "completed"
-  nextSprint: "07B"
-  previousSprint: "06B"
+  nextSprint: "08"
+  previousSprint: "07A"
   previousSprintStatus: "completed"
   releaseReadiness: "passed-with-findings"
   testsPassing: 381
@@ -214,9 +214,9 @@ roadmap:
       - "Preview und Produktion geprüft"
       - "RBAC und RLS mit realen Testrollen verifiziert"
       - "Inbetriebnahmebericht erstellt"
-  - id: "07B"
-    title: "AVKK- und Reference-Data-Implementierung"
-    status: "next"
+  - id: "07"
+    title: "AVKK-Datenmodell (UI und Arbeitsansicht)"
+    status: "planned"
     priority: "high"
     goal: >-
       Reference-Data- und AVKK-Tabellen produktiv anlegen, Services, RBAC-Permissions
@@ -395,7 +395,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.51.0"
+  currentRelease: "1.52.0"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
