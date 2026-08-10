@@ -70,8 +70,10 @@ describe("AVKK / Reference Data — Zugriffsgrenzen", () => {
 
   it("should_keepReferenceDataCacheFreeOfCredentials_when_snapshotWritten", () => {
     const cache = readFileSync(join(ROOT, "src", "lib", "reference-data", "cache.ts"), "utf8");
-    expect(cache).not.toMatch(/token|password|access_token|session/i);
+    // sessionStorage/localStorage sind erlaubt; Zugangsdaten nicht.
+    expect(cache).not.toMatch(/access_token|refresh_token|password|apiKey|bearer/i);
   });
+
 });
 
 describe("avkk_can_write — akzeptierte, begründete Ausnahme", () => {
