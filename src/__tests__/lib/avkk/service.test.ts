@@ -18,7 +18,7 @@ import type {
   AvkkSubject,
 } from "@/lib/avkk/types";
 
-const adapterMocks = {
+const adapterMocks = vi.hoisted(() => ({
   insertSubject: vi.fn(),
   selectSubjects: vi.fn(),
   selectSubject: vi.fn(),
@@ -32,11 +32,11 @@ const adapterMocks = {
   insertConsequence: vi.fn(),
   selectConsequences: vi.fn(),
   selectRiskThreshold: vi.fn(),
-};
+}));
 
 vi.mock("@/lib/avkk/adapter", () => adapterMocks);
 
-const requireValue = vi.fn();
+const requireValue = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/reference-data", async () => {
   const actual = await vi.importActual<typeof import("@/lib/reference-data/types")>(
     "@/lib/reference-data/types",
