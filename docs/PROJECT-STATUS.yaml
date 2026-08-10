@@ -197,6 +197,15 @@ completedSprints:
       AVKK als Führungsmethodik definiert, Datenmodell- und RBAC-Zielkonzept entworfen,
       Kontextindikatoren abgegrenzt und Reference Data als Plattformdienst festgelegt
       (ADR-0024). Keine Datenbankimplementierung.
+  - id: "07B"
+    title: "AVKK-Datenbank, Reference Data, Services und RBAC/RLS"
+    version: "1.52.0"
+    status: "completed"
+    summary: >-
+      AVKK- und Reference-Data-Tabellen produktiv migriert inklusive Grants, RLS,
+      Audit-Triggern und Historie; Fachdienste mit Cache und Frühindikator umgesetzt;
+      sechs Berechtigungen dreifach gespiegelt; Servicetests und Sicherheitstest ergänzt;
+      avkk_can_write als begründete Ausnahme dokumentiert (ADR-0025).
 
 roadmap:
   - id: "06"
@@ -240,17 +249,6 @@ roadmap:
       - "Datenmodell dokumentiert und in docs/DATA-SCHEMA.md beschrieben"
       - "Migration inklusive RLS-Policies und Grants angelegt"
       - "Import-, Export- und Backupformat berücksichtigen AVKK"
-  - id: "08"
-    title: "AVKK-Arbeitsansicht"
-    status: "planned"
-    priority: "high"
-    goal: "AVKK im persönlichen Arbeitsdashboard nutzbar machen."
-    dependencies:
-      - "07"
-    exitCriteria:
-      - "AVKK-Ansicht im Dashboard verfügbar und RBAC-gesteuert"
-      - "Handbuchkapitel ergänzt"
-      - "UI- und E2E-Tests grün"
   - id: "09"
     title: "AVKK-Management-Cockpit"
     status: "planned"
@@ -373,10 +371,14 @@ adrs:
     status: "accepted"
     topic: "AVKK-Führungsmodell und Reference Data als Plattformdienst"
     path: "docs/ADR/0024-avkk-und-reference-data.md"
+  - id: "ADR-0025"
+    status: "accepted"
+    topic: "Technische Umsetzung von AVKK und Reference Data in Supabase"
+    path: "docs/ADR/0025-avkk-umsetzung-07b.md"
 
 quality:
   tests:
-    passing: 368
+    passing: 424
     failing: 0
     skipped: "not-recorded"
     coverage: "not-recorded"
@@ -428,6 +430,15 @@ risks:
     impact: "high"
     status: "resolved"
     mitigation: "Backupmanifest Version 2 ist in Sprint 06A eingeführt; Restore arbeitet ausschließlich über entries[]."
+  - id: "RISK-AVKK-POLYMORPH"
+    category: "data-integrity"
+    probability: "medium"
+    impact: "medium"
+    status: "accepted"
+    mitigation: >-
+      Keine Fremdschlüsselintegrität zwischen AVKK und den lokal geführten Aufgabenobjekten;
+      abgesichert über CHECK, UNIQUE, Titel-Snapshot, Serviceprüfung und findOrphanSubjects().
+      Migrationspfad in ADR-0025 beschrieben.
   - id: "RISK-DOC-DRIFT"
     category: "governance"
     probability: "medium"
