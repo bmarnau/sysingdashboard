@@ -1,6 +1,6 @@
 # Sysing Dashboard — MVP-Plan und Abnahmestrategie
 
-Stand: 2026-08-08
+Stand: 2026-08-10
 
 ## 1. Ziel
 
@@ -226,12 +226,27 @@ Ausgangsschätzung nach Sprint 07A: etwa 65–70 % Reifegrad und rund sechs verb
 
 ## 8. Post-MVP
 
-Nach erfolgreichem Sprint 09B folgen als getrennte Integrations- und Enterprise-Ausbaustufen insbesondere:
+Nach erfolgreichem Sprint 09B beginnt die Integrationsphase. Die detaillierte Planung ist in [`docs/POST-MVP-PLAN.md`](./POST-MVP-PLAN.md) festgehalten.
 
-- Microsoft 365 / Microsoft Graph,
-- Outlook und SharePoint,
-- KI-/Arbeitspaket-Agenten,
-- Microsoft Entra ID,
+Priorität 1 ist die benutzerbezogene Auswertung eingehender Microsoft-365-E-Mails über Microsoft Graph. Eine erkannte Nachricht erzeugt zunächst ausschließlich einen `TaskCandidate`; ein produktives Arbeitspaket entsteht erst nach ausdrücklicher Benutzerprüfung und -bestätigung.
+
+Geplante erste Post-MVP-Sprints:
+
+| Sprint | Schwerpunkt |
+| --- | --- |
+| 10A | Microsoft Graph Basis, delegierter persönlicher Mailzugriff und Provider-Abstraktion |
+| 10B | Mail-Ingestion, Delta-Synchronisation, deterministische Erkennung und TaskCandidate |
+| 10C | Dashboard „Aufgabenvorschläge“, Benutzerprüfung, Arbeitspaket- und AVKK-Übernahme |
+| 10D | Automatisierung, optionale Change Notifications, Recovery und Gesamttest |
+
+Danach folgen als getrennte Integrations- und Enterprise-Ausbaustufen insbesondere:
+
+- SharePoint-Verknüpfung,
+- Kalenderintegration,
+- optionale KI-gestützte Mail-/Aufgabenextraktion,
+- Microsoft Entra ID als Dashboard-Identitätsprovider,
 - Azure SQL,
 - Azure Table Storage,
 - erweiterter Container-/Enterprise-Betrieb.
+
+Die Graph-Mail-Integration darf die bestehende Provider-Trennung nicht aufheben. Die Supabase-basierte MVP-Authentifizierung bleibt zunächst bestehen; Microsoft OAuth wird für Graph als separater Integrationskontext behandelt.
