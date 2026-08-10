@@ -8,7 +8,7 @@ Nach erfolgreicher MVP-Abnahme in Sprint 09B beginnt die Integrationsphase. Die 
 
 Grundsatz: Eine E-Mail darf niemals autonom ein produktives Arbeitspaket erzeugen. Sie erzeugt zunächst einen `TaskCandidate`. Erst nach Benutzerprüfung und ausdrücklicher Bestätigung wird daraus ein Arbeitspaket bzw. eine AVKK-Zuordnung.
 
-Azure SQL, Azure Table Storage und die vollständige Umstellung der Dashboard-Authentifizierung auf Microsoft Entra ID bleiben davon getrennte spätere Ausbaustufen.
+Auf die sichere Eingangsintegration folgen ausgehende Kommunikation, KI-Copilot-Funktionen und erst danach kontrollierte Agentenfunktionen. Azure SQL, Azure Table Storage und die vollständige Umstellung der Dashboard-Authentifizierung auf Microsoft Entra ID bleiben davon getrennte spätere Ausbaustufen.
 
 ## 2. Warum Microsoft Graph Mail zuerst
 
@@ -18,11 +18,12 @@ Die Mail-Integration liefert früh sichtbaren Nutzen bei begrenztem Integrations
 - vorhandene Arbeitspaket- und AVKK-Strukturen werden direkt wiederverwendet,
 - der Benutzer behält die Entscheidungshoheit,
 - die Schnittstelle lässt sich klar von der Fachlogik trennen,
-- SharePoint- und Kalenderintegration können später auf derselben Providerbasis aufsetzen.
+- ausgehende Kommunikation kann später denselben Provider nutzen,
+- SharePoint- und Kalenderintegration können auf derselben Providerbasis aufsetzen.
 
 Die erste Ausbaustufe soll benutzerbezogen arbeiten: Der angemeldete Benutzer autorisiert den Zugriff auf sein eigenes Microsoft-365-Postfach. Eine tenantweite oder zentrale Postfachüberwachung ist nicht Bestandteil der ersten Graph-Sprints.
 
-## 3. Zielarchitektur
+## 3. Zielarchitektur Eingang
 
 ```text
 Microsoft-365-Postfach
@@ -67,7 +68,7 @@ Stand der Microsoft-Dokumentation zum Planungszeitpunkt 2026-08-10:
 - Delegierte Outlook-Subscriptions beziehen sich auf Ordner im Postfach des angemeldeten Benutzers.
 - Application Permissions ermöglichen tenantweiten bzw. benutzerunabhängigen Zugriff, erfordern aber Admin-Consent und werden für die erste Ausbaustufe nicht bevorzugt.
 
-Leitprinzip: Least Privilege. Die tatsächlich erforderlichen Scopes werden pro Sprint anhand der konkret genutzten Graph-Operationen nochmals gegen die aktuelle Microsoft-Dokumentation geprüft.
+Leitprinzip: Least Privilege. Die tatsächlich erforderlichen Scopes werden pro Sprint anhand der konkret genutzten Graph-Operationen nochmals gegen die aktuelle Microsoft-Dokumentation geprüft. Für ausgehende E-Mails wird der minimal erforderliche Send-Scope separat bewertet; Leserechte dürfen nicht allein wegen des Versands erweitert werden.
 
 Keine Client-Secrets oder langfristigen Tokens im Browser, in Logs oder in Dokumentation speichern.
 
@@ -202,13 +203,14 @@ Verbindliche Regeln:
 - HTML-Mailinhalt nicht ungeprüft rendern.
 - Externe Links als externe Inhalte behandeln.
 - Keine automatische Übernahme produktiver Aufgaben.
-- Jede Übernahme wird auditiert.
+- Keine automatische externe Kommunikation in den ersten Versand-/KI-Stufen.
+- Jede Übernahme und jeder Versand wird auditiert.
 - Benutzer kann eine Verbindung widerrufen.
 - Verbindungstatus und Berechtigungsumfang müssen transparent sichtbar sein.
 
 Vor produktiver Einführung sind Datenschutz-/Betriebsanforderungen des Unternehmens zu prüfen.
 
-## 11. Geplante Sprints nach MVP
+## 11. Geplante Sprints 10A–10D: Eingang und Aufgabenkandidaten
 
 ### Sprint 10A — Microsoft Graph Basis und persönlicher Mailzugriff
 
@@ -290,18 +292,293 @@ Umfang:
 
 Nur umsetzen, wenn 10A–10C stabil sind.
 
-## 12. Spätere Erweiterungen
+## 12. Ausgehende E-Mail-Kommunikation
 
-Nach erfolgreicher Mailintegration:
+Nach stabiler Eingangsintegration soll das Dashboard aus strukturierten Daten heraus E-Mail-Entwürfe erzeugen und über Microsoft Graph versenden können.
 
-1. SharePoint-Verknüpfung zu den in E-Mails referenzierten Arbeitspaketen/Projekten.
+Grundsatz der ersten Ausbaustufe: **Das System bereitet vor, der Benutzer versendet.** Kein automatischer externer Versand ohne explizite Freigabe.
+
+### 12.1 Zielarchitektur Versand
+
+```text
+Arbeitspaket / Projekt / AVKK / Status
+          ↓
+CommunicationService
+          ↓
+CommunicationTemplateService
+          ↓
+MailDraft
+          ↓
+Benutzer prüft / ändert / bestätigt
+          ↓
+GraphMailProvider
+          ↓
+Microsoft 365
+          ↓
+Audit
+```
+
+`CommunicationService` ist fachlich und providerneutral. `GraphMailProvider` übernimmt nur die Microsoft-spezifische Übertragung. Dadurch bleibt später ein anderer Mailprovider grundsätzlich möglich.
+
+### 12.2 Vorgesehene Kommunikationsvorlagen
+
+Mindestens als erste Kandidaten:
+
+- Auftrags-/Aufgabenbestätigung,
+- Statusmeldung,
+- Rückfrage wegen fehlender Informationen,
+- Terminbestätigung,
+- Terminverschiebung,
+- Hinweis auf Blockade oder fehlende Voraussetzung,
+- Fertigmeldung,
+- Eskalations-/Risikohinweis.
+
+Vorlagen sollen versioniert, konfigurierbar und von Fachlogik getrennt sein. Sie können strukturierte Platzhalter verwenden, zum Beispiel:
+
+- Empfänger/Ansprechpartner,
+- Projekt,
+- Arbeitspaket,
+- Status,
+- nächster Schritt,
+- Fälligkeit,
+- Terminprognose,
+- verantwortliche Person,
+- freigegebene AVKK-Risikoinformationen.
+
+Nicht jede interne AVKK-Information ist automatisch für externe Empfänger geeignet. Die Report-/Kommunikationsdefinition muss festlegen, welche Daten nach außen gelangen dürfen.
+
+### 12.3 MailDraft-Datenmodell
+
+Ein Entwurf soll mindestens enthalten können:
+
+- `id`
+- `sourceType` / `sourceId`
+- `templateId` / `templateVersion`
+- `recipientTo`
+- `recipientCc`
+- `subject`
+- `body`
+- `bodyFormat`
+- `status`
+- `createdBy`
+- `createdAt`
+- `approvedBy`
+- `approvedAt`
+- `sentAt`
+- `providerMessageId`
+- `generationMode` (`template`, später `ai-assisted`)
+
+Statuswerte mindestens:
+
+- `draft`
+- `ready-for-review`
+- `approved`
+- `sending`
+- `sent`
+- `failed`
+- `cancelled`
+
+### 12.4 Audit und Nachweis
+
+Für jeden externen Versand nachvollziehbar festhalten:
+
+- aus welchem Arbeitspaket/Projekt der Entwurf entstand,
+- welche Template-Version verwendet wurde,
+- wer den Entwurf erstellt bzw. ausgelöst hat,
+- wer ihn freigegeben hat,
+- wann versendet wurde,
+- Provider-Referenz und Ergebnisstatus.
+
+Mailinhalte nur in dem Umfang auditieren/speichern, der fachlich und datenschutzrechtlich erforderlich ist.
+
+## 13. Sprint 11A — CommunicationService und Graph-Mailversand
+
+Ziel: Sicheren, benutzerbestätigten Versand aus dem Dashboard ermöglichen.
+
+Umfang:
+
+- providerneutralen `CommunicationService` definieren,
+- `MailDraft`-Modell und Persistenz,
+- Send-Funktion im `GraphMailProvider`,
+- minimalen Graph-Send-Scope prüfen,
+- Draft → Review → Send Workflow,
+- Empfänger- und Eingabevalidierung,
+- RBAC/RLS,
+- Audit,
+- Fehler-/Retry-Verhalten,
+- keine KI,
+- keine automatische Versendung.
+
+Abnahme: Kein Versand ohne explizite Benutzerfreigabe; erfolgreicher Versand und Fehlerfälle sind nachvollziehbar auditiert.
+
+## 14. Sprint 11B — Kommunikationsvorlagen und automatische Inhaltsvorbereitung
+
+Ziel: Wiederkehrende Kommunikation aus strukturierten Dashboarddaten vorbereiten.
+
+Umfang:
+
+- versionierte Kommunikationsvorlagen,
+- Template-IDs und Status (`draft`, `review`, `released`, `retired`),
+- Platzhaltervertrag,
+- Vorschau,
+- zulässige externe Datenfelder,
+- Vorlagen für Status, Termin, Rückfrage, Abschluss und Risiko,
+- Rollen/Berechtigungen zur Vorlagenverwaltung,
+- Tests für fehlende Platzhalter und falsche Empfänger,
+- Benutzer kann generierten Text vor Versand bearbeiten,
+- Audit der verwendeten Template-Version.
+
+Automatischer Inhalt bedeutet in diesem Sprint deterministische Templatebefüllung, nicht freie KI-Generierung.
+
+## 15. KI-Integrationsstrategie
+
+KI wird bewusst nach stabilen Fach-, Graph- und Kommunikationsverträgen integriert. Ziel ist zunächst ein **Copilot**, kein autonomer Agent.
+
+### 15.1 Drei Aktionsklassen
+
+Jede KI-/Agentenfunktion wird einer Aktionsklasse zugeordnet:
+
+- **READ** — analysieren, klassifizieren, zusammenfassen; keine Fach- oder Kommunikationsdaten verändern.
+- **PROPOSE** — Änderungen, AVKK-Werte, Aufgaben oder Kommunikationsentwürfe vorschlagen; Benutzer entscheidet.
+- **EXECUTE** — produktive Daten ändern, externe Nachrichten versenden oder andere externe Aktionen ausführen.
+
+Erste KI-Stufe: nur READ + PROPOSE. EXECUTE ist standardmäßig verboten und wird später je Aktionstyp, Rolle und Risiko separat freigegeben.
+
+### 15.2 KI-Anwendungsfälle
+
+Priorisierte Anwendungsfälle:
+
+1. unstrukturierte E-Mail → strukturierter TaskCandidate-Vorschlag,
+2. Zusammenfassung langer Mailthreads,
+3. Vorschlag für Titel, Beschreibung, Termin oder Projektzuordnung,
+4. Hinweise auf fehlende Informationen,
+5. Vorschläge für AVKK-Ergänzungen — niemals als ungeprüfte Wahrheit,
+6. Formulierung eines Mailentwurfs aus bestätigten Dashboarddaten,
+7. Managementzusammenfassung bestätigter Daten,
+8. spätere Risiko-/Handlungsvorschläge aus AVKK und Kontextindikatoren.
+
+### 15.3 Confidence und Provenance
+
+KI-Vorschläge müssen kenntlich machen:
+
+- dass sie KI-generiert sind,
+- auf welchen Quellen sie beruhen,
+- welche Felder sicher aus strukturierten Daten stammen,
+- welche Felder inferiert wurden,
+- Confidence bzw. Unsicherheit, sofern sinnvoll,
+- dass eine menschliche Prüfung erforderlich ist.
+
+Ein KI-Vorschlag darf nicht unbemerkt einen bestätigten Datenwert überschreiben.
+
+### 15.4 Datenschutz und Datenminimierung
+
+Vor Auswahl eines KI-Providers wird eine eigene Architektur-/Datenschutzentscheidung benötigt. Zu prüfen sind mindestens:
+
+- Datenstandort und Auftragsverarbeitung,
+- welche Mail-/Projekt-/Personendaten übertragen werden dürfen,
+- Retention durch den Provider,
+- Training auf Kundendaten,
+- Mandantentrennung,
+- Verschlüsselung,
+- Logging/Telemetry,
+- Löschkonzept,
+- Providerwechsel und lokaler/Enterprise-Betrieb.
+
+Fachlogik darf nicht direkt an einen konkreten KI-Anbieter gekoppelt werden. Vorgesehen ist eine providerneutrale `AiAssistantProvider`-/Service-Abstraktion.
+
+## 16. Sprint 12A — KI-Copilot für Mail und Kommunikation
+
+Ziel: KI als kontrollierte Assistenz für Eingang und Ausgang nutzen.
+
+Umfang:
+
+- providerneutrale AI-Service-Schnittstelle,
+- READ/PROPOSE-Policy,
+- KI-basierte TaskCandidate-Extraktion als Ergänzung/Fallback zu deterministischen Regeln,
+- Thread-Zusammenfassung,
+- Mailentwurf aus bestätigten Dashboarddaten,
+- Quellen-/Provenance-Anzeige,
+- Kennzeichnung KI-generierter Inhalte,
+- Benutzerreview zwingend,
+- Prompt-/Output-Validierung,
+- Schutz gegen Prompt Injection aus E-Mail-Inhalten,
+- Datenschutz-/Security-ADR,
+- keine autonomen externen Aktionen.
+
+Die deterministische Erkennung bleibt erhalten. KI ersetzt sie nicht stillschweigend.
+
+## 17. Agentenphase nach dem KI-Copilot
+
+Erst nach belastbarer Erfahrung mit READ/PROPOSE kann eine Agentenphase beginnen.
+
+Beispiel eines späteren Agentenablaufs:
+
+```text
+Arbeitspaket morgen fällig
++ Kompetenz „Material“ fehlt
++ Konsequenz „Kunde“ hoch
++ letzte Statusmeldung vor mehreren Tagen
+        ↓
+Agent analysiert
+        ↓
+Vorschläge:
+- Verantwortlichen erinnern
+- Kundeninformation vorbereiten
+- Terminrisiko markieren
+- Managementhinweis erzeugen
+        ↓
+Policy-/RBAC-Prüfung
+        ↓
+Benutzerfreigabe oder später explizit erlaubte Aktion
+        ↓
+Audit
+```
+
+### 17.1 Voraussetzungen für EXECUTE
+
+Bevor eine Agentenfunktion EXECUTE-Rechte erhält, müssen mindestens definiert sein:
+
+- erlaubter Aktionstyp,
+- erlaubte Rollen,
+- erlaubte Datenbereiche,
+- Risikoklasse,
+- Freigabeschwelle,
+- Rate-/Mengenlimit,
+- Idempotenz,
+- Abbruch-/Widerrufsmöglichkeit,
+- Auditspur,
+- Fehler-/Rollback-Verhalten,
+- Not-Aus / Feature Flag.
+
+Externe Kommunikation und produktive Datenänderungen gelten grundsätzlich als höheres Risiko als reine Analyse.
+
+## 18. Empfohlene Post-MVP-Roadmap
+
+| Sprint | Schwerpunkt | Automatisierungsgrad |
+| --- | --- | --- |
+| 10A | Graph/OAuth und persönlicher Mailzugriff | Verbindung / READ |
+| 10B | Delta-Sync, Mail-Ingestion, TaskCandidate | deterministische READ/PROPOSE-Vorbereitung |
+| 10C | Aufgabenvorschläge und bestätigte Übernahme | PROPOSE + menschliche Freigabe |
+| 10D | Change Notifications, Recovery, Robustheit | technische Automatisierung, keine autonome Fachentscheidung |
+| 11A | CommunicationService und Graph-Versand | Entwurf + explizites SEND durch Benutzer |
+| 11B | versionierte Kommunikationsvorlagen | automatische deterministische Inhaltsvorbereitung |
+| 12A | KI-Copilot Mail/Kommunikation | KI READ + PROPOSE |
+| 12B+ | kontrollierte Agentenfunktionen | EXECUTE nur nach eigener Policy/Freigabe |
+
+Parallel bzw. danach können SharePoint- und Kalenderprovider ergänzt werden. Die Reihenfolge ist bei Sprintabschluss anhand des realen Nutzens und der Risiken neu zu bewerten.
+
+## 19. Weitere spätere Erweiterungen
+
+Nach erfolgreicher Mailintegration und je nach Priorität:
+
+1. SharePoint-Verknüpfung zu in E-Mails referenzierten Arbeitspaketen/Projekten.
 2. Kalenderintegration für Fälligkeiten und Termine.
-3. KI-gestützte Extraktion unstrukturierter E-Mails als optionaler Fallback.
-4. Managementzusammenfassungen auf Basis bestätigter Dashboarddaten.
-5. Tenantweite bzw. Funktionspostfach-Szenarien nur nach gesonderter Berechtigungs- und Datenschutzentscheidung.
-6. Vollständige Entra-ID-Integration des Dashboard-Logins als eigener Architektur-/Migrationsschritt.
+3. Managementzusammenfassungen auf Basis bestätigter Dashboarddaten.
+4. Tenantweite bzw. Funktionspostfach-Szenarien nur nach gesonderter Berechtigungs- und Datenschutzentscheidung.
+5. Vollständige Entra-ID-Integration des Dashboard-Logins als eigener Architektur-/Migrationsschritt.
+6. Azure SQL / Azure Table Storage als getrennte Datenplattformmigration.
 
-## 13. Teststrategie
+## 20. Teststrategie
 
 Jeder Graph-Sprint benötigt zusätzlich zu den bestehenden Quality Gates:
 
@@ -311,7 +588,7 @@ Jeder Graph-Sprint benötigt zusätzlich zu den bestehenden Quality Gates:
 - Paging/Delta-Link-Tests,
 - Dublettentests,
 - Wiederanlauf nach abgelaufenem/entzogenem Zugriff,
-- RBAC/RLS für TaskCandidates,
+- RBAC/RLS für TaskCandidates und MailDrafts,
 - Auditnachweis,
 - Test mit synthetischen Mails ohne reale personenbezogene Inhalte.
 
@@ -327,7 +604,28 @@ Für 10C/10D zusätzlich Browser-E2E:
 - Audit prüfen,
 - Dublette wird nicht erneut übernommen.
 
-## 14. Offene Architekturentscheidungen vor Sprint 10A
+Für 11A/11B zusätzlich:
+
+- Draft erzeugen,
+- Templateversion nachweisen,
+- Empfänger validieren,
+- Benutzerfreigabe erzwingen,
+- Send-Erfolg und Send-Fehler,
+- Doppelversand verhindern,
+- Audit prüfen.
+
+Für KI-/Agentensprints zusätzlich:
+
+- Prompt-Injection-Tests mit bösartigem Mailinhalt,
+- Halluzinations-/Unsupported-Claim-Fälle,
+- Provenance-Prüfung,
+- READ/PROPOSE/EXECUTE-Policy-Negativtests,
+- keine Aktion bei fehlender Freigabe,
+- Providerfehler und Timeout,
+- Datenminimierung,
+- Regression gegen deterministische Regeln.
+
+## 21. Offene Architekturentscheidungen vor Sprint 10A
 
 Vor Umsetzung müssen mindestens folgende Fragen verbindlich entschieden werden:
 
@@ -340,20 +638,58 @@ Vor Umsetzung müssen mindestens folgende Fragen verbindlich entschieden werden:
 - Welche Aufbewahrungsfrist gilt für abgelehnte Candidates?
 - Ist ein Unternehmens-Admin-Consent erforderlich?
 
-Diese Entscheidungen gehören vor Implementierung in eine ADR.
+Vor 11A zusätzlich:
 
-## 15. Definition of Done der Graph-Mail-Integrationsphase
+- minimal erforderlicher Graph-Send-Scope,
+- Umgang mit Absenderidentität/Send-as-Szenarien,
+- zulässige Empfängerdomänen bzw. Warnregeln,
+- Retention von MailDrafts und Versandnachweisen.
 
-Die Mailintegration gilt erst als produktionsreif, wenn:
+Vor 12A zusätzlich:
 
-- persönliche M365-Verbindung sicher hergestellt und widerrufen werden kann,
-- Least-Privilege-Berechtigungen nachgewiesen sind,
-- inkrementeller Mailabruf stabil funktioniert,
-- Dubletten zuverlässig verhindert werden,
-- TaskCandidates nachvollziehbar erzeugt werden,
-- Benutzer jeden produktiven Import ausdrücklich bestätigt,
+- AI-Provider und Deploymentmodell,
+- Datenschutz-/AVV-Anforderungen,
+- zulässige Datenklassen,
+- Modell-/Prompt-Versionierung,
+- Evaluationskriterien und Freigabeschwellen.
+
+Diese Entscheidungen gehören vor Implementierung jeweils in ADRs.
+
+## 22. Definition of Done der Kommunikations- und Assistenzphase
+
+### Graph-Eingang produktionsreif
+
+- persönliche M365-Verbindung sicher herstellbar und widerrufbar,
+- Least-Privilege-Berechtigungen nachgewiesen,
+- inkrementeller Mailabruf stabil,
+- Dubletten zuverlässig verhindert,
+- TaskCandidates nachvollziehbar erzeugt,
+- Benutzer bestätigt jeden produktiven Import,
 - AVKK-Vervollständigung funktioniert,
 - RBAC/RLS und Audit greifen,
-- kein Mailinhalt unbeabsichtigt in Logs gelangt,
-- Fehler-/Recovery-Pfade getestet sind,
-- technische Dokumentation, Betriebsdokumentation und Prüfbericht aktualisiert sind.
+- kein Mailinhalt unbeabsichtigt in Logs,
+- Recovery-Pfade getestet.
+
+### Graph-Ausgang produktionsreif
+
+- MailDrafts aus strukturierten Daten erzeugbar,
+- Vorlagen versioniert,
+- Empfänger und Berechtigungen geprüft,
+- kein Versand ohne erforderliche Freigabe,
+- Doppelversand verhindert,
+- Versand und Fehler auditierbar,
+- Provider bleibt austauschbar.
+
+### KI-Copilot produktionsreif
+
+- KI-Funktionen klar als READ/PROPOSE klassifiziert,
+- Benutzerreview zwingend,
+- Provenance sichtbar,
+- Prompt-Injection-Schutz getestet,
+- Datenschutzentscheidung dokumentiert,
+- kein autonomes EXECUTE,
+- deterministische Fallback-/Basislogik bleibt funktionsfähig.
+
+### Agentenfunktionen produktionsreif
+
+Nur je einzelnem Aktionstyp nach separater Freigabe, Policy, Sicherheitsprüfung, Audit und Not-Aus-Möglichkeit.
