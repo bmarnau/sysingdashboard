@@ -13,7 +13,19 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.52.0 - 2026-08-10
+
+- **AVKK-Datenmodell produktiv**: Tabellen `avkk_subject`, `avkk_responsibility`, `avkk_responsibility_type`, `avkk_competence` und `avkk_consequence` in Supabase angelegt, inklusive Constraints, Indizes, Grants und Audit-Triggern.
+- **Reference Data produktiv**: `reference_catalog`, `reference_value` und `reference_value_history` angelegt; Werte werden deaktiviert statt gelöscht, jede Änderung erhöht die Katalogversion und schreibt Historie.
+- **Services**: `src/lib/reference-data/` mit Read-Through-Cache (24 h, Kennzeichnung veralteter Stände, expliziter Offlinefehler statt leerer Liste) und `src/lib/avkk/` mit Aggregatladen, Kompetenz-Fortschreibung und abgeleitetem Frühindikator „zugeordnet, aber gefährdet".
+- **RBAC/RLS**: Sechs neue Berechtigungen (`avkk.view`, `avkk.edit`, `avkk.responsibility.assign`, `avkk.management.view`, `referencedata.view`, `referencedata.manage`) in Datenbank, Frontend und Backend gespiegelt; alle Policies auf angemeldete Benutzer beschränkt, Ingenieure schreiben nur an eigenen oder ihnen zugeordneten Sachverhalten.
+- **Audit**: AVKK- und Katalogänderungen werden ausschließlich durch Datenbank-Trigger in `audit_log` geschrieben; Client-Inserts bleiben blockiert.
+- **Tests**: Neue Vitest-Suiten für beide Services sowie ein statischer Sicherheitstest, der Schichtgrenzen und die dokumentierte `avkk_can_write`-Ausnahme absichert.
+- **ADR-0025**: Technische Umsetzung, RLS-Modell, Cacheverhalten, Sicherheitsbewertung von `avkk_can_write`, verworfene Alternativen und Migrationspfad zu echter Fremdschlüsselintegrität dokumentiert; `docs/DATA-SCHEMA.md` bildet den tatsächlichen Datenbankstand ab.
+- **Bekannte Einschränkungen**: Keine referenzielle Integrität zwischen AVKK-Datensätzen und den weiterhin lokal geführten Aufgabenobjekten (Absicherung über Prüfregeln, Titel-Snapshots und `findOrphanSubjects()`); die Bestands-Statuswerte des Dashboards sind noch nicht nach Reference Data migriert; keine AVKK-Oberfläche (folgt in Sprint 08).
+
 ## 1.51.0 - 2026-08-08
+
 
 - **Phase 2 gestartet**: Beginn der Fachmodellphase; Phase 1 „Technische Plattform" bleibt abgeschlossen (v1.50.0).
 - **AVKK-Führungsmodell**: Neues Dokument `docs/AVKK.md` definiert AVKK (Aufgabe, Verantwortung, Kompetenz, Konsequenz) als Führungs- und Steuerungsmethodik inklusive Nutzenbeschreibung, Aufgabentypen, Verantwortungsarten, Kompetenzdimensionen, Konsequenzbewertung, Datenmodellentwurf, RBAC-/RLS-Zielkonzept und Reportvorbereitung.
