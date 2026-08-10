@@ -107,7 +107,7 @@ const builtInTopics: HelpTopic[] = [
       "Priorisierung",
       "Unterstützungsbedarf",
     ],
-    lastUpdated: "2026-08-08",
+    lastUpdated: "2026-08-10",
     content: `## Was ist AVKK?
 AVKK ist die fachliche Führungsmethodik des Dashboards. Sie beschreibt jede
 steuerbare Aufgabe über vier Fragen:
@@ -139,9 +139,19 @@ nicht über die Person. Kontextindikatoren (z. B. Belastung, Stimmung) sind
 Führungssichten nur aggregiert dargestellt wird.
 
 ## Stand
-Seit Version 1.51.0 ist das Fachmodell definiert und in \`docs/AVKK.md\` sowie
-ADR-0024 dokumentiert. Datenbank, Services und Oberfläche folgen in den
-nächsten Sprints.`,
+Seit Version 1.51.0 ist das Fachmodell definiert (\`docs/AVKK.md\`, ADR-0024).
+Mit Version 1.52.0 sind Datenmodell, Berechtigungen und Fachdienste in der
+Datenbank produktiv: AVKK-Sachverhalte, Verantwortungen, Kompetenzbewertungen
+und Konsequenzen werden gespeichert, jede Änderung wird protokolliert, und der
+Frühindikator „zugeordnet, aber gefährdet" wird abgeleitet (mindestens eine
+fehlende Kompetenz oder mindestens zwei nur teilweise erfüllte).
+
+**Einschränkungen in 1.52.0**: Es gibt noch **keine AVKK-Oberfläche** — sie
+folgt in Sprint 08. AVKK-Daten sind nicht Teil des JSON-Exports und des
+ZIP-Backups, weil sie in der Datenbank liegen. Da Projekte, Arbeitspakete und
+Tätigkeiten weiterhin lokal geführt werden, kann die Datenbank die Verknüpfung
+zu einer Aufgabe nicht erzwingen; verwaiste Zuordnungen werden erkannt und
+gemeldet, nicht verhindert.`,
     relatedTopics: ["reference-data"],
   },
   {
@@ -158,7 +168,7 @@ nächsten Sprints.`,
       "Priorität",
       "Versionierung",
     ],
-    lastUpdated: "2026-08-08",
+    lastUpdated: "2026-08-10",
     content: `## Zweck
 Referenzdaten sind alle fachlich gepflegten Auswahlwerte des Dashboards —
 Projektstatus, Prioritäten, Tätigkeitskategorien, Verantwortungsarten,
@@ -179,8 +189,21 @@ Neue Statuswerte oder Kategorien lassen sich ohne Softwarerelease ergänzen, und
 Auswertungen bleiben nachvollziehbar, weil der Katalogstand mitgeführt wird.
 
 ## Stand
-Seit Version 1.51.0 ist die Architektur in \`docs/REFERENCE-DATA.md\` und
-ADR-0024 festgelegt. Die produktive Umsetzung folgt im nächsten Sprint.`,
+Seit Version 1.52.0 sind die Kataloge produktiv: Werte werden versioniert
+gepflegt, deaktiviert statt gelöscht und vollständig historisiert. Lesen setzt
+das Recht „Referenzdaten anzeigen" voraus, Pflege das Recht „Referenzdaten
+verwalten" (Administration und Systemadministration).
+
+Kataloge werden für die Offline-Nutzung bis zu 24 Stunden zwischengespeichert;
+ein älterer Stand bleibt lesbar, wird aber als Katalogstand mit Datum
+gekennzeichnet. Ohne Verbindung und ohne Zwischenspeicher erscheint eine
+eindeutige Fehlermeldung statt einer leeren Auswahlliste. Katalogpflege ist
+offline gesperrt.
+
+**Einschränkungen in 1.52.0**: Es gibt noch keine Pflegeoberfläche für
+Kataloge; genutzt werden sie zunächst nur durch AVKK. Die bestehenden
+Auswahlwerte des Dashboards (Projektstatus, Priorität, Kategorie,
+Abrechnungsstatus) sind noch nicht auf Kataloge umgestellt.`,
     relatedTopics: ["avkk-modell"],
   },
   {

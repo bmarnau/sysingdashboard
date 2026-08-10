@@ -1,4 +1,29 @@
 {
   "$comment": "Manuell gepflegte Findings (source=manual) für den zentralen technischen Prüfbericht. IDs beginnen mit 'man:'. Werden mit den automatisch gesammelten Findings zusammengeführt und wie diese sortiert.",
-  "findings": []
+  "findings": [
+    {
+      "id": "man:avkk-can-write-execute",
+      "severity": "LOW",
+      "status": "accepted",
+      "accepted": true,
+      "classification": "accepted-debt",
+      "gateRelevant": false,
+      "category": "RBAC",
+      "area": "RBAC",
+      "title": "avkk_can_write ist für die Rolle authenticated ausführbar",
+      "description": "Der Datenbank-Linter meldet, dass public.avkk_can_write(uuid) von der Rolle authenticated ausgeführt werden darf. Das ist zwingend erforderlich, weil die Funktion in den RLS-Policies der AVKK-Tabellen ausgewertet wird; ohne EXECUTE scheitert jeder Schreibvorgang. Bewertung und Begründung: ADR-0025, Abschnitt „avkk_can_write“.",
+      "cause": "RLS-Policies auf avkk_subject, avkk_competence und avkk_consequence rufen die Funktion im USING-/WITH-CHECK-Ausdruck auf. Postgres wertet diese Ausdrücke mit den Rechten des aufrufenden Nutzers aus.",
+      "rootCause": "Notwendige Rechtevergabe für policybasierte Autorisierung, keine Fehlkonfiguration.",
+      "impact": "Ein angemeldeter Nutzer kann für eine geratene Subject-UUID die boolesche Antwort „darf ich schreiben“ erfragen. Die Funktion liefert ausschließlich true/false, keine Tabelleninhalte, keine Fremddaten und keine Existenzaussage über konkrete Sachdaten.",
+      "recommendation": "Beibehalten. EXECUTE bleibt auf authenticated und service_role beschränkt (kein anon). Funktion bleibt SECURITY DEFINER, STABLE, mit search_path = public und boolescher Rückgabe. Abgesichert durch src/__tests__/security/avkk-rls.test.ts.",
+      "evidence": {
+        "file": "docs/ADR/0025-avkk-umsetzung-07b.md",
+        "reportRef": "supabase linter: function_execute_grant"
+      },
+      "components": ["public.avkk_can_write", "RLS AVKK"],
+      "adrRef": "ADR-0025",
+      "owner": "Plattform",
+      "effort": "S"
+    }
+  ]
 }
