@@ -234,19 +234,19 @@ roadmap:
       - "Preview und Produktion geprüft"
       - "RBAC und RLS mit realen Testrollen verifiziert"
       - "Inbetriebnahmebericht erstellt"
-  - id: "08"
-    title: "Persönlicher AVKK-Arbeitsplatz"
+  - id: "09"
+    title: "AVKK in Backup, Export und Führungssicht"
     status: "next"
     priority: "high"
     goal: >-
-      AVKK im persönlichen Arbeitsdashboard nutzbar machen: Ansicht, Erfassung
-      und Frühindikator rollenbasiert bereitstellen.
+      Serverseitige AVKK-Daten in Sicherung und Austauschformate aufnehmen und
+      die Führungssicht ergänzen.
     dependencies:
-      - "07B"
+      - "08"
     exitCriteria:
-      - "AVKK-Ansicht im Dashboard verfügbar und RBAC-gesteuert"
-      - "Handbuchkapitel zur AVKK-Bedienung ergänzt"
-      - "UI- und E2E-Tests grün"
+      - "AVKK-Daten in Backup und JSON-Export enthalten"
+      - "Wiederherstellung inklusive AVKK geprüft"
+      - "Führungssicht rollenbasiert verfügbar"
 
   - id: "07"
     title: "AVKK-Datenmodell (UI und Arbeitsansicht)"
