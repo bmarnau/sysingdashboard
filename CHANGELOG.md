@@ -14,6 +14,7 @@ Format pro Eintrag:
 ```
 
 ## 1.53.0 - 2026-08-11
+
 - **Persönlicher AVKK-Arbeitsplatz**: neuer Dashboard-Tab „Mein AVKK" mit Aufgabenliste, Suche, Filtern (gefährdet, kritisch, unvollständig, fällig, überfällig, eigene Verantwortung) und Kennzahlen.
 - **Detailansicht** entlang A–V–K–K mit Katalogauswahl aus Reference Data, Speichern über `AvkkService` (Audit + RLS) und ausgeschriebenen Gründen des Frühindikators.
 - **Methodik im Arbeitsfluss**: Kurzerklärung je Dimension plus Einstieg „AVKK verstehen" ins Handbuch.

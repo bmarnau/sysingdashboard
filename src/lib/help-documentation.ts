@@ -93,6 +93,36 @@ export const DASHBOARD_VERSION_HINT = `Engineer Console ${DASHBOARD_VERSION}`;
 
 const builtInTopics: HelpTopic[] = [
   {
+    id: "avkk-arbeitsplatz",
+    title: "Mein AVKK — persönlicher Arbeitsplatz",
+    category: "Fachmodell",
+    keywords: ["AVKK", "Arbeitsplatz", "Gefährdet", "Frühindikator", "Verantwortung", "Filter"],
+    lastUpdated: "2026-08-11",
+    content: `## Wo finde ich den Arbeitsplatz?
+Im Dashboard über den Tab **Mein AVKK** (Berechtigung \`avkk.view\`).
+
+## Aufgabenliste
+Die Liste zeigt alle Projekte, Arbeitspakete und Tätigkeiten mit ihrem
+AVKK-Stand: Verantwortung, bewertete Kompetenzdimensionen, Konsequenzen und
+den Frühindikator. Suche, Sortierung und Filter (gefährdet, kritische
+Konsequenz, unvollständig, vollständig, fällig, überfällig, eigene
+Verantwortung) grenzen die Liste ein.
+
+## Detailansicht
+Über „Öffnen" erscheint der **AvkkDetailDialog** mit den vier Dimensionen
+A – V – K – K. Auswahlwerte stammen aus den Katalogen der Referenzdaten;
+ist der Katalogstand älter, wird das mit Datum angezeigt.
+
+## Wann gilt eine Aufgabe als „gefährdet"?
+Wenn eine gültige Verantwortung zugeordnet ist **und** mindestens eine
+Kompetenzdimension „nicht vorhanden" oder mindestens zwei „teilweise
+vorhanden" sind. Die Gründe stehen ausgeschrieben im Kontextblock.
+
+## Grenzen
+Weiche Kontextfaktoren werden bewusst noch nicht erfasst. AVKK-Daten liegen
+serverseitig und sind derzeit nicht Teil des lokalen Backups.`,
+  },
+  {
     id: "avkk-modell",
     title: "AVKK — Führungs- und Steuerungsmodell",
     category: "Fachmodell",
