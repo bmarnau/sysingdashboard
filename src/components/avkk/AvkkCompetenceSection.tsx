@@ -126,7 +126,7 @@ function DimensionRow({
       {!readOnly && (
         <button
           type="button"
-          disabled={saving || ratingKey === "" || ratingKey === value?.ratingKey}
+          disabled={saving || ratingKey === ""}
           onClick={() => onSave({ dimensionKey: dimension.key, ratingKey, supportNeeded, note })}
           className="inline-flex min-h-11 items-center justify-center rounded-md border border-border bg-secondary/40 px-4 text-sm hover:bg-secondary disabled:opacity-50"
         >
