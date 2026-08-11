@@ -142,15 +142,15 @@ Ein Sprint gilt erst als abgeschlossen, wenn alle Punkte erfüllt und belegt sin
 
 ## 8. Qualitätsregeln
 
-| Regel                                                      | Prüfung                        |
-| ---------------------------------------------------------- | ------------------------------ |
-| Kein `console.*` in Produktivcode                          | `bun run lint:no-console`      |
-| Typen vollständig                                          | `bun run typecheck`            |
-| Keine Layer-Verletzungen                                   | Tech-Debt-/Architekturprüfung  |
-| RBAC-Matrix Frontend = Backend                             | `bun run rbac:check`           |
-| Dokumentation synchron                                     | `bun run docs:check`           |
-| Projektmanifest gültig                                     | `bun run project-status:check` |
-| Endpunkte inventarisiert und getestet                      | `bun run api:gate`             |
+| Regel                                 | Prüfung                        |
+| ------------------------------------- | ------------------------------ |
+| Kein `console.*` in Produktivcode     | `bun run lint:no-console`      |
+| Typen vollständig                     | `bun run typecheck`            |
+| Keine Layer-Verletzungen              | Tech-Debt-/Architekturprüfung  |
+| RBAC-Matrix Frontend = Backend        | `bun run rbac:check`           |
+| Dokumentation synchron                | `bun run docs:check`           |
+| Projektmanifest gültig                | `bun run project-status:check` |
+| Endpunkte inventarisiert und getestet | `bun run api:gate`             |
 
 Findings werden nicht stillschweigend ignoriert. Ein akzeptiertes Finding
 braucht Begründung, Ticket und Verfallsdatum.
@@ -233,16 +233,16 @@ GO, GO WITH FINDINGS oder NO-GO und konkreten Empfehlungen. Details stehen in
 
 ## 12. Rollen der Projektdokumente
 
-| Dokument | Rolle |
-| --- | --- |
-| `docs/PROJECT-GOVERNANCE.md` | Oberste Regelquelle |
-| `docs/PROJECT-STATUS.yaml` | Maschinenlesbare Single Source of Truth für Status und Roadmap |
-| `docs/MVP-PLAN.md` | MVP-Ziel, Restweg, Gesamttest und Freigaberegeln |
-| `CHANGELOG.md` | Version und Änderungshistorie |
-| `docs/ARCHITECTURE.md` | Ist- und Zielarchitektur |
-| `docs/ADR/` | Architekturentscheidungen |
-| `docs/ENTWICKLUNGSTAGEBUCH.md` | Projektchronik |
-| `test-report/technical-test-report.*` | Technischer Prüf- und Freigabenachweis |
+| Dokument                              | Rolle                                                          |
+| ------------------------------------- | -------------------------------------------------------------- |
+| `docs/PROJECT-GOVERNANCE.md`          | Oberste Regelquelle                                            |
+| `docs/PROJECT-STATUS.yaml`            | Maschinenlesbare Single Source of Truth für Status und Roadmap |
+| `docs/MVP-PLAN.md`                    | MVP-Ziel, Restweg, Gesamttest und Freigaberegeln               |
+| `CHANGELOG.md`                        | Version und Änderungshistorie                                  |
+| `docs/ARCHITECTURE.md`                | Ist- und Zielarchitektur                                       |
+| `docs/ADR/`                           | Architekturentscheidungen                                      |
+| `docs/ENTWICKLUNGSTAGEBUCH.md`        | Projektchronik                                                 |
+| `test-report/technical-test-report.*` | Technischer Prüf- und Freigabenachweis                         |
 
 ---
 

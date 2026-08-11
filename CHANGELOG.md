@@ -26,7 +26,6 @@ Format pro Eintrag:
 
 ## 1.51.0 - 2026-08-08
 
-
 - **Phase 2 gestartet**: Beginn der Fachmodellphase; Phase 1 „Technische Plattform" bleibt abgeschlossen (v1.50.0).
 - **AVKK-Führungsmodell**: Neues Dokument `docs/AVKK.md` definiert AVKK (Aufgabe, Verantwortung, Kompetenz, Konsequenz) als Führungs- und Steuerungsmethodik inklusive Nutzenbeschreibung, Aufgabentypen, Verantwortungsarten, Kompetenzdimensionen, Konsequenzbewertung, Datenmodellentwurf, RBAC-/RLS-Zielkonzept und Reportvorbereitung.
 - **Kontextindikatoren abgegrenzt**: Stress, Belastung und vergleichbare Indikatoren sind ausdrücklich nicht Teil von AVKK, sondern eine spätere, getrennt berechtigte Ebene mit Aggregationspflicht und Datenschutzprüfung.

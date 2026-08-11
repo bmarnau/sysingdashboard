@@ -216,10 +216,7 @@ describe("AvkkService — Verantwortung, Kompetenz, Konsequenz", () => {
     );
     expect(adapterMocks.insertResponsibilityTypes).toHaveBeenCalledWith(
       "r1",
-      [
-        expect.objectContaining({ key: "decision" }),
-        expect.objectContaining({ key: "execution" }),
-      ],
+      [expect.objectContaining({ key: "decision" }), expect.objectContaining({ key: "execution" })],
       "actor-1",
     );
   });
