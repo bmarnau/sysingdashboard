@@ -13,6 +13,25 @@ export {
   findOrphanSubjects,
 } from "./service";
 export { evaluateRisk } from "./indicators";
+export {
+  AVKK_FILTERS,
+  AVKK_FILTER_LABELS,
+  buildRows,
+  dueState,
+  filterRows,
+  sortRows,
+  summarize,
+  taskKey,
+  tasksFromLocalData,
+} from "./workspace";
+export type {
+  AvkkDueState,
+  AvkkFilter,
+  AvkkRow,
+  AvkkSort,
+  AvkkSummary,
+  AvkkTask,
+} from "./workspace";
 export { SUBJECT_TYPES, SUBJECT_STATUS, DEFAULT_RISK_THRESHOLD } from "./types";
 export type {
   AvkkCompetence,

@@ -73,7 +73,6 @@ describe("AVKK / Reference Data — Zugriffsgrenzen", () => {
     // sessionStorage/localStorage sind erlaubt; Zugangsdaten nicht.
     expect(cache).not.toMatch(/access_token|refresh_token|password|apiKey|bearer/i);
   });
-
 });
 
 describe("avkk_can_write — akzeptierte, begründete Ausnahme", () => {

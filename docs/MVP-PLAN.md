@@ -32,14 +32,14 @@ Der MVP umfasst mindestens:
 
 ## 3. Geplanter Weg bis MVP
 
-| Sprint | Schwerpunkt | MVP-Beitrag |
-| --- | --- | --- |
-| 07B | AVKK-Datenbank, Reference Data, Services, RBAC/RLS | Fachliche Datenbasis |
-| 08 | Persönlicher AVKK-Arbeitsplatz | Operative Nutzung |
-| 08A | Kontext- und Frühwarnindikatoren | Weiche Faktoren und Risikosicht |
-| 09 | AVKK-Management-Cockpit | Führungssicht und AVKK-Erklärung |
-| 09A | Report-Service, PDF/Word/Druck, Corporate Templates | Reporting und Ausgabe |
-| 09B | MVP-Gesamttest und Release Candidate | Systemweite Abnahme |
+| Sprint | Schwerpunkt                                         | MVP-Beitrag                      |
+| ------ | --------------------------------------------------- | -------------------------------- |
+| 07B    | AVKK-Datenbank, Reference Data, Services, RBAC/RLS  | Fachliche Datenbasis             |
+| 08     | Persönlicher AVKK-Arbeitsplatz                      | Operative Nutzung                |
+| 08A    | Kontext- und Frühwarnindikatoren                    | Weiche Faktoren und Risikosicht  |
+| 09     | AVKK-Management-Cockpit                             | Führungssicht und AVKK-Erklärung |
+| 09A    | Report-Service, PDF/Word/Druck, Corporate Templates | Reporting und Ausgabe            |
+| 09B    | MVP-Gesamttest und Release Candidate                | Systemweite Abnahme              |
 
 Planungsbasis: sechs weitere größere Prompts ab Abschluss von Sprint 07A. Realistische Bandbreite: fünf bis sieben, abhängig vom Umfang der fachlichen UI und der Integrationsbefunde.
 
@@ -232,12 +232,12 @@ Priorität 1 ist die benutzerbezogene Auswertung eingehender Microsoft-365-E-Mai
 
 Geplante erste Post-MVP-Sprints:
 
-| Sprint | Schwerpunkt |
-| --- | --- |
-| 10A | Microsoft Graph Basis, delegierter persönlicher Mailzugriff und Provider-Abstraktion |
-| 10B | Mail-Ingestion, Delta-Synchronisation, deterministische Erkennung und TaskCandidate |
-| 10C | Dashboard „Aufgabenvorschläge“, Benutzerprüfung, Arbeitspaket- und AVKK-Übernahme |
-| 10D | Automatisierung, optionale Change Notifications, Recovery und Gesamttest |
+| Sprint | Schwerpunkt                                                                          |
+| ------ | ------------------------------------------------------------------------------------ |
+| 10A    | Microsoft Graph Basis, delegierter persönlicher Mailzugriff und Provider-Abstraktion |
+| 10B    | Mail-Ingestion, Delta-Synchronisation, deterministische Erkennung und TaskCandidate  |
+| 10C    | Dashboard „Aufgabenvorschläge“, Benutzerprüfung, Arbeitspaket- und AVKK-Übernahme    |
+| 10D    | Automatisierung, optionale Change Notifications, Recovery und Gesamttest             |
 
 Danach folgen als getrennte Integrations- und Enterprise-Ausbaustufen insbesondere:
 

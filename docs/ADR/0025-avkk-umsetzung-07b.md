@@ -24,21 +24,21 @@ damit technisch unmöglich.
 
 Reference Data (Plattformdienst):
 
-| Tabelle                   | Zweck                             | Besonderheiten                                                             |
-| ------------------------- | --------------------------------- | -------------------------------------------------------------------------- |
-| `reference_catalog`       | Katalogdefinition                 | `UNIQUE (key)`, `version` wird durch Trigger hochgezählt                   |
-| `reference_value`         | Katalogwerte                      | `UNIQUE (catalog_id, key)`, `is_active`, `valid_from/valid_to`, Selbst-FK  |
-| `reference_value_history` | Änderungshistorie (Snapshot)      | append-only, `CHECK (operation IN ('insert','update'))`, kein UPDATE/DELETE |
+| Tabelle                   | Zweck                        | Besonderheiten                                                              |
+| ------------------------- | ---------------------------- | --------------------------------------------------------------------------- |
+| `reference_catalog`       | Katalogdefinition            | `UNIQUE (key)`, `version` wird durch Trigger hochgezählt                    |
+| `reference_value`         | Katalogwerte                 | `UNIQUE (catalog_id, key)`, `is_active`, `valid_from/valid_to`, Selbst-FK   |
+| `reference_value_history` | Änderungshistorie (Snapshot) | append-only, `CHECK (operation IN ('insert','update'))`, kein UPDATE/DELETE |
 
 AVKK:
 
-| Tabelle                    | Zweck                        | Besonderheiten                                                                    |
-| -------------------------- | ---------------------------- | --------------------------------------------------------------------------------- |
-| `avkk_subject`             | Aufgabenbezug (polymorph)    | `CHECK subject_type ∈ {project, workpackage, activity, measure}`, `UNIQUE (subject_type, subject_id)`, `subject_title_snapshot` |
-| `avkk_responsibility`      | Verantwortungszuordnung      | FK auf `avkk_subject`, `person_id → profiles.id`, Rollen-Snapshot, `valid_from/valid_to` |
-| `avkk_responsibility_type` | Verantwortungsarten (n:m)    | `UNIQUE (responsibility_id, type_value_id)`, kein UPDATE erlaubt                   |
-| `avkk_competence`          | Kompetenzbewertung           | Fortschreibung über `superseded_at` statt Überschreiben, Snapshot von Dimension und Bewertung |
-| `avkk_consequence`         | Konsequenzbewertung          | Snapshot von Bereich, Schweregrad und Terminwirkung                                |
+| Tabelle                    | Zweck                     | Besonderheiten                                                                                                                  |
+| -------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `avkk_subject`             | Aufgabenbezug (polymorph) | `CHECK subject_type ∈ {project, workpackage, activity, measure}`, `UNIQUE (subject_type, subject_id)`, `subject_title_snapshot` |
+| `avkk_responsibility`      | Verantwortungszuordnung   | FK auf `avkk_subject`, `person_id → profiles.id`, Rollen-Snapshot, `valid_from/valid_to`                                        |
+| `avkk_responsibility_type` | Verantwortungsarten (n:m) | `UNIQUE (responsibility_id, type_value_id)`, kein UPDATE erlaubt                                                                |
+| `avkk_competence`          | Kompetenzbewertung        | Fortschreibung über `superseded_at` statt Überschreiben, Snapshot von Dimension und Bewertung                                   |
+| `avkk_consequence`         | Konsequenzbewertung       | Snapshot von Bereich, Schweregrad und Terminwirkung                                                                             |
 
 Indizes: `avkk_competence_subject_idx (avkk_subject_id, superseded_at)`,
 `avkk_consequence_subject_idx (avkk_subject_id, superseded_at)`,

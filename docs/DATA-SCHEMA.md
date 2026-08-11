@@ -124,12 +124,12 @@ vermerkt.
 
 ## 1. Plattform- und Identitätstabellen (Bestand)
 
-| Tabelle                   | PK                  | Zweck                                     | Besonderheiten                                        |
-| ------------------------- | ------------------- | ----------------------------------------- | ----------------------------------------------------- |
-| `profiles`                | `id` → `auth.users` | Benutzerprofil                            | Status `active/inactive/locked/archived`, kein DELETE |
-| `user_roles`              | `id`                | Rollenzuordnung                           | `UNIQUE (user_id, role)`, Enum `app_role` (7 Werte)   |
-| `app_settings`            | `key`               | Key/Value-Konfiguration (`jsonb`)         | Audit-Trigger, kein DELETE                            |
-| `audit_log`               | `id`                | Zentrales Protokoll                       | append-only, kein UPDATE/DELETE, nur Trigger schreiben |
+| Tabelle        | PK                  | Zweck                             | Besonderheiten                                         |
+| -------------- | ------------------- | --------------------------------- | ------------------------------------------------------ |
+| `profiles`     | `id` → `auth.users` | Benutzerprofil                    | Status `active/inactive/locked/archived`, kein DELETE  |
+| `user_roles`   | `id`                | Rollenzuordnung                   | `UNIQUE (user_id, role)`, Enum `app_role` (7 Werte)    |
+| `app_settings` | `key`               | Key/Value-Konfiguration (`jsonb`) | Audit-Trigger, kein DELETE                             |
+| `audit_log`    | `id`                | Zentrales Protokoll               | append-only, kein UPDATE/DELETE, nur Trigger schreiben |
 
 ## 2. Reference Data
 
@@ -218,26 +218,26 @@ ALTER TABLE public.<table> ENABLE ROW LEVEL SECURITY;
 `anon` erhält durch **keine** Policy Zugriff auf AVKK- oder
 Reference-Data-Tabellen.
 
-| Tabelle                    | SELECT                          | INSERT / UPDATE                                                     | DELETE      |
-| -------------------------- | ------------------------------- | -------------------------------------------------------------------- | ----------- |
-| `reference_catalog`        | `referencedata.view`            | `referencedata.manage`                                              | verboten    |
-| `reference_value`          | `referencedata.view`            | `referencedata.manage`                                              | verboten    |
-| `reference_value_history`  | `referencedata.view`            | nur Trigger                                                         | verboten    |
-| `avkk_subject`             | `avkk.view`                     | `avkk.edit` (+ `created_by = auth.uid()` beim Einfügen)             | verboten    |
-| `avkk_responsibility`      | `avkk.view`                     | `avkk.responsibility.assign`                                        | erlaubt     |
-| `avkk_responsibility_type` | `avkk.view`                     | `avkk.responsibility.assign`                                        | erlaubt     |
-| `avkk_competence`          | `avkk.view`                     | `avkk_can_write(avkk_subject_id)`                                   | verboten    |
-| `avkk_consequence`         | `avkk.view`                     | `avkk_can_write(avkk_subject_id)`                                   | verboten    |
+| Tabelle                    | SELECT               | INSERT / UPDATE                                         | DELETE   |
+| -------------------------- | -------------------- | ------------------------------------------------------- | -------- |
+| `reference_catalog`        | `referencedata.view` | `referencedata.manage`                                  | verboten |
+| `reference_value`          | `referencedata.view` | `referencedata.manage`                                  | verboten |
+| `reference_value_history`  | `referencedata.view` | nur Trigger                                             | verboten |
+| `avkk_subject`             | `avkk.view`          | `avkk.edit` (+ `created_by = auth.uid()` beim Einfügen) | verboten |
+| `avkk_responsibility`      | `avkk.view`          | `avkk.responsibility.assign`                            | erlaubt  |
+| `avkk_responsibility_type` | `avkk.view`          | `avkk.responsibility.assign`                            | erlaubt  |
+| `avkk_competence`          | `avkk.view`          | `avkk_can_write(avkk_subject_id)`                       | verboten |
+| `avkk_consequence`         | `avkk.view`          | `avkk_can_write(avkk_subject_id)`                       | verboten |
 
 ## 5. Datenbankfunktionen
 
-| Funktion                              | Modus            | Rückgabe  | Zweck                                                            |
-| ------------------------------------- | ---------------- | --------- | ---------------------------------------------------------------- |
-| `has_permission(uuid, text)`          | STABLE, INVOKER  | `boolean` | Rollenmatrix, Basis aller Policies                                |
-| `has_role(uuid, app_role)`            | STABLE, INVOKER  | `boolean` | Einzelrollenprüfung                                              |
-| `has_any_role(uuid, app_role[])`      | STABLE, INVOKER  | `boolean` | Mehrfachrollenprüfung                                            |
-| `is_account_active(uuid)`             | STABLE, INVOKER  | `boolean` | Kontostatus                                                       |
-| `avkk_can_write(uuid)`                | STABLE, DEFINER  | `boolean` | Schreibentscheidung je AVKK-Subject; Ingenieure nur eigen/zuständig |
+| Funktion                         | Modus           | Rückgabe  | Zweck                                                               |
+| -------------------------------- | --------------- | --------- | ------------------------------------------------------------------- |
+| `has_permission(uuid, text)`     | STABLE, INVOKER | `boolean` | Rollenmatrix, Basis aller Policies                                  |
+| `has_role(uuid, app_role)`       | STABLE, INVOKER | `boolean` | Einzelrollenprüfung                                                 |
+| `has_any_role(uuid, app_role[])` | STABLE, INVOKER | `boolean` | Mehrfachrollenprüfung                                               |
+| `is_account_active(uuid)`        | STABLE, INVOKER | `boolean` | Kontostatus                                                         |
+| `avkk_can_write(uuid)`           | STABLE, DEFINER | `boolean` | Schreibentscheidung je AVKK-Subject; Ingenieure nur eigen/zuständig |
 
 Alle Funktionen setzen `search_path = public`. `avkk_can_write` ist für
 `authenticated` ausführbar — erforderlich für die Policy-Auswertung, bewertet
@@ -249,7 +249,7 @@ und akzeptiert in ADR-0025 sowie im technischen Prüfbericht
 1. **Polymorphe Referenz ohne FK**: `avkk_subject.subject_id` ist `text` und
    verweist auf lokal gespeicherte Aufgabenobjekte. Verwaiste Datensätze sind
    möglich. Absicherung: `CHECK` auf den Typ, `UNIQUE (subject_type,
-   subject_id)`, Titel-Snapshot, Existenzprüfung im Service und die
+subject_id)`, Titel-Snapshot, Existenzprüfung im Service und die
    Integritätsprüfung `findOrphanSubjects()`.
 2. **Snapshot-Redundanz**: Katalogtexte werden in AVKK-Zeilen dupliziert. Das
    ist bewusst — historische Datensätze bleiben nach Umbenennungen lesbar,

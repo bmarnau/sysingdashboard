@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-10 · Dashboard-Version 1.52.0
+Stand: 2026-08-11 · Dashboard-Version 1.53.0
 
 ## Vision
 
@@ -311,3 +311,15 @@ AVKK-Datensätzen und den weiterhin lokal geführten Aufgabenobjekten. Verwaiste
 Zuordnungen werden erkannt, nicht verhindert (ADR-0025). Die Ausführbarkeit von
 `avkk_can_write` für angemeldete Benutzer ist geprüft und als begründete
 Ausnahme dokumentiert. Eine Oberfläche entsteht erst in Sprint 08.
+
+## Sprint 08 — Persönlicher AVKK-Arbeitsplatz (1.53.0)
+
+AVKK ist erstmals bedienbar: neuer Dashboard-Tab „Mein AVKK" mit Aufgabenliste,
+Suche, Filtern und Kennzahlen sowie einer Detailansicht entlang der vier
+Dimensionen. Auswahlwerte kommen aus den Referenzdaten, gespeichert wird
+ausschließlich über den AVKK-Dienst; die Ableitungslogik liegt bewusst in einem
+reinen Modul und ist ohne Oberfläche testbar.
+
+Bewusst offen geblieben: weiche Kontextfaktoren werden nicht erfasst, und
+AVKK-Daten sind noch nicht Teil des lokalen Backups bzw. JSON-Exports. Beides
+ist als Aufgabe für Sprint 09 festgehalten.

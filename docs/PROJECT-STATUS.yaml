@@ -46,7 +46,7 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.52.0"
+  dashboard: "1.53.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -207,6 +207,17 @@ completedSprints:
       sechs Berechtigungen dreifach gespiegelt; Servicetests und Sicherheitstest ergänzt;
       avkk_can_write als begründete Ausnahme dokumentiert (ADR-0025).
 
+  - id: "08"
+    title: "Persönlicher AVKK-Arbeitsplatz"
+    version: "1.53.0"
+    status: "completed"
+    summary: >-
+      Dashboard-Tab "Mein AVKK" mit Aufgabenliste, Suche, Filtern, Kennzahlen und
+      Detailansicht entlang A-V-K-K; Katalogauswahl aus Reference Data, Speichern
+      ueber AvkkService; reine Ableitungslogik in src/lib/avkk/workspace.ts mit
+      Vitest-Suite; manueller Abnahmetest dokumentiert. Offen: AVKK ist nicht Teil
+      von Backup/JSON-Export (Blocker Sprint 09).
+
 roadmap:
   - id: "06"
     title: "Produktive Supabase-Inbetriebnahme und persönliches Benutzerkonto"
@@ -223,19 +234,19 @@ roadmap:
       - "Preview und Produktion geprüft"
       - "RBAC und RLS mit realen Testrollen verifiziert"
       - "Inbetriebnahmebericht erstellt"
-  - id: "08"
-    title: "Persönlicher AVKK-Arbeitsplatz"
+  - id: "08B"
+    title: "AVKK in Backup, Export und Führungssicht"
     status: "next"
     priority: "high"
     goal: >-
-      AVKK im persönlichen Arbeitsdashboard nutzbar machen: Ansicht, Erfassung
-      und Frühindikator rollenbasiert bereitstellen.
+      Serverseitige AVKK-Daten in Sicherung und Austauschformate aufnehmen und
+      die Führungssicht ergänzen.
     dependencies:
-      - "07B"
+      - "08"
     exitCriteria:
-      - "AVKK-Ansicht im Dashboard verfügbar und RBAC-gesteuert"
-      - "Handbuchkapitel zur AVKK-Bedienung ergänzt"
-      - "UI- und E2E-Tests grün"
+      - "AVKK-Daten in Backup und JSON-Export enthalten"
+      - "Wiederherstellung inklusive AVKK geprüft"
+      - "Führungssicht rollenbasiert verfügbar"
 
   - id: "07"
     title: "AVKK-Datenmodell (UI und Arbeitsansicht)"
@@ -397,7 +408,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.52.0"
+  currentRelease: "1.53.0"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:

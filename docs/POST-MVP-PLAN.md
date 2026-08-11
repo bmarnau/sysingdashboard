@@ -554,16 +554,16 @@ Externe Kommunikation und produktive Datenänderungen gelten grundsätzlich als 
 
 ## 18. Empfohlene Post-MVP-Roadmap
 
-| Sprint | Schwerpunkt | Automatisierungsgrad |
-| --- | --- | --- |
-| 10A | Graph/OAuth und persönlicher Mailzugriff | Verbindung / READ |
-| 10B | Delta-Sync, Mail-Ingestion, TaskCandidate | deterministische READ/PROPOSE-Vorbereitung |
-| 10C | Aufgabenvorschläge und bestätigte Übernahme | PROPOSE + menschliche Freigabe |
-| 10D | Change Notifications, Recovery, Robustheit | technische Automatisierung, keine autonome Fachentscheidung |
-| 11A | CommunicationService und Graph-Versand | Entwurf + explizites SEND durch Benutzer |
-| 11B | versionierte Kommunikationsvorlagen | automatische deterministische Inhaltsvorbereitung |
-| 12A | KI-Copilot Mail/Kommunikation | KI READ + PROPOSE |
-| 12B+ | kontrollierte Agentenfunktionen | EXECUTE nur nach eigener Policy/Freigabe |
+| Sprint | Schwerpunkt                                 | Automatisierungsgrad                                        |
+| ------ | ------------------------------------------- | ----------------------------------------------------------- |
+| 10A    | Graph/OAuth und persönlicher Mailzugriff    | Verbindung / READ                                           |
+| 10B    | Delta-Sync, Mail-Ingestion, TaskCandidate   | deterministische READ/PROPOSE-Vorbereitung                  |
+| 10C    | Aufgabenvorschläge und bestätigte Übernahme | PROPOSE + menschliche Freigabe                              |
+| 10D    | Change Notifications, Recovery, Robustheit  | technische Automatisierung, keine autonome Fachentscheidung |
+| 11A    | CommunicationService und Graph-Versand      | Entwurf + explizites SEND durch Benutzer                    |
+| 11B    | versionierte Kommunikationsvorlagen         | automatische deterministische Inhaltsvorbereitung           |
+| 12A    | KI-Copilot Mail/Kommunikation               | KI READ + PROPOSE                                           |
+| 12B+   | kontrollierte Agentenfunktionen             | EXECUTE nur nach eigener Policy/Freigabe                    |
 
 Parallel bzw. danach können SharePoint- und Kalenderprovider ergänzt werden. Die Reihenfolge ist bei Sprintabschluss anhand des realen Nutzens und der Risiken neu zu bewerten.
 

@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Clock,
   Euro,
+  ShieldCheck,
   FolderKanban,
   Layers,
   Plus,
@@ -110,6 +111,9 @@ import { ProjectsView } from "@/components/dashboard/views/ProjectsView";
 import { WorkPackagesView } from "@/components/dashboard/views/WorkPackagesView";
 import { ActivitiesView } from "@/components/dashboard/views/ActivitiesView";
 import { BillingView } from "@/components/dashboard/views/BillingView";
+import { AvkkWorkspaceView } from "@/components/avkk/AvkkWorkspaceView";
+import { PermissionGate } from "@/components/PermissionGate";
+import { tasksFromLocalData } from "@/lib/avkk/workspace";
 import { ProjectDialog } from "@/components/dashboard/dialogs/ProjectDialog";
 import { WorkPackageDialog } from "@/components/dashboard/dialogs/WorkPackageDialog";
 import { ActivityDialog } from "@/components/dashboard/dialogs/ActivityDialog";
@@ -156,6 +160,10 @@ function Dashboard() {
   const [hydrated, setHydrated] = useState(false);
 
   const [tab, setTab] = useState<Tab>("projekte");
+  const avkkTasks = useMemo(
+    () => tasksFromLocalData({ projects, workPackages, activities }),
+    [projects, workPackages, activities],
+  );
   const [showNewMenu, setShowNewMenu] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
@@ -762,6 +770,15 @@ function Dashboard() {
           >
             Abrechnung
           </TabButton>
+          <PermissionGate permission="avkk.view">
+            <TabButton
+              active={tab === "avkk"}
+              onClick={() => setTab("avkk")}
+              icon={<ShieldCheck className="size-4" />}
+            >
+              Mein AVKK
+            </TabButton>
+          </PermissionGate>
         </div>
 
         {tab === "projekte" && (
@@ -810,6 +827,22 @@ function Dashboard() {
             viewMode={viewMode}
             onEdit={setEditingActivity}
           />
+        )}
+
+        {tab === "avkk" && (
+          <PermissionGate
+            permission="avkk.view"
+            fallback={
+              <p className="text-sm text-muted-foreground">
+                Für den AVKK-Arbeitsplatz fehlt die Berechtigung.
+              </p>
+            }
+          >
+            <AvkkWorkspaceView
+              tasks={avkkTasks}
+              onOpenManual={() => openManualTopic("avkk-modell")}
+            />
+          </PermissionGate>
         )}
 
         <footer className="mt-10 flex items-center justify-between border-t border-border pt-6 text-xs text-muted-foreground">

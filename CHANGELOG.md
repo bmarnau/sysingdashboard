@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.53.0 - 2026-08-11
+
+- **Persönlicher AVKK-Arbeitsplatz**: neuer Dashboard-Tab „Mein AVKK" mit Aufgabenliste, Suche, Filtern (gefährdet, kritisch, unvollständig, fällig, überfällig, eigene Verantwortung) und Kennzahlen.
+- **Detailansicht** entlang A–V–K–K mit Katalogauswahl aus Reference Data, Speichern über `AvkkService` (Audit + RLS) und ausgeschriebenen Gründen des Frühindikators.
+- **Methodik im Arbeitsfluss**: Kurzerklärung je Dimension plus Einstieg „AVKK verstehen" ins Handbuch.
+- **Neu**: `src/lib/avkk/workspace.ts` (reine Ableitungslogik), Hooks `useReferenceData`, `useAvkkWorkspace`, `useAvkkDossier`, Doku `docs/AVKK-MANUAL-ACCEPTANCE.md`.
+- **Bekannte Grenze**: AVKK liegt serverseitig und ist noch nicht Teil von Backup/JSON-Export (Blocker für Sprint 09).
+
 ## 1.52.0 - 2026-08-10
 
 - **AVKK-Datenmodell produktiv**: Tabellen `avkk_subject`, `avkk_responsibility`, `avkk_responsibility_type`, `avkk_competence` und `avkk_consequence` in Supabase angelegt, inklusive Constraints, Indizes, Grants und Audit-Triggern.
@@ -25,7 +33,6 @@ Format pro Eintrag:
 - **Bekannte Einschränkungen**: Keine referenzielle Integrität zwischen AVKK-Datensätzen und den weiterhin lokal geführten Aufgabenobjekten (Absicherung über Prüfregeln, Titel-Snapshots und `findOrphanSubjects()`); die Bestands-Statuswerte des Dashboards sind noch nicht nach Reference Data migriert; keine AVKK-Oberfläche (folgt in Sprint 08).
 
 ## 1.51.0 - 2026-08-08
-
 
 - **Phase 2 gestartet**: Beginn der Fachmodellphase; Phase 1 „Technische Plattform" bleibt abgeschlossen (v1.50.0).
 - **AVKK-Führungsmodell**: Neues Dokument `docs/AVKK.md` definiert AVKK (Aufgabe, Verantwortung, Kompetenz, Konsequenz) als Führungs- und Steuerungsmethodik inklusive Nutzenbeschreibung, Aufgabentypen, Verantwortungsarten, Kompetenzdimensionen, Konsequenzbewertung, Datenmodellentwurf, RBAC-/RLS-Zielkonzept und Reportvorbereitung.
