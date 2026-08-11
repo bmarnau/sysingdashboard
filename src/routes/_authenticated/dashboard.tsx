@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Clock,
   Euro,
+  ShieldCheck,
   FolderKanban,
   Layers,
   Plus,
@@ -159,6 +160,10 @@ function Dashboard() {
   const [hydrated, setHydrated] = useState(false);
 
   const [tab, setTab] = useState<Tab>("projekte");
+  const avkkTasks = useMemo(
+    () => tasksFromLocalData({ projects, workPackages, activities }),
+    [projects, workPackages, activities],
+  );
   const [showNewMenu, setShowNewMenu] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);

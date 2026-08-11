@@ -80,7 +80,10 @@ export function AvkkDetailDialog({
         <AvkkMethodLink onOpen={onOpenManual} />
 
         {error ? (
-          <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+          <p
+            role="alert"
+            className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive"
+          >
             {error}
           </p>
         ) : null}
@@ -173,8 +176,8 @@ export function AvkkDetailDialog({
           </ul>
           <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
             Weiche Kontextfaktoren (Belastung, Teamunterstützung, Störungen) werden bewusst noch
-            nicht erfasst. Sie folgen als getrennt berechtigte Ebene, damit keine
-            personenbezogenen Bewertungen ohne Rechtsgrundlage entstehen.
+            nicht erfasst. Sie folgen als getrennt berechtigte Ebene, damit keine personenbezogenen
+            Bewertungen ohne Rechtsgrundlage entstehen.
           </p>
         </section>
 

@@ -120,18 +120,24 @@ export function AvkkWorkspaceView({
       </dl>
 
       {catalogs.error ? (
-        <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+        <p
+          role="alert"
+          className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive"
+        >
           Kataloge konnten nicht geladen werden: {catalogs.error}
         </p>
       ) : null}
       {catalogs.stale && catalogs.fetchedAt ? (
         <p className="rounded-md border border-warning/30 bg-warning/10 p-3 text-xs text-warning">
-          Katalogstand vom {new Date(catalogs.fetchedAt).toLocaleString("de-DE")} (aus dem
-          lokalen Zwischenspeicher).
+          Katalogstand vom {new Date(catalogs.fetchedAt).toLocaleString("de-DE")} (aus dem lokalen
+          Zwischenspeicher).
         </p>
       ) : null}
       {workspace.error ? (
-        <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+        <p
+          role="alert"
+          className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive"
+        >
           AVKK-Daten konnten nicht geladen werden: {workspace.error}
         </p>
       ) : null}

@@ -22,12 +22,7 @@ export function AvkkResponsibilitySection({
   types: readonly ReferenceValue[];
   readOnly: boolean;
   saving: boolean;
-  onSave: (input: {
-    personId: string;
-    roleKey: string;
-    typeKeys: string[];
-    note: string;
-  }) => void;
+  onSave: (input: { personId: string; roleKey: string; typeKeys: string[]; note: string }) => void;
 }) {
   const [personId, setPersonId] = useState("");
   const [roleKey, setRoleKey] = useState(roles.find((r) => r.isDefault)?.key ?? "");
