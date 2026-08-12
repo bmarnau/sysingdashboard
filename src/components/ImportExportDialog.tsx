@@ -274,7 +274,7 @@ export function ImportExportDialog({
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <Button variant="outline" onClick={handleCheck} disabled={busy}>
+                <Button variant="outline" onClick={() => void handleCheck()} disabled={busy}>
                   <ListChecks className="mr-2 size-4" /> Export prüfen
                 </Button>
                 <Button onClick={handleExport} disabled={busy}>
