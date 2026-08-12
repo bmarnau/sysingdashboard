@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-11 · Dashboard-Version 1.53.0
+Stand: 2026-08-12 · Dashboard-Version 1.54.0
 
 ## Vision
 
@@ -323,3 +323,22 @@ reinen Modul und ist ohne Oberfläche testbar.
 Bewusst offen geblieben: weiche Kontextfaktoren werden nicht erfasst, und
 AVKK-Daten sind noch nicht Teil des lokalen Backups bzw. JSON-Exports. Beides
 ist als Aufgabe für Sprint 09 festgehalten.
+
+## Sprint 08B — AVKK in Backup, Restore und JSON-Export (1.54.0)
+
+AVKK war bis hierhin ein blinder Fleck der Sicherung: die Führungsdaten liegen
+serverseitig, das Backup arbeitete rein lokal. Jetzt enthält jedes Archiv
+`avkk.json` und `reference-data.json` als reguläre Manifest-Einträge mit
+Prüfsumme, und der JSON-Export kennt den optionalen Block `avkk` (Schema
+1.1.0).
+
+Bewusst offen geblieben: Der Restore prüft diese Daten vollständig, schreibt
+sie aber nicht in die Datenbank zurück. Ein Rückschreiben aus dem Browser wäre
+nicht transaktional zum lokalen Teil und würde die Audit-Kette verfälschen —
+für Cloud-Datenverlust bleibt die Datenbankwiederherstellung zuständig
+(ADR-0026). Datensätze ohne lokalen Aufgabenbezug landen sichtbar in
+Quarantäne statt still durchzurutschen.
+
+Die drei offenen Sicherheitswarnungen sind bewertet: fehlende Löschregeln sind
+Absicht (Historisierung statt Hard Delete), der Lesezugriff auf
+`app_settings` betrifft ausschließlich unkritische Laufzeitkonfiguration.

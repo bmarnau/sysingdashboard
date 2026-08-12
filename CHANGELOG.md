@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.54.0 - 2026-08-12
+
+- **AVKK im Backup**: Jedes ZIP enthält jetzt `avkk.json` (Führungsdaten) und `reference-data.json` (Katalogstand) als reguläre Manifest-Einträge mit SHA-256-Prüfsumme.
+- **Geprüfter, aber nicht schreibender Restore**: AVKK-Daten werden vor jedem Schreibvorgang vollständig validiert (Pflichtfelder, eindeutige Kennungen, Subjektbezüge, bekannte Katalogwerte, Katalogversionen) und als Bericht ausgewiesen; sie werden bewusst nicht in die Datenbank zurückgeschrieben (ADR-0026).
+- **Quarantäne**: AVKK-Datensätze ohne lokalen Aufgabenbezug erscheinen mit Begründung im Restore-Bericht; fehlt der lokale Bestand, wird die ungeprüfte Lage ausdrücklich gemeldet.
+- **JSON-Schema 1.1.0**: Optionaler Block `avkk` samt Katalogwerten, neuer Teil-Export „Nur AVKK-Führungsdaten"; nur für Benutzer mit `avkk.view`.
+- **Sicherheitswarnungen bewertet**: Fehlende Löschregeln für AVKK- und Katalogtabellen sowie der Lesezugriff auf `app_settings` sind als bewusste Entscheidungen dokumentiert (ADR-0026) — Löschen bleibt ausgeschlossen, Historisierung ist der Standard.
+
 ## 1.53.0 - 2026-08-11
 
 - **Persönlicher AVKK-Arbeitsplatz**: neuer Dashboard-Tab „Mein AVKK" mit Aufgabenliste, Suche, Filtern (gefährdet, kritisch, unvollständig, fällig, überfällig, eigene Verantwortung) und Kennzahlen.

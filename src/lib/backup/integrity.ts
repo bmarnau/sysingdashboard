@@ -8,6 +8,7 @@ import { strFromU8, unzipSync } from "fflate";
 import { checksumOf } from "./checksum";
 import { PROJECT_NAME, contentTypeForPath, looksSensitive } from "./constants";
 import { loadManifest } from "./manifest";
+import { validateAvkkPayload, type AvkkValidation } from "./avkk-payload";
 import type { BackupCheckResult, BackupCheckStatus, BackupManifestV2, Snapshot } from "./types";
 
 /**
@@ -78,6 +79,46 @@ export async function validateManifestEntries(
   return msgs.length > 0 ? { status: "failed", messages: msgs } : { status: "ok", messages: [] };
 }
 
+/**
+ * Liest die AVKK-Nutzdaten aus dem Archiv und prüft sie vollständig.
+ * Beide Dateien gehören zusammen: fehlt eine, ist das ein harter Fehler.
+ */
+export function checkAvkkArchive(
+  manifest: BackupManifestV2,
+  zip: Record<string, Uint8Array>,
+  options: { knownSubjects?: ReadonlySet<string> } = {},
+): { present: boolean; validation: AvkkValidation | null; errors: string[] } {
+  const errors: string[] = [];
+  const find = (logicalName: string): Uint8Array | null => {
+    const entry = manifest.entries.find((e) => e.logicalName === logicalName);
+    return entry ? (zip[entry.path] ?? null) : null;
+  };
+
+  const avkkBytes = find("avkk-dataset");
+  const refBytes = find("reference-data");
+  if (!avkkBytes && !refBytes) return { present: false, validation: null, errors };
+  if (!avkkBytes || !refBytes) {
+    errors.push(
+      "AVKK-Nutzdaten unvollständig: `avkk.json` und `reference-data.json` müssen beide vorhanden sein.",
+    );
+    return { present: true, validation: null, errors };
+  }
+
+  let avkkRaw: unknown;
+  let refRaw: unknown;
+  try {
+    avkkRaw = JSON.parse(strFromU8(avkkBytes));
+    refRaw = JSON.parse(strFromU8(refBytes));
+  } catch (err) {
+    errors.push(`AVKK-Nutzdaten sind kein gültiges JSON: ${(err as Error).message}`);
+    return { present: true, validation: null, errors };
+  }
+
+  const validation = validateAvkkPayload(avkkRaw, refRaw, options);
+  errors.push(...validation.errors);
+  return { present: true, validation, errors };
+}
+
 export function runConsistencyCheck(snapshot: Snapshot): BackupCheckResult {
   const msgs: string[] = [];
   let status: BackupCheckStatus = "ok";
@@ -106,6 +147,11 @@ export function runConsistencyCheck(snapshot: Snapshot): BackupCheckResult {
       msgs.push(`Sensibler Wert in '${k}' erkannt — Backup wird abgebrochen.`);
       status = "failed";
     }
+  }
+
+  for (const w of snapshot.avkkWarnings) {
+    msgs.push(w);
+    if (status === "ok") status = "warning";
   }
 
   if (snapshot.manifest.excludedKeys.length > 0) {
@@ -173,6 +219,17 @@ export async function validateZip(
     const actual = manifest.entries.filter((e) => e.storageKey !== null).length;
     if (expected !== actual) {
       msgs.push(`Erwartet ${expected} Datendateien, im Manifest gefunden: ${actual}.`);
+      status = "failed";
+    }
+
+    // AVKK-Nutzdaten müssen in sich stimmig sein, sonst ist das Archiv wertlos.
+    const avkkCheck = checkAvkkArchive(manifest, entries);
+    if (avkkCheck.errors.length > 0) {
+      msgs.push(...avkkCheck.errors);
+      status = "failed";
+    }
+    if (snapshot.avkk && !avkkCheck.present) {
+      msgs.push("AVKK-Nutzdaten fehlen im Archiv, obwohl sie gesichert werden sollten.");
       status = "failed";
     }
 

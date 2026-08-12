@@ -23,6 +23,7 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 | 0022 | [Backupformat 2.0 — manifestbasierte Zuordnung](./0022-backupformat-2.md)                          | Accepted |
 | 0023 | [Phasenmodell und Abschluss der Infrastrukturphase](./0023-phasenmodell-infrastrukturabschluss.md) | Accepted |
 | 0024 | [AVKK-Führungsmodell und Reference Data als Plattformdienst](./0024-avkk-und-reference-data.md)    | Accepted |
+| 0026 | [Löschstrategie, AVKK im Backup und bewertete Sicherheitswarnungen](./0026-loeschstrategie-und-avkk-backup.md) | Accepted |
 
 ## Template
 

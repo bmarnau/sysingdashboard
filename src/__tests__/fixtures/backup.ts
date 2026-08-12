@@ -121,9 +121,108 @@ function contentType(path: string): string {
   return "text/plain";
 }
 
+/** Deterministische AVKK-Nutzdaten inkl. passendem Katalogstand. */
+export function avkkFixture(): {
+  avkk: Record<string, unknown>;
+  referenceData: Record<string, unknown>;
+} {
+  const capturedAt = "2026-01-01T00:00:00.000Z";
+  const value = (catalogKey: string, key: string, id: string) => ({
+    id,
+    catalogKey,
+    key,
+    label: key,
+    sortOrder: 1,
+    isActive: true,
+    isDefault: false,
+    validFrom: capturedAt,
+    validTo: null,
+  });
+  return {
+    avkk: {
+      payloadVersion: 1,
+      capturedAt,
+      subjects: [
+        {
+          id: "s-1",
+          subjectType: "workpackage",
+          subjectId: "wp-1",
+          titleSnapshot: "Arbeitspaket 1",
+          status: "active",
+          version: 1,
+          createdAt: capturedAt,
+          updatedAt: capturedAt,
+        },
+      ],
+      responsibilities: [
+        {
+          id: "r-1",
+          subjectRef: "s-1",
+          personId: "p-1",
+          roleKey: "owner",
+          typeKeys: ["execution"],
+          note: "",
+          validFrom: capturedAt,
+          validTo: null,
+        },
+      ],
+      competences: [
+        {
+          id: "k-1",
+          subjectRef: "s-1",
+          dimensionKey: "technical",
+          ratingKey: "full",
+          supportNeeded: false,
+          note: "",
+          supersededAt: null,
+          createdAt: capturedAt,
+        },
+      ],
+      consequences: [
+        {
+          id: "c-1",
+          subjectRef: "s-1",
+          areaKey: "quality",
+          severityKey: "high",
+          scheduleImpactKey: "none",
+          description: "",
+          supersededAt: null,
+        },
+      ],
+      catalogRefs: [{ key: "avkk.responsibility_role", version: 1 }],
+    },
+    referenceData: {
+      payloadVersion: 1,
+      capturedAt,
+      catalogs: [
+        {
+          id: "cat-1",
+          key: "avkk.responsibility_role",
+          name: "Rollen",
+          domain: "avkk",
+          version: 1,
+          isSystem: true,
+        },
+      ],
+      values: [
+        value("avkk.responsibility_role", "owner", "v-1"),
+        value("avkk.responsibility_type", "execution", "v-2"),
+        value("avkk.competence_dimension", "technical", "v-3"),
+        value("avkk.competence_rating", "full", "v-4"),
+        value("avkk.consequence_area", "quality", "v-5"),
+        value("avkk.consequence_severity", "high", "v-6"),
+        value("avkk.schedule_impact", "none", "v-7"),
+      ],
+    },
+  };
+}
+
 /** Erzeugt ein Archiv im Format 2.0 mit gültiger Zuordnungstabelle. */
 export async function buildValidBackupZipV2(
-  opts: BackupFixtureOptions & { storagePaths?: Record<string, string> } = {},
+  opts: BackupFixtureOptions & {
+    storagePaths?: Record<string, string>;
+    avkk?: { avkk: unknown; referenceData: unknown } | null;
+  } = {},
 ): Promise<Uint8Array> {
   const createdAt = opts.createdAt ?? "2026-01-01T00:00:00.000Z";
   const data: Record<string, unknown> = {
@@ -144,6 +243,14 @@ export async function buildValidBackupZipV2(
     { logicalName: "env-example", storageKey: null, path: ".env.example" },
     { logicalName: "archive-index", storageKey: null, path: "archive-index.json" },
   ];
+
+  if (opts.avkk !== null) {
+    const payload = opts.avkk ?? avkkFixture();
+    files["avkk.json"] = strToU8(JSON.stringify(payload.avkk, null, 2));
+    files["reference-data.json"] = strToU8(JSON.stringify(payload.referenceData, null, 2));
+    meta.push({ logicalName: "avkk-dataset", storageKey: null, path: "avkk.json" });
+    meta.push({ logicalName: "reference-data", storageKey: null, path: "reference-data.json" });
+  }
 
   let i = 0;
   for (const [key, value] of Object.entries(data)) {

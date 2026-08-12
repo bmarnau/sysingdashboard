@@ -5,6 +5,8 @@
  * kann, ohne Zyklen zu erzeugen.
  */
 
+import type { AvkkBackupPayload } from "./avkk-payload";
+
 export type BackupCheckStatus = "ok" | "warning" | "failed";
 
 export interface BackupCheckResult {
@@ -93,6 +95,13 @@ export interface BackupManifestV1 {
 export interface Snapshot {
   manifest: BackupManifestBase;
   data: Record<string, unknown>;
+  /**
+   * Cloud-Nutzdaten (AVKK + Reference Data). `null`, wenn sie nicht geladen
+   * werden konnten — das Backup bleibt dann gültig, meldet aber eine Warnung.
+   */
+  avkk: AvkkBackupPayload | null;
+  /** Gründe, warum Cloud-Nutzdaten fehlen. */
+  avkkWarnings: string[];
   archive: Array<{
     id: string;
     fileName: string;
@@ -131,6 +140,25 @@ export interface RestoreOptions {
   allowNewer?: boolean;
   /** Erwarteter Projektname. Default `dashboard`. */
   expectedProject?: string;
+  /**
+   * Lokal vorhandene Aufgaben als `"<typ>:<id>"`. Nur damit kann der
+   * Aufgabenbezug der AVKK-Daten geprüft werden; fehlt die Menge, wird das
+   * als Warnung ausgewiesen.
+   */
+  knownSubjects?: ReadonlySet<string>;
+}
+
+/**
+ * Ergebnis der AVKK-Prüfung beim Restore. AVKK-Daten werden ausschließlich
+ * geprüft und berichtet — sie werden NICHT in die Datenbank zurückgeschrieben
+ * (ADR-0026).
+ */
+export interface AvkkRestoreReport {
+  present: boolean;
+  validated: boolean;
+  counts: { subjects: number; responsibilities: number; competences: number; consequences: number };
+  quarantine: Array<{ subjectRef: string; reason: string }>;
+  messages: string[];
 }
 
 export interface RestoreResult {
@@ -146,6 +174,8 @@ export interface RestoreResult {
   warnings: string[];
   errors: string[];
   rollback: boolean;
+  /** Prüfbericht der mitgelieferten AVKK-Daten (kein DB-Schreibvorgang). */
+  avkk: AvkkRestoreReport;
 }
 
 export interface RestoreSnapshot {

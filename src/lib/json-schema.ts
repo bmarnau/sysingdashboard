@@ -1,5 +1,8 @@
 /**
- * JSON-Schnittstellen-Schema v1.0.0
+ * JSON-Schnittstellen-Schema v1.1.0
+ *
+ * 1.1.0 ergänzt den optionalen Block `avkk` (AVKK-Führungsdaten und
+ * Katalogstand). Der Block ist additiv — Dokumente ohne ihn bleiben gültig.
  *
  * Versionierte Struktur für JSON-Export, Import und JSON-basierte Backups.
  * Stufe 1 liefert hier nur die TS-Typen + Zod-Schemas; der Import-Pfad
@@ -14,7 +17,7 @@
 
 import { z } from "zod";
 
-export const JSON_SCHEMA_VERSION = "1.0.0";
+export const JSON_SCHEMA_VERSION = "1.1.0";
 
 /* ----------------------------- Primitive Schemas ---------------------------- */
 
@@ -143,6 +146,79 @@ export const DashboardSettingsSchema = z.object({
 });
 export type DashboardSettingsExport = z.infer<typeof DashboardSettingsSchema>;
 
+/* ----------------------------------- AVKK ----------------------------------- */
+
+/**
+ * AVKK-Block (Schema 1.1.0). Enthält ausschließlich IDs, Katalogschlüssel und
+ * fachliche Texte — keine Zugangsdaten. Labels sind Momentaufnahmen.
+ */
+export const AvkkSubjectExportSchema = z.object({
+  id: z.string().min(1).max(SHORT_ID),
+  subjectType: z.string().max(SHORT_STR),
+  subjectId: z.string().max(SHORT_ID),
+  titleSnapshot: z.string().max(SHORT_STR),
+  status: z.string().max(SHORT_STR),
+  version: z.number().int().nonnegative(),
+  createdAt: z.string().max(64),
+  updatedAt: z.string().max(64),
+});
+
+export const AvkkResponsibilityExportSchema = z.object({
+  id: z.string().min(1).max(SHORT_ID),
+  subjectRef: z.string().min(1).max(SHORT_ID),
+  personId: z.string().max(SHORT_ID),
+  roleKey: z.string().max(SHORT_STR),
+  typeKeys: z.array(z.string().max(SHORT_STR)).max(50),
+  note: z.string().max(LONG_STR),
+  validFrom: z.string().max(64),
+  validTo: z.string().max(64).nullable(),
+});
+
+export const AvkkCompetenceExportSchema = z.object({
+  id: z.string().min(1).max(SHORT_ID),
+  subjectRef: z.string().min(1).max(SHORT_ID),
+  dimensionKey: z.string().max(SHORT_STR),
+  ratingKey: z.string().max(SHORT_STR),
+  supportNeeded: z.boolean(),
+  note: z.string().max(LONG_STR),
+  supersededAt: z.string().max(64).nullable(),
+  createdAt: z.string().max(64),
+});
+
+export const AvkkConsequenceExportSchema = z.object({
+  id: z.string().min(1).max(SHORT_ID),
+  subjectRef: z.string().min(1).max(SHORT_ID),
+  areaKey: z.string().max(SHORT_STR),
+  severityKey: z.string().max(SHORT_STR),
+  scheduleImpactKey: z.string().max(SHORT_STR),
+  description: z.string().max(LONG_STR),
+  supersededAt: z.string().max(64).nullable(),
+});
+
+export const ReferenceValueExportSchema = z.object({
+  id: z.string().min(1).max(SHORT_ID),
+  catalogKey: z.string().max(SHORT_STR),
+  key: z.string().max(SHORT_STR),
+  label: z.string().max(SHORT_STR),
+  sortOrder: z.number().int(),
+  isActive: z.boolean(),
+  isDefault: z.boolean(),
+  validFrom: z.string().max(64),
+  validTo: z.string().max(64).nullable(),
+});
+
+export const AvkkExportSchema = z.object({
+  payloadVersion: z.number().int().positive(),
+  capturedAt: isoDateTime,
+  subjects: z.array(AvkkSubjectExportSchema),
+  responsibilities: z.array(AvkkResponsibilityExportSchema),
+  competences: z.array(AvkkCompetenceExportSchema),
+  consequences: z.array(AvkkConsequenceExportSchema),
+  catalogRefs: z.array(z.object({ key: z.string().max(SHORT_STR), version: z.number().int() })),
+  referenceValues: z.array(ReferenceValueExportSchema),
+});
+export type AvkkExport = z.infer<typeof AvkkExportSchema>;
+
 /* --------------------------------- Envelope --------------------------------- */
 
 export const ExportTypeSchema = z.enum(["full", "partial"]);
@@ -157,6 +233,7 @@ export const ExportScopeSchema = z.enum([
   "timeentries",
   "settings",
   "targettime",
+  "avkk",
 ]);
 export type ExportScope = z.infer<typeof ExportScopeSchema>;
 
@@ -176,6 +253,7 @@ export const DashboardJsonExportSchema = z.object({
   timeEntries: z.array(TimeEntrySchema).optional(),
   targetTimeModels: z.array(TargetTimeModelSchema).optional(),
   settings: z.array(DashboardSettingsSchema).optional(),
+  avkk: AvkkExportSchema.optional(),
 
   manualMeta: z
     .object({

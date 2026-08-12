@@ -78,10 +78,31 @@ export async function buildZip(snapshot: Snapshot): Promise<Uint8Array> {
     });
   }
 
+  // AVKK und Reference Data als eigene, fachlich benannte Einträge.
+  if (snapshot.avkk) {
+    pending.push({
+      logicalName: "avkk-dataset",
+      storageKey: null,
+      path: "avkk.json",
+      bytes: strToU8(JSON.stringify(snapshot.avkk.avkk, null, 2)),
+      description: "AVKK-Führungsdaten (Prüfdaten, kein Restore-Ziel)",
+    });
+    pending.push({
+      logicalName: "reference-data",
+      storageKey: null,
+      path: "reference-data.json",
+      bytes: strToU8(JSON.stringify(snapshot.avkk.referenceData, null, 2)),
+      description: "Katalogstand (Reference Data) zum Sicherungszeitpunkt",
+    });
+  }
+
   // Kanonische `dashboard.json` (Schema v1) zusätzlich einbetten. Fehler hier
   // brechen das Archiv NICHT — der Backup-Pfad bleibt funktionsfähig.
   try {
-    const res = JsonExportService.exportFullJson({ exportedBy: "backup-service" });
+    const res = JsonExportService.exportFullJson({
+      exportedBy: "backup-service",
+      avkk: snapshot.avkk ?? undefined,
+    });
     pending.push({
       logicalName: "dashboard-export",
       storageKey: null,

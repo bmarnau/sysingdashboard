@@ -36,6 +36,8 @@ import { UserManualDialog } from "@/components/UserManualDialog";
 import { ImportPreviewDialog } from "@/components/ImportPreviewDialog";
 import { ImportLogService, type ImportLogEntry } from "@/lib/import-log-service";
 import { JsonImportService } from "@/lib/json-import-service";
+import { collectAvkkPayload, type AvkkBackupPayload } from "@/lib/backup/avkk-payload";
+import { usePermission } from "@/hooks/usePermission";
 
 export type ImportExportTab = "export" | "import" | "examples" | "log" | "backup" | "docs";
 
@@ -58,6 +60,7 @@ const SCOPE_LABELS: Record<ScopeChoice, string> = {
   timeentries: "Nur Zeitbuchungen",
   settings: "Nur Einstellungen",
   targettime: "Nur Arbeitszeitmodelle",
+  avkk: "Nur AVKK-Führungsdaten",
 };
 
 function triggerBrowserDownload(blob: Blob, fileName: string) {
@@ -78,9 +81,10 @@ export function ImportExportDialog({
   onOpenBackup,
 }: ImportExportDialogProps) {
   const currentUser = useCurrentUser();
+  const canViewAvkk = usePermission("avkk.view");
   const [tab, setTab] = useState<ImportExportTab>(initialTab);
   const [scope, setScope] = useState<ScopeChoice>("full");
-  const [opts, setOpts] = useState<Required<Omit<ExportOptions, "exportedBy">>>({
+  const [opts, setOpts] = useState<Required<Omit<ExportOptions, "exportedBy" | "avkk">>>({
     includeUsers: true,
     includeSettings: true,
     includeTimeEntries: true,
@@ -111,13 +115,32 @@ export function ImportExportDialog({
 
   const exportedBy = currentUser?.email || currentUser?.displayName || "anonymous";
 
-  const handleCheck = () => {
+  /**
+   * AVKK-Daten liegen im Backend und werden nur geladen, wenn der Export sie
+   * enthalten darf und der Benutzer sie sehen darf. Fehler dürfen den Export
+   * nicht verhindern — sie werden als Hinweis gemeldet.
+   */
+  const loadAvkk = async (): Promise<AvkkBackupPayload | undefined> => {
+    if (!canViewAvkk) return undefined;
+    if (scope !== "full" && scope !== "avkk") return undefined;
+    const { payload, warnings } = await collectAvkkPayload();
+    if (!payload && warnings.length > 0) {
+      toast.warning("AVKK-Daten nicht im Export enthalten", { description: warnings.join(" ") });
+    }
+    return payload ?? undefined;
+  };
+
+  const buildExport = async () => {
+    const avkk = await loadAvkk();
+    return scope === "full"
+      ? JsonExportService.exportFullJson({ ...opts, exportedBy, avkk })
+      : JsonExportService.exportPartialJson(scope, { ...opts, exportedBy, avkk });
+  };
+
+  const handleCheck = async () => {
     setBusy(true);
     try {
-      const res =
-        scope === "full"
-          ? JsonExportService.exportFullJson({ ...opts, exportedBy })
-          : JsonExportService.exportPartialJson(scope, { ...opts, exportedBy });
+      const res = await buildExport();
       const v = JsonSchemaValidationService.validate(res.document);
       setValidation(v);
     } catch (err) {
@@ -132,10 +155,7 @@ export function ImportExportDialog({
   const handleExport = async () => {
     setBusy(true);
     try {
-      const res =
-        scope === "full"
-          ? JsonExportService.exportFullJson({ ...opts, exportedBy })
-          : JsonExportService.exportPartialJson(scope, { ...opts, exportedBy });
+      const res = await buildExport();
       triggerBrowserDownload(res.blob, res.fileName);
       try {
         await ExportDownloadService.addDownload({
@@ -254,7 +274,7 @@ export function ImportExportDialog({
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <Button variant="outline" onClick={handleCheck} disabled={busy}>
+                <Button variant="outline" onClick={() => void handleCheck()} disabled={busy}>
                   <ListChecks className="mr-2 size-4" /> Export prüfen
                 </Button>
                 <Button onClick={handleExport} disabled={busy}>
