@@ -12,11 +12,11 @@ import { logger } from "../logger";
 import { BackupError } from "../errors";
 import { writeRestoreLog } from "./audit";
 import { EXPECTED_MANIFEST_MAJOR, PROJECT_NAME, looksSensitive } from "./constants";
-import { validateManifestEntries } from "./integrity";
+import { checkAvkkArchive, validateManifestEntries } from "./integrity";
 import { loadManifest, type LoadedManifest } from "./manifest";
 import { applyRestoreEntries, collectTouchedKeys, type DesiredEntry } from "./merge";
 import { listCurrentAppKeys, registerSnapshot, rollbackSnapshot, takeSnapshotOf } from "./rollback";
-import type { RestoreOptions, RestoreResult } from "./types";
+import type { AvkkRestoreReport, RestoreOptions, RestoreResult } from "./types";
 
 function parseSemverMajor(v: string): number {
   const m = /^(\d+)/.exec(v);
@@ -45,6 +45,13 @@ export async function restoreFromZip(
   const expectedProject = opts.expectedProject ?? PROJECT_NAME;
   const allowOlderMinor = opts.allowOlderMinor ?? true;
   const allowNewer = opts.allowNewer ?? false;
+  const avkkReport: AvkkRestoreReport = {
+    present: false,
+    validated: false,
+    counts: { subjects: 0, responsibilities: 0, competences: 0, consequences: 0 },
+    quarantine: [],
+    messages: [],
+  };
 
   const fail = (msg: string, extra: Partial<RestoreResult> = {}): RestoreResult => {
     errors.push(msg);
@@ -61,6 +68,7 @@ export async function restoreFromZip(
       warnings,
       errors,
       rollback: false,
+      avkk: avkkReport,
       ...extra,
     };
     writeRestoreLog(res);
@@ -128,6 +136,28 @@ export async function restoreFromZip(
     return fail(`Manifest-Prüfung fehlgeschlagen: ${entryCheck.messages.join("; ")}`);
   }
 
+  // 4b. AVKK-Nutzdaten prüfen — vollständig, aber ohne Rückschreiben in die DB.
+  const avkkCheck = checkAvkkArchive(manifest, entries, { knownSubjects: opts.knownSubjects });
+  avkkReport.present = avkkCheck.present;
+  if (avkkCheck.errors.length > 0) {
+    return fail(`AVKK-Prüfung fehlgeschlagen: ${avkkCheck.errors.join("; ")}`);
+  }
+  if (avkkCheck.validation) {
+    avkkReport.validated = true;
+    avkkReport.counts = avkkCheck.validation.counts;
+    avkkReport.quarantine = avkkCheck.validation.quarantine;
+    avkkReport.messages = [
+      ...avkkCheck.validation.warnings,
+      "AVKK-Daten wurden geprüft, aber nicht in die Datenbank zurückgeschrieben (ADR-0026).",
+    ];
+    warnings.push(...avkkCheck.validation.warnings);
+    if (avkkReport.quarantine.length > 0) {
+      warnings.push(
+        `${avkkReport.quarantine.length} AVKK-Datensätze in Quarantäne: Aufgabenbezug fehlt.`,
+      );
+    }
+  }
+
   // 5. Restoreplan ausschließlich aus dem Manifest bilden
   const restorable = manifest.entries.filter((e) => e.storageKey !== null);
   if (restorable.length === 0) {
@@ -184,6 +214,7 @@ export async function restoreFromZip(
       warnings,
       errors,
       rollback: true,
+      avkk: avkkReport,
     };
     writeRestoreLog(res);
     logger.error("Restore rolled back", err, { actor: opts.actor, mode: opts.mode });
@@ -204,6 +235,7 @@ export async function restoreFromZip(
     warnings,
     errors,
     rollback: false,
+    avkk: avkkReport,
   };
   writeRestoreLog(result);
   logger.info("Restore applied", {
