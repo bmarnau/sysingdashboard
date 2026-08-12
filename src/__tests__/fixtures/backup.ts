@@ -122,7 +122,10 @@ function contentType(path: string): string {
 }
 
 /** Deterministische AVKK-Nutzdaten inkl. passendem Katalogstand. */
-export function avkkFixture(): { avkk: Record<string, unknown>; referenceData: Record<string, unknown> } {
+export function avkkFixture(): {
+  avkk: Record<string, unknown>;
+  referenceData: Record<string, unknown>;
+} {
   const capturedAt = "2026-01-01T00:00:00.000Z";
   const value = (catalogKey: string, key: string, id: string) => ({
     id,

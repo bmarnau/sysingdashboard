@@ -219,11 +219,7 @@ function buildAvkkBlock(payload: AvkkBackupPayload): AvkkExport {
   };
 }
 
-function buildEnvelopeBase(
-  opts: ResolvedOptions,
-  type: ExportType,
-  scopes?: ExportScope[],
-) {
+function buildEnvelopeBase(opts: ResolvedOptions, type: ExportType, scopes?: ExportScope[]) {
   return {
     schemaVersion: JSON_SCHEMA_VERSION,
     exportType: type,

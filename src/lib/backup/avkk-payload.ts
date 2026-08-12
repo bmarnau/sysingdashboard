@@ -330,9 +330,7 @@ export function validateAvkkPayload(
     if (current === undefined) {
       errors.push(`Referenzierter Katalog fehlt im Archiv: ${r.key}`);
     } else if (typeof r.version === "number" && current !== r.version) {
-      warnings.push(
-        `Katalog ${r.key}: gesichert in Version ${r.version}, Archivstand ${current}.`,
-      );
+      warnings.push(`Katalog ${r.key}: gesichert in Version ${r.version}, Archivstand ${current}.`);
     }
   }
 
@@ -439,7 +437,11 @@ export function validateAvkkPayload(
       requireString(row, "dimensionKey", where, errors),
       where,
     );
-    requireValueRef("avkk.competence_rating", requireString(row, "ratingKey", where, errors), where);
+    requireValueRef(
+      "avkk.competence_rating",
+      requireString(row, "ratingKey", where, errors),
+      where,
+    );
     if (typeof row.supportNeeded !== "boolean") {
       errors.push(`${where}: 'supportNeeded' muss ein Wahrheitswert sein.`);
     }

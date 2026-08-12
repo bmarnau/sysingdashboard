@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-08-10"
+lastUpdated: "2026-08-12"
 
 project:
   name: "Sysing Dashboard"
@@ -56,11 +56,11 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "07B"
-  currentSprintTitle: "AVKK-Datenbank, Reference Data, Services und RBAC/RLS"
+  currentSprint: "08B"
+  currentSprintTitle: "AVKK in Backup, Restore und JSON-Export"
   currentSprintStatus: "completed"
-  nextSprint: "08"
-  previousSprint: "07A"
+  nextSprint: "09"
+  previousSprint: "08"
   previousSprintStatus: "completed"
   releaseReadiness: "passed-with-findings"
   testsPassing: 381
@@ -218,6 +218,17 @@ completedSprints:
       Vitest-Suite; manueller Abnahmetest dokumentiert. Offen: AVKK ist nicht Teil
       von Backup/JSON-Export (Blocker Sprint 09).
 
+  - id: "08B"
+    title: "AVKK in Backup, Restore und JSON-Export"
+    version: "1.54.0"
+    status: "completed"
+    summary: >-
+      AVKK-Fuehrungsdaten und Katalogstand sind Teil jedes Backups (avkk.json,
+      reference-data.json) und des JSON-Exports (Schema 1.1.0). Restore prueft die
+      Daten vollstaendig, schreibt sie aber nicht in die Datenbank zurueck und
+      weist verwaiste Bezuege als Quarantaene aus. Loeschstrategie und drei
+      Sicherheitswarnungen bewertet und dokumentiert (ADR-0026).
+
 roadmap:
   - id: "06"
     title: "Produktive Supabase-Inbetriebnahme und persönliches Benutzerkonto"
@@ -236,7 +247,7 @@ roadmap:
       - "Inbetriebnahmebericht erstellt"
   - id: "08B"
     title: "AVKK in Backup, Export und Führungssicht"
-    status: "next"
+    status: "completed"
     priority: "high"
     goal: >-
       Serverseitige AVKK-Daten in Sicherung und Austauschformate aufnehmen und
@@ -386,6 +397,10 @@ adrs:
     status: "accepted"
     topic: "Technische Umsetzung von AVKK und Reference Data in Supabase"
     path: "docs/ADR/0025-avkk-umsetzung-07b.md"
+  - id: "ADR-0026"
+    status: "accepted"
+    topic: "Loeschstrategie, AVKK im Backup und bewertete Sicherheitswarnungen"
+    path: "docs/ADR/0026-loeschstrategie-und-avkk-backup.md"
 
 quality:
   tests:
