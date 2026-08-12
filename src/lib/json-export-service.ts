@@ -26,8 +26,10 @@ import {
   type DashboardJsonExport,
   type ExportScope,
   type ExportType,
+  type AvkkExport,
   type TimeEntryExport,
 } from "@/lib/json-schema";
+import type { AvkkBackupPayload } from "@/lib/backup/avkk-payload";
 import { UserManagementService, type UserProfile } from "@/lib/user-management";
 import { EngineerTargetTimeService } from "@/lib/engineer-target-time";
 import { dashboardData, type Activity, type Project, type WorkPackage } from "@/lib/dashboard-data";
@@ -47,9 +49,16 @@ export interface ExportOptions {
   includeSettings?: boolean;
   includeTimeEntries?: boolean;
   includeManualMeta?: boolean;
+  /**
+   * AVKK- und Katalogdaten. Werden vom Aufrufer bereitgestellt, weil sie aus
+   * dem Backend stammen und der Export synchron arbeitet.
+   */
+  avkk?: AvkkBackupPayload;
 }
 
-const DEFAULT_OPTIONS: Required<ExportOptions> = {
+type ResolvedOptions = Required<Omit<ExportOptions, "avkk">>;
+
+const DEFAULT_OPTIONS: ResolvedOptions = {
   exportedBy: "system",
   includeUsers: true,
   includeSettings: true,
@@ -196,8 +205,22 @@ function sanitizeUsers(users: UserProfile[]): UserProfile[] {
   return stripSensitiveFields(users) as UserProfile[];
 }
 
+/** Fasst AVKK-Daten und den zugehörigen Katalogstand zu einem Exportblock. */
+function buildAvkkBlock(payload: AvkkBackupPayload): AvkkExport {
+  return {
+    payloadVersion: payload.avkk.payloadVersion,
+    capturedAt: payload.avkk.capturedAt,
+    subjects: payload.avkk.subjects,
+    responsibilities: payload.avkk.responsibilities,
+    competences: payload.avkk.competences,
+    consequences: payload.avkk.consequences,
+    catalogRefs: payload.avkk.catalogRefs,
+    referenceValues: payload.referenceData.values,
+  };
+}
+
 function buildEnvelopeBase(
-  opts: Required<ExportOptions>,
+  opts: ResolvedOptions,
   type: ExportType,
   scopes?: ExportScope[],
 ) {
@@ -289,6 +312,7 @@ export const JsonExportService = {
       timeEntries,
       targetTimeModels: targetTimeModels as DashboardJsonExport["targetTimeModels"],
       settings,
+      avkk: options.avkk ? buildAvkkBlock(options.avkk) : undefined,
     };
 
     return finalizeExport(doc, "full");
@@ -333,6 +357,9 @@ export const JsonExportService = {
         break;
       case "settings":
         doc.settings = collectSettings();
+        break;
+      case "avkk":
+        if (options.avkk) doc.avkk = buildAvkkBlock(options.avkk);
         break;
     }
 
