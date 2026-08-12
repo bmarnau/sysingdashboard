@@ -41,7 +41,7 @@ async function replaceFile(bytes: Uint8Array, path: string, content: unknown): P
 
 describe("AVKK im Backup-Archiv", () => {
   it("prüft AVKK-Daten beim Restore, schreibt sie aber nicht zurück", async () => {
-    const zip = await buildValidBackupZipV2({ version: "2.0" });
+    const zip = await buildValidBackupZipV2();
     const res = await restoreFromZip(zip, {
       actor: "a",
       mode: "overwrite",
@@ -61,7 +61,7 @@ describe("AVKK im Backup-Archiv", () => {
   });
 
   it("stellt verwaiste AVKK-Datensätze unter Quarantäne", async () => {
-    const zip = await buildValidBackupZipV2({ version: "2.0" });
+    const zip = await buildValidBackupZipV2();
     const res = await restoreFromZip(zip, {
       actor: "a",
       mode: "overwrite",
@@ -75,7 +75,7 @@ describe("AVKK im Backup-Archiv", () => {
   it("weist ein Archiv mit unbekanntem Katalogwert ab", async () => {
     const fixture = avkkFixture();
     (fixture.avkk.responsibilities as Array<{ roleKey: string }>)[0].roleKey = "does-not-exist";
-    const base = await buildValidBackupZipV2({ version: "2.0", avkk: fixture });
+    const base = await buildValidBackupZipV2({ avkk: fixture });
     const zip = await replaceFile(base, "avkk.json", fixture.avkk);
     const res = await restoreFromZip(zip, { actor: "a", mode: "overwrite" });
     expect(res.ok).toBe(false);
@@ -83,7 +83,7 @@ describe("AVKK im Backup-Archiv", () => {
   });
 
   it("weist ein Archiv ohne zugehörigen Katalogstand ab", async () => {
-    const base = await buildValidBackupZipV2({ version: "2.0" });
+    const base = await buildValidBackupZipV2();
     const zip = unzipSync(base);
     delete zip["reference-data.json"];
     const manifest = JSON.parse(new TextDecoder().decode(zip["manifest.json"])) as {
@@ -100,7 +100,7 @@ describe("AVKK im Backup-Archiv", () => {
   });
 
   it("bleibt kompatibel zu Archiven ohne AVKK-Daten", async () => {
-    const zip = await buildValidBackupZipV2({ version: "2.0", avkk: null });
+    const zip = await buildValidBackupZipV2({ avkk: null });
     const res = await restoreFromZip(zip, { actor: "a", mode: "overwrite" });
     expect(res.ok).toBe(true);
     expect(res.avkk.present).toBe(false);
