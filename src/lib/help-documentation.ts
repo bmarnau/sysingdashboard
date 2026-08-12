@@ -1055,8 +1055,17 @@ Aus der Browser-App heraus kann der Projekt-Quellcode nicht gesichert werden. De
 ## Sicherheit
 Schlüssel mit Hinweisen auf Passwörter, Tokens, API-Keys oder JWTs werden vor dem Packen ausgeschlossen und niemals ins ZIP geschrieben.
 
+## AVKK und Kataloge im Backup (seit 1.54.0)
+Jedes Archiv enthält zusätzlich \`avkk.json\` (AVKK-Führungsdaten) und \`reference-data.json\` (Katalogstand zum Sicherungszeitpunkt). Beide sind reguläre Manifest-Einträge mit Prüfsumme.
+
+**Wichtige Grenze:** Beim Wiederherstellen werden diese Daten vollständig geprüft (Pflichtfelder, eindeutige Kennungen, Bezüge, bekannte Katalogwerte, Katalogversionen), aber **nicht** in die Datenbank zurückgeschrieben. Der Restore arbeitet ausschließlich lokal. Für einen Verlust der Cloud-Daten ist eine Datenbankwiederherstellung nötig.
+
+Datensätze, deren Aufgabe im lokalen Bestand fehlt, erscheinen im Restore-Bericht als **Quarantäne** mit Begründung. Sind AVKK-Daten beschädigt oder verweisen sie auf unbekannte Katalogwerte, wird der gesamte Restore vor jedem Schreibvorgang abgelehnt.
+
+Konnten AVKK-Daten beim Sichern nicht geladen werden (offline, fehlende Berechtigung), bleibt das Backup gültig — der Grund steht als Warnung im Backup-Protokoll.
+
 ## JSON-Komplett-Export (zusätzlich)
-Im Bereich „Service → Import / Export → Backup" steht zusätzlich ein JSON-Komplett-Export bereit (Dateiname \`dashboard-backup_YYYY-MM-DD_HHMMSS.json\`). Er nutzt Schema v1 und erscheint im Downloadbereich. Das tägliche automatische ZIP-Backup bleibt unverändert der Standard.`,
+Im Bereich „Service → Import / Export → Backup" steht zusätzlich ein JSON-Komplett-Export bereit (Dateiname \`dashboard-backup_YYYY-MM-DD_HHMMSS.json\`). Er nutzt Schema v1.1.0 (zusätzlicher optionaler Block \`avkk\` mit Führungsdaten und Katalogwerten, nur für Benutzer mit \`avkk.view\`) und erscheint im Downloadbereich. Das tägliche automatische ZIP-Backup bleibt unverändert der Standard.`,
   },
   {
     id: "downloads",
