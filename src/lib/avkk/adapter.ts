@@ -372,10 +372,7 @@ export async function updateSubjectStatus(
 }
 
 /** Legt alle aktuellen Kompetenzbewertungen eines Sachverhalts still. */
-export async function supersedeAllCompetences(
-  subjectRef: string,
-  actorId: string,
-): Promise<void> {
+export async function supersedeAllCompetences(subjectRef: string, actorId: string): Promise<void> {
   const { error } = await supabase
     .from("avkk_competence")
     .update({ superseded_at: new Date().toISOString(), updated_by: actorId })
@@ -385,10 +382,7 @@ export async function supersedeAllCompetences(
 }
 
 /** Legt alle aktuellen Konsequenzen eines Sachverhalts still. */
-export async function supersedeAllConsequences(
-  subjectRef: string,
-  actorId: string,
-): Promise<void> {
+export async function supersedeAllConsequences(subjectRef: string, actorId: string): Promise<void> {
   const { error } = await supabase
     .from("avkk_consequence")
     .update({ superseded_at: new Date().toISOString(), updated_by: actorId })

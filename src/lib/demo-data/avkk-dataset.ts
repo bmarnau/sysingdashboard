@@ -12,7 +12,7 @@
 
 import type { AvkkSubjectType } from "@/lib/avkk/types";
 
-export type DemoAvkkCaseId = "A" | "B" | "C" | "D" | "E" | "F" | "G";
+export type DemoAvkkCaseId = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
 
 export interface DemoCompetenceRating {
   dimensionKey: string;
@@ -48,7 +48,7 @@ export interface DemoAvkkCase {
   expectedAtRisk: boolean;
 }
 
-export const DEMO_AVKK_VERSION = "1.0.0";
+export const DEMO_AVKK_VERSION = "1.1.0";
 
 export const demoAvkkCases: DemoAvkkCase[] = [
   {
@@ -256,6 +256,43 @@ export const demoAvkkCases: DemoAvkkCase[] = [
         severityKey: "critical",
         scheduleImpactKey: "project_stop",
         description: "Ohne belastbaren Wiederanlauf ist die Abnahme des Projekts nicht möglich.",
+      },
+    ],
+    expectedAtRisk: true,
+  },
+  {
+    caseId: "H",
+    situation: "Wissens- und Informationslücke — Fachwissen fehlt, Vorgaben nicht verfügbar",
+    subjectType: "project",
+    subjectId: "demo-prj-netzwerk",
+    title: "Netzwerkmodernisierung",
+    responsibility: {
+      roleKey: "owner",
+      typeKeys: ["result", "communication"],
+      note: "Ergebnisverantwortung zugeordnet, fachliche Vorgaben des Kunden fehlen.",
+    },
+    competences: [
+      {
+        dimensionKey: "knowledge",
+        ratingKey: "missing",
+        supportNeeded: true,
+        note: "Fachwissen zur neuen Firewall-Plattform ist nicht vorhanden.",
+      },
+      {
+        dimensionKey: "experience",
+        ratingKey: "missing",
+        note: "Information fehlt: Kunde hat die Zielarchitektur nicht freigegeben.",
+      },
+      { dimensionKey: "support", ratingKey: "partial", supportNeeded: true },
+      { dimensionKey: "time", ratingKey: "available" },
+    ],
+    consequences: [
+      {
+        areaKey: "project",
+        severityKey: "high",
+        scheduleImpactKey: "delay",
+        description:
+          "Ohne Fachwissen und freigegebene Zielarchitektur kann die Umsetzung nicht starten.",
       },
     ],
     expectedAtRisk: true,

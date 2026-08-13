@@ -3,7 +3,7 @@
   "sections": {
     "auth": {
       "status": "passed-with-findings",
-      "evidence": "e2e/specs/navigation.spec.ts, test-report/security-report.md, docs/adr/ADR-0013-security-release-gate.md",
+      "evidence": "e2e/specs/navigation.spec.ts, test-report/security-report.md, docs/ADR/0013-security-release-gate.md",
       "note": "Login, Logout, Session-Wiederherstellung, Redirect-Sicherheit umgesetzt. Realer Published-Login gegen Supabase außerhalb der CI verifiziert (Sprint 03B)."
     },
     "rls": {

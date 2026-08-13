@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-08-12"
+lastUpdated: "2026-08-13"
 
 project:
   name: "Sysing Dashboard"
@@ -46,7 +46,7 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.57.0"
+  dashboard: "1.58.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -56,8 +56,8 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "09"
-  currentSprintTitle: "AVKK-Management-Cockpit und Fuehrungssicht"
+  currentSprint: "09B"
+  currentSprintTitle: "MVP-Gesamtabnahme und Release Candidate"
   currentSprintStatus: "completed"
   nextSprint: "09A"
   previousSprint: "08B"
@@ -151,6 +151,11 @@ phases:
       - "AVKK als Führungsmodell dokumentiert (docs/AVKK.md, ADR-0024)"
 
 completedSprints:
+  - id: "09B"
+    title: "MVP-Gesamtabnahme und Release Candidate"
+    version: "1.58.0"
+    status: "completed"
+    summary: "Demo-Datensatz vervollstaendigt, ADRs konsolidiert, SYSING-001 ausgebaut, MVP-Abnahmebericht mit Freigabeentscheidung erstellt."
   - id: "05"
     title: "Architektur-Refactoring"
     version: "1.44.0"
@@ -369,11 +374,11 @@ adrs:
   - id: "ADR-0019"
     status: "accepted"
     topic: "Modularisierung großer UI-Module"
-    path: "docs/adr/ADR-0019*"
+    path: "docs/ADR/0019*"
   - id: "ADR-0020"
     status: "accepted-with-limitations"
     topic: "Konfigurierbare automatische Abmeldung"
-    path: "docs/adr/ADR-0020*"
+    path: "docs/ADR/0020*"
   - id: "ADR-0021"
     status: "accepted"
     topic: "Modularisierung Backup-Service"
@@ -424,7 +429,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.57.0"
+  currentRelease: "1.58.0"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
@@ -436,6 +441,8 @@ releaseManagement:
     - "docs/ENTWICKLUNGSTAGEBUCH.md"
     - "docs/ARCHITECTURE.md"
     - "docs/ADR/0023-phasenmodell-infrastrukturabschluss.md"
+    - "docs/MVP-ACCEPTANCE-REPORT.md"
+    - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.0.md"
   nextReleaseTarget: "Sprint 06 completion (Phase 2 Start)"
 
 risks:

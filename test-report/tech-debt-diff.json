@@ -1,12 +1,7 @@
 {
-  "new": [
-    "td-layer-d1e551ce"
-  ],
-  "resolved": [
-    "td-layer-9275d7a1",
-    "td-oversize-789d61fa"
-  ],
-  "persistent": 57,
-  "previousVersion": "1.44.0",
-  "currentVersion": "1.48.0"
+  "new": [],
+  "resolved": [],
+  "persistent": 59,
+  "previousVersion": "1.57.0",
+  "currentVersion": "1.58.0"
 }

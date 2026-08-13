@@ -120,6 +120,18 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
           </Badge>
         </div>
 
+        <p
+          role="alert"
+          className="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-xs font-medium text-destructive"
+        >
+          <ShieldAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          <span>
+            Nicht auf Produktivinstanzen ausführen. AVKK-Demofälle werden historisiert und können
+            nicht gelöscht, sondern nur stillgelegt werden. Eine Instanz mit eingespielten Demodaten
+            gilt ohne Neuaufbau nicht mehr als saubere Produktivinstanz.
+          </span>
+        </p>
+
         <section className="space-y-2 rounded-lg border border-border p-4">
           <h3 className="text-sm font-semibold">Lokaler Bestand</h3>
           <p className="text-xs text-muted-foreground">
@@ -139,9 +151,10 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
         <section className="space-y-2 rounded-lg border border-border p-4">
           <h3 className="text-sm font-semibold">AVKK-Abnahmefälle (Datenbank)</h3>
           <p className="text-xs text-muted-foreground">
-            Sieben zusammenhängende Fälle: unkritisch, gefährdet, kritisch, überfällig,
-            Voraussetzungslücke, hohe Kundenkonsequenz, hohe Terminwirkung. Das Einspielen läuft
-            unter Ihren Berechtigungen — es werden keine fremden Daten verändert.
+            Acht zusammenhängende Fälle: unkritisch, gefährdet, kritisch, überfällig,
+            Voraussetzungslücke, Wissens-/Informationslücke, hohe Kundenkonsequenz, hohe
+            Terminwirkung. Das Einspielen läuft unter Ihren Berechtigungen — es werden keine fremden
+            Daten verändert.
           </p>
           <p className="flex items-start gap-2 rounded-md bg-secondary/50 p-2 text-xs">
             <ShieldAlert className="mt-0.5 size-4 shrink-0 opacity-70" aria-hidden="true" />

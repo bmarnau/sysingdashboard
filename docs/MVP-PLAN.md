@@ -49,7 +49,7 @@ Der MVP umfasst mindestens:
 
 Bis zur MVP-Freigabe wird das Dokument
 
-`docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.1.0.md`
+`docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.0.md`
 
 als Living Document gepflegt.
 

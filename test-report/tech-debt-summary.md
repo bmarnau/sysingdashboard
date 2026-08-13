@@ -1,16 +1,16 @@
 # Management-Zusammenfassung — Technical Debt
 
-**Version 1.48.0** · 2026-08-05
+**Version 1.58.0** · 2026-08-13
 
 | Kategorie | Wert |
 | --------- | ---- |
-| Findings gesamt | 58 |
+| Findings gesamt | 59 |
 | Critical | 0 |
-| High | 1 |
-| Medium | 7 |
-| Low + Info | 50 |
-| Neu seit Vorlauf | 1 |
-| Behoben seit Vorlauf | 2 |
+| High | 2 |
+| Medium | 6 |
+| Low + Info | 51 |
+| Neu seit Vorlauf | 0 |
+| Behoben seit Vorlauf | 0 |
 
 ## Top-10 nach Priorität
 
@@ -22,8 +22,8 @@
 6. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry) — `src/start.ts:13` (`td-console-08e8609a`)
 7. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase) — `src/integrations/supabase/auth-middleware.ts:45` (`td-console-2c49302b`)
 8. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase) — `src/integrations/supabase/client.ts:54` (`td-console-43084e7a`)
-9. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase) — `src/integrations/supabase/client.server.ts:42` (`td-console-665c1d8d`)
-10. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry) — `src/server.ts:68` (`td-console-6c701bbd`)
+9. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry) — `src/server.ts:68` (`td-console-6c701bbd`)
+10. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry) — `src/server.ts:79` (`td-console-74bd3646`)
 
 ## Interpretation
 
