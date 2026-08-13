@@ -6,6 +6,7 @@ export {
   registerSubjectResolver,
   createSubject,
   listSubjects,
+  listDossiers,
   assignResponsibility,
   rateCompetence,
   addConsequence,
