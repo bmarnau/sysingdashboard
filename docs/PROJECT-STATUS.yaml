@@ -152,6 +152,11 @@ phases:
 
 completedSprints:
   - id: "09C"
+    title: "Nachpruefung F-11 Mehrbenutzer-Demoszenario"
+    version: "1.58.3"
+    status: "completed"
+    summary: "Demo-Datensatz auf vier fiktive Personen verteilt, Kontozuordnung im Demo-Dialog, Mehrbenutzer-Abnahmematrix und Scope-Grenzen als Befunde dokumentiert."
+  - id: "09C"
     title: "MVP Hardening und manuelle Abnahme"
     version: "1.58.2"
     status: "completed"
@@ -434,7 +439,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.58.2"
+  currentRelease: "1.58.3"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
