@@ -34,6 +34,7 @@ describe("redact", () => {
 
   it("should_maskConnectionStringsInAnyField", () => {
     // SEC-HIGH-LOG-001 – Werte werden auch dann maskiert, wenn der Feldname harmlos ist.
+    // security-scan-allow: azure-storage-conn (synthetischer Testwert, kein echtes Secret)
     const azureConn =
       "DefaultEndpointsProtocol=https;AccountName=demo;AccountKey=aGVsbG9zZWNyZXQ=;EndpointSuffix=core.windows.net";
     const pgConn = "postgresql://user:supersecret@db.internal:5432/app";
