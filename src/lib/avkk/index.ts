@@ -44,3 +44,34 @@ export type {
   AvkkSubjectType,
   RiskThreshold,
 } from "./types";
+
+export {
+  ACTION_CATEGORIES,
+  ACTION_LABELS,
+  ACTION_RULES,
+  CRITICAL_SEVERITY_RANK,
+  HIGH_SEVERITY_RANK,
+  MANAGEMENT_SNAPSHOT_VERSION,
+  PRIORITY_RULE,
+  aggregateCompetenceGaps,
+  aggregateConsequences,
+  aggregateResponsibility,
+  buildActionGroups,
+  buildManagementSnapshot,
+  buildManagementSummary,
+  filterManagementRows,
+  matchesAction,
+  prioritize,
+  riskDistribution,
+  severityDistribution,
+} from "./management";
+export type {
+  ActionCategory,
+  ActionGroup,
+  CompetenceGap,
+  ConsequenceGroup,
+  ManagementFilter,
+  ManagementSnapshot,
+  ManagementSummary,
+  ResponsibilityOverview,
+} from "./management";
