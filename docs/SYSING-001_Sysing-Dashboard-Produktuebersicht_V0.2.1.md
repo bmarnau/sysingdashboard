@@ -7,10 +7,11 @@
 - **subtitle:** Idee, Funktionen, Nutzen, Schnittstellen und Automatisierung
 - **document_type:** Produkt- und Managementübersicht (Living Document)
 - **owner:** Projekt Sysing Dashboard
-- **version:** 0.2.0
+- **version:** 0.2.1
 - **release_date:** 2026-08-13
 - **source_review_date:** 2026-08-13
-- **release_candidate:** Dashboard v1.58.0 (Sprint 09B, MVP Release Candidate)
+- **ausgabeformate:** PDF und Word werden mit `node scripts/docs/build-sysing-001.mjs` aus dieser Markdown-Quelle erzeugt
+- **release_candidate:** Dashboard v1.58.2 (Sprint 09C, MVP Release Candidate)
 - **classification:** intern
 
 ## 0. Lesehinweis und Kennzeichnung

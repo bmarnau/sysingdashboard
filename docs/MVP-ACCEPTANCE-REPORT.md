@@ -197,7 +197,7 @@ Auflagen für die Freigabe:
 
 `test-report/technical-test-report.json`, `test-report/tech-debt.json`,
 `test-report/ops-report.md`, `security-report/findings.json`,
-`docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.0.md`,
+`docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md`,
 `docs/DEMO-DATA.md`, `docs/AVKK-MANUAL-ACCEPTANCE.md`,
 `docs/AVKK-MANAGEMENT-MANUAL-ACCEPTANCE.md`, `docs/PRINT-VERIFICATION.md`,
 `docs/ADR/README.md`, `CHANGELOG.md`, `docs/PROJECT-STATUS.yaml`.
