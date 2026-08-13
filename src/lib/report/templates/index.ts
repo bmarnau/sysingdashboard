@@ -28,5 +28,9 @@ export async function resolveTemplate(templateId: string): Promise<ReportTemplat
 }
 
 export { DEFAULT_TEMPLATE, DEFAULT_TEMPLATE_ID, defaultTemplateProvider };
-export { filesystemTemplateProvider, setTemplateBase, getTemplateBase } from "./filesystem-provider";
+export {
+  filesystemTemplateProvider,
+  setTemplateBase,
+  getTemplateBase,
+} from "./filesystem-provider";
 export type { ReportTemplate, TemplateProvider } from "./types";

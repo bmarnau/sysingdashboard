@@ -18,7 +18,11 @@ import {
 import type { AvkkRow } from "@/lib/avkk/workspace";
 import { DEFAULT_TEMPLATE_ID } from "../templates/default-provider";
 import type { ReportContext, ReportDefinition, ReportDocument, ReportSection } from "../types";
-import { selectPersonalRows, selectProjectRows, type AvkkReportInput } from "../data/avkk-selectors";
+import {
+  selectPersonalRows,
+  selectProjectRows,
+  type AvkkReportInput,
+} from "../data/avkk-selectors";
 
 const DUE_LABEL: Record<AvkkRow["dueState"], string> = {
   none: "—",
@@ -234,7 +238,13 @@ export const avkkProjectReport: ReportDefinition<AvkkReportInput> = {
         const row = rows.find(
           (r) => r.task.subjectType === "workpackage" && r.task.subjectId === w.id,
         );
-        return [w.title, w.status, w.priority, w.due ?? "—", row ? statusText(row) : "nicht erfasst"];
+        return [
+          w.title,
+          w.status,
+          w.priority,
+          w.due ?? "—",
+          row ? statusText(row) : "nicht erfasst",
+        ];
       }),
       emptyText: "Keine Arbeitspakete im Projekt",
     };

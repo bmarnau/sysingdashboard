@@ -105,7 +105,7 @@ export function ReportDialog({
         rows: avkk.rows,
         projects,
         workPackages,
-        projectId: needsProject ? (projectId || null) : null,
+        projectId: needsProject ? projectId || null : null,
         personId: user?.id ?? null,
         scopeLabel: needsProject
           ? (project?.name ?? "Alle Projekte")

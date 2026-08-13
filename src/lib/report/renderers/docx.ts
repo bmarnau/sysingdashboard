@@ -30,7 +30,10 @@ const MARGIN = 1134; // 2 cm
 const CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN;
 
 const hex = (c: [number, number, number]) =>
-  c.map((v) => v.toString(16).padStart(2, "0")).join("").toUpperCase();
+  c
+    .map((v) => v.toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase();
 
 const cellBorder = { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" };
 const cellBorders = { top: cellBorder, bottom: cellBorder, left: cellBorder, right: cellBorder };
@@ -108,9 +111,13 @@ export async function renderDocx(
   const primary = hex(template.brand.primary);
   const children: Array<Paragraph | Table> = [];
 
-  children.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun(document.title)] }));
+  children.push(
+    new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun(document.title)] }),
+  );
   if (document.subtitle) {
-    children.push(new Paragraph({ children: [new TextRun({ text: document.subtitle, italics: true })] }));
+    children.push(
+      new Paragraph({ children: [new TextRun({ text: document.subtitle, italics: true })] }),
+    );
   }
   const metaWidths = columnWidths(2);
   children.push(
@@ -161,7 +168,10 @@ export async function renderDocx(
     } else {
       if (section.title) {
         children.push(
-          new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun(section.title)] }),
+          new Paragraph({
+            heading: HeadingLevel.HEADING_2,
+            children: [new TextRun(section.title)],
+          }),
         );
       }
       for (const paragraph of section.paragraphs) {

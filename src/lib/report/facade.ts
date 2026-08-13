@@ -106,5 +106,13 @@ export async function renderReport<TInput>(
       throw new Error(`Renderer fehlt für Format ${request.format}`);
   }
 
-  return { fileName, mimeType: MIME[request.format], format: request.format, blob, html, document, metadata };
+  return {
+    fileName,
+    mimeType: MIME[request.format],
+    format: request.format,
+    blob,
+    html,
+    document,
+    metadata,
+  };
 }
