@@ -23,6 +23,33 @@ export interface AvkkTask {
 
 export type AvkkDueState = "none" | "upcoming" | "due" | "overdue";
 
+/** Verdichtete Verantwortungsangabe einer Zeile (keine Personenbewertung). */
+export interface AvkkRowResponsibility {
+  personId: string;
+  roleKey: string;
+  roleLabel: string;
+  typeKeys: string[];
+  typeLabels: string[];
+}
+
+export interface AvkkRowCompetence {
+  dimensionKey: string;
+  dimensionLabel: string;
+  ratingKey: string;
+  ratingLabel: string;
+  supportNeeded: boolean;
+}
+
+export interface AvkkRowConsequence {
+  areaKey: string;
+  areaLabel: string;
+  severityKey: string;
+  severityLabel: string;
+  severityRank: number;
+  scheduleImpactKey: string;
+  scheduleImpactLabel: string;
+}
+
 export interface AvkkRow {
   key: string;
   task: AvkkTask;
