@@ -56,11 +56,11 @@ AVKK-Datensätzen sind immer ein Fehler.
 
 ## Bewertete Sicherheitswarnungen
 
-| Warnung | Bewertung | Begründung |
-| --- | --- | --- |
-| `avkk_subject` ohne DELETE-Policy | accepted | Löschen ist fachlich ausgeschlossen (Punkt 1). Kein Grant, keine Policy — konsistent. |
-| `reference_catalog`/`reference_value` ohne DELETE-Policy | accepted | Katalogwerte werden deaktiviert (`is_active = false`, `valid_to`), nie entfernt. |
-| `app_settings` für alle angemeldeten Benutzer lesbar | accepted | Inhalt ist reine Laufzeitkonfiguration (`idle_timeout_minutes`, `avkk.risk_threshold`), die jede angemeldete Sitzung zur Darstellung benötigt. Schreiben bleibt auf Administratoren beschränkt und wird auditiert. Es dürfen dort **keine** Secrets abgelegt werden. |
+| Warnung                                                  | Bewertung | Begründung                                                                                                                                                                                                                                                           |
+| -------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `avkk_subject` ohne DELETE-Policy                        | accepted  | Löschen ist fachlich ausgeschlossen (Punkt 1). Kein Grant, keine Policy — konsistent.                                                                                                                                                                                |
+| `reference_catalog`/`reference_value` ohne DELETE-Policy | accepted  | Katalogwerte werden deaktiviert (`is_active = false`, `valid_to`), nie entfernt.                                                                                                                                                                                     |
+| `app_settings` für alle angemeldeten Benutzer lesbar     | accepted  | Inhalt ist reine Laufzeitkonfiguration (`idle_timeout_minutes`, `avkk.risk_threshold`), die jede angemeldete Sitzung zur Darstellung benötigt. Schreiben bleibt auf Administratoren beschränkt und wird auditiert. Es dürfen dort **keine** Secrets abgelegt werden. |
 
 ## Konsequenzen
 

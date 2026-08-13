@@ -1,22 +1,31 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-07-24T05:45:52.938Z",
-  "dashboardVersion": "1.41.3",
-  "commit": "452e517",
+  "generatedAt": "2026-08-13T04:48:06.366Z",
+  "dashboardVersion": "1.58.0",
+  "commit": "88cde9a",
   "counts": {
-    "total": 2,
+    "total": 3,
     "tested": 2,
     "passed": 2,
     "failed": 0,
-    "skipped": 0,
+    "skipped": 1,
     "notImplemented": 0,
     "notConfigured": 0,
     "unclassified": 0,
-    "withoutAuthTest": 1,
-    "withoutValidationTest": 1,
-    "withoutSchemaCheck": 0
+    "withoutAuthTest": 2,
+    "withoutValidationTest": 2,
+    "withoutSchemaCheck": 1
   },
   "results": [
+    {
+      "endpointId": "api-public-auth-config",
+      "path": "/api/public/auth-config",
+      "method": "GET",
+      "classification": "public",
+      "status": "skipped",
+      "scenarios": [],
+      "reason": "no smoke test executed"
+    },
     {
       "endpointId": "status",
       "method": "GET",
@@ -49,7 +58,7 @@
           "detail": "status=405"
         }
       ],
-      "duration": 520.1600719999997,
+      "duration": 1917.4170279999998,
       "path": "/api/status",
       "classification": "public"
     },
@@ -97,7 +106,7 @@
           "detail": "status=401"
         }
       ],
-      "duration": 87.4284430000007,
+      "duration": 444.21608899999956,
       "path": "/api/sync",
       "classification": "privileged"
     }

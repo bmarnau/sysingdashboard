@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.1 - 2026-08-13
+
+- **MVP-Abnahme final**: Abnahmebericht auf den tatsächlichen Release-Candidate-Stand gebracht — getrennter RBAC-/RLS-Nachweis, Backup-Restore-Entscheidung (ACCEPTED FOR MVP), Cross-Format-Konsistenz, Portabilitäts- und Security-Abschluss, vollständige ADR-Übersicht.
+- **Prüfwerkzeuge korrigiert**: Der API-Discovery-Prüfer erkennt jetzt auch mehrzeilig formatierte Zod-Schemata; der Zyklus-Prüfer ignoriert generierte Dateien. Beide meldeten bisher Fehlalarme.
+- **Offene Punkte transparent**: Manuelle Rollenabnahme und fehlende Word-Fassung von SYSING-001 sind als eigene Befunde dokumentiert.
+
 ## 1.58.0 - 2026-08-13
 
 - **MVP-Abnahme**: Zentraler Abnahmebericht `docs/MVP-ACCEPTANCE-REPORT.md` mit Release-Candidate-Definition, Qualitätstoren, Befundmatrix und Freigabeentscheidung.

@@ -16,3 +16,4 @@ e2e/reports
 # Agenten-/Workspace-Metadaten
 .lovable
 .workspace
+src/integrations/supabase/types.ts

@@ -20,15 +20,15 @@ Aufbewahrung und eigener Erhebung. Sie verändert AVKK-Daten nicht.
 
 ## 2. Vorgesehene Indikatoren
 
-| Indikator | Bedeutung | Erhebung |
-| --- | --- | --- |
-| Arbeitsbelastung | subjektive Auslastung im Bezugszeitraum | Selbstauskunft |
-| Zeitdruck | empfundener Termindruck | Selbstauskunft |
-| Teamunterstützung | Verfügbarkeit fachlicher Hilfe | Selbstauskunft |
-| Informationslage | Klarheit von Auftrag und Vorgaben | Selbstauskunft |
-| Ressourcenlage | Material, Werkzeuge, Budget, Zugänge | Selbstauskunft |
-| Eskalationsgrad | bereits eskalierte Sachverhalte | abgeleitet aus AVKK |
-| Kundenzufriedenheit | Rückmeldung aus dem Projektumfeld | Fremdauskunft |
+| Indikator           | Bedeutung                               | Erhebung            |
+| ------------------- | --------------------------------------- | ------------------- |
+| Arbeitsbelastung    | subjektive Auslastung im Bezugszeitraum | Selbstauskunft      |
+| Zeitdruck           | empfundener Termindruck                 | Selbstauskunft      |
+| Teamunterstützung   | Verfügbarkeit fachlicher Hilfe          | Selbstauskunft      |
+| Informationslage    | Klarheit von Auftrag und Vorgaben       | Selbstauskunft      |
+| Ressourcenlage      | Material, Werkzeuge, Budget, Zugänge    | Selbstauskunft      |
+| Eskalationsgrad     | bereits eskalierte Sachverhalte         | abgeleitet aus AVKK |
+| Kundenzufriedenheit | Rückmeldung aus dem Projektumfeld       | Fremdauskunft       |
 
 Skalen sind Katalogwerte des Reference-Data-Dienstes (kein Code-Enum), damit
 Bedeutung und Version nachvollziehbar bleiben.
@@ -52,12 +52,12 @@ Bedeutung und Version nachvollziehbar bleiben.
 
 ## 4. Vorgesehene Berechtigungen
 
-| Recht | Bedeutung |
-| --- | --- |
-| `avkk.context.submit` | eigene Kontextwerte melden |
-| `avkk.context.view.own` | eigene Meldungen einsehen |
+| Recht                          | Bedeutung                                  |
+| ------------------------------ | ------------------------------------------ |
+| `avkk.context.submit`          | eigene Kontextwerte melden                 |
+| `avkk.context.view.own`        | eigene Meldungen einsehen                  |
 | `avkk.context.view.aggregated` | aggregierte Kontextlage in Führungssichten |
-| `avkk.context.manage` | Katalog- und Erhebungsparameter pflegen |
+| `avkk.context.manage`          | Katalog- und Erhebungsparameter pflegen    |
 
 Ein Recht auf Einzelwerte anderer Personen ist **nicht** vorgesehen.
 

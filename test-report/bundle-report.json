@@ -1,0 +1,307 @@
+{
+  "generatedAt": "2026-08-13T04:47:19.825Z",
+  "totals": {
+    "totalKB": 11012,
+    "entryKB": 10903.7,
+    "lazyKB": 0
+  },
+  "counts": {
+    "files": 221,
+    "entryChunks": 219,
+    "lazyChunks": 0
+  },
+  "topChunks": [
+    {
+      "path": "client/assets/pdf.worker.min-qwK7q_zL.mjs",
+      "kb": 1021.7
+    },
+    {
+      "path": "server/_libs/pdfjs-dist.mjs",
+      "kb": 759.1
+    },
+    {
+      "path": "client/assets/index-CHkUw3H5.js",
+      "kb": 649.8
+    },
+    {
+      "path": "server/_libs/docx.mjs",
+      "kb": 647.9
+    },
+    {
+      "path": "server/_ssr/dashboard-ftenry-e.mjs",
+      "kb": 596.7
+    },
+    {
+      "path": "server/_libs/react-dom.mjs",
+      "kb": 487.5
+    },
+    {
+      "path": "client/assets/dashboard-CIaXziPg.js",
+      "kb": 470
+    },
+    {
+      "path": "server/_libs/jspdf.mjs",
+      "kb": 465.2
+    },
+    {
+      "path": "client/assets/PdfCanvasViewer-2t6efsQs.js",
+      "kb": 416.4
+    },
+    {
+      "path": "client/assets/jspdf.plugin.autotable-BQD1ZLIs.js",
+      "kb": 400.5
+    },
+    {
+      "path": "client/assets/ReportDialog-oGh9qlUn.js",
+      "kb": 371
+    },
+    {
+      "path": "server/_libs/html2canvas.mjs",
+      "kb": 341.3
+    },
+    {
+      "path": "server/_libs/supabase__auth-js.mjs",
+      "kb": 296.1
+    },
+    {
+      "path": "server/_ssr/TechnicalReportDialog-QigRgn3k.mjs",
+      "kb": 280
+    },
+    {
+      "path": "client/assets/TechnicalReportDialog-DgOi84ft.js",
+      "kb": 245.2
+    },
+    {
+      "path": "client/assets/html2canvas.esm-DXEQVQnt.js",
+      "kb": 196.3
+    },
+    {
+      "path": "server/_libs/tanstack__router-core.mjs",
+      "kb": 167.4
+    },
+    {
+      "path": "server/_libs/canvg.mjs",
+      "kb": 157.1
+    },
+    {
+      "path": "client/assets/index.es-D-sjQNQA.js",
+      "kb": 155.3
+    },
+    {
+      "path": "server/_libs/core-js.mjs",
+      "kb": 147.2
+    }
+  ],
+  "heavyInEntry": [],
+  "duplicates": [
+    {
+      "name": "js-tokens",
+      "majors": [
+        "4",
+        "10"
+      ]
+    },
+    {
+      "name": "lru-cache",
+      "majors": [
+        "5",
+        "11"
+      ]
+    },
+    {
+      "name": "eslint-visitor-keys",
+      "majors": [
+        "3",
+        "5",
+        "4"
+      ]
+    },
+    {
+      "name": "ajv",
+      "majors": [
+        "6",
+        "8"
+      ]
+    },
+    {
+      "name": "json-schema-traverse",
+      "majors": [
+        "0",
+        "1"
+      ]
+    },
+    {
+      "name": "globals",
+      "majors": [
+        "14",
+        "15"
+      ]
+    },
+    {
+      "name": "@open-draft/deferred-promise",
+      "majors": [
+        "2",
+        "3"
+      ]
+    },
+    {
+      "name": "supports-color",
+      "majors": [
+        "10",
+        "7"
+      ]
+    },
+    {
+      "name": "chalk",
+      "majors": [
+        "5",
+        "4"
+      ]
+    },
+    {
+      "name": "zod",
+      "majors": [
+        "4",
+        "3"
+      ]
+    },
+    {
+      "name": "@types/node",
+      "majors": [
+        "22",
+        "25"
+      ]
+    },
+    {
+      "name": "ignore",
+      "majors": [
+        "7",
+        "5"
+      ]
+    },
+    {
+      "name": "minimatch",
+      "majors": [
+        "10",
+        "3"
+      ]
+    },
+    {
+      "name": "brace-expansion",
+      "majors": [
+        "5",
+        "1"
+      ]
+    },
+    {
+      "name": "balanced-match",
+      "majors": [
+        "4",
+        "1"
+      ]
+    },
+    {
+      "name": "semver",
+      "majors": [
+        "7",
+        "6"
+      ]
+    },
+    {
+      "name": "ansi-regex",
+      "majors": [
+        "5",
+        "6"
+      ]
+    },
+    {
+      "name": "ansi-styles",
+      "majors": [
+        "4",
+        "5",
+        "6"
+      ]
+    },
+    {
+      "name": "cliui",
+      "majors": [
+        "8",
+        "9"
+      ]
+    },
+    {
+      "name": "undici-types",
+      "majors": [
+        "7",
+        "6"
+      ]
+    },
+    {
+      "name": "emoji-regex",
+      "majors": [
+        "8",
+        "10"
+      ]
+    },
+    {
+      "name": "pako",
+      "majors": [
+        "2",
+        "1"
+      ]
+    },
+    {
+      "name": "nanoid",
+      "majors": [
+        "5",
+        "3"
+      ]
+    },
+    {
+      "name": "react-is",
+      "majors": [
+        "17",
+        "16",
+        "18"
+      ]
+    },
+    {
+      "name": "yargs",
+      "majors": [
+        "18",
+        "17"
+      ]
+    },
+    {
+      "name": "strip-ansi",
+      "majors": [
+        "7",
+        "6"
+      ]
+    },
+    {
+      "name": "wrap-ansi",
+      "majors": [
+        "9",
+        "7"
+      ]
+    },
+    {
+      "name": "string-width",
+      "majors": [
+        "7",
+        "4"
+      ]
+    },
+    {
+      "name": "yargs-parser",
+      "majors": [
+        "22",
+        "21"
+      ]
+    }
+  ],
+  "trend": {
+    "note": "keine Baseline vorhanden"
+  }
+}

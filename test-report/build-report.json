@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-08-13T04:47:19.544Z",
+  "results": [
+    {
+      "id": "typescript",
+      "label": "TypeScript",
+      "ok": true,
+      "exitCode": 0,
+      "soft": false,
+      "durationMs": 1368,
+      "stdoutTail": "",
+      "stderrTail": ""
+    },
+    {
+      "id": "eslint",
+      "label": "ESLint",
+      "ok": true,
+      "exitCode": 0,
+      "soft": true,
+      "durationMs": 9703,
+      "stdoutTail": "/dev-server/src/components/ui/sidebar.tsx\n  743:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components\n\n/dev-server/src/components/ui/toggle.tsx\n  42:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components\n\n/dev-server/src/routes/_authenticated/dashboard.tsx\n  306:5  warning  React Hook useMemo has a missing dependency: 'engineerState'. Either include it or remove the dependency array  react-hooks/exhaustive-deps\n\n/dev-server/src/routes/_authenticated/route.tsx\n  123:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components\n\n✖ 17 problems (0 errors, 17 warnings)\n\n",
+      "stderrTail": "$ eslint .\n"
+    },
+    {
+      "id": "prettier",
+      "label": "Prettier",
+      "ok": false,
+      "exitCode": 1,
+      "soft": true,
+      "durationMs": 6228,
+      "stdoutTail": "Checking formatting...\n",
+      "stderrTail": "[warn] docs/AVKK-MANAGEMENT-MANUAL-ACCEPTANCE.md\n[warn] Code style issues found in the above file. Run Prettier with --write to fix.\n"
+    },
+    {
+      "id": "docs-sync",
+      "label": "Doku-Sync",
+      "ok": true,
+      "exitCode": 0,
+      "soft": false,
+      "durationMs": 91,
+      "stdoutTail": "\u001b[1mDoku-Sync-Check\u001b[0m\n  CHANGELOG-Einträge: 76\n  Aktuelle Version:   1.58.0 (2026-08-13)\n  Komponenten geprüft: 24\n\n✓ Doku ist synchron.\n",
+      "stderrTail": "$ node scripts/check-docs-sync.mjs\n"
+    },
+    {
+      "id": "no-console",
+      "label": "No-Console-Guard",
+      "ok": true,
+      "exitCode": 0,
+      "soft": false,
+      "durationMs": 107,
+      "stdoutTail": "ℹ No-Console-Check: 6 dokumentierte Ausnahme(n):\n  · src/integrations/supabase/auth-middleware.ts:45  [console-exc-generated-supabase]\n  · src/integrations/supabase/client.server.ts:45  [console-exc-generated-supabase]\n  · src/integrations/supabase/client.ts:54  [console-exc-generated-supabase]\n  · src/server.ts:68  [console-exc-worker-entry]\n  · src/server.ts:79  [console-exc-worker-entry]\n  · src/start.ts:13  [console-exc-worker-entry]\n✓ No-Console-Check: Produktivcode nutzt durchgängig den Logger.\n",
+      "stderrTail": "$ node scripts/check-no-console.mjs\n"
+    },
+    {
+      "id": "rbac",
+      "label": "RBAC-Parität",
+      "ok": true,
+      "exitCode": 0,
+      "soft": false,
+      "durationMs": 74,
+      "stdoutTail": "[rbac:check] ok — Frontend- und Backend-Matrix sind identisch\n[rbac:check] ok — Alle vergebenen Permissions sind im offiziellen Katalog\n[rbac:check] ok — azure.database.build ⊆ {systemadministrator}\n[rbac:check] ok — azure.import ⊆ {systemadministrator, administrator}\n[rbac:check] ok — Import-Träger ⊆ Export-Träger\n[rbac:check] ok — roles.manage ⊆ {systemadministrator}\n[rbac:check] ok — users.manage / auditlog.view / backup.restore nur Admins\n[rbac:check] ok — viewer ist read-only\n[rbac:check] ok — customer hat keine Admin-/Edit-Permissions\n\n[rbac:check] Alle Invarianten erfüllt.\n",
+      "stderrTail": "$ node scripts/check-rbac.mjs\n"
+    },
+    {
+      "id": "security",
+      "label": "Security-Scan",
+      "ok": true,
+      "exitCode": 0,
+      "soft": true,
+      "durationMs": 148,
+      "stdoutTail": "Security-Check\n  Dateien geprüft: 387\n  CRITICAL: 0  HIGH: 0  MEDIUM: 0\n  JSON-Report:     security-report/findings.json\n  Markdown-Report: security-report/findings.md\n\n✓ Keine blockierenden Funde.\n",
+      "stderrTail": "$ node scripts/security-check.mjs --json security-report/findings.json --markdown security-report/findings.md\n"
+    }
+  ]
+}

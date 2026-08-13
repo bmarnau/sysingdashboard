@@ -4,13 +4,13 @@
 
 | Kategorie | Wert |
 | --------- | ---- |
-| Findings gesamt | 59 |
+| Findings gesamt | 58 |
 | Critical | 0 |
-| High | 2 |
+| High | 1 |
 | Medium | 6 |
 | Low + Info | 51 |
 | Neu seit Vorlauf | 0 |
-| Behoben seit Vorlauf | 0 |
+| Behoben seit Vorlauf | 1 |
 
 ## Top-10 nach Priorität
 

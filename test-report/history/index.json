@@ -176,6 +176,54 @@
       "integrityHash": "820e6c0759dda181039c83eb68e156ccfd87ba6ee9f155bfee2ba0cbf92387b0",
       "released": false,
       "file": "test-report/history/2026-08-13T04-35-05-674Z-a6d187b0-daf8-4a20-8eab-cd95ad72776c.json"
+    },
+    {
+      "id": "0983a111-d16d-4176-b3ad-b83fedfcc6fb",
+      "version": 12,
+      "parentReportId": "a6d187b0-daf8-4a20-8eab-cd95ad72776c",
+      "generatedAt": "2026-08-13T04:48:35.595Z",
+      "dashboardVersion": "1.58.0",
+      "commit": "63ce8ca",
+      "status": "passed-with-findings",
+      "releaseStage": {
+        "proposed": "internal-test",
+        "effective": "internal-test"
+      },
+      "integrityHash": "134f8631127c8bd27082c1e931c9a60efefa449a6a97c65247b1dad61f2952ff",
+      "released": false,
+      "file": "test-report/history/2026-08-13T04-48-35-595Z-0983a111-d16d-4176-b3ad-b83fedfcc6fb.json"
+    },
+    {
+      "id": "ab11fd34-6704-4cd9-a19a-f600e77e0967",
+      "version": 13,
+      "parentReportId": "0983a111-d16d-4176-b3ad-b83fedfcc6fb",
+      "generatedAt": "2026-08-13T04:49:58.099Z",
+      "dashboardVersion": "1.58.0",
+      "commit": "a7fbfa3",
+      "status": "passed-with-findings",
+      "releaseStage": {
+        "proposed": "production",
+        "effective": "production"
+      },
+      "integrityHash": "dd25badfaa7a3227656dd80e415659cd4a63ec243ea1099e133193a88f3f9af1",
+      "released": false,
+      "file": "test-report/history/2026-08-13T04-49-58-099Z-ab11fd34-6704-4cd9-a19a-f600e77e0967.json"
+    },
+    {
+      "id": "dfa68dbb-328c-472c-be00-66e49b3757fe",
+      "version": 14,
+      "parentReportId": "ab11fd34-6704-4cd9-a19a-f600e77e0967",
+      "generatedAt": "2026-08-13T04:52:37.488Z",
+      "dashboardVersion": "1.58.1",
+      "commit": "78d2834",
+      "status": "passed-with-findings",
+      "releaseStage": {
+        "proposed": "production",
+        "effective": "production"
+      },
+      "integrityHash": "5342a2b5d16c81627195ed9a7889c4c95690eebe5550f906413f3490717a39eb",
+      "released": false,
+      "file": "test-report/history/2026-08-13T04-52-37-488Z-dfa68dbb-328c-472c-be00-66e49b3757fe.json"
     }
   ]
 }

@@ -53,11 +53,13 @@ die fachlich **nicht** Teil von AVKK sind.
 ## Konsequenzen
 
 **Positiv**
+
 - Eine einzige Quelle für Gefährdungs- und Vollständigkeitslogik.
 - Kennzahlen sind erklärbar und per Drill-down überprüfbar.
 - Datenschutzrisiko durch Leistungsbewertung ist strukturell reduziert.
 
 **Negativ / akzeptiert**
+
 - `listDossiers()` lädt Aggregate je Subjekt; bei stark wachsendem Bestand ist
   eine serverseitige Verdichtung nötig (Backlog).
 - Diagramme sind bewusst einfache Balkenlisten ohne Diagrammbibliothek;

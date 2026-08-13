@@ -31,9 +31,13 @@ export function analyzeMethods(source) {
   return [...methods];
 }
 
-/** Erkennt `z.object(...)`, `z.array(...)` etc. als Request-Validierung. */
+/**
+ * Erkennt `z.object(...)`, `z.array(...)` etc. als Request-Validierung.
+ * Prettier bricht Zod-Ketten um (`z\n  .object({`), deshalb sind Zeilenumbrüche
+ * zwischen `z` und der Methode zulässig.
+ */
 export function analyzeValidation(source) {
-  return /z\.(object|array|union|record|discriminatedUnion)\s*\(/.test(source);
+  return /\bz\s*\.\s*(object|array|union|record|discriminatedUnion)\s*\(/.test(source);
 }
 
 /** Erkennt Correlation-ID-Wrapper. */
