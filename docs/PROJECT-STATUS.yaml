@@ -46,7 +46,7 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.58.1"
+  dashboard: "1.58.2"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -56,8 +56,8 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "09B"
-  currentSprintTitle: "MVP-Gesamtabnahme und Release Candidate"
+  currentSprint: "09C"
+  currentSprintTitle: "MVP Hardening und manuelle Abnahme"
   currentSprintStatus: "completed"
   nextSprint: "09A"
   previousSprint: "08B"
@@ -151,6 +151,11 @@ phases:
       - "AVKK als Führungsmodell dokumentiert (docs/AVKK.md, ADR-0024)"
 
 completedSprints:
+  - id: "09C"
+    title: "MVP Hardening und manuelle Abnahme"
+    version: "1.58.2"
+    status: "completed"
+    summary: "Word-Fassung von SYSING-001 aus der Markdown-Quelle erzeugt und visuell geprueft, Rollen-Abnahmecheckliste erstellt, Befunde konsolidiert."
   - id: "09B"
     title: "MVP-Gesamtabnahme und Release Candidate"
     version: "1.58.1"
@@ -429,7 +434,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.58.1"
+  currentRelease: "1.58.2"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
@@ -442,7 +447,8 @@ releaseManagement:
     - "docs/ARCHITECTURE.md"
     - "docs/ADR/0023-phasenmodell-infrastrukturabschluss.md"
     - "docs/MVP-ACCEPTANCE-REPORT.md"
-    - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.0.md"
+    - "docs/ROLE-ACCEPTANCE-09C.md"
+    - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
   nextReleaseTarget: "Sprint 06 completion (Phase 2 Start)"
 
 risks:
