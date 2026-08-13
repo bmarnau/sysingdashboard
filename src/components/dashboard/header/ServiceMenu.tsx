@@ -11,6 +11,7 @@ import {
   Eye,
   EyeOff,
   FileJson,
+  FileText,
   Gauge,
   HardDrive,
   Printer,
@@ -44,6 +45,7 @@ interface ServiceMenuProps {
   setShowLogViewer: (v: boolean) => void;
   setShowExportDialog: (v: boolean) => void;
   setShowDevDiary: (v: boolean) => void;
+  setShowReports: (v: boolean) => void;
 }
 
 export function ServiceMenu({
@@ -63,6 +65,7 @@ export function ServiceMenu({
   setShowLogViewer,
   setShowExportDialog,
   setShowDevDiary,
+  setShowReports,
 }: ServiceMenuProps) {
   const currentUser = useCurrentUser();
   const navigate = useNavigate();
@@ -97,6 +100,15 @@ export function ServiceMenu({
               className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
             >
               <Download className="size-4 opacity-70" /> Export…
+            </button>
+            <button
+              onClick={() => {
+                setShowServiceMenu(false);
+                setShowReports(true);
+              }}
+              className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+            >
+              <FileText className="size-4 opacity-70" /> Berichte…
             </button>
             <button
               onClick={() => {
