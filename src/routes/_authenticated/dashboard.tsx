@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Clock,
   Euro,
+  Gauge,
   ShieldCheck,
   FolderKanban,
   Layers,
