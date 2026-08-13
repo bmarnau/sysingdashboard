@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-13 · Dashboard-Version 1.55.0
+Stand: 2026-08-13 · Dashboard-Version 1.57.0
 
 ## Vision
 
@@ -391,3 +391,28 @@ Semikolon und BOM deckt den Excel-Bedarf des MVP ab. Der Demo-Datensatz ist
 rein lokal (Präfix `demo-`, idempotent, rückstandsfrei entfernbar) — AVKK-Stände
 für die Demodaten müssen weiterhin bewusst erfasst werden, damit keine
 synthetischen Führungsdaten in die Datenbank gelangen.
+
+## Sprint 09B — Demo-Datensatz für Schulung und Abnahme (1.57.0)
+
+Der Demo-Datensatz aus Sprint 09A war rein lokal — für eine MVP-Abnahme des
+Führungsmodells reichte das nicht: Ohne AVKK-Stände lässt sich weder die
+Führungssicht noch der Managementbericht sinnvoll vorführen. Sprint 09B ergänzt
+deshalb sieben zusammenhängende AVKK-Abnahmefälle, die jede Bewertungslage
+genau einmal abdecken, und macht sie über Service → „Demo-Datensatz…"
+bedienbar.
+
+Zwei Entscheidungen prägen den Sprint. Erstens ist der Stichtag jetzt der
+aktuelle Tag statt eines festen Datums: Ein fixer Stichtag hätte die Fälle mit
+der Zeit entwertet, weil „im Plan" irgendwann überfällig geworden wäre. Für
+reproduzierbare Testläufe lässt sich der Stichtag weiterhin fest setzen; der
+verwendete Wert wandert in den Datensatz und damit in den Abnahmebericht.
+
+Zweitens der Seed-Weg: Das Einspielen läuft über den regulären Fachdienst unter
+den Rechten des angemeldeten Benutzers — kein privilegierter Schlüssel, keine
+Umgehung der Datenbankregeln.
+
+Bewusst offen und keine Nachlässigkeit: AVKK-Demofälle lassen sich nur
+stilllegen, nicht löschen (ADR-0026). Eine Instanz mit eingespielten Demodaten
+ist damit dauerhaft keine saubere Produktivinstanz mehr. Diese Grenze ist in
+`docs/DEMO-DATA.md` und im Release-Candidate-Scope festgehalten, statt sie
+durch eine Ausnahme im Löschschutz aufzuweichen.
