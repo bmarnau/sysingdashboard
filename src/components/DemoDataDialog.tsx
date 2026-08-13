@@ -132,7 +132,6 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
           </span>
         </p>
 
-
         <section className="space-y-2 rounded-lg border border-border p-4">
           <h3 className="text-sm font-semibold">Lokaler Bestand</h3>
           <p className="text-xs text-muted-foreground">

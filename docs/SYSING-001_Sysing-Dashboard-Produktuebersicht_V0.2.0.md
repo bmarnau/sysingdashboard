@@ -18,13 +18,13 @@
 Dieses Dokument beschreibt sowohl den heutigen Funktionsumfang als auch die
 beabsichtigte Weiterentwicklung. Jede Aussage trägt eine Kennzeichnung:
 
-| Kennzeichnung             | Bedeutung                                                        |
-| ------------------------- | ---------------------------------------------------------------- |
-| UMGESETZT                 | im Release Candidate vorhanden und geprüft                        |
-| IN ERPROBUNG              | vorhanden, aber noch nicht abschließend fachlich abgenommen       |
-| GEPLANT / POST-MVP        | bewusst nach dem MVP eingeplant                                   |
-| MÖGLICHE SPÄTERE ERWEITERUNG | Ideenstand, keine Zusage, keine beschlossene Roadmap           |
-| BEKANNTE GRENZE           | bewusste Einschränkung mit dokumentierter Begründung              |
+| Kennzeichnung                | Bedeutung                                                   |
+| ---------------------------- | ----------------------------------------------------------- |
+| UMGESETZT                    | im Release Candidate vorhanden und geprüft                  |
+| IN ERPROBUNG                 | vorhanden, aber noch nicht abschließend fachlich abgenommen |
+| GEPLANT / POST-MVP           | bewusst nach dem MVP eingeplant                             |
+| MÖGLICHE SPÄTERE ERWEITERUNG | Ideenstand, keine Zusage, keine beschlossene Roadmap        |
+| BEKANNTE GRENZE              | bewusste Einschränkung mit dokumentierter Begründung        |
 
 ## 1. Produktidee
 
@@ -42,30 +42,30 @@ Leistungsbewertungen sind dauerhaft ausgeschlossen (ADR-0027).
 
 ## 2. Funktionsumfang des Release Candidate
 
-| Bereich                                      | Stand         |
-| -------------------------------------------- | ------------- |
-| Authentifizierung über Lovable Cloud (Supabase), E-Mail/Passwort | UMGESETZT |
-| Rollen- und Rechtemodell (RBAC v2, 7 Rollen)  | UMGESETZT     |
-| Datenbankseitige Absicherung (RLS-Policies)   | UMGESETZT     |
-| Inaktivitäts-Abmeldung (konfigurierbar)       | UMGESETZT     |
-| Persönliches Arbeitsdashboard (Projekte, Arbeitspakete, Tätigkeiten, Zeiten) | UMGESETZT |
-| AVKK-Arbeitsplatz „Mein AVKK"                 | UMGESETZT     |
-| AVKK-Management-Cockpit (Führungssicht)       | UMGESETZT     |
-| Reference Data als Plattformdienst            | UMGESETZT     |
-| Reporting-Schicht mit Corporate Templates     | UMGESETZT     |
-| Ausgabeformate PDF, Druck, Word, JSON, CSV    | UMGESETZT     |
-| Ausgabeformat Excel                           | GEPLANT / POST-MVP |
-| Backup 2.0 mit Manifest und SHA-256           | UMGESETZT     |
-| Restore lokaler Daten                         | UMGESETZT     |
-| Automatischer Rückschreib-Restore der AVKK-Cloud-Daten | BEKANNTE GRENZE |
-| JSON-Import/-Export mit Vorschau und Rollback | UMGESETZT     |
-| Downloadbereich mit Aufbewahrungsregel        | UMGESETZT     |
-| Integriertes Benutzerhandbuch, Systemstatus, Log Viewer | UMGESETZT |
-| Systemhaus-Demo-Datensatz für Schulung und Abnahme | UMGESETZT |
-| Kontextindikatoren als produktive Erhebung    | GEPLANT / POST-MVP |
-| Microsoft Graph, Exchange Online, Entra ID    | GEPLANT / POST-MVP |
-| Azure SQL, Azure Table Storage, SharePoint    | GEPLANT / POST-MVP |
-| KI-Copilot, KI-Agenten                        | MÖGLICHE SPÄTERE ERWEITERUNG |
+| Bereich                                                                      | Stand                        |
+| ---------------------------------------------------------------------------- | ---------------------------- |
+| Authentifizierung über Lovable Cloud (Supabase), E-Mail/Passwort             | UMGESETZT                    |
+| Rollen- und Rechtemodell (RBAC v2, 7 Rollen)                                 | UMGESETZT                    |
+| Datenbankseitige Absicherung (RLS-Policies)                                  | UMGESETZT                    |
+| Inaktivitäts-Abmeldung (konfigurierbar)                                      | UMGESETZT                    |
+| Persönliches Arbeitsdashboard (Projekte, Arbeitspakete, Tätigkeiten, Zeiten) | UMGESETZT                    |
+| AVKK-Arbeitsplatz „Mein AVKK"                                                | UMGESETZT                    |
+| AVKK-Management-Cockpit (Führungssicht)                                      | UMGESETZT                    |
+| Reference Data als Plattformdienst                                           | UMGESETZT                    |
+| Reporting-Schicht mit Corporate Templates                                    | UMGESETZT                    |
+| Ausgabeformate PDF, Druck, Word, JSON, CSV                                   | UMGESETZT                    |
+| Ausgabeformat Excel                                                          | GEPLANT / POST-MVP           |
+| Backup 2.0 mit Manifest und SHA-256                                          | UMGESETZT                    |
+| Restore lokaler Daten                                                        | UMGESETZT                    |
+| Automatischer Rückschreib-Restore der AVKK-Cloud-Daten                       | BEKANNTE GRENZE              |
+| JSON-Import/-Export mit Vorschau und Rollback                                | UMGESETZT                    |
+| Downloadbereich mit Aufbewahrungsregel                                       | UMGESETZT                    |
+| Integriertes Benutzerhandbuch, Systemstatus, Log Viewer                      | UMGESETZT                    |
+| Systemhaus-Demo-Datensatz für Schulung und Abnahme                           | UMGESETZT                    |
+| Kontextindikatoren als produktive Erhebung                                   | GEPLANT / POST-MVP           |
+| Microsoft Graph, Exchange Online, Entra ID                                   | GEPLANT / POST-MVP           |
+| Azure SQL, Azure Table Storage, SharePoint                                   | GEPLANT / POST-MVP           |
+| KI-Copilot, KI-Agenten                                                       | MÖGLICHE SPÄTERE ERWEITERUNG |
 
 ## 3. Nutzen je Rolle
 
@@ -102,15 +102,15 @@ Darstellung und umgeht weder RBAC noch RLS.
 
 Welches System ist perspektivisch für welche Information zuständig:
 
-| System                | Zuständigkeit                                                     | Stand |
-| --------------------- | ----------------------------------------------------------------- | ----- |
-| Legacy SharePoint     | reale operative Projekte, Arbeitspakete, Tätigkeiten               | GEPLANT / POST-MVP als Quelle |
-| Sysing Dashboard      | AVKK, Steuerung, Aggregation, Managementsicht, Arbeitskontext      | UMGESETZT |
-| Supabase              | Daten- und Authentifizierungsplattform des MVP                     | UMGESETZT |
-| Exchange Online       | E-Mail-Kommunikation                                               | GEPLANT / POST-MVP |
-| Microsoft Graph       | Integrationsschnittstelle zu Microsoft 365                         | GEPLANT / POST-MVP |
-| KI                    | Analyse, Zusammenfassung, Vorschläge                               | MÖGLICHE SPÄTERE ERWEITERUNG |
-| Agenten               | später kontrollierte, freigabepflichtige Aktionen                  | MÖGLICHE SPÄTERE ERWEITERUNG |
+| System            | Zuständigkeit                                                 | Stand                         |
+| ----------------- | ------------------------------------------------------------- | ----------------------------- |
+| Legacy SharePoint | reale operative Projekte, Arbeitspakete, Tätigkeiten          | GEPLANT / POST-MVP als Quelle |
+| Sysing Dashboard  | AVKK, Steuerung, Aggregation, Managementsicht, Arbeitskontext | UMGESETZT                     |
+| Supabase          | Daten- und Authentifizierungsplattform des MVP                | UMGESETZT                     |
+| Exchange Online   | E-Mail-Kommunikation                                          | GEPLANT / POST-MVP            |
+| Microsoft Graph   | Integrationsschnittstelle zu Microsoft 365                    | GEPLANT / POST-MVP            |
+| KI                | Analyse, Zusammenfassung, Vorschläge                          | MÖGLICHE SPÄTERE ERWEITERUNG  |
+| Agenten           | später kontrollierte, freigabepflichtige Aktionen             | MÖGLICHE SPÄTERE ERWEITERUNG  |
 
 ## 6. Zukunftsbild und Informationsflüsse
 
@@ -203,14 +203,14 @@ Architekturabhängigkeit.
 
 ### 6.7 Mögliche Reifegrade von Agenten (MÖGLICHE SPÄTERE ERWEITERUNG)
 
-| Stufe | Inhalt                                                                        |
-| ----- | ----------------------------------------------------------------------------- |
-| 0     | Mock-Daten, nur lesend                                                         |
-| 1     | Mock-Daten, lesend mit Vorschlägen                                             |
-| 2     | reale Daten, nur lesend                                                        |
-| 3     | reale Daten, lesend mit Vorschlägen                                            |
-| 4     | kontrollierte Tool-Aktionen mit expliziter Benutzerfreigabe                    |
-| 5     | eng begrenzte automatisierte Aktionen mit Policies, Audit, Limits, Rückfall    |
+| Stufe | Inhalt                                                                      |
+| ----- | --------------------------------------------------------------------------- |
+| 0     | Mock-Daten, nur lesend                                                      |
+| 1     | Mock-Daten, lesend mit Vorschlägen                                          |
+| 2     | reale Daten, nur lesend                                                     |
+| 3     | reale Daten, lesend mit Vorschlägen                                         |
+| 4     | kontrollierte Tool-Aktionen mit expliziter Benutzerfreigabe                 |
+| 5     | eng begrenzte automatisierte Aktionen mit Policies, Audit, Limits, Rückfall |
 
 Dies ist ein Entwicklungs- und Lernmodell, keine beschlossene Roadmap.
 

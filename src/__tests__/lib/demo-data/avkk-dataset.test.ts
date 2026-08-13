@@ -48,7 +48,8 @@ describe("Demo-AVKK-Datensatz — Abdeckung der Abnahmeszenarien", () => {
   it("should_coverHighCustomerAndScheduleConsequences", () => {
     const customer = demoAvkkCases.some((c) =>
       c.consequences.some(
-        (k) => k.areaKey === "customer" && (k.severityKey === "high" || k.severityKey === "critical"),
+        (k) =>
+          k.areaKey === "customer" && (k.severityKey === "high" || k.severityKey === "critical"),
       ),
     );
     const schedule = demoAvkkCases.some((c) =>
