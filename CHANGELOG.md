@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.2 - 2026-08-13
+
+- **Produktübersicht als Word**: `SYSING-001` liegt jetzt zusätzlich als Word-Datei vor. Word und PDF entstehen aus derselben Markdown-Quelle, damit Inhalt und Reihenfolge nicht auseinanderlaufen können; die Fassung wurde Seite für Seite visuell geprüft.
+- **Rollenabnahme vorbereitet**: Neue Checkliste `docs/ROLE-ACCEPTANCE-09C.md` trennt automatisiert nachgewiesene Zugriffsgrenzen von den fachlich abzuzeichnenden Oberflächenschritten je Rolle.
+- **Abnahmebericht aktualisiert**: Befunde neu bewertet — Word-Fassung erledigt, offene Rollenabzeichnung herabgestuft; Freigabeempfehlung bleibt GO WITH FINDINGS.
+
 ## 1.58.1 - 2026-08-13
 
 - **MVP-Abnahme final**: Abnahmebericht auf den tatsächlichen Release-Candidate-Stand gebracht — getrennter RBAC-/RLS-Nachweis, Backup-Restore-Entscheidung (ACCEPTED FOR MVP), Cross-Format-Konsistenz, Portabilitäts- und Security-Abschluss, vollständige ADR-Übersicht.

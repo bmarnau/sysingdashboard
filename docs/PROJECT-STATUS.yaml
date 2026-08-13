@@ -46,7 +46,7 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.58.1"
+  dashboard: "1.58.2"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -56,8 +56,8 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "09B"
-  currentSprintTitle: "MVP-Gesamtabnahme und Release Candidate"
+  currentSprint: "09C"
+  currentSprintTitle: "MVP Hardening und manuelle Abnahme"
   currentSprintStatus: "completed"
   nextSprint: "09A"
   previousSprint: "08B"
@@ -429,7 +429,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.58.1"
+  currentRelease: "1.58.2"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:

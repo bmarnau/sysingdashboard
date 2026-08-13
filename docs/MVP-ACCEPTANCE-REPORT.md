@@ -1,7 +1,7 @@
 # MVP-Abnahmebericht — Sysing Dashboard
 
-- **Sprint**: 09B (Abschluss)
-- **Release Candidate**: v1.58.1
+- **Sprint**: 09C (MVP Hardening, Abschluss)
+- **Release Candidate**: v1.58.2
 - **Berichtsdatum**: 2026-08-13
 - **Umgebung der Prüfung**: Entwicklungs-/Preview-Instanz mit Lovable Cloud (Supabase) als Datenplattform
 - **Prüfberichtsstand**: technischer Prüfbericht v13, Schema 2.0.0, Stage `production`
@@ -10,13 +10,13 @@
 
 ## 1. Release-Candidate-Definition
 
-Der Release Candidate ist der Stand v1.58.1 mit:
+Der Release Candidate ist der Stand v1.58.2 mit:
 
-- CHANGELOG-Kopf `1.58.1 - 2026-08-13` als Versionsquelle,
-- `docs/PROJECT-STATUS.yaml` mit `versions.dashboard = 1.58.1` und
-  `releaseManagement.currentRelease = 1.58.1`,
+- CHANGELOG-Kopf `1.58.2 - 2026-08-13` als Versionsquelle,
+- `docs/PROJECT-STATUS.yaml` mit `versions.dashboard = 1.58.2` und
+  `releaseManagement.currentRelease = 1.58.2`,
 - vollständigem ADR-Bestand ADR-0001 bis ADR-0028 in einem Verzeichnis,
-- Produktübersicht `SYSING-001` in Version 0.2.0,
+- Produktübersicht `SYSING-001` in Version 0.2.1 als Markdown-Quelle mit erzeugter Word- und PDF-Fassung,
 - reproduzierbarem Systemhaus-Demo-Datensatz für Schulung und Abnahme.
 
 Nicht Teil des Release Candidate: Excel-Export, produktive Erhebung der
@@ -92,12 +92,12 @@ im Handbuchkapitel „Demo-Datensatz" und in `docs/DEMO-DATA.md`.
 
 | Nr.  | Schwere | Befund                                                                                                                                               | Wirkung                                                 | Umgang                                                          |
 | ---- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------- |
-| F-01 | low     | Zyklus-Detektor meldete den framework-erzeugten Ring `routeTree.gen.ts ↔ router.tsx`                                                                 | Fehlalarm, kein Funktionsfehler                         | behoben in v1.58.1: generierte Dateien vom Detektor ausgenommen |
+| F-01 | low     | Zyklus-Detektor meldete den framework-erzeugten Ring `routeTree.gen.ts ↔ router.tsx`                                                                 | Fehlalarm, kein Funktionsfehler                         | behoben in v1.58.2: generierte Dateien vom Detektor ausgenommen |
 | F-02 | high    | Drei Module über Größenschwelle (1075 / 745 / 731 Zeilen)                                                                                            | Wartbarkeit                                             | Refactoringplan ADR-0019                                        |
 | F-03 | medium  | 17 Lint-Warnungen, darunter fehlende `useMemo`-Abhängigkeit in `dashboard.tsx`                                                                       | mögliches Aktualisierungsverhalten in Randfällen        | Sprint 10, beobachtet                                           |
 | F-04 | medium  | UI greift direkt auf Azure-Interna zu (Schichtenverstoß)                                                                                             | Schichtentrennung                                       | Sprint 09C/10                                                   |
-| F-11 | medium  | Manuelle Rollenabnahme (Systemingenieur, Projektmanager, Geschäftsführer, Admin-Role-Preview, Negativtest) ist in den Checklisten nicht abgezeichnet | fachliche Oberflächenabnahme nur automatisiert belegt   | MANUAL VERIFICATION REQUIRED, Sprint 09C                        |
-| F-12 | low     | Von SYSING-001 existiert nur die PDF-Fassung, keine geprüfte Word-Fassung                                                                            | Dokumentverteilung                                      | Sprint 09C                                                      |
+| F-11 | low     | Fachliche Abzeichnung der Rollenabnahme steht aus; Checkliste und automatisierte Nachweise liegen seit v1.58.2 vor (`docs/ROLE-ACCEPTANCE-09C.md`)   | Dokumentation der Oberflächenabnahme                    | herabgestuft in v1.58.2: Zugriffsgrenzen serverseitig belegt, offene Unterschrift MANUAL VERIFICATION REQUIRED |
+| F-12 | low     | Word-Fassung von SYSING-001 fehlte                                                                                                                   | Dokumentverteilung                                      | behoben in v1.58.2: `scripts/docs/build-sysing-001.mjs` erzeugt Word und PDF aus einer Quelle, visuell geprüft (5 Seiten) |
 | F-05 | medium  | Excel-Ausgabe fehlt                                                                                                                                  | MVP-Pflichtformate PDF/Druck/Word/JSON/CSV sind erfüllt | bewusst Post-MVP                                                |
 | F-06 | medium  | E2E-Suite ist bewusst nur Smoke (`td-manual-playwright-smoke-only`)                                                                                  | begrenzte Oberflächenabdeckung                          | akzeptiert, ADR-0012                                            |
 | F-07 | medium  | Keine Claims-Whitelist im Logger (`SEC-MED-CLAIMS-001`)                                                                                              | Protokollinhalt                                         | Sprint 10                                                       |
@@ -200,20 +200,21 @@ Auflagen für die Freigabe:
 `docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md`,
 `docs/DEMO-DATA.md`, `docs/AVKK-MANUAL-ACCEPTANCE.md`,
 `docs/AVKK-MANAGEMENT-MANUAL-ACCEPTANCE.md`, `docs/PRINT-VERIFICATION.md`,
-`docs/ADR/README.md`, `CHANGELOG.md`, `docs/PROJECT-STATUS.yaml`.
+`docs/ROLE-ACCEPTANCE-09C.md`, `docs/ADR/README.md`, `CHANGELOG.md`,
+`docs/PROJECT-STATUS.yaml`.
 
 ## 9. Kennzahlen des Abnahmelaufs
 
 | Feld                              | Wert                                                                                                        |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Getestete Version                 | v1.58.1                                                                                                     |
+| Getestete Version                 | v1.58.2                                                                                                     |
 | Testdatum                         | 2026-08-13                                                                                                  |
 | Testumgebung                      | Entwicklungs-/Preview-Instanz, Lovable Cloud (Supabase), Produktionsbuild geprüft                           |
 | Version Demo-Datensatz            | lokal 2.0.0 · AVKK-Fälle 1.1.0                                                                              |
 | Getestete Rollen                  | Systemadministrator, App-Entwickler, Geschäftsführer, Projektmanager, Systemingenieur, Viewer, Customer     |
 | Automatisierte Tests              | 481 grün (56 Dateien, 4 todo)                                                                               |
 | E2E-/UI-Tests                     | 32 Playwright-Tests in 11 Spezifikationen (Smoke-Umfang, ADR-0012)                                          |
-| UI-Teststatus                     | automatisiert bestanden · manuelle Rollenabnahme MANUAL VERIFICATION REQUIRED (F-11)                        |
+| UI-Teststatus                     | automatisiert bestanden · Abnahmecheckliste `docs/ROLE-ACCEPTANCE-09C.md` bereitgestellt, Abzeichnung offen (F-11) |
 | Auth-/Sessionstatus               | bestanden (Route-Guard, Idle-Logout, Session-Wiederherstellung)                                             |
 | AVKK-Teststatus                   | bestanden (Service, Aggregation, Management, Backup-Nutzdaten)                                              |
 | Kontextindikatorstatus            | fachlich beschrieben, nicht produktiv erhoben (F-10)                                                        |
@@ -222,17 +223,22 @@ Auflagen für die Freigabe:
 | Backup-/Restorestatus             | bestanden, Manifest 2.0 mit SHA-256 · AVKK-Rückschreiben manuell (F-08)                                     |
 | RBAC-/RLS-Status                  | bestanden (`rbac:check`, Security-Suite, RLS-Policies aktiv)                                                |
 | ADR-Review-Status                 | abgeschlossen, ADR-0001 bis ADR-0028 accepted, keine offene Entscheidung                                    |
-| SYSING-001                        | Version 0.2.0, synchron zum Quellstand · visuelle PDF-Abnahme PASSED (6 Seiten) · Word-Fassung fehlt (F-12) |
-| Bekannte Einschränkungen          | F-05, F-06, F-08, F-09, F-10, F-12                                                                          |
-| Findings nach Schweregrad (offen) | critical 0 · high 1 · medium 6 · low 44 · info 7 (Abnahmebefunde: 0 critical, 1 high, 6 medium, 5 low)      |
+| SYSING-001                        | Version 0.2.1, eine Markdown-Quelle · Word- und PDF-Fassung erzeugt und visuell geprüft, 5 Seiten, PASSED  |
+| Bekannte Einschränkungen          | F-05, F-06, F-08, F-09, F-10                                                                                |
+| Findings nach Schweregrad (offen) | critical 0 · high 1 · medium 5 · low 45 · info 7 (Abnahmebefunde: 0 critical, 1 high, 5 medium, 6 low)      |
 | Freigabeentscheidung              | GO WITH FINDINGS                                                                                            |
 
-## 10. Empfehlungen für Sprint 09C
+## 10. Ergebnis Sprint 09C und Empfehlungen für Sprint 10
 
-1. Zyklische Abhängigkeit und Lint-Warnungen auflösen (F-01, F-03).
-2. Zod-Validierung für den verbleibenden Endpoint, Azure-Zugriff hinter den Service legen (F-04).
+In Sprint 09C geschlossen: F-12 (Word-Fassung erzeugt und geprüft) sowie die
+technische Seite von F-11 (Checkliste mit automatisierten Nachweisen). F-02
+bleibt bewusst als dokumentierte Schuld nach ADR-0019 bestehen.
+
+Empfehlungen für Sprint 10:
+
+1. Lint-Warnungen auflösen (F-03).
+2. Azure-Zugriff hinter den Service legen (F-04).
 3. Claims-Whitelist im Logger ergänzen (F-07).
 4. Leistungsnachweis-PDF in die zentrale Reporting-Schicht überführen (F-09).
 5. Excel-Ausgabe als erstes Post-MVP-Format umsetzen (F-05).
-6. Manuelle Rollenabnahme durchführen und Checklisten abzeichnen (F-11).
-7. Word-Fassung von SYSING-001 erzeugen und visuell prüfen (F-12).
+6. Abzeichnung der Rollenabnahme einholen (F-11, Abschnitt 3 der Checkliste).
