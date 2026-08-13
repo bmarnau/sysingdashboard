@@ -779,6 +779,15 @@ function Dashboard() {
               Mein AVKK
             </TabButton>
           </PermissionGate>
+          <PermissionGate permission="avkk.management.view">
+            <TabButton
+              active={tab === "avkk-management"}
+              onClick={() => setTab("avkk-management")}
+              icon={<Gauge className="size-4" />}
+            >
+              AVKK Management
+            </TabButton>
+          </PermissionGate>
         </div>
 
         {tab === "projekte" && (
