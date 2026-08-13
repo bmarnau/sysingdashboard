@@ -86,16 +86,16 @@ vollständig eingespielten Datensatz; sie sind maschinell abgesichert
 (`src/__tests__/lib/demo-data/personas.test.ts`) und werden aus dem Datensatz
 abgeleitet, nicht gepflegt.
 
-| #   | Anmeldung / Rolle                       | Erwartetes Ergebnis                                                                                    | Bewertung |
-| --- | --------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------- |
-| 1   | Alex (`engineer`), Mein AVKK            | 2 eigene Sachverhalte (Fälle A, C), davon 1 mit Handlungsbedarf, 1 fehlende Voraussetzung, 2 Arbeitspakete |           |
-| 2   | Sam (`engineer`), Mein AVKK             | 3 eigene Sachverhalte (Fälle B, D, E), alle mit Handlungsbedarf, 1 kritische Konsequenz, 3 Arbeitspakete |           |
-| 3   | Alex vs. Sam                            | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                   |           |
-| 4   | Sam schreibt auf einen Fall von Alex    | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt    |           |
-| 5   | Petra (`projectmanager`), Projektsicht  | Projekte Netzwerk und Microsoft 365; Arbeitspakete von Alex **und** Sam sichtbar und verdichtet         |           |
-| 6   | Georg (`teamlead`), Management-Cockpit  | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)       |           |
-| 7   | Georg, Managementbericht                | Kennzahlen stimmen mit dem Cockpit überein; Personen erscheinen nur als Zuordnung, nicht als Bewertung  |           |
-| 8   | Beliebige Rolle, Role Preview           | Darstellung wechselt, Datenumfang und Schreibrechte bleiben unverändert                                 |           |
+| #   | Anmeldung / Rolle                      | Erwartetes Ergebnis                                                                                        | Bewertung |
+| --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------- |
+| 1   | Alex (`engineer`), Mein AVKK           | 2 eigene Sachverhalte (Fälle A, C), davon 1 mit Handlungsbedarf, 1 fehlende Voraussetzung, 2 Arbeitspakete |           |
+| 2   | Sam (`engineer`), Mein AVKK            | 3 eigene Sachverhalte (Fälle B, D, E), alle mit Handlungsbedarf, 1 kritische Konsequenz, 3 Arbeitspakete   |           |
+| 3   | Alex vs. Sam                           | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                      |           |
+| 4   | Sam schreibt auf einen Fall von Alex   | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt       |           |
+| 5   | Petra (`projectmanager`), Projektsicht | Projekte Netzwerk und Microsoft 365; Arbeitspakete von Alex **und** Sam sichtbar und verdichtet            |           |
+| 6   | Georg (`teamlead`), Management-Cockpit | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)          |           |
+| 7   | Georg, Managementbericht               | Kennzahlen stimmen mit dem Cockpit überein; Personen erscheinen nur als Zuordnung, nicht als Bewertung     |           |
+| 8   | Beliebige Rolle, Role Preview          | Darstellung wechselt, Datenumfang und Schreibrechte bleiben unverändert                                    |           |
 
 **Bekannte, bewusste Grenze dieses Tests:** Schritt 3 prüft die persönliche
 Sicht, nicht die Datenbank. Die Leseregeln erlauben jedem Konto mit `avkk.view`

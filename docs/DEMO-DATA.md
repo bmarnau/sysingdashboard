@@ -91,13 +91,13 @@ Demoinstanz oder in die Entwicklungsumgebung.
 
 ## Module
 
-| Datei                               | Aufgabe                                   |
-| ----------------------------------- | ----------------------------------------- |
-| `src/lib/demo-data/dataset.ts`      | lokaler Datensatz, Stichtagslogik         |
-| `src/lib/demo-data/seed.ts`         | Einspielen/Entfernen des lokalen Bestands |
-| `src/lib/demo-data/avkk-dataset.ts` | AVKK-Fälle A–G und Erwartungswerte        |
-| `src/lib/demo-data/avkk-seed.ts`    | Cloud-Seed und Stilllegung                |
-| `src/lib/demo-data/personas.ts`     | Personen und Objektzuordnung              |
-| `src/lib/demo-data/persona-expectations.ts` | Abnahmereferenz je Person         |
-| `src/lib/demo-data/index.ts`        | öffentliche API                           |
-| `src/components/DemoDataDialog.tsx` | Bedienoberfläche                          |
+| Datei                                       | Aufgabe                                   |
+| ------------------------------------------- | ----------------------------------------- |
+| `src/lib/demo-data/dataset.ts`              | lokaler Datensatz, Stichtagslogik         |
+| `src/lib/demo-data/seed.ts`                 | Einspielen/Entfernen des lokalen Bestands |
+| `src/lib/demo-data/avkk-dataset.ts`         | AVKK-Fälle A–G und Erwartungswerte        |
+| `src/lib/demo-data/avkk-seed.ts`            | Cloud-Seed und Stilllegung                |
+| `src/lib/demo-data/personas.ts`             | Personen und Objektzuordnung              |
+| `src/lib/demo-data/persona-expectations.ts` | Abnahmereferenz je Person                 |
+| `src/lib/demo-data/index.ts`                | öffentliche API                           |
+| `src/components/DemoDataDialog.tsx`         | Bedienoberfläche                          |

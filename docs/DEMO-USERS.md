@@ -12,12 +12,12 @@ kein Mehrbenutzer-Nachweis möglich.
 
 ## Die vier Personen
 
-| Person                      | Funktion          | Benötigte Rolle  | Fachlicher Scope                                                    |
-| --------------------------- | ----------------- | ---------------- | ------------------------------------------------------------------- |
-| Demo Alex Systemtechnik     | Systemingenieur A | `engineer`       | Netzwerkpakete, Fälle A und C (davon einer gefährdet)                |
+| Person                      | Funktion          | Benötigte Rolle  | Fachlicher Scope                                                         |
+| --------------------------- | ----------------- | ---------------- | ------------------------------------------------------------------------ |
+| Demo Alex Systemtechnik     | Systemingenieur A | `engineer`       | Netzwerkpakete, Fälle A und C (davon einer gefährdet)                    |
 | Demo Sam Infrastruktur      | Systemingenieur B | `engineer`       | Microsoft-365- und Backup-Pakete, Fälle B, D, E (alle handlungsrelevant) |
-| Demo Petra Projektleitung   | Projektmanagerin  | `projectmanager` | Projekte Netzwerk und Microsoft 365, Fälle F und H                   |
-| Demo Georg Geschäftsführung | Führungssicht     | `teamlead`       | Projekt Backup, Fall G, Portfoliosicht über alle Demo-Projekte       |
+| Demo Petra Projektleitung   | Projektmanagerin  | `projectmanager` | Projekte Netzwerk und Microsoft 365, Fälle F und H                       |
+| Demo Georg Geschäftsführung | Führungssicht     | `teamlead`       | Projekt Backup, Fall G, Portfoliosicht über alle Demo-Projekte           |
 
 Die Anzeigenamen sind identisch mit den `assignee`- und `lead`-Werten im
 lokalen Datensatz — dadurch passen Arbeitspakete, Tätigkeiten und AVKK-Fälle
