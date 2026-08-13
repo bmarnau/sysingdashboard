@@ -3,14 +3,14 @@
 Reproduzierbarer, vollständig fiktiver Datensatz für Schulung, Vorführung und
 MVP-Abnahme. Er ist ein Abnahmeartefakt nach `docs/MVP-PLAN.md` Abschnitt 3.3.
 
-| Merkmal              | Wert                                             |
-| -------------------- | ------------------------------------------------ |
-| Datensatzversion     | `DEMO_DATASET_VERSION` (aktuell 2.0.0)           |
-| AVKK-Fallversion     | `DEMO_AVKK_VERSION`                              |
-| Kennungspräfix       | `demo-`                                          |
-| Stichtag             | aktueller Tag, überschreibbar via `setDemoBaseDate()` |
-| Bedienung            | Servicemenü → „Demo-Datensatz…"                  |
-| Berechtigung         | `avkk.edit`                                      |
+| Merkmal          | Wert                                                  |
+| ---------------- | ----------------------------------------------------- |
+| Datensatzversion | `DEMO_DATASET_VERSION` (aktuell 2.0.0)                |
+| AVKK-Fallversion | `DEMO_AVKK_VERSION`                                   |
+| Kennungspräfix   | `demo-`                                               |
+| Stichtag         | aktueller Tag, überschreibbar via `setDemoBaseDate()` |
+| Bedienung        | Servicemenü → „Demo-Datensatz…"                       |
+| Berechtigung     | `avkk.edit`                                           |
 
 ## Inhalt
 
@@ -46,10 +46,10 @@ kein Service-Role-Key, kein direkter Datenbankzugriff.
 
 ## Rücknahme und ihre Grenze
 
-| Bereich       | Rücknahme                             |
-| ------------- | ------------------------------------- |
-| lokal         | vollständiges Entfernen aller `demo-`-Einträge |
-| AVKK (Cloud)  | Stilllegen, **kein Löschen**          |
+| Bereich      | Rücknahme                                      |
+| ------------ | ---------------------------------------------- |
+| lokal        | vollständiges Entfernen aller `demo-`-Einträge |
+| AVKK (Cloud) | Stilllegen, **kein Löschen**                   |
 
 AVKK-Tabellen erlauben grundsätzlich kein Löschen (ADR-0026), damit
 Führungsentscheidungen belegbar bleiben. `retireAvkkDemoData()` setzt den
@@ -63,11 +63,11 @@ Demoinstanz oder in die Entwicklungsumgebung.
 
 ## Module
 
-| Datei                              | Aufgabe                                   |
-| ---------------------------------- | ----------------------------------------- |
-| `src/lib/demo-data/dataset.ts`     | lokaler Datensatz, Stichtagslogik         |
-| `src/lib/demo-data/seed.ts`        | Einspielen/Entfernen des lokalen Bestands |
-| `src/lib/demo-data/avkk-dataset.ts`| AVKK-Fälle A–G und Erwartungswerte        |
-| `src/lib/demo-data/avkk-seed.ts`   | Cloud-Seed und Stilllegung                |
-| `src/lib/demo-data/index.ts`       | öffentliche API                           |
-| `src/components/DemoDataDialog.tsx`| Bedienoberfläche                          |
+| Datei                               | Aufgabe                                   |
+| ----------------------------------- | ----------------------------------------- |
+| `src/lib/demo-data/dataset.ts`      | lokaler Datensatz, Stichtagslogik         |
+| `src/lib/demo-data/seed.ts`         | Einspielen/Entfernen des lokalen Bestands |
+| `src/lib/demo-data/avkk-dataset.ts` | AVKK-Fälle A–G und Erwartungswerte        |
+| `src/lib/demo-data/avkk-seed.ts`    | Cloud-Seed und Stilllegung                |
+| `src/lib/demo-data/index.ts`        | öffentliche API                           |
+| `src/components/DemoDataDialog.tsx` | Bedienoberfläche                          |

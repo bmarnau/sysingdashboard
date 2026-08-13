@@ -151,6 +151,11 @@ phases:
       - "AVKK als Führungsmodell dokumentiert (docs/AVKK.md, ADR-0024)"
 
 completedSprints:
+  - id: "09B"
+    title: "MVP-Gesamtabnahme und Release Candidate"
+    version: "1.58.0"
+    status: "completed"
+    summary: "Demo-Datensatz vervollstaendigt, ADRs konsolidiert, SYSING-001 ausgebaut, MVP-Abnahmebericht mit Freigabeentscheidung erstellt."
   - id: "05"
     title: "Architektur-Refactoring"
     version: "1.44.0"
@@ -424,7 +429,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.57.0"
+  currentRelease: "1.58.0"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
@@ -436,6 +441,8 @@ releaseManagement:
     - "docs/ENTWICKLUNGSTAGEBUCH.md"
     - "docs/ARCHITECTURE.md"
     - "docs/ADR/0023-phasenmodell-infrastrukturabschluss.md"
+    - "docs/MVP-ACCEPTANCE-REPORT.md"
+    - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.0.md"
   nextReleaseTarget: "Sprint 06 completion (Phase 2 Start)"
 
 risks:
