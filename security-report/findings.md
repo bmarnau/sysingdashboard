@@ -1,7 +1,7 @@
 # Security-Scan-Report
 
-- **Generiert:** 2026-08-01T03:28:09.216Z
-- **Dateien geprüft:** 285
+- **Generiert:** 2026-08-13T04:26:26.107Z
+- **Dateien geprüft:** 386
 - **Regeln:** 22
 - **CRITICAL:** 1 · **HIGH:** 0 · **MEDIUM:** 0
 - **Build-Status:** ❌ FAIL (CRITICAL/HIGH)
