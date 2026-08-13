@@ -387,6 +387,10 @@ adrs:
     status: "accepted"
     topic: "Loeschstrategie, AVKK im Backup und bewertete Sicherheitswarnungen"
     path: "docs/ADR/0026-loeschstrategie-und-avkk-backup.md"
+  - id: "ADR-0027"
+    status: "accepted"
+    topic: "AVKK-Fuehrungssicht und getrennte Kontextebene"
+    path: "docs/ADR/0027-avkk-management-und-kontextebene.md"
 
 quality:
   tests:
@@ -409,7 +413,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.54.0"
+  currentRelease: "1.55.0"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:

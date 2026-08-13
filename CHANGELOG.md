@@ -13,6 +13,16 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.55.0 - 2026-08-13
+
+- **AVKK Management**: Neue rollengeschützte Führungssicht (Recht „AVKK-Führungssicht anzeigen") mit Kennzahlen, Handlungsbedarf, Aufgabenübersicht sowie Verantwortungs-, Kompetenz- und Konsequenzauswertung.
+- **Drill-down**: Jede Kennzahl und jede Handlungskategorie ist anklickbar und schränkt die Aufgabenübersicht ein; ein Klick auf eine Aufgabe öffnet den vollständigen AVKK-Sachverhalt.
+- **Nachvollziehbare Priorisierung**: Reihenfolge und Regeln jeder Kategorie stehen im Klartext in der Oberfläche — keine verborgene Punktzahl.
+- **Keine Leistungsbewertung**: Verantwortung wird nur als Zuordnungsstatus, Kompetenz nur je Dimension aggregiert; personenbezogene Ranglisten sind ausgeschlossen (ADR-0027).
+- **Bericht (JSON)**: Gefilterter Führungsstand als versionierter Datenvertrag 1.0.0 exportierbar, ohne Personenbezug.
+- **Kontextindikatoren**: Als getrennte Ebene konzipiert und dokumentiert (`docs/AVKK-CONTEXT-INDICATORS.md`); es werden derzeit keine Kontextdaten erhoben oder gespeichert.
+- **Handbuch**: Neues Kapitel „AVKK Management — Führungssicht"; manueller Abnahmetest in `docs/AVKK-MANAGEMENT-MANUAL-ACCEPTANCE.md`.
+
 ## 1.54.0 - 2026-08-12
 
 - **AVKK im Backup**: Jedes ZIP enthält jetzt `avkk.json` (Führungsdaten) und `reference-data.json` (Katalogstand) als reguläre Manifest-Einträge mit SHA-256-Prüfsumme.
