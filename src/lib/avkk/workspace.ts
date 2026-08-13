@@ -71,6 +71,12 @@ export interface AvkkRow {
   complete: boolean;
   dueState: AvkkDueState;
   updatedAt: string | null;
+  /** Gültige Verantwortungen (für Aggregationen, ohne Personenbewertung). */
+  responsibilities: AvkkRowResponsibility[];
+  /** Aktuelle Kompetenzbewertungen der Aufgabe. */
+  competences: AvkkRowCompetence[];
+  /** Aktuelle Konsequenzen der Aufgabe. */
+  consequences: AvkkRowConsequence[];
 }
 
 export const AVKK_FILTERS = [
