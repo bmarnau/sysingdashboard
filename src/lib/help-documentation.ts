@@ -249,6 +249,59 @@ Auswirkung auf Echtdaten wieder entfernen.`,
     relatedTopics: ["avkk-management", "download-center", "export"],
   },
   {
+    id: "demo-data",
+    title: "Demo-Datensatz für Schulung und Abnahme",
+    category: "Service",
+    component: "DemoDataDialog",
+    keywords: [
+      "Demo",
+      "Demodaten",
+      "Schulung",
+      "Abnahme",
+      "Testdaten",
+      "Seed",
+      "Systemhaus",
+      "AVKK",
+    ],
+    lastUpdated: "2026-08-13",
+    content: `## Zweck
+Im Servicemenü öffnet „Demo-Datensatz…" die Verwaltung eines vollständig
+fiktiven Systemhaus-Datensatzes. Er dient Schulungen, Vorführungen und der
+Abnahme — nicht dem Produktivbetrieb.
+
+## Inhalt
+- **Lokaler Bestand**: Projekte (Netzwerkmodernisierung, Microsoft-365-Migration,
+  Backup-Konzept), zugehörige Arbeitspakete und Tätigkeiten.
+- **AVKK-Abnahmefälle**: sieben zusammenhängende Sachverhalte, die jede
+  Bewertungslage einmal abdecken — unkritisch, gefährdet, kritisch, überfällig,
+  Voraussetzungslücke, hohe Kundenkonsequenz, hohe Terminwirkung.
+
+Alle Kennungen tragen das Präfix \`demo-\`. Der Stichtag des Datensatzes ist
+standardmäßig der aktuelle Tag, damit Fristen ihre Bedeutung behalten: „im
+Plan" liegt in der Zukunft, „überfällig" in der Vergangenheit.
+
+## Berechtigung
+Der Menüpunkt erscheint nur mit dem Recht zum Bearbeiten von AVKK-Daten. Das
+Einspielen läuft unter Ihren eigenen Rechten; fremde Daten werden nicht
+verändert.
+
+## Einspielen und Entfernen
+Mehrfaches Einspielen erzeugt keine Duplikate: bereits vorhandene, offene
+Demo-Sachverhalte werden übersprungen.
+
+- **Lokaler Bestand**: vollständig entfernbar, wirkt nur auf \`demo-\`-Einträge.
+- **AVKK-Fälle**: werden **stillgelegt**, nicht gelöscht. Der Sachverhalt wird
+  auf „abgeschlossen" gesetzt, Bewertungen und Konsequenzen werden als abgelöst
+  markiert.
+
+## Warum AVKK-Daten nicht gelöscht werden
+Führungsdaten müssen belegbar bleiben. Die Datenbank lässt deshalb kein Löschen
+zu (ADR-0026). Nach einer Vorführung verbleiben die Demofälle daher als
+abgeschlossene Historie im System — das ist beabsichtigt und gehört in den
+Abnahmebericht.`,
+    relatedTopics: ["reports", "avkk-management", "backup"],
+  },
+  {
     id: "avkk-management",
     title: "AVKK Management — Führungssicht",
     category: "Fachmodell",
