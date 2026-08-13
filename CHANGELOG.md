@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.0 - 2026-08-13
+
+- **MVP-Abnahme**: Zentraler Abnahmebericht `docs/MVP-ACCEPTANCE-REPORT.md` mit Release-Candidate-Definition, Qualitätstoren, Befundmatrix und Freigabeentscheidung.
+- **Demo-Datensatz**: Achter AVKK-Abnahmefall „Wissens- und Informationslücke"; Datensatzversion 1.1.0. Neue Prüfung stellt die Abdeckung aller Abnahmelagen automatisch sicher.
+- **Betriebsregel**: Der Demo-Dialog warnt jetzt deutlich, dass Demodaten nicht in Produktivinstanzen eingespielt werden dürfen, weil AVKK-Fälle historisiert und nicht gelöscht werden.
+- **Produktübersicht**: `SYSING-001` auf Version 0.2.0 ausgebaut — Funktionsstand, Nutzen je Rolle, Informationshoheit, SharePoint-/Graph-/KI-Zukunftsbild und bekannte Grenzen, jede Aussage als umgesetzt, geplant oder Idee gekennzeichnet.
+- **Architekturentscheidungen**: Die beiden ADR-Verzeichnisse wurden zu `docs/ADR/` zusammengeführt (Namenskollision unter Windows); der Index listet lückenlos ADR-0001 bis ADR-0028.
+
 ## 1.57.0 - 2026-08-13
 
 - **Demo-Datensatz**: Neuer Servicemenü-Punkt „Demo-Datensatz…" zum Einspielen und Zurücknehmen des fiktiven Systemhaus-Datensatzes (nur mit AVKK-Bearbeitungsrecht).

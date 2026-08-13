@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-08-12"
+lastUpdated: "2026-08-13"
 
 project:
   name: "Sysing Dashboard"
@@ -46,7 +46,7 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.57.0"
+  dashboard: "1.58.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -56,8 +56,8 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "09"
-  currentSprintTitle: "AVKK-Management-Cockpit und Fuehrungssicht"
+  currentSprint: "09B"
+  currentSprintTitle: "MVP-Gesamtabnahme und Release Candidate"
   currentSprintStatus: "completed"
   nextSprint: "09A"
   previousSprint: "08B"
