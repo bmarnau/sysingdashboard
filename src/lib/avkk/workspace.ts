@@ -223,6 +223,29 @@ export function buildRows(
       complete,
       dueState: state,
       updatedAt: dossier.subject.updatedAt,
+      responsibilities: responsibilities.map((r) => ({
+        personId: r.personId,
+        roleKey: r.roleKey,
+        roleLabel: r.roleLabel,
+        typeKeys: r.types.map((t) => t.key),
+        typeLabels: r.types.map((t) => t.label),
+      })),
+      competences: competences.map((c) => ({
+        dimensionKey: c.dimensionKey,
+        dimensionLabel: c.dimensionLabel,
+        ratingKey: c.ratingKey,
+        ratingLabel: c.ratingLabel,
+        supportNeeded: c.supportNeeded,
+      })),
+      consequences: consequences.map((c) => ({
+        areaKey: c.areaKey,
+        areaLabel: c.areaLabel,
+        severityKey: c.severityKey,
+        severityLabel: c.severityLabel,
+        severityRank: severityRanks[c.severityKey] ?? 0,
+        scheduleImpactKey: c.scheduleImpactKey,
+        scheduleImpactLabel: c.scheduleImpactLabel,
+      })),
     };
   });
 }
