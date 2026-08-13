@@ -1,33 +1,33 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `b9e48162-39e8-4889-9001-34888a434363` · Version 8 · Generiert: 2026-08-10T04:27:43.359Z_
+_Report ID: `ba617a4f-6c50-42d5-af89-8abffef66b17` · Version 9 · Generiert: 2026-08-13T04:27:06.208Z_
 
 ## 1. Prüfidentität
-- Report-ID: `b9e48162-39e8-4889-9001-34888a434363`
-- Reportversion: **8**
-- Vorgängerbericht: `dfb75b8e-1271-453f-8f78-2357fc5fe9ec`
+- Report-ID: `ba617a4f-6c50-42d5-af89-8abffef66b17`
+- Reportversion: **9**
+- Vorgängerbericht: `b9e48162-39e8-4889-9001-34888a434363`
 - Schema: `2.0.0`
-- Dashboard-Version: **1.52.0**
-- Commit: `dcffe47`
+- Dashboard-Version: **1.57.0**
+- Commit: `c4a1813`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: —
-- Testzeit: 2026-08-10T04:27:43.248Z
+- Testzeit: 2026-08-13T04:27:06.105Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:e059219e281951c751272ac99162c65fa70c36e45e0f64fddf444c17da8b2737`
+- Integrität: `sha256:9f00a59b2b6842b287875548cd64d70f6fb3ba848ca0f0636461042a2b8d8ef2`
 
 ## 2. Freigabestufe
-- Vorschlag: **production**
-- Effektiv: **production**
-- Begründung: Alle Pflichtnachweise grün, keine Blocker offen.
+- Vorschlag: **internal-test**
+- Effektiv: **internal-test**
+- Begründung: 1 offene HIGH-Findings.
 
 ## 3. Gesamtstatus
 **bestanden mit Findings**
 
 ## 4. Executive Summary
-- Findings gesamt: 68 (CRITICAL 0 · HIGH 0 · MEDIUM 8 · LOW 43 · akzeptiert 10).
-- Freigabeempfehlung (Legacy): **Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
+- Findings gesamt: 69 (CRITICAL 0 · HIGH 1 · MEDIUM 7 · LOW 44 · akzeptiert 10).
+- Freigabeempfehlung (Legacy): **für Pilot geeignet** — 1 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
 
 ## 5. Prüfbereiche (deklarativ)
 | Bereich | Status | Nachweis |
@@ -67,7 +67,7 @@ _Report ID: `b9e48162-39e8-4889-9001-34888a434363` · Version 8 · Generiert: 20
 | Accessibility | nicht ausgeführt | 0 | 0 |
 | Performance | nicht ausgeführt | 0 | 0 |
 | Dokumentation | bestanden | 0 | 0 |
-| Technische Schulden | bestanden mit Findings | 0 | 0 |
+| Technische Schulden | bestanden mit Findings | 0 | 1 |
 
 ## 7. Findings
 
@@ -119,11 +119,23 @@ _Report ID: `b9e48162-39e8-4889-9001-34888a434363` · Version 8 · Generiert: 20
 - **Empfehlung**: Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.
 - **Aufwand**: M · **Reihenfolge**: high-security · **Status**: accepted
 
-### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (989 Zeilen)
+### td:td-cycle-4f7048fd · HIGH · Zyklische Abhängigkeit (2 Kanten)
+- **Kategorie**: Architektur / Architektur
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Zyklus: src/routeTree.gen.ts → src/router.tsx → src/routeTree.gen.ts
+- **Ursache**: Wechselseitiger Import zwischen Modulen; Fehlende gemeinsame Basis-Abstraktion.
+- **Auswirkung**: Erschwert Tree-Shaking, kann zu undefined-Imports zur Laufzeit führen, blockiert saubere Test-Isolation.
+- **Komponenten**: src/routeTree.gen.ts
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Gemeinsame Types/Utilities in ein drittes Modul extrahieren; Abhängigkeitsrichtung erzwingen.
+- **Aufwand**: M · **Reihenfolge**: high-functional · **Status**: open
+
+### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (1075 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Klassifikation**: accepted-debt · **Gate-relevant**: nein
 - **Quelle**: auto (akzeptiert)
-- **Beschreibung**: Die Datei hat 989 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 1075 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/routes/_authenticated/dashboard.tsx
@@ -203,18 +215,6 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Komponenten**: src/components/azure/AzureActionsPanel.tsx:7
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Ausschließlich `@/lib/azure/azure-service` importieren.
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
-### td:td-layer-d1e551ce · MEDIUM · UI-Direktzugriff auf Persistenz-Schicht
-- **Kategorie**: Architektur / Architektur
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Datei importiert ein verbotenes Modul: from "@/lib/store/dashboard-persistence"
-- **Ursache**: Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.
-- **Auswirkung**: Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.
-- **Komponenten**: src/routes/_authenticated/dashboard.tsx:92
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
 
 ### td:td-layer-e4fb0e64 · MEDIUM · UI-Direktzugriff auf Azure-Interna
@@ -301,11 +301,11 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-oversize-38954b26 · LOW · Modul überschreitet Größenschwelle (560 Zeilen)
+### td:td-oversize-38954b26 · LOW · Modul überschreitet Größenschwelle (580 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
 - **Quelle**: auto
-- **Beschreibung**: Die Datei hat 560 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 580 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/ImportExportDialog.tsx
@@ -337,11 +337,23 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-oversize-92e5643a · LOW · Modul überschreitet Größenschwelle (423 Zeilen)
+### td:td-oversize-92249691 · LOW · Modul überschreitet Größenschwelle (768 Zeilen)
+- **Kategorie**: Architektur / Architektur
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Die Datei hat 768 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
+- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
+- **Komponenten**: src/integrations/supabase/types.ts
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
+- **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
+
+### td:td-oversize-92e5643a · LOW · Modul überschreitet Größenschwelle (403 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
 - **Quelle**: auto
-- **Beschreibung**: Die Datei hat 423 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 403 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/compliance/ComplianceReportPrint.tsx
@@ -361,11 +373,11 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-oversize-d5f3942b · LOW · Modul überschreitet Größenschwelle (496 Zeilen)
+### td:td-oversize-d5f3942b · LOW · Modul überschreitet Größenschwelle (497 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
 - **Quelle**: auto
-- **Beschreibung**: Die Datei hat 496 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 497 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/LogViewerDialog.tsx
@@ -373,11 +385,11 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-oversize-ebfd4b54 · LOW · Modul überschreitet Größenschwelle (563 Zeilen)
+### td:td-oversize-ebfd4b54 · LOW · Modul überschreitet Größenschwelle (585 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
 - **Quelle**: auto
-- **Beschreibung**: Die Datei hat 563 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 585 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/UserManagementDialog.tsx
@@ -842,18 +854,6 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
 
-### td:td-console-665c1d8d · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.
-- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
-- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
-- **Komponenten**: src/integrations/supabase/client.server.ts:42
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
-
 ### td:td-console-6c701bbd · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
 - **Kategorie**: Frontend / Frontend
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
@@ -878,6 +878,18 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
 
+### td:td-console-8c42fa14 · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
+- **Kategorie**: Frontend / Frontend
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Komponenten**: src/integrations/supabase/client.server.ts:45
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
+
 ### td:td-coverage-027fe478 · INFO · Kein Coverage-Report vorhanden
 - **Kategorie**: Tests / Tests
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
@@ -891,21 +903,22 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Aufwand**: S · **Reihenfolge**: test-gap · **Status**: open
 
 ## 8. Sortierte Maßnahmenliste
-- **architecture** (54): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-layer-b432b1b9, td:td-layer-d1e551ce, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-92e5643a, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-43084e7a, td:td-console-665c1d8d, td:td-console-6c701bbd, td:td-console-74bd3646
+- **high-functional** (1): td:td-cycle-4f7048fd
+- **architecture** (54): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-layer-b432b1b9, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-92249691, td:td-oversize-92e5643a, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-43084e7a, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-8c42fa14
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 9. Vergleich zum Vorgängerbericht
-- Neu: 1
-- Behoben: 0
+- Neu: 3
+- Behoben: 2
 - Verschlechtert: 0
-- Unverändert: 67
+- Unverändert: 66
 - Wieder aufgetreten: 0
 - Schweregrad geändert: 0
 - Gate-Relevanz geändert: 0
 - Status geändert: 0
 
 ## 10. Freigabeempfehlung (Legacy)
-**Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
+**für Pilot geeignet** — 1 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
 
 ## 11. Quality-Gate-Blocker (Prompt 2A.10)
 _Keine — CI-Gate ist grün._

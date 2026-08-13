@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "dfb75b8e-1271-453f-8f78-2357fc5fe9ec",
-  "version": 7,
-  "parentReportId": "65e565e0-a9ff-4fb7-84e7-52e9bc3ed248",
-  "generatedAt": "2026-08-07T03:25:49.837Z",
+  "id": "b9e48162-39e8-4889-9001-34888a434363",
+  "version": 8,
+  "parentReportId": "dfb75b8e-1271-453f-8f78-2357fc5fe9ec",
+  "generatedAt": "2026-08-10T04:27:43.359Z",
   "identity": {
-    "dashboardVersion": "1.50.0",
-    "commit": "e45cf08",
+    "dashboardVersion": "1.52.0",
+    "commit": "dcffe47",
     "buildTime": null,
-    "testTime": "2026-08-07T03:25:49.706Z",
+    "testTime": "2026-08-10T04:27:43.248Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -121,13 +121,13 @@
     }
   },
   "summary": {
-    "total": 67,
+    "total": 68,
     "openTotal": 58,
     "critical": 0,
     "high": 0,
     "medium": 8,
     "low": 43,
-    "accepted": 9,
+    "accepted": 10,
     "sources": {
       "security": {
         "status": "passed-with-findings",
@@ -154,8 +154,8 @@
         "count": 0
       },
       "manual": {
-        "status": "passed",
-        "count": 0
+        "status": "passed-with-findings",
+        "count": 1
       }
     }
   },
@@ -2263,6 +2263,42 @@
       "order": 8
     },
     {
+      "id": "man:avkk-can-write-execute",
+      "severity": "LOW",
+      "category": "RBAC",
+      "area": "RBAC",
+      "title": "avkk_can_write ist für die Rolle authenticated ausführbar",
+      "description": "Der Datenbank-Linter meldet, dass public.avkk_can_write(uuid) von der Rolle authenticated ausgeführt werden darf. Das ist zwingend erforderlich, weil die Funktion in den RLS-Policies der AVKK-Tabellen ausgewertet wird; ohne EXECUTE scheitert jeder Schreibvorgang. Bewertung und Begründung: ADR-0025, Abschnitt „avkk_can_write“.",
+      "cause": "RLS-Policies auf avkk_subject, avkk_competence und avkk_consequence rufen die Funktion im USING-/WITH-CHECK-Ausdruck auf. Postgres wertet diese Ausdrücke mit den Rechten des aufrufenden Nutzers aus.",
+      "impact": "Ein angemeldeter Nutzer kann für eine geratene Subject-UUID die boolesche Antwort „darf ich schreiben“ erfragen. Die Funktion liefert ausschließlich true/false, keine Tabelleninhalte, keine Fremddaten und keine Existenzaussage über konkrete Sachdaten.",
+      "rootCause": "Notwendige Rechtevergabe für policybasierte Autorisierung, keine Fehlkonfiguration.",
+      "evidence": {
+        "file": "docs/ADR/0025-avkk-umsetzung-07b.md",
+        "line": null,
+        "reportRef": "supabase linter: function_execute_grant"
+      },
+      "components": [
+        "public.avkk_can_write",
+        "RLS AVKK"
+      ],
+      "recommendation": "Beibehalten. EXECUTE bleibt auf authenticated und service_role beschränkt (kein anon). Funktion bleibt SECURITY DEFINER, STABLE, mit search_path = public und boolescher Rückgabe. Abgesichert durch src/__tests__/security/avkk-rls.test.ts.",
+      "dependencies": [],
+      "owner": "Plattform",
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": "ADR-0025",
+      "effort": "S",
+      "status": "accepted",
+      "source": "manual",
+      "accepted": true,
+      "gateRelevant": false,
+      "classification": "accepted-debt",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
       "id": "td:td-manual-msw-coverage-gap",
       "severity": "LOW",
       "category": "Tests",
@@ -2684,7 +2720,9 @@
     }
   ],
   "diff": {
-    "new": [],
+    "new": [
+      "man:avkk-can-write-execute"
+    ],
     "fixed": [],
     "worse": [],
     "same": [
@@ -2765,7 +2803,7 @@
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "516c0dfb8edecc4175daf782bcc84de9791ba6e0e555e649eb42db70cc6d5f3f",
+    "value": "e059219e281951c751272ac99162c65fa70c36e45e0f64fddf444c17da8b2737",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",
