@@ -447,6 +447,7 @@ releaseManagement:
     - "docs/ARCHITECTURE.md"
     - "docs/ADR/0023-phasenmodell-infrastrukturabschluss.md"
     - "docs/MVP-ACCEPTANCE-REPORT.md"
+    - "docs/ROLE-ACCEPTANCE-09C.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
   nextReleaseTarget: "Sprint 06 completion (Phase 2 Start)"
 
