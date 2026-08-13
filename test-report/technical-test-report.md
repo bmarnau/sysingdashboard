@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `e879dce5-fbee-4256-b55c-a92786862374` · Version 10 · Generiert: 2026-08-13T04:34:47.461Z_
+_Report ID: `a6d187b0-daf8-4a20-8eab-cd95ad72776c` · Version 11 · Generiert: 2026-08-13T04:35:05.674Z_
 
 ## 1. Prüfidentität
-- Report-ID: `e879dce5-fbee-4256-b55c-a92786862374`
-- Reportversion: **10**
-- Vorgängerbericht: `ba617a4f-6c50-42d5-af89-8abffef66b17`
+- Report-ID: `a6d187b0-daf8-4a20-8eab-cd95ad72776c`
+- Reportversion: **11**
+- Vorgängerbericht: `e879dce5-fbee-4256-b55c-a92786862374`
 - Schema: `2.0.0`
 - Dashboard-Version: **1.58.0**
-- Commit: `dfd685a`
+- Commit: `79f0596`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
-- Build-Zeit: —
-- Testzeit: 2026-08-13T04:34:47.360Z
+- Build-Zeit: 2026-08-13T04:35:01.150Z
+- Testzeit: 2026-08-13T04:35:05.560Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:7b9fdc2a09ebc6786203653186bbc0d9bd3952c885ff3d5e6dfcd9fbe1c35576`
+- Integrität: `sha256:820e6c0759dda181039c83eb68e156ccfd87ba6ee9f155bfee2ba0cbf92387b0`
 
 ## 2. Freigabestufe
 - Vorschlag: **internal-test**
@@ -35,7 +35,7 @@ _Report ID: `e879dce5-fbee-4256-b55c-a92786862374` · Version 10 · Generiert: 2
 | architecture | bestanden mit Findings | test-report/tech-debt.md |
 | rbac | bestanden mit Findings | src/__tests__/security/rbac-v2.test.ts, docs/RBAC-MATRIX.md |
 | apiSecurity | bestanden | test-report/api-findings.md, test-report/api-matrix.md |
-| operations | nicht ausgeführt | test-report/ops-report.md |
+| operations | bestanden | test-report/ops-report.md |
 | tests | bestanden mit Findings | test-report/security-vitest.json, test-report/backup-vitest.json |
 | backup | bestanden | test-report/backup-integrity-report.md |
 | auth | bestanden mit Findings | e2e/specs/navigation.spec.ts, test-report/security-report.md, docs/ADR/0013-security-release-gate.md |
@@ -55,17 +55,17 @@ _Report ID: `e879dce5-fbee-4256-b55c-a92786862374` · Version 10 · Generiert: 2
 
 | Bereich | Status | CRIT offen | HIGH offen |
 | --- | --- | ---: | ---: |
-| Frontend | nicht ausgeführt | 0 | 0 |
-| Backend | nicht ausgeführt | 0 | 0 |
+| Frontend | bestanden | 0 | 0 |
+| Backend | bestanden | 0 | 0 |
 | API | bestanden | 0 | 0 |
-| UI/E2E | nicht ausgeführt | 0 | 0 |
+| UI/E2E | bestanden | 0 | 0 |
 | RBAC | bestanden mit Findings | 0 | 0 |
 | Auth | bestanden mit Findings | 0 | 0 |
 | Azure | bestanden mit Findings | 0 | 0 |
 | Datenintegrität | bestanden | 0 | 0 |
 | Backup/Restore | bestanden | 0 | 0 |
-| Accessibility | nicht ausgeführt | 0 | 0 |
-| Performance | nicht ausgeführt | 0 | 0 |
+| Accessibility | bestanden | 0 | 0 |
+| Performance | bestanden | 0 | 0 |
 | Dokumentation | bestanden | 0 | 0 |
 | Technische Schulden | bestanden mit Findings | 0 | 1 |
 

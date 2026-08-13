@@ -160,6 +160,22 @@
       "integrityHash": "7b9fdc2a09ebc6786203653186bbc0d9bd3952c885ff3d5e6dfcd9fbe1c35576",
       "released": false,
       "file": "test-report/history/2026-08-13T04-34-47-461Z-e879dce5-fbee-4256-b55c-a92786862374.json"
+    },
+    {
+      "id": "a6d187b0-daf8-4a20-8eab-cd95ad72776c",
+      "version": 11,
+      "parentReportId": "e879dce5-fbee-4256-b55c-a92786862374",
+      "generatedAt": "2026-08-13T04:35:05.674Z",
+      "dashboardVersion": "1.58.0",
+      "commit": "79f0596",
+      "status": "passed-with-findings",
+      "releaseStage": {
+        "proposed": "internal-test",
+        "effective": "internal-test"
+      },
+      "integrityHash": "820e6c0759dda181039c83eb68e156ccfd87ba6ee9f155bfee2ba0cbf92387b0",
+      "released": false,
+      "file": "test-report/history/2026-08-13T04-35-05-674Z-a6d187b0-daf8-4a20-8eab-cd95ad72776c.json"
     }
   ]
 }

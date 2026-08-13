@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "ba617a4f-6c50-42d5-af89-8abffef66b17",
-  "version": 9,
-  "parentReportId": "b9e48162-39e8-4889-9001-34888a434363",
-  "generatedAt": "2026-08-13T04:27:06.208Z",
+  "id": "e879dce5-fbee-4256-b55c-a92786862374",
+  "version": 10,
+  "parentReportId": "ba617a4f-6c50-42d5-af89-8abffef66b17",
+  "generatedAt": "2026-08-13T04:34:47.461Z",
   "identity": {
-    "dashboardVersion": "1.57.0",
-    "commit": "c4a1813",
+    "dashboardVersion": "1.58.0",
+    "commit": "dfd685a",
     "buildTime": null,
-    "testTime": "2026-08-13T04:27:06.105Z",
+    "testTime": "2026-08-13T04:34:47.360Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -61,7 +61,7 @@
     },
     "auth": {
       "status": "passed-with-findings",
-      "evidence": "e2e/specs/navigation.spec.ts, test-report/security-report.md, docs/adr/ADR-0013-security-release-gate.md",
+      "evidence": "e2e/specs/navigation.spec.ts, test-report/security-report.md, docs/ADR/0013-security-release-gate.md",
       "note": "Login, Logout, Session-Wiederherstellung, Redirect-Sicherheit umgesetzt. Realer Published-Login gegen Supabase außerhalb der CI verifiziert (Sprint 03B)."
     },
     "rls": {
@@ -2761,21 +2761,15 @@
     }
   ],
   "diff": {
-    "new": [
-      "td:td-cycle-4f7048fd",
-      "td:td-oversize-92249691",
-      "td:td-console-8c42fa14"
-    ],
-    "fixed": [
-      "td:td-layer-d1e551ce",
-      "td:td-console-665c1d8d"
-    ],
+    "new": [],
+    "fixed": [],
     "worse": [],
     "same": [
       "sec:SEC-CRIT-001",
       "sec:SEC-CRIT-002",
       "sec:SEC-HIGH-STATUS-001",
       "sec:SEC-HIGH-LOG-001",
+      "td:td-cycle-4f7048fd",
       "td:td-oversize-7e9a0b20",
       "sec:SEC-HIGH-AUTH-001",
       "sec:SEC-HIGH-AZURE-001",
@@ -2793,6 +2787,7 @@
       "td:td-oversize-38954b26",
       "td:td-oversize-392d9209",
       "td:td-oversize-564261af",
+      "td:td-oversize-92249691",
       "td:td-oversize-92e5643a",
       "td:td-oversize-af210d92",
       "td:td-oversize-d5f3942b",
@@ -2837,6 +2832,7 @@
       "td:td-console-43084e7a",
       "td:td-console-6c701bbd",
       "td:td-console-74bd3646",
+      "td:td-console-8c42fa14",
       "td:td-coverage-027fe478"
     ],
     "reappeared": [],
@@ -2848,7 +2844,7 @@
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "9f00a59b2b6842b287875548cd64d70f6fb3ba848ca0f0636461042a2b8d8ef2",
+    "value": "7b9fdc2a09ebc6786203653186bbc0d9bd3952c885ff3d5e6dfcd9fbe1c35576",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",
