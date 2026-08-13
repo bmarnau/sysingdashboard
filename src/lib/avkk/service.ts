@@ -195,10 +195,29 @@ export async function findOrphanSubjects(existing: ReadonlySet<string>): Promise
   return all.filter((s) => !existing.has(`${s.subjectType}:${s.subjectId}`));
 }
 
+/**
+ * Lädt alle sichtbaren Dossiers in einem Durchgang. Der Schwellwert wird
+ * einmalig geladen (statt je Subjekt) — für Arbeitsplatz und Führungssicht.
+ * RLS bleibt maßgeblich: es kommen ausschließlich Datensätze zurück, die der
+ * angemeldete Benutzer lesen darf.
+ */
+export async function listDossiers(threshold?: RiskThreshold): Promise<AvkkDossier[]> {
+  const all = await repository.subjects.list();
+  const limits = threshold ?? (await repository.settings.riskThreshold());
+  return Promise.all(
+    all.map(async (subject) => {
+      const aggregate = await repository.loadAggregate(subject);
+      const risk = evaluateRisk(aggregate.responsibilities, aggregate.competences, limits);
+      return { ...aggregate, atRisk: risk.atRisk, riskReasons: risk.reasons };
+    }),
+  );
+}
+
 export const AvkkService = {
   registerSubjectResolver,
   createSubject,
   listSubjects,
+  listDossiers,
   assignResponsibility,
   rateCompetence,
   addConsequence,
