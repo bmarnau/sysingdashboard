@@ -38,7 +38,7 @@ export function kpisOf(summary: ManagementSummary): KpiDefinition[] {
       id: "critical",
       label: "Kritische Konsequenz",
       value: summary.critical,
-      hint: "Schweregrad „kritisch" erfasst",
+      hint: "Schweregrad „kritisch“ erfasst",
       tone: "danger",
     },
     {
@@ -59,7 +59,7 @@ export function kpisOf(summary: ManagementSummary): KpiDefinition[] {
       id: "highConsequence",
       label: "Hohe Konsequenz",
       value: summary.highConsequence,
-      hint: "Schweregrad „hoch" oder höher",
+      hint: "Schweregrad „hoch“ oder höher",
       tone: "warn",
     },
     {
