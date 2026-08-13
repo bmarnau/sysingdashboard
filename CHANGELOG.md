@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.3 - 2026-08-13
+
+- **Mehrbenutzer-Demoszenario**: Der Systemhaus-Demo-Datensatz verteilt Projekte, Arbeitspakete und AVKK-Fälle jetzt auf vier fiktive Personen (zwei Systemingenieure, Projektleitung, Führungssicht) statt alles dem einspielenden Konto zuzuordnen.
+- **Zuordnung im Demo-Dialog**: Je Demo-Person lässt sich ein vorhandenes Anmeldekonto wählen; ohne Zuordnung bleibt das bisherige Verhalten erhalten. Das Protokoll weist aus, wie viele Verantwortungen auf eigene Konten gezeigt haben.
+- **Neue Anleitung**: `docs/DEMO-USERS.md` beschreibt Personen, benötigte Rollen und die Einrichtung der Demo-Konten.
+- **Rollenabnahme erweitert**: `docs/ROLE-ACCEPTANCE-09C.md` erhält eine Mehrbenutzer-Matrix mit abgeleiteten Referenzwerten je Person.
+- **Ehrlich dokumentierte Grenze**: Die AVKK-Leseregeln prüfen nur das Leserecht — „Mein AVKK" trennt in der Sicht, nicht in der Datenbank. Diese Grenze ist jetzt in Handbuch, Abnahmebericht und Checkliste benannt.
+
 ## 1.58.2 - 2026-08-13
 
 - **Produktübersicht als Word**: `SYSING-001` liegt jetzt zusätzlich als Word-Datei vor. Word und PDF entstehen aus derselben Markdown-Quelle, damit Inhalt und Reihenfolge nicht auseinanderlaufen können; die Fassung wurde Seite für Seite visuell geprüft.

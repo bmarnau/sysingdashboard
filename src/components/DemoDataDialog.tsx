@@ -6,7 +6,7 @@
  * - Cloud: AVKK-Sachverhalte — nur stilllegbar, da die Datenbank kein
  *   Löschen kennt (Historisierung, ADR-0026)
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Database, Loader2, ShieldAlert } from "lucide-react";
 import {
   Dialog,
@@ -20,8 +20,11 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { can } from "@/lib/rbac/permissions";
+import { listUsers } from "@/lib/users-supabase-service";
+import type { UserProfile } from "@/lib/user-management";
 import {
   DEMO_AVKK_VERSION,
+  DEMO_PERSONAS,
   DEMO_DATASET_VERSION,
   demoAvkkCases,
   hasDemoData,
@@ -30,6 +33,7 @@ import {
   seedAvkkDemoData,
   seedDemoData,
 } from "@/lib/demo-data";
+import type { DemoPersonaAccounts, DemoPersonaId } from "@/lib/demo-data";
 import { logger } from "@/lib/logger";
 
 interface DemoDataDialogProps {
@@ -42,6 +46,33 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
   const mayWriteAvkk = can(user, "avkk.edit");
   const [busy, setBusy] = useState<null | "seed" | "remove" | "avkk" | "retire">(null);
   const [log, setLog] = useState<string[]>([]);
+  const [accounts, setAccounts] = useState<DemoPersonaAccounts>({});
+  const [candidates, setCandidates] = useState<UserProfile[]>([]);
+  const [candidatesError, setCandidatesError] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    let active = true;
+    listUsers()
+      .then((users) => {
+        if (active) setCandidates(users);
+      })
+      .catch((error) => {
+        logger.warn("Konten für die Demo-Zuordnung nicht lesbar", { error: String(error) });
+        if (active) setCandidatesError(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [open]);
+
+  const setAccount = (personaId: DemoPersonaId, userId: string) =>
+    setAccounts((prev) => {
+      const next = { ...prev };
+      if (userId === "") delete next[personaId];
+      else next[personaId] = userId;
+      return next;
+    });
 
   const append = (line: string) => setLog((prev) => [...prev, line]);
 
@@ -65,10 +96,11 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
     if (!user?.id) return;
     setBusy("avkk");
     try {
-      const result = await seedAvkkDemoData(user.id);
+      const result = await seedAvkkDemoData(user.id, accounts);
       append(
         `AVKK eingespielt: ${result.created} Sachverhalte neu, ${result.skipped} übersprungen, ` +
-          `${result.responsibilities} Verantwortungen, ${result.competences} Kompetenzbewertungen, ` +
+          `${result.responsibilities} Verantwortungen (davon ${result.delegated} auf eigene ` +
+          `Demo-Konten), ${result.competences} Kompetenzbewertungen, ` +
           `${result.consequences} Konsequenzen.`,
       );
       toast.success("AVKK-Demofälle eingespielt");
@@ -168,6 +200,46 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
               Ihnen fehlt die Berechtigung zum Bearbeiten von AVKK-Daten.
             </p>
           )}
+          <div className="space-y-2 rounded-md border border-border/70 p-3">
+            <h4 className="text-xs font-semibold">Zuordnung der Demo-Personen</h4>
+            <p className="text-xs text-muted-foreground">
+              Ohne Zuordnung laufen alle Verantwortungen auf Ihr eigenes Konto — dann ist kein
+              Mehrbenutzer-Nachweis möglich. Anleitung: <code>docs/DEMO-USERS.md</code>.
+            </p>
+            {candidatesError && (
+              <p className="text-xs text-destructive">
+                Konten konnten nicht gelesen werden. Ohne Administratorrechte ist nur die eigene
+                Zuordnung möglich.
+              </p>
+            )}
+            <ul className="space-y-2">
+              {DEMO_PERSONAS.map((persona) => (
+                <li key={persona.id} className="grid gap-1 sm:grid-cols-2 sm:items-center">
+                  <label className="text-xs" htmlFor={`demo-persona-${persona.id}`}>
+                    <span className="font-medium">{persona.displayName}</span>
+                    <span className="block text-muted-foreground">
+                      {persona.functionLabel} · Rolle {persona.requiredRole}
+                    </span>
+                  </label>
+                  <select
+                    id={`demo-persona-${persona.id}`}
+                    className="h-9 w-full rounded-md border border-input bg-background px-2 text-xs"
+                    value={accounts[persona.id] ?? ""}
+                    onChange={(e) => setAccount(persona.id, e.target.value)}
+                    disabled={busy !== null}
+                  >
+                    <option value="">eigenes Konto (kein Mehrbenutzer-Nachweis)</option>
+                    {candidates.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.displayName} · {c.role}
+                      </option>
+                    ))}
+                  </select>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <div className="flex gap-2">
             <Button size="sm" onClick={runAvkkSeed} disabled={!mayWriteAvkk || busy !== null}>
               {busy === "avkk" && <Loader2 className="mr-1 size-4 animate-spin" />}

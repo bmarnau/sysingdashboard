@@ -286,6 +286,18 @@ Alle Kennungen tragen das Präfix \`demo-\`. Der Stichtag des Datensatzes ist
 standardmäßig der aktuelle Tag, damit Fristen ihre Bedeutung behalten: „im
 Plan" liegt in der Zukunft, „überfällig" in der Vergangenheit.
 
+## Demo-Personen und Mehrbenutzer-Vorführung
+Der Datensatz verteilt seine Inhalte auf vier fiktive Personen: zwei
+Systemingenieure (Netzwerk bzw. Microsoft 365/Backup), eine Projektleitung und
+eine Führungssicht. Im Abschnitt „Zuordnung der Demo-Personen" lässt sich je
+Person ein vorhandenes Anmeldekonto wählen; ohne Zuordnung laufen alle
+Verantwortungen auf Ihr eigenes Konto und die Sichten sehen für jede Anmeldung
+gleich aus. Die Einrichtung der Konten beschreibt \`docs/DEMO-USERS.md\`.
+
+> **Grenze, die man kennen sollte:** Wer AVKK lesen darf, sieht alle
+> Sachverhalte. „Mein AVKK" filtert auf die eigene Verantwortung — die Trennung
+> wirkt in der Sicht und beim Schreiben, nicht beim Lesen.
+
 ## Berechtigung
 Der Menüpunkt erscheint nur mit dem Recht zum Bearbeiten von AVKK-Daten. Das
 Einspielen läuft unter Ihren eigenen Rechten; fremde Daten werden nicht

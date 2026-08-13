@@ -15,12 +15,16 @@ import type { AvkkDossier } from "@/lib/avkk/types";
 import { isDemoId } from "./dataset";
 import { DEMO_AVKK_VERSION, demoAvkkCases } from "./avkk-dataset";
 import type { DemoAvkkCase } from "./avkk-dataset";
+import { resolvePersonId } from "./personas";
+import type { DemoPersonaAccounts } from "./personas";
 
 export interface AvkkSeedResult {
   version: string;
   created: number;
   skipped: number;
   responsibilities: number;
+  /** Anzahl Verantwortungen, die auf ein eigenes Demo-Konto gezeigt haben. */
+  delegated: number;
   competences: number;
   consequences: number;
 }
@@ -40,6 +44,7 @@ export async function listDemoDossiers(): Promise<AvkkDossier[]> {
 async function seedCase(
   demoCase: DemoAvkkCase,
   actorId: string,
+  accounts: DemoPersonaAccounts,
   result: AvkkSeedResult,
 ): Promise<void> {
   const existing = await AvkkService.getDossier(demoCase.subjectType, demoCase.subjectId);
@@ -63,13 +68,14 @@ async function seedCase(
   if (demoCase.responsibility) {
     await AvkkService.assignResponsibility({
       subjectRef,
-      personId: actorId,
+      personId: resolvePersonId(demoCase.subjectId, accounts, actorId),
       roleKey: demoCase.responsibility.roleKey,
       typeKeys: demoCase.responsibility.typeKeys,
       note: demoCase.responsibility.note,
       actorId,
     });
     result.responsibilities += 1;
+    if (resolvePersonId(demoCase.subjectId, accounts, actorId) !== actorId) result.delegated += 1;
   }
 
   for (const k of demoCase.competences) {
@@ -101,18 +107,22 @@ async function seedCase(
  * Idempotent: bereits vorhandene, offene Demo-Sachverhalte werden übersprungen.
  * Erfordert `avkk.edit` — ohne Berechtigung schlägt der Aufruf über RLS fehl.
  */
-export async function seedAvkkDemoData(actorId: string): Promise<AvkkSeedResult> {
+export async function seedAvkkDemoData(
+  actorId: string,
+  accounts: DemoPersonaAccounts = {},
+): Promise<AvkkSeedResult> {
   const result: AvkkSeedResult = {
     version: DEMO_AVKK_VERSION,
     created: 0,
     skipped: 0,
     responsibilities: 0,
+    delegated: 0,
     competences: 0,
     consequences: 0,
   };
 
   for (const demoCase of demoAvkkCases) {
-    await seedCase(demoCase, actorId, result);
+    await seedCase(demoCase, actorId, accounts, result);
   }
   return result;
 }

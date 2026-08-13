@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-13 · Dashboard-Version 1.58.1
+Stand: 2026-08-13 · Dashboard-Version 1.58.3
 
 ## Vision
 
@@ -501,3 +501,31 @@ davon abhängt.
 Die Freigabeempfehlung bleibt GO WITH FINDINGS. Die Modulgröße der
 Dashboard-Route bleibt bewusst als dokumentierte Schuld nach ADR-0019 stehen;
 sie in einem Hardening-Sprint anzufassen hätte mehr Risiko erzeugt als gelöst.
+
+## Sprint 09C – Nachprüfung F-11: Mehrbenutzer-Demoszenario (v1.58.3)
+
+Die Rollenabnahme scheiterte bisher an einer unscheinbaren Stelle im Seed: alle
+Verantwortungen wurden dem einspielenden Konto zugeordnet. Damit sah jede
+Anmeldung dasselbe, und die Frage „stimmen die persönlichen Sichten?" war gar
+nicht beantwortbar. Der Datensatz verteilt seine acht Sachverhalte nun auf vier
+fiktive Personen — zwei Systemingenieure mit klar getrennten Themen, eine
+Projektleitung über zwei Projekte und eine Führungssicht über das Portfolio.
+Die Zuordnung hängt an der Objektkennung, nicht an der Fallnummer, damit
+lokaler Bestand und AVKK-Fälle zusammenpassen, auch wenn Fälle später
+umsortiert werden.
+
+Im Demo-Dialog wird je Person ein vorhandenes Anmeldekonto gewählt. Ohne
+Zuordnung bleibt das alte Verhalten bestehen, was für Einzelvorführungen
+weiterhin richtig ist. Die Erwartungswerte für die Abnahme werden aus dem
+Datensatz abgeleitet statt gepflegt: eine Checkliste, die nach der nächsten
+Datensatzänderung falsch dasteht, wäre schlimmer als keine.
+
+Zwei Dinge mussten dabei ehrlich benannt statt kaschiert werden. Erstens prüfen
+die Leseregeln der AVKK-Tabellen nur das Leserecht — wer lesen darf, sieht
+alles; „Mein AVKK" trennt in der Sicht, nicht in der Datenbank. Zweitens liegen
+Projekte, Arbeitspakete und Tätigkeiten weiterhin lokal im Browser und kennen
+überhaupt keine Personentrennung. Beides steht jetzt als Befund im
+Abnahmebericht, statt durch schnell nachgezogene Policies verdeckt zu werden.
+Die Unterschriften der Rollenabnahme fehlen weiterhin; F-11 bleibt deshalb
+MANUAL VERIFICATION REQUIRED, nun aber mit einem Szenario, das eine Abzeichnung
+überhaupt aussagekräftig macht.
