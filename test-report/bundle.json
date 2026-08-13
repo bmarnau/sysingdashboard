@@ -1,0 +1,952 @@
+{
+  "generatedAt": "2026-08-13T04:47:20.049Z",
+  "totalSize": 11276269,
+  "top": [
+    {
+      "path": "client/assets/pdf.worker.min-qwK7q_zL.mjs",
+      "size": 1046214
+    },
+    {
+      "path": "server/_libs/pdfjs-dist.mjs",
+      "size": 777366
+    },
+    {
+      "path": "client/assets/index-CHkUw3H5.js",
+      "size": 665400
+    },
+    {
+      "path": "server/_libs/docx.mjs",
+      "size": 663422
+    },
+    {
+      "path": "server/_ssr/dashboard-ftenry-e.mjs",
+      "size": 611000
+    },
+    {
+      "path": "server/_libs/react-dom.mjs",
+      "size": 499250
+    },
+    {
+      "path": "client/assets/dashboard-CIaXziPg.js",
+      "size": 481316
+    },
+    {
+      "path": "server/_libs/jspdf.mjs",
+      "size": 476351
+    },
+    {
+      "path": "client/assets/PdfCanvasViewer-2t6efsQs.js",
+      "size": 426415
+    },
+    {
+      "path": "client/assets/jspdf.plugin.autotable-BQD1ZLIs.js",
+      "size": 410120
+    },
+    {
+      "path": "client/assets/ReportDialog-oGh9qlUn.js",
+      "size": 379857
+    },
+    {
+      "path": "server/_libs/html2canvas.mjs",
+      "size": 349462
+    },
+    {
+      "path": "server/_libs/supabase__auth-js.mjs",
+      "size": 303226
+    },
+    {
+      "path": "server/_ssr/TechnicalReportDialog-QigRgn3k.mjs",
+      "size": 286670
+    },
+    {
+      "path": "client/assets/TechnicalReportDialog-DgOi84ft.js",
+      "size": 251091
+    }
+  ],
+  "all": [
+    {
+      "path": "client/assets/pdf.worker.min-qwK7q_zL.mjs",
+      "size": 1046214
+    },
+    {
+      "path": "server/_libs/pdfjs-dist.mjs",
+      "size": 777366
+    },
+    {
+      "path": "client/assets/index-CHkUw3H5.js",
+      "size": 665400
+    },
+    {
+      "path": "server/_libs/docx.mjs",
+      "size": 663422
+    },
+    {
+      "path": "server/_ssr/dashboard-ftenry-e.mjs",
+      "size": 611000
+    },
+    {
+      "path": "server/_libs/react-dom.mjs",
+      "size": 499250
+    },
+    {
+      "path": "client/assets/dashboard-CIaXziPg.js",
+      "size": 481316
+    },
+    {
+      "path": "server/_libs/jspdf.mjs",
+      "size": 476351
+    },
+    {
+      "path": "client/assets/PdfCanvasViewer-2t6efsQs.js",
+      "size": 426415
+    },
+    {
+      "path": "client/assets/jspdf.plugin.autotable-BQD1ZLIs.js",
+      "size": 410120
+    },
+    {
+      "path": "client/assets/ReportDialog-oGh9qlUn.js",
+      "size": 379857
+    },
+    {
+      "path": "server/_libs/html2canvas.mjs",
+      "size": 349462
+    },
+    {
+      "path": "server/_libs/supabase__auth-js.mjs",
+      "size": 303226
+    },
+    {
+      "path": "server/_ssr/TechnicalReportDialog-QigRgn3k.mjs",
+      "size": 286670
+    },
+    {
+      "path": "client/assets/TechnicalReportDialog-DgOi84ft.js",
+      "size": 251091
+    },
+    {
+      "path": "client/assets/html2canvas.esm-DXEQVQnt.js",
+      "size": 201041
+    },
+    {
+      "path": "server/_libs/tanstack__router-core.mjs",
+      "size": 171406
+    },
+    {
+      "path": "server/_libs/canvg.mjs",
+      "size": 160855
+    },
+    {
+      "path": "client/assets/index.es-D-sjQNQA.js",
+      "size": 159029
+    },
+    {
+      "path": "server/_libs/core-js.mjs",
+      "size": 150717
+    },
+    {
+      "path": "server/_libs/supabase__postgrest-js.mjs",
+      "size": 107756
+    },
+    {
+      "path": "server/_libs/zod.mjs",
+      "size": 106075
+    },
+    {
+      "path": "server/_libs/supabase__storage-js.mjs",
+      "size": 102336
+    },
+    {
+      "path": "client/assets/styles-S17H9Aie.css",
+      "size": 101843
+    },
+    {
+      "path": "server/_libs/tailwind-merge.mjs",
+      "size": 99205
+    },
+    {
+      "path": "server/_ssr/ImportExportDialog-BFs5Z-Fq.mjs",
+      "size": 80135
+    },
+    {
+      "path": "server/_libs/supabase__realtime-js.mjs",
+      "size": 78463
+    },
+    {
+      "path": "server/_libs/jspdf-autotable.mjs",
+      "size": 66290
+    },
+    {
+      "path": "server/_libs/dompurify.mjs",
+      "size": 63289
+    },
+    {
+      "path": "server/_libs/pako.mjs",
+      "size": 59512
+    },
+    {
+      "path": "server/_ssr/server-By8S6ptd.mjs",
+      "size": 57988
+    },
+    {
+      "path": "server/_libs/sonner.mjs",
+      "size": 56104
+    },
+    {
+      "path": "server/_libs/supabase__phoenix.mjs",
+      "size": 55820
+    },
+    {
+      "path": "server/_libs/tanstack__query-core.mjs",
+      "size": 54768
+    },
+    {
+      "path": "server/_libs/radix-ui__react-select.mjs",
+      "size": 52285
+    },
+    {
+      "path": "server/_ssr/ExportDialog-D1Z27q27.mjs",
+      "size": 50336
+    },
+    {
+      "path": "server/_ssr/ReportDialog-BVznSB7e.mjs",
+      "size": 50271
+    },
+    {
+      "path": "client/assets/ImportExportDialog-Caf6ywmM.js",
+      "size": 49619
+    },
+    {
+      "path": "client/assets/select-wqtpCtpS.js",
+      "size": 49171
+    },
+    {
+      "path": "server/_libs/seroval.mjs",
+      "size": 48446
+    },
+    {
+      "path": "server/_ssr/router-CeNW-h88.mjs",
+      "size": 45783
+    },
+    {
+      "path": "server/_libs/react-pdf.mjs",
+      "size": 45165
+    },
+    {
+      "path": "server/_libs/tanstack__react-router.mjs",
+      "size": 42541
+    },
+    {
+      "path": "server/_ssr/DevDiaryDialog-DNv6clw9.mjs",
+      "size": 39165
+    },
+    {
+      "path": "server/_ssr/AzureDataDialog-C2X0lBhX.mjs",
+      "size": 38594
+    },
+    {
+      "path": "client/assets/DevDiaryDialog-DQ6aqRr-.js",
+      "size": 33589
+    },
+    {
+      "path": "server/_libs/supabase__supabase-js.mjs",
+      "size": 33291
+    },
+    {
+      "path": "client/assets/button-KHZEZIOH.js",
+      "size": 31743
+    },
+    {
+      "path": "server/_ssr/UserManualDialog-CoL-r6TF.mjs",
+      "size": 30397
+    },
+    {
+      "path": "server/_ssr/PerformanceReport-D1Alxi8K.mjs",
+      "size": 29573
+    },
+    {
+      "path": "server/_ssr/DemoDataDialog-bBNEmLHD.mjs",
+      "size": 29220
+    },
+    {
+      "path": "client/assets/purify.es-Ddytg4bZ.js",
+      "size": 27883
+    },
+    {
+      "path": "server/_libs/lucide-react.mjs",
+      "size": 26617
+    },
+    {
+      "path": "client/assets/ExportDialog-BDt1KAau.js",
+      "size": 26401
+    },
+    {
+      "path": "server/_libs/fflate.mjs",
+      "size": 26057
+    },
+    {
+      "path": "server/_libs/svg-pathdata.mjs",
+      "size": 25981
+    },
+    {
+      "path": "server/_ssr/LogViewerDialog-C2r1z_GJ.mjs",
+      "size": 25609
+    },
+    {
+      "path": "server/_libs/fast-png.mjs",
+      "size": 25111
+    },
+    {
+      "path": "server/_ssr/SystemStatusDialog-BUfkbdba.mjs",
+      "size": 25051
+    },
+    {
+      "path": "server/index.mjs",
+      "size": 24746
+    },
+    {
+      "path": "server/_libs/floating-ui__core.mjs",
+      "size": 24058
+    },
+    {
+      "path": "server/_ssr/UserManagementDialog-HYBI6NR7.mjs",
+      "size": 23506
+    },
+    {
+      "path": "server/_ssr/WorkingTimeModelsDialog-DMaP67BH.mjs",
+      "size": 22636
+    },
+    {
+      "path": "server/_libs/floating-ui__dom.mjs",
+      "size": 21284
+    },
+    {
+      "path": "server/_libs/react.mjs",
+      "size": 20243
+    },
+    {
+      "path": "client/assets/AzureDataDialog-Jsz7vpEr.js",
+      "size": 19740
+    },
+    {
+      "path": "client/assets/DemoDataDialog-DXLs2nEf.js",
+      "size": 18158
+    },
+    {
+      "path": "server/_libs/iobuffer.mjs",
+      "size": 17215
+    },
+    {
+      "path": "server/_ssr/DownloadCenterDialog-BGoq-CPW.mjs",
+      "size": 16757
+    },
+    {
+      "path": "server/_libs/iceberg-js.mjs",
+      "size": 15696
+    },
+    {
+      "path": "client/assets/UserManualDialog-BNCvFwLu.js",
+      "size": 15576
+    },
+    {
+      "path": "server/_ssr/pdf-export-CPAevH9A.mjs",
+      "size": 15393
+    },
+    {
+      "path": "client/assets/PerformanceReport-BMO5lulD.js",
+      "size": 15001
+    },
+    {
+      "path": "server/_ssr/BackupDialog-Br3kFhPi.mjs",
+      "size": 14354
+    },
+    {
+      "path": "server/_ssr/SaveTargetDialog-DGhkqtUy.mjs",
+      "size": 14347
+    },
+    {
+      "path": "server/_libs/h3.mjs",
+      "size": 14337
+    },
+    {
+      "path": "server/_ssr/auth-CzTMGmyb.mjs",
+      "size": 13803
+    },
+    {
+      "path": "server/_libs/radix-ui__react-radio-group.mjs",
+      "size": 13551
+    },
+    {
+      "path": "server/_libs/react-remove-scroll.mjs",
+      "size": 13391
+    },
+    {
+      "path": "server/_libs/radix-ui__react-popper.mjs",
+      "size": 13344
+    },
+    {
+      "path": "client/assets/UserManagementDialog-D3H7J-4R.js",
+      "size": 13008
+    },
+    {
+      "path": "server/_libs/@radix-ui/react-dismissable-layer+[...].mjs",
+      "size": 12990
+    },
+    {
+      "path": "client/assets/SystemStatusDialog-Bl-SvsJz.js",
+      "size": 12838
+    },
+    {
+      "path": "client/assets/LogViewerDialog-Cp14n8Pb.js",
+      "size": 12401
+    },
+    {
+      "path": "server/_libs/supabase__functions-js.mjs",
+      "size": 12222
+    },
+    {
+      "path": "server/_libs/radix-ui__react-dialog.mjs",
+      "size": 11474
+    },
+    {
+      "path": "server/_ssr/route-BN5XkHG3.mjs",
+      "size": 10714
+    },
+    {
+      "path": "client/assets/WorkingTimeModelsDialog-_yfzxZJ5.js",
+      "size": 10705
+    },
+    {
+      "path": "server/_libs/h3-v2.mjs",
+      "size": 10001
+    },
+    {
+      "path": "server/_libs/stackblur-canvas.mjs",
+      "size": 9668
+    },
+    {
+      "path": "server/_libs/radix-ui__react-roving-focus.mjs",
+      "size": 9530
+    },
+    {
+      "path": "server/_libs/floating-ui__utils.mjs",
+      "size": 9466
+    },
+    {
+      "path": "client/assets/PdfCanvasViewer-Bmh-SCti.css",
+      "size": 9068
+    },
+    {
+      "path": "server/_libs/radix-ui__react-checkbox.mjs",
+      "size": 8650
+    },
+    {
+      "path": "server/_ssr/PdfPreviewDialog-YR4j6qen.mjs",
+      "size": 8569
+    },
+    {
+      "path": "server/_libs/rgbcolor.mjs",
+      "size": 8530
+    },
+    {
+      "path": "client/assets/DownloadCenterDialog-BE7DTumy.js",
+      "size": 8450
+    },
+    {
+      "path": "server/_libs/floating-ui__react-dom.mjs",
+      "size": 8421
+    },
+    {
+      "path": "client/assets/pdf-export-BK-fOjG5.js",
+      "size": 8083
+    },
+    {
+      "path": "server/_libs/radix-ui__react-focus-scope.mjs",
+      "size": 8072
+    },
+    {
+      "path": "server/_libs/radix-ui__react-switch.mjs",
+      "size": 7210
+    },
+    {
+      "path": "client/assets/BackupDialog-BX_k5Dsa.js",
+      "size": 6915
+    },
+    {
+      "path": "server/_libs/unenv.mjs",
+      "size": 6913
+    },
+    {
+      "path": "client/assets/tabs-CbPZw7X2.js",
+      "size": 6702
+    },
+    {
+      "path": "server/_ssr/TextPreviewDialog-DcLEeocV.mjs",
+      "size": 6643
+    },
+    {
+      "path": "client/assets/auth-Dhz-QvIu.js",
+      "size": 6556
+    },
+    {
+      "path": "server/_libs/radix-ui__react-tabs.mjs",
+      "size": 6488
+    },
+    {
+      "path": "client/assets/SaveTargetDialog-CY-PsDlp.js",
+      "size": 6452
+    },
+    {
+      "path": "server/_ssr/PdfCanvasViewer-CP1tpyXP.mjs",
+      "size": 6405
+    },
+    {
+      "path": "server/_ssr/export-download-service-CHppR-AT.mjs",
+      "size": 6277
+    },
+    {
+      "path": "server/_libs/tanstack__history.mjs",
+      "size": 5991
+    },
+    {
+      "path": "server/_libs/radix-ui__react-presence.mjs",
+      "size": 5711
+    },
+    {
+      "path": "server/_ssr/select-BMxB0edH.mjs",
+      "size": 5493
+    },
+    {
+      "path": "server/_libs/radix-ui__react-slot.mjs",
+      "size": 5334
+    },
+    {
+      "path": "server/_ssr/index-BtPaRzAC.mjs",
+      "size": 4815
+    },
+    {
+      "path": "client/assets/index-DCdncTrO.js",
+      "size": 4752
+    },
+    {
+      "path": "client/assets/route-Cx6_ugSu.js",
+      "size": 4724
+    },
+    {
+      "path": "server/_ssr/env-check-D130ZkEd.mjs",
+      "size": 4221
+    },
+    {
+      "path": "server/_libs/aria-hidden.mjs",
+      "size": 4059
+    },
+    {
+      "path": "client/assets/PdfPreviewDialog-CeYIrnGl.js",
+      "size": 4029
+    },
+    {
+      "path": "server/_ssr/logout-service-f0tBFmoz.mjs",
+      "size": 4006
+    },
+    {
+      "path": "server/_ssr/index.mjs",
+      "size": 3988
+    },
+    {
+      "path": "server/_libs/react-remove-scroll-bar.mjs",
+      "size": 3956
+    },
+    {
+      "path": "client/assets/checkbox-BmvAbawL.js",
+      "size": 3950
+    },
+    {
+      "path": "server/_ssr/client-B83F2o-4.mjs",
+      "size": 3900
+    },
+    {
+      "path": "server/_ssr/idle-config-BJfJwIfb.mjs",
+      "size": 3735
+    },
+    {
+      "path": "client/assets/triangle-alert-B4NwBwmy.js",
+      "size": 3431
+    },
+    {
+      "path": "server/_libs/radix-ui__react-collection.mjs",
+      "size": 3280
+    },
+    {
+      "path": "server/_libs/babel__runtime.mjs",
+      "size": 3222
+    },
+    {
+      "path": "client/assets/export-download-service-3RFNHbst.js",
+      "size": 3201
+    },
+    {
+      "path": "server/_ssr/reset-password-DvgG0S7X.mjs",
+      "size": 3176
+    },
+    {
+      "path": "server/_ssr/start-DjaYmio1.mjs",
+      "size": 2689
+    },
+    {
+      "path": "server/_libs/use-sidecar.mjs",
+      "size": 2662
+    },
+    {
+      "path": "server/_libs/radix-ui__react-context.mjs",
+      "size": 2651
+    },
+    {
+      "path": "server/_libs/isbot.mjs",
+      "size": 2563
+    },
+    {
+      "path": "server/_libs/make-event-props.mjs",
+      "size": 2529
+    },
+    {
+      "path": "server/_ssr/useSystemStatusHealth-C9SGAbXT.mjs",
+      "size": 2442
+    },
+    {
+      "path": "client/assets/env-check-C-GuIBYJ.js",
+      "size": 2435
+    },
+    {
+      "path": "server/_libs/@radix-ui/react-use-controllable-state+[...].mjs",
+      "size": 2292
+    },
+    {
+      "path": "server/_libs/raf.mjs",
+      "size": 2247
+    },
+    {
+      "path": "client/assets/index-DDUwcHFh.js",
+      "size": 2166
+    },
+    {
+      "path": "client/assets/TextPreviewDialog-C3RmomEu.js",
+      "size": 2141
+    },
+    {
+      "path": "server/_libs/class-variance-authority.mjs",
+      "size": 2136
+    },
+    {
+      "path": "server/_libs/dequal.mjs",
+      "size": 2133
+    },
+    {
+      "path": "server/_libs/tslib.mjs",
+      "size": 2078
+    },
+    {
+      "path": "client/assets/idle-config-BQ7qZmI0.js",
+      "size": 1969
+    },
+    {
+      "path": "server/_ssr/button-Cz8PAkJh.mjs",
+      "size": 1875
+    },
+    {
+      "path": "server/_ssr/card-DHzT6xna.mjs",
+      "size": 1781
+    },
+    {
+      "path": "server/_ssr/logger.indexeddb-B_YKqPea.mjs",
+      "size": 1753
+    },
+    {
+      "path": "server/_libs/use-callback-ref.mjs",
+      "size": 1749
+    },
+    {
+      "path": "server/_ssr/tabs-Cdo7TSxH.mjs",
+      "size": 1702
+    },
+    {
+      "path": "server/_libs/react-style-singleton.mjs",
+      "size": 1672
+    },
+    {
+      "path": "server/_tanstack-start-manifest_v-DlTKNafQ.mjs",
+      "size": 1579
+    },
+    {
+      "path": "server/_libs/performance-now.mjs",
+      "size": 1536
+    },
+    {
+      "path": "client/assets/label-DJxrDn3O.js",
+      "size": 1490
+    },
+    {
+      "path": "server/_libs/seroval-plugins.mjs",
+      "size": 1470
+    },
+    {
+      "path": "server/_libs/cookie-es.mjs",
+      "size": 1456
+    },
+    {
+      "path": "client/assets/useSystemStatusHealth-D8N5aaiE.js",
+      "size": 1379
+    },
+    {
+      "path": "client/assets/index-Ba3OJZmn.js",
+      "size": 1329
+    },
+    {
+      "path": "server/_ssr/label-B3OpQAUx.mjs",
+      "size": 1319
+    },
+    {
+      "path": "server/_libs/radix-ui__react-use-size.mjs",
+      "size": 1264
+    },
+    {
+      "path": "server/_libs/hookable.mjs",
+      "size": 1177
+    },
+    {
+      "path": "client/assets/reset-password-Beta0fNL.js",
+      "size": 1161
+    },
+    {
+      "path": "server/_libs/radix-ui__react-primitive.mjs",
+      "size": 1119
+    },
+    {
+      "path": "server/_libs/radix-ui__react-focus-guards.mjs",
+      "size": 1075
+    },
+    {
+      "path": "server/_ssr/checkbox-DcDI1Sw7.mjs",
+      "size": 1070
+    },
+    {
+      "path": "server/_ssr/badge-B5fVHV-F.mjs",
+      "size": 1042
+    },
+    {
+      "path": "client/assets/card-BL5jfhoG.js",
+      "size": 1019
+    },
+    {
+      "path": "server/_libs/radix-ui__react-compose-refs.mjs",
+      "size": 937
+    },
+    {
+      "path": "client/assets/logger.indexeddb-lF14lbs6.js",
+      "size": 902
+    },
+    {
+      "path": "server/_libs/@radix-ui/react-visually-hidden+[...].mjs",
+      "size": 852
+    },
+    {
+      "path": "server/_libs/radix-ui__react-portal.mjs",
+      "size": 848
+    },
+    {
+      "path": "client/assets/badge-CW3Q1d6b.js",
+      "size": 755
+    },
+    {
+      "path": "client/assets/index-DrppVWsw.js",
+      "size": 727
+    },
+    {
+      "path": "server/_libs/radix-ui__react-arrow.mjs",
+      "size": 705
+    },
+    {
+      "path": "server/_libs/radix-ui__react-label.mjs",
+      "size": 686
+    },
+    {
+      "path": "server/_libs/@radix-ui/react-use-escape-keydown+[...].mjs",
+      "size": 685
+    },
+    {
+      "path": "server/_libs/merge-refs.mjs",
+      "size": 667
+    },
+    {
+      "path": "server/_ssr/locale-nYp7ZH4v.mjs",
+      "size": 533
+    },
+    {
+      "path": "server/_chunks/ssr-renderer.mjs",
+      "size": 528
+    },
+    {
+      "path": "server/_libs/radix-ui__react-id.mjs",
+      "size": 513
+    },
+    {
+      "path": "server/_libs/clsx.mjs",
+      "size": 511
+    },
+    {
+      "path": "server/_libs/tanstack__react-query.mjs",
+      "size": 463
+    },
+    {
+      "path": "server/_libs/warning.mjs",
+      "size": 417
+    },
+    {
+      "path": "server/_libs/radix-ui__react-use-previous.mjs",
+      "size": 387
+    },
+    {
+      "path": "server/_libs/make-cancellable-promise.mjs",
+      "size": 381
+    },
+    {
+      "path": "client/assets/shield-alert-DvLDNMBj.js",
+      "size": 363
+    },
+    {
+      "path": "server/_libs/radix-ui__primitive.mjs",
+      "size": 352
+    },
+    {
+      "path": "server/_libs/@radix-ui/react-use-callback-ref+[...].mjs",
+      "size": 338
+    },
+    {
+      "path": "client/assets/users-D7QBN-G_.js",
+      "size": 316
+    },
+    {
+      "path": "client/assets/locale-BQIpv-2i.js",
+      "size": 309
+    },
+    {
+      "path": "server/_libs/radix-ui__react-direction.mjs",
+      "size": 280
+    },
+    {
+      "path": "client/assets/archive-DlWKglIW.js",
+      "size": 263
+    },
+    {
+      "path": "client/assets/external-link-Cbp-TmY9.js",
+      "size": 261
+    },
+    {
+      "path": "client/assets/minimize-2-566IZZLt.js",
+      "size": 250
+    },
+    {
+      "path": "client/assets/maximize-2-r_B-_ZPm.js",
+      "size": 248
+    },
+    {
+      "path": "client/assets/copy-BpXCE-S7.js",
+      "size": 241
+    },
+    {
+      "path": "client/assets/circle-x-BflQzT8A.js",
+      "size": 212
+    },
+    {
+      "path": "server/_libs/rou3.mjs",
+      "size": 205
+    },
+    {
+      "path": "server/_libs/srvx.mjs",
+      "size": 204
+    },
+    {
+      "path": "server/_libs/tiny-invariant.mjs",
+      "size": 177
+    },
+    {
+      "path": "server/_libs/@radix-ui/react-use-layout-effect+[...].mjs",
+      "size": 174
+    },
+    {
+      "path": "client/assets/cloud-fsPLEJ-Q.js",
+      "size": 170
+    },
+    {
+      "path": "server/_libs/get-nonce.mjs",
+      "size": 160
+    },
+    {
+      "path": "client/assets/loader-circle-DVNOSbSp.js",
+      "size": 149
+    },
+    {
+      "path": "client/assets/chevron-right-DpVxB1tS.js",
+      "size": 140
+    },
+    {
+      "path": "client/assets/chevron-up-BHZQhXtn.js",
+      "size": 138
+    },
+    {
+      "path": "server/_ssr/empty-plugin-adapters-BFgPZ6_d.mjs",
+      "size": 132
+    },
+    {
+      "path": "client/assets/check-1aB6OThz.js",
+      "size": 129
+    },
+    {
+      "path": "server/_libs/radix-ui__number.mjs",
+      "size": 109
+    },
+    {
+      "path": "server/_libs/crossws.mjs",
+      "size": 30
+    },
+    {
+      "path": "server/_libs/@radix-ui/react-use-effect-event+[...].mjs",
+      "size": 23
+    },
+    {
+      "path": "server/_libs/tanstack__react-store.mjs",
+      "size": 22
+    },
+    {
+      "path": "server/_libs/croner.mjs",
+      "size": 1
+    },
+    {
+      "path": "server/_libs/ocache.mjs",
+      "size": 1
+    },
+    {
+      "path": "server/_libs/ohash.mjs",
+      "size": 1
+    },
+    {
+      "path": "server/_libs/tanstack__store.mjs",
+      "size": 1
+    },
+    {
+      "path": "server/_libs/ufo.mjs",
+      "size": 1
+    },
+    {
+      "path": "server/_libs/detect-node-es.mjs",
+      "size": 0
+    },
+    {
+      "path": "server/_libs/unstorage.mjs",
+      "size": 0
+    },
+    {
+      "path": "server/_libs/use-sync-external-store.mjs",
+      "size": 0
+    }
+  ]
+}

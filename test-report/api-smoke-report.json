@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-07-24T05:45:52.938Z",
+  "generatedAt": "2026-08-13T04:47:01.739Z",
   "dashboardVersion": "1.41.3",
   "commit": "452e517",
   "counts": {
@@ -49,7 +49,7 @@
           "detail": "status=405"
         }
       ],
-      "duration": 520.1600719999997,
+      "duration": 1917.4170279999998,
       "path": "/api/status",
       "classification": "public"
     },
@@ -97,7 +97,7 @@
           "detail": "status=401"
         }
       ],
-      "duration": 87.4284430000007,
+      "duration": 444.21608899999956,
       "path": "/api/sync",
       "classification": "privileged"
     }
