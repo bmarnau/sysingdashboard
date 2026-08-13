@@ -213,6 +213,23 @@ export async function listDossiers(threshold?: RiskThreshold): Promise<AvkkDossi
   );
 }
 
+/**
+ * Nimmt einen Sachverhalt zurück, ohne zu löschen: laufende Verantwortungen
+ * werden beendet, Kompetenzen und Konsequenzen stillgelegt, der Sachverhalt
+ * auf `closed` gesetzt. Grundlage der Demodaten-Rücknahme in der Cloud
+ * (ADR-0026: Historisierung statt Hard Delete).
+ */
+export async function retireSubject(subjectRef: string, actorId: string): Promise<void> {
+  assertOnline();
+  const responsibilities = await repository.responsibilities.list(subjectRef);
+  for (const r of responsibilities.filter((x) => x.validTo === null)) {
+    await repository.responsibilities.end(r.id, actorId);
+  }
+  await repository.competences.supersedeAll(subjectRef, actorId);
+  await repository.consequences.supersedeAll(subjectRef, actorId);
+  await repository.subjects.setStatus(subjectRef, "closed", actorId);
+}
+
 export const AvkkService = {
   registerSubjectResolver,
   createSubject,
@@ -223,4 +240,5 @@ export const AvkkService = {
   addConsequence,
   getDossier,
   findOrphanSubjects,
+  retireSubject,
 };
