@@ -1,33 +1,33 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `0983a111-d16d-4176-b3ad-b83fedfcc6fb` · Version 12 · Generiert: 2026-08-13T04:48:35.595Z_
+_Report ID: `ab11fd34-6704-4cd9-a19a-f600e77e0967` · Version 13 · Generiert: 2026-08-13T04:49:58.099Z_
 
 ## 1. Prüfidentität
-- Report-ID: `0983a111-d16d-4176-b3ad-b83fedfcc6fb`
-- Reportversion: **12**
-- Vorgängerbericht: `a6d187b0-daf8-4a20-8eab-cd95ad72776c`
+- Report-ID: `ab11fd34-6704-4cd9-a19a-f600e77e0967`
+- Reportversion: **13**
+- Vorgängerbericht: `0983a111-d16d-4176-b3ad-b83fedfcc6fb`
 - Schema: `2.0.0`
 - Dashboard-Version: **1.58.0**
-- Commit: `63ce8ca`
+- Commit: `a7fbfa3`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: 2026-08-13T04:35:01.150Z
-- Testzeit: 2026-08-13T04:48:35.481Z
+- Testzeit: 2026-08-13T04:49:57.989Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:134f8631127c8bd27082c1e931c9a60efefa449a6a97c65247b1dad61f2952ff`
+- Integrität: `sha256:dd25badfaa7a3227656dd80e415659cd4a63ec243ea1099e133193a88f3f9af1`
 
 ## 2. Freigabestufe
-- Vorschlag: **internal-test**
-- Effektiv: **internal-test**
-- Begründung: 1 offene HIGH-Findings.
+- Vorschlag: **production**
+- Effektiv: **production**
+- Begründung: Alle Pflichtnachweise grün, keine Blocker offen.
 
 ## 3. Gesamtstatus
 **bestanden mit Findings**
 
 ## 4. Executive Summary
-- Findings gesamt: 69 (CRITICAL 0 · HIGH 1 · MEDIUM 7 · LOW 44 · akzeptiert 10).
-- Freigabeempfehlung (Legacy): **für Pilot geeignet** — 1 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
+- Findings gesamt: 68 (CRITICAL 0 · HIGH 0 · MEDIUM 7 · LOW 44 · akzeptiert 10).
+- Freigabeempfehlung (Legacy): **Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
 
 ## 5. Prüfbereiche (deklarativ)
 | Bereich | Status | Nachweis |
@@ -67,7 +67,7 @@ _Report ID: `0983a111-d16d-4176-b3ad-b83fedfcc6fb` · Version 12 · Generiert: 2
 | Accessibility | bestanden | 0 | 0 |
 | Performance | bestanden | 0 | 0 |
 | Dokumentation | bestanden | 0 | 0 |
-| Technische Schulden | bestanden mit Findings | 0 | 1 |
+| Technische Schulden | bestanden mit Findings | 0 | 0 |
 
 ## 7. Findings
 
@@ -118,18 +118,6 @@ _Report ID: `0983a111-d16d-4176-b3ad-b83fedfcc6fb` · Version 12 · Generiert: 2
 - **Nachweis**: test-report/security-report.md#SEC-HIGH-LOG-001
 - **Empfehlung**: Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.
 - **Aufwand**: M · **Reihenfolge**: high-security · **Status**: accepted
-
-### td:td-cycle-4f7048fd · HIGH · Zyklische Abhängigkeit (2 Kanten)
-- **Kategorie**: Architektur / Architektur
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Zyklus: src/routeTree.gen.ts → src/router.tsx → src/routeTree.gen.ts
-- **Ursache**: Wechselseitiger Import zwischen Modulen; Fehlende gemeinsame Basis-Abstraktion.
-- **Auswirkung**: Erschwert Tree-Shaking, kann zu undefined-Imports zur Laufzeit führen, blockiert saubere Test-Isolation.
-- **Komponenten**: src/routeTree.gen.ts
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Gemeinsame Types/Utilities in ein drittes Modul extrahieren; Abhängigkeitsrichtung erzwingen.
-- **Aufwand**: M · **Reihenfolge**: high-functional · **Status**: open
 
 ### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (1075 Zeilen)
 - **Kategorie**: Frontend / Frontend
@@ -903,22 +891,21 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Aufwand**: S · **Reihenfolge**: test-gap · **Status**: open
 
 ## 8. Sortierte Maßnahmenliste
-- **high-functional** (1): td:td-cycle-4f7048fd
 - **architecture** (54): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-layer-b432b1b9, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-92249691, td:td-oversize-92e5643a, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-43084e7a, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-8c42fa14
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 9. Vergleich zum Vorgängerbericht
 - Neu: 0
-- Behoben: 0
+- Behoben: 1
 - Verschlechtert: 0
-- Unverändert: 69
+- Unverändert: 68
 - Wieder aufgetreten: 0
 - Schweregrad geändert: 0
 - Gate-Relevanz geändert: 0
 - Status geändert: 0
 
 ## 10. Freigabeempfehlung (Legacy)
-**für Pilot geeignet** — 1 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
+**Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
 
 ## 11. Quality-Gate-Blocker (Prompt 2A.10)
 _Keine — CI-Gate ist grün._

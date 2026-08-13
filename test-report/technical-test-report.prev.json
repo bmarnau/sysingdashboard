@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "a6d187b0-daf8-4a20-8eab-cd95ad72776c",
-  "version": 11,
-  "parentReportId": "e879dce5-fbee-4256-b55c-a92786862374",
-  "generatedAt": "2026-08-13T04:35:05.674Z",
+  "id": "0983a111-d16d-4176-b3ad-b83fedfcc6fb",
+  "version": 12,
+  "parentReportId": "a6d187b0-daf8-4a20-8eab-cd95ad72776c",
+  "generatedAt": "2026-08-13T04:48:35.595Z",
   "identity": {
     "dashboardVersion": "1.58.0",
-    "commit": "79f0596",
+    "commit": "63ce8ca",
     "buildTime": "2026-08-13T04:35:01.150Z",
-    "testTime": "2026-08-13T04:35:05.560Z",
+    "testTime": "2026-08-13T04:48:35.481Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -1042,8 +1042,8 @@
       "severity": "LOW",
       "category": "Architektur",
       "area": "Architektur",
-      "title": "Modul überschreitet Größenschwelle (768 Zeilen)",
-      "description": "Die Datei hat 768 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "title": "Modul überschreitet Größenschwelle (776 Zeilen)",
+      "description": "Die Datei hat 776 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.",
       "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
       "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
       "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
@@ -2844,7 +2844,7 @@
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "820e6c0759dda181039c83eb68e156ccfd87ba6ee9f155bfee2ba0cbf92387b0",
+    "value": "134f8631127c8bd27082c1e931c9a60efefa449a6a97c65247b1dad61f2952ff",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",
