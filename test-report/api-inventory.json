@@ -1,9 +1,9 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-07-24T05:45:18.678Z",
-  "dashboardVersion": "1.41.3",
-  "commit": "452e517",
-  "branch": "edit/edt-e4440002-8756-4ef6-b80a-579509ca023f",
+  "generatedAt": "2026-08-13T04:48:06.242Z",
+  "dashboardVersion": "1.58.0",
+  "commit": "88cde9a",
+  "branch": "edit/edt-82fb7e07-7124-4aed-a0bf-72b60d7f1f62",
   "scannedDir": "src/routes/api",
   "excluded": [
     {
@@ -18,11 +18,51 @@
     }
   ],
   "counts": {
-    "endpoints": 2,
-    "findings": 5,
+    "endpoints": 3,
+    "findings": 4,
     "unclassified": 0
   },
   "endpoints": [
+    {
+      "id": "api-public-auth-config",
+      "path": "/api/public/auth-config",
+      "methods": [
+        "GET"
+      ],
+      "routeFile": "src/routes/api/public/auth-config.ts",
+      "handler": "server.handlers",
+      "runtime": "tanstack-start-server-route",
+      "status": "active",
+      "classification": "public",
+      "authRequired": false,
+      "permission": null,
+      "scope": null,
+      "scopeResolver": null,
+      "requestValidation": false,
+      "requestSchema": null,
+      "responseSchema": null,
+      "contentTypes": [
+        "application/json"
+      ],
+      "possibleStatusCodes": [
+        200,
+        400,
+        401,
+        405,
+        500
+      ],
+      "correlationId": true,
+      "logging": false,
+      "rateLimit": false,
+      "destructiveImpact": "read",
+      "smokeTest": true,
+      "functionalTest": null,
+      "securityTest": null,
+      "lastChecked": "2026-08-13T04:48:06.228Z",
+      "archivedImports": [],
+      "declaredPublic": true,
+      "publicReason": "Auth-Config-Bootstrap — liefert nur SUPABASE_URL und den öffentlichen Publishable-Key, damit der Browser-Client sich initialisieren kann, wenn der Publish-Build ohne VITE_SUPABASE_* gebaut wurde."
+    },
     {
       "id": "status",
       "path": "/api/status",
@@ -58,7 +98,7 @@
       "smokeTest": true,
       "functionalTest": null,
       "securityTest": null,
-      "lastChecked": "2026-07-24T05:45:18.665Z",
+      "lastChecked": "2026-08-13T04:48:06.232Z",
       "archivedImports": [],
       "declaredPublic": true,
       "publicReason": "Health-/Statusanzeige — kein Secret, kein State, wird vom Dashboard und CI ohne Auth abgefragt."
@@ -78,8 +118,8 @@
       "permission": "azure.export",
       "scope": null,
       "scopeResolver": null,
-      "requestValidation": false,
-      "requestSchema": null,
+      "requestValidation": true,
+      "requestSchema": "zod (source-detected)",
       "responseSchema": null,
       "contentTypes": [
         "application/json"
@@ -98,27 +138,13 @@
       "smokeTest": true,
       "functionalTest": null,
       "securityTest": null,
-      "lastChecked": "2026-07-24T05:45:18.666Z",
+      "lastChecked": "2026-08-13T04:48:06.232Z",
       "archivedImports": [],
       "declaredPublic": false,
       "publicReason": null
     }
   ],
   "findings": [
-    {
-      "id": "DISC-HIGH-sync-no-validation",
-      "severity": "high",
-      "category": "missing-validation",
-      "endpoint": "/api/sync",
-      "methods": [
-        "POST"
-      ],
-      "file": "src/routes/api/sync.ts",
-      "title": "Schreibender Endpoint ohne erkennbare Request-Validierung",
-      "description": "Keine `z.object(...)` o. ä. im Handler gefunden.",
-      "recommendation": "Zod-Schema für Request-Body ergänzen.",
-      "status": "open"
-    },
     {
       "id": "DISC-MED-azure-connection-test-orphan-registry",
       "severity": "medium",

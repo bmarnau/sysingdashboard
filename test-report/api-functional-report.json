@@ -1,17 +1,26 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-08-13T04:47:01.740Z",
-  "dashboardVersion": "1.41.3",
-  "commit": "452e517",
+  "generatedAt": "2026-08-13T04:48:06.366Z",
+  "dashboardVersion": "1.58.0",
+  "commit": "88cde9a",
   "counts": {
-    "total": 2,
+    "total": 3,
     "complete": 0,
     "partial": 2,
-    "missing": 0,
+    "missing": 1,
     "blocked": 0,
     "notApplicable": 0
   },
   "results": [
+    {
+      "endpointId": "api-public-auth-config",
+      "path": "/api/public/auth-config",
+      "purpose": null,
+      "coverage": "missing",
+      "gaps": [
+        "no functional test executed"
+      ]
+    },
     {
       "endpointId": "status",
       "purpose": "Health- und Systemstatus, secret-frei.",

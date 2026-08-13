@@ -1,23 +1,14 @@
 # API Discovery — Findings
 
-Generated: 2026-08-13T04:47:01.740Z
-Dashboard: 1.41.3 · Commit: 452e517
+Generated: 2026-08-13T04:48:06.367Z
+Dashboard: 1.58.0 · Commit: 88cde9a
 
 ## Zusammenfassung
 
-- Endpoints: **2**
+- Endpoints: **3**
 - Unklassifiziert: **0**
-- Smoke passed / failed / skipped: **2** / **0** / **0**
-- Functional coverage complete / partial / missing: **0** / **2** / **0**
-
-## HIGH (1)
-
-### DISC-HIGH-sync-no-validation — Schreibender Endpoint ohne erkennbare Request-Validierung
-- Endpoint: `POST /api/sync`
-- Datei: `src/routes/api/sync.ts`
-- Kategorie: missing-validation
-- Beschreibung: Keine `z.object(...)` o. ä. im Handler gefunden.
-- Empfehlung: Zod-Schema für Request-Body ergänzen.
+- Smoke passed / failed / skipped: **2** / **0** / **1**
+- Functional coverage complete / partial / missing: **0** / **2** / **1**
 
 ## MEDIUM (4)
 
