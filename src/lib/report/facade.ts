@@ -8,7 +8,7 @@
 
 import { DASHBOARD_VERSION } from "@/lib/help-documentation";
 import { can, type Permission } from "@/lib/rbac/permissions";
-import type { UserProfile } from "@/lib/rbac/types";
+import type { UserProfile } from "@/lib/user-management";
 import { buildReportFileName } from "./filename";
 import { getReport, listReports } from "./registry";
 import { resolveTemplate } from "./templates";
