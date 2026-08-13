@@ -367,3 +367,27 @@ Quarantäne statt still durchzurutschen.
 Die drei offenen Sicherheitswarnungen sind bewertet: fehlende Löschregeln sind
 Absicht (Historisierung statt Hard Delete), der Lesezugriff auf
 `app_settings` betrifft ausschließlich unkritische Laufzeitkonfiguration.
+
+## Sprint 09A — Reporting, Corporate Templates und Demodaten (1.56.0)
+
+Bis hierhin gab es Exporte, aber keine Berichte: Der PDF-Export war fest an den
+Leistungsnachweis gebunden, jede neue Auswertung hätte eine weitere Kopie der
+Layoutlogik bedeutet. Sprint 09A trennt daher konsequent in drei Schichten —
+Datenauswahl, neutrales Dokumentmodell (`ReportDocument`) und Renderer. Ein
+Bericht beschreibt nur noch, welche Abschnitte er hat; ob daraus PDF, Druck,
+JSON, CSV oder Word wird, entscheidet erst die Fassade.
+
+Drei Berichte sind fachlich freigegeben: persönlich, Projekt und Management.
+Sie folgen ADR-0027 — keine personenbezogenen Ranglisten, Kompetenz nur je
+Dimension, Verantwortung nur als Zuordnungsstatus.
+
+Corporate Templates sind austauschbar (Dateisystem vor Default), aber nie
+blockierend: fehlt eine externe Vorlage, greift die mitgelieferte neutrale
+Vorlage. Die tatsächlich verwendete Quelle steht in den Berichtsmetadaten und
+ist damit im Nachweis prüfbar.
+
+Bewusst offen: Excel bleibt als geplante Erweiterung dokumentiert; CSV mit
+Semikolon und BOM deckt den Excel-Bedarf des MVP ab. Der Demo-Datensatz ist
+rein lokal (Präfix `demo-`, idempotent, rückstandsfrei entfernbar) — AVKK-Stände
+für die Demodaten müssen weiterhin bewusst erfasst werden, damit keine
+synthetischen Führungsdaten in die Datenbank gelangen.
