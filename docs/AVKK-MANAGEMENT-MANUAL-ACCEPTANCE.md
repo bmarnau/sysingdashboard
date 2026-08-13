@@ -80,6 +80,6 @@ Ergebnisspalte: **OK** / **Fehler** (mit Notiz).
 
 ## Abnahmevermerk
 
-- Getestet von: ******\_\_****** Datum: ****\_\_****
+- Getestet von: **\*\***\_\_**\*\*** Datum: \***\*\_\_\*\***
 - Ergebnis: ☐ angenommen ☐ angenommen mit Auflagen ☐ abgelehnt
 - Auflagen/Notizen:
