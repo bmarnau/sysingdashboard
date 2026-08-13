@@ -201,7 +201,7 @@ gemeldet, nicht verhindert.`,
       "Corporate",
       "Demodaten",
     ],
-    lastUpdated: "2026-08-14",
+    lastUpdated: "2026-08-13",
     content: `## Zweck
 Im Servicemenü öffnet „Berichte…" die zentrale Dokumentausgabe. Alle Berichte
 werden aus dem aktuellen AVKK-Stand und dem lokalen Aufgabenbestand erzeugt.

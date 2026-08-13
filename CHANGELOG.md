@@ -13,7 +13,7 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
-## 1.56.0 - 2026-08-14
+## 1.56.0 - 2026-08-13
 
 - **Berichte**: Neuer Servicemenü-Punkt „Berichte…" mit drei rollengeschützten AVKK-Berichten (persönlich, Projekt, Management).
 - **Formate**: PDF, Druck, JSON, CSV und Word sind freigegeben; jede Datei landet zusätzlich im Downloadbereich. Excel bleibt als geplante Erweiterung dokumentiert.

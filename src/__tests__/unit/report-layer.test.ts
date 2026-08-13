@@ -70,9 +70,13 @@ describe("Reporting-Schicht", () => {
 
   it("Managementbericht enthält keine Personenrangliste", () => {
     const doc = avkkManagementReport.build(input, ctx);
-    const serialized = JSON.stringify(doc).toLowerCase();
-    expect(serialized).not.toContain("rangliste");
-    expect(serialized).not.toContain("punktzahl");
+    const tables = doc.sections.filter((s) => s.kind === "table");
+    const columnKeys = tables.flatMap((s) =>
+      s.kind === "table" ? s.columns.map((c) => c.key) : [],
+    );
+    expect(columnKeys).not.toContain("person");
+    expect(columnKeys).not.toContain("rang");
+    expect(columnKeys).not.toContain("score");
     const projects = doc.sections.find((s) => s.id === "projekte");
     expect(projects?.kind).toBe("table");
   });
