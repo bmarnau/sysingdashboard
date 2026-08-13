@@ -5,7 +5,7 @@ MVP-Abnahme. Er ist ein Abnahmeartefakt nach `docs/MVP-PLAN.md` Abschnitt 3.3.
 
 | Merkmal          | Wert                                                  |
 | ---------------- | ----------------------------------------------------- |
-| Datensatzversion | `DEMO_DATASET_VERSION` (aktuell 2.0.0)                |
+| Datensatzversion | `DEMO_DATASET_VERSION` (aktuell 2.1.0)                |
 | AVKK-Fallversion | `DEMO_AVKK_VERSION`                                   |
 | Kennungspräfix   | `demo-`                                               |
 | Stichtag         | aktueller Tag, überschreibbar via `setDemoBaseDate()` |
@@ -35,6 +35,26 @@ selbst ist maschinell abgesichert
 > legt Demofälle nur still. Eine Instanz mit eingespielten Demodaten gilt ohne
 > Neuaufbau nicht mehr als saubere Produktivinstanz. Demodaten gehören
 > ausschließlich in Entwicklungs-, Schulungs- und Abnahmeinstanzen.
+
+## Personenschicht (ab 2.1.0)
+
+Der Datensatz verteilt seine Inhalte auf vier fiktive Personen: Demo Alex
+Systemtechnik und Demo Sam Infrastruktur (Systemingenieure), Demo Petra
+Projektleitung und Demo Georg Geschäftsführung. Die Anzeigenamen sind zugleich
+die `assignee`- und `lead`-Werte des lokalen Bestands
+(`src/lib/demo-data/personas.ts`). Die Erwartungswerte je Person werden aus dem
+Datensatz abgeleitet (`persona-expectations.ts`) und sind damit nicht pflegbar
+veraltet.
+
+Im Demo-Dialog lässt sich je Person ein vorhandenes Anmeldekonto zuordnen; der
+Seed schreibt dieses Konto als verantwortliche Person. Ohne Zuordnung fällt
+alles auf den einspielenden Benutzer zurück. Einrichtung der Konten:
+`docs/DEMO-USERS.md`.
+
+> **Grenze:** Die AVKK-Leseregeln prüfen ausschließlich `avkk.view`. Die
+> Personentrennung wirkt in der Sicht („Mein AVKK") und beim Schreiben
+> (`avkk_can_write`), nicht beim Lesen. Projekte, Arbeitspakete und Tätigkeiten
+> liegen lokal im Browser und kennen überhaupt keine Personentrennung.
 
 ## Stichtag
 
@@ -77,5 +97,7 @@ Demoinstanz oder in die Entwicklungsumgebung.
 | `src/lib/demo-data/seed.ts`         | Einspielen/Entfernen des lokalen Bestands |
 | `src/lib/demo-data/avkk-dataset.ts` | AVKK-Fälle A–G und Erwartungswerte        |
 | `src/lib/demo-data/avkk-seed.ts`    | Cloud-Seed und Stilllegung                |
+| `src/lib/demo-data/personas.ts`     | Personen und Objektzuordnung              |
+| `src/lib/demo-data/persona-expectations.ts` | Abnahmereferenz je Person         |
 | `src/lib/demo-data/index.ts`        | öffentliche API                           |
 | `src/components/DemoDataDialog.tsx` | Bedienoberfläche                          |

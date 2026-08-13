@@ -9,7 +9,7 @@
 import type { Activity, Project, WorkPackage } from "@/lib/dashboard-data";
 
 export const DEMO_PREFIX = "demo-";
-export const DEMO_DATASET_VERSION = "2.0.0";
+export const DEMO_DATASET_VERSION = "2.1.0";
 
 export const isDemoId = (id: string): boolean => id.startsWith(DEMO_PREFIX);
 
@@ -46,8 +46,8 @@ function buildProjects(): Project[] {
       description: "Ablösung veralteter Switches, Segmentierung und WLAN-Ausbau in zwei Gebäuden.",
       start: day(-40),
       deadline: day(45),
-      lead: "Demo Projektleitung",
-      team: ["Demo Technik 1", "Demo Technik 2"],
+      lead: "Demo Petra Projektleitung",
+      team: ["Demo Alex Systemtechnik"],
       budget: 96000,
       status: "on_track",
     },
@@ -59,8 +59,8 @@ function buildProjects(): Project[] {
       description: "Migration von Datei- und Mailablage inklusive Berechtigungskonzept.",
       start: day(-70),
       deadline: day(12),
-      lead: "Demo Projektleitung",
-      team: ["Demo Consulting"],
+      lead: "Demo Petra Projektleitung",
+      team: ["Demo Sam Infrastruktur"],
       budget: 58000,
       status: "at_risk",
     },
@@ -73,8 +73,8 @@ function buildProjects(): Project[] {
         "Aufbau eines geprüften Wiederanlaufs mit dokumentierten Wiederherstellungstests.",
       start: day(-20),
       deadline: day(70),
-      lead: "Demo Servicedesk",
-      team: ["Demo Technik 1"],
+      lead: "Demo Georg Geschäftsführung",
+      team: ["Demo Sam Infrastruktur"],
       budget: 34000,
       status: "delayed",
     },
@@ -92,7 +92,7 @@ function buildWorkPackages(): WorkPackage[] {
       priority: "hoch",
       due: day(-10),
       estimated: 40,
-      assignee: "Demo Technik 1",
+      assignee: "Demo Alex Systemtechnik",
       tags: ["netzwerk", "konzept"],
     },
     {
@@ -104,7 +104,7 @@ function buildWorkPackages(): WorkPackage[] {
       priority: "kritisch",
       due: day(9),
       estimated: 64,
-      assignee: "Demo Technik 2",
+      assignee: "Demo Alex Systemtechnik",
       tags: ["netzwerk", "rollout"],
     },
     {
@@ -116,7 +116,7 @@ function buildWorkPackages(): WorkPackage[] {
       priority: "hoch",
       due: day(-3),
       estimated: 32,
-      assignee: "Demo Consulting",
+      assignee: "Demo Sam Infrastruktur",
       tags: ["m365", "governance"],
     },
     {
@@ -128,7 +128,7 @@ function buildWorkPackages(): WorkPackage[] {
       priority: "mittel",
       due: day(18),
       estimated: 80,
-      assignee: "Demo Consulting",
+      assignee: "Demo Sam Infrastruktur",
       tags: ["m365", "migration"],
     },
     {
@@ -140,7 +140,7 @@ function buildWorkPackages(): WorkPackage[] {
       priority: "kritisch",
       due: day(-6),
       estimated: 24,
-      assignee: "Demo Technik 1",
+      assignee: "Demo Sam Infrastruktur",
       tags: ["backup", "nachweis"],
     },
   ];

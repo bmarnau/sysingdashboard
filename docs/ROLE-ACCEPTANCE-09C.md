@@ -1,6 +1,6 @@
 # Rollen- und Oberflächenabnahme (F-11)
 
-Sprint 09C · Release Candidate v1.58.2 · Stand 2026-08-13
+Sprint 09C · Release Candidate v1.58.3 · Stand 2026-08-13
 
 Diese Checkliste schließt den Befund F-11 aus dem MVP-Abnahmebericht. Sie trennt
 zwei Dinge sauber:
@@ -12,7 +12,8 @@ zwei Dinge sauber:
 
 Vorbedingung für die Durchführung: Demo-Datensatz über Servicemenü →
 „Demo-Datensatz…" eingespielt (nur auf einer Test- oder Preview-Instanz,
-niemals produktiv).
+niemals produktiv). Für den Mehrbenutzer-Nachweis (Abschnitt 2.6) zusätzlich
+die vier Demo-Konten nach `docs/DEMO-USERS.md` anlegen und im Dialog zuordnen.
 
 ## 1. Automatisiert nachgewiesen (Stand v1.58.2)
 
@@ -77,6 +78,36 @@ Screenshot und Uhrzeit festhalten.
 | 3   | Benutzerverwaltung aufrufen       | nicht sichtbar                                            |           |
 | 4   | Direkter Datenzugriff (Schreiben) | von der Datenbank abgewiesen, nicht nur in der Oberfläche |           |
 
+### 2.6 Mehrbenutzer-Demoszenario (Scope-Trennung)
+
+Voraussetzung: vier Demo-Konten nach `docs/DEMO-USERS.md`, Zuordnung im
+Demo-Dialog gesetzt, Datensatzversion 2.1.0. Referenzwerte gelten für den
+vollständig eingespielten Datensatz; sie sind maschinell abgesichert
+(`src/__tests__/lib/demo-data/personas.test.ts`) und werden aus dem Datensatz
+abgeleitet, nicht gepflegt.
+
+| #   | Anmeldung / Rolle                       | Erwartetes Ergebnis                                                                                    | Bewertung |
+| --- | --------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------- |
+| 1   | Alex (`engineer`), Mein AVKK            | 2 eigene Sachverhalte (Fälle A, C), davon 1 mit Handlungsbedarf, 1 fehlende Voraussetzung, 2 Arbeitspakete |           |
+| 2   | Sam (`engineer`), Mein AVKK             | 3 eigene Sachverhalte (Fälle B, D, E), alle mit Handlungsbedarf, 1 kritische Konsequenz, 3 Arbeitspakete |           |
+| 3   | Alex vs. Sam                            | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                   |           |
+| 4   | Sam schreibt auf einen Fall von Alex    | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt    |           |
+| 5   | Petra (`projectmanager`), Projektsicht  | Projekte Netzwerk und Microsoft 365; Arbeitspakete von Alex **und** Sam sichtbar und verdichtet         |           |
+| 6   | Georg (`teamlead`), Management-Cockpit  | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)       |           |
+| 7   | Georg, Managementbericht                | Kennzahlen stimmen mit dem Cockpit überein; Personen erscheinen nur als Zuordnung, nicht als Bewertung  |           |
+| 8   | Beliebige Rolle, Role Preview           | Darstellung wechselt, Datenumfang und Schreibrechte bleiben unverändert                                 |           |
+
+**Bekannte, bewusste Grenze dieses Tests:** Schritt 3 prüft die persönliche
+Sicht, nicht die Datenbank. Die Leseregeln erlauben jedem Konto mit `avkk.view`
+den Zugriff auf alle Sachverhalte; die Trennung entsteht durch Filterung auf die
+eigene Verantwortung. Wer Lesetrennung fordert, braucht zeilenbezogene
+Leseregeln — das ist eine Produktentscheidung, kein Fehler dieses Tests, und im
+Abnahmebericht als Befund geführt.
+
+Ebenso bewusst: Projekte, Arbeitspakete und Tätigkeiten liegen lokal im Browser.
+Jedes Demo-Konto spielt den lokalen Bestand einmal selbst ein; eine
+gerätübergreifende oder personenbezogene Trennung existiert dort nicht.
+
 ## 3. Abzeichnung
 
 | Rolle                  | Prüfer/in | Datum | Ergebnis | Bemerkung |
@@ -86,6 +117,7 @@ Screenshot und Uhrzeit festhalten.
 | Geschäftsführer        |           |       |          |           |
 | Administrator          |           |       |          |           |
 | Negativtest ohne Recht |           |       |          |           |
+| Mehrbenutzerszenario   |           |       |          |           |
 
 Solange Abschnitt 3 nicht vollständig ausgefüllt ist, bleibt F-11 im
 Abnahmebericht als **MANUAL VERIFICATION REQUIRED** geführt. Die
