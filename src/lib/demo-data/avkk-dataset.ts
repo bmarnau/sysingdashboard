@@ -260,6 +260,43 @@ export const demoAvkkCases: DemoAvkkCase[] = [
     ],
     expectedAtRisk: true,
   },
+  {
+    caseId: "H",
+    situation: "Wissens- und Informationslücke — Fachwissen fehlt, Vorgaben nicht verfügbar",
+    subjectType: "project",
+    subjectId: "demo-prj-netzwerk",
+    title: "Netzwerkmodernisierung",
+    responsibility: {
+      roleKey: "owner",
+      typeKeys: ["result", "communication"],
+      note: "Ergebnisverantwortung zugeordnet, fachliche Vorgaben des Kunden fehlen.",
+    },
+    competences: [
+      {
+        dimensionKey: "knowledge",
+        ratingKey: "missing",
+        supportNeeded: true,
+        note: "Fachwissen zur neuen Firewall-Plattform ist nicht vorhanden.",
+      },
+      {
+        dimensionKey: "experience",
+        ratingKey: "missing",
+        note: "Information fehlt: Kunde hat die Zielarchitektur nicht freigegeben.",
+      },
+      { dimensionKey: "support", ratingKey: "partial", supportNeeded: true },
+      { dimensionKey: "time", ratingKey: "available" },
+    ],
+    consequences: [
+      {
+        areaKey: "project",
+        severityKey: "high",
+        scheduleImpactKey: "delay",
+        description:
+          "Ohne Fachwissen und freigegebene Zielarchitektur kann die Umsetzung nicht starten.",
+      },
+    ],
+    expectedAtRisk: true,
+  },
 ];
 
 /** Erwartungswerte für die Abnahme — bewusst hier fixiert, nicht berechnet. */
