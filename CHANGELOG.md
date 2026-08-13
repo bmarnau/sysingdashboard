@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.56.0 - 2026-08-14
+
+- **Berichte**: Neuer Servicemenü-Punkt „Berichte…" mit drei rollengeschützten AVKK-Berichten (persönlich, Projekt, Management).
+- **Formate**: PDF, Druck, JSON, CSV und Word sind freigegeben; jede Datei landet zusätzlich im Downloadbereich. Excel bleibt als geplante Erweiterung dokumentiert.
+- **Corporate Templates**: Kopf-/Fußzeile, Farben und Organisationsangabe kommen aus austauschbaren Vorlagen mit garantiertem neutralem Fallback.
+- **Dateinamen**: Einheitliche TDF-Benennung aus Dokumentkennung, Titel, Version und Zeitstempel.
+- **Demodaten**: Reproduzierbarer, vollständig fiktiver Systemhaus-Datensatz mit `demo-`-Präfix, idempotent einspielbar und rückstandsfrei entfernbar.
+- **Handbuch**: Neues Kapitel „Berichte und Dokumentausgabe".
+
 ## 1.55.0 - 2026-08-13
 
 - **AVKK Management**: Neue rollengeschützte Führungssicht (Recht „AVKK-Führungssicht anzeigen") mit Kennzahlen, Handlungsbedarf, Aufgabenübersicht sowie Verantwortungs-, Kompetenz- und Konsequenzauswertung.
