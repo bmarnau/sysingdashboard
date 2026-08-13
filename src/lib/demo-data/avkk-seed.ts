@@ -48,17 +48,18 @@ async function seedCase(
     return;
   }
 
-  const subject =
-    existing ??
-    (await AvkkService.createSubject({
-      subjectType: demoCase.subjectType,
-      subjectId: demoCase.subjectId,
-      title: demoCase.title,
-      actorId,
-    }).then((s) => ({ subject: s })));
-
-  const subjectRef = "subject" in subject ? subject.subject.id : "";
+  const subjectRef = existing
+    ? existing.subject.id
+    : (
+        await AvkkService.createSubject({
+          subjectType: demoCase.subjectType,
+          subjectId: demoCase.subjectId,
+          title: demoCase.title,
+          actorId,
+        })
+      ).id;
   result.created += 1;
+
 
   if (demoCase.responsibility) {
     await AvkkService.assignResponsibility({
