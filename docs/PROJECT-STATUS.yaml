@@ -218,6 +218,17 @@ completedSprints:
       Vitest-Suite; manueller Abnahmetest dokumentiert. Offen: AVKK ist nicht Teil
       von Backup/JSON-Export (Blocker Sprint 09).
 
+  - id: "09"
+    title: "AVKK-Management-Cockpit und Fuehrungssicht"
+    version: "1.55.0"
+    status: "completed"
+    summary: >-
+      Rollengeschuetzte Fuehrungssicht mit Kennzahlen, Handlungsbedarf,
+      Aufgabenuebersicht und Auswertungen zu Verantwortung, Kompetenz und
+      Konsequenz. Drill-down von jeder Kennzahl auf den Sachverhalt, dokumentierte
+      Priorisierungsregeln, keine personenbezogenen Ranglisten. Kontextindikatoren
+      sind als getrennte Ebene konzipiert, aber nicht erhoben (ADR-0027).
+
   - id: "08B"
     title: "AVKK in Backup, Restore und JSON-Export"
     version: "1.54.0"
