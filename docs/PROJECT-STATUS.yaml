@@ -151,7 +151,7 @@ phases:
       - "AVKK als Führungsmodell dokumentiert (docs/AVKK.md, ADR-0024)"
 
 completedSprints:
-  - id: "09C"
+  - id: "09C-2"
     title: "Nachpruefung F-11 Mehrbenutzer-Demoszenario"
     version: "1.58.3"
     status: "completed"
