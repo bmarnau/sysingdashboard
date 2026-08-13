@@ -56,6 +56,9 @@ const SystemStatusDialog = lazy(() =>
 const TechnicalReportDialog = lazy(() =>
   import("@/components/TechnicalReportDialog").then((m) => ({ default: m.TechnicalReportDialog })),
 );
+const ReportDialog = lazy(() =>
+  import("@/components/report/ReportDialog").then((m) => ({ default: m.ReportDialog })),
+);
 const DownloadCenterDialog = lazy(() =>
   import("@/components/DownloadCenterDialog").then((m) => ({ default: m.DownloadCenterDialog })),
 );
@@ -189,6 +192,7 @@ function Dashboard() {
   const [showSystemStatus, setShowSystemStatus] = useState(false);
   const [showTechnicalReport, setShowTechnicalReport] = useState(false);
   const [showDownloads, setShowDownloads] = useState(false);
+  const [showReports, setShowReports] = useState(false);
   const [showImportExport, setShowImportExport] = useState(false);
   const [showAzureData, setShowAzureData] = useState(false);
   const [showLogViewer, setShowLogViewer] = useState(false);
@@ -528,6 +532,7 @@ function Dashboard() {
               setShowLogViewer={setShowLogViewer}
               setShowExportDialog={setShowExportDialog}
               setShowDevDiary={setShowDevDiary}
+              setShowReports={setShowReports}
             />
             <button
               type="button"
@@ -1009,6 +1014,17 @@ function Dashboard() {
       {showArchiveDialog && (
         <Suspense fallback={null}>
           <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
+        </Suspense>
+      )}
+      {showReports && (
+        <Suspense fallback={null}>
+          <ReportDialog
+            open={showReports}
+            onOpenChange={setShowReports}
+            tasks={avkkTasks}
+            projects={projects}
+            workPackages={workPackages}
+          />
         </Suspense>
       )}
       {showDownloads && (
