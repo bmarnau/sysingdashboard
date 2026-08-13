@@ -1,6 +1,6 @@
 {
   "summary": {
-    "generatedAt": "2026-08-13T04:26:26.107Z",
+    "generatedAt": "2026-08-13T04:26:47.087Z",
     "filesScanned": 386,
     "rulesEvaluated": 22,
     "counts": {
@@ -16,7 +16,7 @@
       "rule": "azure-storage-conn",
       "title": "Azure Storage Connection-String",
       "file": "src/__tests__/lib/logger.test.ts",
-      "line": 38,
+      "line": 39,
       "snippet": "\"DefaultEndpointsProtocol=https;AccountName=demo;AccountKey=aGVsbG9zZWNyZXQ=;EndpointSuffix=core.windows.net\";"
     }
   ]
