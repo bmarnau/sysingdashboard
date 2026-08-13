@@ -146,9 +146,12 @@ function markdownToChildren(markdown) {
         i += 1;
       }
       i += 1;
-      for (const raw of block) {
+      block.forEach((raw, idx) => {
         children.push(
           new Paragraph({
+            // Diagramm zusammenhalten: kein Seitenumbruch mitten im ASCII-Bild
+            keepLines: true,
+            keepNext: idx < block.length - 1,
             spacing: { before: 0, after: 0, line: 220, lineRule: "exact" },
             shading: { fill: "F4F6F8", type: ShadingType.CLEAR },
             children: [
@@ -156,7 +159,7 @@ function markdownToChildren(markdown) {
             ],
           }),
         );
-      }
+      });
       children.push(new Paragraph({ text: "" }));
       continue;
     }
