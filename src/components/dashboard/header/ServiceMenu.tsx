@@ -7,6 +7,7 @@ import {
   BookMarked,
   BookOpen,
   Clock,
+  Database,
   Download,
   Eye,
   EyeOff,
@@ -46,6 +47,7 @@ interface ServiceMenuProps {
   setShowExportDialog: (v: boolean) => void;
   setShowDevDiary: (v: boolean) => void;
   setShowReports: (v: boolean) => void;
+  setShowDemoData: (v: boolean) => void;
 }
 
 export function ServiceMenu({
@@ -66,6 +68,7 @@ export function ServiceMenu({
   setShowExportDialog,
   setShowDevDiary,
   setShowReports,
+  setShowDemoData,
 }: ServiceMenuProps) {
   const currentUser = useCurrentUser();
   const navigate = useNavigate();
@@ -254,6 +257,17 @@ export function ServiceMenu({
                 className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
               >
                 <BookMarked className="size-4 opacity-70" /> Entwicklungstagebuch…
+              </button>
+            )}
+            {can(currentUser, "avkk.edit") && (
+              <button
+                onClick={() => {
+                  setShowServiceMenu(false);
+                  setShowDemoData(true);
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+              >
+                <Database className="size-4 opacity-70" /> Demo-Datensatz…
               </button>
             )}
             <button
