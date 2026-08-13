@@ -18,7 +18,10 @@ export function DistributionPanel({
       ) : (
         <ul className="mt-3 space-y-2">
           {data.map((d) => (
-            <li key={d.label} className="grid grid-cols-[minmax(6rem,10rem)_1fr_2.5rem] items-center gap-2">
+            <li
+              key={d.label}
+              className="grid grid-cols-[minmax(6rem,10rem)_1fr_2.5rem] items-center gap-2"
+            >
               <span className="truncate text-xs">{d.label}</span>
               <span className="h-2 rounded-full bg-muted" aria-hidden="true">
                 <span

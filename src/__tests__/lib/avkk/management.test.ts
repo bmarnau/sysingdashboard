@@ -62,7 +62,12 @@ describe("AVKK-Management: Kennzahlen", () => {
     const rows = [
       row(),
       row({ key: "a", atRisk: true, complete: false, missing: 1 }),
-      row({ key: "b", maxSeverityRank: 4, dueState: "overdue", task: { ...row().task, due: "2020-01-01" } }),
+      row({
+        key: "b",
+        maxSeverityRank: 4,
+        dueState: "overdue",
+        task: { ...row().task, due: "2020-01-01" },
+      }),
     ];
     const s = buildManagementSummary(rows);
     expect(s.total).toBe(3);
@@ -154,7 +159,10 @@ describe("AVKK-Management: Aggregationen", () => {
   });
 
   it("aggregiert Verantwortung ohne Personenrangliste", () => {
-    const overview = aggregateResponsibility([row(), row({ key: "b", responsibleCount: 0, responsibilities: [] })]);
+    const overview = aggregateResponsibility([
+      row(),
+      row({ key: "b", responsibleCount: 0, responsibilities: [] }),
+    ]);
     expect(overview.assigned).toBe(1);
     expect(overview.unassigned).toBe(1);
     expect(overview.types[0]).toMatchObject({ key: "execution", count: 1 });
@@ -171,7 +179,11 @@ describe("AVKK-Management: Filter und Priorisierung", () => {
   it("filtert nach Kontext, Gefährdung und Zeitraum", () => {
     const rows = [
       row(),
-      row({ key: "b", atRisk: true, task: { ...row().task, context: "Projekt B", due: "2026-09-01" } }),
+      row({
+        key: "b",
+        atRisk: true,
+        task: { ...row().task, context: "Projekt B", due: "2026-09-01" },
+      }),
     ];
     expect(filterManagementRows(rows, { risk: "gefaehrdet" })).toHaveLength(1);
     expect(filterManagementRows(rows, { context: "Projekt B" })).toHaveLength(1);

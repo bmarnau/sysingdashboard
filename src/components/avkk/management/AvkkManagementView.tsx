@@ -267,7 +267,10 @@ export function AvkkManagementView({
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         <DistributionPanel title="Gefährdungsverteilung" data={riskDistribution(baseRows)} />
-        <DistributionPanel title="Konsequenzen nach Schweregrad" data={severityDistribution(baseRows)} />
+        <DistributionPanel
+          title="Konsequenzen nach Schweregrad"
+          data={severityDistribution(baseRows)}
+        />
       </div>
 
       <ResponsibilityPanel
