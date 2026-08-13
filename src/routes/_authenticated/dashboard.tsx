@@ -113,6 +113,7 @@ import { WorkPackagesView } from "@/components/dashboard/views/WorkPackagesView"
 import { ActivitiesView } from "@/components/dashboard/views/ActivitiesView";
 import { BillingView } from "@/components/dashboard/views/BillingView";
 import { AvkkWorkspaceView } from "@/components/avkk/AvkkWorkspaceView";
+import { AvkkManagementView } from "@/components/avkk/management/AvkkManagementView";
 import { PermissionGate } from "@/components/PermissionGate";
 import { tasksFromLocalData } from "@/lib/avkk/workspace";
 import { ProjectDialog } from "@/components/dashboard/dialogs/ProjectDialog";
