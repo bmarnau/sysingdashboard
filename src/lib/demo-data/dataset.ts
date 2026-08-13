@@ -9,20 +9,35 @@
 import type { Activity, Project, WorkPackage } from "@/lib/dashboard-data";
 
 export const DEMO_PREFIX = "demo-";
-export const DEMO_DATASET_VERSION = "1.0.0";
+export const DEMO_DATASET_VERSION = "2.0.0";
 
 export const isDemoId = (id: string): boolean => id.startsWith(DEMO_PREFIX);
 
-/** Fester Stichtag — der Datensatz ist damit bei jedem Seed identisch. */
-export const DEMO_BASE_DATE = "2026-03-02";
+/**
+ * Stichtag des Datensatzes. Standard ist der aktuelle Tag, damit die
+ * Abnahmefälle ihre fachliche Bedeutung behalten ("im Plan" bleibt in der
+ * Zukunft, "überfällig" in der Vergangenheit). Für reproduzierbare Läufe kann
+ * ein fester Stichtag gesetzt werden; der verwendete Wert wird mit dem
+ * Datensatz ausgegeben und gehört in den Abnahmebericht.
+ */
+let baseDate: string = new Date().toISOString().slice(0, 10);
+
+export function setDemoBaseDate(date: string): void {
+  baseDate = date;
+}
+
+export function getDemoBaseDate(): string {
+  return baseDate;
+}
 
 function day(offset: number): string {
-  const base = new Date(`${DEMO_BASE_DATE}T00:00:00Z`);
+  const base = new Date(`${baseDate}T00:00:00Z`);
   base.setUTCDate(base.getUTCDate() + offset);
   return base.toISOString().slice(0, 10);
 }
 
-export const demoProjects: Project[] = [
+function buildProjects(): Project[] {
+  return [
   {
     id: "demo-prj-netzwerk",
     name: "Netzwerkmodernisierung Verwaltungsstandort",
@@ -64,7 +79,8 @@ export const demoProjects: Project[] = [
   },
 ];
 
-export const demoWorkPackages: WorkPackage[] = [
+function buildWorkPackages(): WorkPackage[] {
+  return [
   {
     id: "demo-wp-netz-planung",
     title: "Netzplanung und Segmentierung",
@@ -127,7 +143,8 @@ export const demoWorkPackages: WorkPackage[] = [
   },
 ];
 
-export const demoActivities: Activity[] = [
+function buildActivities(): Activity[] {
+  return [
   {
     id: "demo-act-1",
     title: "Bestandsaufnahme Verteilerräume",
@@ -207,6 +224,7 @@ export const demoActivities: Activity[] = [
 
 export interface DemoDataset {
   version: string;
+  baseDate: string;
   projects: Project[];
   workPackages: WorkPackage[];
   activities: Activity[];
@@ -215,8 +233,9 @@ export interface DemoDataset {
 export function buildDemoDataset(): DemoDataset {
   return {
     version: DEMO_DATASET_VERSION,
-    projects: demoProjects.map((p) => ({ ...p })),
-    workPackages: demoWorkPackages.map((w) => ({ ...w })),
-    activities: demoActivities.map((a) => ({ ...a })),
+    baseDate,
+    projects: buildProjects(),
+    workPackages: buildWorkPackages(),
+    activities: buildActivities(),
   };
 }
