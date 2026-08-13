@@ -1,6 +1,6 @@
 # Sysing Dashboard — MVP-Plan und Abnahmestrategie
 
-Stand: 2026-08-12
+Stand: 2026-08-13
 
 ## 1. Ziel
 
@@ -30,7 +30,8 @@ Der MVP umfasst mindestens:
 - technischer Prüfbericht, Entwicklungstagebuch und Project Manifest,
 - vollständige Benutzer-, Administrator- und Betriebsdokumentation,
 - TDF-konforme Produktübersicht `SYSING-001`, die Idee, Funktionen, Nutzen, Schnittstellen, Automatisierung, Architektur, Grenzen und Weiterentwicklung des Sysing Dashboards verständlich zusammenfasst,
-- vollständige Prüfung des ADR-Bestands auf Aktualität, offene Architekturentscheidungen, bekannte Kompromisse und noch zu treffende MVP-/Post-MVP-Entscheidungen.
+- vollständige Prüfung des ADR-Bestands auf Aktualität, offene Architekturentscheidungen, bekannte Kompromisse und noch zu treffende MVP-/Post-MVP-Entscheidungen,
+- einen vollständigen, reproduzierbaren und vollständig fiktiven Systemhaus-Demo-Datensatz als verbindliches MVP-Abnahmeartefakt.
 
 ## 3. Geplanter Weg bis MVP
 
@@ -39,9 +40,9 @@ Der MVP umfasst mindestens:
 | 07B | AVKK-Datenbank, Reference Data, Services, RBAC/RLS | Fachliche Datenbasis |
 | 08 | Persönlicher AVKK-Arbeitsplatz | Operative Nutzung |
 | 08B | AVKK Backup/Restore-Prüfung und JSON-Export | Datenportabilität und Integrität |
-| 09 | Rollenbasiertes AVKK-Management-Cockpit und Systemhaus-Demo-Daten | Führungssicht und manuelle fachliche Abnahme |
-| 09A | Report-Service, PDF/Word/Druck, Corporate Templates | Reporting und Ausgabe; erste veröffentlichungsfähige SYSING-001-Ausgabe vorbereiten |
-| 09B | MVP-Gesamttest, TDF-Produktübersicht finalisieren und Release Candidate | Systemweite Abnahme, ADR-Review und Produkt-/Managementdokumentation |
+| 09 | Rollenbasiertes AVKK-Management-Cockpit | Führungssicht und manuelle fachliche Abnahme |
+| 09A | Report-Service, PDF/Word/Druck, Corporate Templates; Demo-Datensatz für Reporting vorbereiten | Reporting und Ausgabe; erste veröffentlichungsfähige SYSING-001-Ausgabe vorbereiten |
+| 09B | MVP-Gesamttest mit vollständigem Systemhaus-Demo-Datensatz, TDF-Produktübersicht finalisieren und Release Candidate | Systemweite Abnahme, ADR-Review und Produkt-/Managementdokumentation |
 | 09C | Optionales Hardening | Nur Findings aus 09B, falls erforderlich |
 
 ## 3.1 TDF-Produktübersicht SYSING-001
@@ -75,71 +76,94 @@ Pflichtinhalte:
 
 Das Dokument folgt den relevanten TDF-Standards, insbesondere Dokumentbenennung und SemVer, Managementdarstellung, Architektur, Visualisierung, Rendering/Publishing, Export und AI/Retrieval Readiness.
 
-### Pflegepflicht nach Sprint 09
-
-Nach Sprint 09 werden mindestens aktualisiert:
-
-- tatsächlich implementierte Rollensichten,
-- Managementkennzahlen,
-- Drill-down,
-- Systemhaus-Demo-Szenarien,
-- Kontextindikatorstatus,
-- MVP-Reifegrad.
-
-### Pflegepflicht nach Sprint 09A
-
-Nach Sprint 09A werden mindestens aktualisiert:
-
-- produktive Reportformate,
-- Template-Provider,
-- Corporate Document Templates,
-- PDF-/Word-/Druckarchitektur,
-- Exportmöglichkeiten,
-- veröffentlichungsfähige TDF-Ausgabevorbereitung.
-
-### Pflicht in Sprint 09B
-
-Vor MVP-Freigabe:
-
-1. Produktübersicht gegen den tatsächlichen Release Candidate prüfen.
-2. Jede Aussage als `umgesetzt`, `geplant/post-MVP` oder `bekannte Grenze` korrekt einordnen.
-3. Versions- und Statusangaben synchronisieren.
-4. TDF-Qualitätsgates anwenden.
-5. Aus derselben freigegebenen Quelle mindestens eine PDF-Fassung erzeugen; Word zusätzlich, wenn der Report-/Dokumentenservice dies im MVP unterstützt.
-6. PDF/Word visuell prüfen.
-7. Datei- und Dokumentversion gemäß TDF synchronisieren.
-8. Produktübersicht als Bestandteil des MVP-Abnahmepakets referenzieren.
-
-Die Produktübersicht wird damit ein verbindliches MVP-Artefakt und bleibt nach MVP als fortlaufende Produkt- und Managementdokumentation bestehen.
-
 ## 3.2 ADR-Review als verbindlicher MVP-Prüfpunkt
 
 Architecture Decision Records (ADR) sind vor der MVP-Freigabe als eigener Prüfschritt zu betrachten. Ziel ist nicht, vorhandene ADRs nachträglich umzuschreiben, sondern sicherzustellen, dass die tatsächlich gültigen Architekturentscheidungen, bewussten Kompromisse und offenen Entscheidungen nachvollziehbar dokumentiert sind.
 
-Spätestens in Sprint 09B ist der gesamte ADR-Bestand zu prüfen auf:
+Spätestens in Sprint 09B ist der gesamte ADR-Bestand zu prüfen auf Aktualität, Widersprüche, ersetzte Entscheidungen, offene Architekturentscheidungen, accepted Findings, Provider-Trennung, Rollen-/Scope-Modell, Kontextindikatoren, Reporting/TDF, Restore-/Quarantäne-Vertrag sowie bereits festgelegte Post-MVP-Integrationsentscheidungen.
 
-- Aktualität gegenüber dem realen Code- und Datenbankstand,
-- Widersprüche zwischen älteren und neueren ADRs,
-- Entscheidungen, die inzwischen überholt oder ersetzt wurden,
-- offene Architekturentscheidungen ohne ADR,
-- accepted Findings und bewusste Sicherheitsausnahmen,
-- Provider-Trennung und spätere Microsoft-/Azure-Migrationsfähigkeit,
-- Rollen-/Scope-Modell des Management-Cockpits,
-- Kontextindikatoren und deren Datenschutz-/Persistenzmodell, sofern MVP-Bestandteil,
-- Report-Service, Template-Provider und TDF-Anbindung,
-- Restore-/Quarantäne-Vertrag und die bewusste Grenze des AVKK-Datenbank-Restores,
-- Post-MVP-Integrationsentscheidungen, insbesondere Graph/OAuth, Kommunikation und KI, soweit bereits architektonisch festgelegt.
+Wenn eine wesentliche langfristige Architekturentscheidung noch nicht als ADR dokumentiert ist, wird vor MVP-Freigabe ein ADR angelegt. Reine Implementierungsdetails benötigen keinen eigenen ADR.
 
-Wenn bei dieser Prüfung eine wesentliche, langfristig relevante Architekturentscheidung festgestellt wird, die bisher nicht als ADR dokumentiert ist, wird vor MVP-Freigabe ein neuer ADR angelegt. Reine Implementierungsdetails benötigen keinen eigenen ADR.
+## 3.3 Systemhaus-Demo-Datensatz als verbindliches MVP-Abnahmeartefakt
 
-Der MVP-Abnahmebericht soll den ADR-Review mit mindestens folgenden Angaben referenzieren:
+Vor MVP-Freigabe muss ein vollständiger, reproduzierbarer Beispieldatensatz verfügbar sein, mit dem die wesentlichen Funktionen des Sysing Dashboards fachlich und technisch manuell überprüft werden können.
 
-- Anzahl geprüfter ADRs,
-- neue ADRs seit dem letzten Review,
-- ersetzte/deprecated ADRs,
-- offene ADR-Entscheidungen,
-- bestätigte bewusste Kompromisse,
-- daraus resultierende MVP- oder Post-MVP-Maßnahmen.
+Der Datensatz ist kein loses Bündel einzelner Demo-Einträge, sondern ein zusammenhängendes fiktives Systemhaus-Szenario mit konsistenten Beziehungen zwischen Kunden, Projekten, Arbeitspaketen, Tätigkeiten, Verantwortungen und AVKK-Daten.
+
+### Mindestinhalt
+
+Der Datensatz enthält mindestens:
+
+- mehrere vollständig fiktive Kunden,
+- mehrere Projekte unterschiedlicher Größe und Lage,
+- zugehörige Arbeitspakete,
+- zugehörige Tätigkeiten,
+- unterschiedliche Bearbeitungs- und Terminstatus,
+- Rollen- und Verantwortungszuordnungen,
+- vollständige AVKK-Beispiele,
+- Reference-Data-Bezüge,
+- mindestens einen vollständig unkritischen Fall,
+- mindestens ein gefährdetes Projekt bzw. Arbeitspaket,
+- mindestens einen kritischen Fall,
+- überfällige und bald fällige Tätigkeiten,
+- Beispiele für fehlende Zeit,
+- fehlendes Material,
+- fehlende Berechtigung,
+- fehlende Information,
+- teilweise vorhandene Unterstützung,
+- hohe Kundenkonsequenz,
+- hohe Projekt- oder Terminwirkung,
+- geeignete Historien-/Auditzustände, soweit dies für die jeweilige Abnahme fachlich erforderlich ist.
+
+Geeignete Szenarien sind beispielsweise Microsoft-365-Rollout, Firewall-/Netzwerk-Erneuerung, Infrastrukturmigration, Backup-/Restore-Projekt sowie Server-/Storage-Migration.
+
+### Rollensichten
+
+Derselbe fachliche Datenbestand muss mindestens aus folgenden Perspektiven prüfbar sein:
+
+- **Systemingenieur:** eigene Projekte, Arbeitspakete und Tätigkeiten nach Dringlichkeit und Handlungsbedarf,
+- **Projektmanager:** zugeordnete Projekte mit Planstatus, Risiken und Drill-down,
+- **Geschäftsführer:** verdichtete Portfolio-/Unternehmenssicht,
+- **App-Entwickler/Admin:** Role Preview der vorgesehenen Rollendarstellungen innerhalb des realen Berechtigungsscopes,
+- **Benutzer ohne Berechtigung:** negativer Zugriffstest.
+
+### Technische Anforderungen
+
+Der Datensatz muss:
+
+- deterministisch bzw. nachvollziehbar erzeugbar sein,
+- eindeutig als Demo/Test gekennzeichnet sein,
+- wiederholt eingespielt werden können,
+- vollständig und kontrolliert entfernt bzw. zurückgesetzt werden können,
+- RBAC und RLS respektieren,
+- keine produktiven Daten überschreiben oder löschen,
+- keine realen Kunden-, Mitarbeiter-, E-Mail-, Vertrags-, Zugangs- oder Unternehmensdaten enthalten,
+- keine Secrets, Tokens oder Schlüssel enthalten.
+
+Bevorzugt wird ein versionierter Seed-/Fixture-Mechanismus oder ein vergleichbar kontrollierter Testdatenpfad. Komponentenbezogene Ad-hoc-Testdaten im Frontend sind kein Ersatz.
+
+### Nutzung in Sprint 09A
+
+Der Datensatz soll in Sprint 09A bereits als Referenz für Reports, PDF-/Word-/Druckausgaben, JSON-/CSV-Exporte und Corporate Templates verwendet bzw. dafür vorbereitet werden. Damit werden nicht nur technische Dateien, sondern fachlich nachvollziehbare Systemhaus-Fälle ausgegeben.
+
+### Verbindliche Nutzung in Sprint 09B
+
+In Sprint 09B wird der vollständige Datensatz als gemeinsame Grundlage des MVP-Gesamttests verwendet. Mindestens zu prüfen sind:
+
+1. Rollensichten und Scopes,
+2. Navigation und Drill-down,
+3. Filter und Sortierung,
+4. AVKK-Erfassung und -Auswertung,
+5. Managementkennzahlen,
+6. Handlungsbedarf und Gefährdungslogik,
+7. Reports und Exporte,
+8. PDF-/Druck-/ggf. Word-Ausgaben,
+9. Backup-/Restore-Vertrag,
+10. RBAC/RLS,
+11. Role Preview ohne Rechteausweitung,
+12. fachliche Konsistenz derselben Fälle zwischen UI, Datenbank, Managementsicht und Ausgabe.
+
+Der MVP-Abnahmebericht dokumentiert die verwendete Demo-Datensatz-Version und die damit ausgeführten manuellen Tests.
 
 ## 4. Sprint 09B — MVP-Gesamttest und Release Candidate
 
@@ -147,7 +171,7 @@ Sprint 09B entwickelt keine neuen Fachfunktionen. Er prüft die gesamte Anwendun
 
 ### 4.1 UI-Gesamttest
 
-Vollständig prüfen:
+Vollständig mit dem definierten Systemhaus-Demo-Datensatz prüfen:
 
 - Seiten, Ansichten und Navigation,
 - Menüs und Servicemenüs,
@@ -191,12 +215,12 @@ End-to-End prüfen:
 - Historie und Audit,
 - persönliche Arbeitsansicht,
 - Managementansicht,
-- Kontextindikatoren und deren Berechtigungen,
+- Kontextindikatoren entsprechend dem tatsächlich freigegebenen MVP-Status,
 - Datenschutzgrenzen und keine automatisierte personenbezogene Leistungsbewertung.
 
 ### 4.4 PDF, Druck und Dokumentvorlagen
 
-Alle produktiven Pflichtberichte erzeugen und visuell prüfen:
+Alle produktiven Pflichtberichte mit fachlich repräsentativen Demo-Fällen erzeugen und visuell prüfen:
 
 - vollständiger Inhalt,
 - Corporate Document Templates,
@@ -215,7 +239,7 @@ Der Template-Speicherort darf nicht als lokaler Windows-Pfad in der Fachlogik ha
 
 ### 4.5 Exporte
 
-Mindestens die bis dahin als produktiv freigegebenen Formate prüfen:
+Mindestens die bis dahin als produktiv freigegebenen Formate mit dem Demo-Datensatz prüfen:
 
 - PDF,
 - CSV,
@@ -244,18 +268,18 @@ Die bekannte Grenze, dass AVKK-Restore aktuell bewusst nicht automatisch in Supa
 
 ### 4.7 Reporting und fachliche Plausibilität
 
-Nicht nur technische Ausgabe prüfen, sondern auch:
+Nicht nur technische Ausgabe prüfen, sondern anhand derselben Demo-Fälle auch:
 
 - stimmen Kennzahlen und Summen,
 - stimmen Filter und Gruppierungen,
 - stimmen AVKK-Werte zwischen UI, Datenbank und Report,
 - sind Managementaussagen nachvollziehbar,
 - werden fehlende Kompetenzen und kritische Konsequenzen korrekt dargestellt,
-- werden Kontextindikatoren fachlich getrennt von AVKK, aber gemeinsam auswertbar behandelt.
+- werden Kontextindikatoren fachlich getrennt von AVKK behandelt.
 
 ### 4.8 ADR-Review
 
-Den unter Abschnitt 3.2 definierten ADR-Review vollständig durchführen und das Ergebnis im MVP-Abnahmebericht referenzieren. Offene Architekturentscheidungen mit möglicher MVP-Auswirkung dürfen nicht stillschweigend in die Post-MVP-Phase verschoben werden.
+Den definierten ADR-Review vollständig durchführen und das Ergebnis im MVP-Abnahmebericht referenzieren. Offene Architekturentscheidungen mit möglicher MVP-Auswirkung dürfen nicht stillschweigend in die Post-MVP-Phase verschoben werden.
 
 ## 5. MVP-Abnahmebericht
 
@@ -267,6 +291,7 @@ Der Bericht enthält mindestens:
 
 - getestete Version,
 - Testdatum und Testumgebungen,
+- verwendete Version des Systemhaus-Demo-Datensatzes,
 - getestete Rollen,
 - Anzahl automatisierter Tests,
 - Anzahl E2E-/UI-Tests,
@@ -301,6 +326,8 @@ Freigabestatus:
 - Backup/Restore-Vertrag verifiziert und bekannte Restore-Grenzen explizit freigegeben oder behoben,
 - alle Kern-User-Journeys erfolgreich,
 - alle verpflichtenden Quality Gates grün,
+- vollständiger Systemhaus-Demo-Datensatz reproduzierbar erzeugbar, eindeutig gekennzeichnet und kontrolliert entfernbar,
+- Rollensichten und zentrale MVP-Funktionen anhand dieses Datensatzes manuell geprüft,
 - ADR-Bestand geprüft und alle MVP-relevanten offenen Architekturentscheidungen entschieden oder ausdrücklich als nicht blockierend freigegeben,
 - SYSING-001 inhaltlich mit dem Release Candidate synchron und als TDF-konforme PDF-Fassung geprüft.
 
