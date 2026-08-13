@@ -417,7 +417,6 @@ ist damit dauerhaft keine saubere Produktivinstanz mehr. Diese Grenze ist in
 `docs/DEMO-DATA.md` und im Release-Candidate-Scope festgehalten, statt sie
 durch eine Ausnahme im Löschschutz aufzuweichen.
 
-
 ## Sprint 09B, Teil 2 — MVP-Gesamtabnahme und Release Candidate (1.58.0)
 
 Am Ende einer MVP-Phase zählt nicht, was gebaut wurde, sondern was belegbar
