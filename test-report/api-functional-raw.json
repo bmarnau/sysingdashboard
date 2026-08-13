@@ -1,6 +1,24 @@
 {
   "results": [
     {
+      "endpointId": "api-public-auth-config",
+      "purpose": "(nicht dokumentiert)",
+      "coverage": "missing",
+      "positive": false,
+      "negative": false,
+      "auth": false,
+      "authorization": false,
+      "scope": false,
+      "validation": false,
+      "errorHandling": false,
+      "sideEffects": false,
+      "idempotency": false,
+      "audit": false,
+      "gaps": [
+        "Keine dokumentierte Functional-Coverage."
+      ]
+    },
+    {
       "endpointId": "status",
       "purpose": "Health- und Systemstatus, secret-frei.",
       "coverage": "partial",

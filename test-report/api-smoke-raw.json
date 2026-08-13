@@ -1,6 +1,40 @@
 {
   "results": [
     {
+      "endpointId": "api-public-auth-config",
+      "method": "GET",
+      "status": "passed",
+      "scenarios": [
+        {
+          "name": "handler registered",
+          "category": "reachability",
+          "ok": true
+        },
+        {
+          "name": "response is not HTML error page",
+          "category": "schema",
+          "ok": true
+        },
+        {
+          "name": "no secrets in response body",
+          "category": "secret-scan",
+          "ok": true
+        },
+        {
+          "name": "correlation-id header present (if wrapper used)",
+          "category": "correlation",
+          "ok": true
+        },
+        {
+          "name": "unsupported method rejected",
+          "category": "method",
+          "ok": true,
+          "detail": "status=405"
+        }
+      ],
+      "duration": 2062.9526349999996
+    },
+    {
       "endpointId": "status",
       "method": "GET",
       "status": "passed",
@@ -32,7 +66,7 @@
           "detail": "status=405"
         }
       ],
-      "duration": 1917.4170279999998
+      "duration": 19.469913000000815
     },
     {
       "endpointId": "sync",
@@ -78,7 +112,7 @@
           "detail": "status=401"
         }
       ],
-      "duration": 444.21608899999956
+      "duration": 431.89660900000126
     }
   ]
 }
