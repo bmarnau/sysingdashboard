@@ -92,7 +92,7 @@ Darstellung und umgeht weder RBAC noch RLS.
 - Authentifizierung und Datenhaltung über Supabase; Zugriff ausschließlich unter
   RLS mit den Rechten des angemeldeten Benutzers (ADR-0025).
 - Fachlogik, Auth-Adapter und Providerimplementierungen sind getrennt, damit ein
-  späterer Wechsel zu Entra ID oder Azure SQL keine Fachlogik anfasst (ADR-0020).
+  späterer Wechsel zu Entra ID oder Azure SQL keine Fachlogik anfasst (ADR-0007, ADR-0020).
 - Reporting arbeitet auf einem neutralen Dokumentmodell mit austauschbarer
   Template-Provider-Kette und garantiertem neutralem Fallback (ADR-0028).
 - Backups tragen ein Manifest 2.0 mit Prüfsummen je Eintrag (ADR-0022).
