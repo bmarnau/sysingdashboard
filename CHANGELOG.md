@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.57.0 - 2026-08-13
+
+- **Demo-Datensatz**: Neuer Servicemenü-Punkt „Demo-Datensatz…" zum Einspielen und Zurücknehmen des fiktiven Systemhaus-Datensatzes (nur mit AVKK-Bearbeitungsrecht).
+- **AVKK-Abnahmefälle**: Sieben zusammenhängende Fälle decken unkritisch, gefährdet, kritisch, überfällig, Voraussetzungslücke, hohe Kundenkonsequenz und hohe Terminwirkung ab.
+- **Stichtag**: Der Datensatz nutzt jetzt den aktuellen Tag als Stichtag, damit „im Plan" und „überfällig" dauerhaft ihre Bedeutung behalten.
+- **Rücknahme**: Lokale Demodaten werden vollständig entfernt; AVKK-Demofälle werden stillgelegt statt gelöscht, da Führungsdaten belegbar bleiben müssen (ADR-0026).
+- **Handbuch**: Neues Kapitel „Demo-Datensatz für Schulung und Abnahme"; Details in `docs/DEMO-DATA.md`.
+
 ## 1.56.0 - 2026-08-13
 
 - **Berichte**: Neuer Servicemenü-Punkt „Berichte…" mit drei rollengeschützten AVKK-Berichten (persönlich, Projekt, Management).

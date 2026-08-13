@@ -84,6 +84,14 @@ Spätestens in Sprint 09B ist der gesamte ADR-Bestand zu prüfen auf Aktualität
 
 Wenn eine wesentliche langfristige Architekturentscheidung noch nicht als ADR dokumentiert ist, wird vor MVP-Freigabe ein ADR angelegt. Reine Implementierungsdetails benötigen keinen eigenen ADR.
 
+## 3.2.1 Release-Candidate-Scope
+
+Für den Release Candidate gilt folgender festgeschriebener Umfang:
+
+- **Enthalten**: AVKK-Arbeitsplatz, Führungssicht, Reporting (PDF, Druck, JSON, CSV, Word), Backup/Restore 2.0, JSON-Import/-Export, RBAC mit sieben Rollen, Systemstatus, Handbuch, Demo-Datensatz.
+- **Bewusst nicht enthalten**: Excel-Ausgabe, produktive Azure-DevOps-Synchronisation, Mehrsprachigkeit über Deutsch hinaus.
+- **Bekannte Grenze**: Eingespielte AVKK-Demofälle lassen sich nur stilllegen, nicht löschen (ADR-0026). Vorführungen gehören deshalb in eine Demo- oder Entwicklungsinstanz, nicht in eine Produktivinstanz.
+
 ## 3.3 Systemhaus-Demo-Datensatz als verbindliches MVP-Abnahmeartefakt
 
 Vor MVP-Freigabe muss ein vollständiger, reproduzierbarer Beispieldatensatz verfügbar sein, mit dem die wesentlichen Funktionen des Sysing Dashboards fachlich und technisch manuell überprüft werden können.
