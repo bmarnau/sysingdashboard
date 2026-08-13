@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-12 · Dashboard-Version 1.54.0
+Stand: 2026-08-13 · Dashboard-Version 1.55.0
 
 ## Vision
 
@@ -323,6 +323,31 @@ reinen Modul und ist ohne Oberfläche testbar.
 Bewusst offen geblieben: weiche Kontextfaktoren werden nicht erfasst, und
 AVKK-Daten sind noch nicht Teil des lokalen Backups bzw. JSON-Exports. Beides
 ist als Aufgabe für Sprint 09 festgehalten.
+
+## Sprint 09 — AVKK-Management-Cockpit und Führungssicht (1.55.0)
+
+Der persönliche Arbeitsplatz beantwortete die Frage „was betrifft mich?". Für
+Steuerung fehlte die Gegenfrage: „wo besteht Handlungsbedarf?". Die neue
+Registerkarte „AVKK Management" verdichtet alle sichtbaren Aufgaben zu
+Kennzahlen, Handlungskategorien und Auswertungen zu Verantwortung, Kompetenz
+und Konsequenz.
+
+Zwei Entwurfsentscheidungen prägen das Ergebnis. Erstens: keine zweite
+Fachlogik. Die Aggregation baut ausschließlich auf den bestehenden
+Arbeitsplatz-Zeilen auf, Gefährdung und Vollständigkeit werden nicht neu
+berechnet. Zweitens: keine verborgene Bewertung. Jede Kennzahl ist anklickbar
+und führt auf genau die Aufgaben, aus denen sie entstanden ist; jede
+Handlungskategorie nennt ihre Regel im Klartext.
+
+Bewusst ausgeschlossen bleibt die personenbezogene Leistungsbewertung.
+Verantwortung erscheint nur als Zuordnungsstatus, Kompetenz nur je Dimension
+(„Voraussetzung fehlt bei sechs Aufgaben"). Die geforderten weichen Faktoren
+sind als getrennte Kontextebene konzipiert, aber nicht erhoben — das Zielmodell
+mit Zweckbindung, Mindestgruppengröße und Aufbewahrung steht in
+`docs/AVKK-CONTEXT-INDICATORS.md` und ADR-0027.
+
+Offene Grenze: `listDossiers()` lädt je Sachverhalt ein Aggregat. Bei stark
+wachsendem Bestand ist eine serverseitige Verdichtung nötig.
 
 ## Sprint 08B — AVKK in Backup, Restore und JSON-Export (1.54.0)
 

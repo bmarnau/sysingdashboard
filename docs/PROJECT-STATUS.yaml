@@ -56,11 +56,11 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "08B"
-  currentSprintTitle: "AVKK in Backup, Restore und JSON-Export"
+  currentSprint: "09"
+  currentSprintTitle: "AVKK-Management-Cockpit und Fuehrungssicht"
   currentSprintStatus: "completed"
-  nextSprint: "09"
-  previousSprint: "08"
+  nextSprint: "09A"
+  previousSprint: "08B"
   previousSprintStatus: "completed"
   releaseReadiness: "passed-with-findings"
   testsPassing: 381
