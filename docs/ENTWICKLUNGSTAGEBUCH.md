@@ -474,3 +474,30 @@ Wartbarkeit. Für die AVKK-Wiederherstellung wurde bewusst entschieden: Die
 Daten sind im Backup enthalten und geprüft, nur das Zurückschreiben in die
 Cloud bleibt manuell — das ist für den MVP akzeptiert, weil ein automatischer
 Rückschreibpfad ohne Löschstrategie Historie überschreiben würde.
+
+## Sprint 09C – MVP Hardening und manuelle Abnahme (v1.58.2)
+
+Zwei offene Punkte aus dem Release-Candidate-Check standen noch im Weg, und
+beide waren Dokumentation, nicht Funktion. Für die Produktübersicht SYSING-001
+gab es nur eine PDF-Fassung. Statt eine Word-Datei danebenzulegen und damit
+zwei Wahrheiten zu schaffen, erzeugt jetzt ein Skript Word direkt aus der
+Markdown-Quelle; die PDF-Fassung entsteht aus derselben Datei. Inhalt,
+Reihenfolge und Statuskennzeichnungen können so nicht mehr auseinanderlaufen.
+Beim ersten Durchlauf zerriss ein Seitenumbruch eines der ASCII-Diagramme —
+die Diagrammzeilen werden nun zusammengehalten, und jede Seite wurde einzeln
+angesehen, bevor die Fassung als geprüft gilt.
+
+Der zweite Punkt war die fachliche Rollenabnahme. Hier war die ehrliche
+Antwort, dass ein Werkzeug sie nicht ersetzen kann. Die neue Checkliste trennt
+deshalb sauber: Was serverseitig belegbar ist — Route-Guards, abgewiesene
+Datenzugriffe ohne Anmeldung, wirkungslose Rollenmanipulation im Browser,
+Role Preview ohne Rechteerweiterung — steht als Nachweis mit Quelle darin und
+braucht keine Unterschrift. Was jemand tatsächlich in der Oberfläche gesehen
+haben muss, steht als abzuzeichnender Schritt je Rolle darin, inklusive
+Negativtest ohne Berechtigung. Solange die Unterschriften fehlen, bleibt der
+Befund offen, nur eben mit geringerem Gewicht, weil kein Sicherheitsnachweis
+davon abhängt.
+
+Die Freigabeempfehlung bleibt GO WITH FINDINGS. Die Modulgröße der
+Dashboard-Route bleibt bewusst als dokumentierte Schuld nach ADR-0019 stehen;
+sie in einem Hardening-Sprint anzufassen hätte mehr Risiko erzeugt als gelöst.

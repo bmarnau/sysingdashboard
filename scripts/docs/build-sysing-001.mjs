@@ -115,11 +115,11 @@ function buildTable(rows) {
     rows: [
       new TableRow({
         tableHeader: true,
-        children: header.map((h, i) => cell(h, widths[i], { bold: true, fill: PRIMARY, color: "FFFFFF" })),
+        children: header.map((h, i) =>
+          cell(h, widths[i], { bold: true, fill: PRIMARY, color: "FFFFFF" }),
+        ),
       }),
-      ...body.map(
-        (r) => new TableRow({ children: widths.map((w, i) => cell(r[i] ?? "", w)) }),
-      ),
+      ...body.map((r) => new TableRow({ children: widths.map((w, i) => cell(r[i] ?? "", w)) })),
     ],
   });
 }
@@ -154,9 +154,7 @@ function markdownToChildren(markdown) {
             keepNext: idx < block.length - 1,
             spacing: { before: 0, after: 0, line: 220, lineRule: "exact" },
             shading: { fill: "F4F6F8", type: ShadingType.CLEAR },
-            children: [
-              new TextRun({ text: raw.length ? raw : " ", font: "Consolas", size: 16 }),
-            ],
+            children: [new TextRun({ text: raw.length ? raw : " ", font: "Consolas", size: 16 })],
           }),
         );
       });
