@@ -128,14 +128,16 @@ function consequenceSection(rows: readonly AvkkRow[]): ReportSection {
     columns: [
       { key: "bereich", label: "Bereich" },
       { key: "anzahl", label: "Aufgaben", align: "right" },
-      { key: "hoch", label: "hoch/kritisch", align: "right" },
-      { key: "max", label: "Höchster Schweregrad" },
+      { key: "hoch", label: "hoch", align: "right" },
+      { key: "kritisch", label: "kritisch", align: "right" },
+      { key: "termin", label: "Terminwirkung", weight: 2 },
     ],
     rows: groups.map((g) => [
       g.areaLabel,
       g.total,
       g.high,
-      g.maxSeverityLabel ?? "—",
+      g.critical,
+      g.scheduleImpacts.join(", ") || "—",
     ]),
     emptyText: "Keine Konsequenzen erfasst",
   };
