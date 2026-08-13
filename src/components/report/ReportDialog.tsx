@@ -154,7 +154,11 @@ export function ReportDialog({
       downloadBlob(result.blob, result.fileName);
       setStatus(`${result.fileName} erstellt und im Downloadbereich abgelegt.`);
     } catch (error) {
-      logger.error("report.render.failed", { reportId, format }, error);
+      logger.error("report.render.failed", {
+        reportId,
+        format,
+        message: error instanceof Error ? error.message : String(error),
+      });
       setStatus(error instanceof Error ? error.message : "Bericht konnte nicht erzeugt werden.");
     } finally {
       setBusy(false);
