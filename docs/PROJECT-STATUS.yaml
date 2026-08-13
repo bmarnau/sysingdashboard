@@ -63,7 +63,7 @@ currentState:
   previousSprint: "08B"
   previousSprintStatus: "completed"
   releaseReadiness: "passed-with-findings"
-  testsPassing: 381
+  testsPassing: 462
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
@@ -405,7 +405,7 @@ adrs:
 
 quality:
   tests:
-    passing: 424
+    passing: 462
     failing: 0
     skipped: "not-recorded"
     coverage: "not-recorded"
