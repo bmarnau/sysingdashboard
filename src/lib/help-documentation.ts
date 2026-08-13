@@ -272,9 +272,15 @@ Abnahme — nicht dem Produktivbetrieb.
 ## Inhalt
 - **Lokaler Bestand**: Projekte (Netzwerkmodernisierung, Microsoft-365-Migration,
   Backup-Konzept), zugehörige Arbeitspakete und Tätigkeiten.
-- **AVKK-Abnahmefälle**: sieben zusammenhängende Sachverhalte, die jede
+- **AVKK-Abnahmefälle**: acht zusammenhängende Sachverhalte, die jede
   Bewertungslage einmal abdecken — unkritisch, gefährdet, kritisch, überfällig,
-  Voraussetzungslücke, hohe Kundenkonsequenz, hohe Terminwirkung.
+  Voraussetzungslücke, Wissens- und Informationslücke, hohe Kundenkonsequenz,
+  hohe Terminwirkung.
+
+> **Nicht auf Produktivinstanzen einspielen.** AVKK-Fälle werden historisiert
+> und lassen sich nur stilllegen, nicht löschen. Eine Instanz mit
+> eingespielten Demodaten gilt ohne Neuaufbau nicht mehr als saubere
+> Produktivinstanz.
 
 Alle Kennungen tragen das Präfix \`demo-\`. Der Stichtag des Datensatzes ist
 standardmäßig der aktuelle Tag, damit Fristen ihre Bedeutung behalten: „im

@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-13 · Dashboard-Version 1.57.0
+Stand: 2026-08-13 · Dashboard-Version 1.58.0
 
 ## Vision
 
@@ -416,3 +416,33 @@ stilllegen, nicht löschen (ADR-0026). Eine Instanz mit eingespielten Demodaten
 ist damit dauerhaft keine saubere Produktivinstanz mehr. Diese Grenze ist in
 `docs/DEMO-DATA.md` und im Release-Candidate-Scope festgehalten, statt sie
 durch eine Ausnahme im Löschschutz aufzuweichen.
+
+
+## Sprint 09B, Teil 2 — MVP-Gesamtabnahme und Release Candidate (1.58.0)
+
+Am Ende einer MVP-Phase zählt nicht, was gebaut wurde, sondern was belegbar
+funktioniert. Sprint 09B schließt deshalb mit einer vollständigen Abnahme statt
+mit einer weiteren Funktion: alle Qualitätstore frisch ausgeführt, jeder Befund
+benannt, bewertet und einem Folgesprint oder einer bewussten Grenze zugeordnet.
+Das Ergebnis steht in `docs/MVP-ACCEPTANCE-REPORT.md` und lautet
+**GO WITH FINDINGS** — kein offener kritischer Befund, der einzige offene
+High-Befund betrifft Wartbarkeit, nicht Funktion oder Sicherheit.
+
+Drei inhaltliche Korrekturen ergaben sich aus der Prüfung. Der Demo-Datensatz
+hatte eine Lücke: Die in der Praxis häufigste AVKK-Lage „Wissen oder
+Information fehlt" war nicht abgedeckt. Sie ist jetzt als Fall H enthalten, und
+ein Test hält die Abdeckung aller Abnahmelagen dauerhaft fest, damit sie nicht
+still wegbricht. Zweitens gab es zwei ADR-Verzeichnisse, die sich nur in der
+Groß-/Kleinschreibung unterschieden — auf einem Windows-Arbeitsplatz ist das
+kein Schönheitsfehler, sondern eine Kollision. Sie sind zusammengeführt, der
+Index ist lückenlos. Drittens war die Produktübersicht SYSING-001 nur ein
+Platzhalter; sie ist jetzt ein Dokument, das Idee, Nutzen je Rolle,
+Informationshoheit und Zukunftsbild beschreibt und dabei jede Aussage als
+umgesetzt, geplant oder Idee kennzeichnet, statt Absicht und Realität zu
+vermischen.
+
+Die wichtigste Betriebsregel des Sprints ist bewusst unbequem formuliert:
+Demodaten dürfen nicht in Produktivinstanzen. Da AVKK-Daten historisiert und
+nicht gelöscht werden, bleibt eine so verunreinigte Instanz dauerhaft
+verunreinigt. Diese Regel steht jetzt im Dialog selbst, im Handbuch und im
+Abnahmebericht.
