@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-13 · Dashboard-Version 1.58.0
+Stand: 2026-08-13 · Dashboard-Version 1.58.1
 
 ## Vision
 
@@ -445,3 +445,32 @@ Demodaten dürfen nicht in Produktivinstanzen. Da AVKK-Daten historisiert und
 nicht gelöscht werden, bleibt eine so verunreinigte Instanz dauerhaft
 verunreinigt. Diese Regel steht jetzt im Dialog selbst, im Handbuch und im
 Abnahmebericht.
+
+## Sprint 09B – Finaler Release-Candidate-Check (v1.58.1)
+
+Der letzte Durchgang vor der MVP-Entscheidung war ausdrücklich kein
+Feature-Sprint, sondern eine Nachprüfung: Stimmt das, was der Bericht behauptet,
+mit dem überein, was im Repository steht? Zwei Abweichungen kamen dabei ans
+Licht, und beide lagen nicht im Produkt, sondern in den Prüfwerkzeugen. Der
+API-Prüfer meldete einen schreibenden Endpoint „ohne Validierung", obwohl das
+Zod-Schema seit Langem vorhanden ist — der Suchausdruck scheiterte schlicht an
+der von der Formatierung eingefügten Zeilenumbruchstelle. Der Zyklus-Prüfer
+meldete eine zyklische Abhängigkeit zwischen der generierten Routendatei und
+dem Router; dieser Ring ist vom Framework vorgegeben und nicht auflösbar.
+Beide Prüfer sind jetzt korrigiert, statt die Befunde stehenzulassen oder
+wegzuerklären.
+
+Ehrlich bleibt festzuhalten, was nicht nachgewiesen ist: Die manuelle
+Rollenabnahme für Systemingenieur, Projektmanager, Geschäftsführer und
+Administrator ist in den Checklisten nicht abgezeichnet, und von der
+Produktübersicht SYSING-001 existiert nur die geprüfte PDF-Fassung, keine
+Word-Fassung. Beides steht als eigener Befund im Abnahmebericht und nicht als
+stillschweigende Annahme.
+
+Die Freigabeentscheidung bleibt GO WITH FINDINGS. Kein offener Befund betrifft
+Authentifizierung, Rechtevergabe, Datenbankabsicherung oder Datenverlust; der
+verbleibende High-Befund ist die Größe der Dashboard-Route und damit reine
+Wartbarkeit. Für die AVKK-Wiederherstellung wurde bewusst entschieden: Die
+Daten sind im Backup enthalten und geprüft, nur das Zurückschreiben in die
+Cloud bleibt manuell — das ist für den MVP akzeptiert, weil ein automatischer
+Rückschreibpfad ohne Löschstrategie Historie überschreiben würde.

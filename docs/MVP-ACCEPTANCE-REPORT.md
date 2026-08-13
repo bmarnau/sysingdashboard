@@ -90,20 +90,20 @@ im Handbuchkapitel „Demo-Datensatz" und in `docs/DEMO-DATA.md`.
 
 ## 5. Befundmatrix
 
-| Nr.  | Schwere | Befund                                                                           | Wirkung                                                 | Umgang                          |
-| ---- | ------- | -------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------- |
-| F-01 | low     | Zyklus-Detektor meldete den framework-erzeugten Ring `routeTree.gen.ts ↔ router.tsx` | Fehlalarm, kein Funktionsfehler | behoben in v1.58.1: generierte Dateien vom Detektor ausgenommen |
-| F-02 | high    | Drei Module über Größenschwelle (1075 / 745 / 731 Zeilen)                        | Wartbarkeit                                             | Refactoringplan ADR-0019        |
-| F-03 | medium  | 17 Lint-Warnungen, darunter fehlende `useMemo`-Abhängigkeit in `dashboard.tsx`   | mögliches Aktualisierungsverhalten in Randfällen        | Sprint 10, beobachtet           |
-| F-04 | medium  | UI greift direkt auf Azure-Interna zu (Schichtenverstoß)                         | Schichtentrennung                                       | Sprint 09C/10                   |
-| F-11 | medium  | Manuelle Rollenabnahme (Systemingenieur, Projektmanager, Geschäftsführer, Admin-Role-Preview, Negativtest) ist in den Checklisten nicht abgezeichnet | fachliche Oberflächenabnahme nur automatisiert belegt | MANUAL VERIFICATION REQUIRED, Sprint 09C |
-| F-12 | low     | Von SYSING-001 existiert nur die PDF-Fassung, keine geprüfte Word-Fassung        | Dokumentverteilung                                      | Sprint 09C                      |
-| F-05 | medium  | Excel-Ausgabe fehlt                                                              | MVP-Pflichtformate PDF/Druck/Word/JSON/CSV sind erfüllt | bewusst Post-MVP                |
-| F-06 | medium  | E2E-Suite ist bewusst nur Smoke (`td-manual-playwright-smoke-only`)              | begrenzte Oberflächenabdeckung                          | akzeptiert, ADR-0012            |
-| F-07 | medium  | Keine Claims-Whitelist im Logger (`SEC-MED-CLAIMS-001`)                          | Protokollinhalt                                         | Sprint 10                       |
-| F-08 | low     | AVKK-Restore schreibt nicht automatisch in die Cloud zurück                      | manueller Wiederherstellungsschritt                     | bekannte Grenze, ADR-0026       |
-| F-09 | low     | Eigener PDF-Pfad für den Leistungsnachweis neben der Reporting-Schicht           | doppelte Ausgabelogik                                   | Zusammenführung Sprint 10       |
-| F-10 | low     | Kontextindikatoren fachlich beschrieben, nicht produktiv erhoben                 | Führungssicht ohne Kontextdaten                         | Post-MVP                        |
+| Nr.  | Schwere | Befund                                                                                                                                               | Wirkung                                                 | Umgang                                                          |
+| ---- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------- |
+| F-01 | low     | Zyklus-Detektor meldete den framework-erzeugten Ring `routeTree.gen.ts ↔ router.tsx`                                                                 | Fehlalarm, kein Funktionsfehler                         | behoben in v1.58.1: generierte Dateien vom Detektor ausgenommen |
+| F-02 | high    | Drei Module über Größenschwelle (1075 / 745 / 731 Zeilen)                                                                                            | Wartbarkeit                                             | Refactoringplan ADR-0019                                        |
+| F-03 | medium  | 17 Lint-Warnungen, darunter fehlende `useMemo`-Abhängigkeit in `dashboard.tsx`                                                                       | mögliches Aktualisierungsverhalten in Randfällen        | Sprint 10, beobachtet                                           |
+| F-04 | medium  | UI greift direkt auf Azure-Interna zu (Schichtenverstoß)                                                                                             | Schichtentrennung                                       | Sprint 09C/10                                                   |
+| F-11 | medium  | Manuelle Rollenabnahme (Systemingenieur, Projektmanager, Geschäftsführer, Admin-Role-Preview, Negativtest) ist in den Checklisten nicht abgezeichnet | fachliche Oberflächenabnahme nur automatisiert belegt   | MANUAL VERIFICATION REQUIRED, Sprint 09C                        |
+| F-12 | low     | Von SYSING-001 existiert nur die PDF-Fassung, keine geprüfte Word-Fassung                                                                            | Dokumentverteilung                                      | Sprint 09C                                                      |
+| F-05 | medium  | Excel-Ausgabe fehlt                                                                                                                                  | MVP-Pflichtformate PDF/Druck/Word/JSON/CSV sind erfüllt | bewusst Post-MVP                                                |
+| F-06 | medium  | E2E-Suite ist bewusst nur Smoke (`td-manual-playwright-smoke-only`)                                                                                  | begrenzte Oberflächenabdeckung                          | akzeptiert, ADR-0012                                            |
+| F-07 | medium  | Keine Claims-Whitelist im Logger (`SEC-MED-CLAIMS-001`)                                                                                              | Protokollinhalt                                         | Sprint 10                                                       |
+| F-08 | low     | AVKK-Restore schreibt nicht automatisch in die Cloud zurück                                                                                          | manueller Wiederherstellungsschritt                     | bekannte Grenze, ADR-0026                                       |
+| F-09 | low     | Eigener PDF-Pfad für den Leistungsnachweis neben der Reporting-Schicht                                                                               | doppelte Ausgabelogik                                   | Zusammenführung Sprint 10                                       |
+| F-10 | low     | Kontextindikatoren fachlich beschrieben, nicht produktiv erhoben                                                                                     | Führungssicht ohne Kontextdaten                         | Post-MVP                                                        |
 
 Keine offenen Befunde der Stufe critical. SEC-CRIT-001 und SEC-CRIT-002 sind
 durch die Einführung datenbankgestützter Identität und RBAC behoben und im
@@ -114,11 +114,11 @@ Refactoringpfad in ADR-0019 festgehalten.
 
 ### Getrennter RBAC-/RLS-Nachweis
 
-| Ebene | Nachweis | Ergebnis |
-| ----- | -------- | -------- |
-| RBAC (Anwendungsebene) | `bun run rbac:check`, `src/__tests__/lib/rbac/*`, `src/__tests__/security/*` — `avkk.view`, `avkk.edit`, `avkk.management.view`, Reporting, Export, Reference Data, Demo-Seed, administrative Funktionen, Role Preview | PASSED |
-| RLS (Datenbankebene) | Policies je AVKK-/Reference-Data-Tabelle, `avkk_can_write`, `has_permission`, Grants je Rolle; Demo-Seed läuft ausschließlich über den Fachdienst unter RLS, ohne Service-Role-Key | PASSED |
-| Role Preview | verändert ausschließlich die Ansicht, keine Berechtigungen, keine Session, keine RLS-Wirkung (Tests in `src/__tests__/lib/rbac/access.test.ts`) | PASSED |
+| Ebene                  | Nachweis                                                                                                                                                                                                               | Ergebnis |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| RBAC (Anwendungsebene) | `bun run rbac:check`, `src/__tests__/lib/rbac/*`, `src/__tests__/security/*` — `avkk.view`, `avkk.edit`, `avkk.management.view`, Reporting, Export, Reference Data, Demo-Seed, administrative Funktionen, Role Preview | PASSED   |
+| RLS (Datenbankebene)   | Policies je AVKK-/Reference-Data-Tabelle, `avkk_can_write`, `has_permission`, Grants je Rolle; Demo-Seed läuft ausschließlich über den Fachdienst unter RLS, ohne Service-Role-Key                                     | PASSED   |
+| Role Preview           | verändert ausschließlich die Ansicht, keine Berechtigungen, keine Session, keine RLS-Wirkung (Tests in `src/__tests__/lib/rbac/access.test.ts`)                                                                        | PASSED   |
 
 ### Backup-/Restore-Entscheidung
 
@@ -204,28 +204,28 @@ Auflagen für die Freigabe:
 
 ## 9. Kennzahlen des Abnahmelaufs
 
-| Feld                              | Wert                                                                                                    |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Getestete Version                 | v1.58.1                                                                                                 |
-| Testdatum                         | 2026-08-13                                                                                              |
-| Testumgebung                      | Entwicklungs-/Preview-Instanz, Lovable Cloud (Supabase), Produktionsbuild geprüft                       |
-| Version Demo-Datensatz            | lokal 2.0.0 · AVKK-Fälle 1.1.0                                                                          |
-| Getestete Rollen                  | Systemadministrator, App-Entwickler, Geschäftsführer, Projektmanager, Systemingenieur, Viewer, Customer |
-| Automatisierte Tests              | 481 grün (56 Dateien, 4 todo)                                                                           |
-| E2E-/UI-Tests                     | 32 Playwright-Tests in 11 Spezifikationen (Smoke-Umfang, ADR-0012)                                      |
-| UI-Teststatus                     | automatisiert bestanden · manuelle Rollenabnahme MANUAL VERIFICATION REQUIRED (F-11)                    |
-| Auth-/Sessionstatus               | bestanden (Route-Guard, Idle-Logout, Session-Wiederherstellung)                                         |
-| AVKK-Teststatus                   | bestanden (Service, Aggregation, Management, Backup-Nutzdaten)                                          |
-| Kontextindikatorstatus            | fachlich beschrieben, nicht produktiv erhoben (F-10)                                                    |
-| PDF-/Druckstatus                  | bestanden (`docs/PRINT-VERIFICATION.md`)                                                                |
-| Exportstatus                      | PDF, Druck, Word, JSON, CSV bestanden · Excel offen (F-05)                                              |
-| Backup-/Restorestatus             | bestanden, Manifest 2.0 mit SHA-256 · AVKK-Rückschreiben manuell (F-08)                                 |
-| RBAC-/RLS-Status                  | bestanden (`rbac:check`, Security-Suite, RLS-Policies aktiv)                                            |
-| ADR-Review-Status                 | abgeschlossen, ADR-0001 bis ADR-0028 accepted, keine offene Entscheidung                                |
+| Feld                              | Wert                                                                                                        |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Getestete Version                 | v1.58.1                                                                                                     |
+| Testdatum                         | 2026-08-13                                                                                                  |
+| Testumgebung                      | Entwicklungs-/Preview-Instanz, Lovable Cloud (Supabase), Produktionsbuild geprüft                           |
+| Version Demo-Datensatz            | lokal 2.0.0 · AVKK-Fälle 1.1.0                                                                              |
+| Getestete Rollen                  | Systemadministrator, App-Entwickler, Geschäftsführer, Projektmanager, Systemingenieur, Viewer, Customer     |
+| Automatisierte Tests              | 481 grün (56 Dateien, 4 todo)                                                                               |
+| E2E-/UI-Tests                     | 32 Playwright-Tests in 11 Spezifikationen (Smoke-Umfang, ADR-0012)                                          |
+| UI-Teststatus                     | automatisiert bestanden · manuelle Rollenabnahme MANUAL VERIFICATION REQUIRED (F-11)                        |
+| Auth-/Sessionstatus               | bestanden (Route-Guard, Idle-Logout, Session-Wiederherstellung)                                             |
+| AVKK-Teststatus                   | bestanden (Service, Aggregation, Management, Backup-Nutzdaten)                                              |
+| Kontextindikatorstatus            | fachlich beschrieben, nicht produktiv erhoben (F-10)                                                        |
+| PDF-/Druckstatus                  | bestanden (`docs/PRINT-VERIFICATION.md`)                                                                    |
+| Exportstatus                      | PDF, Druck, Word, JSON, CSV bestanden · Excel offen (F-05)                                                  |
+| Backup-/Restorestatus             | bestanden, Manifest 2.0 mit SHA-256 · AVKK-Rückschreiben manuell (F-08)                                     |
+| RBAC-/RLS-Status                  | bestanden (`rbac:check`, Security-Suite, RLS-Policies aktiv)                                                |
+| ADR-Review-Status                 | abgeschlossen, ADR-0001 bis ADR-0028 accepted, keine offene Entscheidung                                    |
 | SYSING-001                        | Version 0.2.0, synchron zum Quellstand · visuelle PDF-Abnahme PASSED (6 Seiten) · Word-Fassung fehlt (F-12) |
-| Bekannte Einschränkungen          | F-05, F-06, F-08, F-09, F-10, F-12                                                                      |
-| Findings nach Schweregrad (offen) | critical 0 · high 1 · medium 6 · low 44 · info 7 (Abnahmebefunde: 0 critical, 1 high, 6 medium, 5 low)  |
-| Freigabeentscheidung              | GO WITH FINDINGS                                                                                        |
+| Bekannte Einschränkungen          | F-05, F-06, F-08, F-09, F-10, F-12                                                                          |
+| Findings nach Schweregrad (offen) | critical 0 · high 1 · medium 6 · low 44 · info 7 (Abnahmebefunde: 0 critical, 1 high, 6 medium, 5 low)      |
+| Freigabeentscheidung              | GO WITH FINDINGS                                                                                            |
 
 ## 10. Empfehlungen für Sprint 09C
 

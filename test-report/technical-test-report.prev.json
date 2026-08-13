@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "0983a111-d16d-4176-b3ad-b83fedfcc6fb",
-  "version": 12,
-  "parentReportId": "a6d187b0-daf8-4a20-8eab-cd95ad72776c",
-  "generatedAt": "2026-08-13T04:48:35.595Z",
+  "id": "ab11fd34-6704-4cd9-a19a-f600e77e0967",
+  "version": 13,
+  "parentReportId": "0983a111-d16d-4176-b3ad-b83fedfcc6fb",
+  "generatedAt": "2026-08-13T04:49:58.099Z",
   "identity": {
     "dashboardVersion": "1.58.0",
-    "commit": "63ce8ca",
+    "commit": "a7fbfa3",
     "buildTime": "2026-08-13T04:35:01.150Z",
-    "testTime": "2026-08-13T04:48:35.481Z",
+    "testTime": "2026-08-13T04:49:57.989Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -20,13 +20,13 @@
   },
   "status": "passed-with-findings",
   "recommendation": {
-    "level": "pilot-ready",
-    "reason": "1 HIGH-Findings — für Pilot geeignet, für Produktion nicht."
+    "level": "continue-development",
+    "reason": "Weiterentwicklung empfohlen."
   },
   "releaseStage": {
-    "proposed": "internal-test",
-    "reason": "1 offene HIGH-Findings.",
-    "effective": "internal-test"
+    "proposed": "production",
+    "reason": "Alle Pflichtnachweise grün, keine Blocker offen.",
+    "effective": "production"
   },
   "sections": {
     "architecture": {
@@ -121,10 +121,10 @@
     }
   },
   "summary": {
-    "total": 69,
-    "openTotal": 59,
+    "total": 68,
+    "openTotal": 58,
     "critical": 0,
-    "high": 1,
+    "high": 0,
     "medium": 7,
     "low": 44,
     "accepted": 10,
@@ -143,7 +143,7 @@
       },
       "techdebt": {
         "status": "passed-with-findings",
-        "count": 59
+        "count": 58
       },
       "ops": {
         "status": "passed",
@@ -260,7 +260,7 @@
     "Technische Schulden": {
       "status": "passed-with-findings",
       "openCritical": 0,
-      "openHigh": 1,
+      "openHigh": 0,
       "sourceKeys": [
         "techdebt"
       ]
@@ -406,41 +406,6 @@
       "classification": "accepted-debt",
       "bucket": "high-security",
       "order": 2
-    },
-    {
-      "id": "td:td-cycle-4f7048fd",
-      "severity": "HIGH",
-      "category": "Architektur",
-      "area": "Architektur",
-      "title": "Zyklische Abhängigkeit (2 Kanten)",
-      "description": "Zyklus: src/routeTree.gen.ts → src/router.tsx → src/routeTree.gen.ts",
-      "cause": "Wechselseitiger Import zwischen Modulen; Fehlende gemeinsame Basis-Abstraktion.",
-      "impact": "Erschwert Tree-Shaking, kann zu undefined-Imports zur Laufzeit führen, blockiert saubere Test-Isolation.",
-      "rootCause": "Wechselseitiger Import zwischen Modulen; Fehlende gemeinsame Basis-Abstraktion.",
-      "evidence": {
-        "file": "src/routeTree.gen.ts",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/routeTree.gen.ts"
-      ],
-      "recommendation": "Gemeinsame Types/Utilities in ein drittes Modul extrahieren; Abhängigkeitsrichtung erzwingen.",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "M",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "high-functional",
-      "order": 3
     },
     {
       "id": "td:td-oversize-7e9a0b20",
@@ -2686,12 +2651,6 @@
   ],
   "actionOrder": [
     {
-      "bucket": "high-functional",
-      "findings": [
-        "td:td-cycle-4f7048fd"
-      ]
-    },
-    {
       "bucket": "architecture",
       "findings": [
         "sec:SEC-MED-CLAIMS-001",
@@ -2762,14 +2721,15 @@
   ],
   "diff": {
     "new": [],
-    "fixed": [],
+    "fixed": [
+      "td:td-cycle-4f7048fd"
+    ],
     "worse": [],
     "same": [
       "sec:SEC-CRIT-001",
       "sec:SEC-CRIT-002",
       "sec:SEC-HIGH-STATUS-001",
       "sec:SEC-HIGH-LOG-001",
-      "td:td-cycle-4f7048fd",
       "td:td-oversize-7e9a0b20",
       "sec:SEC-HIGH-AUTH-001",
       "sec:SEC-HIGH-AZURE-001",
@@ -2844,7 +2804,7 @@
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "134f8631127c8bd27082c1e931c9a60efefa449a6a97c65247b1dad61f2952ff",
+    "value": "dd25badfaa7a3227656dd80e415659cd4a63ec243ea1099e133193a88f3f9af1",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",

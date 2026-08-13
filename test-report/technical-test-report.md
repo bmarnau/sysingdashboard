@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `ab11fd34-6704-4cd9-a19a-f600e77e0967` · Version 13 · Generiert: 2026-08-13T04:49:58.099Z_
+_Report ID: `dfa68dbb-328c-472c-be00-66e49b3757fe` · Version 14 · Generiert: 2026-08-13T04:52:37.488Z_
 
 ## 1. Prüfidentität
-- Report-ID: `ab11fd34-6704-4cd9-a19a-f600e77e0967`
-- Reportversion: **13**
-- Vorgängerbericht: `0983a111-d16d-4176-b3ad-b83fedfcc6fb`
+- Report-ID: `dfa68dbb-328c-472c-be00-66e49b3757fe`
+- Reportversion: **14**
+- Vorgängerbericht: `ab11fd34-6704-4cd9-a19a-f600e77e0967`
 - Schema: `2.0.0`
-- Dashboard-Version: **1.58.0**
-- Commit: `a7fbfa3`
+- Dashboard-Version: **1.58.1**
+- Commit: `78d2834`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: 2026-08-13T04:35:01.150Z
-- Testzeit: 2026-08-13T04:49:57.989Z
+- Testzeit: 2026-08-13T04:52:37.381Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:dd25badfaa7a3227656dd80e415659cd4a63ec243ea1099e133193a88f3f9af1`
+- Integrität: `sha256:5342a2b5d16c81627195ed9a7889c4c95690eebe5550f906413f3490717a39eb`
 
 ## 2. Freigabestufe
 - Vorschlag: **production**
@@ -896,7 +896,7 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 
 ## 9. Vergleich zum Vorgängerbericht
 - Neu: 0
-- Behoben: 1
+- Behoben: 0
 - Verschlechtert: 0
 - Unverändert: 68
 - Wieder aufgetreten: 0
