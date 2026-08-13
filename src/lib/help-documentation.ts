@@ -185,6 +185,70 @@ gemeldet, nicht verhindert.`,
     relatedTopics: ["reference-data", "avkk-management"],
   },
   {
+    id: "berichte",
+    title: "Berichte und Dokumentausgabe",
+    category: "Auswertung",
+    component: "ReportDialog",
+    keywords: [
+      "Bericht",
+      "Report",
+      "PDF",
+      "Word",
+      "Druck",
+      "JSON",
+      "CSV",
+      "Vorlage",
+      "Corporate",
+      "Demodaten",
+    ],
+    lastUpdated: "2026-08-14",
+    content: `## Zweck
+Im Servicemenü öffnet „Berichte…" die zentrale Dokumentausgabe. Alle Berichte
+werden aus dem aktuellen AVKK-Stand und dem lokalen Aufgabenbestand erzeugt.
+
+## Verfügbare Berichte
+1. **AVKK — Persönlicher Bericht**: eigene Aufgaben mit Verantwortung,
+   Kompetenzlücken, Konsequenzen und Handlungsbedarf.
+2. **AVKK — Projektbericht**: Projektsicht inklusive Arbeitspaketen,
+   gefährdeten und kritischen Vorgängen sowie Verantwortungszuordnung.
+3. **AVKK — Managementbericht**: verdichtete Portfoliosicht über alle für Sie
+   sichtbaren Projekte. Erfordert das Recht „AVKK-Führungssicht anzeigen".
+
+Sichtbar sind nur Berichte, für die Sie berechtigt sind; welche Datensätze
+enthalten sind, entscheidet weiterhin die Datenbank.
+
+## Formate
+PDF, Druck (Browser-Druckfenster), JSON, CSV und Word sind freigegeben.
+Excel ist bewusst noch nicht enthalten und als geplante Erweiterung
+dokumentiert; CSV lässt sich in Excel direkt öffnen.
+
+Jede erzeugte Datei wird zusätzlich im Downloadbereich abgelegt und
+unterliegt dort der eingestellten Aufbewahrungsdauer.
+
+## Vorlagen (Corporate Templates)
+Kopf- und Fußzeile, Farben, Schrift und Organisationsangabe stammen aus einer
+Vorlage. Ist keine externe Vorlage hinterlegt, greift automatisch die
+mitgelieferte neutrale Vorlage — ein Bericht schlägt nie an fehlender
+Vorlage fehl. Die verwendete Vorlage steht in den Berichtsmetadaten.
+
+## Dateinamen
+Die Benennung folgt dem TDF-Schema: Dokumentkennung, sprechender Titel,
+Version und Zeitstempel, zum Beispiel
+\`SYSING-101_avkk-persoenlicher-bericht_V1.0.0_20260302-101500.pdf\`.
+
+## Grenzen
+Berichte enthalten grundsätzlich keine personenbezogenen Ranglisten,
+Punktzahlen oder Leistungsbewertungen. Kompetenz wird nur je Dimension,
+Verantwortung nur als Zuordnungsstatus verdichtet.
+
+## Demodaten
+Für Schulung und Abnahme steht ein fiktiver Systemhaus-Datensatz bereit
+(Netzwerkmodernisierung, Microsoft-365-Migration, Backup-Konzept). Alle
+Datensätze tragen das Präfix \`demo-\` und lassen sich vollständig und ohne
+Auswirkung auf Echtdaten wieder entfernen.`,
+    relatedTopics: ["avkk-management", "download-center", "export"],
+  },
+  {
     id: "avkk-management",
     title: "AVKK Management — Führungssicht",
     category: "Fachmodell",
