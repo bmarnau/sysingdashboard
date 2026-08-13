@@ -855,6 +855,22 @@ function Dashboard() {
           </PermissionGate>
         )}
 
+        {tab === "avkk-management" && (
+          <PermissionGate
+            permission="avkk.management.view"
+            fallback={
+              <p className="text-sm text-muted-foreground">
+                Für die AVKK-Führungssicht fehlt die Berechtigung.
+              </p>
+            }
+          >
+            <AvkkManagementView
+              tasks={avkkTasks}
+              onOpenManual={() => openManualTopic("avkk-management")}
+            />
+          </PermissionGate>
+        )}
+
         <footer className="mt-10 flex items-center justify-between border-t border-border pt-6 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <ActivityIcon className="size-3.5 text-success" />
