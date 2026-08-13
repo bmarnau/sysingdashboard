@@ -32,6 +32,9 @@ const adapterMocks = vi.hoisted(() => ({
   insertConsequence: vi.fn(),
   selectConsequences: vi.fn(),
   selectRiskThreshold: vi.fn(),
+  updateSubjectStatus: vi.fn(),
+  supersedeAllCompetences: vi.fn(),
+  supersedeAllConsequences: vi.fn(),
 }));
 
 vi.mock("@/lib/avkk/adapter", () => adapterMocks);
