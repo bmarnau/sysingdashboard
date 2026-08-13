@@ -175,6 +175,9 @@ export function buildRows(
         complete: false,
         dueState: state,
         updatedAt: null,
+        responsibilities: [],
+        competences: [],
+        consequences: [],
       };
     }
 
