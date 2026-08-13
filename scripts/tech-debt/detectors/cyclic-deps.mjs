@@ -36,8 +36,15 @@ function resolveImport(fromFile, spec, ROOT) {
   return null;
 }
 
+/**
+ * Auto-generierte Dateien sind vom Zyklus-Check ausgenommen: TanStack Router
+ * erzeugt `routeTree.gen.ts`, das bauartbedingt wechselseitig mit `router.tsx`
+ * verbunden ist. Der Zyklus ist framework-vorgegeben und nicht behebbar.
+ */
+const GENERATED = /(^|\/)routeTree\.gen\.ts$|(^|\/)integrations\/supabase\/types\.ts$/;
+
 export function detectCyclicDeps(ROOT) {
-  const files = walk(`${ROOT}/src`, /\.(ts|tsx)$/);
+  const files = walk(`${ROOT}/src`, /\.(ts|tsx)$/).filter((f) => !GENERATED.test(rel(ROOT, f)));
   const graph = new Map();
   for (const f of files) {
     const text = read(f);
