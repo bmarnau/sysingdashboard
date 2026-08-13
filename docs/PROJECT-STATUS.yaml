@@ -151,6 +151,11 @@ phases:
       - "AVKK als Führungsmodell dokumentiert (docs/AVKK.md, ADR-0024)"
 
 completedSprints:
+  - id: "09C"
+    title: "MVP Hardening und manuelle Abnahme"
+    version: "1.58.2"
+    status: "completed"
+    summary: "Word-Fassung von SYSING-001 aus der Markdown-Quelle erzeugt und visuell geprueft, Rollen-Abnahmecheckliste erstellt, Befunde konsolidiert."
   - id: "09B"
     title: "MVP-Gesamtabnahme und Release Candidate"
     version: "1.58.1"
