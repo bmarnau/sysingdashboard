@@ -424,7 +424,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.56.0"
+  currentRelease: "1.57.0"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
