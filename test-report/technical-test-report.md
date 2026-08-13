@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `a6d187b0-daf8-4a20-8eab-cd95ad72776c` · Version 11 · Generiert: 2026-08-13T04:35:05.674Z_
+_Report ID: `0983a111-d16d-4176-b3ad-b83fedfcc6fb` · Version 12 · Generiert: 2026-08-13T04:48:35.595Z_
 
 ## 1. Prüfidentität
-- Report-ID: `a6d187b0-daf8-4a20-8eab-cd95ad72776c`
-- Reportversion: **11**
-- Vorgängerbericht: `e879dce5-fbee-4256-b55c-a92786862374`
+- Report-ID: `0983a111-d16d-4176-b3ad-b83fedfcc6fb`
+- Reportversion: **12**
+- Vorgängerbericht: `a6d187b0-daf8-4a20-8eab-cd95ad72776c`
 - Schema: `2.0.0`
 - Dashboard-Version: **1.58.0**
-- Commit: `79f0596`
+- Commit: `63ce8ca`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: 2026-08-13T04:35:01.150Z
-- Testzeit: 2026-08-13T04:35:05.560Z
+- Testzeit: 2026-08-13T04:48:35.481Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:820e6c0759dda181039c83eb68e156ccfd87ba6ee9f155bfee2ba0cbf92387b0`
+- Integrität: `sha256:134f8631127c8bd27082c1e931c9a60efefa449a6a97c65247b1dad61f2952ff`
 
 ## 2. Freigabestufe
 - Vorschlag: **internal-test**
@@ -337,11 +337,11 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-oversize-92249691 · LOW · Modul überschreitet Größenschwelle (768 Zeilen)
+### td:td-oversize-92249691 · LOW · Modul überschreitet Größenschwelle (776 Zeilen)
 - **Kategorie**: Architektur / Architektur
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
 - **Quelle**: auto
-- **Beschreibung**: Die Datei hat 768 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 776 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/integrations/supabase/types.ts

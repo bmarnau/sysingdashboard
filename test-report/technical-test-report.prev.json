@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "e879dce5-fbee-4256-b55c-a92786862374",
-  "version": 10,
-  "parentReportId": "ba617a4f-6c50-42d5-af89-8abffef66b17",
-  "generatedAt": "2026-08-13T04:34:47.461Z",
+  "id": "a6d187b0-daf8-4a20-8eab-cd95ad72776c",
+  "version": 11,
+  "parentReportId": "e879dce5-fbee-4256-b55c-a92786862374",
+  "generatedAt": "2026-08-13T04:35:05.674Z",
   "identity": {
     "dashboardVersion": "1.58.0",
-    "commit": "dfd685a",
-    "buildTime": null,
-    "testTime": "2026-08-13T04:34:47.360Z",
+    "commit": "79f0596",
+    "buildTime": "2026-08-13T04:35:01.150Z",
+    "testTime": "2026-08-13T04:35:05.560Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -45,7 +45,7 @@
       "note": "Auth-Guards, Zod-Validierung, Correlation-ID pro Route geprüft."
     },
     "operations": {
-      "status": "not-run",
+      "status": "passed",
       "evidence": "test-report/ops-report.md",
       "note": "Build, Bundle, Health, Backup/Restore aus Ops-Suite."
     },
@@ -146,7 +146,7 @@
         "count": 59
       },
       "ops": {
-        "status": "not-run",
+        "status": "passed",
         "count": 0
       },
       "docs": {
@@ -161,7 +161,7 @@
   },
   "areas": {
     "Frontend": {
-      "status": "not-run",
+      "status": "passed",
       "openCritical": 0,
       "openHigh": 0,
       "sourceKeys": [
@@ -169,7 +169,7 @@
       ]
     },
     "Backend": {
-      "status": "not-run",
+      "status": "passed",
       "openCritical": 0,
       "openHigh": 0,
       "sourceKeys": [
@@ -186,7 +186,7 @@
       ]
     },
     "UI/E2E": {
-      "status": "not-run",
+      "status": "passed",
       "openCritical": 0,
       "openHigh": 0,
       "sourceKeys": [
@@ -234,7 +234,7 @@
       ]
     },
     "Accessibility": {
-      "status": "not-run",
+      "status": "passed",
       "openCritical": 0,
       "openHigh": 0,
       "sourceKeys": [
@@ -242,7 +242,7 @@
       ]
     },
     "Performance": {
-      "status": "not-run",
+      "status": "passed",
       "openCritical": 0,
       "openHigh": 0,
       "sourceKeys": [
@@ -2844,7 +2844,7 @@
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "7b9fdc2a09ebc6786203653186bbc0d9bd3952c885ff3d5e6dfcd9fbe1c35576",
+    "value": "820e6c0759dda181039c83eb68e156ccfd87ba6ee9f155bfee2ba0cbf92387b0",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",
