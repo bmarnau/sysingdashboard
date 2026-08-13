@@ -60,7 +60,6 @@ async function seedCase(
       ).id;
   result.created += 1;
 
-
   if (demoCase.responsibility) {
     await AvkkService.assignResponsibility({
       subjectRef,
