@@ -29,7 +29,8 @@ Der MVP umfasst mindestens:
 - Corporate Document Templates über einen konfigurierbaren Template-Provider,
 - technischer Prüfbericht, Entwicklungstagebuch und Project Manifest,
 - vollständige Benutzer-, Administrator- und Betriebsdokumentation,
-- TDF-konforme Produktübersicht `SYSING-001`, die Idee, Funktionen, Nutzen, Schnittstellen, Automatisierung, Architektur, Grenzen und Weiterentwicklung des Sysing Dashboards verständlich zusammenfasst.
+- TDF-konforme Produktübersicht `SYSING-001`, die Idee, Funktionen, Nutzen, Schnittstellen, Automatisierung, Architektur, Grenzen und Weiterentwicklung des Sysing Dashboards verständlich zusammenfasst,
+- vollständige Prüfung des ADR-Bestands auf Aktualität, offene Architekturentscheidungen, bekannte Kompromisse und noch zu treffende MVP-/Post-MVP-Entscheidungen.
 
 ## 3. Geplanter Weg bis MVP
 
@@ -40,7 +41,7 @@ Der MVP umfasst mindestens:
 | 08B | AVKK Backup/Restore-Prüfung und JSON-Export | Datenportabilität und Integrität |
 | 09 | Rollenbasiertes AVKK-Management-Cockpit und Systemhaus-Demo-Daten | Führungssicht und manuelle fachliche Abnahme |
 | 09A | Report-Service, PDF/Word/Druck, Corporate Templates | Reporting und Ausgabe; erste veröffentlichungsfähige SYSING-001-Ausgabe vorbereiten |
-| 09B | MVP-Gesamttest, TDF-Produktübersicht finalisieren und Release Candidate | Systemweite Abnahme und Produkt-/Managementdokumentation |
+| 09B | MVP-Gesamttest, TDF-Produktübersicht finalisieren und Release Candidate | Systemweite Abnahme, ADR-Review und Produkt-/Managementdokumentation |
 | 09C | Optionales Hardening | Nur Findings aus 09B, falls erforderlich |
 
 ## 3.1 TDF-Produktübersicht SYSING-001
@@ -110,6 +111,35 @@ Vor MVP-Freigabe:
 8. Produktübersicht als Bestandteil des MVP-Abnahmepakets referenzieren.
 
 Die Produktübersicht wird damit ein verbindliches MVP-Artefakt und bleibt nach MVP als fortlaufende Produkt- und Managementdokumentation bestehen.
+
+## 3.2 ADR-Review als verbindlicher MVP-Prüfpunkt
+
+Architecture Decision Records (ADR) sind vor der MVP-Freigabe als eigener Prüfschritt zu betrachten. Ziel ist nicht, vorhandene ADRs nachträglich umzuschreiben, sondern sicherzustellen, dass die tatsächlich gültigen Architekturentscheidungen, bewussten Kompromisse und offenen Entscheidungen nachvollziehbar dokumentiert sind.
+
+Spätestens in Sprint 09B ist der gesamte ADR-Bestand zu prüfen auf:
+
+- Aktualität gegenüber dem realen Code- und Datenbankstand,
+- Widersprüche zwischen älteren und neueren ADRs,
+- Entscheidungen, die inzwischen überholt oder ersetzt wurden,
+- offene Architekturentscheidungen ohne ADR,
+- accepted Findings und bewusste Sicherheitsausnahmen,
+- Provider-Trennung und spätere Microsoft-/Azure-Migrationsfähigkeit,
+- Rollen-/Scope-Modell des Management-Cockpits,
+- Kontextindikatoren und deren Datenschutz-/Persistenzmodell, sofern MVP-Bestandteil,
+- Report-Service, Template-Provider und TDF-Anbindung,
+- Restore-/Quarantäne-Vertrag und die bewusste Grenze des AVKK-Datenbank-Restores,
+- Post-MVP-Integrationsentscheidungen, insbesondere Graph/OAuth, Kommunikation und KI, soweit bereits architektonisch festgelegt.
+
+Wenn bei dieser Prüfung eine wesentliche, langfristig relevante Architekturentscheidung festgestellt wird, die bisher nicht als ADR dokumentiert ist, wird vor MVP-Freigabe ein neuer ADR angelegt. Reine Implementierungsdetails benötigen keinen eigenen ADR.
+
+Der MVP-Abnahmebericht soll den ADR-Review mit mindestens folgenden Angaben referenzieren:
+
+- Anzahl geprüfter ADRs,
+- neue ADRs seit dem letzten Review,
+- ersetzte/deprecated ADRs,
+- offene ADR-Entscheidungen,
+- bestätigte bewusste Kompromisse,
+- daraus resultierende MVP- oder Post-MVP-Maßnahmen.
 
 ## 4. Sprint 09B — MVP-Gesamttest und Release Candidate
 
@@ -223,6 +253,10 @@ Nicht nur technische Ausgabe prüfen, sondern auch:
 - werden fehlende Kompetenzen und kritische Konsequenzen korrekt dargestellt,
 - werden Kontextindikatoren fachlich getrennt von AVKK, aber gemeinsam auswertbar behandelt.
 
+### 4.8 ADR-Review
+
+Den unter Abschnitt 3.2 definierten ADR-Review vollständig durchführen und das Ergebnis im MVP-Abnahmebericht referenzieren. Offene Architekturentscheidungen mit möglicher MVP-Auswirkung dürfen nicht stillschweigend in die Post-MVP-Phase verschoben werden.
+
 ## 5. MVP-Abnahmebericht
 
 Sprint 09B erzeugt:
@@ -244,6 +278,7 @@ Der Bericht enthält mindestens:
 - Exportstatus,
 - Backup-/Restorestatus,
 - RBAC-/RLS-Status,
+- ADR-Review-Status und offene Architekturentscheidungen,
 - Status und Version der TDF-Produktübersicht SYSING-001,
 - bekannte Einschränkungen,
 - Findings nach Schweregrad,
@@ -266,6 +301,7 @@ Freigabestatus:
 - Backup/Restore-Vertrag verifiziert und bekannte Restore-Grenzen explizit freigegeben oder behoben,
 - alle Kern-User-Journeys erfolgreich,
 - alle verpflichtenden Quality Gates grün,
+- ADR-Bestand geprüft und alle MVP-relevanten offenen Architekturentscheidungen entschieden oder ausdrücklich als nicht blockierend freigegeben,
 - SYSING-001 inhaltlich mit dem Release Candidate synchron und als TDF-konforme PDF-Fassung geprüft.
 
 Medium- und Low-Findings dürfen nur mit dokumentierter Bewertung, Verantwortlichkeit und Zieltermin übernommen werden.
