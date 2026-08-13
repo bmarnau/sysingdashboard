@@ -46,7 +46,7 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.54.0"
+  dashboard: "1.55.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -56,14 +56,14 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "08B"
-  currentSprintTitle: "AVKK in Backup, Restore und JSON-Export"
+  currentSprint: "09"
+  currentSprintTitle: "AVKK-Management-Cockpit und Fuehrungssicht"
   currentSprintStatus: "completed"
-  nextSprint: "09"
-  previousSprint: "08"
+  nextSprint: "09A"
+  previousSprint: "08B"
   previousSprintStatus: "completed"
   releaseReadiness: "passed-with-findings"
-  testsPassing: 381
+  testsPassing: 462
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
@@ -218,6 +218,17 @@ completedSprints:
       Vitest-Suite; manueller Abnahmetest dokumentiert. Offen: AVKK ist nicht Teil
       von Backup/JSON-Export (Blocker Sprint 09).
 
+  - id: "09"
+    title: "AVKK-Management-Cockpit und Fuehrungssicht"
+    version: "1.55.0"
+    status: "completed"
+    summary: >-
+      Rollengeschuetzte Fuehrungssicht mit Kennzahlen, Handlungsbedarf,
+      Aufgabenuebersicht und Auswertungen zu Verantwortung, Kompetenz und
+      Konsequenz. Drill-down von jeder Kennzahl auf den Sachverhalt, dokumentierte
+      Priorisierungsregeln, keine personenbezogenen Ranglisten. Kontextindikatoren
+      sind als getrennte Ebene konzipiert, aber nicht erhoben (ADR-0027).
+
   - id: "08B"
     title: "AVKK in Backup, Restore und JSON-Export"
     version: "1.54.0"
@@ -257,17 +268,17 @@ roadmap:
       - "Datenmodell dokumentiert und in docs/DATA-SCHEMA.md beschrieben"
       - "Migration inklusive RLS-Policies und Grants angelegt"
       - "Import-, Export- und Backupformat berücksichtigen AVKK"
-  - id: "09"
-    title: "AVKK-Management-Cockpit"
+  - id: "09A"
+    title: "AVKK-Kontextindikatoren als getrennte Ebene"
     status: "planned"
     priority: "medium"
-    goal: "Rollenbasierte Führungssicht auf Verantwortungen, Kommunikation und Kontrollen bereitstellen."
+    goal: "Kontextindikatoren gemäß ADR-0027 erheben, aggregiert darstellen und datenschutzkonform aufbewahren."
     dependencies:
-      - "08"
+      - "09"
     exitCriteria:
-      - "Führungssicht mit Kennzahlen und Filtern umgesetzt"
-      - "Zugriff ausschließlich über Rollenrechte"
-      - "Exportierbarer Managementbericht vorhanden"
+      - "Datenmodell und Rechte für Kontextindikatoren umgesetzt"
+      - "Nur aggregierte Darstellung ab Mindestgruppengröße"
+      - "Aufbewahrung und Zweckbindung dokumentiert und geprüft"
   - id: "10"
     title: "Microsoft-365-Integration"
     status: "planned"
@@ -387,10 +398,14 @@ adrs:
     status: "accepted"
     topic: "Loeschstrategie, AVKK im Backup und bewertete Sicherheitswarnungen"
     path: "docs/ADR/0026-loeschstrategie-und-avkk-backup.md"
+  - id: "ADR-0027"
+    status: "accepted"
+    topic: "AVKK-Fuehrungssicht und getrennte Kontextebene"
+    path: "docs/ADR/0027-avkk-management-und-kontextebene.md"
 
 quality:
   tests:
-    passing: 424
+    passing: 462
     failing: 0
     skipped: "not-recorded"
     coverage: "not-recorded"
@@ -409,7 +424,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.54.0"
+  currentRelease: "1.55.0"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:

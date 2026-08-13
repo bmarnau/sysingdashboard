@@ -182,7 +182,73 @@ ZIP-Backups, weil sie in der Datenbank liegen. Da Projekte, Arbeitspakete und
 Tätigkeiten weiterhin lokal geführt werden, kann die Datenbank die Verknüpfung
 zu einer Aufgabe nicht erzwingen; verwaiste Zuordnungen werden erkannt und
 gemeldet, nicht verhindert.`,
-    relatedTopics: ["reference-data"],
+    relatedTopics: ["reference-data", "avkk-management"],
+  },
+  {
+    id: "avkk-management",
+    title: "AVKK Management — Führungssicht",
+    category: "Fachmodell",
+    component: "AvkkManagementView",
+    keywords: [
+      "AVKK",
+      "Management",
+      "Führung",
+      "Cockpit",
+      "Handlungsbedarf",
+      "Gefährdung",
+      "Kompetenzlücke",
+      "Konsequenz",
+      "Kontextindikatoren",
+    ],
+    lastUpdated: "2026-08-13",
+    content: `## Zweck
+Die Registerkarte „AVKK Management" ist die Führungssicht auf alle für Sie
+sichtbaren Aufgaben. Sie beantwortet eine Frage: **Wo besteht Handlungsbedarf?**
+
+Sichtbar ist die Registerkarte nur mit dem Recht „AVKK-Führungssicht anzeigen".
+Welche Aufgaben angezeigt werden, entscheidet weiterhin die Datenbank; die
+Oberfläche zeigt nie mehr, als Ihre Berechtigung zulässt.
+
+## Aufbau
+1. **Kennzahlen** — offene Aufgaben, Gefährdungen, kritische Konsequenzen,
+   Überfälligkeiten, Kompetenzdefizite, Aufgaben ohne Verantwortung. Jede Kachel
+   ist anklickbar und schränkt die Aufgabenübersicht ein (Drill-down).
+2. **Filter** — Suche, Projekt/Kontext, Aufgabenart, Verantwortungsart,
+   Fälligkeitszeitraum, Kompetenzstatus und Gefährdung. Alle Auswertungen der
+   Seite rechnen auf derselben gefilterten Menge.
+3. **Handlungsbedarf** — Kategorien wie „Kritisch", „Gefährdet",
+   „Unterstützung erforderlich", „Terminrisiko", „Fehlende Voraussetzung",
+   „Hohe Kunden-/Projektkonsequenz" und „Verantwortung fehlt". Jede Kategorie
+   nennt ihre Regel im Klartext — es gibt keine verborgene Punktzahl.
+4. **Aufgabenübersicht** — priorisierte Liste mit Verantwortung, Fälligkeit,
+   Kompetenzstatus, Konsequenz und Begründung. Ein Klick öffnet den vollen
+   AVKK-Sachverhalt.
+5. **Verantwortung, Kompetenz, Konsequenz** — verdichtete Auswertungen, jeweils
+   mit Drill-down auf die betroffenen Aufgaben.
+
+## Priorisierung
+Die Reihenfolge ist dokumentiert und nachvollziehbar: kritische Konsequenz →
+gefährdet → hohe Konsequenz → überfällig → bald fällig → Titel.
+
+## Abgrenzung (verbindlich)
+Diese Sicht erzeugt **keine** personenbezogenen Ranglisten, Punktzahlen oder
+Leistungsbewertungen. Verantwortung wird ausschließlich als Zuordnungsstatus
+ausgewertet, Kompetenz ausschließlich je Dimension („Voraussetzung X fehlt bei
+6 Aufgaben"), niemals je Person.
+
+## Bericht
+Über „Bericht (JSON)" lässt sich der aktuelle, gefilterte Stand als
+Datenvertrag exportieren (Version 1.0.0). Er enthält Kennzahlen, Kategorien mit
+Regeln, Kompetenz- und Konsequenzaggregationen — bewusst ohne Personenbezug.
+
+## Kontextindikatoren
+Weiche Faktoren wie Arbeitsbelastung, Zeitdruck, Teamunterstützung,
+Informationslage, Ressourcenlage, Eskalationsgrad und Kundenzufriedenheit sind
+**kein** Teil von AVKK. Sie bilden eine getrennte Ebene und werden derzeit
+weder erhoben noch gespeichert. Das Zielmodell inklusive Zweckbindung,
+Sichtbarkeit und Aufbewahrung ist in \`docs/AVKK-CONTEXT-INDICATORS.md\` und
+ADR-0027 beschrieben.`,
+    relatedTopics: ["avkk-modell", "reference-data"],
   },
   {
     id: "reference-data",

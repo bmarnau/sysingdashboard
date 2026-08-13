@@ -9,7 +9,13 @@ import type {
   WorkPackageStatus,
 } from "@/lib/dashboard-data";
 
-export type Tab = "projekte" | "arbeitspakete" | "taetigkeiten" | "abrechnung" | "avkk";
+export type Tab =
+  | "projekte"
+  | "arbeitspakete"
+  | "taetigkeiten"
+  | "abrechnung"
+  | "avkk"
+  | "avkk-management";
 
 export const wpStatusLabel: Record<WorkPackageStatus, string> = {
   offen: "Offen",

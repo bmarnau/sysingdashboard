@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Clock,
   Euro,
+  Gauge,
   ShieldCheck,
   FolderKanban,
   Layers,
@@ -112,6 +113,7 @@ import { WorkPackagesView } from "@/components/dashboard/views/WorkPackagesView"
 import { ActivitiesView } from "@/components/dashboard/views/ActivitiesView";
 import { BillingView } from "@/components/dashboard/views/BillingView";
 import { AvkkWorkspaceView } from "@/components/avkk/AvkkWorkspaceView";
+import { AvkkManagementView } from "@/components/avkk/management/AvkkManagementView";
 import { PermissionGate } from "@/components/PermissionGate";
 import { tasksFromLocalData } from "@/lib/avkk/workspace";
 import { ProjectDialog } from "@/components/dashboard/dialogs/ProjectDialog";
@@ -779,6 +781,15 @@ function Dashboard() {
               Mein AVKK
             </TabButton>
           </PermissionGate>
+          <PermissionGate permission="avkk.management.view">
+            <TabButton
+              active={tab === "avkk-management"}
+              onClick={() => setTab("avkk-management")}
+              icon={<Gauge className="size-4" />}
+            >
+              AVKK Management
+            </TabButton>
+          </PermissionGate>
         </div>
 
         {tab === "projekte" && (
@@ -841,6 +852,22 @@ function Dashboard() {
             <AvkkWorkspaceView
               tasks={avkkTasks}
               onOpenManual={() => openManualTopic("avkk-modell")}
+            />
+          </PermissionGate>
+        )}
+
+        {tab === "avkk-management" && (
+          <PermissionGate
+            permission="avkk.management.view"
+            fallback={
+              <p className="text-sm text-muted-foreground">
+                Für die AVKK-Führungssicht fehlt die Berechtigung.
+              </p>
+            }
+          >
+            <AvkkManagementView
+              tasks={avkkTasks}
+              onOpenManual={() => openManualTopic("avkk-management")}
             />
           </PermissionGate>
         )}

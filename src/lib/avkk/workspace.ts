@@ -23,6 +23,33 @@ export interface AvkkTask {
 
 export type AvkkDueState = "none" | "upcoming" | "due" | "overdue";
 
+/** Verdichtete Verantwortungsangabe einer Zeile (keine Personenbewertung). */
+export interface AvkkRowResponsibility {
+  personId: string;
+  roleKey: string;
+  roleLabel: string;
+  typeKeys: string[];
+  typeLabels: string[];
+}
+
+export interface AvkkRowCompetence {
+  dimensionKey: string;
+  dimensionLabel: string;
+  ratingKey: string;
+  ratingLabel: string;
+  supportNeeded: boolean;
+}
+
+export interface AvkkRowConsequence {
+  areaKey: string;
+  areaLabel: string;
+  severityKey: string;
+  severityLabel: string;
+  severityRank: number;
+  scheduleImpactKey: string;
+  scheduleImpactLabel: string;
+}
+
 export interface AvkkRow {
   key: string;
   task: AvkkTask;
@@ -44,6 +71,12 @@ export interface AvkkRow {
   complete: boolean;
   dueState: AvkkDueState;
   updatedAt: string | null;
+  /** Gültige Verantwortungen (für Aggregationen, ohne Personenbewertung). */
+  responsibilities: AvkkRowResponsibility[];
+  /** Aktuelle Kompetenzbewertungen der Aufgabe. */
+  competences: AvkkRowCompetence[];
+  /** Aktuelle Konsequenzen der Aufgabe. */
+  consequences: AvkkRowConsequence[];
 }
 
 export const AVKK_FILTERS = [
@@ -142,6 +175,9 @@ export function buildRows(
         complete: false,
         dueState: state,
         updatedAt: null,
+        responsibilities: [],
+        competences: [],
+        consequences: [],
       };
     }
 
@@ -187,6 +223,29 @@ export function buildRows(
       complete,
       dueState: state,
       updatedAt: dossier.subject.updatedAt,
+      responsibilities: responsibilities.map((r) => ({
+        personId: r.personId,
+        roleKey: r.roleKey,
+        roleLabel: r.roleLabel,
+        typeKeys: r.types.map((t) => t.key),
+        typeLabels: r.types.map((t) => t.label),
+      })),
+      competences: competences.map((c) => ({
+        dimensionKey: c.dimensionKey,
+        dimensionLabel: c.dimensionLabel,
+        ratingKey: c.ratingKey,
+        ratingLabel: c.ratingLabel,
+        supportNeeded: c.supportNeeded,
+      })),
+      consequences: consequences.map((c) => ({
+        areaKey: c.areaKey,
+        areaLabel: c.areaLabel,
+        severityKey: c.severityKey,
+        severityLabel: c.severityLabel,
+        severityRank: severityRanks[c.severityKey] ?? 0,
+        scheduleImpactKey: c.scheduleImpactKey,
+        scheduleImpactLabel: c.scheduleImpactLabel,
+      })),
     };
   });
 }
