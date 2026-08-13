@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0.0",
-  "id": "b9e48162-39e8-4889-9001-34888a434363",
-  "version": 8,
-  "parentReportId": "dfb75b8e-1271-453f-8f78-2357fc5fe9ec",
-  "generatedAt": "2026-08-10T04:27:43.359Z",
+  "id": "ba617a4f-6c50-42d5-af89-8abffef66b17",
+  "version": 9,
+  "parentReportId": "b9e48162-39e8-4889-9001-34888a434363",
+  "generatedAt": "2026-08-13T04:27:06.208Z",
   "identity": {
-    "dashboardVersion": "1.52.0",
-    "commit": "dcffe47",
+    "dashboardVersion": "1.57.0",
+    "commit": "c4a1813",
     "buildTime": null,
-    "testTime": "2026-08-10T04:27:43.248Z",
+    "testTime": "2026-08-13T04:27:06.105Z",
     "environment": {
       "node": "v22.22.0",
       "platform": "linux",
@@ -20,13 +20,13 @@
   },
   "status": "passed-with-findings",
   "recommendation": {
-    "level": "continue-development",
-    "reason": "Weiterentwicklung empfohlen."
+    "level": "pilot-ready",
+    "reason": "1 HIGH-Findings — für Pilot geeignet, für Produktion nicht."
   },
   "releaseStage": {
-    "proposed": "production",
-    "reason": "Alle Pflichtnachweise grün, keine Blocker offen.",
-    "effective": "production"
+    "proposed": "internal-test",
+    "reason": "1 offene HIGH-Findings.",
+    "effective": "internal-test"
   },
   "sections": {
     "architecture": {
@@ -121,12 +121,12 @@
     }
   },
   "summary": {
-    "total": 68,
-    "openTotal": 58,
+    "total": 69,
+    "openTotal": 59,
     "critical": 0,
-    "high": 0,
-    "medium": 8,
-    "low": 43,
+    "high": 1,
+    "medium": 7,
+    "low": 44,
     "accepted": 10,
     "sources": {
       "security": {
@@ -143,7 +143,7 @@
       },
       "techdebt": {
         "status": "passed-with-findings",
-        "count": 58
+        "count": 59
       },
       "ops": {
         "status": "not-run",
@@ -260,7 +260,7 @@
     "Technische Schulden": {
       "status": "passed-with-findings",
       "openCritical": 0,
-      "openHigh": 0,
+      "openHigh": 1,
       "sourceKeys": [
         "techdebt"
       ]
@@ -408,12 +408,47 @@
       "order": 2
     },
     {
+      "id": "td:td-cycle-4f7048fd",
+      "severity": "HIGH",
+      "category": "Architektur",
+      "area": "Architektur",
+      "title": "Zyklische Abhängigkeit (2 Kanten)",
+      "description": "Zyklus: src/routeTree.gen.ts → src/router.tsx → src/routeTree.gen.ts",
+      "cause": "Wechselseitiger Import zwischen Modulen; Fehlende gemeinsame Basis-Abstraktion.",
+      "impact": "Erschwert Tree-Shaking, kann zu undefined-Imports zur Laufzeit führen, blockiert saubere Test-Isolation.",
+      "rootCause": "Wechselseitiger Import zwischen Modulen; Fehlende gemeinsame Basis-Abstraktion.",
+      "evidence": {
+        "file": "src/routeTree.gen.ts",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/routeTree.gen.ts"
+      ],
+      "recommendation": "Gemeinsame Types/Utilities in ein drittes Modul extrahieren; Abhängigkeitsrichtung erzwingen.",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "M",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "high-functional",
+      "order": 3
+    },
+    {
       "id": "td:td-oversize-7e9a0b20",
       "severity": "HIGH",
       "category": "Frontend",
       "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (989 Zeilen)",
-      "description": "Die Datei hat 989 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "title": "Modul überschreitet Größenschwelle (1075 Zeilen)",
+      "description": "Die Datei hat 1075 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
       "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
       "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
       "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
@@ -636,41 +671,6 @@
         "src/components/azure/AzureActionsPanel.tsx:7"
       ],
       "recommendation": "Ausschließlich `@/lib/azure/azure-service` importieren.",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "open",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
-      "id": "td:td-layer-d1e551ce",
-      "severity": "MEDIUM",
-      "category": "Architektur",
-      "area": "Architektur",
-      "title": "UI-Direktzugriff auf Persistenz-Schicht",
-      "description": "Datei importiert ein verbotenes Modul: from \"@/lib/store/dashboard-persistence\"",
-      "cause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
-      "impact": "Umgeht Store-Selectors und Debounce-Persistenz; erzeugt versteckte Kopplung an localStorage-Layout.",
-      "rootCause": "Fehlende Facade-Nutzung; Convenience-Import statt Store-/Service-Abstraktion.",
-      "evidence": {
-        "file": "src/routes/_authenticated/dashboard.tsx:92",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/routes/_authenticated/dashboard.tsx:92"
-      ],
-      "recommendation": "useDashboardStore-Selector oder dedizierten Facade-Hook verwenden.",
       "dependencies": [],
       "owner": null,
       "dueDate": null,
@@ -937,8 +937,8 @@
       "severity": "LOW",
       "category": "Frontend",
       "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (560 Zeilen)",
-      "description": "Die Datei hat 560 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "title": "Modul überschreitet Größenschwelle (580 Zeilen)",
+      "description": "Die Datei hat 580 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
       "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
       "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
       "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
@@ -1038,12 +1038,47 @@
       "order": 8
     },
     {
+      "id": "td:td-oversize-92249691",
+      "severity": "LOW",
+      "category": "Architektur",
+      "area": "Architektur",
+      "title": "Modul überschreitet Größenschwelle (768 Zeilen)",
+      "description": "Die Datei hat 768 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
+      "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
+      "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
+      "evidence": {
+        "file": "src/integrations/supabase/types.ts",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/integrations/supabase/types.ts"
+      ],
+      "recommendation": "Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "M",
+      "status": "open",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
       "id": "td:td-oversize-92e5643a",
       "severity": "LOW",
       "category": "Frontend",
       "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (423 Zeilen)",
-      "description": "Die Datei hat 423 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "title": "Modul überschreitet Größenschwelle (403 Zeilen)",
+      "description": "Die Datei hat 403 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
       "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
       "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
       "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
@@ -1112,8 +1147,8 @@
       "severity": "LOW",
       "category": "Frontend",
       "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (496 Zeilen)",
-      "description": "Die Datei hat 496 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "title": "Modul überschreitet Größenschwelle (497 Zeilen)",
+      "description": "Die Datei hat 497 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
       "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
       "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
       "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
@@ -1147,8 +1182,8 @@
       "severity": "LOW",
       "category": "Frontend",
       "area": "Frontend",
-      "title": "Modul überschreitet Größenschwelle (563 Zeilen)",
-      "description": "Die Datei hat 563 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
+      "title": "Modul überschreitet Größenschwelle (585 Zeilen)",
+      "description": "Die Datei hat 585 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.",
       "cause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
       "impact": "Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.",
       "rootCause": "Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.",
@@ -2509,41 +2544,6 @@
       "order": 8
     },
     {
-      "id": "td:td-console-665c1d8d",
-      "severity": "INFO",
-      "category": "Frontend",
-      "area": "Frontend",
-      "title": "Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)",
-      "description": "Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.",
-      "cause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
-      "impact": "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.",
-      "rootCause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
-      "evidence": {
-        "file": "src/integrations/supabase/client.server.ts:42",
-        "line": null,
-        "reportRef": "test-report/tech-debt.md"
-      },
-      "components": [
-        "src/integrations/supabase/client.server.ts:42"
-      ],
-      "recommendation": "Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).",
-      "dependencies": [],
-      "owner": null,
-      "dueDate": null,
-      "createdAt": null,
-      "closedAt": null,
-      "commitRef": null,
-      "adrRef": null,
-      "effort": "S",
-      "status": "akzeptiert",
-      "source": "auto",
-      "accepted": false,
-      "gateRelevant": false,
-      "classification": "confirmed",
-      "bucket": "architecture",
-      "order": 8
-    },
-    {
       "id": "td:td-console-6c701bbd",
       "severity": "INFO",
       "category": "Frontend",
@@ -2614,6 +2614,41 @@
       "order": 8
     },
     {
+      "id": "td:td-console-8c42fa14",
+      "severity": "INFO",
+      "category": "Frontend",
+      "area": "Frontend",
+      "title": "Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)",
+      "description": "Aufruf: console.error(…) — begründete Ausnahme: Auto-generierte Integrationsdateien (Lovable Cloud). Änderungen würden beim nächsten Generierungslauf überschrieben. Ausgaben sind statische Konfig-Hinweise ohne Werte.",
+      "cause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "impact": "Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.",
+      "rootCause": "Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).",
+      "evidence": {
+        "file": "src/integrations/supabase/client.server.ts:45",
+        "line": null,
+        "reportRef": "test-report/tech-debt.md"
+      },
+      "components": [
+        "src/integrations/supabase/client.server.ts:45"
+      ],
+      "recommendation": "Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).",
+      "dependencies": [],
+      "owner": null,
+      "dueDate": null,
+      "createdAt": null,
+      "closedAt": null,
+      "commitRef": null,
+      "adrRef": null,
+      "effort": "S",
+      "status": "akzeptiert",
+      "source": "auto",
+      "accepted": false,
+      "gateRelevant": false,
+      "classification": "confirmed",
+      "bucket": "architecture",
+      "order": 8
+    },
+    {
       "id": "td:td-coverage-027fe478",
       "severity": "INFO",
       "category": "Tests",
@@ -2651,12 +2686,17 @@
   ],
   "actionOrder": [
     {
+      "bucket": "high-functional",
+      "findings": [
+        "td:td-cycle-4f7048fd"
+      ]
+    },
+    {
       "bucket": "architecture",
       "findings": [
         "sec:SEC-MED-CLAIMS-001",
         "td:td-endpoint-zod-34111d3b",
         "td:td-layer-b432b1b9",
-        "td:td-layer-d1e551ce",
         "td:td-layer-e4fb0e64",
         "td:td-oversize-242b307c",
         "td:td-oversize-f3843ebe",
@@ -2666,6 +2706,7 @@
         "td:td-oversize-38954b26",
         "td:td-oversize-392d9209",
         "td:td-oversize-564261af",
+        "td:td-oversize-92249691",
         "td:td-oversize-92e5643a",
         "td:td-oversize-af210d92",
         "td:td-oversize-d5f3942b",
@@ -2704,9 +2745,9 @@
         "td:td-console-08e8609a",
         "td:td-console-2c49302b",
         "td:td-console-43084e7a",
-        "td:td-console-665c1d8d",
         "td:td-console-6c701bbd",
-        "td:td-console-74bd3646"
+        "td:td-console-74bd3646",
+        "td:td-console-8c42fa14"
       ]
     },
     {
@@ -2721,9 +2762,14 @@
   ],
   "diff": {
     "new": [
-      "man:avkk-can-write-execute"
+      "td:td-cycle-4f7048fd",
+      "td:td-oversize-92249691",
+      "td:td-console-8c42fa14"
     ],
-    "fixed": [],
+    "fixed": [
+      "td:td-layer-d1e551ce",
+      "td:td-console-665c1d8d"
+    ],
     "worse": [],
     "same": [
       "sec:SEC-CRIT-001",
@@ -2737,7 +2783,6 @@
       "sec:SEC-MED-CLAIMS-001",
       "td:td-endpoint-zod-34111d3b",
       "td:td-layer-b432b1b9",
-      "td:td-layer-d1e551ce",
       "td:td-layer-e4fb0e64",
       "td:td-oversize-242b307c",
       "td:td-oversize-f3843ebe",
@@ -2783,13 +2828,13 @@
       "td:td-orphan-e89d394d",
       "td:td-orphan-f35c0af6",
       "td:td-orphan-fee5a79a",
+      "man:avkk-can-write-execute",
       "td:td-manual-msw-coverage-gap",
       "td:td-manual-ci-playwright-cache",
       "sec:SEC-LOW-DOCS-001",
       "td:td-console-08e8609a",
       "td:td-console-2c49302b",
       "td:td-console-43084e7a",
-      "td:td-console-665c1d8d",
       "td:td-console-6c701bbd",
       "td:td-console-74bd3646",
       "td:td-coverage-027fe478"
@@ -2803,7 +2848,7 @@
   "blockers": [],
   "integrity": {
     "algo": "sha256",
-    "value": "e059219e281951c751272ac99162c65fa70c36e45e0f64fddf444c17da8b2737",
+    "value": "9f00a59b2b6842b287875548cd64d70f6fb3ba848ca0f0636461042a2b8d8ef2",
     "fields": [
       "schemaVersion",
       "identity.dashboardVersion",

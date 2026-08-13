@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `ba617a4f-6c50-42d5-af89-8abffef66b17` · Version 9 · Generiert: 2026-08-13T04:27:06.208Z_
+_Report ID: `e879dce5-fbee-4256-b55c-a92786862374` · Version 10 · Generiert: 2026-08-13T04:34:47.461Z_
 
 ## 1. Prüfidentität
-- Report-ID: `ba617a4f-6c50-42d5-af89-8abffef66b17`
-- Reportversion: **9**
-- Vorgängerbericht: `b9e48162-39e8-4889-9001-34888a434363`
+- Report-ID: `e879dce5-fbee-4256-b55c-a92786862374`
+- Reportversion: **10**
+- Vorgängerbericht: `ba617a4f-6c50-42d5-af89-8abffef66b17`
 - Schema: `2.0.0`
-- Dashboard-Version: **1.57.0**
-- Commit: `c4a1813`
+- Dashboard-Version: **1.58.0**
+- Commit: `dfd685a`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: —
-- Testzeit: 2026-08-13T04:27:06.105Z
+- Testzeit: 2026-08-13T04:34:47.360Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:9f00a59b2b6842b287875548cd64d70f6fb3ba848ca0f0636461042a2b8d8ef2`
+- Integrität: `sha256:7b9fdc2a09ebc6786203653186bbc0d9bd3952c885ff3d5e6dfcd9fbe1c35576`
 
 ## 2. Freigabestufe
 - Vorschlag: **internal-test**
@@ -38,7 +38,7 @@ _Report ID: `ba617a4f-6c50-42d5-af89-8abffef66b17` · Version 9 · Generiert: 20
 | operations | nicht ausgeführt | test-report/ops-report.md |
 | tests | bestanden mit Findings | test-report/security-vitest.json, test-report/backup-vitest.json |
 | backup | bestanden | test-report/backup-integrity-report.md |
-| auth | bestanden mit Findings | e2e/specs/navigation.spec.ts, test-report/security-report.md, docs/adr/ADR-0013-security-release-gate.md |
+| auth | bestanden mit Findings | e2e/specs/navigation.spec.ts, test-report/security-report.md, docs/ADR/0013-security-release-gate.md |
 | rls | bestanden | supabase/migrations/*, src/__tests__/security/rbac-v2.test.ts |
 | supabase | bestanden | src/integrations/supabase/config.ts, supabase/config.toml |
 | dockerPortability | not-applicable | docs/DEPLOYMENT.md |
@@ -908,10 +908,10 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 9. Vergleich zum Vorgängerbericht
-- Neu: 3
-- Behoben: 2
+- Neu: 0
+- Behoben: 0
 - Verschlechtert: 0
-- Unverändert: 66
+- Unverändert: 69
 - Wieder aufgetreten: 0
 - Schweregrad geändert: 0
 - Gate-Relevanz geändert: 0

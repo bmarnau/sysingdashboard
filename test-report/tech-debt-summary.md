@@ -1,6 +1,6 @@
 # Management-Zusammenfassung — Technical Debt
 
-**Version 1.57.0** · 2026-08-13
+**Version 1.58.0** · 2026-08-13
 
 | Kategorie | Wert |
 | --------- | ---- |
@@ -9,8 +9,8 @@
 | High | 2 |
 | Medium | 6 |
 | Low + Info | 51 |
-| Neu seit Vorlauf | 3 |
-| Behoben seit Vorlauf | 2 |
+| Neu seit Vorlauf | 0 |
+| Behoben seit Vorlauf | 0 |
 
 ## Top-10 nach Priorität
 
