@@ -264,7 +264,14 @@ export const avkkProjectReport: ReportDefinition<AvkkReportInput> = {
           items: [
             { label: "Aufgaben mit Verantwortung", value: responsibility.assigned },
             { label: "Aufgaben ohne Verantwortung", value: responsibility.unassigned },
-            { label: "Abdeckung in Prozent", value: `${responsibility.coverage}%` },
+            {
+              label: "Überfällig mit Verantwortung",
+              value: responsibility.overdueWithResponsibility,
+            },
+            {
+              label: "Kritisch ohne Verantwortung",
+              value: responsibility.criticalWithoutFullResponsibility,
+            },
           ],
         },
       ],
