@@ -56,6 +56,9 @@ const SystemStatusDialog = lazy(() =>
 const TechnicalReportDialog = lazy(() =>
   import("@/components/TechnicalReportDialog").then((m) => ({ default: m.TechnicalReportDialog })),
 );
+const DemoDataDialog = lazy(() =>
+  import("@/components/DemoDataDialog").then((m) => ({ default: m.DemoDataDialog })),
+);
 const ReportDialog = lazy(() =>
   import("@/components/report/ReportDialog").then((m) => ({ default: m.ReportDialog })),
 );
@@ -197,6 +200,7 @@ function Dashboard() {
   const [showAzureData, setShowAzureData] = useState(false);
   const [showLogViewer, setShowLogViewer] = useState(false);
   const [showDevDiary, setShowDevDiary] = useState(false);
+  const [showDemoData, setShowDemoData] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
 
@@ -533,6 +537,7 @@ function Dashboard() {
               setShowExportDialog={setShowExportDialog}
               setShowDevDiary={setShowDevDiary}
               setShowReports={setShowReports}
+              setShowDemoData={setShowDemoData}
             />
             <button
               type="button"
@@ -1057,6 +1062,11 @@ function Dashboard() {
       {showDevDiary && (
         <Suspense fallback={null}>
           <DevDiaryDialog open={showDevDiary} onOpenChange={setShowDevDiary} />
+        </Suspense>
+      )}
+      {showDemoData && (
+        <Suspense fallback={null}>
+          <DemoDataDialog open={showDemoData} onOpenChange={setShowDemoData} />
         </Suspense>
       )}
     </div>

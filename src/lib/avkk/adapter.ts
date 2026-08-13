@@ -351,3 +351,48 @@ export async function selectRiskThreshold(): Promise<RiskThreshold> {
     partialCount: Number(value?.partialCount ?? DEFAULT_RISK_THRESHOLD.partialCount),
   };
 }
+
+/* ---------------------------- Stilllegung ------------------------------ */
+
+/**
+ * Setzt den Status eines Sachverhalts (z. B. auf `closed`).
+ * Bewusst kein Löschen: Die AVKK-Tabellen kennen keine DELETE-Regel,
+ * Historisierung ist die vorgesehene Rücknahme (ADR-0026).
+ */
+export async function updateSubjectStatus(
+  subjectRef: string,
+  status: AvkkSubjectStatus,
+  actorId: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("avkk_subject")
+    .update({ status, updated_by: actorId })
+    .eq("id", subjectRef);
+  if (error) fail("AVKK_SUBJECT_STATUS_FAILED", error.message, error);
+}
+
+/** Legt alle aktuellen Kompetenzbewertungen eines Sachverhalts still. */
+export async function supersedeAllCompetences(
+  subjectRef: string,
+  actorId: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("avkk_competence")
+    .update({ superseded_at: new Date().toISOString(), updated_by: actorId })
+    .eq("avkk_subject_id", subjectRef)
+    .is("superseded_at", null);
+  if (error) fail("AVKK_COMPETENCE_SUPERSEDE_FAILED", error.message, error);
+}
+
+/** Legt alle aktuellen Konsequenzen eines Sachverhalts still. */
+export async function supersedeAllConsequences(
+  subjectRef: string,
+  actorId: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("avkk_consequence")
+    .update({ superseded_at: new Date().toISOString(), updated_by: actorId })
+    .eq("avkk_subject_id", subjectRef)
+    .is("superseded_at", null);
+  if (error) fail("AVKK_CONSEQUENCE_SUPERSEDE_FAILED", error.message, error);
+}

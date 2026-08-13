@@ -10,6 +10,7 @@ export const subjects = {
   create: adapter.insertSubject,
   list: adapter.selectSubjects,
   find: adapter.selectSubject,
+  setStatus: adapter.updateSubjectStatus,
 };
 
 export const responsibilities = {
@@ -21,12 +22,14 @@ export const responsibilities = {
 
 export const competences = {
   supersede: adapter.supersedeCompetence,
+  supersedeAll: adapter.supersedeAllCompetences,
   create: adapter.insertCompetence,
   list: adapter.selectCompetences,
 };
 
 export const consequences = {
   create: adapter.insertConsequence,
+  supersedeAll: adapter.supersedeAllConsequences,
   list: adapter.selectConsequences,
 };
 
