@@ -12,7 +12,7 @@
 
 import type { AvkkSubjectType } from "@/lib/avkk/types";
 
-export type DemoAvkkCaseId = "A" | "B" | "C" | "D" | "E" | "F" | "G";
+export type DemoAvkkCaseId = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
 
 export interface DemoCompetenceRating {
   dimensionKey: string;
