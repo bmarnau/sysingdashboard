@@ -52,7 +52,7 @@ export function detectCyclicDeps(ROOT) {
     let m;
     while ((m = IMPORT_RE.exec(text)) !== null) {
       const resolved = resolveImport(f, m[1], ROOT);
-      if (resolved) deps.add(resolved);
+      if (resolved && !GENERATED.test(rel(ROOT, resolved))) deps.add(resolved);
     }
     graph.set(f, deps);
   }
