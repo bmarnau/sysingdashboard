@@ -35,15 +35,15 @@ Der MVP umfasst mindestens:
 
 ## 3. Geplanter Weg bis MVP
 
-| Sprint | Schwerpunkt | MVP-Beitrag |
-| --- | --- | --- |
-| 07B | AVKK-Datenbank, Reference Data, Services, RBAC/RLS | Fachliche Datenbasis |
-| 08 | Persönlicher AVKK-Arbeitsplatz | Operative Nutzung |
-| 08B | AVKK Backup/Restore-Prüfung und JSON-Export | Datenportabilität und Integrität |
-| 09 | Rollenbasiertes AVKK-Management-Cockpit | Führungssicht und manuelle fachliche Abnahme |
-| 09A | Report-Service, PDF/Word/Druck, Corporate Templates; Demo-Datensatz für Reporting vorbereiten | Reporting und Ausgabe; erste veröffentlichungsfähige SYSING-001-Ausgabe vorbereiten |
-| 09B | MVP-Gesamttest mit vollständigem Systemhaus-Demo-Datensatz, TDF-Produktübersicht finalisieren und Release Candidate | Systemweite Abnahme, ADR-Review und Produkt-/Managementdokumentation |
-| 09C | Optionales Hardening | Nur Findings aus 09B, falls erforderlich |
+| Sprint | Schwerpunkt                                                                                                         | MVP-Beitrag                                                                         |
+| ------ | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| 07B    | AVKK-Datenbank, Reference Data, Services, RBAC/RLS                                                                  | Fachliche Datenbasis                                                                |
+| 08     | Persönlicher AVKK-Arbeitsplatz                                                                                      | Operative Nutzung                                                                   |
+| 08B    | AVKK Backup/Restore-Prüfung und JSON-Export                                                                         | Datenportabilität und Integrität                                                    |
+| 09     | Rollenbasiertes AVKK-Management-Cockpit                                                                             | Führungssicht und manuelle fachliche Abnahme                                        |
+| 09A    | Report-Service, PDF/Word/Druck, Corporate Templates; Demo-Datensatz für Reporting vorbereiten                       | Reporting und Ausgabe; erste veröffentlichungsfähige SYSING-001-Ausgabe vorbereiten |
+| 09B    | MVP-Gesamttest mit vollständigem Systemhaus-Demo-Datensatz, TDF-Produktübersicht finalisieren und Release Candidate | Systemweite Abnahme, ADR-Review und Produkt-/Managementdokumentation                |
+| 09C    | Optionales Hardening                                                                                                | Nur Findings aus 09B, falls erforderlich                                            |
 
 ## 3.1 TDF-Produktübersicht SYSING-001
 
@@ -373,12 +373,12 @@ Priorität 1 ist die benutzerbezogene Auswertung eingehender Microsoft-365-E-Mai
 
 Geplante erste Post-MVP-Sprints:
 
-| Sprint | Schwerpunkt |
-| --- | --- |
-| 10A | Microsoft Graph Basis, delegierter persönlicher Mailzugriff und Provider-Abstraktion |
-| 10B | Mail-Ingestion, Delta-Synchronisation, deterministische Erkennung und TaskCandidate |
-| 10C | Dashboard „Aufgabenvorschläge“, Benutzerprüfung, Arbeitspaket- und AVKK-Übernahme |
-| 10D | Automatisierung, optionale Change Notifications, Recovery und Gesamttest |
+| Sprint | Schwerpunkt                                                                          |
+| ------ | ------------------------------------------------------------------------------------ |
+| 10A    | Microsoft Graph Basis, delegierter persönlicher Mailzugriff und Provider-Abstraktion |
+| 10B    | Mail-Ingestion, Delta-Synchronisation, deterministische Erkennung und TaskCandidate  |
+| 10C    | Dashboard „Aufgabenvorschläge“, Benutzerprüfung, Arbeitspaket- und AVKK-Übernahme    |
+| 10D    | Automatisierung, optionale Change Notifications, Recovery und Gesamttest             |
 
 Danach folgen als getrennte Integrations- und Enterprise-Ausbaustufen insbesondere:
 

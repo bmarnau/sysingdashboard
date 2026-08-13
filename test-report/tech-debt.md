@@ -1,7 +1,7 @@
 # Technical-Debt-Bericht
 
 - **Version**: 1.58.0
-- **Erzeugt**: 2026-08-13T04:34:47.247Z
+- **Erzeugt**: 2026-08-13T04:46:26.332Z
 - **Findings gesamt**: 59 (automated: 56, manual: 3)
 - **Severity-Verteilung**: Critical 0 · High 2 · Medium 6 · Low 44 · Informational 7
 - **Diff zum Vorlauf**: 0 neu, 0 behoben, 59 bestehend
@@ -19,7 +19,7 @@
 - **Auswirkung**: Malformierte Payloads erreichen Business-Logik; potenziell inkonsistente Speicherung.
 - **Empfehlung**: Zod-Schema am Handler-Eingang ergänzen und bei Fehler 400 zurückgeben.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.179Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.179Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.267Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.267Z · **Version**: 1.58.0
 
 ### [Low] API-Endpoint ohne strukturierte Fehlerantwort
 - **ID**: `td-endpoint-err-cdae73c5`
@@ -30,7 +30,7 @@
 - **Auswirkung**: Client kann Fehler nicht klassifizieren, Correlation erschwert.
 - **Empfehlung**: try/catch mit `Response.json({error, code}, {status: 4xx|5xx})` ergänzen.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.179Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.179Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.267Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.267Z · **Version**: 1.58.0
 
 ### [Low] API-Endpoint ohne strukturierte Fehlerantwort
 - **ID**: `td-endpoint-err-ce5fa0be`
@@ -41,7 +41,7 @@
 - **Auswirkung**: Client kann Fehler nicht klassifizieren, Correlation erschwert.
 - **Empfehlung**: try/catch mit `Response.json({error, code}, {status: 4xx|5xx})` ergänzen.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.179Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.179Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.267Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.267Z · **Version**: 1.58.0
 
 ## Tests (4)
 
@@ -87,7 +87,7 @@
 - **Auswirkung**: Trend-Analyse der Testabdeckung blind.
 - **Empfehlung**: In CI vor `test:debt` `bun run test:coverage` ausführen (bereits konfiguriert).
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.209Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.209Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.292Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.292Z · **Version**: 1.58.0
 
 ## Frontend (17)
 
@@ -100,7 +100,7 @@
 - **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
 - **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
-- **Erstmals**: 2026-08-13T04:34:47.209Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.209Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.292Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.292Z · **Version**: 1.58.0
 
 ### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
 - **ID**: `td-console-2c49302b`
@@ -111,7 +111,7 @@
 - **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
 - **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
-- **Erstmals**: 2026-08-13T04:34:47.209Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.209Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.292Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.292Z · **Version**: 1.58.0
 
 ### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
 - **ID**: `td-console-43084e7a`
@@ -122,7 +122,7 @@
 - **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
 - **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
-- **Erstmals**: 2026-08-13T04:34:47.209Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.209Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.292Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.292Z · **Version**: 1.58.0
 
 ### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
 - **ID**: `td-console-6c701bbd`
@@ -133,7 +133,7 @@
 - **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
 - **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
-- **Erstmals**: 2026-08-13T04:34:47.209Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.209Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.292Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.292Z · **Version**: 1.58.0
 
 ### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
 - **ID**: `td-console-74bd3646`
@@ -144,7 +144,7 @@
 - **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
 - **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
-- **Erstmals**: 2026-08-13T04:34:47.209Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.209Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.292Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.292Z · **Version**: 1.58.0
 
 ### [Informational] Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
 - **ID**: `td-console-8c42fa14`
@@ -155,7 +155,7 @@
 - **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
 - **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: akzeptiert
-- **Erstmals**: 2026-08-13T04:34:47.209Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.209Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.292Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.292Z · **Version**: 1.58.0
 
 ### [High] Modul überschreitet Größenschwelle (1075 Zeilen)
 - **ID**: `td-oversize-7e9a0b20`
@@ -166,7 +166,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: gross · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Medium] Modul überschreitet Größenschwelle (745 Zeilen)
 - **ID**: `td-oversize-242b307c`
@@ -177,7 +177,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Medium] Modul überschreitet Größenschwelle (731 Zeilen)
 - **ID**: `td-oversize-f3843ebe`
@@ -188,7 +188,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Low] Modul überschreitet Größenschwelle (436 Zeilen)
 - **ID**: `td-oversize-32eb5e8c`
@@ -199,7 +199,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Low] Modul überschreitet Größenschwelle (580 Zeilen)
 - **ID**: `td-oversize-38954b26`
@@ -210,7 +210,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Low] Modul überschreitet Größenschwelle (466 Zeilen)
 - **ID**: `td-oversize-564261af`
@@ -221,7 +221,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Low] Modul überschreitet Größenschwelle (403 Zeilen)
 - **ID**: `td-oversize-92e5643a`
@@ -232,7 +232,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Low] Modul überschreitet Größenschwelle (481 Zeilen)
 - **ID**: `td-oversize-af210d92`
@@ -243,7 +243,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Low] Modul überschreitet Größenschwelle (497 Zeilen)
 - **ID**: `td-oversize-d5f3942b`
@@ -254,7 +254,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Low] Modul überschreitet Größenschwelle (585 Zeilen)
 - **ID**: `td-oversize-ebfd4b54`
@@ -265,7 +265,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Low] Modul überschreitet Größenschwelle (490 Zeilen)
 - **ID**: `td-oversize-feb81a2f`
@@ -276,7 +276,7 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ## Architektur (35)
 
@@ -289,7 +289,7 @@
 - **Auswirkung**: Erschwert Tree-Shaking, kann zu undefined-Imports zur Laufzeit führen, blockiert saubere Test-Isolation.
 - **Empfehlung**: Gemeinsame Types/Utilities in ein drittes Modul extrahieren; Abhängigkeitsrichtung erzwingen.
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Hoch · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.146Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.146Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.238Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.238Z · **Version**: 1.58.0
 
 ### [Medium] UI-Direktzugriff auf Azure-Interna
 - **ID**: `td-layer-b432b1b9`
@@ -300,7 +300,7 @@
 - **Auswirkung**: Bricht die Azure-Facade auf; Änderungen am Azure-Schema propagieren ungefiltert in die UI.
 - **Empfehlung**: Ausschließlich `@/lib/azure/azure-service` importieren.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.147Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.147Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.239Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.239Z · **Version**: 1.58.0
 
 ### [Medium] UI-Direktzugriff auf Azure-Interna
 - **ID**: `td-layer-e4fb0e64`
@@ -311,7 +311,7 @@
 - **Auswirkung**: Bricht die Azure-Facade auf; Änderungen am Azure-Schema propagieren ungefiltert in die UI.
 - **Empfehlung**: Ausschließlich `@/lib/azure/azure-service` importieren.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.147Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.147Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.239Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.239Z · **Version**: 1.58.0
 
 ### [Low] Modul überschreitet Größenschwelle (702 Zeilen)
 - **ID**: `td-oversize-392d9209`
@@ -322,18 +322,18 @@
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
-### [Low] Modul überschreitet Größenschwelle (768 Zeilen)
+### [Low] Modul überschreitet Größenschwelle (776 Zeilen)
 - **ID**: `td-oversize-92249691`
 - **Location**: src/integrations/supabase/types.ts
 - **Quelle**: automated (`oversize-module`)
-- **Beschreibung**: Die Datei hat 768 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 776 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: mittel · **Wahrscheinlichkeit**: Mittel · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.158Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.158Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.248Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.248Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-1634f273`
@@ -344,7 +344,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-19eefab7`
@@ -355,7 +355,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-242b307c`
@@ -366,7 +366,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-2452737a`
@@ -377,7 +377,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-2900775b`
@@ -388,7 +388,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-2c46e416`
@@ -399,7 +399,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-432c9ba1`
@@ -410,7 +410,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-47d5b07c`
@@ -421,7 +421,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-4c5ab6a6`
@@ -432,7 +432,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-4fae0654`
@@ -443,7 +443,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-539cbbad`
@@ -454,7 +454,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-60027755`
@@ -465,7 +465,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-7ed7cbb9`
@@ -476,7 +476,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-8152e2df`
@@ -487,7 +487,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-8b8d7a5b`
@@ -498,7 +498,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-906e6010`
@@ -509,7 +509,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-98f7d819`
@@ -520,7 +520,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-9b5a9f9b`
@@ -531,7 +531,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-adda4e46`
@@ -542,7 +542,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-af1ee499`
@@ -553,7 +553,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-b0c0d351`
@@ -564,7 +564,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-bd7563ab`
@@ -575,7 +575,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-d5b25a61`
@@ -586,7 +586,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-da11a267`
@@ -597,7 +597,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-deb46595`
@@ -608,7 +608,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-ded2d8d0`
@@ -619,7 +619,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-e4656c7f`
@@ -630,7 +630,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-e89d394d`
@@ -641,7 +641,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-f35c0af6`
@@ -652,7 +652,7 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0
 
 ### [Low] Möglicherweise verwaistes Modul
 - **ID**: `td-orphan-fee5a79a`
@@ -663,4 +663,4 @@
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: klein · **Wahrscheinlichkeit**: Niedrig · **Status**: offen
-- **Erstmals**: 2026-08-13T04:34:47.202Z · **Zuletzt geprüft**: 2026-08-13T04:34:47.202Z · **Version**: 1.58.0
+- **Erstmals**: 2026-08-13T04:46:26.288Z · **Zuletzt geprüft**: 2026-08-13T04:46:26.288Z · **Version**: 1.58.0

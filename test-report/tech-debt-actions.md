@@ -75,7 +75,7 @@
    - Empfehlung: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
    - Finding-ID: `td-oversize-564261af`
 
-16. **[Low/mittel]** Modul überschreitet Größenschwelle (768 Zeilen)
+16. **[Low/mittel]** Modul überschreitet Größenschwelle (776 Zeilen)
    - Ort: `src/integrations/supabase/types.ts`
    - Empfehlung: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
    - Finding-ID: `td-oversize-92249691`
