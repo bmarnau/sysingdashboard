@@ -44,6 +44,9 @@ const WorkingTimeModelsDialog = lazy(() =>
 const UserManagementDialog = lazy(() =>
   import("@/components/UserManagementDialog").then((m) => ({ default: m.UserManagementDialog })),
 );
+const BackendAdminDialog = lazy(() =>
+  import("@/components/BackendAdminDialog").then((m) => ({ default: m.BackendAdminDialog })),
+);
 const UserManualDialog = lazy(() =>
   import("@/components/UserManualDialog").then((m) => ({ default: m.UserManualDialog })),
 );
