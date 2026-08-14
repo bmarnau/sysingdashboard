@@ -13,6 +13,7 @@ export function AvkkCompetenceSection({
   ratings,
   readOnly,
   saving,
+  loading = false,
   onSave,
 }: {
   competences: readonly AvkkCompetence[];
@@ -20,6 +21,8 @@ export function AvkkCompetenceSection({
   ratings: readonly ReferenceValue[];
   readOnly: boolean;
   saving: boolean;
+  /** Solange der Serverstand lädt, werden keine Eingabefelder aufgebaut. */
+  loading?: boolean;
   onSave: (input: {
     dimensionKey: string;
     ratingKey: string;
@@ -31,6 +34,10 @@ export function AvkkCompetenceSection({
     competences.filter((c) => c.supersededAt === null).map((c) => [c.dimensionKey, c]),
   );
 
+  if (loading) {
+    return <p className="text-xs text-muted-foreground">Bewertungen werden geladen …</p>;
+  }
+
   return (
     <div className="space-y-2">
       {dimensions.length === 0 ? (
@@ -38,7 +45,9 @@ export function AvkkCompetenceSection({
       ) : null}
       {dimensions.map((dim) => (
         <DimensionRow
-          key={dim.key}
+          // Der gespeicherte Datensatz ist Teil des Schlüssels: trifft der
+          // Serverstand später ein, werden die Felder neu initialisiert.
+          key={`${dim.key}:${current.get(dim.key)?.id ?? "leer"}`}
           dimension={dim}
           ratings={ratings}
           value={current.get(dim.key) ?? null}
