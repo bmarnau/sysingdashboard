@@ -66,8 +66,15 @@ export function AvkkResponsibilitySection({
           Nur Leserecht — Verantwortung kann nicht geändert werden.
         </p>
       ) : (
-        <fieldset className="grid grid-cols-1 gap-3 sm:grid-cols-2" disabled={saving}>
-          <legend className="sr-only">Verantwortung zuordnen</legend>
+        <fieldset
+          className="grid grid-cols-1 gap-3 border-t border-border pt-3 sm:grid-cols-2"
+          disabled={saving}
+        >
+          <legend className="text-xs font-semibold">Weitere Verantwortung hinzufügen</legend>
+          <p className="text-xs text-muted-foreground sm:col-span-2">
+            Diese Auswahl ergänzt eine zusätzliche Zuordnung; bestehende Verantwortliche bleiben
+            unverändert.
+          </p>
           <label className="text-xs font-medium">
             Person
             <select
