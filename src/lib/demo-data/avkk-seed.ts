@@ -22,11 +22,15 @@ export interface AvkkSeedResult {
   version: string;
   created: number;
   skipped: number;
+  /** Bestehende Fälle, deren Verantwortung auf die Persona umgehängt wurde. */
+  reassigned: number;
   responsibilities: number;
   /** Anzahl Verantwortungen, die auf ein eigenes Demo-Konto gezeigt haben. */
   delegated: number;
   competences: number;
   consequences: number;
+  /** Fälle, bei denen das Umhängen fehlschlug (z. B. fehlendes Recht). */
+  failures: string[];
 }
 
 export interface AvkkCleanupResult {
