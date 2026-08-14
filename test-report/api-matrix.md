@@ -4,7 +4,7 @@ _Generiert: 2026-01-01T00:00:00.000Z_
 
 | Endpoint | Methoden | Auth | Permission | Scope | Req-Schema | Resp-Schema | Cases | Status | Offene Risiken |
 | -------- | -------- | ---- | ---------- | ----- | ---------- | ----------- | ----- | ------ | -------------- |
-| `/api/status` | GET | nein | — | — | no | yes | 1 | active | Keine Correlation-ID im Response — Traceability nur über Server-Log.<br>Anonymer Zugriff bewusst offen (Uptime-Checks); prüft aber Secret-Freiheit hart. |
+| `/api/status` | GET | nein | — | — | no | yes | 10 | active | Keine Correlation-ID im Response — Traceability nur über Server-Log.<br>Anonymer Zugriff bewusst offen (Uptime-Checks); prüft aber Secret-Freiheit hart. |
 | `/api/sync` | POST | ja | azure.export | — | yes | yes | 17 | active | Positive Sync-Ausführung benötigt eine echte angemeldete Session mit `azure.export` oder `azure.import`.<br>Kein Rate-Limit — parallele Requests laufen alle durch. |
 | `/api/azure/connection-test` | POST | ja | azure.connection.test | global | no | no | 0 | planned | Route noch nicht implementiert; Registry-Platzhalter für ADR-0008. |
 | `/api/azure/export` | POST | ja | azure.export | customer | no | no | 0 | planned | — |
