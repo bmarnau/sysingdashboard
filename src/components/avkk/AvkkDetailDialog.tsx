@@ -110,6 +110,7 @@ export function AvkkDetailDialog({
             )}
             readOnly={readOnly || !canAssign}
             saving={saving}
+            loading={loading}
             onSave={(input) =>
               void guarded(() => saveResponsibility(input), "Verantwortung gespeichert.")
             }
