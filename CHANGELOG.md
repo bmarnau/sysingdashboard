@@ -13,6 +13,11 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.7 - 2026-08-14
+- **Backend & Auth-Konten**: Neuer Servicemenü-Eintrag (nur mit Berechtigung `users.manage`) zeigt den Verbindungs- und Auth-Konfigurationsstatus und erlaubt die Pflege der Anmeldekonten (bestätigen, Bestätigungsmail erneut senden, Konto löschen).
+- **Sicherheit**: Alle Kontoaktionen laufen über serverseitig geprüfte Funktionen mit Rollenprüfung, Schutz des letzten Systemadministrators und Protokollierung im Prüfprotokoll; es werden keine Schlüssel, Adressen oder Projektkennungen angezeigt oder gespeichert.
+- **Dokumentation**: Handbuchkapitel „Backend- und Auth-Administration" und `docs/BACKEND-ADMINISTRATION.md`; Befund F-15 (kein externer Betreiberzugang zur Plattformverwaltung) aufgenommen.
+
 ## 1.58.6 - 2026-08-14
 - Benutzerbegrüßung und Kopfbereich zeigen den fachlichen Anzeigenamen statt des Login-/E-Mail-Teils.
 - Zentrale Namensauflösung `src/lib/user-display-name.ts` (Profil → Auth-Metadaten → neutraler Fallback).

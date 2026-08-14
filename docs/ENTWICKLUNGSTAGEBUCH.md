@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-14 · Dashboard-Version 1.58.6
+Stand: 2026-08-14 · Dashboard-Version 1.58.7
 
 ## Vision
 
@@ -576,3 +576,22 @@ keine Adresse unnötig in der Oberfläche erscheint. Begrüßung und Benutzeranz
 nutzen dieselbe Quelle; ein Benutzerwechsel aktualisiert den Namen sofort, und
 die Rollenvorschau verändert ihn nicht. Umlaute, Leerzeichen und lange Namen
 sind durch Tests abgedeckt.
+
+## Backend- und Auth-Administration im Dashboard (v1.58.7)
+
+Bei der Rollenabnahme fehlte ein Weg, unbestätigte oder fehlerhaft angelegte
+Anmeldekonten zu bereinigen. Die Betriebsplattform stellt dem Betreiber keine
+externe Administrationsoberfläche bereit; ein Verweis dorthin wäre ins Leere
+gegangen. Statt Plattform-Zugangsdaten im Dashboard zu speichern — das ist
+ausdrücklich ausgeschlossen — wurde ein eigener Servicebereich ergänzt:
+*Backend & Auth-Konten…*, sichtbar nur mit der Berechtigung `users.manage`.
+
+Er zeigt den Verbindungszustand und den Auth-Konfigurationsstatus ohne
+Schlüssel, Adressen oder Projektkennungen und erlaubt drei Kontoaktionen:
+bestätigen, Bestätigungsmail erneut senden, Konto löschen. Die Aktionen laufen
+über Serverfunktionen, die zunächst das Zugriffstoken prüfen, danach im
+Benutzerkontext die Berechtigung verifizieren und erst dann privilegiert
+arbeiten. Der letzte aktive Systemadministrator und das eigene Konto sind gegen
+Löschung geschützt; jede Aktion wird im Prüfprotokoll erfasst. Der fehlende
+externe Betreiberzugang bleibt als Befund F-15 (medium, kein MVP-Blocker)
+dokumentiert.
