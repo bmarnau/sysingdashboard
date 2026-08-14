@@ -130,6 +130,7 @@ export function AvkkDetailDialog({
             )}
             readOnly={readOnly}
             saving={saving}
+            loading={loading}
             onSave={(input) => void guarded(() => saveCompetence(input), "Bewertung gespeichert.")}
           />
         </AvkkExplainer>
