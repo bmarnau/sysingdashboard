@@ -14,6 +14,7 @@ export function AvkkResponsibilitySection({
   types,
   readOnly,
   saving,
+  loading = false,
   onSave,
 }: {
   responsibilities: readonly AvkkResponsibility[];
@@ -22,6 +23,8 @@ export function AvkkResponsibilitySection({
   types: readonly ReferenceValue[];
   readOnly: boolean;
   saving: boolean;
+  /** Solange der Serverstand lädt, wird der bestehende Stand nicht behauptet. */
+  loading?: boolean;
   onSave: (input: { personId: string; roleKey: string; typeKeys: string[]; note: string }) => void;
 }) {
   const [personId, setPersonId] = useState("");
@@ -33,8 +36,13 @@ export function AvkkResponsibilitySection({
   const nameOf = (id: string) => people.find((p) => p.id === id)?.displayName ?? id;
   const valid = personId !== "" && roleKey !== "" && typeKeys.length > 0;
 
+  if (loading) {
+    return <p className="text-xs text-muted-foreground">Verantwortung wird geladen …</p>;
+  }
+
   return (
     <div className="space-y-3">
+      <p className="text-xs font-semibold">Zugeordnet</p>
       {active.length === 0 ? (
         <p className="text-xs text-muted-foreground">Noch keine Verantwortung zugeordnet.</p>
       ) : (
@@ -58,8 +66,15 @@ export function AvkkResponsibilitySection({
           Nur Leserecht — Verantwortung kann nicht geändert werden.
         </p>
       ) : (
-        <fieldset className="grid grid-cols-1 gap-3 sm:grid-cols-2" disabled={saving}>
-          <legend className="sr-only">Verantwortung zuordnen</legend>
+        <fieldset
+          className="grid grid-cols-1 gap-3 border-t border-border pt-3 sm:grid-cols-2"
+          disabled={saving}
+        >
+          <legend className="text-xs font-semibold">Weitere Verantwortung hinzufügen</legend>
+          <p className="text-xs text-muted-foreground sm:col-span-2">
+            Diese Auswahl ergänzt eine zusätzliche Zuordnung; bestehende Verantwortliche bleiben
+            unverändert.
+          </p>
           <label className="text-xs font-medium">
             Person
             <select
