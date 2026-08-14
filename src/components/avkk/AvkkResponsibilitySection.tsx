@@ -36,8 +36,13 @@ export function AvkkResponsibilitySection({
   const nameOf = (id: string) => people.find((p) => p.id === id)?.displayName ?? id;
   const valid = personId !== "" && roleKey !== "" && typeKeys.length > 0;
 
+  if (loading) {
+    return <p className="text-xs text-muted-foreground">Verantwortung wird geladen …</p>;
+  }
+
   return (
     <div className="space-y-3">
+      <p className="text-xs font-semibold">Zugeordnet</p>
       {active.length === 0 ? (
         <p className="text-xs text-muted-foreground">Noch keine Verantwortung zugeordnet.</p>
       ) : (
