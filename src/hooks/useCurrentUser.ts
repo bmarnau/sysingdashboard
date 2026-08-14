@@ -53,7 +53,12 @@ export function useCurrentUser(): UserProfile | null {
         id: p.id,
         firstName: p.first_name ?? "",
         lastName: p.last_name ?? "",
-        displayName: p.display_name || (authUser.email ?? ""),
+        displayName: resolveDisplayName({
+          displayName: p.display_name,
+          firstName: p.first_name,
+          lastName: p.last_name,
+          metadata: authUser.user_metadata as Record<string, unknown> | null,
+        }),
         email: p.email ?? authUser.email ?? "",
         phone: p.phone ?? "",
         role,
