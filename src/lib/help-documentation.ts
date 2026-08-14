@@ -460,7 +460,7 @@ Abrechnungsstatus) sind noch nicht auf Kataloge umgestellt.`,
       "Sperre",
       "Angemeldet bleiben",
     ],
-    lastUpdated: "2026-08-02",
+    lastUpdated: "2026-08-14",
     content: `## Für Benutzer
 Bleibt das Dashboard eine festgelegte Zeit ohne Aktivität (Maus, Tastatur, Scrollen,
 Touch), wird die Sitzung automatisch beendet. **Standard: 5 Minuten.**
