@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.4 - 2026-08-14
+
+- **AVKK-Detaildialog**: Gespeicherte Kompetenzbewertungen werden nach dem Laden korrekt in den Auswahlfeldern vorbelegt (inklusive Notiz und Unterstützungsbedarf). Damit werden diese Angaben beim erneuten Speichern nicht mehr unbemerkt geleert.
+- **Klarere Beschriftung**: Statt „Gespeichert: <Wert>" steht nun „Aktuelle Bewertung: <Wert> · gespeichert am <Zeitpunkt>"; ohne Bewertung erscheint ein eindeutiger Hinweis.
+- **Verantwortung**: Der Abschnitt trennt „Zugeordnet" und „Weitere Verantwortung hinzufügen"; ein Hinweis stellt klar, dass die Auswahl ergänzt und nicht ersetzt.
+- **Aufgabenliste**: Lange Aufgabentitel, Kennungen und Bezüge sind per Tooltip vollständig lesbar; in der Kartenansicht werden sie umgebrochen statt abgeschnitten.
+
 ## 1.58.3 - 2026-08-13
 
 - **Mehrbenutzer-Demoszenario**: Der Systemhaus-Demo-Datensatz verteilt Projekte, Arbeitspakete und AVKK-Fälle jetzt auf vier fiktive Personen (zwei Systemingenieure, Projektleitung, Führungssicht) statt alles dem einspielenden Konto zuzuordnen.

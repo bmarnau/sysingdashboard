@@ -97,7 +97,7 @@ const builtInTopics: HelpTopic[] = [
     title: "Mein AVKK — persönlicher Arbeitsplatz",
     category: "Fachmodell",
     keywords: ["AVKK", "Arbeitsplatz", "Gefährdet", "Frühindikator", "Verantwortung", "Filter"],
-    lastUpdated: "2026-08-11",
+    lastUpdated: "2026-08-14",
     content: `## Wo finde ich den Arbeitsplatz?
 Im Dashboard über den Tab **Mein AVKK** (Berechtigung \`avkk.view\`).
 
@@ -111,7 +111,15 @@ Verantwortung) grenzen die Liste ein.
 ## Detailansicht
 Über „Öffnen" erscheint der **AvkkDetailDialog** mit den vier Dimensionen
 A – V – K – K. Auswahlwerte stammen aus den Katalogen der Referenzdaten;
-ist der Katalogstand älter, wird das mit Datum angezeigt.
+ist der Katalogstand älter, wird das mit Datum angezeigt. Die Abschnitte
+erscheinen erst, wenn der Serverstand geladen ist; gespeicherte
+Kompetenzbewertungen sind dann in den Auswahlfeldern vorausgewählt und mit
+Notiz sowie Unterstützungsbedarf sichtbar.
+
+## Verantwortung ergänzen statt ersetzen
+Der Abschnitt **Zugeordnet** zeigt die gültigen Verantwortlichen. Das Formular
+darunter („Weitere Verantwortung hinzufügen") legt eine zusätzliche Zuordnung
+an; bestehende Verantwortliche werden dadurch nicht ersetzt.
 
 ## Wann gilt eine Aufgabe als „gefährdet"?
 Wenn eine gültige Verantwortung zugeordnet ist **und** mindestens eine
