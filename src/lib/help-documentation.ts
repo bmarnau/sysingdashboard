@@ -479,8 +479,9 @@ Geschützte Seiten sind danach nicht mehr erreichbar; auch der Zurück-Button
 **Mehrere Tabs**: Aktivität in einem Tab hält alle Tabs angemeldet. Läuft die Zeit
 ab, werden alle Tabs gemeinsam abgemeldet.
 
-**Manuelle Abmeldung**: Servicemenü → *Abmelden* (gleicher Ablauf wie die
-automatische Abmeldung).
+**Manuelle Abmeldung**: Abmelde-Symbol rechts im Kopfbereich (Tooltip
+*Abmelden*, per Tastatur erreichbar) oder Servicemenü → *Abmelden* — beide nutzen
+denselben Ablauf wie die automatische Abmeldung.
 
 ## Für Administratoren
 Servicemenü → *Automatische Abmeldung…* (\`SessionSettingsDialog\`) zeigt den
