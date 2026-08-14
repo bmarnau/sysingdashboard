@@ -98,12 +98,20 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
     try {
       const result = await seedAvkkDemoData(user.id, accounts);
       append(
-        `AVKK eingespielt: ${result.created} Sachverhalte neu, ${result.skipped} übersprungen, ` +
+        `AVKK eingespielt: ${result.created} Sachverhalte neu, ${result.skipped} vorhanden ` +
+          `(davon ${result.reassigned} Verantwortungen neu zugeordnet), ` +
           `${result.responsibilities} Verantwortungen (davon ${result.delegated} auf eigene ` +
           `Demo-Konten), ${result.competences} Kompetenzbewertungen, ` +
           `${result.consequences} Konsequenzen.`,
       );
-      toast.success("AVKK-Demofälle eingespielt");
+      for (const failure of result.failures) {
+        append(`Verantwortung nicht änderbar — ${failure}`);
+      }
+      if (result.failures.length > 0) {
+        toast.warning("AVKK-Demofälle eingespielt, Zuordnung teilweise nicht möglich");
+      } else {
+        toast.success("AVKK-Demofälle eingespielt");
+      }
     } catch (error) {
       logger.error("Seed der AVKK-Demodaten fehlgeschlagen", { error: String(error) });
       toast.error("AVKK-Demofälle konnten nicht eingespielt werden");
