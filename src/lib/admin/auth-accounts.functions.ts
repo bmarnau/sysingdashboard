@@ -178,13 +178,13 @@ export const deleteAuthAccount = createServerFn({ method: "POST" })
     }
     const admin = await loadAdmin();
 
+    // Rollenabfrage bewusst als Datenbankfilter (kein Rollenvergleich im Code).
     const { data: roleRows } = await admin
       .from("user_roles")
-      .select("role")
-      .eq("user_id", data.userId);
-    const isSysadmin = ((roleRows ?? []) as { role: string }[]).some(
-      (r) => r.role === "systemadministrator",
-    );
+      .select("user_id")
+      .eq("user_id", data.userId)
+      .eq("role", "systemadministrator");
+    const isSysadmin = (roleRows ?? []).length > 0;
     if (isSysadmin && (await countOtherActiveSysadmins(admin, data.userId)) < 1) {
       throw new Error("Der letzte aktive Systemadministrator kann nicht gelöscht werden.");
     }
