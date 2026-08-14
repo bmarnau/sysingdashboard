@@ -18,6 +18,7 @@
  */
 
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export interface AuthAccountSummary {
@@ -91,6 +92,23 @@ async function countOtherActiveSysadmins(admin: AdminClient, excludeId: string):
   return (profiles ?? []).length;
 }
 
+/**
+ * Ziel der Recovery-Mail: immer die eigene Anwendung (gleicher Ursprung wie
+ * die Anfrage). Es wird kein vom Client gelieferter Wert übernommen.
+ */
+function resolveRecoveryRedirect(): string | undefined {
+  try {
+    const request = getRequest();
+    const origin =
+      request?.headers.get("origin") ??
+      (request?.url ? new URL(request.url).origin : undefined) ??
+      undefined;
+    return origin ? `${origin}/reset-password` : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export const listAuthAccounts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AuthAccountSummary[]> => {
@@ -161,6 +179,43 @@ export const resendConfirmation = createServerFn({ method: "POST" })
     if (error) throw new Error("Bestätigungsmail konnte nicht gesendet werden.");
     await writeAudit(admin, context.userId, "auth_account.resend_confirmation", data.email, {});
     return { ok: true };
+  });
+
+/**
+ * Stößt den regulären Passwort-Wiederherstellungsablauf für ein bestehendes
+ * Konto an. Administratoren setzen dabei **kein** Passwort und sehen weder
+ * Passwort noch Recovery-Token; es wird ausschließlich eine Recovery-Mail an
+ * die registrierte Adresse gesendet.
+ */
+export const requestPasswordReset = createServerFn({ method: "POST" })
+  .inputValidator((input: { userId: string }) => {
+    if (!input || typeof input.userId !== "string" || input.userId.length < 10) {
+      throw new Error("Ungültige Kontokennung.");
+    }
+    return { userId: input.userId };
+  })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; email: string }> => {
+    await assertUserManage(context as unknown as AuthContext);
+    const admin = await loadAdmin();
+
+    // Zieladresse nie vom Client übernehmen, sondern serverseitig auflösen.
+    const { data: found, error: lookupError } = await admin.auth.admin.getUserById(data.userId);
+    const email = found?.user?.email ?? "";
+    if (lookupError || !email) {
+      throw new Error("Konto wurde nicht gefunden.");
+    }
+
+    const redirectTo = resolveRecoveryRedirect();
+    const { error } = await admin.auth.resetPasswordForEmail(
+      email,
+      redirectTo ? { redirectTo } : undefined,
+    );
+    await writeAudit(admin, context.userId, "auth.password_reset_requested", data.userId, {
+      result: error ? "failed" : "sent",
+    });
+    if (error) throw new Error("Passwort-Reset-Mail konnte nicht gesendet werden.");
+    return { ok: true, email };
   });
 
 export const deleteAuthAccount = createServerFn({ method: "POST" })
