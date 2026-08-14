@@ -108,13 +108,9 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
       email,
       redirectTo ? { redirectTo } : undefined,
     );
-    await helpers.writeAudit(
-      admin,
-      context.userId,
-      "auth.password_reset_requested",
-      data.userId,
-      { result: error ? "failed" : "sent" },
-    );
+    await helpers.writeAudit(admin, context.userId, "auth.password_reset_requested", data.userId, {
+      result: error ? "failed" : "sent",
+    });
     if (error) throw new Error("Passwort-Reset-Mail konnte nicht gesendet werden.");
     return { ok: true, email };
   });

@@ -18,7 +18,10 @@ const HELPERS = readFileSync(
   resolve(process.cwd(), "src/lib/admin/auth-accounts.server.ts"),
   "utf8",
 );
-const DIALOG = readFileSync(resolve(process.cwd(), "src/components/BackendAdminDialog.tsx"), "utf8");
+const DIALOG = readFileSync(
+  resolve(process.cwd(), "src/components/BackendAdminDialog.tsx"),
+  "utf8",
+);
 
 /** Handler-Rumpf einer exportierten Serverfunktion ausschneiden. */
 function fnBlock(name: string): string {

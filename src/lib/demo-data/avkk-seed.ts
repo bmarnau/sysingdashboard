@@ -12,6 +12,7 @@
 
 import { AvkkService } from "@/lib/avkk/service";
 import type { AvkkDossier } from "@/lib/avkk/types";
+
 import { isDemoId } from "./dataset";
 import { DEMO_AVKK_VERSION, demoAvkkCases } from "./avkk-dataset";
 import type { DemoAvkkCase } from "./avkk-dataset";
@@ -22,11 +23,15 @@ export interface AvkkSeedResult {
   version: string;
   created: number;
   skipped: number;
+  /** Bestehende Fälle, deren Verantwortung auf die Persona umgehängt wurde. */
+  reassigned: number;
   responsibilities: number;
   /** Anzahl Verantwortungen, die auf ein eigenes Demo-Konto gezeigt haben. */
   delegated: number;
   competences: number;
   consequences: number;
+  /** Fälle, bei denen das Umhängen fehlschlug (z. B. fehlendes Recht). */
+  failures: string[];
 }
 
 export interface AvkkCleanupResult {
@@ -41,6 +46,47 @@ export async function listDemoDossiers(): Promise<AvkkDossier[]> {
   return all.filter((d) => isDemoId(d.subject.subjectId));
 }
 
+/**
+ * Gleicht die Verantwortung eines bereits vorhandenen Demo-Falls mit der
+ * aktuellen Personenzuordnung ab. Trägt bereits genau die Zielperson die
+ * gültige Verantwortung, geschieht nichts (Idempotenz). Andernfalls werden
+ * laufende Verantwortungen beendet (kein Löschen, ADR-0026) und die neue
+ * Zuordnung gesetzt.
+ */
+async function reconcileResponsibility(
+  demoCase: DemoAvkkCase,
+  existing: AvkkDossier,
+  actorId: string,
+  accounts: DemoPersonaAccounts,
+  result: AvkkSeedResult,
+): Promise<void> {
+  result.skipped += 1;
+  if (!demoCase.responsibility) return;
+
+  const target = resolvePersonId(demoCase.subjectId, accounts, actorId);
+  const active = existing.responsibilities.filter((r) => r.validTo === null);
+  if (active.length === 1 && active[0].personId === target) return;
+
+  try {
+    for (const r of active) {
+      await AvkkService.endResponsibility(r.id, actorId);
+    }
+    await AvkkService.assignResponsibility({
+      subjectRef: existing.subject.id,
+      personId: target,
+      roleKey: demoCase.responsibility.roleKey,
+      typeKeys: demoCase.responsibility.typeKeys,
+      note: demoCase.responsibility.note,
+      actorId,
+    });
+    result.reassigned += 1;
+    result.responsibilities += 1;
+    if (target !== actorId) result.delegated += 1;
+  } catch (error) {
+    result.failures.push(`${demoCase.subjectId}: ${String(error)}`);
+  }
+}
+
 async function seedCase(
   demoCase: DemoAvkkCase,
   actorId: string,
@@ -49,7 +95,7 @@ async function seedCase(
 ): Promise<void> {
   const existing = await AvkkService.getDossier(demoCase.subjectType, demoCase.subjectId);
   if (existing && existing.subject.status !== "closed") {
-    result.skipped += 1;
+    await reconcileResponsibility(demoCase, existing, actorId, accounts, result);
     return;
   }
 
@@ -104,8 +150,11 @@ async function seedCase(
 }
 
 /**
- * Idempotent: bereits vorhandene, offene Demo-Sachverhalte werden übersprungen.
- * Erfordert `avkk.edit` — ohne Berechtigung schlägt der Aufruf über RLS fehl.
+ * Idempotent: bereits vorhandene, offene Demo-Sachverhalte werden nicht neu
+ * angelegt; ihre Verantwortung wird jedoch mit der aktuellen Personenzuordnung
+ * abgeglichen (F-11). Erfordert `avkk.edit`, das Umhängen zusätzlich
+ * `avkk.responsibility.assign` — ohne Berechtigung schlägt der Aufruf über RLS
+ * fehl und wird in `failures` gemeldet, statt still übergangen zu werden.
  */
 export async function seedAvkkDemoData(
   actorId: string,
@@ -115,10 +164,12 @@ export async function seedAvkkDemoData(
     version: DEMO_AVKK_VERSION,
     created: 0,
     skipped: 0,
+    reassigned: 0,
     responsibilities: 0,
     delegated: 0,
     competences: 0,
     consequences: 0,
+    failures: [],
   };
 
   for (const demoCase of demoAvkkCases) {

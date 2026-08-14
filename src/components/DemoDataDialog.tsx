@@ -98,12 +98,20 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
     try {
       const result = await seedAvkkDemoData(user.id, accounts);
       append(
-        `AVKK eingespielt: ${result.created} Sachverhalte neu, ${result.skipped} übersprungen, ` +
+        `AVKK eingespielt: ${result.created} Sachverhalte neu, ${result.skipped} vorhanden ` +
+          `(davon ${result.reassigned} Verantwortungen neu zugeordnet), ` +
           `${result.responsibilities} Verantwortungen (davon ${result.delegated} auf eigene ` +
           `Demo-Konten), ${result.competences} Kompetenzbewertungen, ` +
           `${result.consequences} Konsequenzen.`,
       );
-      toast.success("AVKK-Demofälle eingespielt");
+      for (const failure of result.failures) {
+        append(`Verantwortung nicht änderbar — ${failure}`);
+      }
+      if (result.failures.length > 0) {
+        toast.warning("AVKK-Demofälle eingespielt, Zuordnung teilweise nicht möglich");
+      } else {
+        toast.success("AVKK-Demofälle eingespielt");
+      }
     } catch (error) {
       logger.error("Seed der AVKK-Demodaten fehlgeschlagen", { error: String(error) });
       toast.error("AVKK-Demofälle konnten nicht eingespielt werden");
@@ -169,6 +177,12 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
           <p className="text-xs text-muted-foreground">
             Projekte, Arbeitspakete und Tätigkeiten. Mehrfaches Einspielen erzeugt keine Duplikate,
             das Entfernen wirkt ausschließlich auf <code>demo-</code>-Datensätze.
+          </p>
+          <p className="rounded-md bg-secondary/50 p-2 text-xs">
+            <strong>Wichtig für den Mehrbenutzer-Nachweis:</strong> Der lokale Bestand liegt im
+            Browser und wird nicht zwischen Anmeldungen oder Geräten geteilt. Jede Demo-Person muss
+            sich anmelden und hier einmal „Einspielen" ausführen — sonst bleibt „Mein AVKK" leer,
+            obwohl die AVKK-Fälle in der Datenbank vorhanden sind.
           </p>
           <div className="flex gap-2">
             <Button size="sm" onClick={runLocalSeed} disabled={busy !== null}>

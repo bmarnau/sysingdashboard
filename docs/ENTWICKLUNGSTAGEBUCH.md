@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-14 · Dashboard-Version 1.58.8
+Stand: 2026-08-14 · Dashboard-Version 1.58.9
 
 ## Vision
 
@@ -584,7 +584,7 @@ Anmeldekonten zu bereinigen. Die Betriebsplattform stellt dem Betreiber keine
 externe Administrationsoberfläche bereit; ein Verweis dorthin wäre ins Leere
 gegangen. Statt Plattform-Zugangsdaten im Dashboard zu speichern — das ist
 ausdrücklich ausgeschlossen — wurde ein eigener Servicebereich ergänzt:
-*Backend & Auth-Konten…*, sichtbar nur mit der Berechtigung `users.manage`.
+_Backend & Auth-Konten…_, sichtbar nur mit der Berechtigung `users.manage`.
 
 Er zeigt den Verbindungszustand und den Auth-Konfigurationsstatus ohne
 Schlüssel, Adressen oder Projektkennungen und erlaubt drei Kontoaktionen:
@@ -599,7 +599,7 @@ dokumentiert.
 ## Passwort-Reset in der Kontoverwaltung (v1.58.8)
 
 Für die manuelle Mehrbenutzer-Abnahme fehlte ein sicherer Weg, ein vergessenes
-Passwort zurückzusetzen. Bewusst *nicht* umgesetzt wurde das direkte Setzen
+Passwort zurückzusetzen. Bewusst _nicht_ umgesetzt wurde das direkte Setzen
 eines Passworts durch Administratoren: Damit entstünde ein Kennwort, das eine
 zweite Person kennt. Stattdessen löst die neue Aktion nur den regulären
 Wiederherstellungsablauf aus — eine Recovery-Mail an die registrierte Adresse,
@@ -614,3 +614,26 @@ und Ergebnis — kein Token, kein Passwort. Gleichzeitig wurde die Hilfslogik de
 Kontoverwaltung in ein reines Servermodul ausgelagert, damit das
 Serverfunktionsmodul ein dünner Wrapper bleibt und privilegierter Code nie in
 den Browser gelangen kann.
+
+## Demo-Personenzuordnung greift nachträglich (v1.58.9)
+
+Die manuelle Mehrbenutzer-Abnahme zeigte einen reproduzierbaren Befund: Nach
+der Zuordnung der Demo-Personen zu echten Anmeldekonten blieb „Mein AVKK" für
+die Systemingenieurin leer. Ursache waren zwei unabhängige Punkte.
+
+Erstens war die Idempotenz des Seeds zu grob: Ein bereits vorhandener, offener
+Demofall wurde vollständig übersprungen — samt Verantwortungszuweisung. Wer die
+Fälle einmal ohne Zuordnung eingespielt hatte, konnte die Zuordnung danach nie
+mehr wirksam machen. Der Seed gleicht die Verantwortung jetzt ab: Weicht die
+gültige Verantwortung von der gewählten Person ab, wird sie beendet
+(historisiert, kein Löschen nach ADR-0026) und neu gesetzt. Stimmt sie bereits,
+geschieht nichts — die Idempotenz bleibt erhalten. Fehlt das Recht zum
+Umhängen, erscheint das als Fehlermeldung im Protokoll statt als stiller
+Erfolg; ein Seed, der schweigend nichts tut, ist die schlechtere Variante.
+
+Zweitens ist der Aufgabenbestand local-first (ADR-0003) und damit an Browser
+und Profil gebunden. Ein zweites Demo-Konto sieht die Demo-Aufgaben nicht,
+solange es sie nicht selbst einspielt — die AVKK-Fälle in der Datenbank finden
+dann keine passende Aufgabe. Das ist keine Fehlfunktion, sondern die bekannte
+Architekturgrenze; der Demo-Dialog benennt sie jetzt ausdrücklich, statt sie
+den Prüfenden zu überlassen.

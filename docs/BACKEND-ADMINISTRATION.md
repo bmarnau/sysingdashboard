@@ -29,12 +29,12 @@ Verbindungsadressen, Projektkennungen, Rohmetadaten der Konten.
 
 ## Aktionen
 
-| Aktion | Zweck | Schutz |
-| --- | --- | --- |
-| Bestätigen | Konto ohne bestätigte E-Mail freischalten (Schulung, Abnahme) | Rollenprüfung, Protokolleintrag |
-| Bestätigungsmail erneut senden | Zustellprobleme beheben | Rollenprüfung, Protokolleintrag |
-| Passwort zurücksetzen | Recovery-Mail an die registrierte Adresse senden | Rollenprüfung, serverseitige Adressauflösung, Protokolleintrag `auth.password_reset_requested` |
-| Konto löschen | Fehlerhaft angelegte Konten entfernen | eigenes Konto und letzter aktiver Systemadministrator gesperrt |
+| Aktion                         | Zweck                                                         | Schutz                                                                                         |
+| ------------------------------ | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Bestätigen                     | Konto ohne bestätigte E-Mail freischalten (Schulung, Abnahme) | Rollenprüfung, Protokolleintrag                                                                |
+| Bestätigungsmail erneut senden | Zustellprobleme beheben                                       | Rollenprüfung, Protokolleintrag                                                                |
+| Passwort zurücksetzen          | Recovery-Mail an die registrierte Adresse senden              | Rollenprüfung, serverseitige Adressauflösung, Protokolleintrag `auth.password_reset_requested` |
+| Konto löschen                  | Fehlerhaft angelegte Konten entfernen                         | eigenes Konto und letzter aktiver Systemadministrator gesperrt                                 |
 
 ## Sicherheitsmodell
 
