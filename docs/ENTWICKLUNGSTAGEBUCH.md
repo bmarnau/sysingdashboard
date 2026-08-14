@@ -584,7 +584,7 @@ Anmeldekonten zu bereinigen. Die Betriebsplattform stellt dem Betreiber keine
 externe Administrationsoberfläche bereit; ein Verweis dorthin wäre ins Leere
 gegangen. Statt Plattform-Zugangsdaten im Dashboard zu speichern — das ist
 ausdrücklich ausgeschlossen — wurde ein eigener Servicebereich ergänzt:
-*Backend & Auth-Konten…*, sichtbar nur mit der Berechtigung `users.manage`.
+_Backend & Auth-Konten…_, sichtbar nur mit der Berechtigung `users.manage`.
 
 Er zeigt den Verbindungszustand und den Auth-Konfigurationsstatus ohne
 Schlüssel, Adressen oder Projektkennungen und erlaubt drei Kontoaktionen:
@@ -599,7 +599,7 @@ dokumentiert.
 ## Passwort-Reset in der Kontoverwaltung (v1.58.8)
 
 Für die manuelle Mehrbenutzer-Abnahme fehlte ein sicherer Weg, ein vergessenes
-Passwort zurückzusetzen. Bewusst *nicht* umgesetzt wurde das direkte Setzen
+Passwort zurückzusetzen. Bewusst _nicht_ umgesetzt wurde das direkte Setzen
 eines Passworts durch Administratoren: Damit entstünde ein Kennwort, das eine
 zweite Person kennt. Stattdessen löst die neue Aktion nur den regulären
 Wiederherstellungsablauf aus — eine Recovery-Mail an die registrierte Adresse,
