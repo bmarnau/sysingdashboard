@@ -201,7 +201,7 @@ describe("Demo-Seed — Personenzuordnung (F-11)", () => {
   });
 });
 
-describe("Ableitung „eigene Verantwortung" (F-11)", () => {
+describe("Ableitung der eigenen Verantwortung (F-11)", () => {
   const tasks: AvkkTask[] = demoAvkkCases
     .filter((c) => c.responsibility)
     .map((c) => ({
