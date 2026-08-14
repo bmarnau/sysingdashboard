@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 
-const resetMock = vi.fn(async () => ({ ok: true, email: "demo@example.com" }));
+const resetMock = vi.fn(async (_args: { data: { userId: string } }) => ({
+  ok: true as const,
+  email: "demo@example.com",
+}));
 const listMock = vi.fn(async () => [
   {
     id: "11111111-1111-1111-1111-111111111111",
@@ -19,7 +22,7 @@ vi.mock("@/lib/admin/auth-accounts.functions", () => ({
   confirmAuthAccount: vi.fn(async () => ({ ok: true })),
   resendConfirmation: vi.fn(async () => ({ ok: true })),
   deleteAuthAccount: vi.fn(async () => ({ ok: true })),
-  requestPasswordReset: (args: { data: { userId: string } }) => resetMock(args as never),
+  requestPasswordReset: (args: { data: { userId: string } }) => resetMock(args),
 }));
 
 vi.mock("@/integrations/supabase/config", () => ({
