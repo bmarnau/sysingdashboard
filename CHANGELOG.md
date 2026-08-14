@@ -13,6 +13,11 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.6 - 2026-08-14
+- Benutzerbegrüßung und Kopfbereich zeigen den fachlichen Anzeigenamen statt des Login-/E-Mail-Teils.
+- Zentrale Namensauflösung `src/lib/user-display-name.ts` (Profil → Auth-Metadaten → neutraler Fallback).
+- Tests für Anzeigename, Umlaute, lange Namen und Fallback ergänzt.
+
 ## 1.58.5 - 2026-08-14
 
 - **Sichtbares Abmelden**: Im Kopfbereich steht neben dem Benutzerbereich ein Abmelde-Symbol mit Tooltip und aria-label „Abmelden“ zur Verfügung; es nutzt den bestehenden zentralen Abmeldepfad (Session beenden, lokalen Session-State bereinigen, Rückkehr zur Anmeldeseite).
