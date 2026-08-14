@@ -23,9 +23,9 @@ describe("resolveDisplayName", () => {
   });
 
   it("fällt auf Vor- und Nachname zurück", () => {
-    expect(resolveDisplayName({ displayName: "", firstName: "Jörg", lastName: "Müller-Groß" })).toBe(
-      "Jörg Müller-Groß",
-    );
+    expect(
+      resolveDisplayName({ displayName: "", firstName: "Jörg", lastName: "Müller-Groß" }),
+    ).toBe("Jörg Müller-Groß");
   });
 
   it("nutzt Auth-Metadaten, wenn das Profil leer ist", () => {
