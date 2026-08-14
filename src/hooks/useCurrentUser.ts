@@ -38,7 +38,7 @@ export function useCurrentUser(): UserProfile | null {
         id: authUser.id,
         first_name: "",
         last_name: "",
-        display_name: authUser.email ?? "",
+        display_name: "",
         email: authUser.email ?? "",
         phone: "",
         status: "active" as UserStatus,
