@@ -127,10 +127,13 @@ function DimensionRow({
         </label>
         {value ? (
           <p className="mt-1 text-xs text-muted-foreground">
-            Gespeichert: {value.ratingLabel}
-            {value.supportNeeded ? " · Unterstützungsbedarf" : ""}
+            Aktuelle Bewertung: „{value.ratingLabel}"
+            {value.supportNeeded ? " · Unterstützungsbedarf" : ""} · gespeichert am{" "}
+            {new Date(value.createdAt).toLocaleString("de-DE")}
           </p>
-        ) : null}
+        ) : (
+          <p className="mt-1 text-xs text-muted-foreground">Noch keine Bewertung gespeichert.</p>
+        )}
       </div>
       {!readOnly && (
         <button
