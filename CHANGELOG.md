@@ -13,6 +13,11 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.8 - 2026-08-14
+- **Passwort-Reset im Kontobereich**: In „Backend & Auth-Konten" kann je Konto eine Passwort-Reset-Mail ausgelöst werden (Schlüssel-Symbol, Tooltip, Rückfrage vor Versand).
+- **Sicherheit**: Es wird ausschließlich der reguläre Wiederherstellungsablauf angestoßen; Administratoren setzen oder sehen keine Passwörter, die Zieladresse wird serverseitig aufgelöst, jede Anforderung wird als `auth.password_reset_requested` protokolliert.
+- **Struktur**: Hilfslogik der Kontoverwaltung nach `src/lib/admin/auth-accounts.server.ts` ausgelagert; Serverfunktionsmodul bleibt ein dünner Wrapper.
+
 ## 1.58.7 - 2026-08-14
 - **Backend & Auth-Konten**: Neuer Servicemenü-Eintrag (nur mit Berechtigung `users.manage`) zeigt den Verbindungs- und Auth-Konfigurationsstatus und erlaubt die Pflege der Anmeldekonten (bestätigen, Bestätigungsmail erneut senden, Konto löschen).
 - **Sicherheit**: Alle Kontoaktionen laufen über serverseitig geprüfte Funktionen mit Rollenprüfung, Schutz des letzten Systemadministrators und Protokollierung im Prüfprotokoll; es werden keine Schlüssel, Adressen oder Projektkennungen angezeigt oder gespeichert.

@@ -1,6 +1,6 @@
 # Backend- und Auth-Administration
 
-Stand: 2026-08-14 · Dashboard-Version 1.58.7
+Stand: 2026-08-14 · Dashboard-Version 1.58.8
 
 ## Ausgangslage
 
@@ -33,6 +33,7 @@ Verbindungsadressen, Projektkennungen, Rohmetadaten der Konten.
 | --- | --- | --- |
 | Bestätigen | Konto ohne bestätigte E-Mail freischalten (Schulung, Abnahme) | Rollenprüfung, Protokolleintrag |
 | Bestätigungsmail erneut senden | Zustellprobleme beheben | Rollenprüfung, Protokolleintrag |
+| Passwort zurücksetzen | Recovery-Mail an die registrierte Adresse senden | Rollenprüfung, serverseitige Adressauflösung, Protokolleintrag `auth.password_reset_requested` |
 | Konto löschen | Fehlerhaft angelegte Konten entfernen | eigenes Konto und letzter aktiver Systemadministrator gesperrt |
 
 ## Sicherheitsmodell
@@ -47,5 +48,11 @@ Serverfunktionen:
    nie Teil des Browser-Bundles.
 4. Jede verändernde Aktion schreibt einen Eintrag ins Prüfprotokoll
    (`audit_log`), zusammen mit der handelnden Kontokennung.
+
+Beim Passwort-Reset wird ausschließlich der reguläre Wiederherstellungsablauf
+der Auth-Komponente ausgelöst. Administratoren setzen kein Passwort und sehen
+weder Passwort noch Recovery-Token; die Zieladresse wird serverseitig aus dem
+Konto aufgelöst und nicht vom Browser übernommen. Das Protokoll enthält nur
+Aktion, Zielkonto, ausführendes Konto, Zeitstempel und Ergebnis.
 
 Das Dashboard speichert grundsätzlich keine Plattform-Administrationszugänge.
