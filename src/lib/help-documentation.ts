@@ -446,6 +446,53 @@ Abrechnungsstatus) sind noch nicht auf Kataloge umgestellt.`,
     relatedTopics: ["avkk-modell"],
   },
   {
+    id: "backend-admin",
+    title: "Backend- und Auth-Administration",
+    category: "Sicherheit",
+    component: "BackendAdminDialog",
+    keywords: [
+      "Backend",
+      "Auth",
+      "Konten",
+      "Anmeldekonten",
+      "Administration",
+      "Bestätigung",
+      "Konto löschen",
+      "Verbindung",
+    ],
+    lastUpdated: "2026-08-14",
+    content: `## Für Administratoren
+Servicemenü → *Backend & Auth-Konten…* (sichtbar mit der Berechtigung
+\`users.manage\`) zeigt den Zustand der Backend-Anbindung und verwaltet die
+Anmeldekonten.
+
+Angezeigt werden ausschließlich unkritische Angaben:
+
+- **Backend verbunden** — ja/nein
+- **Auth-Konfiguration** — vollständig, unvollständig oder fehlerhaft
+- **Konten** — E-Mail, Bestätigungsstatus, Rolle, letzte Anmeldung
+
+Schlüssel, Tokens, Verbindungsadressen und Projektkennungen werden weder
+angezeigt noch im Dashboard gespeichert.
+
+## Verfügbare Aktionen
+- **Bestätigen** — schaltet ein Konto ohne bestätigte E-Mail frei (z. B. für
+  Schulung und Abnahme).
+- **Mail erneut** — sendet die Bestätigungsmail nochmals.
+- **Löschen** — entfernt ein fehlerhaft angelegtes Konto. Das eigene Konto und
+  der letzte aktive Systemadministrator sind gesperrt.
+
+Jede Aktion wird serverseitig auf die Berechtigung geprüft und im
+Prüfprotokoll erfasst.
+
+## Warum kein externer Verwaltungszugang
+Die Betriebsplattform wird verwaltet betrieben; ein eigener Administrationszugang
+des Betreibers zur Plattformoberfläche besteht nicht. Deshalb erfolgt die
+Kontopflege vollständig hier. Diese Grenze ist als Befund F-15 dokumentiert
+(siehe \`docs/BACKEND-ADMINISTRATION.md\` und den MVP-Abnahmebericht).`,
+    relatedTopics: ["idle-logout"],
+  },
+  {
     id: "idle-logout",
     title: "Automatische Abmeldung bei Inaktivität",
     category: "Sicherheit",
