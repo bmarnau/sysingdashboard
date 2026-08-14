@@ -45,8 +45,8 @@ export function AvkkTaskTable({
               onClick={() => onOpen(row)}
               className="w-full rounded-xl border border-border bg-secondary/30 p-4 text-left hover:bg-secondary/50"
             >
-              <p className="truncate text-sm font-medium">{row.task.title}</p>
-              <p className="mt-0.5 truncate text-xs text-muted-foreground">
+              <p className="text-sm font-medium">{row.task.title}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 {TYPE_LABEL[row.task.subjectType]} · {row.task.context || "—"}
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
@@ -101,13 +101,21 @@ export function AvkkTaskTable({
             {rows.map((row) => (
               <tr key={row.key} className="border-t border-border align-top">
                 <th scope="row" className="max-w-[16rem] px-3 py-2 font-medium">
-                  <span className="block truncate">{row.task.title}</span>
-                  <span className="block truncate text-xs font-normal text-muted-foreground">
+                  <span className="block truncate" title={row.task.title}>
+                    {row.task.title}
+                  </span>
+                  <span
+                    className="block truncate text-xs font-normal text-muted-foreground"
+                    title={row.task.subjectId}
+                  >
                     {row.task.subjectId}
                   </span>
                 </th>
                 <td className="px-3 py-2 text-xs">{TYPE_LABEL[row.task.subjectType]}</td>
-                <td className="max-w-[12rem] truncate px-3 py-2 text-xs">
+                <td
+                  className="max-w-[12rem] truncate px-3 py-2 text-xs"
+                  title={row.task.context || undefined}
+                >
                   {row.task.context || "—"}
                 </td>
                 <td className="px-3 py-2 text-xs">
