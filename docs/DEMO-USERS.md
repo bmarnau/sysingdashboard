@@ -39,6 +39,18 @@ zusammen.
    „Einspielen". Das Protokoll weist aus, wie viele Verantwortungen auf eigene
    Demo-Konten gezeigt haben.
 
+5. **Lokalen Bestand je Konto einspielen** — sich mit jedem Demo-Konto
+   anmelden und im selben Dialog einmal „Einspielen" für den lokalen Bestand
+   ausführen. Projekte, Arbeitspakete und Tätigkeiten liegen im Browserprofil
+   des jeweiligen Kontos; ohne diesen Schritt zeigt „Mein AVKK" keine
+   Demo-Aufgaben, obwohl die Fälle in der Datenbank vorhanden sind.
+
+Eine Änderung der Zuordnung darf jederzeit wiederholt werden: Der Seed hängt
+die Verantwortung vorhandener Demofälle auf die neu gewählte Person um, die
+bisherige Zuordnung wird historisiert (kein Löschen, ADR-0026). Das Protokoll
+weist umgehängte Fälle getrennt aus; fehlende Rechte werden als Fehlermeldung
+sichtbar, nicht stillschweigend übergangen.
+
 Anschließend meldet man sich nacheinander mit den Konten an und arbeitet die
 Matrix in `docs/ROLE-ACCEPTANCE-09C.md`, Abschnitt 2.6 ab.
 
