@@ -19,6 +19,7 @@ import {
   ScrollText,
   Server,
   Settings,
+  ShieldCheck,
   Timer,
   LogOut,
   Trash2,
@@ -48,6 +49,7 @@ interface ServiceMenuProps {
   setShowDevDiary: (v: boolean) => void;
   setShowReports: (v: boolean) => void;
   setShowDemoData: (v: boolean) => void;
+  setShowBackendAdmin: (v: boolean) => void;
 }
 
 export function ServiceMenu({
@@ -69,6 +71,7 @@ export function ServiceMenu({
   setShowDevDiary,
   setShowReports,
   setShowDemoData,
+  setShowBackendAdmin,
 }: ServiceMenuProps) {
   const currentUser = useCurrentUser();
   const navigate = useNavigate();
@@ -268,6 +271,17 @@ export function ServiceMenu({
                 className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
               >
                 <Database className="size-4 opacity-70" /> Demo-Datensatz…
+              </button>
+            )}
+            {can(currentUser, "users.manage") && (
+              <button
+                onClick={() => {
+                  setShowServiceMenu(false);
+                  setShowBackendAdmin(true);
+                }}
+                className="flex w-full items-center gap-2 border-t border-border px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+              >
+                <ShieldCheck className="size-4 opacity-70" /> Backend & Auth-Konten…
               </button>
             )}
             <button
