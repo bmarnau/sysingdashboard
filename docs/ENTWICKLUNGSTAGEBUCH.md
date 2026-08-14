@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-14 · Dashboard-Version 1.58.4
+Stand: 2026-08-14 · Dashboard-Version 1.58.5
 
 ## Vision
 
@@ -552,3 +552,13 @@ lange Titel per Tooltip vollständig; in der Kartenansicht werden sie
 umgebrochen statt abgeschnitten. Die verbleibenden Befunde des Quick Checks —
 unscharfe Kennzahldefinitionen und das fehlende Beenden einer Zuordnung —
 bleiben bewusst offen und sind nach dem MVP eingeplant.
+
+## Sichtbares Abmelden im Kopfbereich (v1.58.5)
+
+Die manuelle Rollenabnahme verlangt häufige Benutzerwechsel. Bisher lag die
+Abmeldung nur im Servicemenü und war damit im angemeldeten Zustand nicht
+unmittelbar erkennbar. Der Kopfbereich zeigt nun neben dem Benutzerbereich ein
+Abmelde-Symbol mit Tooltip und Accessible Name „Abmelden", per Tastatur
+erreichbar. Bewusst wurde keine zweite Abmeldelogik gebaut: Die Schaltfläche
+ruft denselben zentralen Pfad (`performLogout`, ADR-0020) auf, der Session
+beendet, lokalen Session-State bereinigt und zur Anmeldeseite zurückführt.
