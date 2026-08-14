@@ -178,6 +178,12 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
             Projekte, Arbeitspakete und Tätigkeiten. Mehrfaches Einspielen erzeugt keine Duplikate,
             das Entfernen wirkt ausschließlich auf <code>demo-</code>-Datensätze.
           </p>
+          <p className="rounded-md bg-secondary/50 p-2 text-xs">
+            <strong>Wichtig für den Mehrbenutzer-Nachweis:</strong> Der lokale Bestand liegt im
+            Browser und wird nicht zwischen Anmeldungen oder Geräten geteilt. Jede Demo-Person muss
+            sich anmelden und hier einmal „Einspielen" ausführen — sonst bleibt „Mein AVKK" leer,
+            obwohl die AVKK-Fälle in der Datenbank vorhanden sind.
+          </p>
           <div className="flex gap-2">
             <Button size="sm" onClick={runLocalSeed} disabled={busy !== null}>
               Einspielen
