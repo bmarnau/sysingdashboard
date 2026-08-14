@@ -12,6 +12,7 @@
 
 import { AvkkService } from "@/lib/avkk/service";
 import type { AvkkDossier } from "@/lib/avkk/types";
+
 import { isDemoId } from "./dataset";
 import { DEMO_AVKK_VERSION, demoAvkkCases } from "./avkk-dataset";
 import type { DemoAvkkCase } from "./avkk-dataset";
