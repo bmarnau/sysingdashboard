@@ -149,8 +149,11 @@ async function seedCase(
 }
 
 /**
- * Idempotent: bereits vorhandene, offene Demo-Sachverhalte werden übersprungen.
- * Erfordert `avkk.edit` — ohne Berechtigung schlägt der Aufruf über RLS fehl.
+ * Idempotent: bereits vorhandene, offene Demo-Sachverhalte werden nicht neu
+ * angelegt; ihre Verantwortung wird jedoch mit der aktuellen Personenzuordnung
+ * abgeglichen (F-11). Erfordert `avkk.edit`, das Umhängen zusätzlich
+ * `avkk.responsibility.assign` — ohne Berechtigung schlägt der Aufruf über RLS
+ * fehl und wird in `failures` gemeldet, statt still übergangen zu werden.
  */
 export async function seedAvkkDemoData(
   actorId: string,
@@ -160,10 +163,12 @@ export async function seedAvkkDemoData(
     version: DEMO_AVKK_VERSION,
     created: 0,
     skipped: 0,
+    reassigned: 0,
     responsibilities: 0,
     delegated: 0,
     competences: 0,
     consequences: 0,
+    failures: [],
   };
 
   for (const demoCase of demoAvkkCases) {
