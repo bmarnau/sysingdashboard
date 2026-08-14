@@ -22,6 +22,8 @@ export function AvkkResponsibilitySection({
   types: readonly ReferenceValue[];
   readOnly: boolean;
   saving: boolean;
+  /** Solange der Serverstand lädt, wird der bestehende Stand nicht behauptet. */
+  loading?: boolean;
   onSave: (input: { personId: string; roleKey: string; typeKeys: string[]; note: string }) => void;
 }) {
   const [personId, setPersonId] = useState("");
