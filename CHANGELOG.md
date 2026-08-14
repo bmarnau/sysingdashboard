@@ -13,6 +13,11 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.5 - 2026-08-14
+
+- **Sichtbares Abmelden**: Im Kopfbereich steht neben dem Benutzerbereich ein Abmelde-Symbol mit Tooltip und aria-label „Abmelden“ zur Verfügung; es nutzt den bestehenden zentralen Abmeldepfad (Session beenden, lokalen Session-State bereinigen, Rückkehr zur Anmeldeseite).
+- **Handbuch**: Kapitel zur Sitzung um die neue Abmeldeaktion ergänzt.
+
 ## 1.58.4 - 2026-08-14
 
 - **AVKK-Detaildialog**: Gespeicherte Kompetenzbewertungen werden nach dem Laden korrekt in den Auswahlfeldern vorbelegt (inklusive Notiz und Unterstützungsbedarf). Damit werden diese Angaben beim erneuten Speichern nicht mehr unbemerkt geleert.

@@ -460,7 +460,7 @@ Abrechnungsstatus) sind noch nicht auf Kataloge umgestellt.`,
       "Sperre",
       "Angemeldet bleiben",
     ],
-    lastUpdated: "2026-08-02",
+    lastUpdated: "2026-08-14",
     content: `## Für Benutzer
 Bleibt das Dashboard eine festgelegte Zeit ohne Aktivität (Maus, Tastatur, Scrollen,
 Touch), wird die Sitzung automatisch beendet. **Standard: 5 Minuten.**
@@ -479,8 +479,9 @@ Geschützte Seiten sind danach nicht mehr erreichbar; auch der Zurück-Button
 **Mehrere Tabs**: Aktivität in einem Tab hält alle Tabs angemeldet. Läuft die Zeit
 ab, werden alle Tabs gemeinsam abgemeldet.
 
-**Manuelle Abmeldung**: Servicemenü → *Abmelden* (gleicher Ablauf wie die
-automatische Abmeldung).
+**Manuelle Abmeldung**: Abmelde-Symbol rechts im Kopfbereich (Tooltip
+*Abmelden*, per Tastatur erreichbar) oder Servicemenü → *Abmelden* — beide nutzen
+denselben Ablauf wie die automatische Abmeldung.
 
 ## Für Administratoren
 Servicemenü → *Automatische Abmeldung…* (\`SessionSettingsDialog\`) zeigt den
