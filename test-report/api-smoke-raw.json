@@ -32,7 +32,7 @@
           "detail": "status=405"
         }
       ],
-      "duration": 1448.0235479999992
+      "duration": 3883.436278000001
     },
     {
       "endpointId": "status",
@@ -66,7 +66,7 @@
           "detail": "status=405"
         }
       ],
-      "duration": 18.178556000000754
+      "duration": 99.90494899999612
     },
     {
       "endpointId": "sync",
@@ -112,7 +112,7 @@
           "detail": "status=401"
         }
       ],
-      "duration": 321.6751060000006
+      "duration": 966.2160629999998
     }
   ]
 }
