@@ -81,7 +81,9 @@ describe("Admin-Serverfunktionen für Auth-Konten", () => {
     const block = fnBlock("requestPasswordReset");
     expect(block).toContain('"auth.password_reset_requested"');
     expect(block).toContain('result: error ? "failed" : "sent"');
-    expect(block).not.toMatch(/token/i);
+    // Kein Token-Wert im Audit-Payload (Kommentare bleiben unberührt).
+    const payload = block.slice(block.indexOf('"auth.password_reset_requested"'));
+    expect(payload).not.toMatch(/token/i);
   });
 
   it("should_notLogPasswordsOrSecrets", () => {
