@@ -230,12 +230,22 @@ export async function retireSubject(subjectRef: string, actorId: string): Promis
   await repository.subjects.setStatus(subjectRef, "closed", actorId);
 }
 
+/**
+ * Beendet eine laufende Verantwortung (`valid_to`), ohne zu löschen. Wird für
+ * das Umhängen einer Verantwortung benötigt (ADR-0026: Historisierung).
+ */
+export async function endResponsibility(responsibilityId: string, actorId: string): Promise<void> {
+  assertOnline();
+  await repository.responsibilities.end(responsibilityId, actorId);
+}
+
 export const AvkkService = {
   registerSubjectResolver,
   createSubject,
   listSubjects,
   listDossiers,
   assignResponsibility,
+  endResponsibility,
   rateCompetence,
   addConsequence,
   getDossier,
