@@ -13,6 +13,11 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.9 - 2026-08-14
+- **Demo-Personenzuordnung wirkt jetzt auch nachträglich** (Befund F-11): Beim erneuten Einspielen werden vorhandene Demofälle nicht mehr übersprungen, sondern ihre Verantwortung auf die im Dialog gewählte Person umgehängt (bisherige Zuordnung wird historisiert, nicht gelöscht).
+- **Rückmeldung im Protokoll**: Der Demo-Dialog weist umgehängte Fälle getrennt aus und meldet Fälle, bei denen die Zuordnung mangels Berechtigung nicht geändert werden konnte, statt sie still zu übergehen.
+- **Hinweis zum lokalen Bestand**: Der Demo-Dialog erklärt, dass Projekte, Arbeitspakete und Tätigkeiten browsergebunden sind und jede Demo-Person sie nach eigener Anmeldung einmal einspielen muss — sonst bleibt „Mein AVKK" leer.
+
 ## 1.58.8 - 2026-08-14
 - **Passwort-Reset im Kontobereich**: In „Backend & Auth-Konten" kann je Konto eine Passwort-Reset-Mail ausgelöst werden (Schlüssel-Symbol, Tooltip, Rückfrage vor Versand).
 - **Sicherheit**: Es wird ausschließlich der reguläre Wiederherstellungsablauf angestoßen; Administratoren setzen oder sehen keine Passwörter, die Zieladresse wird serverseitig aufgelöst, jede Anforderung wird als `auth.password_reset_requested` protokolliert.
