@@ -451,6 +451,8 @@ Abrechnungsstatus) sind noch nicht auf Kataloge umgestellt.`,
     category: "Sicherheit",
     component: "BackendAdminDialog",
     keywords: [
+      "Passwort zurücksetzen",
+      "Recovery",
       "Backend",
       "Auth",
       "Konten",
@@ -479,6 +481,10 @@ angezeigt noch im Dashboard gespeichert.
 - **Bestätigen** — schaltet ein Konto ohne bestätigte E-Mail frei (z. B. für
   Schulung und Abnahme).
 - **Mail erneut** — sendet die Bestätigungsmail nochmals.
+- **Passwort zurücksetzen** — sendet eine Recovery-Mail an die registrierte
+  Adresse. Administratoren können Passwörter weder einsehen noch direkt setzen;
+  das neue Passwort vergibt ausschließlich die Kontoinhaberin oder der
+  Kontoinhaber über den Link in der Mail.
 - **Löschen** — entfernt ein fehlerhaft angelegtes Konto. Das eigene Konto und
   der letzte aktive Systemadministrator sind gesperrt.
 

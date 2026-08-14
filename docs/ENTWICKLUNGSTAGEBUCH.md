@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-14 · Dashboard-Version 1.58.7
+Stand: 2026-08-14 · Dashboard-Version 1.58.8
 
 ## Vision
 
@@ -595,3 +595,22 @@ arbeiten. Der letzte aktive Systemadministrator und das eigene Konto sind gegen
 Löschung geschützt; jede Aktion wird im Prüfprotokoll erfasst. Der fehlende
 externe Betreiberzugang bleibt als Befund F-15 (medium, kein MVP-Blocker)
 dokumentiert.
+
+## Passwort-Reset in der Kontoverwaltung (v1.58.8)
+
+Für die manuelle Mehrbenutzer-Abnahme fehlte ein sicherer Weg, ein vergessenes
+Passwort zurückzusetzen. Bewusst *nicht* umgesetzt wurde das direkte Setzen
+eines Passworts durch Administratoren: Damit entstünde ein Kennwort, das eine
+zweite Person kennt. Stattdessen löst die neue Aktion nur den regulären
+Wiederherstellungsablauf aus — eine Recovery-Mail an die registrierte Adresse,
+das neue Passwort vergibt ausschließlich die Kontoinhaberin oder der
+Kontoinhaber.
+
+Die Zieladresse wird serverseitig aus dem Konto aufgelöst; ein vom Browser
+gelieferter Wert wird nicht verwendet. Vor der Ausführung prüft die
+Serverfunktion Sitzung und Berechtigung `users.manage`, danach die Existenz des
+Kontos. Protokolliert werden Aktion, Zielkonto, ausführendes Konto, Zeitpunkt
+und Ergebnis — kein Token, kein Passwort. Gleichzeitig wurde die Hilfslogik der
+Kontoverwaltung in ein reines Servermodul ausgelagert, damit das
+Serverfunktionsmodul ein dünner Wrapper bleibt und privilegierter Code nie in
+den Browser gelangen kann.

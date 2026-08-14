@@ -16,7 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, RefreshCw, ShieldCheck, Trash2, XCircle } from "lucide-react";
+import { CheckCircle2, KeyRound, RefreshCw, ShieldCheck, Trash2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { getAuthConfigurationStatus } from "@/integrations/supabase/config";
 import {
@@ -24,6 +24,7 @@ import {
   confirmAuthAccount,
   resendConfirmation,
   deleteAuthAccount,
+  requestPasswordReset,
   type AuthAccountSummary,
 } from "@/lib/admin/auth-accounts.functions";
 
@@ -184,6 +185,23 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
                           </Button>
                         </>
                       )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        aria-label={`Passwort-Reset-Mail an ${a.email} senden`}
+                        title="Passwort-Reset-Mail senden"
+                        disabled={busyId === a.id}
+                        onClick={() => {
+                          if (!window.confirm(`Passwort-Reset-Mail an ${a.email} senden?`)) return;
+                          void run(
+                            a.id,
+                            () => requestPasswordReset({ data: { userId: a.id } }),
+                            "Passwort-Reset-Mail wurde versendet.",
+                          );
+                        }}
+                      >
+                        <KeyRound className="size-4" aria-hidden="true" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="ghost"
