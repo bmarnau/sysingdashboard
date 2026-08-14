@@ -205,6 +205,7 @@ function Dashboard() {
   const [showLogViewer, setShowLogViewer] = useState(false);
   const [showDevDiary, setShowDevDiary] = useState(false);
   const [showDemoData, setShowDemoData] = useState(false);
+  const [showBackendAdmin, setShowBackendAdmin] = useState(false);
   const currentUser = useCurrentUser();
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
 
@@ -542,6 +543,7 @@ function Dashboard() {
               setShowDevDiary={setShowDevDiary}
               setShowReports={setShowReports}
               setShowDemoData={setShowDemoData}
+              setShowBackendAdmin={setShowBackendAdmin}
             />
             <button
               type="button"
@@ -1066,6 +1068,11 @@ function Dashboard() {
       {showDemoData && (
         <Suspense fallback={null}>
           <DemoDataDialog open={showDemoData} onOpenChange={setShowDemoData} />
+        </Suspense>
+      )}
+      {showBackendAdmin && (
+        <Suspense fallback={null}>
+          <BackendAdminDialog open={showBackendAdmin} onOpenChange={setShowBackendAdmin} />
         </Suspense>
       )}
     </div>
