@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-14 · Dashboard-Version 1.58.5
+Stand: 2026-08-14 · Dashboard-Version 1.58.6
 
 ## Vision
 
@@ -562,3 +562,17 @@ Abmelde-Symbol mit Tooltip und Accessible Name „Abmelden", per Tastatur
 erreichbar. Bewusst wurde keine zweite Abmeldelogik gebaut: Die Schaltfläche
 ruft denselben zentralen Pfad (`performLogout`, ADR-0020) auf, der Session
 beendet, lokalen Session-State bereinigt und zur Anmeldeseite zurückführt.
+
+## Fachlicher Anzeigename statt Login-Kennung (v1.58.6)
+
+Die Begrüßung im Kopfbereich zeigte den lokalen Teil der Anmeldeadresse, weil
+der Anzeigename bei fehlendem Profileintrag auf die E-Mail-Adresse zurückfiel
+und zusätzlich am ersten Leerzeichen abgeschnitten wurde. Die Ermittlung liegt
+nun zentral in `src/lib/user-display-name.ts` und folgt einer festen Reihenfolge:
+fachlicher Anzeigename aus dem Benutzerprofil, andernfalls Vor- und Nachname,
+danach ein sinnvoller Name aus der Auth-Metadatenstruktur und erst zuletzt ein
+neutraler Wert. E-Mail-artige Werte gelten grundsätzlich nicht als Name, damit
+keine Adresse unnötig in der Oberfläche erscheint. Begrüßung und Benutzeranzeige
+nutzen dieselbe Quelle; ein Benutzerwechsel aktualisiert den Namen sofort, und
+die Rollenvorschau verändert ihn nicht. Umlaute, Leerzeichen und lange Namen
+sind durch Tests abgedeckt.

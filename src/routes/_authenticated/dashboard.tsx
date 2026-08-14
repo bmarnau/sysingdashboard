@@ -582,13 +582,7 @@ function Dashboard() {
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">{dateLine}</p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-              Guten Tag,{" "}
-              {
-                (currentUser?.firstName || currentUser?.displayName || engineerState.name).split(
-                  " ",
-                )[0]
-              }
-              .
+              Guten Tag, {currentUser ? currentUser.displayName : engineerState.name}.
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
               {activeProjects} aktive Projekte · {openWPs} offene Arbeitspakete ·{" "}

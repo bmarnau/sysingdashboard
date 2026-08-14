@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile, UserRole, UserStatus } from "@/lib/user-management";
+import { resolveDisplayName } from "@/lib/user-display-name";
 
 /**
  * Session-basierter aktueller Benutzer.
@@ -38,7 +39,7 @@ export function useCurrentUser(): UserProfile | null {
         id: authUser.id,
         first_name: "",
         last_name: "",
-        display_name: authUser.email ?? "",
+        display_name: "",
         email: authUser.email ?? "",
         phone: "",
         status: "active" as UserStatus,
@@ -53,7 +54,12 @@ export function useCurrentUser(): UserProfile | null {
         id: p.id,
         firstName: p.first_name ?? "",
         lastName: p.last_name ?? "",
-        displayName: p.display_name || (authUser.email ?? ""),
+        displayName: resolveDisplayName({
+          displayName: p.display_name,
+          firstName: p.first_name,
+          lastName: p.last_name,
+          metadata: authUser.user_metadata as Record<string, unknown> | null,
+        }),
         email: p.email ?? authUser.email ?? "",
         phone: p.phone ?? "",
         role,
