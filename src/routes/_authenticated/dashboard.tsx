@@ -570,6 +570,7 @@ function Dashboard() {
                 </p>
               </div>
             </button>
+            <LogoutButton />
           </div>
         </div>
       </header>
