@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile, UserRole, UserStatus } from "@/lib/user-management";
+import { resolveDisplayName } from "@/lib/user-display-name";
 
 /**
  * Session-basierter aktueller Benutzer.
