@@ -529,3 +529,26 @@ Abnahmebericht, statt durch schnell nachgezogene Policies verdeckt zu werden.
 Die Unterschriften der Rollenabnahme fehlen weiterhin; F-11 bleibt deshalb
 MANUAL VERIFICATION REQUIRED, nun aber mit einem Szenario, das eine Abzeichnung
 überhaupt aussagekräftig macht.
+
+## AVKK UI Quick Check – Behebung der Anzeigefehler (v1.58.4)
+
+Die manuelle Sichtprüfung der AVKK-Oberflächen förderte einen Widerspruch
+zutage: Das Auswahlfeld einer Kompetenzdimension zeigte „— nicht bewertet —",
+während direkt darunter ein gespeicherter Wert stand. Ursache war keine
+Datenfrage, sondern die Reihenfolge: Der Dialog baute seine Eingabefelder auf,
+bevor der Serverstand eintraf, und führte sie danach nicht mehr nach. Wer in
+dieser Lage erneut speicherte, überschrieb still Notiz und
+Unterstützungsbedarf. Die Bewertung selbst war nie gefährdet, weil ein leeres
+Feld gar nicht speicherbar ist — das Muster war trotzdem falsch und wurde vor
+der MVP-Baseline behoben, indem die Abschnitte erst nach dem Laden erscheinen
+und an den geladenen Datensatz gebunden sind.
+
+Zwei Beschriftungen waren zusätzlich irreführend. „Gespeichert: nicht
+vorhanden" liest sich wie „nichts gespeichert", meinte aber den Katalogwert der
+Bewertung; und das leere Personenfeld unter einer bereits gefüllten
+Verantwortungsliste sah wie eine Korrekturmöglichkeit aus, obwohl es
+ausschließlich ergänzt. Beides ist nun ausgeschrieben. Die Aufgabenliste zeigt
+lange Titel per Tooltip vollständig; in der Kartenansicht werden sie
+umgebrochen statt abgeschnitten. Die verbleibenden Befunde des Quick Checks —
+unscharfe Kennzahldefinitionen und das fehlende Beenden einer Zuordnung —
+bleiben bewusst offen und sind nach dem MVP eingeplant.
