@@ -14,6 +14,7 @@ export function AvkkResponsibilitySection({
   types,
   readOnly,
   saving,
+  loading = false,
   onSave,
 }: {
   responsibilities: readonly AvkkResponsibility[];
