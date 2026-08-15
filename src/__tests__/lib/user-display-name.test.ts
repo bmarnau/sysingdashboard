@@ -103,8 +103,9 @@ describe("greetingFirstNameOf", () => {
   });
 
   it("fällt auf E-Mail-Local-Part zurück, wenn nichts anderes vorhanden ist", () => {
-    expect(greetingFirstNameOf({ email: "alex.marnau@example.org" })).toBe("Alex.Marnau");
+    expect(greetingFirstNameOf({ email: "alex@example.org" })).toBe("Alex");
     expect(greetingFirstNameOf({ email: "ALEX@EXAMPLE.ORG" })).toBe("Alex");
+    expect(greetingFirstNameOf({ email: "alex.marnau@example.org" })).toBe("Alex.marnau");
   });
 
   it("zeigt niemals die vollständige E-Mail-Adresse", () => {
