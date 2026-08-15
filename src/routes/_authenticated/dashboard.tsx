@@ -22,6 +22,7 @@ import {
   type Project,
   type WorkPackage,
 } from "@/lib/dashboard-data";
+import { greetingFirstNameOf } from "@/lib/user-display-name";
 // Schwere Dashboard-Dialoge werden lazy geladen, damit `jspdf`, `jspdf-autotable`,
 // `recharts` und ~5.000 LOC Dialog-Code den Initial-Chunk verlassen. Jeder Dialog
 // hat einen eigenen Suspense-Wrapper — ein langsam ladender Chunk blockiert keinen
