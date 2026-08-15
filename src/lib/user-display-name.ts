@@ -123,7 +123,9 @@ function normalizeFirstName(value: string): string {
   return shouldNormalize ? toTitleCase(cleaned) : cleaned;
 }
 
-function fromMetadataFirstName(metadata: Record<string, unknown> | null | undefined): string | null {
+function fromMetadataFirstName(
+  metadata: Record<string, unknown> | null | undefined,
+): string | null {
   if (!metadata) return null;
   const pick = (key: string): string | null =>
     typeof metadata[key] === "string" ? usable(metadata[key] as string) : null;
