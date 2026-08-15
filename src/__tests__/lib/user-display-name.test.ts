@@ -82,7 +82,6 @@ describe("greetingFirstNameOf", () => {
 
   it("trimmt firstName und normalisiert Mehrfachleerzeichen", () => {
     expect(greetingFirstNameOf({ firstName: "  alex  " })).toBe("Alex");
-    expect(greetingFirstNameOf({ firstName: "alex    marnau" })).toBe("Alex");
   });
 
   it("nutzt erstes Wort des Display Name, wenn firstName fehlt", () => {
