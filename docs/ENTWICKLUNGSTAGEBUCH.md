@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-14 · Dashboard-Version 1.58.9
+Stand: 2026-08-15 · Dashboard-Version 1.58.10
 
 ## Vision
 
@@ -33,9 +33,9 @@ Leitplanken von Anfang an:
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Rollenmodell, Backup/Restore, Import/Export, Reporting und integriertem Handbuch. |
 | Zeitraum            | Mai 2026 bis August 2026                                                                                                     |
-| Aktueller Stand     | Version 1.47.0, alle automatisierten Tests grün, technischer Prüfbericht ohne offene kritische Befunde                       |
-| Größte Hürden       | Inbetriebnahme der Anmeldung, vollständiger PDF-Druck, Aufräumen technischer Schulden bei wachsendem Umfang                  |
-| Nächster Nutzen     | Mehrsprachigkeit, serverseitige Sitzungsdurchsetzung, Azure-Produktivbetrieb                                                 |
+| Aktueller Stand     | Version 1.58.10, MVP-Härtung abgeschlossen, alle automatisierten Tests grün, manuelle Abnahme mit bekannten Findings offen    |
+| Größte Hürden       | Inbetriebnahme der Anmeldung, vollständiger PDF-Druck, Mehrbenutzer-Demo unter RLS/RBAC                                      |
+| Nächster Nutzen     | Manuelle Freigabeentscheidung, Word-Fassung SYSING-001, optionale Azure-Produktivumgebung                                    |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, Prüfpfad und automatisierter
