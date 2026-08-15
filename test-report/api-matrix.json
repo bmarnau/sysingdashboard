@@ -11,7 +11,7 @@
       "requestSchema": "no",
       "responseSchema": "yes",
       "status": "active",
-      "cases": 10,
+      "cases": 1,
       "failures": 0,
       "knownRisks": [
         "Keine Correlation-ID im Response — Traceability nur über Server-Log.",
