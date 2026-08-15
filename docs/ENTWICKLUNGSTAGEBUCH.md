@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-14 · Dashboard-Version 1.58.9
+Stand: 2026-08-15 · Dashboard-Version 1.58.10
 
 ## Vision
 
@@ -33,9 +33,9 @@ Leitplanken von Anfang an:
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Rollenmodell, Backup/Restore, Import/Export, Reporting und integriertem Handbuch. |
 | Zeitraum            | Mai 2026 bis August 2026                                                                                                     |
-| Aktueller Stand     | Version 1.47.0, alle automatisierten Tests grün, technischer Prüfbericht ohne offene kritische Befunde                       |
-| Größte Hürden       | Inbetriebnahme der Anmeldung, vollständiger PDF-Druck, Aufräumen technischer Schulden bei wachsendem Umfang                  |
-| Nächster Nutzen     | Mehrsprachigkeit, serverseitige Sitzungsdurchsetzung, Azure-Produktivbetrieb                                                 |
+| Aktueller Stand     | Version 1.58.10, MVP-Härtung abgeschlossen, alle automatisierten Tests grün, manuelle Abnahme mit bekannten Findings offen    |
+| Größte Hürden       | Inbetriebnahme der Anmeldung, vollständiger PDF-Druck, Mehrbenutzer-Demo unter RLS/RBAC                                      |
+| Nächster Nutzen     | Manuelle Freigabeentscheidung, Word-Fassung SYSING-001, optionale Azure-Produktivumgebung                                    |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, Prüfpfad und automatisierter
@@ -83,6 +83,22 @@ Dokumentation.
 | 1.45.0    | 2026-08-02           | Sitzung                   | Automatische Abmeldung bei Inaktivität                                  |
 | 1.46.0    | 2026-08-03           | Chronik                   | Entwicklungstagebuch im Servicebereich                                  |
 | 1.47.0    | 2026-08-03           | Wartbarkeit               | Backup-/Restore-Service modularisiert (ADR-0021)                        |
+| 1.50.0    | 2026-08-07           | Plattformabschluss        | Phase 1 technische Plattform finalisiert, 381 Tests grün                |
+| 1.51.0    | 2026-08-08           | AVKK-Architektur          | Führungsmodell, Reference-Data-Architektur                              |
+| 1.52.0    | 2026-08-09           | AVKK-Datenbank            | AVKK-Entitäten, RBAC/RLS, Local-First-Übergang                          |
+| 1.53.0    | 2026-08-11           | Persönlicher AVKK-Platz   | Mein AVKK-Workspace mit Filtern und Risikoindikatoren                   |
+| 1.54.0    | 2026-08-12           | AVKK-Backup/Export        | AVKK in Backup/Restore, JSON-Schema v1.1.0, Löschstrategie (ADR-0026)    |
+| 1.55.0    | 2026-08-13           | AVKK-Cockpit              | Rollenbasierte Führungssicht, Action-Need, Verteilung (ADR-0027)         |
+| 1.56.0    | 2026-08-13           | Reporting                 | Corporate Templates, TDF-Ausgabe, Demo-Daten-Seed (ADR-0028)              |
+| 1.57.0    | 2026-08-13           | Demo-Schulung             | Idempotenter AVKK-Demo-Datensatz, UI-Steuerung, soft retirement          |
+| 1.58.0    | 2026-08-13           | MVP-Freigabe                | Release-Candidate, MVP-Acceptance-Report (**GO WITH FINDINGS**)         |
+| 1.58.1–1.58.4 | 2026-08-14       | AVKK-UI-Härtung           | Detaildialog-Zustand, Tooltips, Textlängen, 490 Tests grün              |
+| 1.58.5    | 2026-08-14           | Sichtbares Abmelden       | Logout-Button im Header                                                  |
+| 1.58.6    | 2026-08-14           | Fachliche Begrüßung       | Anzeigename zentral aus Profil, Auth-Metadaten, kein E-Mail-Fallback     |
+| 1.58.7    | 2026-08-14           | Backend-Administration    | Auth-Konten im Service-Menü, keine Supabase-Dashboard-Links (F-15)        |
+| 1.58.8    | 2026-08-14           | Passwort-Reset            | Serverseitige Recovery-Mail je Konto mit Audit-Log                       |
+| 1.58.9    | 2026-08-14           | Demo-Personenzuordnung    | Nachrüstbare Verantwortungszuweisung, Local-First-Hinweis (F-11)         |
+| 1.58.10   | 2026-08-15           | Begrüßung mit Vorname     | Dashboard-Anrede nur noch mit Vorname, normalisiert                     |
 
 ## Schwierigkeiten und ihre Lösung
 
@@ -637,3 +653,19 @@ solange es sie nicht selbst einspielt — die AVKK-Fälle in der Datenbank finde
 dann keine passende Aufgabe. Das ist keine Fehlfunktion, sondern die bekannte
 Architekturgrenze; der Demo-Dialog benennt sie jetzt ausdrücklich, statt sie
 den Prüfenden zu überlassen.
+
+## Begrüßung nur mit Vorname (v1.58.10)
+
+Die Dashboard-Anrede zeigte bisher den vollständigen fachlichen Anzeigenamen,
+also etwa „Guten Tag, alex marnau.". Das war inhaltlich korrekt, aber wirkte
+unaufgeräumt, wenn die Schreibweise der Daten nicht gepflegt war. Ab v1.58.10
+wird ausschließlich der Vorname verwendet und dabei normalisiert: „alex",
+„ALEX", „aLeX" und „Alex Marnau" werden alle zu „Alex". Zusammengesetzte
+Namen wie „Jörg-Michael" bleiben erhalten, wenn sie bereits korrekt geschrieben
+sind; einheitlich falsche Schreibweise wird sanft korrigiert.
+
+Die Priorität folgt bewusst der Datenquelle: zuerst das echte Profilfeld
+`first_name`, dann das erste Wort des fachlichen Anzeigenamens, dann die
+Auth-Metadaten. Erst als allerletzter Fallback greift der Local-Part der
+E-Mail-Adresse — und selbst dann wird niemals die vollständige E-Mail-Adresse
+angezeigt. Header und Profilanzeige verwenden weiterhin den vollständigen Namen.

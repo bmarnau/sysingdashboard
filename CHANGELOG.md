@@ -13,6 +13,11 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.58.10 - 2026-08-15
+
+- **Begrüßung nur mit Vorname**: Die Dashboard-Anrede zeigt ausschließlich den Vornamen, normalisiert die Schreibweise (z. B. „alex marnau" → „Alex") und greift niemals auf E-Mail-Adressen zurück.
+- **Normalisierung**: Einheitliche Klein- oder Großschreibung wird korrigiert; korrekte Eigenschreibweisen zusammengesetzter Namen bleiben erhalten.
+
 ## 1.58.9 - 2026-08-14
 
 - **Demo-Personenzuordnung wirkt jetzt auch nachträglich** (Befund F-11): Beim erneuten Einspielen werden vorhandene Demofälle nicht mehr übersprungen, sondern ihre Verantwortung auf die im Dialog gewählte Person umgehängt (bisherige Zuordnung wird historisiert, nicht gelöscht).

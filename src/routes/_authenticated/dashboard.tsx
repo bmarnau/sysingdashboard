@@ -22,6 +22,7 @@ import {
   type Project,
   type WorkPackage,
 } from "@/lib/dashboard-data";
+import { greetingFirstNameOf } from "@/lib/user-display-name";
 // Schwere Dashboard-Dialoge werden lazy geladen, damit `jspdf`, `jspdf-autotable`,
 // `recharts` und ~5.000 LOC Dialog-Code den Initial-Chunk verlassen. Jeder Dialog
 // hat einen eigenen Suspense-Wrapper — ein langsam ladender Chunk blockiert keinen
@@ -587,7 +588,16 @@ function Dashboard() {
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">{dateLine}</p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-              Guten Tag, {currentUser ? currentUser.displayName : engineerState.name}.
+              Guten Tag,{" "}
+              {currentUser
+                ? greetingFirstNameOf({
+                    firstName: currentUser.firstName,
+                    displayName: currentUser.displayName,
+                    email: currentUser.email,
+                    metadata: null,
+                  })
+                : greetingFirstNameOf({ displayName: engineerState.name })}
+              .
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
               {activeProjects} aktive Projekte · {openWPs} offene Arbeitspakete ·{" "}
