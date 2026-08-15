@@ -653,3 +653,19 @@ solange es sie nicht selbst einspielt — die AVKK-Fälle in der Datenbank finde
 dann keine passende Aufgabe. Das ist keine Fehlfunktion, sondern die bekannte
 Architekturgrenze; der Demo-Dialog benennt sie jetzt ausdrücklich, statt sie
 den Prüfenden zu überlassen.
+
+## Begrüßung nur mit Vorname (v1.58.10)
+
+Die Dashboard-Anrede zeigte bisher den vollständigen fachlichen Anzeigenamen,
+also etwa „Guten Tag, alex marnau.". Das war inhaltlich korrekt, aber wirkte
+unaufgeräumt, wenn die Schreibweise der Daten nicht gepflegt war. Ab v1.58.10
+wird ausschließlich der Vorname verwendet und dabei normalisiert: „alex",
+„ALEX", „aLeX" und „Alex Marnau" werden alle zu „Alex". Zusammengesetzte
+Namen wie „Jörg-Michael" bleiben erhalten, wenn sie bereits korrekt geschrieben
+sind; einheitlich falsche Schreibweise wird sanft korrigiert.
+
+Die Priorität folgt bewusst der Datenquelle: zuerst das echte Profilfeld
+`first_name`, dann das erste Wort des fachlichen Anzeigenamens, dann die
+Auth-Metadaten. Erst als allerletzter Fallback greift der Local-Part der
+E-Mail-Adresse — und selbst dann wird niemals die vollständige E-Mail-Adresse
+angezeigt. Header und Profilanzeige verwenden weiterhin den vollständigen Namen.
