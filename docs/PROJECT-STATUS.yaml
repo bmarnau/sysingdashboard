@@ -459,7 +459,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.58.9"
+  currentRelease: "1.58.10"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
