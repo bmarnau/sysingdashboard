@@ -83,6 +83,22 @@ Dokumentation.
 | 1.45.0    | 2026-08-02           | Sitzung                   | Automatische Abmeldung bei Inaktivität                                  |
 | 1.46.0    | 2026-08-03           | Chronik                   | Entwicklungstagebuch im Servicebereich                                  |
 | 1.47.0    | 2026-08-03           | Wartbarkeit               | Backup-/Restore-Service modularisiert (ADR-0021)                        |
+| 1.50.0    | 2026-08-07           | Plattformabschluss        | Phase 1 technische Plattform finalisiert, 381 Tests grün                |
+| 1.51.0    | 2026-08-08           | AVKK-Architektur          | Führungsmodell, Reference-Data-Architektur                              |
+| 1.52.0    | 2026-08-09           | AVKK-Datenbank            | AVKK-Entitäten, RBAC/RLS, Local-First-Übergang                          |
+| 1.53.0    | 2026-08-11           | Persönlicher AVKK-Platz   | Mein AVKK-Workspace mit Filtern und Risikoindikatoren                   |
+| 1.54.0    | 2026-08-12           | AVKK-Backup/Export        | AVKK in Backup/Restore, JSON-Schema v1.1.0, Löschstrategie (ADR-0026)    |
+| 1.55.0    | 2026-08-13           | AVKK-Cockpit              | Rollenbasierte Führungssicht, Action-Need, Verteilung (ADR-0027)         |
+| 1.56.0    | 2026-08-13           | Reporting                 | Corporate Templates, TDF-Ausgabe, Demo-Daten-Seed (ADR-0028)              |
+| 1.57.0    | 2026-08-13           | Demo-Schulung             | Idempotenter AVKK-Demo-Datensatz, UI-Steuerung, soft retirement          |
+| 1.58.0    | 2026-08-13           | MVP-Freigabe                | Release-Candidate, MVP-Acceptance-Report (**GO WITH FINDINGS**)         |
+| 1.58.1–1.58.4 | 2026-08-14       | AVKK-UI-Härtung           | Detaildialog-Zustand, Tooltips, Textlängen, 490 Tests grün              |
+| 1.58.5    | 2026-08-14           | Sichtbares Abmelden       | Logout-Button im Header                                                  |
+| 1.58.6    | 2026-08-14           | Fachliche Begrüßung       | Anzeigename zentral aus Profil, Auth-Metadaten, kein E-Mail-Fallback     |
+| 1.58.7    | 2026-08-14           | Backend-Administration    | Auth-Konten im Service-Menü, keine Supabase-Dashboard-Links (F-15)        |
+| 1.58.8    | 2026-08-14           | Passwort-Reset            | Serverseitige Recovery-Mail je Konto mit Audit-Log                       |
+| 1.58.9    | 2026-08-14           | Demo-Personenzuordnung    | Nachrüstbare Verantwortungszuweisung, Local-First-Hinweis (F-11)         |
+| 1.58.10   | 2026-08-15           | Begrüßung mit Vorname     | Dashboard-Anrede nur noch mit Vorname, normalisiert                     |
 
 ## Schwierigkeiten und ihre Lösung
 
