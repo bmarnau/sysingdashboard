@@ -91,11 +91,13 @@ function emailLocalPart(email: string | null | undefined): string | null {
   return local || null;
 }
 
-/** Ist die Schreibweise des Strings einheitlich (nur Klein- oder nur Großbuchstaben)? */
-function isUniformCase(value: string): boolean {
-  const letters = value.replace(/[^\p{L}]/gu, "");
-  if (!letters) return false;
-  return letters === letters.toLowerCase() || letters === letters.toUpperCase();
+/** Sieht ein Wort wie korrekt geschriebenes Title Case aus (erster Buchstabe groß, Rest klein)? */
+function looksLikeTitleCaseWord(word: string): boolean {
+  const letters = word.replace(/[^\p{L}]/gu, "");
+  if (letters.length < 2) return true;
+  const first = letters[0];
+  const rest = letters.slice(1);
+  return first === first.toUpperCase() && rest === rest.toLowerCase();
 }
 
 /**
@@ -113,7 +115,12 @@ function toTitleCase(value: string): string {
 function normalizeFirstName(value: string): string {
   const cleaned = clean(value);
   if (!cleaned) return "";
-  return isUniformCase(cleaned) ? toTitleCase(cleaned) : cleaned;
+
+  const words = cleaned.split(/[\s-]+/);
+  const badWords = words.filter((w) => !looksLikeTitleCaseWord(w)).length;
+  const shouldNormalize = badWords > 0 && badWords >= words.length / 2;
+
+  return shouldNormalize ? toTitleCase(cleaned) : cleaned;
 }
 
 function fromMetadataFirstName(metadata: Record<string, unknown> | null | undefined): string | null {
