@@ -39,6 +39,8 @@ export interface DisplayNameSources {
   firstName?: string | null;
   /** `profiles.last_name` */
   lastName?: string | null;
+  /** `auth.users.email` — ausschließlich als letzter Fallback für den Vornamen. */
+  email?: string | null;
   /** `auth.users.user_metadata` (beliebige Struktur) */
   metadata?: Record<string, unknown> | null;
 }
@@ -71,4 +73,84 @@ export function resolveDisplayName(sources: DisplayNameSources): string {
 /** Anrede im Kopfbereich — vollständiger fachlicher Name. */
 export function greetingNameOf(sources: DisplayNameSources): string {
   return resolveDisplayName(sources);
+}
+
+/** Erstes Wort eines Strings, falls vorhanden. */
+function firstWord(value: string | null | undefined): string | null {
+  const v = usable(value);
+  if (!v) return null;
+  const word = v.split(/\s+/)[0];
+  return word || null;
+}
+
+/** E-Mail-Local-Part extrahieren, ohne die Domain anzuzeigen. */
+function emailLocalPart(email: string | null | undefined): string | null {
+  const v = clean(email);
+  if (!v || !looksLikeEmail(v)) return null;
+  const local = v.split("@")[0];
+  return local || null;
+}
+
+/** Ist die Schreibweise des Strings einheitlich (nur Klein- oder nur Großbuchstaben)? */
+function isUniformCase(value: string): boolean {
+  const letters = value.replace(/[^\p{L}]/gu, "");
+  if (!letters) return false;
+  return letters === letters.toLowerCase() || letters === letters.toUpperCase();
+}
+
+/**
+ * Title-Case-Normalisierung, die korrekte Eigenschreibweisen zusammengesetzter
+ * Namen erhält (z. B. Jörg-Michael). Wird nur auf einheitlich groß/kleingeschriebene
+ * Eingaben oder abgeleitete Werte angewendet.
+ */
+function toTitleCase(value: string): string {
+  return clean(value)
+    .toLowerCase()
+    .replace(/(?:^|[\s-])\p{L}/gu, (match) => match.toUpperCase());
+}
+
+/** Normalisiert einen Vornamen: trimmt, entfernt Mehrfachleerzeichen und korrigiert einheitliche Schreibweise. */
+function normalizeFirstName(value: string): string {
+  const cleaned = clean(value);
+  if (!cleaned) return "";
+  return isUniformCase(cleaned) ? toTitleCase(cleaned) : cleaned;
+}
+
+function fromMetadataFirstName(metadata: Record<string, unknown> | null | undefined): string | null {
+  if (!metadata) return null;
+  const pick = (key: string): string | null =>
+    typeof metadata[key] === "string" ? usable(metadata[key] as string) : null;
+
+  const direct = pick("given_name") ?? pick("first_name");
+  if (direct) return direct;
+
+  const full = pick("full_name") ?? pick("name") ?? pick("display_name");
+  if (full) return firstWord(full);
+
+  return null;
+}
+
+/**
+ * Liefert den Vornamen für die Begrüßung. Priorität:
+ *  1. `firstName` aus dem Profil (unverändert bevorzugt, aber einheitliche
+ *     Groß-/Kleinschreibung wird korrigiert).
+ *  2. Erstes Wort aus dem fachlichen Display Name.
+ *  3. Auth-Metadaten (`given_name`, `first_name`, erstes Wort aus `full_name`/`name`/`display_name`).
+ *  4. E-Mail-Local-Part (niemals die vollständige E-Mail-Adresse).
+ *  5. Neutraler Fallback "Benutzer".
+ */
+export function greetingFirstNameOf(sources: DisplayNameSources): string {
+  const firstName = usable(sources.firstName);
+  if (firstName) return normalizeFirstName(firstName);
+
+  const displayFirst = firstWord(sources.displayName);
+  if (displayFirst) return normalizeFirstName(displayFirst);
+
+  const metaFirst = fromMetadataFirstName(sources.metadata);
+  if (metaFirst) return normalizeFirstName(metaFirst);
+
+  const local = emailLocalPart(sources.email);
+  if (local) return normalizeFirstName(local);
+
+  return NEUTRAL_DISPLAY_NAME;
 }
