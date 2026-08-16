@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { listDossiers, registerSubjectResolver, type AvkkDossier } from "@/lib/avkk";
 import { buildRows, taskKey, type AvkkRow, type AvkkTask } from "@/lib/avkk/workspace";
+import { useRefreshSignal } from "@/hooks/useRefreshSignal";
 
 export interface AvkkManagementResult {
   rows: AvkkRow[];
@@ -30,6 +31,7 @@ export function useAvkkManagement(input: {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
+  const refreshGeneration = useRefreshSignal();
 
   useEffect(() => {
     const index = new Map(tasks.map((t) => [taskKey(t.subjectType, t.subjectId), t.title]));
@@ -63,7 +65,7 @@ export function useAvkkManagement(input: {
     return () => {
       cancelled = true;
     };
-  }, [enabled, tick]);
+  }, [enabled, tick, refreshGeneration]);
 
   const rows = useMemo(
     () =>

@@ -104,6 +104,17 @@ function rehydrateFromStorage(): void {
 }
 
 /**
+ * Liest den lokalen (browsergebundenen) Bestand erneut ein und ersetzt den
+ * Store-Zustand. Bewusst kein Datenbankabgleich — Projekte, Arbeitspakete und
+ * Tätigkeiten sind local-first (ADR-0003). Beschädigter Storage fällt auf den
+ * bestehenden Merge mit der Fixture zurück.
+ */
+export function rehydrateDashboardStore(): void {
+  if (typeof window === "undefined") return;
+  rehydrateFromStorage();
+}
+
+/**
  * Muss einmalig beim App-Start aufgerufen werden (nach `UserManagementService.bootstrap()`).
  * Idempotent — mehrfacher Aufruf hat keinen Effekt.
  */

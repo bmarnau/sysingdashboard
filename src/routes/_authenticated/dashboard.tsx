@@ -106,6 +106,7 @@ import { GlobalSearch } from "@/components/dashboard/header/GlobalSearch";
 import { HelpMenu } from "@/components/dashboard/header/HelpMenu";
 import { ServiceMenu } from "@/components/dashboard/header/ServiceMenu";
 import { LogoutButton } from "@/components/dashboard/header/LogoutButton";
+import { RefreshButton } from "@/components/dashboard/header/RefreshButton";
 // Sprint 05: Präsentation, Fachlogik und Konstanten liegen in src/components/dashboard/.
 import { type Tab } from "@/components/dashboard/constants";
 import { fmtEuro } from "@/components/dashboard/formatters";
@@ -577,6 +578,7 @@ function Dashboard() {
                 </p>
               </div>
             </button>
+            <RefreshButton />
             <LogoutButton />
           </div>
         </div>

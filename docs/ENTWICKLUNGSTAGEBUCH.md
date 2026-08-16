@@ -518,6 +518,28 @@ Die Freigabeempfehlung bleibt GO WITH FINDINGS. Die Modulgröße der
 Dashboard-Route bleibt bewusst als dokumentierte Schuld nach ADR-0019 stehen;
 sie in einem Hardening-Sprint anzufassen hätte mehr Risiko erzeugt als gelöst.
 
+## Sprint 09C – Zentraler Daten-Refresh (v1.59.0)
+
+**Anlass.** Die Aktualität der Anzeige hing bisher an einzelnen Hooks: Kataloge über einen
+Service-Refresh, AVKK über lokale Zähler, Profil und Rolle gar nicht. Ein Neuladen der Seite
+war der einzige verlässliche Weg — mit dem Risiko, die Anmeldung zu verlieren.
+
+**Lösung.** Ein `RefreshCoordinator` (`src/lib/refresh/`) hält eine Registry von
+Refresh-Schritten, arbeitet sie stufenweise ab und erhöht danach eine Generation. Hooks
+abonnieren diese Generation über `useRefreshSignal()` und laden über ihre bestehende Fassade
+neu — es entsteht keine zweite Ladelogik. Der Knopf in der Kopfzeile nutzt ausschließlich die
+Fassade `useRefresh()`.
+
+**Entscheidungen.**
+- Kein `window.location.reload()`; der Refresh ist ein kontrollierter Anwendungsvorgang.
+- Nur Lesepfade: keine Schreiboperation, keine RBAC-Änderung, kein Provider-Import im Koordinator.
+- Single-Flight statt Sperrlogik in der UI: Mehrfachklick nutzt den laufenden Vorgang.
+- Teilfehler isolieren statt abbrechen; bereits gültige Daten bleiben sichtbar.
+- Der lokale Arbeitsbestand wird nur erneut eingelesen — Local-First (ADR-0003) bleibt unangetastet.
+
+**Grenze.** Es gibt bewusst keinen Intervall-Refresh und keine Synchronisation des lokalen
+Bestands mit der Datenbank.
+
 ## Sprint 09C – Nachprüfung F-11: Mehrbenutzer-Demoszenario (v1.58.3)
 
 Die Rollenabnahme scheiterte bisher an einer unscheinbaren Stelle im Seed: alle

@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getDossier, listSubjects, registerSubjectResolver, type AvkkDossier } from "@/lib/avkk";
 import { buildRows, taskKey, type AvkkRow, type AvkkTask } from "@/lib/avkk/workspace";
+import { useRefreshSignal } from "@/hooks/useRefreshSignal";
 
 export interface AvkkWorkspaceResult {
   rows: AvkkRow[];
@@ -27,6 +28,8 @@ export function useAvkkWorkspace(input: {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
+  // Zentraler Refresh: Generationswechsel lädt über dieselbe Fassade neu.
+  const refreshGeneration = useRefreshSignal();
 
   // Existenzprüfung der Anwendungsschicht (ADR-0025): der lokale Bestand ist
   // die Wahrheit, die Datenbank kennt keinen Fremdschlüssel darauf.
@@ -66,7 +69,7 @@ export function useAvkkWorkspace(input: {
     return () => {
       cancelled = true;
     };
-  }, [enabled, tick]);
+  }, [enabled, tick, refreshGeneration]);
 
   const rows = useMemo(
     () =>

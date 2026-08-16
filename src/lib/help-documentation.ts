@@ -2728,6 +2728,46 @@ Gerendert wird ein bewusst begrenztes Markdown-Subset (Überschriften, Listen, T
     relatedTopics: ["changelog", "technical-test-report", "ci-quality-gates"],
   },
   {
+    id: "daten-refresh",
+    title: "Daten aktualisieren (zentraler Refresh)",
+    category: "Bedienung",
+    keywords: [
+      "Refresh",
+      "Aktualisieren",
+      "Neu laden",
+      "Kataloge",
+      "AVKK",
+      "Aktualität",
+      "Kopfzeile",
+    ],
+    lastUpdated: "2026-08-16",
+    content: `## Zweck
+Der Aktualisieren-Knopf in der Kopfzeile des Dashboards lädt alle angezeigten Daten erneut, ohne die Seite neu zu laden und ohne die Anmeldung zu unterbrechen. Eingaben in geöffneten Dialogen bleiben erhalten.
+
+## Aufruf
+Dashboard-Kopfzeile → Symbol **Kreispfeil** (links neben „Abmelden"). Sichtbar für alle angemeldeten Benutzer; es sind keine zusätzlichen Berechtigungen nötig.
+
+## Was aktualisiert wird
+- **Kataloge** (Reference Data): der lokale Katalogstand wird verworfen und neu geladen.
+- **AVKK-Sachverhalte** in „Mein AVKK" und im Management-Cockpit inklusive Verantwortungen, Kompetenzen und Konsequenzen.
+- **Profil und Rolle** des angemeldeten Benutzers sowie die Kontenliste in Verwaltungsdialogen.
+- **Lokaler Arbeitsbestand** (Projekte, Arbeitspakete, Tätigkeiten) wird erneut aus dem Browser-Bestand eingelesen.
+
+## Was bewusst nicht passiert
+- Es wird **nichts geschrieben**: kein Speichern, kein Einspielen von Demodaten, kein Backup, kein Bericht.
+- Es werden **keine Berechtigungen umgangen** — es gilt derselbe rollenbasierte Zugriff wie beim normalen Laden.
+- Der lokale Arbeitsbestand wird **nicht** mit einer zentralen Datenbank abgeglichen; er bleibt browser- und gerätegebunden.
+
+## Rückmeldung und Teilfehler
+Während der Aktualisierung dreht sich das Symbol, der Knopf ist gesperrt. Danach erscheint eine kurze Bestätigung. Kann ein Bereich nicht geladen werden (z. B. keine Verbindung), bleiben die übrigen Bereiche aktualisiert und die Meldung benennt den betroffenen Bereich. Die bisher angezeigten Daten gehen nicht verloren.
+
+## Grenzen
+- Kein automatischer Intervall-Refresh; die Aktualisierung erfolgt bewusst nur auf Anforderung.
+- Mehrfaches Klicken löst keinen zweiten Lauf aus, sondern wartet auf den laufenden.
+- Offline können nur zwischengespeicherte Stände neu gelesen werden; der Katalogstand bleibt dann als „veraltet" gekennzeichnet.`,
+    relatedTopics: ["dialog-referenz", "offline-mode", "avkk-arbeitsplatz"],
+  },
+  {
     id: "dialog-referenz",
     title: "Dialog-Referenz (Zweck, Rollen, Ergebnis)",
     category: "Referenz",

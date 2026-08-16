@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useRefreshSignal } from "@/hooks/useRefreshSignal";
 import { can } from "@/lib/rbac/permissions";
 import { listUsers } from "@/lib/users-supabase-service";
 import type { UserProfile } from "@/lib/user-management";
@@ -43,6 +44,8 @@ interface DemoDataDialogProps {
 
 export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
   const user = useCurrentUser();
+  // Nach zentralem Refresh stehen neu angelegte Konten sofort zur Zuordnung bereit.
+  const refreshGeneration = useRefreshSignal();
   const mayWriteAvkk = can(user, "avkk.edit");
   const [busy, setBusy] = useState<null | "seed" | "remove" | "avkk" | "retire">(null);
   const [log, setLog] = useState<string[]>([]);
@@ -64,7 +67,7 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
     return () => {
       active = false;
     };
-  }, [open]);
+  }, [open, refreshGeneration]);
 
   const setAccount = (personaId: DemoPersonaId, userId: string) =>
     setAccounts((prev) => {

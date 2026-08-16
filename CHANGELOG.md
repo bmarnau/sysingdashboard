@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.59.0 - 2026-08-16
+
+- **Zentraler Daten-Refresh**: Neuer Aktualisieren-Knopf in der Dashboard-Kopfzeile lädt Kataloge, AVKK-Daten, Profil/Rolle und den lokalen Arbeitsbestand neu — ohne Seiten-Neuladen und ohne Abmeldung.
+- **Teilfehler sichtbar**: Schlägt ein Bereich fehl, bleiben die übrigen aktualisiert; die Meldung benennt den betroffenen Bereich.
+- **Mehrfachklick unschädlich**: Ein laufender Refresh wird wiederverwendet (Single-Flight), es gibt keine konkurrierenden Läufe.
+- **Nur Lesepfade**: Der Refresh schreibt nichts und ändert keine Berechtigungen; der lokale Arbeitsbestand bleibt browsergebunden.
+- **Handbuch**: Neues Kapitel „Daten aktualisieren (zentraler Refresh)".
+
 ## 1.58.10 - 2026-08-15
 
 - **Begrüßung nur mit Vorname**: Die Dashboard-Anrede zeigt ausschließlich den Vornamen, normalisiert die Schreibweise (z. B. „alex marnau" → „Alex") und greift niemals auf E-Mail-Adressen zurück.
