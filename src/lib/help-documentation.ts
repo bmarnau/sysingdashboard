@@ -2765,7 +2765,7 @@ Während der Aktualisierung dreht sich das Symbol, der Knopf ist gesperrt. Danac
 - Kein automatischer Intervall-Refresh; die Aktualisierung erfolgt bewusst nur auf Anforderung.
 - Mehrfaches Klicken löst keinen zweiten Lauf aus, sondern wartet auf den laufenden.
 - Offline können nur zwischengespeicherte Stände neu gelesen werden; der Katalogstand bleibt dann als „veraltet" gekennzeichnet.`,
-    relatedTopics: ["dialog-referenz", "offline-operation", "avkk-workspace"],
+    relatedTopics: ["dialog-referenz", "offline-mode", "avkk-arbeitsplatz"],
   },
   {
 
