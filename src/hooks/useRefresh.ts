@@ -18,7 +18,7 @@ export interface UseRefreshResult {
   running: boolean;
   lastRefreshedAt: string | null;
   failed: RefreshFailure[];
-  refresh: () => Promise<void>;
+  refresh: () => Promise<RefreshResult>;
 }
 
 export function useRefresh(): UseRefreshResult {
@@ -39,9 +39,10 @@ export function useRefresh(): UseRefreshResult {
 
   const refresh = useCallback(async () => {
     // Mehrfachklick ist unschädlich: der Koordinator arbeitet Single-Flight.
+    registerDefaultRefreshSteps();
     setRunning(true);
     try {
-      await runRefresh();
+      return await runRefresh();
     } finally {
       setRunning(isRefreshRunning());
     }
