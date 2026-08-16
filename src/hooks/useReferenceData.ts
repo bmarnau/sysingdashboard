@@ -12,6 +12,7 @@ import {
   refresh as refreshCatalogs,
   type ReferenceValue,
 } from "@/lib/reference-data";
+import { useRefreshSignal } from "@/hooks/useRefreshSignal";
 
 export interface ReferenceDataResult {
   values: Record<string, ReferenceValue[]>;
@@ -32,6 +33,8 @@ export function useReferenceData(catalogKeys: readonly string[]): ReferenceDataR
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
+  // Der Koordinator hat den Cache bereits neu befüllt — hier nur neu lesen.
+  const refreshGeneration = useRefreshSignal();
   const [meta, setMeta] = useState<{
     stale: boolean;
     fetchedAt: string | null;
@@ -68,7 +71,7 @@ export function useReferenceData(catalogKeys: readonly string[]): ReferenceDataR
     return () => {
       cancelled = true;
     };
-  }, [signature, tick]);
+  }, [signature, tick, refreshGeneration]);
 
   const reload = useCallback(() => {
     void refreshCatalogs()
