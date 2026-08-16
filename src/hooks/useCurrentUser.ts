@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile, UserRole, UserStatus } from "@/lib/user-management";
 import { resolveDisplayName } from "@/lib/user-display-name";
+import { useRefreshSignal } from "@/hooks/useRefreshSignal";
 
 /**
  * Session-basierter aktueller Benutzer.
@@ -17,6 +18,8 @@ import { resolveDisplayName } from "@/lib/user-display-name";
  */
 export function useCurrentUser(): UserProfile | null {
   const [user, setUser] = useState<UserProfile | null>(null);
+  // Zentraler Refresh liest Profil und Rolle erneut — Quelle bleibt die Session.
+  const refreshGeneration = useRefreshSignal();
 
   useEffect(() => {
     let cancelled = false;
@@ -81,7 +84,7 @@ export function useCurrentUser(): UserProfile | null {
       cancelled = true;
       sub.subscription.unsubscribe();
     };
-  }, []);
+  }, [refreshGeneration]);
 
   return user;
 }
@@ -97,6 +100,7 @@ export function useUsers(): { users: UserProfile[]; loading: boolean; refresh: (
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [tick, setTick] = useState(0);
+  const refreshGeneration = useRefreshSignal();
 
   useEffect(() => {
     let cancelled = false;
@@ -114,7 +118,7 @@ export function useUsers(): { users: UserProfile[]; loading: boolean; refresh: (
     return () => {
       cancelled = true;
     };
-  }, [tick]);
+  }, [tick, refreshGeneration]);
 
   return { users, loading, refresh: () => setTick((n) => n + 1) };
 }
