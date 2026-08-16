@@ -12,7 +12,7 @@ import {
   subscribeRefresh,
 } from "@/lib/refresh/refresh-coordinator";
 import { registerDefaultRefreshSteps } from "@/lib/refresh/steps";
-import type { RefreshFailure } from "@/lib/refresh/types";
+import type { RefreshFailure, RefreshResult } from "@/lib/refresh/types";
 
 export interface UseRefreshResult {
   running: boolean;
