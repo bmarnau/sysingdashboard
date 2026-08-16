@@ -29,7 +29,12 @@ describe("RefreshCoordinator", () => {
 
   it("arbeitet Stufen nacheinander ab", async () => {
     const order: string[] = [];
-    registerRefreshStep({ id: "late", label: "Spät", stage: 1, run: () => void order.push("late") });
+    registerRefreshStep({
+      id: "late",
+      label: "Spät",
+      stage: 1,
+      run: () => void order.push("late"),
+    });
     registerRefreshStep({
       id: "early",
       label: "Früh",
@@ -57,9 +62,7 @@ describe("RefreshCoordinator", () => {
 
     expect(ok).toHaveBeenCalled();
     expect(result.ok).toBe(false);
-    expect(result.failed).toEqual([
-      { id: "bad", label: "AVKK", message: "keine Verbindung" },
-    ]);
+    expect(result.failed).toEqual([{ id: "bad", label: "AVKK", message: "keine Verbindung" }]);
     expect(lastRefreshResult()?.ok).toBe(false);
   });
 

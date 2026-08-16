@@ -2768,7 +2768,6 @@ Während der Aktualisierung dreht sich das Symbol, der Knopf ist gesperrt. Danac
     relatedTopics: ["dialog-referenz", "offline-mode", "avkk-arbeitsplatz"],
   },
   {
-
     id: "dialog-referenz",
     title: "Dialog-Referenz (Zweck, Rollen, Ergebnis)",
     category: "Referenz",

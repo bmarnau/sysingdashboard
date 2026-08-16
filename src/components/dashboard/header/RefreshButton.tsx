@@ -18,7 +18,9 @@ function timeOf(iso: string | null): string | null {
 export function RefreshButton() {
   const { running, lastRefreshedAt, refresh } = useRefresh();
   const last = timeOf(lastRefreshedAt);
-  const title = last ? `Daten aktualisieren · Zuletzt aktualisiert: ${last}` : "Daten aktualisieren";
+  const title = last
+    ? `Daten aktualisieren · Zuletzt aktualisiert: ${last}`
+    : "Daten aktualisieren";
 
   return (
     <button

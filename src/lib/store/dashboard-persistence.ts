@@ -114,7 +114,6 @@ export function rehydrateDashboardStore(): void {
   rehydrateFromStorage();
 }
 
-
 /**
  * Muss einmalig beim App-Start aufgerufen werden (nach `UserManagementService.bootstrap()`).
  * Idempotent — mehrfacher Aufruf hat keinen Effekt.
