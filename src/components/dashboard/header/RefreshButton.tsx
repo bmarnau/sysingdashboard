@@ -29,21 +29,17 @@ export function RefreshButton() {
       disabled={running}
       suppressHydrationWarning
       onClick={() => {
-        void refresh().then(() => {
-          // Ergebnis erst nach Abschluss auswerten (Teilfehler bleiben sichtbar).
-          import("@/lib/refresh/refresh-coordinator")
-            .then(({ lastRefreshResult }) => {
-              const result = lastRefreshResult();
-              if (!result || result.ok) {
-                toast.success("Daten aktualisiert");
-                return;
-              }
-              toast.warning("Teilweise aktualisiert", {
-                description: `Nicht aktualisiert: ${result.failed.map((f) => f.label).join(", ")}`,
-              });
-            })
-            .catch(() => toast.error("Aktualisierung nicht möglich"));
-        });
+        void refresh()
+          .then((result) => {
+            if (result.ok) {
+              toast.success("Daten aktualisiert");
+              return;
+            }
+            toast.warning("Teilweise aktualisiert", {
+              description: `Nicht aktualisiert: ${result.failed.map((f) => f.label).join(", ")}`,
+            });
+          })
+          .catch(() => toast.error("Aktualisierung nicht möglich"));
       }}
       className="grid size-10 min-h-10 min-w-10 place-items-center rounded-lg border border-border bg-secondary/40 transition hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
     >
