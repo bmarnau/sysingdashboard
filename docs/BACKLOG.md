@@ -104,3 +104,147 @@ Das Arbeitspaket ist abgeschlossen, wenn mindestens:
 - KI-/Agentenfunktionen
 
 Diese Themen bleiben gemäß Roadmap nachgelagert.
+
+---
+
+## AVKK — Entwicklungsleitlinie und Ausbaupfad
+
+**Status:** verbindliche fachliche Leitlinie  
+**Meilensteine:** MVP → BSF → Post-BSF  
+**Kernmodell:** AVKK bleibt unverändert
+
+### Fachlicher Kern
+
+AVKK bleibt das verbindliche fachliche Kernmodell des Sysing Dashboards:
+
+- **A – Aufgabe**
+- **V – Verantwortung**
+- **K – Kompetenz**
+- **K – Konsequenz**
+
+AVKK wird nicht umbenannt und nicht um weitere Buchstaben erweitert. Zusätzliche Aspekte wie Ziele, Kapazität, Ressourcen oder Führungskreisläufe werden als Kontext, Rahmenbedingung oder auf AVKK aufbauende Funktion modelliert.
+
+### Entwicklungslogik
+
+Die fachliche Weiterentwicklung folgt diesem Dreisatz:
+
+**MVP: Transparenz schaffen → BSF: Führung ermöglichen → Post-BSF: Entscheidungen intelligent vorbereiten.**
+
+### MVP — AVKK erkennen
+
+Ziel des MVP ist, AVKK transparent und belastbar sichtbar zu machen.
+
+Dazu gehören insbesondere:
+
+- Aufgaben vollständig und eindeutig erfassen,
+- Verantwortung personenbezogen sichtbar machen,
+- Kompetenz bewerten,
+- Konsequenzen bewerten,
+- Frühindikatoren und Gefährdungen erkennen,
+- „Mein AVKK“ als persönliche Arbeitssicht,
+- Managementsicht auf relevante AVKK-Sachverhalte,
+- Rollen-/Rechtekonformität und Mehrbenutzerfähigkeit nachweisen.
+
+### BSF — AVKK führen
+
+Im BSF wird AVKK vom reinen Transparenzmodell zu einem Führungs- und Entscheidungsinstrument weiterentwickelt.
+
+Geplante Ausbaurichtung:
+
+- Kundenverantwortung in die AVKK-Sichten einbeziehen,
+- kundenbezogene Gesamtsicht auch ohne unmittelbare Einzelverantwortung,
+- Kapazität und Ressourcen als Erfüllbarkeitsfaktoren berücksichtigen,
+- AVKK-Check vor Delegation bzw. Verantwortungsübernahme,
+- Eskalations- und Handlungsoptionen vorbereiten,
+- Aggregation von Signalen über Tätigkeit → Arbeitspaket → Projekt → Kunde,
+- Managementcockpit stärker auf Führungsentscheidungen ausrichten,
+- Kompetenz- und Ressourcenengpässe gezielt sichtbar machen.
+
+### Kapazität bleibt Rahmenbedingung, kein fünfter AVKK-Bestandteil
+
+Eine Person kann Verantwortung nur sinnvoll übernehmen, wenn neben der fachlichen Kompetenz auch notwendige Befugnisse, Ressourcen und zeitliche Kapazität vorhanden sind.
+
+Kapazität wird deshalb ausdrücklich **nicht** zu einem zusätzlichen AVKK-Buchstaben. Sie ist eine Rahmenbedingung der Erfüllbarkeit innerhalb bzw. im Umfeld der Kompetenzbewertung.
+
+Beispielhafte Logik:
+
+- fachliche Kompetenz vorhanden,
+- Befugnis vorhanden,
+- Ressourcen vorhanden,
+- Zeitkapazität fehlt,
+- daraus folgt: Verantwortung ist derzeit gefährdet bzw. Führungsentscheidung erforderlich.
+
+### AVKK-Check vor Delegation
+
+Als BSF-Zielbild wird ein AVKK-Check vor Übernahme bzw. Delegation einer Aufgabe vorgesehen.
+
+Der Check soll mindestens prüfen:
+
+- **Aufgabe:** Ist sie eindeutig, verständlich und terminlich bestimmt?
+- **Verantwortung:** Ist klar, wer persönlich verantwortlich ist und wofür?
+- **Kompetenz:** Sind Können, Befugnisse, Ressourcen und zeitliche Erfüllbarkeit ausreichend?
+- **Konsequenz:** Sind relevante Folgen bei Erfüllung bzw. Nichterfüllung bekannt?
+
+Bei erkannten Engpässen soll Sysing nicht nur warnen, sondern mögliche Führungsentscheidungen vorbereiten, zum Beispiel:
+
+- Priorität ändern,
+- Termin anpassen,
+- Ressourcen ergänzen,
+- Verantwortung anders zuordnen,
+- eskalieren.
+
+Die Entscheidung selbst bleibt beim verantwortlichen Menschen.
+
+### Kundenverantwortung und AVKK
+
+Die bereits geplante Kundenverantwortung wird fachlich mit AVKK verbunden.
+
+Ist ein Systemingenieur für einen Kunden verantwortlich, benötigt er eine Gesamtsicht auf die relevanten Projekte, Arbeitspakete und Tätigkeiten dieses Kunden, auch wenn andere Personen die unmittelbare AVKK-Verantwortung tragen.
+
+Dabei bleibt verbindlich:
+
+- Kundenverantwortung ist nicht gleich Objektverantwortung,
+- Kundenverantwortung ist nicht gleich AVKK-Verantwortung,
+- Sichtbarkeit erzeugt nicht automatisch Schreibrechte,
+- der Grund der Sichtbarkeit soll nachvollziehbar bleiben.
+
+### Post-BSF — AVKK intelligent unterstützen
+
+Nach BSF kann AVKK schrittweise um intelligente, unterstützende Funktionen erweitert werden.
+
+Mögliche Entwicklungsrichtung:
+
+- historische AVKK-Muster erkennen,
+- wiederkehrende Kompetenz- oder Ressourcenengpässe erkennen,
+- organisationsweites Lernen aus AVKK-Historie,
+- KI-gestützte Risiko- und Konsequenzanalyse,
+- Entscheidungsvorlagen für Priorisierung, Ressourcen und Delegation,
+- Gesprächs- und Eskalationsvorbereitung,
+- Mustererkennung über Kunden, Projekte und Rollen hinweg.
+
+Verbindlicher KI-Grundsatz:
+
+> **Sysing erkennt, analysiert und bereitet Entscheidungen vor. Der verantwortliche Mensch entscheidet.**
+
+KI-/Agentenfunktionen bleiben damit zunächst READ/PROPOSE-orientiert und Human-in-the-loop.
+
+### Externe Inspiration / Abgrenzung
+
+Externe Darstellungen zu ZAVKK, Führungskreisläufen, SystemChecks oder ähnlichen Methoden können als fachliche Inspiration dienen, werden aber nicht automatisch Bestandteil des Sysing-Fachmodells.
+
+Insbesondere gilt:
+
+- keine Umbenennung von AVKK zu ZAVKK,
+- keine Übernahme fremder „Systemgesetze“ ohne separate fachliche und rechtliche Bewertung,
+- kein fremder SystemCheck als Pflichtbestandteil ohne eigene Produktentscheidung,
+- allgemeine Prinzipien wie Kapazitätsprüfung, Delegationsvorbereitung, Engpasssichtbarkeit und menschliche Führungsentscheidung dürfen als Inspiration in die Weiterentwicklung einfließen.
+
+### TDF / SYSING-001
+
+SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline nachvollziehbar darstellen:
+
+- AVKK als unverändertes Kernmodell,
+- MVP = Transparenz,
+- BSF = Führung,
+- Post-BSF = intelligente Entscheidungsvorbereitung,
+- klare Trennung zwischen umgesetzt, geplant und konzeptionell.
