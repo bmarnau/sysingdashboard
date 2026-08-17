@@ -172,4 +172,4 @@ produktive Umsetzung folgt in Sprint 07B.
 
 ## Lizenz
 
-Privat / Intern – NorthBit IT-Systemhaus GmbH
+Dieses Projekt steht unter der [MIT-Lizenz](./LICENSE).
