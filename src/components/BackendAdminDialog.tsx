@@ -71,12 +71,16 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
       await action();
       toast.success(okMessage);
       await load();
-    } catch {
-      toast.error("Aktion fehlgeschlagen.");
+    } catch (err) {
+      // Anbieterfehler (z. B. Cooldown/Rate-Limit) sichtbar machen, statt sie zu
+      // verschlucken. Es werden nur Klartextmeldungen, nie Tokens ausgegeben.
+      const message = err instanceof Error && err.message ? err.message : "Aktion fehlgeschlagen.";
+      toast.error(message);
     } finally {
       setBusyId(null);
     }
   }
+
 
   const connected = accounts !== null;
 
@@ -196,11 +200,9 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
                           void run(
                             a.id,
                             () => requestPasswordReset({ data: { userId: a.id } }),
-                            "Passwort-Reset-Mail wurde versendet.",
+                            "Passwort-Reset-Mail wurde beim Anbieter angefordert. Zustellung prüfen (auch Spam-Ordner).",
                           );
-                        }}
-                      >
-                        <KeyRound className="size-4" aria-hidden="true" />
+
                       </Button>
                       <Button
                         size="sm"
