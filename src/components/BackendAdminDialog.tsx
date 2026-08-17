@@ -202,8 +202,11 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
                             () => requestPasswordReset({ data: { userId: a.id } }),
                             "Passwort-Reset-Mail wurde beim Anbieter angefordert. Zustellung prüfen (auch Spam-Ordner).",
                           );
-
+                        }}
+                      >
+                        <KeyRound className="size-4" aria-hidden="true" />
                       </Button>
+
                       <Button
                         size="sm"
                         variant="ghost"
