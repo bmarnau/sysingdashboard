@@ -84,6 +84,24 @@ export async function countOtherActiveSysadmins(
   return (profiles ?? []).length;
 }
 
+/** Statuscode einer Anbieter-Antwort (nur Zahl, keine Inhalte/Secrets). */
+export function providerStatusOf(error: unknown): number | null {
+  const status = (error as { status?: unknown } | null)?.status;
+  return typeof status === "number" ? status : null;
+}
+
+/** Klartextmeldung für die Oberfläche — ohne Tokens, Links oder Adressen. */
+export function recoveryErrorMessage(error: unknown): string {
+  const status = providerStatusOf(error);
+  if (status === 429) {
+    return "Anbieter-Limit erreicht (Cooldown oder Stundenlimit für Auth-Mails). Bitte später erneut versuchen.";
+  }
+  if (status === 422 || status === 400) {
+    return "Anfrage vom Anbieter abgelehnt (Konto oder Redirect-Ziel nicht zulässig).";
+  }
+  return "Passwort-Reset-Mail konnte nicht gesendet werden (Anbieterfehler).";
+}
+
 /**
  * Ziel der Recovery-Mail: immer die eigene Anwendung (gleicher Ursprung wie
  * die Anfrage). Es wird kein vom Client gelieferter Wert übernommen.

@@ -108,12 +108,15 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
       email,
       redirectTo ? { redirectTo } : undefined,
     );
+    const status = helpers.providerStatusOf(error);
     await helpers.writeAudit(admin, context.userId, "auth.password_reset_requested", data.userId, {
       result: error ? "failed" : "sent",
+      provider_status: status,
     });
-    if (error) throw new Error("Passwort-Reset-Mail konnte nicht gesendet werden.");
+    if (error) throw new Error(helpers.recoveryErrorMessage(error));
     return { ok: true, email };
   });
+
 
 export const deleteAuthAccount = createServerFn({ method: "POST" })
   .inputValidator((input: { userId: string }) => {
