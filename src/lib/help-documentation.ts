@@ -462,7 +462,7 @@ Abrechnungsstatus) sind noch nicht auf Kataloge umgestellt.`,
       "Konto löschen",
       "Verbindung",
     ],
-    lastUpdated: "2026-08-14",
+    lastUpdated: "2026-08-17",
     content: `## Für Administratoren
 Servicemenü → *Backend & Auth-Konten…* (sichtbar mit der Berechtigung
 \`users.manage\`) zeigt den Zustand der Backend-Anbindung und verwaltet die
@@ -484,7 +484,14 @@ angezeigt noch im Dashboard gespeichert.
 - **Passwort zurücksetzen** — sendet eine Recovery-Mail an die registrierte
   Adresse. Administratoren können Passwörter weder einsehen noch direkt setzen;
   das neue Passwort vergibt ausschließlich die Kontoinhaberin oder der
-  Kontoinhaber über den Link in der Mail.
+  Kontoinhaber über den Link in der Mail. Die Meldung bestätigt nur die
+  **Anforderung** beim Anbieter; lehnt der Anbieter ab (z. B. Cooldown oder
+  Stundenlimit für Auth-Mails), erscheint eine Fehlermeldung mit dem Grund.
+
+> **Zustellgrenze:** Solange keine eigene Absenderdomäne eingerichtet ist,
+> laufen Auth-Mails über den Standardabsender der Plattform. Dort gelten enge
+> Mengen- und Empfängergrenzen, weshalb Recovery-Mails an beliebige Adressen
+> ausbleiben können, obwohl der Auftrag angenommen wurde (Befund F-16).
 - **Löschen** — entfernt ein fehlerhaft angelegtes Konto. Das eigene Konto und
   der letzte aktive Systemadministrator sind gesperrt.
 

@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.59.1 - 2026-08-17
+
+- **Passwort-Reset ehrlich gemeldet**: Die Oberfläche meldet nur noch die *Anforderung* der Recovery-Mail und zeigt Anbieterfehler (Cooldown, Stundenlimit, abgelehntes Ziel) im Klartext statt einer pauschalen Erfolgsmeldung.
+- **Prüfprotokoll**: Der Auth-Protokolleintrag hält zusätzlich den Anbieter-Statuscode fest (keine Tokens oder Adressen).
+- **Handbuch**: Kapitel „Backend- und Auth-Administration" um die Zustellgrenze ohne eigene Absenderdomäne ergänzt (Befund F-16).
+
 ## 1.59.0 - 2026-08-16
 
 - **Zentraler Daten-Refresh**: Neuer Aktualisieren-Knopf in der Dashboard-Kopfzeile lädt Kataloge, AVKK-Daten, Profil/Rolle und den lokalen Arbeitsbestand neu — ohne Seiten-Neuladen und ohne Abmeldung.
