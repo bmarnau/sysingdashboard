@@ -150,3 +150,54 @@ export const deleteAuthAccount = createServerFn({ method: "POST" })
     await helpers.writeAudit(admin, context.userId, "auth_account.delete", data.userId, {});
     return { ok: true };
   });
+
+/**
+ * Setzt administrativ ein neues Passwort für ein bestehendes Konto.
+ *
+ * Das Passwort wird ausschließlich als Argument an die Serverfunktion
+ * übertragen, nie zurückgegeben, protokolliert oder auditiert. Identität
+ * (Konto-ID, Profil, Rolle, AVKK-Zuordnungen) bleibt unverändert.
+ */
+export const setAccountPassword = createServerFn({ method: "POST" })
+  .inputValidator((input: { userId: string; password: string }) => {
+    if (!input || typeof input.userId !== "string" || input.userId.length < 10) {
+      throw new Error("Ungültige Kontokennung.");
+    }
+    const password = typeof input.password === "string" ? input.password : "";
+    if (password.length < 8) {
+      throw new Error("Das Passwort muss mindestens 8 Zeichen lang sein.");
+    }
+    if (password.length > 200) {
+      throw new Error("Das Passwort ist zu lang (maximal 200 Zeichen).");
+    }
+    return { userId: input.userId, password };
+  })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    const helpers = await import("@/lib/admin/auth-accounts.server");
+    await helpers.assertUserManage(context as unknown as AuthContext);
+    if (data.userId === context.userId) {
+      throw new Error("Das Passwort des eigenen Kontos kann hier nicht gesetzt werden.");
+    }
+    const admin = helpers.getAdminClient();
+
+    const targetIsSysadmin = await helpers.isSystemAdministrator(admin, data.userId);
+    if (targetIsSysadmin && !(await helpers.isSystemAdministrator(admin, context.userId))) {
+      throw new Error(
+        "Nur ein Systemadministrator darf das Passwort eines Systemadministrators setzen.",
+      );
+    }
+
+    if (await helpers.tooManyRecentPasswordSets(admin, context.userId)) {
+      throw new Error("Zu viele Passwortsetzungen in kurzer Zeit. Bitte später erneut versuchen.");
+    }
+
+    const { error } = await admin.auth.admin.updateUserById(data.userId, {
+      password: data.password,
+    });
+    await helpers.writeAudit(admin, context.userId, "auth_account.password_set", data.userId, {
+      result: error ? "failed" : "updated",
+    });
+    if (error) throw new Error("Passwort konnte nicht gesetzt werden.");
+    return { ok: true };
+  });
