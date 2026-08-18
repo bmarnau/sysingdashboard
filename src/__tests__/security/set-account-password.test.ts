@@ -61,7 +61,8 @@ describe("Administrative Passwortsetzung", () => {
   it("should_notReturnOrAuditThePassword", () => {
     expect(BLOCK).toContain('"auth_account.password_set"');
     expect(BLOCK).toContain('result: error ? "failed" : "updated"');
-    const audit = BLOCK.slice(BLOCK.indexOf('"auth_account.password_set"'));
+    const auditStart = BLOCK.indexOf('"auth_account.password_set"');
+    const audit = BLOCK.slice(auditStart, BLOCK.indexOf("});", auditStart));
     expect(audit).not.toMatch(/password/i);
     expect(BLOCK).toContain("Promise<{ ok: true }>");
     expect(BLOCK).not.toMatch(/return \{ ok: true, password/);
