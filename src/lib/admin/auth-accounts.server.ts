@@ -151,3 +151,39 @@ export async function listAccounts(admin: AdminClient): Promise<AuthAccountSumma
     }))
     .sort((a, b) => a.email.localeCompare(b.email, "de"));
 }
+
+/** Mindestlänge gemäß bestehender Auth-Policy (Registrierung, Recovery). */
+export const MIN_PASSWORD_LENGTH = 8;
+
+/** Hat das Konto die Rolle Systemadministrator? */
+export async function isSystemAdministrator(
+  admin: AdminClient,
+  userId: string,
+): Promise<boolean> {
+  const { data } = await admin
+    .from("user_roles")
+    .select("user_id")
+    .eq("user_id", userId)
+    .eq("role", "systemadministrator");
+  return ((data ?? []) as unknown[]).length > 0;
+}
+
+/**
+ * Sehr einfache Drosselung über bereits vorhandene Prüfprotokolldaten:
+ * maximal 5 administrative Passwortsetzungen je Akteur in 10 Minuten.
+ * Keine zusätzliche Persistenz-/Rate-Limit-Infrastruktur.
+ */
+export async function tooManyRecentPasswordSets(
+  admin: AdminClient,
+  actorId: string,
+): Promise<boolean> {
+  const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  const { data } = await admin
+    .from("audit_log")
+    .select("id")
+    .eq("action", "auth_account.password_set")
+    .eq("actor_id", actorId)
+    .gte("created_at", since)
+    .limit(6);
+  return ((data ?? []) as unknown[]).length >= 5;
+}
