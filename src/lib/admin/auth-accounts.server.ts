@@ -162,10 +162,7 @@ export async function listAccounts(
 export const MIN_PASSWORD_LENGTH = 8;
 
 /** Hat das Konto die Rolle Systemadministrator? */
-export async function isSystemAdministrator(
-  admin: AdminClient,
-  userId: string,
-): Promise<boolean> {
+export async function isSystemAdministrator(admin: AdminClient, userId: string): Promise<boolean> {
   const { data } = await admin
     .from("user_roles")
     .select("user_id")

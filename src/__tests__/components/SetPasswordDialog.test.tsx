@@ -25,7 +25,12 @@ describe("<SetPasswordDialog>", () => {
   it("should_enforceMinimumLengthFromAuthPolicy", async () => {
     const onSubmit = vi.fn();
     render(
-      <SetPasswordDialog open email="petra@example.com" onOpenChange={() => {}} onSubmit={onSubmit} />,
+      <SetPasswordDialog
+        open
+        email="petra@example.com"
+        onOpenChange={() => {}}
+        onSubmit={onSubmit}
+      />,
     );
     await userEvent.type(screen.getByLabelText(/Neues Passwort/), "kurz");
     await userEvent.type(screen.getByLabelText("Passwort bestätigen"), "kurz");
@@ -37,7 +42,12 @@ describe("<SetPasswordDialog>", () => {
   it("should_submitPasswordAndClearFields", async () => {
     const onSubmit = vi.fn(async () => {});
     render(
-      <SetPasswordDialog open email="petra@example.com" onOpenChange={() => {}} onSubmit={onSubmit} />,
+      <SetPasswordDialog
+        open
+        email="petra@example.com"
+        onOpenChange={() => {}}
+        onSubmit={onSubmit}
+      />,
     );
     await userEvent.type(screen.getByLabelText(/Neues Passwort/), "geheim12345");
     await userEvent.type(screen.getByLabelText("Passwort bestätigen"), "geheim12345");

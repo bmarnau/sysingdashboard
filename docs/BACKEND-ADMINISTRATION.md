@@ -29,13 +29,13 @@ Verbindungsadressen, Projektkennungen, Rohmetadaten der Konten.
 
 ## Aktionen
 
-| Aktion                         | Zweck                                                         | Schutz                                                                                         |
-| ------------------------------ | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Bestätigen                     | Konto ohne bestätigte E-Mail freischalten (Schulung, Abnahme) | Rollenprüfung, Protokolleintrag                                                                |
-| Bestätigungsmail erneut senden | Zustellprobleme beheben                                       | Rollenprüfung, Protokolleintrag                                                                |
-| Passwort zurücksetzen          | Recovery-Mail an die registrierte Adresse senden              | Rollenprüfung, serverseitige Adressauflösung, Protokolleintrag `auth.password_reset_requested` |
+| Aktion                          | Zweck                                                                | Schutz                                                                                                             |
+| ------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Bestätigen                      | Konto ohne bestätigte E-Mail freischalten (Schulung, Abnahme)        | Rollenprüfung, Protokolleintrag                                                                                    |
+| Bestätigungsmail erneut senden  | Zustellprobleme beheben                                              | Rollenprüfung, Protokolleintrag                                                                                    |
+| Passwort zurücksetzen           | Recovery-Mail an die registrierte Adresse senden                     | Rollenprüfung, serverseitige Adressauflösung, Protokolleintrag `auth.password_reset_requested`                     |
 | Administratives Passwort setzen | Zugang wiederherstellen, wenn Recovery-Mails nicht zugestellt werden | Rollenprüfung, Eigenkonto- und Systemadministratorschutz, Drosselung, Protokolleintrag `auth_account.password_set` |
-| Konto löschen                  | Fehlerhaft angelegte Konten entfernen                         | eigenes Konto und letzter aktiver Systemadministrator gesperrt                                 |
+| Konto löschen                   | Fehlerhaft angelegte Konten entfernen                                | eigenes Konto und letzter aktiver Systemadministrator gesperrt                                                     |
 
 ## Sicherheitsmodell
 
@@ -57,7 +57,6 @@ Konto aufgelöst und nicht vom Browser übernommen. Das Protokoll enthält nur
 Aktion, Zielkonto, ausführendes Konto, Zeitstempel und Ergebnis.
 
 Das Dashboard speichert grundsätzlich keine Plattform-Administrationszugänge.
-
 
 ## Administratives Passwortsetzen
 

@@ -92,7 +92,6 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
     }
   }
 
-
   const connected = accounts !== null;
 
   return (

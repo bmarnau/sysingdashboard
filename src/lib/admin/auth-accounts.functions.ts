@@ -117,7 +117,6 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
     return { ok: true, email };
   });
 
-
 export const deleteAuthAccount = createServerFn({ method: "POST" })
   .inputValidator((input: { userId: string }) => {
     if (!input || typeof input.userId !== "string" || input.userId.length < 10) {

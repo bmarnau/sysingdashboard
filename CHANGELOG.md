@@ -22,7 +22,7 @@ Format pro Eintrag:
 
 ## 1.59.1 - 2026-08-17
 
-- **Passwort-Reset ehrlich gemeldet**: Die Oberfläche meldet nur noch die *Anforderung* der Recovery-Mail und zeigt Anbieterfehler (Cooldown, Stundenlimit, abgelehntes Ziel) im Klartext statt einer pauschalen Erfolgsmeldung.
+- **Passwort-Reset ehrlich gemeldet**: Die Oberfläche meldet nur noch die _Anforderung_ der Recovery-Mail und zeigt Anbieterfehler (Cooldown, Stundenlimit, abgelehntes Ziel) im Klartext statt einer pauschalen Erfolgsmeldung.
 - **Prüfprotokoll**: Der Auth-Protokolleintrag hält zusätzlich den Anbieter-Statuscode fest (keine Tokens oder Adressen).
 - **Handbuch**: Kapitel „Backend- und Auth-Administration" um die Zustellgrenze ohne eigene Absenderdomäne ergänzt (Befund F-16).
 

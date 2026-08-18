@@ -88,6 +88,8 @@ describe("Administrative Passwortsetzung", () => {
   it("should_notTouchIdentityProfileRoleOrAvkkAssignments", () => {
     // Es wird ausschließlich das Passwort des bestehenden Kontos aktualisiert.
     expect(BLOCK).toContain("auth.admin.updateUserById(data.userId, {");
-    expect(BLOCK).not.toMatch(/deleteUser|createUser|from\("profiles"\)|from\("user_roles"\)\s*\n?\s*\.(insert|update|delete)|avkk_/);
+    expect(BLOCK).not.toMatch(
+      /deleteUser|createUser|from\("profiles"\)|from\("user_roles"\)\s*\n?\s*\.(insert|update|delete)|avkk_/,
+    );
   });
 });
