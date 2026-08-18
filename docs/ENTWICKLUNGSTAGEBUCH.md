@@ -691,3 +691,19 @@ Die Priorität folgt bewusst der Datenquelle: zuerst das echte Profilfeld
 Auth-Metadaten. Erst als allerletzter Fallback greift der Local-Part der
 E-Mail-Adresse — und selbst dann wird niemals die vollständige E-Mail-Adresse
 angezeigt. Header und Profilanzeige verwenden weiterhin den vollständigen Namen.
+
+
+## Administratives Passwort setzen (v1.59.2)
+
+Die Recovery-Mails der plattformverwalteten Auth-Komponente erreichen externe
+Adressen ohne eigene Absenderdomäne nicht zuverlässig (F-16). Für die laufende
+Abnahme war damit kein Weg zurück in ein bestehendes Konto vorhanden. Statt
+eine zweite Auth-Administration aufzubauen, wurde die vorhandene Infrastruktur
+erweitert: dieselbe Serverfunktionsschicht, dieselbe Berechtigungsprüfung,
+dasselbe Prüfprotokoll.
+
+Bewusst nicht umgesetzt wurde die Bezeichnung „temporäres Passwort" — der
+Auth-Dienst kennt keinen erzwungenen Wechsel bei der nächsten Anmeldung. Die
+Oberfläche formuliert deshalb als Empfehlung, nicht als technische Zusicherung
+(F-17, akzeptiert, BSF-Follow-up). Die Drosselung nutzt vorhandene Auditdaten
+statt neuer Rate-Limit-Persistenz.

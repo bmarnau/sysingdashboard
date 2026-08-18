@@ -18,6 +18,8 @@ export interface AuthAccountSummary {
   lastSignInAt: string | null;
   hasProfile: boolean;
   role: string | null;
+  /** Eigenes Konto des anfragenden Administrators. */
+  isSelf: boolean;
 }
 
 export type AuthContext = {
@@ -120,7 +122,10 @@ export function resolveRecoveryRedirect(): string | undefined {
 }
 
 /** Liest die Kontenliste inklusive Profil- und Rollenzuordnung. */
-export async function listAccounts(admin: AdminClient): Promise<AuthAccountSummary[]> {
+export async function listAccounts(
+  admin: AdminClient,
+  currentUserId: string,
+): Promise<AuthAccountSummary[]> {
   const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
   if (error) throw new Error("Auth-Konten konnten nicht gelesen werden.");
 
@@ -148,6 +153,40 @@ export async function listAccounts(admin: AdminClient): Promise<AuthAccountSumma
       lastSignInAt: u.last_sign_in_at ?? null,
       hasProfile: profileIds.has(u.id),
       role: roleById.get(u.id) ?? null,
+      isSelf: u.id === currentUserId,
     }))
     .sort((a, b) => a.email.localeCompare(b.email, "de"));
+}
+
+/** Mindestlänge gemäß bestehender Auth-Policy (Registrierung, Recovery). */
+export const MIN_PASSWORD_LENGTH = 8;
+
+/** Hat das Konto die Rolle Systemadministrator? */
+export async function isSystemAdministrator(admin: AdminClient, userId: string): Promise<boolean> {
+  const { data } = await admin
+    .from("user_roles")
+    .select("user_id")
+    .eq("user_id", userId)
+    .eq("role", "systemadministrator");
+  return ((data ?? []) as unknown[]).length > 0;
+}
+
+/**
+ * Sehr einfache Drosselung über bereits vorhandene Prüfprotokolldaten:
+ * maximal 5 administrative Passwortsetzungen je Akteur in 10 Minuten.
+ * Keine zusätzliche Persistenz-/Rate-Limit-Infrastruktur.
+ */
+export async function tooManyRecentPasswordSets(
+  admin: AdminClient,
+  actorId: string,
+): Promise<boolean> {
+  const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  const { data } = await admin
+    .from("audit_log")
+    .select("id")
+    .eq("action", "auth_account.password_set")
+    .eq("actor_id", actorId)
+    .gte("occurred_at", since)
+    .limit(6);
+  return ((data ?? []) as unknown[]).length >= 5;
 }

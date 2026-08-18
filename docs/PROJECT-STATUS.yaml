@@ -46,7 +46,7 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.59.0"
+  dashboard: "1.59.2"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -151,6 +151,11 @@ phases:
       - "AVKK als Führungsmodell dokumentiert (docs/AVKK.md, ADR-0024)"
 
 completedSprints:
+  - id: "09C-8"
+    title: "Administrative Passwortsetzung (F-16)"
+    version: "1.59.2"
+    status: "completed"
+    summary: "Servicebereich Backend & Auth-Konten erlaubt berechtigten Administratoren das Setzen eines neuen Passworts; Eigenkonto- und Systemadministratorschutz, Drosselung ueber Auditdaten, Pruefprotokoll ohne Passwort. F-17 (kein erzwungener Wechsel) bleibt akzeptiert."
   - id: "09C-7"
     title: "Zentraler Daten-Refresh"
     version: "1.59.0"
@@ -464,7 +469,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.58.10"
+  currentRelease: "1.59.2"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:

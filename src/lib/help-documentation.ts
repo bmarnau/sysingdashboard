@@ -462,7 +462,7 @@ Abrechnungsstatus) sind noch nicht auf Kataloge umgestellt.`,
       "Konto löschen",
       "Verbindung",
     ],
-    lastUpdated: "2026-08-17",
+    lastUpdated: "2026-08-18",
     content: `## Für Administratoren
 Servicemenü → *Backend & Auth-Konten…* (sichtbar mit der Berechtigung
 \`users.manage\`) zeigt den Zustand der Backend-Anbindung und verwaltet die
@@ -492,6 +492,16 @@ angezeigt noch im Dashboard gespeichert.
 > laufen Auth-Mails über den Standardabsender der Plattform. Dort gelten enge
 > Mengen- und Empfängergrenzen, weshalb Recovery-Mails an beliebige Adressen
 > ausbleiben können, obwohl der Auftrag angenommen wurde (Befund F-16).
+- **Administratives Passwort setzen** — vergibt für ein bestehendes Konto ein
+  neues Passwort, wenn die Zustellung der Recovery-Mail scheitert. Das Passwort
+  wird in einem eigenen Dialog zweifach eingegeben (mindestens 8 Zeichen wie bei
+  Registrierung und Recovery), nur an den Server übergeben und nirgends
+  gespeichert, angezeigt oder protokolliert. **Der Benutzer sollte das Passwort
+  nach der nächsten Anmeldung selbst ändern**; ein technisch erzwungener Wechsel
+  ist nicht möglich (Befund F-17). Das eigene Konto ist ausgenommen; das
+  Passwort eines Systemadministrators darf nur ein Systemadministrator setzen.
+  Zum Schutz vor Missbrauch sind höchstens fünf Setzungen je Administrator in
+  zehn Minuten möglich (Dialog \`SetPasswordDialog\`).
 - **Löschen** — entfernt ein fehlerhaft angelegtes Konto. Das eigene Konto und
   der letzte aktive Systemadministrator sind gesperrt.
 

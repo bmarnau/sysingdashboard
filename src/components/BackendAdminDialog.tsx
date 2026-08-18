@@ -7,6 +7,7 @@
  * URLs oder Schlüssel angezeigt oder gespeichert.
  */
 import { useCallback, useEffect, useState } from "react";
+import { SetPasswordDialog } from "@/components/admin/SetPasswordDialog";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +17,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, KeyRound, RefreshCw, ShieldCheck, Trash2, XCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  KeyRound,
+  Lock,
+  RefreshCw,
+  ShieldCheck,
+  Trash2,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { getAuthConfigurationStatus } from "@/integrations/supabase/config";
 import {
@@ -25,6 +34,7 @@ import {
   resendConfirmation,
   deleteAuthAccount,
   requestPasswordReset,
+  setAccountPassword,
   type AuthAccountSummary,
 } from "@/lib/admin/auth-accounts.functions";
 
@@ -44,6 +54,7 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [pwTarget, setPwTarget] = useState<AuthAccountSummary | null>(null);
 
   const authConfig = getAuthConfigurationStatus();
 
@@ -80,7 +91,6 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
       setBusyId(null);
     }
   }
-
 
   const connected = accounts !== null;
 
@@ -207,6 +217,19 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
                         <KeyRound className="size-4" aria-hidden="true" />
                       </Button>
 
+                      {!a.isSelf && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          aria-label={`Administratives Passwort für ${a.email} setzen`}
+                          title="Administratives Passwort setzen"
+                          disabled={busyId === a.id}
+                          onClick={() => setPwTarget(a)}
+                        >
+                          <Lock className="size-4" aria-hidden="true" />
+                        </Button>
+                      )}
+
                       <Button
                         size="sm"
                         variant="ghost"
@@ -246,6 +269,25 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
           <Button onClick={() => onOpenChange(false)}>Schließen</Button>
         </DialogFooter>
       </DialogContent>
+
+      <SetPasswordDialog
+        open={pwTarget !== null}
+        email={pwTarget?.email ?? ""}
+        busy={busyId !== null}
+        onOpenChange={(next) => {
+          if (!next) setPwTarget(null);
+        }}
+        onSubmit={async (password) => {
+          const target = pwTarget;
+          if (!target) return;
+          setPwTarget(null);
+          await run(
+            target.id,
+            () => setAccountPassword({ data: { userId: target.id, password } }),
+            "Das Passwort wurde aktualisiert. Der Benutzer sollte es nach der nächsten Anmeldung selbst ändern.",
+          );
+        }}
+      />
     </Dialog>
   );
 }
