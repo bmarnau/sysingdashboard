@@ -501,7 +501,7 @@ angezeigt noch im Dashboard gespeichert.
   ist nicht möglich (Befund F-17). Das eigene Konto ist ausgenommen; das
   Passwort eines Systemadministrators darf nur ein Systemadministrator setzen.
   Zum Schutz vor Missbrauch sind höchstens fünf Setzungen je Administrator in
-  zehn Minuten möglich.
+  zehn Minuten möglich (Dialog \`SetPasswordDialog\`).
 - **Löschen** — entfernt ein fehlerhaft angelegtes Konto. Das eigene Konto und
   der letzte aktive Systemadministrator sind gesperrt.
 
