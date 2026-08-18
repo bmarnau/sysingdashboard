@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.59.2 - 2026-08-18
+
+- **Administratives Passwort setzen**: Im Servicebereich „Backend & Auth-Konten" können berechtigte Administratoren (`users.manage`) für ein bestehendes Konto ein neues Passwort setzen, wenn die Zustellung von Recovery-Mails scheitert (Befund F-16).
+- **Schutzregeln**: Das eigene Konto ist ausgenommen; das Passwort eines Systemadministrators darf nur ein Systemadministrator setzen. Eine einfache Drosselung (max. 5 Setzungen je Administrator in 10 Minuten) nutzt die vorhandenen Prüfprotokolldaten.
+- **Datenschutz**: Das Passwort wird ausschließlich als Argument der Serverfunktion übertragen, nicht zurückgegeben, nicht protokolliert, nicht auditiert und nicht im Browser gespeichert. Das Prüfprotokoll hält nur Akteur, Zielkonto, Zeitpunkt und Ergebnis fest (`auth_account.password_set`).
+- **Handbuch**: Kapitel „Backend- und Auth-Administration" um die neue Aktion und den Hinweis zur eigenständigen Passwortänderung ergänzt.
+
 ## 1.59.1 - 2026-08-17
 
 - **Passwort-Reset ehrlich gemeldet**: Die Oberfläche meldet nur noch die *Anforderung* der Recovery-Mail und zeigt Anbieterfehler (Cooldown, Stundenlimit, abgelehntes Ziel) im Klartext statt einer pauschalen Erfolgsmeldung.
