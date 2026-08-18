@@ -18,6 +18,8 @@ export interface AuthAccountSummary {
   lastSignInAt: string | null;
   hasProfile: boolean;
   role: string | null;
+  /** Eigenes Konto des anfragenden Administrators. */
+  isSelf: boolean;
 }
 
 export type AuthContext = {
@@ -120,7 +122,10 @@ export function resolveRecoveryRedirect(): string | undefined {
 }
 
 /** Liest die Kontenliste inklusive Profil- und Rollenzuordnung. */
-export async function listAccounts(admin: AdminClient): Promise<AuthAccountSummary[]> {
+export async function listAccounts(
+  admin: AdminClient,
+  currentUserId: string,
+): Promise<AuthAccountSummary[]> {
   const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
   if (error) throw new Error("Auth-Konten konnten nicht gelesen werden.");
 
@@ -148,6 +153,7 @@ export async function listAccounts(admin: AdminClient): Promise<AuthAccountSumma
       lastSignInAt: u.last_sign_in_at ?? null,
       hasProfile: profileIds.has(u.id),
       role: roleById.get(u.id) ?? null,
+      isSelf: u.id === currentUserId,
     }))
     .sort((a, b) => a.email.localeCompare(b.email, "de"));
 }

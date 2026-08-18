@@ -31,7 +31,7 @@ export const listAuthAccounts = createServerFn({ method: "POST" })
   .handler(async ({ context }): Promise<AuthAccountSummary[]> => {
     const helpers = await import("@/lib/admin/auth-accounts.server");
     await helpers.assertUserManage(context as unknown as AuthContext);
-    return helpers.listAccounts(helpers.getAdminClient());
+    return helpers.listAccounts(helpers.getAdminClient(), context.userId);
   });
 
 export const confirmAuthAccount = createServerFn({ method: "POST" })
