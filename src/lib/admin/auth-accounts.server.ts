@@ -183,7 +183,7 @@ export async function tooManyRecentPasswordSets(
     .select("id")
     .eq("action", "auth_account.password_set")
     .eq("actor_id", actorId)
-    .gte("created_at", since)
+    .gte("occurred_at", since)
     .limit(6);
   return ((data ?? []) as unknown[]).length >= 5;
 }
