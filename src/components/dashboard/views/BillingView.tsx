@@ -16,6 +16,7 @@ export function BillingView({
   chartMax,
   viewMode,
   onEdit,
+  canEdit = true,
 }: {
   activities: Activity[];
   workPackages: WorkPackage[];
@@ -24,6 +25,8 @@ export function BillingView({
   chartMax: number;
   viewMode: DashboardViewMode;
   onEdit: (a: Activity) => void;
+  /** RBAC: Bearbeiten nur bei `activity.edit`. */
+  canEdit?: boolean;
 }) {
   const wpMap = new Map(workPackages.map((w) => [w.id, w]));
   const projMap = new Map(projects.map((p) => [p.id, p]));
@@ -91,9 +94,11 @@ export function BillingView({
                         {fmtEuro(a.duration * a.hourlyRate)}
                       </td>
                       <td className="px-4 py-3 no-print text-right">
-                        <IconBtn onClick={() => onEdit(a)} title="Bearbeiten">
-                          <Pencil className="size-3.5" />
-                        </IconBtn>
+                        {canEdit && (
+                          <IconBtn onClick={() => onEdit(a)} title="Bearbeiten">
+                            <Pencil className="size-3.5" />
+                          </IconBtn>
+                        )}
                       </td>
                     </tr>
                   );

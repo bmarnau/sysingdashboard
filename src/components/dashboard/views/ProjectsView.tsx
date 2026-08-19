@@ -18,6 +18,7 @@ export function ProjectsView({
   onNew,
   onEdit,
   onDelete,
+  canEdit = true,
 }: {
   projects: Project[];
   workPackages: WorkPackage[];
@@ -27,6 +28,8 @@ export function ProjectsView({
   onNew: () => void;
   onEdit: (p: Project) => void;
   onDelete: (id: string) => void;
+  /** RBAC: Schreibaktionen werden nur bei `project.edit` angeboten. */
+  canEdit?: boolean;
 }) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"alle" | ProjectStatus>("alle");
@@ -74,12 +77,14 @@ export function ProjectsView({
               </option>
             ))}
           </select>
-          <button
-            onClick={onNew}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium hover:bg-secondary"
-          >
-            <Plus className="size-4" /> Neu
-          </button>
+          {canEdit && (
+            <button
+              onClick={onNew}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium hover:bg-secondary"
+            >
+              <Plus className="size-4" /> Neu
+            </button>
+          )}
         </div>
       </div>
       <div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2 xl:grid-cols-3">
@@ -150,12 +155,16 @@ export function ProjectsView({
                   ))}
                 </div>
                 <div className="flex gap-1 no-print">
-                  <IconBtn onClick={() => onEdit(p)} title="Bearbeiten">
-                    <Pencil className="size-3.5" />
-                  </IconBtn>
-                  <IconBtn onClick={() => onDelete(p.id)} variant="danger" title="Löschen">
-                    <Trash2 className="size-3.5" />
-                  </IconBtn>
+                  {canEdit && (
+                    <>
+                      <IconBtn onClick={() => onEdit(p)} title="Bearbeiten">
+                        <Pencil className="size-3.5" />
+                      </IconBtn>
+                      <IconBtn onClick={() => onDelete(p.id)} variant="danger" title="Löschen">
+                        <Trash2 className="size-3.5" />
+                      </IconBtn>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

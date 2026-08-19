@@ -18,6 +18,7 @@ export function ActivitiesView({
   onNew,
   onEdit,
   onDelete,
+  canEdit = true,
 }: {
   activities: Activity[];
   periodActivities: Activity[];
@@ -27,6 +28,8 @@ export function ActivitiesView({
   onNew: () => void;
   onEdit: (a: Activity) => void;
   onDelete: (id: string) => void;
+  /** RBAC: Schreibaktionen werden nur bei `activity.edit` angeboten. */
+  canEdit?: boolean;
 }) {
   const [q, setQ] = useState("");
   const [billing, setBilling] = useState<"alle" | BillingStatus>("alle");
@@ -110,12 +113,14 @@ export function ActivitiesView({
               </option>
             ))}
           </select>
-          <button
-            onClick={onNew}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium hover:bg-secondary"
-          >
-            <Plus className="size-4" /> Neu
-          </button>
+          {canEdit && (
+            <button
+              onClick={onNew}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium hover:bg-secondary"
+            >
+              <Plus className="size-4" /> Neu
+            </button>
+          )}
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -194,12 +199,16 @@ export function ActivitiesView({
                   </td>
                   <td className="px-4 py-3 no-print">
                     <div className="flex justify-end gap-1">
-                      <IconBtn onClick={() => onEdit(a)} title="Bearbeiten">
-                        <Pencil className="size-3.5" />
-                      </IconBtn>
-                      <IconBtn onClick={() => onDelete(a.id)} variant="danger" title="Löschen">
-                        <Trash2 className="size-3.5" />
-                      </IconBtn>
+                      {canEdit && (
+                        <>
+                          <IconBtn onClick={() => onEdit(a)} title="Bearbeiten">
+                            <Pencil className="size-3.5" />
+                          </IconBtn>
+                          <IconBtn onClick={() => onDelete(a.id)} variant="danger" title="Löschen">
+                            <Trash2 className="size-3.5" />
+                          </IconBtn>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
