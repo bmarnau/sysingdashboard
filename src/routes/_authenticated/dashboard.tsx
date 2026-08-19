@@ -215,6 +215,7 @@ function Dashboard() {
   const canEditProject = usePermission("project.edit");
   const canEditWP = usePermission("workpackage.edit");
   const canEditActivity = usePermission("activity.edit");
+  const canCreateAnything = canEditProject || canEditWP || canEditActivity;
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
 
   const [now, setNow] = useState<Date | null>(null);
