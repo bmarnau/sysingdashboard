@@ -18,6 +18,7 @@ export function WorkPackagesView({
   onNew,
   onEdit,
   onDelete,
+  canEdit = true,
 }: {
   workPackages: WorkPackage[];
   projects: Project[];
@@ -27,6 +28,8 @@ export function WorkPackagesView({
   onNew: () => void;
   onEdit: (w: WorkPackage) => void;
   onDelete: (id: string) => void;
+  /** RBAC: Schreibaktionen werden nur bei `workpackage.edit` angeboten. */
+  canEdit?: boolean;
 }) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"alle" | WorkPackageStatus>("alle");
@@ -97,12 +100,14 @@ export function WorkPackagesView({
               </option>
             ))}
           </select>
-          <button
-            onClick={onNew}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium hover:bg-secondary"
-          >
-            <Plus className="size-4" /> Neu
-          </button>
+          {canEdit && (
+            <button
+              onClick={onNew}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium hover:bg-secondary"
+            >
+              <Plus className="size-4" /> Neu
+            </button>
+          )}
         </div>
       </div>
       <div className="divide-y divide-border">
@@ -179,12 +184,16 @@ export function WorkPackagesView({
                 <p className="text-xs font-medium">{fmtDate(w.due)}</p>
               </div>
               <div className="col-span-2 md:col-span-1 flex justify-end gap-1 no-print">
-                <IconBtn onClick={() => onEdit(w)} title="Bearbeiten">
-                  <Pencil className="size-3.5" />
-                </IconBtn>
-                <IconBtn onClick={() => onDelete(w.id)} variant="danger" title="Löschen">
-                  <Trash2 className="size-3.5" />
-                </IconBtn>
+                {canEdit && (
+                  <>
+                    <IconBtn onClick={() => onEdit(w)} title="Bearbeiten">
+                      <Pencil className="size-3.5" />
+                    </IconBtn>
+                    <IconBtn onClick={() => onDelete(w.id)} variant="danger" title="Löschen">
+                      <Trash2 className="size-3.5" />
+                    </IconBtn>
+                  </>
+                )}
               </div>
             </div>
           );

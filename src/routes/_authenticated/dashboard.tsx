@@ -127,6 +127,7 @@ import { BillingView } from "@/components/dashboard/views/BillingView";
 import { AvkkWorkspaceView } from "@/components/avkk/AvkkWorkspaceView";
 import { AvkkManagementView } from "@/components/avkk/management/AvkkManagementView";
 import { PermissionGate } from "@/components/PermissionGate";
+import { usePermission } from "@/hooks/usePermission";
 import { tasksFromLocalData } from "@/lib/avkk/workspace";
 import { ProjectDialog } from "@/components/dashboard/dialogs/ProjectDialog";
 import { WorkPackageDialog } from "@/components/dashboard/dialogs/WorkPackageDialog";
@@ -209,6 +210,12 @@ function Dashboard() {
   const [showDemoData, setShowDemoData] = useState(false);
   const [showBackendAdmin, setShowBackendAdmin] = useState(false);
   const currentUser = useCurrentUser();
+  // F-18: Local-First-CRUD an die bestehende RBAC-Matrix binden (UI-Gating +
+  // defensive Prüfung direkt vor der Mutation). Keine neue Rechtelogik.
+  const canEditProject = usePermission("project.edit");
+  const canEditWP = usePermission("workpackage.edit");
+  const canEditActivity = usePermission("activity.edit");
+  const canCreateAnything = canEditProject || canEditWP || canEditActivity;
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
 
   const [now, setNow] = useState<Date | null>(null);
@@ -408,17 +415,20 @@ function Dashboard() {
   /* ---------- CRUD ---------- */
 
   const saveProject = (p: Project) => {
+    if (!canEditProject) return;
     setProjects((arr) =>
       arr.some((x) => x.id === p.id) ? arr.map((x) => (x.id === p.id ? p : x)) : [p, ...arr],
     );
   };
   const deleteProject = (id: string) => {
+    if (!canEditProject) return;
     if (!confirm("Projekt wirklich löschen? Arbeitspakete bleiben projektlos erhalten.")) return;
     setProjects((arr) => arr.filter((x) => x.id !== id));
     setWorkPackages((arr) => arr.map((w) => (w.projectId === id ? { ...w, projectId: null } : w)));
   };
 
   const saveWP = (w: WorkPackage) => {
+    if (!canEditWP) return;
     const projectIds = new Set(projects.map((x) => x.id));
     const normalized = normalizeWorkPackage(w, projectIds);
     setWorkPackages((arr) =>
@@ -428,6 +438,7 @@ function Dashboard() {
     );
   };
   const deleteWP = (id: string) => {
+    if (!canEditWP) return;
     if (!confirm("Arbeitspaket löschen? Tätigkeiten bleiben ohne Arbeitspaket erhalten.")) return;
     setWorkPackages((arr) => arr.filter((x) => x.id !== id));
     setActivities((arr) =>
@@ -436,6 +447,7 @@ function Dashboard() {
   };
 
   const saveActivity = (a: Activity) => {
+    if (!canEditActivity) return;
     const errs = validateActivity(a);
     if (Object.keys(errs).length > 0) {
       // Defensive: UI verhindert den Aufruf bereits, aber kein inkonsistenter State darf entstehen.
@@ -451,6 +463,7 @@ function Dashboard() {
   };
 
   const deleteActivity = (id: string) => {
+    if (!canEditActivity) return;
     if (!confirm("Tätigkeit löschen?")) return;
     setActivities((arr) => arr.filter((x) => x.id !== id));
   };
@@ -667,54 +680,62 @@ function Dashboard() {
                 className="inline-block size-3 animate-pulse rounded-full bg-primary"
               />
             )}
-            <div className="relative no-print">
-              <button
-                onClick={() => setShowNewMenu((v) => !v)}
-                className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
-                style={{ background: "var(--gradient-primary)" }}
-              >
-                <Plus className="size-4" /> Neu
-                <ChevronDown className="size-4 opacity-80" />
-              </button>
-              {showNewMenu && (
-                <>
-                  <button
-                    aria-label="Menü schließen"
-                    className="fixed inset-0 z-30 cursor-default"
-                    onClick={() => setShowNewMenu(false)}
-                  />
-                  <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
+            {canCreateAnything && (
+              <div className="relative no-print">
+                <button
+                  onClick={() => setShowNewMenu((v) => !v)}
+                  className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
+                  style={{ background: "var(--gradient-primary)" }}
+                >
+                  <Plus className="size-4" /> Neu
+                  <ChevronDown className="size-4 opacity-80" />
+                </button>
+                {showNewMenu && (
+                  <>
                     <button
-                      onClick={() => {
-                        setShowNewMenu(false);
-                        setEditingActivity(emptyActivity());
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <Clock className="size-4 opacity-70" /> Neue Tätigkeit
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowNewMenu(false);
-                        setEditingWP(emptyWP());
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <CheckCircle2 className="size-4 opacity-70" /> Neues Arbeitspaket
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowNewMenu(false);
-                        setEditingProject(emptyProject());
-                      }}
-                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
-                    >
-                      <FolderKanban className="size-4 opacity-70" /> Neues Projekt
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+                      aria-label="Menü schließen"
+                      className="fixed inset-0 z-30 cursor-default"
+                      onClick={() => setShowNewMenu(false)}
+                    />
+                    <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
+                      {canEditActivity && (
+                        <button
+                          onClick={() => {
+                            setShowNewMenu(false);
+                            setEditingActivity(emptyActivity());
+                          }}
+                          className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                        >
+                          <Clock className="size-4 opacity-70" /> Neue Tätigkeit
+                        </button>
+                      )}
+                      {canEditWP && (
+                        <button
+                          onClick={() => {
+                            setShowNewMenu(false);
+                            setEditingWP(emptyWP());
+                          }}
+                          className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                        >
+                          <CheckCircle2 className="size-4 opacity-70" /> Neues Arbeitspaket
+                        </button>
+                      )}
+                      {canEditProject && (
+                        <button
+                          onClick={() => {
+                            setShowNewMenu(false);
+                            setEditingProject(emptyProject());
+                          }}
+                          className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                        >
+                          <FolderKanban className="size-4 opacity-70" /> Neues Projekt
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </section>
 
@@ -825,6 +846,7 @@ function Dashboard() {
             onNew={() => setEditingProject(emptyProject())}
             onEdit={setEditingProject}
             onDelete={deleteProject}
+            canEdit={canEditProject}
           />
         )}
         {tab === "arbeitspakete" && (
@@ -837,6 +859,7 @@ function Dashboard() {
             onNew={() => setEditingWP(emptyWP())}
             onEdit={setEditingWP}
             onDelete={deleteWP}
+            canEdit={canEditWP}
           />
         )}
         {tab === "taetigkeiten" && (
@@ -849,6 +872,7 @@ function Dashboard() {
             onNew={() => setEditingActivity(emptyActivity())}
             onEdit={setEditingActivity}
             onDelete={deleteActivity}
+            canEdit={canEditActivity}
           />
         )}
         {tab === "abrechnung" && (
