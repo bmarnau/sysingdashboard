@@ -34,14 +34,13 @@ const wp: WorkPackage = {
 
 const activity: Activity = {
   id: "A-1",
+  title: "Testtätigkeit",
   date: "2026-08-01",
-  description: "Testtätigkeit",
   duration: 2,
   workPackageId: "WP-1",
   billable: true,
   billingStatus: "offen",
   hourlyRate: 100,
-  category: "entwicklung",
 };
 
 function renderAll(canEdit: boolean) {
