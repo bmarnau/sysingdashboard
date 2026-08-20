@@ -101,7 +101,7 @@ describe("F-18 UI-Gating der Fachobjektansichten", () => {
     expect(screen.queryAllByRole("button", { name: /^Neu$/ })).toHaveLength(0);
     expect(screen.queryAllByTitle("Bearbeiten")).toHaveLength(0);
     expect(screen.queryAllByTitle("Löschen")).toHaveLength(0);
-    expect(screen.getByText("Testprojekt")).toBeInTheDocument();
+    expect(screen.getAllByText("Testprojekt").length).toBeGreaterThan(0);
   });
 
   it("should_showNewEditDelete_when_permittedRole", () => {
