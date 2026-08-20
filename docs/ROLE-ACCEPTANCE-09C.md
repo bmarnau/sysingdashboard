@@ -124,7 +124,6 @@ Abnahmebericht als **MANUAL VERIFICATION REQUIRED** geführt. Die
 Freigabeentscheidung wird davon nicht blockiert, weil alle sicherheitsrelevanten
 Zugriffsgrenzen bereits automatisiert und serverseitig nachgewiesen sind.
 
-
 ## Nachtrag F-18 (v1.59.3)
 
 Bei der manuellen Abnahme wurde festgestellt, dass die Rolle `viewer` über das
