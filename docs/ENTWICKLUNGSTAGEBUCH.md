@@ -707,3 +707,19 @@ Auth-Dienst kennt keinen erzwungenen Wechsel bei der nächsten Anmeldung. Die
 Oberfläche formuliert deshalb als Empfehlung, nicht als technische Zusicherung
 (F-17, akzeptiert, BSF-Follow-up). Die Drosselung nutzt vorhandene Auditdaten
 statt neuer Rate-Limit-Persistenz.
+
+
+## Read-only-Rollen im lokalen Bestand (v1.59.3)
+
+Die manuelle Rollenabnahme (F-11) legte offen, dass die Local-First-Fachobjekte
+nie an die dokumentierte Berechtigungsmatrix angeschlossen waren: ein Viewer
+konnte über das globale Menü „+ Neu" eine Tätigkeit buchen. Die Rechte selbst
+waren korrekt definiert, nur nicht ausgewertet.
+
+Die Korrektur ist bewusst klein gehalten und arbeitet auf zwei Ebenen. Sichtbar
+werden Schreibaktionen nur noch bei passender Berechtigung angeboten; unsichtbar
+prüft jeder Speicher- und Löschpfad die Berechtigung erneut, bevor der lokale
+Bestand verändert wird. Die Zuordnung Fachobjekt → Permission liegt einmalig in
+`src/lib/rbac/crud-guards.ts`; es entsteht keine zweite Rechtelogik neben
+`can()`. Die Rollenmatrix und die Engineer-Eigentumssemantik bleiben unberührt
+(F-18).
