@@ -128,6 +128,7 @@ import { AvkkWorkspaceView } from "@/components/avkk/AvkkWorkspaceView";
 import { AvkkManagementView } from "@/components/avkk/management/AvkkManagementView";
 import { PermissionGate } from "@/components/PermissionGate";
 import { usePermission } from "@/hooks/usePermission";
+import { CRUD_PERMISSION } from "@/lib/rbac/crud-guards";
 import { tasksFromLocalData } from "@/lib/avkk/workspace";
 import { ProjectDialog } from "@/components/dashboard/dialogs/ProjectDialog";
 import { WorkPackageDialog } from "@/components/dashboard/dialogs/WorkPackageDialog";
@@ -212,9 +213,9 @@ function Dashboard() {
   const currentUser = useCurrentUser();
   // F-18: Local-First-CRUD an die bestehende RBAC-Matrix binden (UI-Gating +
   // defensive Prüfung direkt vor der Mutation). Keine neue Rechtelogik.
-  const canEditProject = usePermission("project.edit");
-  const canEditWP = usePermission("workpackage.edit");
-  const canEditActivity = usePermission("activity.edit");
+  const canEditProject = usePermission(CRUD_PERMISSION.project);
+  const canEditWP = usePermission(CRUD_PERMISSION.workpackage);
+  const canEditActivity = usePermission(CRUD_PERMISSION.activity);
   const canCreateAnything = canEditProject || canEditWP || canEditActivity;
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
 

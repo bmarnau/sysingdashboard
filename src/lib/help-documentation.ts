@@ -688,8 +688,8 @@ Im Engineer-Profil sind die Zeit-Felder gesperrt, sobald ein aktives Arbeitszeit
     id: "projects",
     title: "Projekte und Arbeitspakete",
     category: "Erfassung",
-    keywords: ["Projekt", "Arbeitspaket", "Kunde", "Lead", "Team"],
-    lastUpdated: "2026-06-13",
+    keywords: ["Projekt", "Arbeitspaket", "Kunde", "Lead", "Team", "Berechtigung"],
+    lastUpdated: "2026-08-19",
     content: `## Projekte
 Projekte werden über "+ Neu" angelegt und enthalten Name, Kunde, Beschreibung, Start/Deadline, Lead, Team, Budget und Status.
 
@@ -697,7 +697,10 @@ Projekte werden über "+ Neu" angelegt und enthalten Name, Kunde, Beschreibung, 
 Arbeitspakete bündeln Tätigkeiten unter einem Projekt (optional auch ohne Projekt). Sie tragen Titel, Status, Priorität, Fälligkeit, Schätzung und Tags.
 
 ## Tätigkeiten zuordnen
-Tätigkeiten verweisen optional auf ein Arbeitspaket. Ohne Zuordnung erscheinen sie unter "Ohne Projekt".`,
+Tätigkeiten verweisen optional auf ein Arbeitspaket. Ohne Zuordnung erscheinen sie unter "Ohne Projekt".
+
+## Berechtigungen (ab v1.59.3)
+Anlegen, Bearbeiten und Löschen werden nur angeboten, wenn die Rolle die passende Berechtigung besitzt (Projekte: project.edit, Arbeitspakete: workpackage.edit, Tätigkeiten: activity.edit). Ohne eine dieser Berechtigungen erscheint auch der Knopf "+ Neu" nicht. Lesende Rollen wie viewer und customer können Inhalte weiterhin vollständig ansehen, aber nicht verändern.`,
   },
   {
     id: "time-entries",

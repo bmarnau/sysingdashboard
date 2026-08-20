@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.59.3 - 2026-08-19
+
+- **F-18 behoben – Read-only-Rollen schreiben nicht mehr**: Die lokalen Fachobjekt-Funktionen (Projekte, Arbeitspakete, Tätigkeiten) sind jetzt durchgängig an die bestehende Berechtigungsmatrix gebunden.
+- **UI-Gating**: Das globale Menü „+ Neu" erscheint nur noch, wenn mindestens eine der Berechtigungen `project.edit`, `workpackage.edit` oder `activity.edit` vorliegt; die Einträge selbst sind einzeln berechtigt. „Neu", „Bearbeiten" und „Löschen" in Projekt-, Arbeitspaket-, Tätigkeits- und Abrechnungsansicht werden nur passend zur Berechtigung angeboten.
+- **Defensive Prüfung**: Die Speicher- und Löschpfade prüfen die Berechtigung unmittelbar vor der Änderung; ohne Berechtigung erfolgt keine Änderung des lokalen Bestands.
+- Keine Änderung der Rollenmatrix, keine Erweiterung der Engineer-Semantik, keine neue Backend-Infrastruktur.
+
 ## 1.59.2 - 2026-08-18
 
 - **Administratives Passwort setzen**: Im Servicebereich „Backend & Auth-Konten" können berechtigte Administratoren (`users.manage`) für ein bestehendes Konto ein neues Passwort setzen, wenn die Zustellung von Recovery-Mails scheitert (Befund F-16).

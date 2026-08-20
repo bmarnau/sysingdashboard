@@ -22,7 +22,12 @@ describe("F-18 CRUD-Guards", () => {
     expect(canCreateAny(null)).toBe(false);
   });
 
-  for (const role of ["systemadministrator", "administrator", "teamlead", "projectmanager"] as const) {
+  for (const role of [
+    "systemadministrator",
+    "administrator",
+    "teamlead",
+    "projectmanager",
+  ] as const) {
     it(`should_allowAllCrud_when_${role}`, () => {
       const user = makeUser(role);
       for (const e of ENTITIES) expect(canMutate(user, e)).toBe(true);

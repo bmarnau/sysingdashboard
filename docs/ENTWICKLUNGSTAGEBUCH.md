@@ -33,7 +33,7 @@ Leitplanken von Anfang an:
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Rollenmodell, Backup/Restore, Import/Export, Reporting und integriertem Handbuch. |
 | Zeitraum            | Mai 2026 bis August 2026                                                                                                     |
-| Aktueller Stand     | Version 1.58.10, MVP-Härtung abgeschlossen, alle automatisierten Tests grün, manuelle Abnahme mit bekannten Findings offen    |
+| Aktueller Stand     | Version 1.58.10, MVP-Härtung abgeschlossen, alle automatisierten Tests grün, manuelle Abnahme mit bekannten Findings offen   |
 | Größte Hürden       | Inbetriebnahme der Anmeldung, vollständiger PDF-Druck, Mehrbenutzer-Demo unter RLS/RBAC                                      |
 | Nächster Nutzen     | Manuelle Freigabeentscheidung, Word-Fassung SYSING-001, optionale Azure-Produktivumgebung                                    |
 
@@ -55,50 +55,50 @@ Dokumentation.
 
 ## Sprintübersicht
 
-| Version   | Datum                | Schwerpunkt               | Ergebnis                                                                |
-| --------- | -------------------- | ------------------------- | ----------------------------------------------------------------------- |
-| 1.7.0     | 2026-06-14           | Arbeitszeitmodell         | Engineurprofil übernimmt Modellwerte                                    |
-| 1.8.0     | 2026-06-14           | Handbuch                  | Integriertes, suchbares Benutzerhandbuch                                |
-| 1.8.1     | 2026-06-15           | Sprache                   | Deutsch als Standard, i18n vorbereitet                                  |
-| 1.9.0     | 2026-06-15           | Backup                    | Tägliches ZIP-Backup mit Protokoll                                      |
-| 1.9.1     | 2026-06-16           | Doku-Sync                 | `CHANGELOG.md` als Single Source, `docs:check`                          |
-| 1.10–1.13 | 2026-06-16 bis 06-19 | Downloadbereich           | PDF/CSV/JSON-Exporte, Vorschau, Aufbewahrungsregeln                     |
-| 1.14.0    | 2026-06-20           | JSON-Import               | Vierstufiger Assistent mit Vorschau, Snapshot und Rollback              |
-| 1.15–1.16 | 2026-06-22           | Betrieb & Backend         | Betriebsmodi, Secret-Verwaltung, Server-Routen                          |
-| 1.17.x    | 2026-06-23 bis 06-27 | Systemstatus & Sicherheit | Statusprüfung, Sicherheitsscan in CI, Env-Validierung                   |
-| 1.18.x    | 2026-06-28 bis 07-01 | RBAC v1                   | Sieben Rollen, Rechtematrix, Handbuchkapitel, globale Suche             |
-| 1.19.0    | 2026-07-02           | Azure                     | Servicebereich für Azure-Daten                                          |
-| 1.20–1.23 | 2026-07-04 bis 07-07 | Qualität                  | Tests, Logger mit IndexedDB, zentraler Store, Barrierefreiheit          |
-| 1.24–1.26 | 2026-07-08 bis 07-11 | Architektur               | ADR-Prozess, Performance, Log Viewer                                    |
-| 1.27–1.29 | 2026-07-12 bis 07-13 | RBAC v2 & Testinstanz     | Akteurskontext, zentrale Testinstanz, Technical-Debt-Scanner            |
-| 1.30–1.34 | 2026-07-13           | Prüfsuiten                | API-Vertragstests, E2E, Correlation-ID, Security-Suite, API-Discovery   |
-| 1.35–1.37 | 2026-07-13 bis 07-15 | Betrieb                   | Restore-Tests, Ops-Baselines, zentraler technischer Prüfbericht         |
-| 1.38.0    | 2026-07-16           | CI                        | Qualitätstore in 14 Stufen                                              |
-| 1.39.0    | 2026-07-17           | Anmeldung                 | Auth über Lovable Cloud, geschützter Bereich, DB-gestützte Rollen       |
-| 1.40.x    | 2026-07-18 bis 07-19 | Benutzerverwaltung        | Rollen aus der Oberfläche, robuster App-Start                           |
-| 1.41.x    | 2026-07-20 bis 07-25 | Auth-Inbetriebnahme       | Konfigurationsprüfung, Laufzeit-Fallback, kritische Befunde geschlossen |
-| 1.42.x    | 2026-07-26 bis 07-28 | Compliance & Regression   | Compliance-Bericht, Open-Redirect-Schutz, Guard-Fehler behoben          |
-| 1.43.0    | 2026-07-29           | Prüfbericht 2.0           | Schema 2.0, SHA-256-Integrität, Release-Gate                            |
-| 1.44.x    | 2026-07-30 bis 08-01 | Refactoring               | Dashboard und Export modularisiert, Logger-Bereinigung, PDF-Druck       |
-| 1.45.0    | 2026-08-02           | Sitzung                   | Automatische Abmeldung bei Inaktivität                                  |
-| 1.46.0    | 2026-08-03           | Chronik                   | Entwicklungstagebuch im Servicebereich                                  |
-| 1.47.0    | 2026-08-03           | Wartbarkeit               | Backup-/Restore-Service modularisiert (ADR-0021)                        |
-| 1.50.0    | 2026-08-07           | Plattformabschluss        | Phase 1 technische Plattform finalisiert, 381 Tests grün                |
-| 1.51.0    | 2026-08-08           | AVKK-Architektur          | Führungsmodell, Reference-Data-Architektur                              |
-| 1.52.0    | 2026-08-09           | AVKK-Datenbank            | AVKK-Entitäten, RBAC/RLS, Local-First-Übergang                          |
-| 1.53.0    | 2026-08-11           | Persönlicher AVKK-Platz   | Mein AVKK-Workspace mit Filtern und Risikoindikatoren                   |
-| 1.54.0    | 2026-08-12           | AVKK-Backup/Export        | AVKK in Backup/Restore, JSON-Schema v1.1.0, Löschstrategie (ADR-0026)    |
-| 1.55.0    | 2026-08-13           | AVKK-Cockpit              | Rollenbasierte Führungssicht, Action-Need, Verteilung (ADR-0027)         |
-| 1.56.0    | 2026-08-13           | Reporting                 | Corporate Templates, TDF-Ausgabe, Demo-Daten-Seed (ADR-0028)              |
-| 1.57.0    | 2026-08-13           | Demo-Schulung             | Idempotenter AVKK-Demo-Datensatz, UI-Steuerung, soft retirement          |
-| 1.58.0    | 2026-08-13           | MVP-Freigabe                | Release-Candidate, MVP-Acceptance-Report (**GO WITH FINDINGS**)         |
-| 1.58.1–1.58.4 | 2026-08-14       | AVKK-UI-Härtung           | Detaildialog-Zustand, Tooltips, Textlängen, 490 Tests grün              |
-| 1.58.5    | 2026-08-14           | Sichtbares Abmelden       | Logout-Button im Header                                                  |
-| 1.58.6    | 2026-08-14           | Fachliche Begrüßung       | Anzeigename zentral aus Profil, Auth-Metadaten, kein E-Mail-Fallback     |
-| 1.58.7    | 2026-08-14           | Backend-Administration    | Auth-Konten im Service-Menü, keine Supabase-Dashboard-Links (F-15)        |
-| 1.58.8    | 2026-08-14           | Passwort-Reset            | Serverseitige Recovery-Mail je Konto mit Audit-Log                       |
-| 1.58.9    | 2026-08-14           | Demo-Personenzuordnung    | Nachrüstbare Verantwortungszuweisung, Local-First-Hinweis (F-11)         |
-| 1.58.10   | 2026-08-15           | Begrüßung mit Vorname     | Dashboard-Anrede nur noch mit Vorname, normalisiert                     |
+| Version       | Datum                | Schwerpunkt               | Ergebnis                                                                |
+| ------------- | -------------------- | ------------------------- | ----------------------------------------------------------------------- |
+| 1.7.0         | 2026-06-14           | Arbeitszeitmodell         | Engineurprofil übernimmt Modellwerte                                    |
+| 1.8.0         | 2026-06-14           | Handbuch                  | Integriertes, suchbares Benutzerhandbuch                                |
+| 1.8.1         | 2026-06-15           | Sprache                   | Deutsch als Standard, i18n vorbereitet                                  |
+| 1.9.0         | 2026-06-15           | Backup                    | Tägliches ZIP-Backup mit Protokoll                                      |
+| 1.9.1         | 2026-06-16           | Doku-Sync                 | `CHANGELOG.md` als Single Source, `docs:check`                          |
+| 1.10–1.13     | 2026-06-16 bis 06-19 | Downloadbereich           | PDF/CSV/JSON-Exporte, Vorschau, Aufbewahrungsregeln                     |
+| 1.14.0        | 2026-06-20           | JSON-Import               | Vierstufiger Assistent mit Vorschau, Snapshot und Rollback              |
+| 1.15–1.16     | 2026-06-22           | Betrieb & Backend         | Betriebsmodi, Secret-Verwaltung, Server-Routen                          |
+| 1.17.x        | 2026-06-23 bis 06-27 | Systemstatus & Sicherheit | Statusprüfung, Sicherheitsscan in CI, Env-Validierung                   |
+| 1.18.x        | 2026-06-28 bis 07-01 | RBAC v1                   | Sieben Rollen, Rechtematrix, Handbuchkapitel, globale Suche             |
+| 1.19.0        | 2026-07-02           | Azure                     | Servicebereich für Azure-Daten                                          |
+| 1.20–1.23     | 2026-07-04 bis 07-07 | Qualität                  | Tests, Logger mit IndexedDB, zentraler Store, Barrierefreiheit          |
+| 1.24–1.26     | 2026-07-08 bis 07-11 | Architektur               | ADR-Prozess, Performance, Log Viewer                                    |
+| 1.27–1.29     | 2026-07-12 bis 07-13 | RBAC v2 & Testinstanz     | Akteurskontext, zentrale Testinstanz, Technical-Debt-Scanner            |
+| 1.30–1.34     | 2026-07-13           | Prüfsuiten                | API-Vertragstests, E2E, Correlation-ID, Security-Suite, API-Discovery   |
+| 1.35–1.37     | 2026-07-13 bis 07-15 | Betrieb                   | Restore-Tests, Ops-Baselines, zentraler technischer Prüfbericht         |
+| 1.38.0        | 2026-07-16           | CI                        | Qualitätstore in 14 Stufen                                              |
+| 1.39.0        | 2026-07-17           | Anmeldung                 | Auth über Lovable Cloud, geschützter Bereich, DB-gestützte Rollen       |
+| 1.40.x        | 2026-07-18 bis 07-19 | Benutzerverwaltung        | Rollen aus der Oberfläche, robuster App-Start                           |
+| 1.41.x        | 2026-07-20 bis 07-25 | Auth-Inbetriebnahme       | Konfigurationsprüfung, Laufzeit-Fallback, kritische Befunde geschlossen |
+| 1.42.x        | 2026-07-26 bis 07-28 | Compliance & Regression   | Compliance-Bericht, Open-Redirect-Schutz, Guard-Fehler behoben          |
+| 1.43.0        | 2026-07-29           | Prüfbericht 2.0           | Schema 2.0, SHA-256-Integrität, Release-Gate                            |
+| 1.44.x        | 2026-07-30 bis 08-01 | Refactoring               | Dashboard und Export modularisiert, Logger-Bereinigung, PDF-Druck       |
+| 1.45.0        | 2026-08-02           | Sitzung                   | Automatische Abmeldung bei Inaktivität                                  |
+| 1.46.0        | 2026-08-03           | Chronik                   | Entwicklungstagebuch im Servicebereich                                  |
+| 1.47.0        | 2026-08-03           | Wartbarkeit               | Backup-/Restore-Service modularisiert (ADR-0021)                        |
+| 1.50.0        | 2026-08-07           | Plattformabschluss        | Phase 1 technische Plattform finalisiert, 381 Tests grün                |
+| 1.51.0        | 2026-08-08           | AVKK-Architektur          | Führungsmodell, Reference-Data-Architektur                              |
+| 1.52.0        | 2026-08-09           | AVKK-Datenbank            | AVKK-Entitäten, RBAC/RLS, Local-First-Übergang                          |
+| 1.53.0        | 2026-08-11           | Persönlicher AVKK-Platz   | Mein AVKK-Workspace mit Filtern und Risikoindikatoren                   |
+| 1.54.0        | 2026-08-12           | AVKK-Backup/Export        | AVKK in Backup/Restore, JSON-Schema v1.1.0, Löschstrategie (ADR-0026)   |
+| 1.55.0        | 2026-08-13           | AVKK-Cockpit              | Rollenbasierte Führungssicht, Action-Need, Verteilung (ADR-0027)        |
+| 1.56.0        | 2026-08-13           | Reporting                 | Corporate Templates, TDF-Ausgabe, Demo-Daten-Seed (ADR-0028)            |
+| 1.57.0        | 2026-08-13           | Demo-Schulung             | Idempotenter AVKK-Demo-Datensatz, UI-Steuerung, soft retirement         |
+| 1.58.0        | 2026-08-13           | MVP-Freigabe              | Release-Candidate, MVP-Acceptance-Report (**GO WITH FINDINGS**)         |
+| 1.58.1–1.58.4 | 2026-08-14           | AVKK-UI-Härtung           | Detaildialog-Zustand, Tooltips, Textlängen, 490 Tests grün              |
+| 1.58.5        | 2026-08-14           | Sichtbares Abmelden       | Logout-Button im Header                                                 |
+| 1.58.6        | 2026-08-14           | Fachliche Begrüßung       | Anzeigename zentral aus Profil, Auth-Metadaten, kein E-Mail-Fallback    |
+| 1.58.7        | 2026-08-14           | Backend-Administration    | Auth-Konten im Service-Menü, keine Supabase-Dashboard-Links (F-15)      |
+| 1.58.8        | 2026-08-14           | Passwort-Reset            | Serverseitige Recovery-Mail je Konto mit Audit-Log                      |
+| 1.58.9        | 2026-08-14           | Demo-Personenzuordnung    | Nachrüstbare Verantwortungszuweisung, Local-First-Hinweis (F-11)        |
+| 1.58.10       | 2026-08-15           | Begrüßung mit Vorname     | Dashboard-Anrede nur noch mit Vorname, normalisiert                     |
 
 ## Schwierigkeiten und ihre Lösung
 
@@ -531,6 +531,7 @@ neu — es entsteht keine zweite Ladelogik. Der Knopf in der Kopfzeile nutzt aus
 Fassade `useRefresh()`.
 
 **Entscheidungen.**
+
 - Kein `window.location.reload()`; der Refresh ist ein kontrollierter Anwendungsvorgang.
 - Nur Lesepfade: keine Schreiboperation, keine RBAC-Änderung, kein Provider-Import im Koordinator.
 - Single-Flight statt Sperrlogik in der UI: Mehrfachklick nutzt den laufenden Vorgang.
@@ -692,7 +693,6 @@ Auth-Metadaten. Erst als allerletzter Fallback greift der Local-Part der
 E-Mail-Adresse — und selbst dann wird niemals die vollständige E-Mail-Adresse
 angezeigt. Header und Profilanzeige verwenden weiterhin den vollständigen Namen.
 
-
 ## Administratives Passwort setzen (v1.59.2)
 
 Die Recovery-Mails der plattformverwalteten Auth-Komponente erreichen externe
@@ -707,3 +707,18 @@ Auth-Dienst kennt keinen erzwungenen Wechsel bei der nächsten Anmeldung. Die
 Oberfläche formuliert deshalb als Empfehlung, nicht als technische Zusicherung
 (F-17, akzeptiert, BSF-Follow-up). Die Drosselung nutzt vorhandene Auditdaten
 statt neuer Rate-Limit-Persistenz.
+
+## Read-only-Rollen im lokalen Bestand (v1.59.3)
+
+Die manuelle Rollenabnahme (F-11) legte offen, dass die Local-First-Fachobjekte
+nie an die dokumentierte Berechtigungsmatrix angeschlossen waren: ein Viewer
+konnte über das globale Menü „+ Neu" eine Tätigkeit buchen. Die Rechte selbst
+waren korrekt definiert, nur nicht ausgewertet.
+
+Die Korrektur ist bewusst klein gehalten und arbeitet auf zwei Ebenen. Sichtbar
+werden Schreibaktionen nur noch bei passender Berechtigung angeboten; unsichtbar
+prüft jeder Speicher- und Löschpfad die Berechtigung erneut, bevor der lokale
+Bestand verändert wird. Die Zuordnung Fachobjekt → Permission liegt einmalig in
+`src/lib/rbac/crud-guards.ts`; es entsteht keine zweite Rechtelogik neben
+`can()`. Die Rollenmatrix und die Engineer-Eigentumssemantik bleiben unberührt
+(F-18).

@@ -123,3 +123,24 @@ Solange Abschnitt 3 nicht vollständig ausgefüllt ist, bleibt F-11 im
 Abnahmebericht als **MANUAL VERIFICATION REQUIRED** geführt. Die
 Freigabeentscheidung wird davon nicht blockiert, weil alle sicherheitsrelevanten
 Zugriffsgrenzen bereits automatisiert und serverseitig nachgewiesen sind.
+
+## Nachtrag F-18 (v1.59.3)
+
+Bei der manuellen Abnahme wurde festgestellt, dass die Rolle `viewer` über das
+globale Menü „+ Neu" Tätigkeiten erfassen konnte. Ursache war die fehlende
+Verbindung des lokalen CRUD mit der bestehenden Berechtigungsmatrix. Seit
+v1.59.3 werden Anlegen, Bearbeiten und Löschen von Projekten, Arbeitspaketen
+und Tätigkeiten nur bei `project.edit`, `workpackage.edit` bzw. `activity.edit`
+angeboten und zusätzlich unmittelbar vor der Änderung geprüft.
+
+Manueller Wiederholungstest (viewer, z. B. „Alexa"):
+
+1. Als Viewer anmelden.
+2. Kopfzeile prüfen: der Knopf „+ Neu" darf nicht erscheinen.
+3. Registerkarten „Projekte", „Arbeitspakete", „Tätigkeiten", „Abrechnung"
+   öffnen: kein „Neu", kein Stift- und kein Papierkorb-Symbol.
+4. Inhalte bleiben lesbar; Kennzahlen und Listen werden weiterhin angezeigt.
+5. „Mein AVKK" bleibt wie bisher lesend.
+
+Erst nach erfolgreicher Wiederholung und Abzeichnung dieses Abschnitts kann
+F-11 geschlossen werden.

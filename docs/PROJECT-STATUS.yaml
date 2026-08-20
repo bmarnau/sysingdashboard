@@ -46,7 +46,7 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.59.2"
+  dashboard: "1.59.3"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -151,6 +151,11 @@ phases:
       - "AVKK als Führungsmodell dokumentiert (docs/AVKK.md, ADR-0024)"
 
 completedSprints:
+  - id: "09C-9"
+    title: "F-18 Read-only-Rollen im lokalen CRUD"
+    version: "1.59.3"
+    status: "completed"
+    summary: "Lokales CRUD fuer Projekte, Arbeitspakete und Taetigkeiten an die bestehende RBAC-Matrix gebunden: UI-Gating plus defensive Berechtigungspruefung vor jeder Mutation. Viewer und Customer sind wieder strikt lesend; berechtigte Rollen unveraendert."
   - id: "09C-8"
     title: "Administrative Passwortsetzung (F-16)"
     version: "1.59.2"
@@ -469,7 +474,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.59.2"
+  currentRelease: "1.59.3"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
