@@ -22,7 +22,9 @@ Die Regel gilt formatübergreifend für die Reporting-Schicht nach ADR-0028 und 
 9. Word, PDF und Druck dürfen im Detail unterschiedlich umbrechen, sollen aber denselben fachlichen Inhalt und eine vergleichbar kompakte Seitennutzung aufweisen.
 10. Leere Abschlussseiten oder Seiten, die überwiegend nur einen kleinen Einzelabschnitt enthalten, sind zu vermeiden, sofern eine fachlich saubere Zusammenlegung möglich ist.
 
-## 3. Beobachtung aus manueller Abnahme SYSING-101
+## 3. Beobachtungen aus manueller Abnahme
+
+### 3.1 SYSING-101 — persönlicher Bericht Alex
 
 Beim persönlichen AVKK-Bericht für Alex am 2026-08-21 wurde festgestellt:
 
@@ -31,6 +33,18 @@ Beim persönlichen AVKK-Bericht für Alex am 2026-08-21 wurde festgestellt:
 - In breiten Tabellen treten zusätzlich ungünstige Umbrüche einzelner Überschriften und Begriffe auf.
 
 Die fachlichen Werte des Berichts waren plausibel; das Finding betrifft Layout/Paginierung, nicht Daten oder Berechtigungen.
+
+### 3.2 SYSING-102 — Projektbericht Petra / Netzwerkmodernisierung
+
+Beim Projektbericht `SYSING-102` für `Netzwerkmodernisierung Verwaltungsstandort` am 2026-08-21 wurde dasselbe Renderer-Verhalten erneut bestätigt:
+
+- PDF: 8 Seiten.
+- Die Seiten 2, 3, 4, 6, 7 und 8 enthalten jeweils nur einen vergleichsweise kleinen fachlichen Abschnitt und danach große ungenutzte Leerflächen.
+- Die Titelseite kann als bewusste Berichtsfront bestehen bleiben; die Folgeseiten sollen dagegen einen kontinuierlichen Inhaltsfluss verwenden.
+- Die breite Tabelle `Vorgänge nach Priorität` auf Seite 5 zeigt zusätzlich sehr enge Spalten und ungünstige Wort-/Überschriftenumbrüche.
+- Der fachliche Projekt-Scope ist korrekt: zwei Arbeitspakete (`Netzplanung und Segmentierung`, `Switch-Rollout Gebäude B`) sowie der Projekt-AVKK-Kontext werden im Bericht konsistent abgebildet.
+
+Damit ist das bereits bei SYSING-101 festgestellte PDF-Layoutproblem **formatübergreifend innerhalb der AVKK-Berichtsfamilie reproduziert**. Es handelt sich weiterhin nicht um einen Daten-, RBAC- oder RLS-Fehler.
 
 ## 4. Technisch bestätigte Ursachen im aktuellen Renderer
 
@@ -72,6 +86,8 @@ Eine Reporting-Layout-Änderung ist erst abgenommen, wenn:
 8. PDF, Druck und Word enthalten dieselben fachlichen Werte.
 9. Bestehende Report-Renderer-Tests bleiben grün und werden um Paginierungs-/Layoutregressionen ergänzt, soweit automatisiert sinnvoll.
 10. Mindestens SYSING-101 wird nach Änderung einmal manuell als PDF und Druck geprüft; SYSING-102/SYSING-103 werden stichprobenartig kontrolliert, weil sie denselben Renderer verwenden.
+11. SYSING-102 nutzt nach der Änderung die Folgeseiten so, dass die kleinen Abschnitte `Projektstand`, `Handlungsbedarf`, `Arbeitspakete`, `Kompetenz- und Voraussetzungslücken`, `Konsequenzen` und `Verantwortungszuordnung` nicht jeweils künstlich eine eigene Seite erhalten.
+12. Die Tabelle `Vorgänge nach Priorität` bleibt trotz kompakterer Paginierung gut lesbar; breite Spalten erhalten geeignete Breiten und Umbrüche.
 
 ## 6. Einordnung zum MVP-Abschluss
 
