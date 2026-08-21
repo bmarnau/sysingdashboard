@@ -4,6 +4,14 @@ import { afterEach, expect, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import * as axeMatchers from "vitest-axe/matchers";
 
+// Globaler Supabase-Client-Stub: garantiert, dass kein Test eine echte
+// Instanz kontaktiert. Einzelne Tests können weiterhin per eigenem
+// `vi.mock(...)` überschreiben.
+vi.mock("@/integrations/supabase/client", async () => {
+  const { createSupabaseClientStub } = await import("./mocks/supabase-client");
+  return { supabase: createSupabaseClientStub() };
+});
+
 // vitest-axe: `toHaveNoViolations` als Vitest-Matcher registrieren.
 expect.extend(axeMatchers);
 
