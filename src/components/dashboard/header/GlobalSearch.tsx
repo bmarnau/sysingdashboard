@@ -19,6 +19,13 @@ interface GlobalSearchProps {
   setEditingProject: (p: Project | null) => void;
   setEditingWP: (w: WorkPackage | null) => void;
   setEditingActivity: (a: Activity | null) => void;
+  /**
+   * F-18: Edit-Dialoge aus der globalen Suche sind an dieselben Permissions
+   * gebunden wie die Fachansichten. Ohne Recht bleibt nur die Navigation.
+   */
+  canEditProject: boolean;
+  canEditWP: boolean;
+  canEditActivity: boolean;
   openManualTopic: (topicId?: string, q?: string) => void;
 }
 
@@ -30,6 +37,9 @@ export function GlobalSearch({
   setEditingProject,
   setEditingWP,
   setEditingActivity,
+  canEditProject,
+  canEditWP,
+  canEditActivity,
   openManualTopic,
 }: GlobalSearchProps) {
   const currentUser = useCurrentUser();
@@ -131,7 +141,7 @@ export function GlobalSearch({
                           setSearchQ("");
                           setSearchOpen(false);
                           setTab("projekte");
-                          setEditingProject(p);
+                          if (canEditProject) setEditingProject(p);
                         }}
                         className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
                       >
@@ -158,7 +168,7 @@ export function GlobalSearch({
                             setSearchQ("");
                             setSearchOpen(false);
                             setTab("arbeitspakete");
-                            setEditingWP(w);
+                            if (canEditWP) setEditingWP(w);
                           }}
                           className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
                         >
@@ -186,7 +196,7 @@ export function GlobalSearch({
                           setSearchQ("");
                           setSearchOpen(false);
                           setTab("taetigkeiten");
-                          setEditingActivity(a);
+                          if (canEditActivity) setEditingActivity(a);
                         }}
                         className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
                       >

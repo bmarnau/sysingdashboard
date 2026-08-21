@@ -16,7 +16,7 @@ export function BillingView({
   chartMax,
   viewMode,
   onEdit,
-  canEdit = true,
+  canEdit,
 }: {
   activities: Activity[];
   workPackages: WorkPackage[];
@@ -26,7 +26,7 @@ export function BillingView({
   viewMode: DashboardViewMode;
   onEdit: (a: Activity) => void;
   /** RBAC: Bearbeiten nur bei `activity.edit`. */
-  canEdit?: boolean;
+  canEdit: boolean;
 }) {
   const wpMap = new Map(workPackages.map((w) => [w.id, w]));
   const projMap = new Map(projects.map((p) => [p.id, p]));
