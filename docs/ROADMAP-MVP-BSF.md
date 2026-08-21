@@ -314,23 +314,23 @@ Für jede freigegebene SYSING-001-Baseline sind mindestens zu prüfen:
 
 Die folgende Reihenfolge ist eine rollierende Planung und kann aufgrund von Findings angepasst werden. Umfangsschätzungen sind keine Zusagen.
 
-| Arbeitspaket | Inhalt | grobe Prompt-Schätzung |
-| --- | --- | ---: |
-| MVP F-11 Abschluss | Petra-Zugang, Petra/Georg, Rollen-/Negativtests | 1–2 |
-| MVP Release/Baseline | finale Gates, Prüfbericht, SYSING-001 als TDF-Baseline, TDF-VREG, ChatGPT-Releasefassung, Version/Tag/Baseline | 1–2 |
-| SYSING-001 Board-Abruf | Neueste freigegebene PDF/Word-Version im Service-Bereich abrufbar machen | 1 |
-| BSF Planungs-/Architekturbaseline | Backlog, ADR-Review, Tech Debt priorisieren | 1 |
-| Kundenmodell | Kunde, IDs, Beziehungen zu Projekt/AP/Tätigkeit | 1–2 |
-| Kundenverantwortung | kundenbezogene Sichtberechtigung, RBAC/RLS, Cockpit | 2 |
-| Zentrale Datenhaltung / Provider | Local-First-Grenze und Providerstrategie | 2–3 |
-| Canonical Import Model | Partial Entities, Pflicht/Optionalfelder, Provenienz, Matching, Idempotenz, Schemaweiterentwicklung | 1–2 |
-| SharePoint-Zielbild / Import Contract | reale Beispieldaten, Mapping, stabile Schlüssel, READ/SYNC, API/MCP, Informationsflüsse | 2–3 |
-| Betreiberhoheit / Portabilität | F-15, Docker, Backup/Restore, Exit-Pfad | 1–2 |
-| Managementcockpit 2 | Kunden-, Projekt- und Portfoliosichten | 1–2 |
-| Reporting 2 | Excel und kunden-/projektbezogene Berichte | 1–2 |
-| KI-/Agenten-Labor | Mock-Daten, providerneutral, Human-in-the-loop | 2–3 |
-| SYSING-001 Fortschreibung | TDF-Dokument auf BSF-Zielbild/-Stand bringen, TDF-VREG fortführen | 1–2 |
-| BSF-Abnahme | technische/fachliche Baseline, SYSING-001 BSF-Baseline und Freigabe | 1 |
+| Arbeitspaket                          | Inhalt                                                                                                         | grobe Prompt-Schätzung |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------: |
+| MVP F-11 Abschluss                    | Petra-Zugang, Petra/Georg, Rollen-/Negativtests                                                                |                    1–2 |
+| MVP Release/Baseline                  | finale Gates, Prüfbericht, SYSING-001 als TDF-Baseline, TDF-VREG, ChatGPT-Releasefassung, Version/Tag/Baseline |                    1–2 |
+| SYSING-001 Board-Abruf                | Neueste freigegebene PDF/Word-Version im Service-Bereich abrufbar machen                                       |                      1 |
+| BSF Planungs-/Architekturbaseline     | Backlog, ADR-Review, Tech Debt priorisieren                                                                    |                      1 |
+| Kundenmodell                          | Kunde, IDs, Beziehungen zu Projekt/AP/Tätigkeit                                                                |                    1–2 |
+| Kundenverantwortung                   | kundenbezogene Sichtberechtigung, RBAC/RLS, Cockpit                                                            |                      2 |
+| Zentrale Datenhaltung / Provider      | Local-First-Grenze und Providerstrategie                                                                       |                    2–3 |
+| Canonical Import Model                | Partial Entities, Pflicht/Optionalfelder, Provenienz, Matching, Idempotenz, Schemaweiterentwicklung            |                    1–2 |
+| SharePoint-Zielbild / Import Contract | reale Beispieldaten, Mapping, stabile Schlüssel, READ/SYNC, API/MCP, Informationsflüsse                        |                    2–3 |
+| Betreiberhoheit / Portabilität        | F-15, Docker, Backup/Restore, Exit-Pfad                                                                        |                    1–2 |
+| Managementcockpit 2                   | Kunden-, Projekt- und Portfoliosichten                                                                         |                    1–2 |
+| Reporting 2                           | Excel und kunden-/projektbezogene Berichte                                                                     |                    1–2 |
+| KI-/Agenten-Labor                     | Mock-Daten, providerneutral, Human-in-the-loop                                                                 |                    2–3 |
+| SYSING-001 Fortschreibung             | TDF-Dokument auf BSF-Zielbild/-Stand bringen, TDF-VREG fortführen                                              |                    1–2 |
+| BSF-Abnahme                           | technische/fachliche Baseline, SYSING-001 BSF-Baseline und Freigabe                                            |                      1 |
 
 Der neue Punkt `Canonical Import Model` ist eine Konkretisierung der bereits geplanten Provider-/SharePoint-Arbeit. Er soll möglichst mit diesen Sprints gebündelt werden und nicht unnötig als isolierter zusätzlicher Großsprint wachsen.
 
