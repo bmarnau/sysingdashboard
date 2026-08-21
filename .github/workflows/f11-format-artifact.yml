@@ -5,15 +5,17 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   format:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -27,10 +29,23 @@ jobs:
             src/components/dashboard/views/ProjectDetailView.tsx \
             src/components/dashboard/views/ProjectsView.tsx \
             src/components/report/ReportDialog.tsx
-      - name: Save Prettier patch
-        run: git diff --binary > prettier.patch
-      - uses: actions/upload-artifact@v4
-        with:
-          name: f11-prettier-patch
-          path: prettier.patch
-          if-no-files-found: error
+      - name: Verify formatting-only diff
+        run: |
+          git diff --check
+          git status --short
+      - name: Commit formatting when needed
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            docs/PROJECTMANAGER-PROJEKTCOCKPIT-IMPLEMENTATION.md \
+            docs/ROLE-ACCEPTANCE-09C.md \
+            src/components/dashboard/views/ProjectDetailView.tsx \
+            src/components/dashboard/views/ProjectsView.tsx \
+            src/components/report/ReportDialog.tsx
+          git commit -m "style: F-11 Dateien mit Prettier formatieren"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
