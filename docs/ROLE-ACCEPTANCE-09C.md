@@ -94,11 +94,11 @@ abgeleitet, nicht gepflegt.
 | #   | Anmeldung / Rolle                      | Erwartetes Ergebnis                                                                                        | Bewertung |
 | --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------- |
 | 1   | Alex (`engineer`), Mein AVKK           | 2 eigene Sachverhalte (Fälle A, C), davon 1 mit Handlungsbedarf, 1 fehlende Voraussetzung, 2 Arbeitspakete | erfüllt   |
-| 2   | Sam (`engineer`), Mein AVKK            | 3 eigene Sachverhalte (Fälle B, D, E), alle mit Handlungsbedarf, 1 kritische Konsequenz, 3 Arbeitspakete   |           |
-| 3   | Alex vs. Sam                           | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                     |           |
-| 4   | Sam schreibt auf einen Fall von Alex   | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt       |           |
+| 2   | Sam (`engineer`), Mein AVKK            | 3 eigene Sachverhalte (Fälle B, D, E), alle mit Handlungsbedarf, 1 kritische Konsequenz, 3 Arbeitspakete   | erfüllt   |
+| 3   | Alex vs. Sam                           | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                     | erfüllt   |
+| 4   | Sam schreibt auf einen Fall von Alex   | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt       | erfüllt   |
 | 5   | Petra (`projectmanager`), Projektsicht | Projekte Netzwerk und Microsoft 365; Arbeitspakete von Alex **und** Sam sichtbar und verdichtet            |           |
-| 6   | Georg (`teamlead`), Management-Cockpit | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)          |           |
+| 6   | Georg (`teamlead`), Management-Cockpit | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)          | erfüllt   |
 | 7   | Georg, Managementbericht               | Kennzahlen stimmen mit dem Cockpit überein; Personen erscheinen nur als Zuordnung, nicht als Bewertung     |           |
 | 8   | Beliebige Rolle, Role Preview          | Darstellung wechselt, Datenumfang und Schreibrechte bleiben unverändert                                    |           |
 
@@ -122,7 +122,7 @@ gerätübergreifende oder personenbezogene Trennung existiert dort nicht.
 | Geschäftsführer        | Betreiber | 2026-08-21 | teilweise | Georg: Management-Cockpit mit 3 Demo-Projekten und 8 AVKK-Sachverhalten geprüft; keine personenbezogene Rangliste. Managementbericht und Detailbearbeitung noch nicht vollständig dokumentiert. |
 | Administrator          |           |            | offen    | Vollständiger manueller Rollenlauf noch nicht dokumentiert. |
 | Negativtest ohne Recht | Betreiber | 2026-08-21 | erfüllt  | Alexa/viewer: F-18-Retest vollständig bestanden; keine CRUD-Aktionen, Abrechnung ohne Edit-Stift, globale Suche ohne Editor, AVKK read-only. Serverseitige Schreibgrenze automatisiert nachgewiesen. |
-| Mehrbenutzerszenario   | Betreiber | 2026-08-21 | teilweise | Alex, Petra und Georg als Teilnachweise vorhanden; Sam, Fremdschreibversuch, Alex-vs-Sam-Abgleich und Role Preview noch nicht vollständig manuell dokumentiert. |
+| Mehrbenutzerszenario   | Betreiber | 2026-08-21 | teilweise | Alex und Sam vollständig für persönliche Scope-Trennung geprüft; Fremdschreibversuch Sam→Alex abgewiesen und nach Reload ohne Datenänderung bestätigt. Georg-Cockpit ebenfalls bestätigt. Offen: Petra-Projektsicht im Mehrbenutzerkontext, Georg-Managementbericht und Role Preview. |
 
 Solange Abschnitt 3 nicht vollständig mit `erfüllt` abgeschlossen ist, bleibt
 F-11 im Abnahmebericht als **MANUAL VERIFICATION REQUIRED** geführt. Die
@@ -146,6 +146,16 @@ Nachweise werden getrennt von noch offenen Prüfschritten festgehalten:
   plausibel. Die Druckvorschau war kompakt und gut lesbar. Das separate
   Reporting-Layout-Finding zur PDF-Paginierung wird in
   `docs/REPORTING-LAYOUT-ACCEPTANCE.md` geführt.
+- **Sam / engineer:** erfolgreicher Login; „Mein AVKK" zeigt genau drei eigene
+  Arbeitspakete (Fälle B/D/E), alle drei mit Handlungsbedarf und genau einen Fall
+  mit kritischer Konsequenz. Die persönliche Sicht überschneidet sich nicht mit
+  Alex' Fällen A/C. Sam konnte Alex' Fall „Netzplanung und Segmentierung" lesen,
+  der Schreibversuch auf die Kompetenznotiz wurde jedoch mit „Speichern nicht
+  möglich" abgewiesen; nach Hard Reload blieb Alex' ursprüngliche Notiz
+  unverändert. Damit ist die Schreibgrenze im manuellen Mehrbenutzertest
+  bestätigt. Nicht blockierende UI-Beobachtung: In Sams Ansicht wurde der
+  Verantwortliche des fremden Falls als technische UUID statt Anzeigename
+  dargestellt; dies wird als LOW-UI-Finding für die spätere Bereinigung geführt.
 - **Petra / projectmanager:** erfolgreicher Login; persönliche AVKK-Sicht plausibel;
   zwei eigene Verantwortungen sichtbar; Benutzerverwaltung nicht aufrufbar.
 - **Georg / teamlead:** erfolgreicher Login; Management-Cockpit mit allen drei
@@ -161,8 +171,8 @@ Noch nicht vollständig als manueller Rollenlauf dokumentiert sind insbesondere:
 - Administrator/App-Entwickler einschließlich Role Preview, Systemstatus,
   Backup und Prüfberichten,
 - die vollständigen Projektmanager-/Geschäftsführer-Berichte,
-- Sam im Mehrbenutzerszenario einschließlich Alex-vs-Sam-Abgleich,
-  Fremdschreibversuch und abschließendem Role-Preview-Nachweis.
+- im Mehrbenutzerszenario Petra-Projektsicht, Georg-Managementbericht und
+  abschließender Role-Preview-Nachweis.
 
 ## Nachtrag F-18 (v1.59.3)
 
