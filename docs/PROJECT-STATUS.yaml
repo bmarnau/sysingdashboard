@@ -46,7 +46,7 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.59.3"
+  dashboard: "1.59.4"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -474,7 +474,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.59.3"
+  currentRelease: "1.59.4"
   stage: "production"
   status: "passed-with-findings"
   releaseEvidence:
