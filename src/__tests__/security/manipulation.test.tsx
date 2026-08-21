@@ -12,6 +12,9 @@ import { describe, expect, it, afterEach, vi } from "vitest";
 import "../env/test-instance";
 import { render, screen, cleanup } from "@testing-library/react";
 
+// Belt-and-suspenders guard for the full coverage suite: if a cached module
+// path still resolves the real hook implementation, it must not instantiate a
+// live Supabase client in CI.
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
     auth: {
