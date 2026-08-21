@@ -1,10 +1,10 @@
 {
-  "startupMs": 852,
+  "startupMs": 872,
   "timing": {
-    "domContentLoaded": 522.7999999999302,
-    "loadEvent": 797,
-    "firstPaint": 552,
+    "domContentLoaded": 561,
+    "loadEvent": 829.7000000000698,
+    "firstPaint": 588,
     "firstContentfulPaint": null
   },
-  "at": "2026-08-21T14:10:42.985Z"
+  "at": "2026-08-21T14:15:25.024Z"
 }
