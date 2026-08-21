@@ -107,7 +107,7 @@ Keine neuen KPI-Definitionen außerhalb der bestehenden Fachlogik erfinden. Wo b
 Nur:
 
 ```ts
-workPackages.filter((wp) => wp.projectId === project.id)
+workPackages.filter((wp) => wp.projectId === project.id);
 ```
 
 Anzeigen:
@@ -126,7 +126,7 @@ Projektzuordnung ausschließlich über bestehende Beziehung:
 
 ```ts
 const projectWpIds = new Set(projectWorkPackages.map((wp) => wp.id));
-activities.filter((a) => a.workPackageId && projectWpIds.has(a.workPackageId))
+activities.filter((a) => a.workPackageId && projectWpIds.has(a.workPackageId));
 ```
 
 Anzeigen:
