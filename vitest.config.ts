@@ -16,7 +16,9 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     css: false,
-    setupFiles: ["src/__tests__/setup.ts"],
+    // Reihenfolge ist relevant: `setup-env.ts` setzt die Test-Platzhalter für
+    // Supabase, bevor irgendein Modul den Client anfasst.
+    setupFiles: ["src/__tests__/env/setup-env.ts", "src/__tests__/setup.ts"],
     include: ["src/__tests__/**/*.{test,spec}.{ts,tsx}"],
     exclude: ["node_modules", "dist", ".output", ".vinxi"],
     coverage: {
