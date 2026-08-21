@@ -36,7 +36,9 @@ export function selectProjectActivities(
   workPackages: readonly WorkPackage[],
 ): Activity[] {
   const wpIds = new Set(workPackages.map((wp) => wp.id));
-  return activities.filter((activity) => Boolean(activity.workPackageId && wpIds.has(activity.workPackageId)));
+  return activities.filter((activity) =>
+    Boolean(activity.workPackageId && wpIds.has(activity.workPackageId)),
+  );
 }
 
 export interface ProjectOperationsSummary {
@@ -267,7 +269,9 @@ export function ProjectDetailView({
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`rounded px-1.5 py-0.5 text-xs ${priorityStyles[wp.priority]}`}>
+                    <span
+                      className={`rounded px-1.5 py-0.5 text-xs ${priorityStyles[wp.priority]}`}
+                    >
                       {wp.priority}
                     </span>
                   </td>
@@ -317,11 +321,15 @@ export function ProjectDetailView({
                     <td className="px-4 py-3">
                       <p className="font-medium">{activity.title}</p>
                       {activity.description && (
-                        <p className="mt-0.5 text-xs text-muted-foreground">{activity.description}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {activity.description}
+                        </p>
                       )}
                     </td>
                     <td className="px-4 py-3">{wp?.title ?? "—"}</td>
-                    <td className="px-4 py-3 text-right font-mono">{activity.duration.toFixed(2)} h</td>
+                    <td className="px-4 py-3 text-right font-mono">
+                      {activity.duration.toFixed(2)} h
+                    </td>
                     <td className="px-4 py-3 text-right font-mono">
                       {activity.billable ? fmtEuro(amount) : "—"}
                     </td>
@@ -366,7 +374,10 @@ export function ProjectDetailView({
             </div>
             <div className="mt-4 divide-y divide-border rounded-lg border border-border">
               {relevantAvkkRows.map((row) => (
-                <div key={row.key} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+                <div
+                  key={row.key}
+                  className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+                >
                   <div>
                     <p className="font-medium">{row.task.title}</p>
                     <p className="mt-0.5 text-xs text-muted-foreground">
@@ -374,7 +385,11 @@ export function ProjectDetailView({
                     </p>
                   </div>
                   <div className="text-right text-xs">
-                    <p className={row.atRisk ? "font-medium text-destructive" : "text-muted-foreground"}>
+                    <p
+                      className={
+                        row.atRisk ? "font-medium text-destructive" : "text-muted-foreground"
+                      }
+                    >
                       {row.atRisk ? "Gefährdet" : row.complete ? "Vollständig" : "Unvollständig"}
                     </p>
                     <p className="mt-0.5 text-muted-foreground">

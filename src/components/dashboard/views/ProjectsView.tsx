@@ -38,7 +38,7 @@ export function ProjectsView({
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
   const selectedProject = selectedProjectId
-    ? projects.find((project) => project.id === selectedProjectId) ?? null
+    ? (projects.find((project) => project.id === selectedProjectId) ?? null)
     : null;
 
   if (selectedProject) {

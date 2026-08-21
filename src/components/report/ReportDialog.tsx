@@ -91,9 +91,10 @@ export function ReportDialog({
 
   useEffect(() => {
     if (!open || reports.length === 0) return;
-    const requested = initialReportId && reports.some((r) => r.reportId === initialReportId)
-      ? initialReportId
-      : reports[0].reportId;
+    const requested =
+      initialReportId && reports.some((r) => r.reportId === initialReportId)
+        ? initialReportId
+        : reports[0].reportId;
     setReportId(requested);
     if (initialProjectId) setProjectId(initialProjectId);
   }, [open, reports, initialReportId, initialProjectId]);
