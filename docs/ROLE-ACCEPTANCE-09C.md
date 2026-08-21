@@ -33,13 +33,18 @@ Screenshot und Uhrzeit festhalten.
 
 ### 2.1 Systemingenieur
 
-| #   | Schritt                 | Erwartetes Ergebnis                                                            | Bewertung |
-| --- | ----------------------- | ------------------------------------------------------------------------------ | --------- |
-| 1   | Anmelden                | Dashboard öffnet mit eigenen Projekten, Arbeitspaketen, Tätigkeiten und Zeiten |           |
-| 2   | Tab „Mein AVKK"         | sichtbar; eigene Fälle, Kennzahlen und Frühindikatoren plausibel               |           |
-| 3   | AVKK-Eintrag bearbeiten | Verantwortung, Kompetenz und Konsequenz speichern; nach Neuladen vorhanden     |           |
-| 4   | Management-Cockpit      | **nicht** sichtbar                                                             |           |
-| 5   | Bericht „persönlich"    | erzeugbar als PDF, Druck, Word, JSON, CSV                                      |           |
+Hinweis zur Rollenlogik: `engineer` besitzt `avkk.edit`, aber nicht
+`avkk.responsibility.assign`. Daher darf ein Systemingenieur eigene AVKK-
+Bewertungen im zulässigen Scope bearbeiten, jedoch keine Verantwortung neu
+zuweisen oder bestehende Verantwortungszuordnungen verändern.
+
+| #   | Schritt                 | Erwartetes Ergebnis                                                                                                      | Bewertung |
+| --- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------- |
+| 1   | Anmelden                | Dashboard öffnet mit eigenen Projekten, Arbeitspaketen, Tätigkeiten und Zeiten                                           | erfüllt   |
+| 2   | Tab „Mein AVKK"         | sichtbar; eigene Fälle, Kennzahlen und Frühindikatoren plausibel                                                         | erfüllt   |
+| 3   | AVKK-Eintrag bearbeiten | Eigene AVKK-Bewertung im zulässigen Scope speichern; nach Neuladen vorhanden; Verantwortung bleibt ohne Assign-Recht read-only | erfüllt   |
+| 4   | Management-Cockpit      | **nicht** sichtbar                                                                                                       | erfüllt   |
+| 5   | Bericht „persönlich"    | erzeugbar als PDF, Druck, Word, JSON, CSV                                                                                | erfüllt   |
 
 ### 2.2 Projektmanager
 
@@ -88,7 +93,7 @@ abgeleitet, nicht gepflegt.
 
 | #   | Anmeldung / Rolle                      | Erwartetes Ergebnis                                                                                        | Bewertung |
 | --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------- |
-| 1   | Alex (`engineer`), Mein AVKK           | 2 eigene Sachverhalte (Fälle A, C), davon 1 mit Handlungsbedarf, 1 fehlende Voraussetzung, 2 Arbeitspakete |           |
+| 1   | Alex (`engineer`), Mein AVKK           | 2 eigene Sachverhalte (Fälle A, C), davon 1 mit Handlungsbedarf, 1 fehlende Voraussetzung, 2 Arbeitspakete | erfüllt   |
 | 2   | Sam (`engineer`), Mein AVKK            | 3 eigene Sachverhalte (Fälle B, D, E), alle mit Handlungsbedarf, 1 kritische Konsequenz, 3 Arbeitspakete   |           |
 | 3   | Alex vs. Sam                           | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                     |           |
 | 4   | Sam schreibt auf einen Fall von Alex   | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt       |           |
@@ -112,12 +117,12 @@ gerätübergreifende oder personenbezogene Trennung existiert dort nicht.
 
 | Rolle                  | Prüfer/in | Datum      | Ergebnis | Bemerkung |
 | ---------------------- | --------- | ---------- | -------- | --------- |
-| Systemingenieur        |           |            | offen    | Noch kein vollständiger manueller Rollenlauf dokumentiert. |
+| Systemingenieur        | Betreiber | 2026-08-21 | erfüllt  | Alex: Login, persönlicher AVKK-Scope A/C, Kompetenz-Schreib- und Persistenztest, Managementsicht gesperrt sowie persönlicher Bericht in PDF, Druck, Word, JSON und CSV geprüft. Verantwortung korrekt read-only, da `avkk.responsibility.assign` fehlt. |
 | Projektmanager         | Betreiber | 2026-08-21 | teilweise | Petra: Projektsicht und persönliche AVKK-Zuordnung plausibel; Benutzerverwaltung nicht sichtbar. Projektbericht und vollständiger Drill-down noch nicht als kompletter Rollenlauf dokumentiert. |
 | Geschäftsführer        | Betreiber | 2026-08-21 | teilweise | Georg: Management-Cockpit mit 3 Demo-Projekten und 8 AVKK-Sachverhalten geprüft; keine personenbezogene Rangliste. Managementbericht und Detailbearbeitung noch nicht vollständig dokumentiert. |
 | Administrator          |           |            | offen    | Vollständiger manueller Rollenlauf noch nicht dokumentiert. |
 | Negativtest ohne Recht | Betreiber | 2026-08-21 | erfüllt  | Alexa/viewer: F-18-Retest vollständig bestanden; keine CRUD-Aktionen, Abrechnung ohne Edit-Stift, globale Suche ohne Editor, AVKK read-only. Serverseitige Schreibgrenze automatisiert nachgewiesen. |
-| Mehrbenutzerszenario   | Betreiber | 2026-08-21 | teilweise | Petra und Georg als Teilnachweise vorhanden; Alex/Sam, Fremdschreibversuch und Role Preview noch nicht vollständig manuell dokumentiert. |
+| Mehrbenutzerszenario   | Betreiber | 2026-08-21 | teilweise | Alex, Petra und Georg als Teilnachweise vorhanden; Sam, Fremdschreibversuch, Alex-vs-Sam-Abgleich und Role Preview noch nicht vollständig manuell dokumentiert. |
 
 Solange Abschnitt 3 nicht vollständig mit `erfüllt` abgeschlossen ist, bleibt
 F-11 im Abnahmebericht als **MANUAL VERIFICATION REQUIRED** geführt. Die
@@ -131,6 +136,16 @@ fachlicher Abzeichnung.
 Die bis zu diesem Stand im Betreiber-Test tatsächlich belegten manuellen
 Nachweise werden getrennt von noch offenen Prüfschritten festgehalten:
 
+- **Alex / engineer:** erfolgreicher Login; „Mein AVKK" zeigt genau zwei eigene
+  Arbeitspakete (Fälle A/C), davon einen gefährdeten Fall und eine fehlende
+  Voraussetzung. Eine Kompetenznotiz wurde gespeichert und nach Hard Reload
+  persistent wieder angezeigt. Verantwortung ist erwartungsgemäß read-only,
+  weil `engineer` kein `avkk.responsibility.assign` besitzt. Management-Cockpit
+  ist nicht verfügbar. Der persönliche Bericht SYSING-101 wurde als PDF,
+  Druck, Word, JSON und CSV erfolgreich erzeugt; Werte waren formatübergreifend
+  plausibel. Die Druckvorschau war kompakt und gut lesbar. Das separate
+  Reporting-Layout-Finding zur PDF-Paginierung wird in
+  `docs/REPORTING-LAYOUT-ACCEPTANCE.md` geführt.
 - **Petra / projectmanager:** erfolgreicher Login; persönliche AVKK-Sicht plausibel;
   zwei eigene Verantwortungen sichtbar; Benutzerverwaltung nicht aufrufbar.
 - **Georg / teamlead:** erfolgreicher Login; Management-Cockpit mit allen drei
@@ -143,12 +158,11 @@ Nachweise werden getrennt von noch offenen Prüfschritten festgehalten:
 
 Noch nicht vollständig als manueller Rollenlauf dokumentiert sind insbesondere:
 
-- Systemingenieur einschließlich persönlichem Bericht und AVKK-Schreibtest,
 - Administrator/App-Entwickler einschließlich Role Preview, Systemstatus,
   Backup und Prüfberichten,
 - die vollständigen Projektmanager-/Geschäftsführer-Berichte,
-- Alex/Sam im Mehrbenutzerszenario einschließlich Fremdschreibversuch und
-  abschließendem Role-Preview-Nachweis.
+- Sam im Mehrbenutzerszenario einschließlich Alex-vs-Sam-Abgleich,
+  Fremdschreibversuch und abschließendem Role-Preview-Nachweis.
 
 ## Nachtrag F-18 (v1.59.3)
 
