@@ -1,6 +1,6 @@
 # Rollen- und Oberflächenabnahme (F-11)
 
-Sprint 09C · Release Candidate v1.58.3 · Stand 2026-08-13
+Sprint 09C · Release Candidate v1.59.4 · Stand 2026-08-21
 
 Diese Checkliste schließt den Befund F-11 aus dem MVP-Abnahmebericht. Sie trennt
 zwei Dinge sauber:
@@ -15,7 +15,7 @@ Vorbedingung für die Durchführung: Demo-Datensatz über Servicemenü →
 niemals produktiv). Für den Mehrbenutzer-Nachweis (Abschnitt 2.6) zusätzlich
 die vier Demo-Konten nach `docs/DEMO-USERS.md` anlegen und im Dialog zuordnen.
 
-## 1. Automatisiert nachgewiesen (Stand v1.58.2)
+## 1. Automatisiert nachgewiesen (Stand v1.59.4)
 
 | Nachweis                                                 | Ergebnis                                            | Quelle                                               |
 | -------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
@@ -24,7 +24,7 @@ die vier Demo-Konten nach `docs/DEMO-USERS.md` anlegen und im Dialog zuordnen.
 | Datenzugriff ohne Anmeldung (Lesen und Schreiben)        | serverseitig abgewiesen (401/403), nicht nur UI     | Security-Suite, direkte Anfragen gegen die Datenbank |
 | Manipulation der Rolle im Browser wirkt nicht            | Rolle kommt aus `user_roles`, nicht aus dem Browser | `src/hooks/useCurrentUser.ts`, Security-Suite        |
 | Role Preview verändert ausschließlich die Darstellung    | keine Rechteerweiterung                             | RBAC-Suite, ADR-0007/0008                            |
-| Gesamte Testsuite                                        | grün                                                | `bun run test`                                       |
+| Gesamte Testsuite                                        | 572 Tests grün, 4 todo (68 Dateien)                 | F-18-Restfix-Abschlussbericht v1.59.4                |
 
 ## 2. Fachlich abzuzeichnen
 
@@ -90,7 +90,7 @@ abgeleitet, nicht gepflegt.
 | --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------- |
 | 1   | Alex (`engineer`), Mein AVKK           | 2 eigene Sachverhalte (Fälle A, C), davon 1 mit Handlungsbedarf, 1 fehlende Voraussetzung, 2 Arbeitspakete |           |
 | 2   | Sam (`engineer`), Mein AVKK            | 3 eigene Sachverhalte (Fälle B, D, E), alle mit Handlungsbedarf, 1 kritische Konsequenz, 3 Arbeitspakete   |           |
-| 3   | Alex vs. Sam                           | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                      |           |
+| 3   | Alex vs. Sam                           | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                     |           |
 | 4   | Sam schreibt auf einen Fall von Alex   | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt       |           |
 | 5   | Petra (`projectmanager`), Projektsicht | Projekte Netzwerk und Microsoft 365; Arbeitspakete von Alex **und** Sam sichtbar und verdichtet            |           |
 | 6   | Georg (`teamlead`), Management-Cockpit | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)          |           |
@@ -110,19 +110,45 @@ gerätübergreifende oder personenbezogene Trennung existiert dort nicht.
 
 ## 3. Abzeichnung
 
-| Rolle                  | Prüfer/in | Datum | Ergebnis | Bemerkung |
-| ---------------------- | --------- | ----- | -------- | --------- |
-| Systemingenieur        |           |       |          |           |
-| Projektmanager         |           |       |          |           |
-| Geschäftsführer        |           |       |          |           |
-| Administrator          |           |       |          |           |
-| Negativtest ohne Recht |           |       |          |           |
-| Mehrbenutzerszenario   |           |       |          |           |
+| Rolle                  | Prüfer/in | Datum      | Ergebnis | Bemerkung |
+| ---------------------- | --------- | ---------- | -------- | --------- |
+| Systemingenieur        |           |            | offen    | Noch kein vollständiger manueller Rollenlauf dokumentiert. |
+| Projektmanager         | Betreiber | 2026-08-21 | teilweise | Petra: Projektsicht und persönliche AVKK-Zuordnung plausibel; Benutzerverwaltung nicht sichtbar. Projektbericht und vollständiger Drill-down noch nicht als kompletter Rollenlauf dokumentiert. |
+| Geschäftsführer        | Betreiber | 2026-08-21 | teilweise | Georg: Management-Cockpit mit 3 Demo-Projekten und 8 AVKK-Sachverhalten geprüft; keine personenbezogene Rangliste. Managementbericht und Detailbearbeitung noch nicht vollständig dokumentiert. |
+| Administrator          |           |            | offen    | Vollständiger manueller Rollenlauf noch nicht dokumentiert. |
+| Negativtest ohne Recht | Betreiber | 2026-08-21 | erfüllt  | Alexa/viewer: F-18-Retest vollständig bestanden; keine CRUD-Aktionen, Abrechnung ohne Edit-Stift, globale Suche ohne Editor, AVKK read-only. Serverseitige Schreibgrenze automatisiert nachgewiesen. |
+| Mehrbenutzerszenario   | Betreiber | 2026-08-21 | teilweise | Petra und Georg als Teilnachweise vorhanden; Alex/Sam, Fremdschreibversuch und Role Preview noch nicht vollständig manuell dokumentiert. |
 
-Solange Abschnitt 3 nicht vollständig ausgefüllt ist, bleibt F-11 im
-Abnahmebericht als **MANUAL VERIFICATION REQUIRED** geführt. Die
+Solange Abschnitt 3 nicht vollständig mit `erfüllt` abgeschlossen ist, bleibt
+F-11 im Abnahmebericht als **MANUAL VERIFICATION REQUIRED** geführt. Die
 Freigabeentscheidung wird davon nicht blockiert, weil alle sicherheitsrelevanten
-Zugriffsgrenzen bereits automatisiert und serverseitig nachgewiesen sind.
+Zugriffsgrenzen bereits automatisiert und serverseitig nachgewiesen sind. Eine
+formale `MVP 100 % / BASELINE`-Kennzeichnung erfolgt jedoch erst nach vollständiger
+fachlicher Abzeichnung.
+
+## 4. Manueller Evidenzstand 2026-08-21
+
+Die bis zu diesem Stand im Betreiber-Test tatsächlich belegten manuellen
+Nachweise werden getrennt von noch offenen Prüfschritten festgehalten:
+
+- **Petra / projectmanager:** erfolgreicher Login; persönliche AVKK-Sicht plausibel;
+  zwei eigene Verantwortungen sichtbar; Benutzerverwaltung nicht aufrufbar.
+- **Georg / teamlead:** erfolgreicher Login; Management-Cockpit mit allen drei
+  Demo-Projekten und acht AVKK-Sachverhalten sichtbar; sieben gefährdete und ein
+  unauffälliger Fall; keine personenbezogene Rangliste.
+- **Alexa / viewer:** erfolgreicher Login; AVKK read-only; Management- und
+  Benutzerverwaltungsfunktionen nicht verfügbar; nach v1.59.4 kein `+ Neu`, keine
+  Neu-/Bearbeiten-/Löschen-Aktionen in Projekte, Arbeitspakete, Tätigkeiten oder
+  Abrechnung; globale Suche navigiert ohne Edit-Dialog. **F-18 manuell PASS.**
+
+Noch nicht vollständig als manueller Rollenlauf dokumentiert sind insbesondere:
+
+- Systemingenieur einschließlich persönlichem Bericht und AVKK-Schreibtest,
+- Administrator/App-Entwickler einschließlich Role Preview, Systemstatus,
+  Backup und Prüfberichten,
+- die vollständigen Projektmanager-/Geschäftsführer-Berichte,
+- Alex/Sam im Mehrbenutzerszenario einschließlich Fremdschreibversuch und
+  abschließendem Role-Preview-Nachweis.
 
 ## Nachtrag F-18 (v1.59.3)
 
@@ -133,17 +159,9 @@ v1.59.3 werden Anlegen, Bearbeiten und Löschen von Projekten, Arbeitspaketen
 und Tätigkeiten nur bei `project.edit`, `workpackage.edit` bzw. `activity.edit`
 angeboten und zusätzlich unmittelbar vor der Änderung geprüft.
 
-Manueller Wiederholungstest (viewer, z. B. „Alexa"):
-
-1. Als Viewer anmelden.
-2. Kopfzeile prüfen: der Knopf „+ Neu" darf nicht erscheinen.
-3. Registerkarten „Projekte", „Arbeitspakete", „Tätigkeiten", „Abrechnung"
-   öffnen: kein „Neu", kein Stift- und kein Papierkorb-Symbol.
-4. Inhalte bleiben lesbar; Kennzahlen und Listen werden weiterhin angezeigt.
-5. „Mein AVKK" bleibt wie bisher lesend.
-
-Erst nach erfolgreicher Wiederholung und Abzeichnung dieses Abschnitts kann
-F-11 geschlossen werden.
+Der erste Wiederholungstest deckte weitere UI-Pfade in Abrechnung und globaler
+Suche auf; diese wurden dem bestehenden Befund F-18 zugeordnet und nicht als
+neuer Befund geführt.
 
 ## Nachtrag F-18 Restfix (v1.59.4)
 
@@ -151,17 +169,18 @@ Der Retest zu v1.59.3 war teilweise negativ: in „Abrechnung" war der
 Bearbeiten-Stift weiterhin sichtbar, und die globale Suche öffnete Editoren.
 Beides ist in v1.59.4 geschlossen.
 
-Erneuter manueller Viewer-Test (Alexa), nach Abmelden und Hard Reload:
+Der erneute manuelle Viewer-Test mit Alexa wurde am 2026-08-21 vollständig
+bestanden:
 
-1. „+ Neu" ist nicht sichtbar.
-2. Projekte: kein Neu, Bearbeiten oder Löschen.
-3. Arbeitspakete: kein Neu, Bearbeiten oder Löschen.
-4. Tätigkeiten: kein Neu, Bearbeiten oder Löschen.
-5. Abrechnung: kein Bearbeiten-Stift.
-6. Globale Suche: bekannte Tätigkeit suchen, Treffer auswählen — es erscheint
-   keine Editmaske, die Ansicht „Tätigkeiten" wird geöffnet.
-7. Stichprobe mit Projekt und Arbeitspaket: gleiches Verhalten.
-8. Inhalte und Kennzahlen bleiben lesbar; „Mein AVKK" bleibt read-only.
+1. „+ Neu" nicht sichtbar — PASS.
+2. Projekte: kein Neu, Bearbeiten oder Löschen — PASS.
+3. Arbeitspakete: kein Neu, Bearbeiten oder Löschen — PASS.
+4. Tätigkeiten: kein Neu, Bearbeiten oder Löschen — PASS.
+5. Abrechnung: kein Bearbeiten-Stift — PASS.
+6. Globale Suche, Tätigkeit: Navigation ohne Editmaske — PASS.
+7. Stichprobe Projekt und Arbeitspaket: Navigation ohne Editmaske — PASS.
+8. Inhalte und Kennzahlen lesbar; „Mein AVKK" read-only — PASS.
 
-Destruktive Schreibversuche sind nicht erforderlich; die Handler-Grenzen sind
-automatisiert abgedeckt.
+Destruktive Schreibversuche waren nicht erforderlich; die Handler-Grenzen sind
+automatisiert abgedeckt. **F-18 ist damit technisch und manuell bestätigt und
+für den MVP geschlossen.**
