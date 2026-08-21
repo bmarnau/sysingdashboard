@@ -3,7 +3,7 @@
  * Verhaltensneutral aus dashboard.tsx extrahiert (Sprint 05).
  */
 import { useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { FolderOpen, Pencil, Plus, Trash2 } from "lucide-react";
 import type { Project, ProjectStatus, WorkPackage } from "@/lib/dashboard-data";
 import { fmtDate } from "../formatters";
 import { projectStatusLabel, projectStatusStyles } from "../constants";
@@ -16,6 +16,7 @@ export function ProjectsView({
   periodProjectIds,
   periodLabel,
   onNew,
+  onOpen,
   onEdit,
   onDelete,
   canEdit,
@@ -26,6 +27,8 @@ export function ProjectsView({
   periodProjectIds: Set<string>;
   periodLabel: string;
   onNew: () => void;
+  /** Lesender Drill-down; bewusst unabhängig von `project.edit`. */
+  onOpen: (projectId: string) => void;
   onEdit: (p: Project) => void;
   onDelete: (id: string) => void;
   /** RBAC: Schreibaktionen werden nur bei `project.edit` angeboten. */
@@ -101,7 +104,14 @@ export function ProjectsView({
                   <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                     {p.id}
                   </p>
-                  <h3 className="mt-1 truncate font-semibold leading-tight">{p.name}</h3>
+                  <button
+                    type="button"
+                    onClick={() => onOpen(p.id)}
+                    className="mt-1 block max-w-full truncate text-left font-semibold leading-tight hover:text-primary hover:underline"
+                    title={`${p.name} öffnen`}
+                  >
+                    {p.name}
+                  </button>
                   <p className="mt-1 text-xs text-muted-foreground">{p.client}</p>
                 </div>
                 <span
@@ -155,6 +165,9 @@ export function ProjectsView({
                   ))}
                 </div>
                 <div className="flex gap-1 no-print">
+                  <IconBtn onClick={() => onOpen(p.id)} title="Projekt öffnen">
+                    <FolderOpen className="size-3.5" />
+                  </IconBtn>
                   {canEdit && (
                     <>
                       <IconBtn onClick={() => onEdit(p)} title="Bearbeiten">
