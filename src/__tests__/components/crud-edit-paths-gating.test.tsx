@@ -153,7 +153,7 @@ describe("F-18 Restfix — globale Suche", () => {
   });
 
   it("should_openEditor_when_permittedRole", () => {
-    mockUser.current = makeUser("projektmanager");
+    mockUser.current = makeUser("projectmanager");
     const h = renderSearch({ p: true, w: true, a: true });
 
     search("Such");
@@ -193,7 +193,7 @@ describe("F-18 Restfix — zentrale Dialog-Render-Gates", () => {
   });
 
   it("should_renderDialogs_when_editingStateSetAndPermitted", () => {
-    const user = makeUser("projektmanager");
+    const user = makeUser("projectmanager");
     expect(gateOpen(project, canMutate(user, "project"))).toBe(true);
     expect(gateOpen(wp, canMutate(user, "workpackage"))).toBe(true);
     expect(gateOpen(activity, canMutate(user, "activity"))).toBe(true);
