@@ -4,12 +4,12 @@ test.use({ role: "administrator" });
 
 test.describe("Navigation", () => {
   test("Startseite lädt und Haupt-Landmark ist sichtbar", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/dashboard");
     await expect(page.locator("main").first()).toBeVisible();
   });
 
   test("Servicemenü lässt sich öffnen und wieder schließen (Escape)", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/dashboard");
     const btn = page.getByRole("button", { name: /Einstellungen und Services/i });
     await btn.click();
     // Menü-Schließen-Button hat aria-label "Menü schließen"
@@ -21,14 +21,14 @@ test.describe("Navigation", () => {
   });
 
   test("Deep-Link auf /?view=projects rendert Dashboard-Route", async ({ page }) => {
-    await page.goto("/?view=projects");
+    await page.goto("/dashboard?view=projects");
     await expect(page.locator("main").first()).toBeVisible();
   });
 
   test("Browser-Back kehrt zur vorherigen URL zurück", async ({ page }) => {
-    await page.goto("/");
-    await page.goto("/?view=timetable");
+    await page.goto("/dashboard");
+    await page.goto("/dashboard?view=timetable");
     await page.goBack();
-    await expect(page).toHaveURL(/\/$/);
+    await expect(page).toHaveURL(/\/dashboard$/);
   });
 });

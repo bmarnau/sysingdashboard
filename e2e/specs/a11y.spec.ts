@@ -5,7 +5,7 @@ test.use({ role: "administrator" });
 
 test.describe("Accessibility (axe-core)", () => {
   test("Startseite: keine kritischen axe-Verstöße", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/dashboard");
     await expect(page.locator("main").first()).toBeVisible();
     const result = await runAxe(page);
     const critical = result.violations.filter((v) => v.impact === "critical");
@@ -17,7 +17,7 @@ test.describe("Accessibility (axe-core)", () => {
   });
 
   test("Tastatur: Tab erreicht Hilfe-Button vor Servicemenü", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/dashboard");
     // Fokus in den Body setzen, dann Tabs zählen – Anker: Hilfe-Button existiert.
     const helpBtn = page.getByRole("button", { name: /Hilfe zu dieser Seite/i });
     await expect(helpBtn).toBeVisible();

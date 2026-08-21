@@ -1,81 +1,24 @@
 /**
- * Rollen-Fixture: seedet vor jedem Test einen bekannten Benutzer mit
- * definierter Rolle in localStorage. Damit sind Rollen-abhängige Tests
- * deterministisch, ohne die produktive Benutzerverwaltung zu berühren.
+ * Rollen-Fixture.
  *
- * Trade-off: rein Client-seitiges Seeding – ausreichend für UI-Sichtbarkeit
- * (`PermissionGate`), aber KEIN Ersatz für serverseitige RBAC-Prüfung.
- * Backend-Denial wird in `specs/rbac/backend-denial.spec.ts` separat gegen
- * die tatsächlichen Endpunkte geprüft.
+ * HISTORIE: Bis v1.59.5 wurden hier LocalStorage-Schlüssel (`northbit-users`,
+ * `northbit-active-user`) geseedet. Seit der Umstellung auf Supabase-Auth ist
+ * das fachlich überholt — die Rolle stammt ausschließlich aus
+ * `public.user_roles` hinter einer gültigen Session. Das Seeding erfolgt jetzt
+ * über eine synthetische Session plus Playwright-Netzwerk-Mock
+ * (`supabase-e2e.ts`); der produktive Auth-Pfad bleibt unverändert.
+ *
+ * Rein UI-seitige Rollen-Sichtbarkeit ist weiterhin KEIN Sicherheitsnachweis;
+ * serverseitige Verweigerung prüft `specs/rbac/backend-denial.spec.ts`.
  */
-import type { Page } from "@playwright/test";
-
-export type SeedRole =
-  | "systemadministrator"
-  | "administrator"
-  | "teamlead"
-  | "projectmanager"
-  | "engineer"
-  | "customer"
-  | "viewer";
-
-export const ALL_SEED_ROLES: SeedRole[] = [
-  "systemadministrator",
-  "administrator",
-  "teamlead",
-  "projectmanager",
-  "engineer",
-  "customer",
-  "viewer",
-];
-
-interface SeedUser {
-  id: string;
-  firstName: string;
-  lastName: string;
-  displayName: string;
-  email: string;
-  phone: string;
-  role: SeedRole;
-  status: "active";
-  mfaEnabled: false;
-  createdAt: string;
-  updatedAt: string;
-}
-
-function makeUser(role: SeedRole): SeedUser {
-  const now = new Date("2026-07-13T00:00:00.000Z").toISOString();
-  return {
-    id: `e2e-${role}`,
-    firstName: "E2E",
-    lastName: role,
-    displayName: `E2E ${role}`,
-    email: `${role}@e2e.local`,
-    phone: "",
-    role,
-    status: "active",
-    mfaEnabled: false,
-    createdAt: now,
-    updatedAt: now,
-  };
-}
-
-/**
- * Muss VOR `page.goto` aufgerufen werden – der Init-Script läuft, bevor
- * die App das localStorage liest.
- */
-export async function seedRole(page: Page, role: SeedRole): Promise<void> {
-  const user = makeUser(role);
-  await page.addInitScript(
-    ({ user }: { user: SeedUser }) => {
-      try {
-        window.localStorage.setItem("northbit-users", JSON.stringify([user]));
-        window.localStorage.setItem("northbit-active-user", user.id);
-        window.localStorage.setItem("test:e2e-role", user.role);
-      } catch {
-        /* Quota / Storage disabled – der jeweilige Test entscheidet, ob das ein Fehler ist. */
-      }
-    },
-    { user },
-  );
-}
+export {
+  ALL_SEED_ROLES,
+  syntheticIdentity,
+  installSupabaseMock,
+  seedSession,
+  E2E_SUPABASE_URL,
+  E2E_SUPABASE_PUBLISHABLE_KEY,
+  E2E_STORAGE_KEY,
+  type SeedRole,
+  type SyntheticIdentity,
+} from "./supabase-e2e";

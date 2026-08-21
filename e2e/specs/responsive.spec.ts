@@ -12,14 +12,14 @@ const VIEWPORTS = [
 for (const vp of VIEWPORTS) {
   test(`Responsive: ${vp.name} rendert Main-Landmark`, async ({ page }) => {
     await page.setViewportSize({ width: vp.width, height: vp.height });
-    await page.goto("/");
+    await page.goto("/dashboard");
     await expect(page.locator("main").first()).toBeVisible();
   });
 }
 
 test("Zoom 200 %: keine horizontale Scrollleiste am Body bei 1280px", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("/");
+  await page.goto("/dashboard");
   await page.evaluate(() => {
     // 200 % Zoom simulieren = halbe CSS-Viewport-Breite.
     document.documentElement.style.zoom = "2";

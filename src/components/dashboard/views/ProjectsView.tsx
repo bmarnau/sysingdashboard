@@ -66,6 +66,7 @@ export function ProjectsView({
           />
           <SearchInput value={q} onChange={setQ} placeholder="Projekte suchen…" />
           <select
+            aria-label="Projekte nach Status filtern"
             value={status}
             onChange={(e) => setStatus(e.target.value as typeof status)}
             className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"

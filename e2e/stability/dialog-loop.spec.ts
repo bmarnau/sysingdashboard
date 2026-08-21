@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures/test-instance";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 /**
@@ -6,9 +6,14 @@ import { mkdirSync, writeFileSync } from "node:fs";
  * Dialog mehrfach und misst die Gesamtdauer. Kein Memory-Growth-Guard —
  * das dokumentiert der Ops-Report als Baseline.
  */
+test.use({ role: "systemadministrator" });
+
 test("dialog loop stability", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/dashboard");
+  // Systemstatus liegt im Servicemenü — vor der Schleife einmal öffnen.
+  await page.getByRole("button", { name: /Einstellungen und Services/i }).click();
   const trigger = page.getByRole("button", { name: /systemstatus|system-status/i }).first();
+  await expect(trigger).toBeVisible();
   const t0 = Date.now();
   let iterations = 0;
   const targetMs = 8000;
