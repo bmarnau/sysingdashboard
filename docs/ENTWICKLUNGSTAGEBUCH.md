@@ -722,3 +722,16 @@ Bestand verändert wird. Die Zuordnung Fachobjekt → Permission liegt einmalig 
 `src/lib/rbac/crud-guards.ts`; es entsteht keine zweite Rechtelogik neben
 `can()`. Die Rollenmatrix und die Engineer-Eigentumssemantik bleiben unberührt
 (F-18).
+
+## v1.59.4 – F-18 Restfix: Abrechnung, globale Suche, Dialoggrenzen
+
+Der manuelle Viewer-Retest nach v1.59.3 zeigte zwei verbliebene UI-Pfade zum
+Schreibdialog: die Abrechnungsansicht erhielt die Berechtigungsangabe nicht und
+fiel auf einen stillen Standardwert zurück, und die globale Suche öffnete
+Fachobjekte direkt im Editor. Beide Pfade sind nun an dieselben bestehenden
+Permissions gebunden. Die vier sicherheitsrelevanten Fachansichten verlangen die
+Berechtigungsangabe verpflichtend (fail-closed statt fail-open), und die drei
+Bearbeitungsdialoge besitzen zusätzlich ein zentrales Render-Gate. Die Suche
+bleibt für lesende Rollen unverändert nutzbar: Treffer werden gefunden und
+navigieren in die Fachansicht, nur der Editor bleibt verschlossen. Die
+defensiven Handler aus v1.59.3 bleiben unverändert bestehen (F-18).
