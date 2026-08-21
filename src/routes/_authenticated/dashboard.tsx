@@ -535,6 +535,9 @@ function Dashboard() {
             setEditingProject={setEditingProject}
             setEditingWP={setEditingWP}
             setEditingActivity={setEditingActivity}
+            canEditProject={canEditProject}
+            canEditWP={canEditWP}
+            canEditActivity={canEditActivity}
             openManualTopic={openManualTopic}
           />
 
@@ -885,6 +888,7 @@ function Dashboard() {
             chartMax={chartMax}
             viewMode={viewMode}
             onEdit={setEditingActivity}
+            canEdit={canEditActivity}
           />
         )}
 
@@ -929,7 +933,7 @@ function Dashboard() {
         </footer>
       </main>
 
-      {editingProject && (
+      {editingProject && canEditProject && (
         <ProjectDialog
           project={editingProject}
           onClose={() => setEditingProject(null)}
@@ -939,7 +943,7 @@ function Dashboard() {
           }}
         />
       )}
-      {editingWP && (
+      {editingWP && canEditWP && (
         <WorkPackageDialog
           wp={editingWP}
           projects={projects}
@@ -950,7 +954,7 @@ function Dashboard() {
           }}
         />
       )}
-      {editingActivity && (
+      {editingActivity && canEditActivity && (
         <ActivityDialog
           activity={editingActivity}
           workPackages={workPackages}

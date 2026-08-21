@@ -18,7 +18,7 @@ export function ActivitiesView({
   onNew,
   onEdit,
   onDelete,
-  canEdit = true,
+  canEdit,
 }: {
   activities: Activity[];
   periodActivities: Activity[];
@@ -29,7 +29,7 @@ export function ActivitiesView({
   onEdit: (a: Activity) => void;
   onDelete: (id: string) => void;
   /** RBAC: Schreibaktionen werden nur bei `activity.edit` angeboten. */
-  canEdit?: boolean;
+  canEdit: boolean;
 }) {
   const [q, setQ] = useState("");
   const [billing, setBilling] = useState<"alle" | BillingStatus>("alle");

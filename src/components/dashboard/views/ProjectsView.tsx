@@ -18,7 +18,7 @@ export function ProjectsView({
   onNew,
   onEdit,
   onDelete,
-  canEdit = true,
+  canEdit,
 }: {
   projects: Project[];
   workPackages: WorkPackage[];
@@ -29,7 +29,7 @@ export function ProjectsView({
   onEdit: (p: Project) => void;
   onDelete: (id: string) => void;
   /** RBAC: Schreibaktionen werden nur bei `project.edit` angeboten. */
-  canEdit?: boolean;
+  canEdit: boolean;
 }) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"alle" | ProjectStatus>("alle");
