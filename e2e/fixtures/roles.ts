@@ -1,12 +1,11 @@
 /**
- * Rollen-Fixture: seedet vor jedem Test einen bekannten Benutzer mit
- * definierter Rolle in localStorage. Damit sind Rollen-abhängige Tests
- * deterministisch, ohne die produktive Benutzerverwaltung zu berühren.
+ * Rollen-Fixture für Playwright.
  *
- * Trade-off: rein Client-seitiges Seeding – ausreichend für UI-Sichtbarkeit
- * (`PermissionGate`), aber KEIN Ersatz für serverseitige RBAC-Prüfung.
- * Backend-Denial wird in `specs/rbac/backend-denial.spec.ts` separat gegen
- * die tatsächlichen Endpunkte geprüft.
+ * Die Produktanwendung bezieht Benutzer und Rolle seit der Supabase-
+ * Authentifizierung nicht mehr aus den historischen `northbit-*`-
+ * localStorage-Keys. Diese Fixture seedet deshalb eine synthetische
+ * Supabase-Session. Netzwerkantworten werden in `test-instance.ts`
+ * vollständig lokal abgefangen.
  */
 import type { Page } from "@playwright/test";
 
@@ -29,53 +28,92 @@ export const ALL_SEED_ROLES: SeedRole[] = [
   "viewer",
 ];
 
-interface SeedUser {
+export interface SeedUser {
   id: string;
+  email: string;
   firstName: string;
   lastName: string;
   displayName: string;
-  email: string;
-  phone: string;
   role: SeedRole;
-  status: "active";
-  mfaEnabled: false;
-  createdAt: string;
-  updatedAt: string;
 }
 
-function makeUser(role: SeedRole): SeedUser {
-  const now = new Date("2026-07-13T00:00:00.000Z").toISOString();
+export function makeSeedUser(role: SeedRole): SeedUser {
   return {
-    id: `e2e-${role}`,
+    id: `00000000-0000-4000-8000-${role.padEnd(12, "0").slice(0, 12)}`,
+    email: `${role}@e2e.local`,
     firstName: "E2E",
     lastName: role,
     displayName: `E2E ${role}`,
-    email: `${role}@e2e.local`,
-    phone: "",
     role,
-    status: "active",
-    mfaEnabled: false,
-    createdAt: now,
-    updatedAt: now,
   };
 }
 
 /**
- * Muss VOR `page.goto` aufgerufen werden – der Init-Script läuft, bevor
- * die App das localStorage liest.
+ * Supabase-js leitet den Default-Storage-Key aus dem ersten Host-Segment ab.
+ * Für `http://e2e.supabase.local` ist dies deterministisch `sb-e2e-auth-token`.
  */
-export async function seedRole(page: Page, role: SeedRole): Promise<void> {
-  const user = makeUser(role);
+const E2E_AUTH_STORAGE_KEY = "sb-e2e-auth-token";
+
+function encodeJwtSegment(value: Record<string, unknown>): string {
+  return Buffer.from(JSON.stringify(value)).toString("base64url");
+}
+
+function makeUnsignedTestJwt(user: SeedUser): string {
+  const header = encodeJwtSegment({ alg: "none", typ: "JWT" });
+  const payload = encodeJwtSegment({
+    aud: "authenticated",
+    exp: 4_102_444_800,
+    iat: 1_788_000_000,
+    sub: user.id,
+    email: user.email,
+    role: "authenticated",
+  });
+  return `${header}.${payload}.e2e`;
+}
+
+/** Muss vor `page.goto` aufgerufen werden. */
+export async function seedRole(page: Page, role: SeedRole): Promise<SeedUser> {
+  const user = makeSeedUser(role);
+  const accessToken = makeUnsignedTestJwt(user);
+  const session = {
+    access_token: accessToken,
+    refresh_token: "e2e-refresh-token",
+    expires_in: 2_147_483_647,
+    expires_at: 4_102_444_800,
+    token_type: "bearer",
+    user: {
+      id: user.id,
+      aud: "authenticated",
+      role: "authenticated",
+      email: user.email,
+      email_confirmed_at: "2026-01-01T00:00:00.000Z",
+      phone: "",
+      confirmed_at: "2026-01-01T00:00:00.000Z",
+      last_sign_in_at: "2026-08-21T00:00:00.000Z",
+      app_metadata: { provider: "email", providers: ["email"] },
+      user_metadata: {
+        first_name: user.firstName,
+        last_name: user.lastName,
+        display_name: user.displayName,
+      },
+      identities: [],
+      created_at: "2026-01-01T00:00:00.000Z",
+      updated_at: "2026-08-21T00:00:00.000Z",
+      is_anonymous: false,
+    },
+  };
+
   await page.addInitScript(
-    ({ user }: { user: SeedUser }) => {
+    ({ storageKey, session, role }: { storageKey: string; session: unknown; role: SeedRole }) => {
       try {
-        window.localStorage.setItem("northbit-users", JSON.stringify([user]));
-        window.localStorage.setItem("northbit-active-user", user.id);
-        window.localStorage.setItem("test:e2e-role", user.role);
+        window.localStorage.setItem(storageKey, JSON.stringify(session));
+        window.localStorage.setItem("test:e2e-role", role);
       } catch {
-        /* Quota / Storage disabled – der jeweilige Test entscheidet, ob das ein Fehler ist. */
+        /* Storage disabled – der jeweilige Test schlägt dann sichtbar fehl. */
       }
     },
-    { user },
+    { storageKey: E2E_AUTH_STORAGE_KEY, session, role },
   );
+
+  return user;
 }
