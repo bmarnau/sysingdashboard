@@ -6,7 +6,7 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 
 ## Index
 
-Vollständig und lückenlos ADR-0001 bis ADR-0028. Alle ADRs liegen ausschließlich
+Vollständig und lückenlos ADR-0001 bis ADR-0029. Alle ADRs liegen ausschließlich
 in diesem Verzeichnis (`docs/ADR/`); das frühere zweite Verzeichnis `docs/adr/`
 wurde in Sprint 09B aufgelöst, weil zwei Verzeichnisse mit gleichem Namen unter
 Windows kollidieren.
@@ -41,9 +41,11 @@ Windows kollidieren.
 | 0026 | [Löschstrategie, AVKK im Backup und bewertete Sicherheitswarnungen](./0026-loeschstrategie-und-avkk-backup.md) | Accepted |
 | 0027 | [AVKK-Führungssicht und getrennte Kontextebene](./0027-avkk-management-und-kontextebene.md)                    | Accepted |
 | 0028 | [Reporting-Architektur und Corporate Templates](./0028-reporting-architektur.md)                               | Accepted |
+| 0029 | [CI-, Test- und Release-Governance](./0029-ci-test-release-governance.md)                                      | Accepted |
 
-Stand der Prüfung: Sprint 09B (v1.58.0). Kein ADR ist deprecated oder superseded;
-keine widersprüchlichen Entscheidungen festgestellt.
+Stand der Prüfung: Sprint 09C-FINAL (v1.59.5). ADR-0029 ergänzt ADR-0009 und ADR-0018
+und supersediert den historischen LocalStorage-Seeding-Teil aus ADR-0012 für die
+aktuelle Supabase-Authentifizierungsarchitektur.
 
 ## Template
 
