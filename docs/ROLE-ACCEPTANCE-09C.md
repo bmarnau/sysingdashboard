@@ -144,3 +144,24 @@ Manueller Wiederholungstest (viewer, z. B. „Alexa"):
 
 Erst nach erfolgreicher Wiederholung und Abzeichnung dieses Abschnitts kann
 F-11 geschlossen werden.
+
+## Nachtrag F-18 Restfix (v1.59.4)
+
+Der Retest zu v1.59.3 war teilweise negativ: in „Abrechnung" war der
+Bearbeiten-Stift weiterhin sichtbar, und die globale Suche öffnete Editoren.
+Beides ist in v1.59.4 geschlossen.
+
+Erneuter manueller Viewer-Test (Alexa), nach Abmelden und Hard Reload:
+
+1. „+ Neu" ist nicht sichtbar.
+2. Projekte: kein Neu, Bearbeiten oder Löschen.
+3. Arbeitspakete: kein Neu, Bearbeiten oder Löschen.
+4. Tätigkeiten: kein Neu, Bearbeiten oder Löschen.
+5. Abrechnung: kein Bearbeiten-Stift.
+6. Globale Suche: bekannte Tätigkeit suchen, Treffer auswählen — es erscheint
+   keine Editmaske, die Ansicht „Tätigkeiten" wird geöffnet.
+7. Stichprobe mit Projekt und Arbeitspaket: gleiches Verhalten.
+8. Inhalte und Kennzahlen bleiben lesbar; „Mein AVKK" bleibt read-only.
+
+Destruktive Schreibversuche sind nicht erforderlich; die Handler-Grenzen sind
+automatisiert abgedeckt.

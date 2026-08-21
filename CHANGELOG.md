@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.59.4 - 2026-08-21
+
+- **F-18 Restfix – Abrechnung und globale Suche**: In der Ansicht „Abrechnung" wird der Bearbeiten-Stift jetzt ebenfalls nur mit der Berechtigung `activity.edit` angeboten.
+- **Globale Suche berechtigungskonform**: Suchtreffer zu Projekten, Arbeitspaketen und Tätigkeiten bleiben für lesende Rollen vollständig auffindbar und navigierbar; ein Bearbeitungsdialog wird nur noch bei vorhandener Berechtigung geöffnet.
+- **Fail-closed-Berechtigungen**: Projekt-, Arbeitspaket-, Tätigkeits- und Abrechnungsansicht verlangen die Berechtigungsangabe verpflichtend; ein Vergessen fällt beim Typecheck auf statt stillschweigend Schreibaktionen anzuzeigen.
+- **Zusätzliche Dialogsicherung**: Die Bearbeitungsdialoge für Projekt, Arbeitspaket und Tätigkeit öffnen grundsätzlich nur bei passender Berechtigung.
+
 ## 1.59.3 - 2026-08-19
 
 - **F-18 behoben – Read-only-Rollen schreiben nicht mehr**: Die lokalen Fachobjekt-Funktionen (Projekte, Arbeitspakete, Tätigkeiten) sind jetzt durchgängig an die bestehende Berechtigungsmatrix gebunden.
