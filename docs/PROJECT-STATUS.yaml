@@ -1,7 +1,6 @@
 schemaVersion: "1.3.0"
 lastUpdated: "2026-08-21"
 
-
 project:
   name: "Sysing Dashboard"
   repository: "https://github.com/bmarnau/sysingdashboard"
