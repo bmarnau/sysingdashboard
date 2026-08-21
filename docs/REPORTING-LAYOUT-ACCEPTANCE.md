@@ -18,7 +18,7 @@ Die Regel gilt formatübergreifend für die Reporting-Schicht nach ADR-0028 und 
 5. Überschrift und unmittelbar folgender Inhalt sollen möglichst zusammenbleiben.
 6. Große Leerflächen durch `page-break-before`, `break-before`, `page-break-inside: avoid` oder vergleichbare pauschale Regeln sind zu vermeiden.
 7. Kopf- und Fußzeilen sowie Seitenzahlen dürfen den nutzbaren Inhaltsbereich nicht unnötig verkleinern.
-8. Spaltenbreiten und Textumbrüche sind so zu wählen, dass Begriffe nicht unnötig in einzelne Silben oder Buchstaben zerfallen.
+8. Spaltenbreiten und Textumbrüche sind so zu wählen, dass Begriffe nicht unnötig in einzelne Silben oder Buchstaben zerfallen. Insbesondere Tabellenüberschriften, Statuswerte und ISO-Datumswerte dürfen nicht in Fragmente wie `Arbeitspa / ket`, `unvollstän / dig` oder `2026-08-2 / 7` zerlegt werden, solange dies durch angepasste Spaltenbreiten, kleinere aber lesbare Schrift oder kompakteres Padding vermeidbar ist.
 9. Word, PDF und Druck dürfen im Detail unterschiedlich umbrechen, sollen aber denselben fachlichen Inhalt und eine vergleichbar kompakte Seitennutzung aufweisen.
 10. Leere Abschlussseiten oder Seiten, die überwiegend nur einen kleinen Einzelabschnitt enthalten, sind zu vermeiden, sofern eine fachlich saubere Zusammenlegung möglich ist.
 
@@ -32,11 +32,19 @@ Beim persönlichen AVKK-Bericht für Alex am 2026-08-21 wurde festgestellt:
 
 Die fachlichen Werte des Berichts waren plausibel; das Finding betrifft Layout/Paginierung, nicht Daten oder Berechtigungen.
 
+### Nachbeobachtung SYSING-102 nach dem ersten Paginierungsfix
+
+Die manuelle Sichtprüfung des Projektberichts `SYSING-102` am 2026-08-21 bestätigte, dass der Abschnittsfluss erfolgreich von acht weitgehend leeren Seiten auf drei kompakte Seiten reduziert wurde. In der achtspaltigen Tabelle „Vorgänge nach Priorität“ blieben jedoch unzulässige Wort- und Datumszerlegungen sichtbar, insbesondere bei `Arbeitspaket`, `Verantwortung`, `Kompetenz`, `Konsequenz`, `unvollständig` und ISO-Datumswerten.
+
+Damit war das Paginierungsziel erreicht, die Layout-Abnahme nach Regel 8 aber noch **nicht** vollständig bestanden. Dieses Finding ist ein Layoutproblem des PDF-Renderers und kein Fehler der AVKK-Fachdaten.
+
 ## 4. Technisch bestätigte Ursachen im aktuellen Renderer
 
 ### PDF
 
-`src/lib/report/renderers/pdf.ts` ruft vor jedem `ReportSection` pauschal `doc.addPage()` auf. Dadurch beginnt jeder Abschnitt zwingend auf einer neuen Seite, unabhängig vom noch freien Platz.
+Der ursprüngliche Renderer rief vor jedem `ReportSection` pauschal `doc.addPage()` auf. Dadurch begann jeder Abschnitt zwingend auf einer neuen Seite, unabhängig vom noch freien Platz. Der erste Paginierungsfix beseitigte diese Ursache durch einen kontinuierlichen Cursor.
+
+Für breite Tabellen zeigte die SYSING-102-Nachprüfung eine zweite Ursache: starre Spaltengewichte berücksichtigen nicht die Breite untrennbarer Tokens wie langer deutscher Begriffe oder ISO-Datumswerte. Dadurch kann AutoTable Wörter mitten im Wort trennen, obwohl eine typografisch kompaktere Verteilung möglich wäre.
 
 Zielzustand:
 
@@ -44,7 +52,9 @@ Zielzustand:
 - `doc.lastAutoTable.finalY` für den tatsächlichen Tabellenabschluss verwenden,
 - neue Seite nur bei unzureichendem Restplatz erzeugen,
 - AutoTable für mehrseitige Tabellen weiter selbst paginieren lassen,
-- Header/Footer bei tatsächlich erzeugten Folgeseiten beibehalten.
+- Header/Footer bei tatsächlich erzeugten Folgeseiten beibehalten,
+- bei breiten Tabellen Mindestbreiten aus den längsten untrennbaren Tokens ableiten,
+- bei Bedarf Schrift und Padding moderat verdichten, bevor Wörter oder Datumswerte mitten im Token getrennt werden.
 
 ### Druck
 
@@ -66,7 +76,7 @@ Eine Reporting-Layout-Änderung ist erst abgenommen, wenn:
 2. PDF nicht mehr automatisch einen Abschnitt pro Seite erzeugt.
 3. Deutlich große Leerflächen aus künstlichen Abschnittsseitenumbrüchen entfallen.
 4. Druckvorschau zeigt ebenfalls einen kontinuierlichen Inhaltsfluss.
-5. Tabellenköpfe und Zeilen lesbar bleiben.
+5. Tabellenköpfe und Zeilen lesbar bleiben; Wörter, Statuswerte und Datumswerte werden nicht unnötig mitten im Token zerlegt.
 6. Keine Tabellen oder Inhalte am Seitenrand abgeschnitten werden.
 7. Kopf-/Fußzeilen und Seitenzahlen korrekt bleiben.
 8. PDF, Druck und Word enthalten dieselben fachlichen Werte.
