@@ -91,6 +91,7 @@ export function ActivitiesView({
           </label>
           <SearchInput value={q} onChange={setQ} placeholder="Tätigkeiten suchen…" />
           <select
+            aria-label="Tätigkeiten nach Umfang filtern"
             value={scope}
             onChange={(e) => setScope(e.target.value as typeof scope)}
             className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"
@@ -102,6 +103,7 @@ export function ActivitiesView({
             <option value="projektlos">Projektlos (inkl. WP ohne Projekt)</option>
           </select>
           <select
+            aria-label="Tätigkeiten nach Abrechnungsstatus filtern"
             value={billing}
             onChange={(e) => setBilling(e.target.value as typeof billing)}
             className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"

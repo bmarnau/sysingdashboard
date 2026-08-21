@@ -11,7 +11,7 @@ test.use({ role: "systemadministrator" });
  */
 test.describe("Servicemenü", () => {
   test("Menü listet Kern-Einträge (Log Viewer, Systemstatus, Backup)", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/dashboard");
     await page.getByRole("button", { name: /Einstellungen und Services/i }).click();
     const menu = page.locator("body");
     await expect(menu.getByText(/Log[- ]?Viewer/i).first()).toBeVisible();
@@ -20,7 +20,7 @@ test.describe("Servicemenü", () => {
   });
 
   test("Handbuch-Button ist erreichbar (aria-label Hilfe)", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/dashboard");
     await expect(page.getByRole("button", { name: /Hilfe zu dieser Seite/i })).toBeVisible();
   });
 });

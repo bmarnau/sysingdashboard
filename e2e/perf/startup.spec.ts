@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures/test-instance";
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 /**
@@ -8,9 +8,11 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
  * Assertions (nur `>0`), damit CI-Rauschen nicht zu Falschalarmen führt —
  * die Bewertung erfolgt im Aggregator via Baseline-Delta.
  */
+test.use({ role: "administrator" });
+
 test("dashboard startup timing", async ({ page }) => {
   const t0 = Date.now();
-  await page.goto("/", { waitUntil: "load" });
+  await page.goto("/dashboard", { waitUntil: "load" });
   const loadedAt = Date.now() - t0;
 
   const timing = await page.evaluate(() => {

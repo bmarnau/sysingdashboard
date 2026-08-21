@@ -1,8 +1,9 @@
 {
   "generatedAt": "2026-08-13T04:47:19.895Z",
-  "healthOk": null,
+  "healthOk": true,
   "secretLeaks": 0,
   "rollbackDocumented": true,
   "backupAvailable": true,
-  "envValidation": true
+  "envValidation": true,
+  "checkedAt": "2026-08-21T14:16:33.630Z"
 }

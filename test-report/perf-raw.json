@@ -1,0 +1,10 @@
+{
+  "startupMs": 896,
+  "timing": {
+    "domContentLoaded": 618.5,
+    "loadEvent": 835.8000000000466,
+    "firstPaint": 660,
+    "firstContentfulPaint": null
+  },
+  "at": "2026-08-21T14:16:35.923Z"
+}

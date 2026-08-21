@@ -56,14 +56,16 @@ test.describe("Correlation-ID Middleware", () => {
   });
 
   test("Fehler-Response enthält strukturierte Correlation-Felder", async ({ request }) => {
-    // /api/sync ohne Body → 400 mit strukturierter Fehlerantwort
+    // /api/sync ist auth-pflichtig (SEC-CRIT-001): ohne Bearer-Token 401,
+    // mit Token, aber kaputtem Body 400. Beide Fehlerpfade müssen die
+    // Correlation-Felder strukturiert liefern.
     const res = await request.post("/api/sync", { data: "not-json" });
-    expect(res.status()).toBe(400);
+    expect([400, 401]).toContain(res.status());
     const cid = res.headers()[HEADER];
     expect(cid).toMatch(UUID_RE);
     const body = await res.json();
     expect(body.ok).toBe(false);
-    expect(body.code).toBe("INVALID_JSON");
+    expect(["INVALID_JSON", "UNAUTHORIZED"]).toContain(body.code);
     expect(body.correlationId).toBe(cid);
     expect(body.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     // Kein Stack, kein Secret

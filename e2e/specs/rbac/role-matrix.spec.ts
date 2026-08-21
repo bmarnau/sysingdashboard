@@ -27,13 +27,13 @@ for (const exp of EXPECTED) {
   test.describe(`Rolle: ${exp.role}`, () => {
     test.use({ role: exp.role });
     test(`Startseite lädt und Main ist sichtbar`, async ({ page }) => {
-      await page.goto("/");
+      await page.goto("/dashboard");
       await expect(page.locator("main").first()).toBeVisible();
     });
     test(`Servicemenü-Button ${exp.serviceMenuVisible ? "sichtbar" : "verborgen"}`, async ({
       page,
     }) => {
-      await page.goto("/");
+      await page.goto("/dashboard");
       const btn = page.getByRole("button", { name: /Einstellungen und Services/i });
       if (exp.serviceMenuVisible) {
         await expect(btn).toBeVisible();

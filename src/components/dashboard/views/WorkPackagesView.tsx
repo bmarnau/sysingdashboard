@@ -76,6 +76,7 @@ export function WorkPackagesView({
           />
           <SearchInput value={q} onChange={setQ} placeholder="Arbeitspakete suchen…" />
           <select
+            aria-label="Arbeitspakete nach Projekt filtern"
             value={proj}
             onChange={(e) => setProj(e.target.value)}
             className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"
@@ -89,6 +90,7 @@ export function WorkPackagesView({
             ))}
           </select>
           <select
+            aria-label="Arbeitspakete nach Status filtern"
             value={status}
             onChange={(e) => setStatus(e.target.value as typeof status)}
             className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"
