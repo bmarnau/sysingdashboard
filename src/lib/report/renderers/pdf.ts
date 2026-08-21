@@ -8,12 +8,17 @@
 
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { ReportDocument, ReportRunMetadata } from "../types";
+import type { ReportDocument, ReportRunMetadata, ReportTableSection } from "../types";
 import type { ReportTemplate } from "../templates/types";
 
 interface AutoTableDoc extends jsPDF {
   lastAutoTable?: { finalY: number };
 }
+
+const CONTENT_TOP_OFFSET_MM = 6;
+const CONTENT_BOTTOM_MM = 18;
+const SECTION_GAP_MM = 8;
+const MIN_SECTION_START_MM = 28;
 
 function drawHeader(doc: jsPDF, template: ReportTemplate, metadata: ReportRunMetadata) {
   const margin = template.page.marginMm;
@@ -52,6 +57,24 @@ function drawFooter(doc: jsPDF, template: ReportTemplate, metadata: ReportRunMet
   doc.setTextColor(0);
 }
 
+function tableColumnStyles(
+  section: ReportTableSection,
+  usableWidth: number,
+): Record<number, { halign?: "right"; cellWidth?: number }> {
+  const weights = section.columns.map((column) => Math.max(0.5, column.weight ?? 1));
+  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+  const styles: Record<number, { halign?: "right"; cellWidth?: number }> = {};
+
+  section.columns.forEach((column, index) => {
+    styles[index] = {
+      ...(column.align === "right" ? { halign: "right" as const } : {}),
+      cellWidth: (usableWidth * weights[index]) / totalWeight,
+    };
+  });
+
+  return styles;
+}
+
 export function renderPdf(
   document: ReportDocument,
   metadata: ReportRunMetadata,
@@ -61,6 +84,21 @@ export function renderPdf(
   const doc = new jsPDF({ unit: "mm", format: template.page.format }) as AutoTableDoc;
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
+  const contentTop = margin + CONTENT_TOP_OFFSET_MM;
+  const contentBottom = pageH - CONTENT_BOTTOM_MM;
+  const usableTableWidth = pageW - 2 * margin;
+
+  const addContentPage = () => {
+    doc.addPage();
+    drawHeader(doc, template, metadata);
+    drawFooter(doc, template, metadata);
+    return contentTop;
+  };
+
+  const ensureSectionSpace = (cursor: number, minimum = MIN_SECTION_START_MM) => {
+    if (cursor + minimum <= contentBottom) return cursor;
+    return addContentPage();
+  };
 
   /* ------------------------------ Deckblatt ------------------------------ */
   if (template.header.showLogo) {
@@ -115,10 +153,13 @@ export function renderPdf(
   });
 
   /* ------------------------------ Abschnitte ----------------------------- */
+  // Das Deckblatt bleibt bewusst eigenständig. Ab hier fließen Abschnitte
+  // kontinuierlich über die Folgeseiten; ein neuer Abschnitt erzeugt nicht
+  // automatisch eine neue Seite.
+  let cursor = addContentPage();
+
   for (const section of document.sections) {
-    doc.addPage();
-    drawHeader(doc, template, metadata);
-    let cursor = margin + 6;
+    cursor = ensureSectionSpace(cursor);
 
     if (section.kind === "table") {
       doc.setFont(template.brand.fontFamily, "bold");
@@ -127,6 +168,7 @@ export function renderPdf(
       doc.text(section.title, margin, cursor);
       doc.setTextColor(0);
       cursor += 5;
+
       if (section.description) {
         doc.setFont(template.brand.fontFamily, "normal");
         doc.setFontSize(9);
@@ -136,10 +178,7 @@ export function renderPdf(
         cursor += desc.length * 4.4;
         doc.setTextColor(0);
       }
-      const columnStyles: Record<number, { halign?: "right" }> = {};
-      section.columns.forEach((c, i) => {
-        if (c.align === "right") columnStyles[i] = { halign: "right" };
-      });
+
       autoTable(doc, {
         startY: cursor + 2,
         margin: { left: margin, right: margin, top: margin + 4, bottom: 16 },
@@ -157,24 +196,32 @@ export function renderPdf(
           fillColor: template.brand.primary,
           textColor: template.brand.tableHeaderText,
           fontSize: 8.5,
+          valign: "middle",
         },
-        styles: { fontSize: 8, cellPadding: 1.6, overflow: "linebreak", valign: "top" },
-        columnStyles,
+        styles: {
+          fontSize: 8,
+          cellPadding: 1.6,
+          overflow: "linebreak",
+          valign: "middle",
+        },
+        columnStyles: tableColumnStyles(section, usableTableWidth),
         rowPageBreak: "avoid",
         didDrawPage: () => {
           drawHeader(doc, template, metadata);
           drawFooter(doc, template, metadata);
         },
       });
+      cursor = (doc.lastAutoTable?.finalY ?? cursor) + SECTION_GAP_MM;
     } else if (section.kind === "kpi") {
       doc.setFont(template.brand.fontFamily, "bold");
       doc.setFontSize(12);
       doc.setTextColor(...template.brand.primary);
       doc.text(section.title, margin, cursor);
       doc.setTextColor(0);
+
       autoTable(doc, {
         startY: cursor + 4,
-        margin: { left: margin, right: margin, bottom: 16 },
+        margin: { left: margin, right: margin, top: margin + 4, bottom: 16 },
         head: [["Kennzahl", "Wert"]],
         body: section.items.map((i) => [i.label, String(i.value)]),
         theme: "striped",
@@ -182,14 +229,16 @@ export function renderPdf(
           fillColor: template.brand.primary,
           textColor: template.brand.tableHeaderText,
           fontSize: 8.5,
+          valign: "middle",
         },
-        styles: { fontSize: 9, cellPadding: 1.8 },
+        styles: { fontSize: 9, cellPadding: 1.8, valign: "middle" },
         columnStyles: { 1: { halign: "right", cellWidth: 34, fontStyle: "bold" } },
         didDrawPage: () => {
           drawHeader(doc, template, metadata);
           drawFooter(doc, template, metadata);
         },
       });
+      cursor = (doc.lastAutoTable?.finalY ?? cursor) + SECTION_GAP_MM;
     } else {
       if (section.title) {
         doc.setFont(template.brand.fontFamily, "bold");
@@ -199,23 +248,21 @@ export function renderPdf(
         doc.setTextColor(0);
         cursor += 6;
       }
+
       doc.setFont(template.brand.fontFamily, "normal");
       doc.setFontSize(10);
       for (const paragraph of section.paragraphs) {
         const lines = doc.splitTextToSize(paragraph, pageW - 2 * margin) as string[];
         for (const line of lines) {
-          if (cursor > pageH - 20) {
-            doc.addPage();
-            drawHeader(doc, template, metadata);
-            drawFooter(doc, template, metadata);
-            cursor = margin + 6;
+          if (cursor > contentBottom) {
+            cursor = addContentPage();
           }
           doc.text(line, margin, cursor);
           cursor += 5;
         }
         cursor += 3;
       }
-      drawFooter(doc, template, metadata);
+      cursor += SECTION_GAP_MM - 3;
     }
   }
 
