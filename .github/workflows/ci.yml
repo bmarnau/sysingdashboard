@@ -60,8 +60,8 @@ jobs:
         run: bunx prettier --check .
       - name: ESLint
         run: bun run lint
-      - name: TypeScript (tsgo)
-        run: bunx --bun tsgo --noEmit
+      - name: TypeScript
+        run: bun run typecheck
       - name: RBAC matrix check
         run: bun run rbac:check
       - name: No-console guard
