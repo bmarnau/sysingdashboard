@@ -38,13 +38,13 @@ Hinweis zur Rollenlogik: `engineer` besitzt `avkk.edit`, aber nicht
 Bewertungen im zulässigen Scope bearbeiten, jedoch keine Verantwortung neu
 zuweisen oder bestehende Verantwortungszuordnungen verändern.
 
-| #   | Schritt                 | Erwartetes Ergebnis                                                                                                      | Bewertung |
-| --- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------ | --------- |
-| 1   | Anmelden                | Dashboard öffnet mit eigenen Projekten, Arbeitspaketen, Tätigkeiten und Zeiten                                           | erfüllt   |
-| 2   | Tab „Mein AVKK"         | sichtbar; eigene Fälle, Kennzahlen und Frühindikatoren plausibel                                                         | erfüllt   |
+| #   | Schritt                 | Erwartetes Ergebnis                                                                                                            | Bewertung |
+| --- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------- |
+| 1   | Anmelden                | Dashboard öffnet mit eigenen Projekten, Arbeitspaketen, Tätigkeiten und Zeiten                                                 | erfüllt   |
+| 2   | Tab „Mein AVKK"         | sichtbar; eigene Fälle, Kennzahlen und Frühindikatoren plausibel                                                               | erfüllt   |
 | 3   | AVKK-Eintrag bearbeiten | Eigene AVKK-Bewertung im zulässigen Scope speichern; nach Neuladen vorhanden; Verantwortung bleibt ohne Assign-Recht read-only | erfüllt   |
-| 4   | Management-Cockpit      | **nicht** sichtbar                                                                                                       | erfüllt   |
-| 5   | Bericht „persönlich"    | erzeugbar als PDF, Druck, Word, JSON, CSV                                                                                | erfüllt   |
+| 4   | Management-Cockpit      | **nicht** sichtbar                                                                                                             | erfüllt   |
+| 5   | Bericht „persönlich"    | erzeugbar als PDF, Druck, Word, JSON, CSV                                                                                      | erfüllt   |
 
 ### 2.2 Projektmanager
 
@@ -95,7 +95,7 @@ abgeleitet, nicht gepflegt.
 | --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------- |
 | 1   | Alex (`engineer`), Mein AVKK           | 2 eigene Sachverhalte (Fälle A, C), davon 1 mit Handlungsbedarf, 1 fehlende Voraussetzung, 2 Arbeitspakete | erfüllt   |
 | 2   | Sam (`engineer`), Mein AVKK            | 3 eigene Sachverhalte (Fälle B, D, E), alle mit Handlungsbedarf, 1 kritische Konsequenz, 3 Arbeitspakete   | erfüllt   |
-| 3   | Alex vs. Sam                           | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                     | erfüllt   |
+| 3   | Alex vs. Sam                           | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                      | erfüllt   |
 | 4   | Sam schreibt auf einen Fall von Alex   | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt       | erfüllt   |
 | 5   | Petra (`projectmanager`), Projektsicht | Projekte Netzwerk und Microsoft 365; Arbeitspakete von Alex **und** Sam sichtbar und verdichtet            |           |
 | 6   | Georg (`teamlead`), Management-Cockpit | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)          | erfüllt   |
@@ -115,13 +115,13 @@ gerätübergreifende oder personenbezogene Trennung existiert dort nicht.
 
 ## 3. Abzeichnung
 
-| Rolle                  | Prüfer/in | Datum      | Ergebnis | Bemerkung |
-| ---------------------- | --------- | ---------- | -------- | --------- |
-| Systemingenieur        | Betreiber | 2026-08-21 | erfüllt  | Alex: Login, persönlicher AVKK-Scope A/C, Kompetenz-Schreib- und Persistenztest, Managementsicht gesperrt sowie persönlicher Bericht in PDF, Druck, Word, JSON und CSV geprüft. Verantwortung korrekt read-only, da `avkk.responsibility.assign` fehlt. |
-| Projektmanager         | Betreiber | 2026-08-21 | teilweise | Petra: Projektsicht und persönliche AVKK-Zuordnung plausibel; Benutzerverwaltung nicht sichtbar. Projektbericht und vollständiger Drill-down noch nicht als kompletter Rollenlauf dokumentiert. |
-| Geschäftsführer        | Betreiber | 2026-08-21 | teilweise | Georg: Management-Cockpit mit 3 Demo-Projekten und 8 AVKK-Sachverhalten geprüft; keine personenbezogene Rangliste. Managementbericht und Detailbearbeitung noch nicht vollständig dokumentiert. |
-| Administrator          |           |            | offen    | Vollständiger manueller Rollenlauf noch nicht dokumentiert. |
-| Negativtest ohne Recht | Betreiber | 2026-08-21 | erfüllt  | Alexa/viewer: F-18-Retest vollständig bestanden; keine CRUD-Aktionen, Abrechnung ohne Edit-Stift, globale Suche ohne Editor, AVKK read-only. Serverseitige Schreibgrenze automatisiert nachgewiesen. |
+| Rolle                  | Prüfer/in | Datum      | Ergebnis  | Bemerkung                                                                                                                                                                                                                                                                             |
+| ---------------------- | --------- | ---------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Systemingenieur        | Betreiber | 2026-08-21 | erfüllt   | Alex: Login, persönlicher AVKK-Scope A/C, Kompetenz-Schreib- und Persistenztest, Managementsicht gesperrt sowie persönlicher Bericht in PDF, Druck, Word, JSON und CSV geprüft. Verantwortung korrekt read-only, da `avkk.responsibility.assign` fehlt.                               |
+| Projektmanager         | Betreiber | 2026-08-21 | teilweise | Petra: Projektsicht und persönliche AVKK-Zuordnung plausibel; Benutzerverwaltung nicht sichtbar. Projektbericht und vollständiger Drill-down noch nicht als kompletter Rollenlauf dokumentiert.                                                                                       |
+| Geschäftsführer        | Betreiber | 2026-08-21 | teilweise | Georg: Management-Cockpit mit 3 Demo-Projekten und 8 AVKK-Sachverhalten geprüft; keine personenbezogene Rangliste. Managementbericht und Detailbearbeitung noch nicht vollständig dokumentiert.                                                                                       |
+| Administrator          |           |            | offen     | Vollständiger manueller Rollenlauf noch nicht dokumentiert.                                                                                                                                                                                                                           |
+| Negativtest ohne Recht | Betreiber | 2026-08-21 | erfüllt   | Alexa/viewer: F-18-Retest vollständig bestanden; keine CRUD-Aktionen, Abrechnung ohne Edit-Stift, globale Suche ohne Editor, AVKK read-only. Serverseitige Schreibgrenze automatisiert nachgewiesen.                                                                                  |
 | Mehrbenutzerszenario   | Betreiber | 2026-08-21 | teilweise | Alex und Sam vollständig für persönliche Scope-Trennung geprüft; Fremdschreibversuch Sam→Alex abgewiesen und nach Reload ohne Datenänderung bestätigt. Georg-Cockpit ebenfalls bestätigt. Offen: Petra-Projektsicht im Mehrbenutzerkontext, Georg-Managementbericht und Role Preview. |
 
 Solange Abschnitt 3 nicht vollständig mit `erfüllt` abgeschlossen ist, bleibt
