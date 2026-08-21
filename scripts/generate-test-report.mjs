@@ -32,9 +32,9 @@ const summary = {
     techDebt: debt
       ? {
           present: true,
-          todos: debt.todos,
-          tsIgnores: debt.tsIgnores,
-          bigFiles: debt.bigFiles.length,
+          totalFindings: debt.summary?.totalFindings ?? debt.todos ?? 0,
+          critical: debt.summary?.counts?.Critical ?? 0,
+          high: debt.summary?.counts?.High ?? 0,
         }
       : { present: false },
     security: security
@@ -67,7 +67,7 @@ const md = [
   } |`,
   `| Technical Debt | ${summary.sections.techDebt.present ? "OK" : "fehlt"} | ${
     summary.sections.techDebt.present
-      ? `${summary.sections.techDebt.todos} TODO / ${summary.sections.techDebt.tsIgnores} ts-ignore / ${summary.sections.techDebt.bigFiles} Große Dateien`
+      ? `${summary.sections.techDebt.totalFindings} Findings (Critical: ${summary.sections.techDebt.critical}, High: ${summary.sections.techDebt.high})`
       : "—"
   } |`,
   `| Security | ${summary.sections.security.present ? "OK" : "fehlt"} | ${

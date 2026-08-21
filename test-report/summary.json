@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-08-21T12:12:18.060Z",
+  "sections": {
+    "coverage": {
+      "present": false
+    },
+    "bundle": {
+      "present": true,
+      "totalSize": 11276269
+    },
+    "techDebt": {
+      "present": true,
+      "totalFindings": 58,
+      "critical": 0,
+      "high": 1
+    },
+    "security": {
+      "present": true,
+      "findings": 0
+    }
+  }
+}
