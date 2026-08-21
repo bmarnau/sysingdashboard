@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-21 · Dashboard-Version 1.59.4
+Stand: 2026-08-21 · Dashboard-Version 1.59.5
 
 ## Vision
 
