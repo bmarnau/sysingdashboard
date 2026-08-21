@@ -8,9 +8,17 @@
  *     manipulierter `northbit-active-user` keine Session-/Rollenautorität
  *     mehr besitzt (SEC-CRIT-002).
  */
-import { describe, expect, it, afterEach } from "vitest";
+import { describe, expect, it, afterEach, vi } from "vitest";
 import "../env/test-instance";
 import { render, screen, cleanup } from "@testing-library/react";
+
+// Prevent tests from triggering the real Supabase client via useCurrentUser.
+// The hook always returns null in this suite (no active session), which means
+// PermissionGate correctly renders its fallback — exactly what SEC-CRIT-002
+// regression tests assert.
+vi.mock("@/hooks/useCurrentUser", () => ({
+  useCurrentUser: vi.fn().mockReturnValue(null),
+}));
 
 import { PermissionGate } from "@/components/PermissionGate";
 import { can } from "@/lib/rbac/permissions";

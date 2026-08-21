@@ -6,9 +6,16 @@
  * beherrschbar ist. Detaillierte Begründung: siehe `.lovable/plan.md`.
  */
 /// <reference types="vitest-axe/extend-expect" />
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render } from "@testing-library/react";
 import { axe } from "vitest-axe";
+
+// Prevent tests from triggering the real Supabase client via useCurrentUser.
+// PermissionGate renders its fallback when the user is null, which is valid
+// DOM content and passes axe accessibility checks.
+vi.mock("@/hooks/useCurrentUser", () => ({
+  useCurrentUser: vi.fn().mockReturnValue(null),
+}));
 
 import { PermissionGate } from "@/components/PermissionGate";
 import { AzureConfirmDialog } from "@/components/azure/AzureConfirmDialog";
