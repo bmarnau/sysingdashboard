@@ -3,9 +3,18 @@
  * Prompt 2A.6.
  */
 import "../env/test-instance";
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, beforeEach, afterEach } from "vitest";
 import { BackupService } from "@/lib/backup-service";
 import { readZipEntries } from "../fixtures/backup";
+
+const originalOnline = window.navigator.onLine;
+
+function setOnline(value: boolean): void {
+  Object.defineProperty(window.navigator, "onLine", {
+    configurable: true,
+    value,
+  });
+}
 
 async function seedLocalStorage() {
   window.localStorage.setItem(
@@ -25,10 +34,17 @@ async function seedLocalStorage() {
 
 describe("BackupService.createBackup", () => {
   beforeEach(async () => {
+    // Diese Suite prüft das lokale Backup. Der optionale Cloud-AVKK-Pfad
+    // wird bewusst offline gehalten, damit kein externer Testzugriff nötig ist.
+    setOnline(false);
     await BackupService.clear();
     BackupService.clearLog();
     window.localStorage.clear();
     await seedLocalStorage();
+  });
+
+  afterEach(() => {
+    setOnline(originalOnline);
   });
 
   it("erzeugt ein valides ZIP mit allen Pflichtdateien", async () => {
