@@ -141,7 +141,7 @@ export function GlobalSearch({
                           setSearchQ("");
                           setSearchOpen(false);
                           setTab("projekte");
-                          setEditingProject(p);
+                          if (canEditProject) setEditingProject(p);
                         }}
                         className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
                       >
@@ -168,7 +168,7 @@ export function GlobalSearch({
                             setSearchQ("");
                             setSearchOpen(false);
                             setTab("arbeitspakete");
-                            setEditingWP(w);
+                            if (canEditWP) setEditingWP(w);
                           }}
                           className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
                         >
@@ -196,7 +196,7 @@ export function GlobalSearch({
                           setSearchQ("");
                           setSearchOpen(false);
                           setTab("taetigkeiten");
-                          setEditingActivity(a);
+                          if (canEditActivity) setEditingActivity(a);
                         }}
                         className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm transition hover:bg-secondary/60"
                       >
