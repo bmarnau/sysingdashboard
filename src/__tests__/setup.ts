@@ -4,6 +4,13 @@ import { afterEach, expect, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import * as axeMatchers from "vitest-axe/matchers";
 
+// Unit-/Komponententests dürfen keine produktiven Supabase-Zugangsdaten benötigen.
+// Die Werte sind absichtlich lokale, nicht geheime Platzhalter. Sie ermöglichen
+// lediglich das Erzeugen des Supabase-Clients; Tests, die Backendverhalten prüfen,
+// mocken bzw. isolieren den Netzwerkzugriff separat.
+process.env.SUPABASE_URL ??= "http://127.0.0.1:54321";
+process.env.SUPABASE_PUBLISHABLE_KEY ??= "test-publishable-key";
+
 // vitest-axe: `toHaveNoViolations` als Vitest-Matcher registrieren.
 expect.extend(axeMatchers);
 
