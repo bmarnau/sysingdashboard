@@ -10,6 +10,17 @@ import { describe, expect, it, vi } from "vitest";
 import { render } from "@testing-library/react";
 import { axe } from "vitest-axe";
 
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: {
+    auth: {
+      getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
+      onAuthStateChange: vi.fn().mockReturnValue({
+        data: { subscription: { unsubscribe: vi.fn() } },
+      }),
+    },
+  },
+}));
+
 // Prevent tests from triggering the real Supabase client via useCurrentUser.
 // PermissionGate renders its fallback when the user is null, which is valid
 // DOM content and passes axe accessibility checks.

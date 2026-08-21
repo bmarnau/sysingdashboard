@@ -12,6 +12,17 @@ import { describe, expect, it, afterEach, vi } from "vitest";
 import "../env/test-instance";
 import { render, screen, cleanup } from "@testing-library/react";
 
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: {
+    auth: {
+      getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
+      onAuthStateChange: vi.fn().mockReturnValue({
+        data: { subscription: { unsubscribe: vi.fn() } },
+      }),
+    },
+  },
+}));
+
 // Prevent tests from triggering the real Supabase client via useCurrentUser.
 // The hook always returns null in this suite (no active session), which means
 // PermissionGate correctly renders its fallback — exactly what SEC-CRIT-002
