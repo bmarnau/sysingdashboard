@@ -13,6 +13,12 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.59.5 - 2026-08-21
+
+- **Testinfrastruktur stabilisiert**: Die automatisierten Tests laufen jetzt auch ohne hinterlegte Backend-Zugangsdaten (z. B. in der CI) durch; die Meldung „Missing Supabase environment variable(s)" tritt nicht mehr auf.
+- **Kein Testzugriff auf die produktive Umgebung**: Tests verwenden ausschließlich einen lokalen Stub des Backend-Clients und nicht geheime Platzhalterwerte; eine Verbindung zu einer echten Instanz ist ausgeschlossen.
+- Keine Änderung an Authentifizierung, Rollenmodell (RBAC) oder Datenbankregeln (RLS).
+
 ## 1.59.4 - 2026-08-21
 
 - **F-18 Restfix – Abrechnung und globale Suche**: In der Ansicht „Abrechnung" wird der Bearbeiten-Stift jetzt ebenfalls nur mit der Berechtigung `activity.edit` angeboten.
