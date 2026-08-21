@@ -11,6 +11,12 @@ import { defineConfig, devices } from "@playwright/test";
  * - Läuft gegen den Vite-Dev-Server (Port 8080), nicht gegen einen Worker-Preview.
  * - Chromium-only in CI.
  * - Traces/Screenshots/Videos nur bei Fehlern (CI-Kosten).
+ *
+ * Auth-Isolation:
+ * - Der lokale E2E-Server erhält ausschließlich synthetische, nicht geheime
+ *   Supabase-Werte.
+ * - `e2e/fixtures/test-instance.ts` fängt jeden Request an diese synthetische
+ *   Origin ab. Es findet kein Zugriff auf eine echte Supabase-Instanz statt.
  */
 export default defineConfig({
   testDir: "./e2e",
@@ -48,5 +54,10 @@ export default defineConfig({
     url: "http://localhost:8080",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      ...process.env,
+      VITE_SUPABASE_URL: "http://e2e.supabase.local",
+      VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_sysing_e2e_only",
+    },
   },
 });
