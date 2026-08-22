@@ -50,7 +50,7 @@ describe("ManagementTable", () => {
   it("begrenzt lange Aufgabentitel auf die eigene Tabellenspalte", () => {
     render(<ManagementTable rows={[row()]} onOpen={vi.fn()} />);
 
-    const titleButton = screen.getByRole("button", { name: LONG_TITLE, exact: true });
+    const titleButton = screen.getByRole("button", { name: LONG_TITLE });
 
     expect(titleButton).toHaveAttribute("title", LONG_TITLE);
     expect(titleButton).toHaveClass("line-clamp-2", "w-full", "min-w-0", "break-words");
@@ -67,7 +67,7 @@ describe("ManagementTable", () => {
     const item = row();
     render(<ManagementTable rows={[item]} onOpen={onOpen} />);
 
-    fireEvent.click(screen.getByRole("button", { name: LONG_TITLE, exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: LONG_TITLE }));
 
     expect(onOpen).toHaveBeenCalledTimes(1);
     expect(onOpen).toHaveBeenCalledWith(item);
