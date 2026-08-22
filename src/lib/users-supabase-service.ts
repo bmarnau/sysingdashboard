@@ -15,6 +15,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile, UserRole, UserStatus } from "@/lib/user-management";
+import { resolveProfileDisplayName } from "@/lib/user-display-name";
 
 type ProfileRow = {
   id: string;
@@ -38,7 +39,11 @@ function toProfile(p: ProfileRow, role: UserRole): UserProfile {
     id: p.id,
     firstName: p.first_name ?? "",
     lastName: p.last_name ?? "",
-    displayName: p.display_name || p.email || "Unbenannt",
+    displayName: resolveProfileDisplayName({
+      displayName: p.display_name,
+      firstName: p.first_name,
+      lastName: p.last_name,
+    }),
     email: p.email ?? "",
     phone: p.phone ?? "",
     role,
