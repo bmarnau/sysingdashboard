@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { AlertTriangle, Info } from "lucide-react";
 import { Modal } from "@/components/dashboard/primitives";
 import { describeError, useAvkkDossier } from "@/hooks/useAvkkDossier";
+import { useAvkkPeopleDirectory } from "@/hooks/useAvkkPeopleDirectory";
 import { selectableValues } from "@/hooks/useReferenceData";
 import { CATALOG_KEYS, type ReferenceValue } from "@/lib/reference-data";
 import type { AvkkRow } from "@/lib/avkk/workspace";
@@ -13,7 +14,10 @@ import type { UserProfile } from "@/lib/user-management";
 import { AVKK_EXPLANATIONS, AvkkExplainer, AvkkMethodLink } from "./AvkkExplainer";
 import { AvkkCompetenceSection } from "./AvkkCompetenceSection";
 import { AvkkConsequenceSection } from "./AvkkConsequenceSection";
-import { AvkkResponsibilitySection } from "./AvkkResponsibilitySection";
+import {
+  AvkkResponsibilitySection,
+  type AvkkResponsibilityPerson,
+} from "./AvkkResponsibilitySection";
 import { AvkkRiskBadge } from "./AvkkRiskBadge";
 
 const TYPE_LABEL: Record<string, string> = {
@@ -46,8 +50,21 @@ export function AvkkDetailDialog({
 }) {
   const { dossier, loading, error, saving, saveResponsibility, saveCompetence, saveConsequence } =
     useAvkkDossier(row.task, actorId);
+  const directory = useAvkkPeopleDirectory();
 
   const readOnly = !canEdit || actorId === null;
+  const responsibilityPeople = (() => {
+    const byId = new Map<string, AvkkResponsibilityPerson>();
+    for (const person of people) {
+      byId.set(person.id, { id: person.id, displayName: person.displayName });
+    }
+    // Der datensparsame AVKK-Vertrag ueberschreibt bewusst frei gepflegte
+    // Anzeigenamen mit dem serverseitig normalisierten "Vorname Nachname".
+    for (const person of directory.people) {
+      byId.set(person.id, { id: person.id, displayName: person.displayName });
+    }
+    return [...byId.values()].sort((a, b) => a.displayName.localeCompare(b.displayName, "de"));
+  })();
 
   async function guarded(action: () => Promise<void>, successText: string) {
     try {
@@ -87,6 +104,15 @@ export function AvkkDetailDialog({
             {error}
           </p>
         ) : null}
+        {directory.error ? (
+          <p
+            role="alert"
+            className="rounded-md border border-warning/30 bg-warning/10 p-3 text-xs text-warning"
+          >
+            Personenverzeichnis konnte nicht geladen werden. Bestehende Verantwortung bleibt lesbar;
+            neue Verantwortung kann bis zur Behebung nicht zugeordnet werden.
+          </p>
+        ) : null}
         {loading ? <p className="text-xs text-muted-foreground">Dossier wird geladen …</p> : null}
 
         <AvkkExplainer letter="A" title="Aufgabe" text={AVKK_EXPLANATIONS.aufgabe}>
@@ -99,7 +125,7 @@ export function AvkkDetailDialog({
         <AvkkExplainer letter="V" title="Verantwortung" text={AVKK_EXPLANATIONS.verantwortung}>
           <AvkkResponsibilitySection
             responsibilities={responsibilities}
-            people={people}
+            people={responsibilityPeople}
             roles={selectableValues(
               catalogs[CATALOG_KEYS.responsibilityRole],
               responsibilities.map((r) => r.roleKey),
@@ -108,9 +134,9 @@ export function AvkkDetailDialog({
               catalogs[CATALOG_KEYS.responsibilityType],
               responsibilities.flatMap((r) => r.types.map((t) => t.key)),
             )}
-            readOnly={readOnly || !canAssign}
+            readOnly={readOnly || !canAssign || directory.error !== null}
             saving={saving}
-            loading={loading}
+            loading={loading || directory.loading}
             onSave={(input) =>
               void guarded(() => saveResponsibility(input), "Verantwortung gespeichert.")
             }

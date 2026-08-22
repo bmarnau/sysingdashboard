@@ -4,8 +4,12 @@
 import { useState } from "react";
 import type { AvkkResponsibility } from "@/lib/avkk";
 import type { ReferenceValue } from "@/lib/reference-data";
-import type { UserProfile } from "@/lib/user-management";
 import { inputCls } from "@/components/dashboard/constants";
+
+export interface AvkkResponsibilityPerson {
+  id: string;
+  displayName: string;
+}
 
 export function AvkkResponsibilitySection({
   responsibilities,
@@ -18,7 +22,7 @@ export function AvkkResponsibilitySection({
   onSave,
 }: {
   responsibilities: readonly AvkkResponsibility[];
-  people: readonly UserProfile[];
+  people: readonly AvkkResponsibilityPerson[];
   roles: readonly ReferenceValue[];
   types: readonly ReferenceValue[];
   readOnly: boolean;
@@ -33,7 +37,8 @@ export function AvkkResponsibilitySection({
   const [note, setNote] = useState("");
 
   const active = responsibilities.filter((r) => r.validTo === null);
-  const nameOf = (id: string) => people.find((p) => p.id === id)?.displayName ?? id;
+  const nameOf = (id: string) =>
+    people.find((p) => p.id === id)?.displayName ?? "Person nicht verfügbar";
   const valid = personId !== "" && roleKey !== "" && typeKeys.length > 0;
 
   if (loading) {
