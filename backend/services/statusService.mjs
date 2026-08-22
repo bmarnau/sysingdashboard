@@ -90,7 +90,9 @@ export function getStatus() {
       missingEnvCount: azureMissing.length,
     },
     security: {
-      authMode: envOrNull("AUTH_PROVIDER") || "local",
+      // Supabase ist der produktive MVP-Provider. Ein zukünftiger Provider
+      // (z. B. Entra) kann weiterhin explizit über AUTH_PROVIDER gesetzt werden.
+      authMode: envOrNull("AUTH_PROVIDER") || "supabase",
       rbac: {
         enabled: true,
         rolesCount: ALL_ROLES.length,
