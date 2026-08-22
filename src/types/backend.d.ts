@@ -17,14 +17,67 @@ declare module "*/backend/services/syncService.mjs" {
 
 declare module "*/backend/services/statusService.mjs" {
   export function getStatus(): {
-    mode: "development" | "production";
-    azure: { allowed: boolean; secrets: Record<string, boolean> };
+    application: {
+      name: string;
+      mode: "development" | "production";
+      startedAt: string;
+    };
+    github: {
+      repositoryUrl: string;
+      branch: string | null;
+      commit: string | null;
+    };
+    lovable: {
+      projectId: string | null;
+      publishedUrl: string | null;
+      lastDeploymentAt: string | null;
+      status: "configured" | "not_configured";
+    };
+    azure: {
+      allowed: boolean;
+      authMode: string;
+      sql: { configured: boolean };
+      table: { configured: boolean };
+      storage: { configured: boolean };
+      lastConnectionTestAt: null;
+      missingEnv: string[];
+      missingEnvCount: number;
+    };
+    security: {
+      authMode: string;
+      rbac: {
+        enabled: boolean;
+        rolesCount: number;
+        permissionsCount: number;
+      };
+      secretManager: {
+        enabled: boolean;
+        missing: string[];
+      };
+      envValidation: {
+        ok: boolean;
+        missing: string[];
+      };
+      keyVault: { configured: boolean };
+      correlationId: {
+        middlewareActive: boolean;
+        header: string;
+        activeRoutesWithSupport: number;
+        activeRoutesWithoutSupport: number;
+        lastTestAt: null;
+      };
+    };
+    data: {
+      lastAzureExportAt: string | null;
+      lastAzureImportAt: null;
+    };
     sync: {
       lastRun: string | null;
       lastError: string | null;
       lastDurationMs: number | null;
       runCount: number;
     };
+    mode: "development" | "production";
     timestamp: string;
   };
 }
