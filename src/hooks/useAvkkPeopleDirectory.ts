@@ -29,7 +29,11 @@ export function useAvkkPeopleDirectory(): {
       .catch((cause: unknown) => {
         if (!cancelled) {
           setPeople([]);
-          setError(cause instanceof Error ? cause.message : "Personenverzeichnis konnte nicht geladen werden.");
+          setError(
+            cause instanceof Error
+              ? cause.message
+              : "Personenverzeichnis konnte nicht geladen werden.",
+          );
         }
       })
       .finally(() => {
