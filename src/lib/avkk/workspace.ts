@@ -353,7 +353,13 @@ export function summarize(rows: readonly AvkkRow[]): AvkkSummary {
   };
 }
 
-/** Aufgabenliste aus dem lokalen Bestand. Reine Abbildung, kein Zugriff. */
+/**
+ * Steuerbare AVKK-Aufgaben aus dem lokalen Bestand.
+ *
+ * Im produktiven MVP sind Projekte und Arbeitspakete die zuweisbaren bzw.
+ * delegierbaren Aufgaben. Tätigkeiten bleiben Arbeits-/Leistungsnachweise und
+ * werden deshalb bewusst nicht in `AvkkTask` überführt.
+ */
 export function tasksFromLocalData(input: {
   projects: readonly { id: string; name: string; client?: string; deadline?: string }[];
   workPackages: readonly {
@@ -370,7 +376,6 @@ export function tasksFromLocalData(input: {
   }[];
 }): AvkkTask[] {
   const projectName = new Map(input.projects.map((p) => [p.id, p.name]));
-  const wpTitle = new Map(input.workPackages.map((w) => [w.id, w.title]));
 
   return [
     ...input.projects.map((p) => ({
@@ -386,13 +391,6 @@ export function tasksFromLocalData(input: {
       title: w.title,
       context: (w.projectId && projectName.get(w.projectId)) || "Ohne Projekt",
       due: w.due ?? null,
-    })),
-    ...input.activities.map((a) => ({
-      subjectType: "activity" as const,
-      subjectId: a.id,
-      title: a.title,
-      context: (a.workPackageId && wpTitle.get(a.workPackageId)) || "Ohne Arbeitspaket",
-      due: a.date || null,
     })),
   ];
 }
