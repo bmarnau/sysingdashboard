@@ -1,0 +1,23 @@
+name: TEMP F11 Prettier Diff
+
+on:
+  push:
+    branches:
+      - docs/f11-evidence-sync-2026-08-22
+
+permissions:
+  contents: read
+
+jobs:
+  prettier-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Print exact Prettier diff
+        run: |
+          bunx prettier --write docs/ROLE-ACCEPTANCE-09C.md
+          git diff -- docs/ROLE-ACCEPTANCE-09C.md
