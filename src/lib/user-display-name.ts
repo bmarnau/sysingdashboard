@@ -127,6 +127,27 @@ export function normalizePersonName(value: string): string {
   return shouldNormalize ? toTitleCase(cleaned) : cleaned;
 }
 
+/**
+ * Anzeige eines angemeldeten Profilbenutzers.
+ *
+ * Wenn Vor- und Nachname gepflegt sind, hat diese fachliche Struktur Vorrang:
+ * Der Vorname wird gegen offensichtliche Groß-/Kleinschreibungsfehler
+ * normalisiert, der Nachname bleibt in seiner gespeicherten Eigenschreibweise
+ * erhalten. Damit wird z. B. `petra Marnau` zu `Petra Marnau`, ohne komplexe
+ * Nachnamen wie `von Überlingen-Schmidt` oder `McDonald` umzuschreiben.
+ * Fehlt eine der beiden Komponenten, greift der bestehende Anzeigename-Fallback.
+ */
+export function resolveProfileDisplayName(sources: DisplayNameSources): string {
+  const firstName = usable(sources.firstName);
+  const lastName = usable(sources.lastName);
+
+  if (firstName && lastName) {
+    return clean(`${normalizePersonName(firstName)} ${lastName}`);
+  }
+
+  return resolveDisplayName(sources);
+}
+
 function fromMetadataFirstName(
   metadata: Record<string, unknown> | null | undefined,
 ): string | null {

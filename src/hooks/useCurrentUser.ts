@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile, UserRole, UserStatus } from "@/lib/user-management";
-import { resolveDisplayName } from "@/lib/user-display-name";
+import { resolveProfileDisplayName } from "@/lib/user-display-name";
 import { useRefreshSignal } from "@/hooks/useRefreshSignal";
 
 /**
@@ -57,7 +57,7 @@ export function useCurrentUser(): UserProfile | null {
         id: p.id,
         firstName: p.first_name ?? "",
         lastName: p.last_name ?? "",
-        displayName: resolveDisplayName({
+        displayName: resolveProfileDisplayName({
           displayName: p.display_name,
           firstName: p.first_name,
           lastName: p.last_name,
