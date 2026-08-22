@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +34,10 @@ import {
 } from "@/lib/help-documentation";
 import { BackupService } from "@/lib/backup-service";
 import { useSystemStatusHealth } from "@/hooks/useSystemStatusHealth";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { can } from "@/lib/rbac/permissions";
+import { getAuthConfigurationStatus } from "@/integrations/supabase/config";
+import { getAuthBackendStatus } from "@/lib/admin/auth-accounts.functions";
 
 interface SystemStatusDialogProps {
   open: boolean;
@@ -41,6 +45,7 @@ interface SystemStatusDialogProps {
 }
 
 const NOT_CONFIGURED = "Not configured";
+type AdminBackendState = "idle" | "checking" | "connected" | "unavailable";
 
 function fmtDate(value: string | null | undefined): string {
   if (!value) return NOT_CONFIGURED;
@@ -160,17 +165,42 @@ function Section({
 export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogProps) {
   const [lastBackup, setLastBackup] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [adminBackendState, setAdminBackendState] = useState<AdminBackendState>("idle");
   const health = useSystemStatusHealth();
+  const currentUser = useCurrentUser();
+  const canManageUsers = can(currentUser, "users.manage");
+  const authConfig = getAuthConfigurationStatus();
   const p = health.payload ?? {};
+
+  const refreshAdminBackend = useCallback(async () => {
+    if (!canManageUsers) {
+      setAdminBackendState("idle");
+      return;
+    }
+    setAdminBackendState("checking");
+    try {
+      await getAuthBackendStatus();
+      setAdminBackendState("connected");
+    } catch {
+      setAdminBackendState("unavailable");
+    }
+  }, [canManageUsers]);
 
   useEffect(() => {
     if (!open) return;
     setLastBackup(BackupService.lastAuto());
-  }, [open]);
+    void refreshAdminBackend();
+  }, [open, refreshAdminBackend]);
 
   const handleOpenChange = (next: boolean) => {
     if (!next) setExpanded(false);
     onOpenChange(next);
+  };
+
+  const refreshAll = () => {
+    health.refresh();
+    setLastBackup(BackupService.lastAuto());
+    void refreshAdminBackend();
   };
 
   const builtAt = new Date(BUILD_INFO.builtAt);
@@ -211,6 +241,28 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
   const rbacRoles = sec.rbac?.rolesCount;
   const rbacPerms = sec.rbac?.permissionsCount;
   const kvOk = Boolean(sec.keyVault?.configured);
+  const authConfigLabel =
+    authConfig.status === "configured"
+      ? "vollständig konfiguriert"
+      : authConfig.status === "missing"
+        ? "unvollständig konfiguriert"
+        : "fehlerhaft konfiguriert";
+  const backendStatusLabel = !canManageUsers
+    ? "nicht geprüft — users.manage erforderlich"
+    : adminBackendState === "checking"
+      ? "Prüfung läuft…"
+      : adminBackendState === "connected"
+        ? "erreichbar — geschützte Admin-Prüfung"
+        : adminBackendState === "unavailable"
+          ? "nicht erreichbar"
+          : "noch nicht geprüft";
+  const backendStatusOk = !canManageUsers
+    ? undefined
+    : adminBackendState === "connected"
+      ? true
+      : adminBackendState === "unavailable"
+        ? false
+        : undefined;
 
   const contentClass = expanded
     ? "max-w-[100vw] sm:max-w-[100vw] w-screen h-[100dvh] max-h-[100dvh] rounded-none overflow-y-auto overflow-x-hidden p-4 sm:p-6"
@@ -230,7 +282,8 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
                 <Activity className="size-5 shrink-0" /> Systemstatus
               </DialogTitle>
               <DialogDescription className="mt-1">
-                Vollständige Übersicht — Werte werden niemals angezeigt, nur Status und ENV-Namen.
+                Betriebsübersicht ohne Secrets oder Verbindungswerte — nur sichere Status- und
+                Metadaten.
               </DialogDescription>
             </div>
             <Button
@@ -275,7 +328,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
             />
             <Row
               label="Commit hash"
-              ok={Boolean(ghCommit)}
+              ok={ghCommit ? true : undefined}
               mono
               value={
                 ghCommit ? (
@@ -285,7 +338,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
                     {BUILD_INFO.dirty && <span className="text-warning">(uncommitted)</span>}
                   </span>
                 ) : (
-                  NOT_CONFIGURED
+                  "vom Hosting nicht bereitgestellt"
                 )
               }
               href={ghCommitHref}
@@ -342,6 +395,11 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
               ok={Boolean(sec.authMode)}
             />
             <Row
+              label="Auth-Konfiguration"
+              value={authConfigLabel}
+              ok={authConfig.status === "configured"}
+            />
+            <Row
               label="RBAC status"
               ok={Boolean(sec.rbac?.enabled)}
               value={
@@ -378,6 +436,8 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
 
           {/* 6) Data */}
           <Section icon={<Database className="size-4 shrink-0" />} title="6. Data">
+            <Row label="MVP-Datenplattform" value="Supabase" ok />
+            <Row label="Backend-Verbindung" value={backendStatusLabel} ok={backendStatusOk} />
             <Row label="Local storage" value="active" ok />
             <Row label="Last local backup" value={fmtDate(lastBackup)} />
             <Row label="Last Azure export" value={fmtDate(p.data?.lastAzureExportAt)} />
@@ -466,8 +526,15 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
         </div>
 
         <DialogFooter className="gap-2 sm:justify-between">
-          <Button variant="outline" size="sm" onClick={health.refresh} disabled={health.inFlight}>
-            <RefreshCw className={`mr-2 size-4 ${health.inFlight ? "animate-spin" : ""}`} />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refreshAll}
+            disabled={health.inFlight || adminBackendState === "checking"}
+          >
+            <RefreshCw
+              className={`mr-2 size-4 ${health.inFlight || adminBackendState === "checking" ? "animate-spin" : ""}`}
+            />
             Jetzt prüfen
           </Button>
           <Button variant="outline" onClick={() => handleOpenChange(false)}>
