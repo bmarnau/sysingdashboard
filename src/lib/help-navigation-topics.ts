@@ -69,6 +69,59 @@ Der **Stift** öffnet ausschließlich **Projekt bearbeiten**. Im Projektdetail s
 Bearbeitungsaktionen erscheinen nur mit den vorhandenen Rechten für Projekt, Arbeitspaket oder Tätigkeit. Lesende Rollen bleiben read-only.`,
     relatedTopics: ["navigation-ansichten", "time-entries", "berichte"],
   },
+  {
+    id: "system-status",
+    title: "Systemstatus",
+    category: "Service",
+    route: "/",
+    component: "SystemStatusDialog",
+    keywords: [
+      "Systemstatus",
+      "GitHub",
+      "Commit",
+      "Branch",
+      "Version",
+      "Lovable",
+      "Supabase",
+      "Backend",
+      "Authentifizierung",
+      "Health",
+    ],
+    lastUpdated: "2026-08-22",
+    content: `## Was zeigt der Systemstatus?
+**Service → Systemstatus…** zeigt ausschließlich Statusinformationen und nicht-sensible Metadaten. Verbindungsadressen, Schlüssel, Tokens, Passwörter und Connection Strings werden dort nicht ausgegeben.
+
+## GitHub
+Die Repository-URL ist die kanonische öffentliche Projektadresse **https://github.com/bmarnau/sysingdashboard**. Interne Git-Remotes einer Hosting-Plattform werden nicht als Repository-URL übernommen.
+
+Branch und Commit werden nur angezeigt, wenn Build- oder Hosting-Umgebung diese Information verlässlich bereitstellen. Fehlt der Commit in einer Lovable-Runtime, erscheint **„vom Hosting nicht bereitgestellt“**. Das bedeutet nicht, dass GitHub falsch konfiguriert ist; für einen reproduzierbaren Freigabenachweis ist weiterhin der in GitHub geprüfte Merge-Commit maßgeblich.
+
+## Supabase als MVP-Plattform
+Im Bereich **Data** wird **Supabase** als aktuelle MVP-Daten- und Authentifizierungsplattform ausgewiesen. Die Anzeige **Auth-Konfiguration** prüft nur, ob die erforderliche Client-Konfiguration plausibel vorhanden ist. Sie zeigt weder URL noch Publishable Key an.
+
+## Geschützter Backend-Nachweis
+System-Administrator und Administrator besitzen **users.manage**. Nur für diese Rollen führt der Systemstatus beim Öffnen oder mit **Jetzt prüfen** zusätzlich einen geschützten Backend-Nachweis aus. Der Server prüft zuerst Anmeldung und Berechtigung und bestätigt anschließend nur **Provider: Supabase** und **Backend-Verbindung: erreichbar**.
+
+Ein Teamleiter darf den allgemeinen Systemstatus sehen, besitzt aber kein **users.manage**. Deshalb wird für ihn dieser Admin-Nachweis nicht ausgelöst und als **„nicht geprüft — users.manage erforderlich“** gekennzeichnet. Das ist beabsichtigtes Least-Privilege-Verhalten und kein Verbindungsfehler.
+
+## Öffentlicher Health-Status
+Der allgemeine **/api/status** bleibt ein secret-freier Health-Endpunkt. Er enthält keine Supabase-Verbindungsadresse, keine Projektkennung und keine Zugangsdaten. Ein administrativer Backend-Nachweis wird bewusst nicht in diesen öffentlichen Endpoint verschoben.
+
+## Weitere Bereiche
+Der Dialog zeigt außerdem Application-/Buildinformationen, Lovable-Status, Azure-Readiness, Security/RBAC, lokale Backup-/Dateninformationen, Dokumentationsstand, Backend-Health und Security-Scan-Hinweise.
+
+## Interpretation
+- **configured / erreichbar**: der jeweilige technische Nachweis ist positiv.
+- **Not configured**: die betreffende optionale Funktion ist nicht konfiguriert.
+- **vom Hosting nicht bereitgestellt**: die Hosting-Runtime liefert die Metadaten nicht; dies ist kein Konfigurationsfehler.
+- **nicht geprüft — users.manage erforderlich**: der Benutzer darf den geschützten Admin-Nachweis nicht ausführen.`,
+    relatedTopics: [
+      "rbac-rollen-berechtigungen",
+      "security-principles",
+      "local-operation",
+      "technical-test-report",
+    ],
+  },
 ];
 
 export function registerDashboardNavigationHelp(): void {
