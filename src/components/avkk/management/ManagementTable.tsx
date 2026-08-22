@@ -120,17 +120,23 @@ export function ManagementTable({
           <tbody>
             {rows.map((row) => (
               <tr key={row.key} className="border-t border-border hover:bg-secondary/30">
-                <th scope="row" className="max-w-[16rem] px-3 py-2 text-left font-medium">
-                  <button
-                    type="button"
-                    onClick={() => onOpen(row)}
-                    className="truncate text-left underline-offset-2 hover:underline"
-                  >
-                    {row.task.title}
-                  </button>
-                  <span className="block text-xs font-normal text-muted-foreground">
-                    {TYPE_LABEL[row.task.subjectType]}
-                  </span>
+                <th
+                  scope="row"
+                  className="max-w-[16rem] overflow-hidden px-3 py-2 text-left font-medium"
+                >
+                  <div className="w-[16rem] max-w-full min-w-0 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => onOpen(row)}
+                      title={row.task.title}
+                      className="line-clamp-2 w-full min-w-0 break-words text-left underline-offset-2 hover:underline"
+                    >
+                      {row.task.title}
+                    </button>
+                    <span className="block text-xs font-normal text-muted-foreground">
+                      {TYPE_LABEL[row.task.subjectType]}
+                    </span>
+                  </div>
                 </th>
                 <td className="max-w-[12rem] truncate px-3 py-2 text-muted-foreground">
                   {row.task.context || "—"}
