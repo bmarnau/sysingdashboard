@@ -11,6 +11,12 @@ export interface AvkkResponsibilityPerson {
   displayName: string;
 }
 
+function sameKeySet(left: readonly string[], right: readonly string[]): boolean {
+  const a = [...new Set(left)].sort();
+  const b = [...new Set(right)].sort();
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
 export function AvkkResponsibilitySection({
   responsibilities,
   people,
@@ -29,17 +35,38 @@ export function AvkkResponsibilitySection({
   saving: boolean;
   /** Solange der Serverstand lädt, wird der bestehende Stand nicht behauptet. */
   loading?: boolean;
-  onSave: (input: { personId: string; roleKey: string; typeKeys: string[]; note: string }) => void;
+  onSave: (input: {
+    personId: string;
+    roleKey: string;
+    typeKeys: string[];
+    note: string;
+  }) => Promise<boolean>;
 }) {
+  const defaultRoleKey = roles.find((r) => r.isDefault)?.key ?? "";
   const [personId, setPersonId] = useState("");
-  const [roleKey, setRoleKey] = useState(roles.find((r) => r.isDefault)?.key ?? "");
+  const [roleKey, setRoleKey] = useState(defaultRoleKey);
   const [typeKeys, setTypeKeys] = useState<string[]>([]);
   const [note, setNote] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const active = responsibilities.filter((r) => r.validTo === null);
   const nameOf = (id: string) =>
     people.find((p) => p.id === id)?.displayName ?? "Person nicht verfügbar";
-  const valid = personId !== "" && roleKey !== "" && typeKeys.length > 0;
+  const duplicateActive =
+    personId !== "" &&
+    roleKey !== "" &&
+    typeKeys.length > 0 &&
+    active.some(
+      (responsibility) =>
+        responsibility.personId === personId &&
+        responsibility.roleKey === roleKey &&
+        sameKeySet(
+          responsibility.types.map((type) => type.key),
+          typeKeys,
+        ),
+    );
+  const valid = personId !== "" && roleKey !== "" && typeKeys.length > 0 && !duplicateActive;
+  const busy = saving || submitting;
 
   if (loading) {
     return <p className="text-xs text-muted-foreground">Verantwortung wird geladen …</p>;
@@ -73,7 +100,7 @@ export function AvkkResponsibilitySection({
       ) : (
         <fieldset
           className="grid grid-cols-1 gap-3 border-t border-border pt-3 sm:grid-cols-2"
-          disabled={saving}
+          disabled={busy}
         >
           <legend className="text-xs font-semibold">Weitere Verantwortung hinzufügen</legend>
           <p className="text-xs text-muted-foreground sm:col-span-2">
@@ -133,6 +160,12 @@ export function AvkkResponsibilitySection({
             </div>
           </div>
 
+          {duplicateActive ? (
+            <p role="alert" className="text-xs text-warning sm:col-span-2">
+              Diese Verantwortung ist bereits aktiv zugeordnet.
+            </p>
+          ) : null}
+
           <label className="text-xs font-medium sm:col-span-2">
             Notiz (optional)
             <input
@@ -145,15 +178,24 @@ export function AvkkResponsibilitySection({
           <div className="sm:col-span-2">
             <button
               type="button"
-              disabled={!valid || saving}
-              onClick={() => {
-                onSave({ personId, roleKey, typeKeys, note });
-                setTypeKeys([]);
-                setNote("");
+              disabled={!valid || busy}
+              onClick={async () => {
+                if (!valid || busy) return;
+                setSubmitting(true);
+                try {
+                  const saved = await onSave({ personId, roleKey, typeKeys, note });
+                  if (!saved) return;
+                  setPersonId("");
+                  setRoleKey(defaultRoleKey);
+                  setTypeKeys([]);
+                  setNote("");
+                } finally {
+                  setSubmitting(false);
+                }
               }}
               className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-sm text-primary-foreground disabled:opacity-50"
             >
-              Verantwortung zuordnen
+              {busy ? "Verantwortung wird gespeichert …" : "Verantwortung zuordnen"}
             </button>
           </div>
         </fieldset>
