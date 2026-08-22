@@ -19,6 +19,11 @@ function safeGit(cmd: string): string {
   }
 }
 
+// Security boundary: never derive a browser-visible repository URL from
+// `git remote`. Hosted build environments may use credential-bearing internal
+// remotes. The public GitHub repository is project metadata, not runtime state.
+const PUBLIC_GITHUB_REPOSITORY_URL = "https://github.com/bmarnau/sysingdashboard";
+
 const pkg = JSON.parse(readFileSync("./package.json", "utf8")) as { version?: string };
 const buildInfo = {
   commit: safeGit("git rev-parse --short HEAD") || "unknown",
@@ -26,7 +31,7 @@ const buildInfo = {
   branch: safeGit("git rev-parse --abbrev-ref HEAD") || "unknown",
   builtAt: new Date().toISOString(),
   packageVersion: pkg.version ?? "0.0.0",
-  repoRemote: safeGit("git config --get remote.origin.url") || "",
+  repoRemote: PUBLIC_GITHUB_REPOSITORY_URL,
   dirty: safeGit("git status --porcelain") !== "",
 };
 
