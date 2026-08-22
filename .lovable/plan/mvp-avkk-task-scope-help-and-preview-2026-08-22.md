@@ -18,7 +18,14 @@ Projekt
 
 Ein Projekt kann zusätzlich selbst AVKK und Verantwortung tragen.
 
-**Tätigkeiten sind im produktiven MVP keine delegierbaren AVKK-Aufgaben.** Sie bleiben vollständig als Arbeits-/Leistungsnachweise im Dashboard, im Projektcockpit und in der Zeiterfassung erhalten.
+**Tätigkeiten sind im produktiven MVP keine delegierbaren AVKK-Aufgaben.** Sie bleiben vollständig als Arbeits-/Leistungsnachweise im Dashboard, im Projektcockpit, in Kundensichten, Leistungsnachweisen, Abrechnung und Zeiterfassung erhalten.
+
+Wichtig: **Keine AVKK-Aufgabe bedeutet ausdrücklich nicht „nicht editierbar“.**
+
+- Projektleiter behalten `activity.edit` und dürfen Tätigkeiten im vorgesehenen Scope bearbeiten.
+- Teamleiter behalten `activity.edit` und dürfen Tätigkeiten im vorgesehenen Scope bearbeiten.
+- Engineer behalten `activity.edit` im vorgesehenen eigenen Scope.
+- Diese Tätigkeitsrechte sind fachlich unabhängig vom AVKK-Delegationsrecht.
 
 ## Verbindliche Grundlage
 
@@ -27,7 +34,8 @@ Der GitHub-`main` enthält nach Merge:
 - `MVP_AVKK_TASK_SUBJECT_TYPES = ["project", "workpackage"]`;
 - `tasksFromLocalData()` erzeugt nur Projekte und Arbeitspakete;
 - `activity` bleibt aus Migrations-/Kompatibilitätsgründen ein historisch zulässiger AVKK-Subject-Typ;
-- keine destruktive Datenbankänderung nur für diese fachliche Korrektur.
+- keine destruktive Datenbankänderung nur für diese fachliche Korrektur;
+- die bestehenden RBAC-Rechte `activity.edit` für Teamlead, Projectmanager und Engineer bleiben unverändert.
 
 ## Vorgehen
 
@@ -35,6 +43,7 @@ Der GitHub-`main` enthält nach Merge:
    - Prüfe den aktuellen GitHub-`main` und die genannten Dateien.
    - Suche alle UI-, Hilfe-, Handbuch-, Reporting- und Abnahmetexte, die noch behaupten, Tätigkeiten seien AVKK-Aufgaben oder delegierbar.
    - Ermittle Auswirkungen auf Demo-Kennzahlen und Berichte aus dem tatsächlichen Code/Teststand; keine Zahlen raten.
+   - Prüfe ausdrücklich, dass die AVKK-Scope-Korrektur keine Tätigkeitsrechte oder Tätigkeitsdaten in Kundensicht, Leistungserfassung oder Abrechnung entfernt.
 
 2. **Funktion prüfen**
    - „Mein AVKK“ zeigt als Aufgaben nur Projekte und Arbeitspakete.
@@ -42,12 +51,17 @@ Der GitHub-`main` enthält nach Merge:
    - Eine Tätigkeit wie `demo-act-3` darf nicht als AVKK-Aufgabe geöffnet oder mit Verantwortung versehen werden.
    - Projektcockpit zeigt die zugehörigen Tätigkeiten weiterhin als Arbeitsnachweise.
    - Tätigkeits-Erfassung, Zeit und Abrechnung bleiben unverändert funktionsfähig.
+   - Projektleiter können Tätigkeiten weiterhin bearbeiten.
+   - Teamleiter können Tätigkeiten weiterhin bearbeiten.
+   - Engineer können Tätigkeiten im vorgesehenen eigenen Scope weiterhin bearbeiten.
+   - Viewer/Customer erhalten dadurch keine neuen Bearbeitungsrechte.
 
 3. **Kontextsensitive Hilfe aktualisieren**
    - Direkt im AVKK-Kontext verständlich erklären:
      - Projekt/Arbeitspaket = steuerbare Aufgabe;
      - Verantwortung kann durch berechtigte Führungsrollen zugeordnet/delegiert werden;
-     - Tätigkeit = dokumentiert tatsächlich geleistete Arbeit und wird nicht delegiert.
+     - Tätigkeit = dokumentiert tatsächlich geleistete Arbeit und wird nicht delegiert;
+     - Tätigkeiten bleiben für berechtigte Rollen bearbeitbar und sind Grundlage für Leistungsnachweis/Kundensicht/Abrechnung.
    - Keine technische Implementierungsdetailsprache für normale Benutzer verwenden.
 
 4. **Allgemeine Hilfe und Benutzerhandbuch aktualisieren**
@@ -59,11 +73,13 @@ Der GitHub-`main` enthält nach Merge:
      - Engineer kann keine Verantwortung zuweisen;
      - Viewer bleibt read-only.
    - Projektcockpit-Hilfe klarstellen: Tätigkeiten sind dort weiterhin sichtbar, weil sie Arbeitsnachweise des Arbeitspakets sind.
-   - Suchbegriffe/Keywords für „Delegation“, „Verantwortung“, „Tätigkeit“, „Arbeitsnachweis“, „Arbeitspaket“ ergänzen, damit die Hilfe auffindbar ist.
+   - Hilfe für Tätigkeiten klarstellen: Projektleiter und Teamleiter dürfen Tätigkeiten weiterhin bearbeiten; Kundensicht, Leistungsnachweis und Abrechnung verwenden diese Daten weiterhin.
+   - Suchbegriffe/Keywords für „Delegation“, „Verantwortung“, „Tätigkeit“, „Arbeitsnachweis“, „Arbeitspaket“, „Kundensicht“, „Abrechnung“ ergänzen, damit die Hilfe auffindbar ist.
 
 5. **Reporting und Demo-Werte prüfen**
    - Alle AVKK-KPIs und SYSING-101/102/103 anhand des neuen Scopes neu berechnen.
-   - Alte Gesamtwerte, die Projekte + Arbeitspakete + Tätigkeiten zählten, nicht beibehalten, wenn sie fachlich nicht mehr stimmen.
+   - Alte AVKK-Gesamtwerte, die Projekte + Arbeitspakete + Tätigkeiten zählten, nicht beibehalten, wenn sie fachlich nicht mehr stimmen.
+   - Kunden-/Leistungs-/Abrechnungswerte auf Basis von Tätigkeiten dürfen dadurch nicht verschwinden oder fachlich verfälscht werden.
    - Nur Werte ändern, die sich aus Code/Test/Demodaten tatsächlich ergeben.
    - Keine personenbezogenen Ranglisten oder Scores einführen.
 
@@ -71,6 +87,8 @@ Der GitHub-`main` enthält nach Merge:
    - vorhandene Unit-/Integration-/Reporting-Tests ausführen;
    - falls alte Tests Tätigkeiten als AVKK-Aufgaben erwarten, fachlich korrekt aktualisieren;
    - sicherstellen, dass Tätigkeitsfunktionen außerhalb AVKK nicht regressieren;
+   - RBAC gezielt prüfen: `activity.edit` für Projectmanager/Teamlead unverändert; Engineer im vorgesehenen eigenen Scope; Viewer/Customer ohne neues Edit-Recht;
+   - Kundensicht, Leistungsnachweis und Abrechnung mit Tätigkeitsdaten prüfen;
    - Typecheck, Lint, Prettier, Build und relevante E2E-/Security-Gates ausführen.
 
 7. **Dokumentation / Abschluss**
@@ -80,7 +98,8 @@ Der GitHub-`main` enthält nach Merge:
 
 ## Nicht tun
 
-- Tätigkeiten nicht aus Projektcockpit, Zeiterfassung oder Abrechnung entfernen;
+- Tätigkeiten nicht aus Projektcockpit, Zeiterfassung, Kundensicht, Leistungsnachweis oder Abrechnung entfernen;
+- `activity.edit` für Projektleiter, Teamleiter oder Engineer nicht im Rahmen dieser AVKK-Korrektur reduzieren;
 - bestehende AVKK-Activity-Daten nicht destruktiv löschen;
 - DB-Constraint für `activity` nicht ohne eigene Migration-/Datenbereinigung ändern;
 - `measure` nicht unbemerkt zum MVP-Scope hinzufügen;
@@ -93,6 +112,9 @@ Der GitHub-`main` enthält nach Merge:
 - AVKK-Aufgabentypen in UI: Projekt + Arbeitspaket: PASS/FAIL
 - Tätigkeit aus AVKK-Aufgabenliste entfernt: PASS/FAIL
 - Tätigkeit im Projektcockpit weiter vorhanden: PASS/FAIL
+- Projektleiter/Teamleiter `activity.edit` unverändert: PASS/FAIL
+- Engineer `activity.edit` im vorgesehenen eigenen Scope unverändert: PASS/FAIL
+- Kundensicht/Leistungsnachweis/Abrechnung mit Tätigkeitsdaten: PASS/FAIL
 - kontextsensitive Hilfe aktualisiert: PASS/FAIL
 - allgemeine Hilfe/Handbuch aktualisiert: PASS/FAIL
 - Reporting-KPIs neu geprüft: PASS/FAIL + tatsächliche Werte
@@ -102,4 +124,4 @@ Der GitHub-`main` enthält nach Merge:
 
 ## Abnahmekriterium
 
-**Fachmodell, UI, Reporting und Hilfe sind konsistent auf Projekt + Arbeitspaket als AVKK-Aufgaben ausgerichtet; Tätigkeiten bleiben Arbeitsnachweise.**
+**Fachmodell, UI, Reporting und Hilfe sind konsistent auf Projekt + Arbeitspaket als AVKK-Aufgaben ausgerichtet; Tätigkeiten bleiben bearbeitbare Arbeitsnachweise für die berechtigten Rollen und operative Grundlage für Kundensicht, Leistungsnachweis und Abrechnung.**
