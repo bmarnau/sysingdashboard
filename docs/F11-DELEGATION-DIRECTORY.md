@@ -69,3 +69,22 @@ Nach Anwendung der Migration in der Lovable-Supabase-Umgebung:
 5. Engineer/Viewer erhalten dadurch keine Benutzerverwaltung und keine zusätzlichen AVKK-Schreibrechte.
 
 F-11 bleibt bis zu diesen manuellen Nachweisen `MANUAL VERIFICATION REQUIRED`.
+
+## Angewendeter Datenbankstand
+
+Stand 2026-08-22 wurde die Repository-Migration
+`supabase/migrations/20260822103100_f11_avkk_people_directory.sql` unverändert auf die mit
+diesem Projekt verbundene Backend-Datenbank angewendet.
+
+Technisch geprüft:
+
+- `public.avkk_people_directory()` ist vorhanden (`SECURITY DEFINER`, `STABLE`, `search_path = ''`).
+- `PUBLIC` und `anon` besitzen kein `EXECUTE`; ausführbar sind ausschließlich `authenticated`
+  (sowie `postgres`/`service_role` als Eigentümer- bzw. Wartungsrollen).
+- Die Policies von `profiles` und `user_roles` sind unverändert (Self- bzw. Admin-Sicht).
+
+Der Linterhinweis „Signed-In Users Can Execute SECURITY DEFINER Function" ist für diesen
+Vertrag beabsichtigt: die Funktion prüft die Berechtigungen `avkk.view` bzw.
+`avkk.responsibility.assign` intern und gibt nur Name, Rolle und Status aus.
+
+F-11 bleibt `MANUAL VERIFICATION REQUIRED` (Abnahme Georg Marnau, danach Petra Marnau).
