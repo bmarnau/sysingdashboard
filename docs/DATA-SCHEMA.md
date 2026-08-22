@@ -1,262 +1,286 @@
 # Datenmodell & Export-Schema
 
-Das kanonische Schema für Export/Import und Azure-Sync lebt als Code, nicht
-als Prosa — sonst driftet die Doku garantiert.
+Stand: 2026-08-22
+
+Das kanonische Schema fuer Export/Import und spaetere Provider-Synchronisation
+lebt als Code, nicht als Prosa. Dieses Dokument beschreibt die Grenzen und den
+tatsaechlich migrierten Supabase-Stand, ohne den Codevertrag zu duplizieren.
 
 ## Single Source of Truth
 
-- **TypeScript-Typen**: [`src/lib/json-schema.ts`](../src/lib/json-schema.ts)
-- **JSON-Schema-Validation** (Runtime): [`src/lib/json-schema-validation-service.ts`](../src/lib/json-schema-validation-service.ts)
-- **Fixtures**: [`src/data/dashboard.json`](../src/data/dashboard.json)
+- **TypeScript-/Zod-Schema**: [`src/lib/json-schema.ts`](../src/lib/json-schema.ts)
+- **JSON-Schema-Validation**: [`src/lib/json-schema-validation-service.ts`](../src/lib/json-schema-validation-service.ts)
+- **Backupformat**: [`src/lib/backup/`](../src/lib/backup/)
+- **Supabase-Migrationen**: [`supabase/migrations/`](../supabase/migrations/)
 
-Bei Änderungen am Datenmodell **immer** dort ändern, nicht hier.
+Bei Aenderungen am Datenmodell wird zuerst der jeweilige Code-/Migrationsvertrag
+geaendert. Diese Datei dokumentiert den daraus abgeleiteten Ist-Zustand.
 
-## Top-Level Shape (verkürzt)
+---
+
+# JSON-Export / Import
+
+## Schema-Version 1.1.0
+
+Seit Schema 1.1.0 ist AVKK als optionaler, additiver Block Bestandteil des
+JSON-Vertrags. Dokumente ohne `avkk` bleiben abwaertskompatibel gueltig.
+
+Verkuerzte Struktur:
 
 ```ts
-export type DashboardExport = {
-  metadata: {
-    version: string; // Semver, siehe Versionierungsregeln unten
-    exportedAt: string; // ISO-8601
-    exportedBy: string; // userId
-  };
-  data: {
-    engineers: Engineer[];
-    projects: Project[];
-    workPackages: WorkPackage[];
-    activities: Activity[];
-  };
+export type DashboardJsonExport = {
+  schemaVersion: string;
+  exportType: "full" | "partial";
+  exportedAt: string;
+  exportedBy: string;
+  dashboardVersion: string;
+  scopes?: Array<
+    | "users"
+    | "customers"
+    | "projects"
+    | "workpackages"
+    | "activities"
+    | "timeentries"
+    | "settings"
+    | "targettime"
+    | "avkk"
+  >;
+  users?: UserProfileExport[];
+  customers?: CustomerExport[];
+  projects?: ProjectExport[];
+  workPackages?: WorkPackageExport[];
+  activities?: ActivityExport[];
+  timeEntries?: TimeEntryExport[];
+  targetTimeModels?: TargetTimeModelExport[];
+  settings?: DashboardSettingsExport[];
+  avkk?: AvkkExport;
 };
 ```
 
+Der AVKK-Block enthaelt Subjects, Verantwortungen, Kompetenzbewertungen,
+Konsequenzen, Katalogreferenzen und die fuer den Snapshot benoetigten
+Reference-Data-Werte. Labels werden als historische Momentaufnahme mitgefuehrt.
+Zugangsdaten gehoeren nicht in diesen Vertrag.
+
 ## Versionierungsregeln
 
-Das Export-Format nutzt eine **eigene Semver** unabhängig von der Dashboard-
-Version (`CHANGELOG.md`), weil Nutzer alte Backups auch nach mehreren Dashboard-
-Releases importieren.
+Das Exportformat nutzt eine eigene Semver unabhaengig von der
+Dashboard-Version (`CHANGELOG.md`).
 
-| Änderung                             | Version-Bump |
+| Aenderung                             | Version-Bump |
 | ------------------------------------ | ------------ |
-| Neues optionales Feld                | `MINOR`      |
-| Neue Enum-Werte (abwärtskompatibel)  | `MINOR`      |
-| Neues Pflichtfeld                    | `MAJOR`      |
-| Umbenennung / Typwechsel eines Felds | `MAJOR`      |
-| Bugfix ohne Schema-Effekt            | `PATCH`      |
+| Neues optionales Feld               | MINOR        |
+| Neue Enum-Werte, abwaertskompatibel | MINOR        |
+| Neues Pflichtfeld                   | MAJOR        |
+| Umbenennung / Typwechsel            | MAJOR        |
+| Bugfix ohne Schema-Effekt           | PATCH        |
 
 ## Migrations-Policy
 
-- **Import älterer MINOR/PATCH** → automatisch (fehlende optionale Felder
-  bekommen Defaults).
-- **Import älterer MAJOR** → expliziter Migrationsschritt in
-  `src/lib/json-import-service.ts`. Migrationen sind **additiv-only** (nie
-  Datenpunkte verwerfen), Ergebnis muss `json-schema-validation-service`
-  bestehen.
-- **Import neuerer MAJOR** → wird abgelehnt mit klarem Fehler.
+- Aeltere MINOR/PATCH-Versionen: kompatibel lesen bzw. mit Defaults ergaenzen.
+- Aeltere MAJOR-Versionen: expliziter, additiver Migrationsschritt im Import.
+- Neuere unbekannte MAJOR-Versionen: ablehnen statt stillschweigend Daten zu
+  verlieren.
 
-Jede neue Migration:
+Jede Migration benoetigt Code, Regressionstest und Dokumentation.
 
-1. Migration-Funktion in `json-import-service.ts` ergänzen (`migrateV<N>toV<N+1>`).
-2. Testcase in `src/__tests__/integration/import.test.ts`.
-3. Handbuch-Kapitel `changelog` mit Import-Kompatibilitätsnotiz.
+## Grenzen des JSON-Vertrags
 
-## Grenzen
+- Keine beliebigen binaeren Datei-Anhaenge.
+- Keine Log-Historie; Logs bleiben im dafuer vorgesehenen lokalen Log-Speicher.
+- Kein Delta-/CRDT-Format; der heutige Export ist Snapshot-orientiert.
+- Der Kundenblock ist im aktuellen Modell teilweise synthetisch aus
+  bestehenden Kundenbezeichnungen abgeleitet. Ein eigenstaendiges
+  Kundenverantwortungsmodell ist ein spaeteres Fachthema.
 
-- **Keine binären Anhänge** im JSON-Export (Profilbilder werden separat als
-  Data-URL im User-Record persistiert — kein Feld für Datei-Assets).
-- **Keine Log-Historie** — Logs bleiben ausschließlich in IndexedDB
-  (siehe [ADR-0005](./ADR/0005-frontend-logger-no-sentry.md)).
-- **Kein Delta-Format** — alle Exports sind Full-Snapshots. Delta-Sync ist
-  offenes Thema für später (CRDT-Kandidat).
+---
 
-## Backup-Archiv — Manifest 2.0
+# Backup-Archiv — Manifest 2.0
 
-Das ZIP-Backup (Service → Backup) nutzt ein eigenes, vom JSON-Exportschema
-unabhängiges Format. Seit Dashboard 1.48.0 gilt Manifest-Version `2.0`
-(ADR-0022).
+Das ZIP-Backup nutzt ein eigenes, vom JSON-Exportschema getrennt versioniertes
+Manifest. Seit Dashboard 1.48.0 gilt Manifest-Version `2.0` (ADR-0022).
+
+Verkuerzt:
 
 ```jsonc
 {
   "version": "2.0",
   "project": "dashboard",
   "createdAt": "2026-08-05T10:00:00.000Z",
-  "keyCount": 12,
-  "excludedKeys": ["engineer-dashboard:password_token"],
-  "archiveItemCount": 3,
-  "note": "…",
   "entries": [
     {
       "logicalName": "storage:engineer-dashboard:profile",
-      "storageKey": "engineer-dashboard:profile", // null bei reinen Dokumenten
-      "path": "data/engineer-dashboard_profile.json", // reine Speicheradresse
-      "checksum": "sha256:…",
+      "storageKey": "engineer-dashboard:profile",
+      "path": "data/engineer-dashboard_profile.json",
+      "checksum": "sha256:...",
       "size": 128,
       "contentType": "application/json",
-      "createdAt": "2026-08-05T10:00:00.000Z",
-      "description": "optional",
-    },
-  ],
+      "createdAt": "2026-08-05T10:00:00.000Z"
+    }
+  ]
 }
 ```
 
 Regeln:
 
-- `entries[]` ist die **einzige** fachliche Zuordnung. `path` trägt keine
-  Bedeutung und darf frei gewählt werden.
-- `logicalName`, `storageKey` (sofern nicht `null`) und `path` sind jeweils
+- `entries[]` ist die fachliche Zuordnung; Dateinamen selbst haben keine
+  fachliche Bedeutung.
+- `logicalName`, `storageKey` und `path` sind im jeweils zulaessigen Scope
   eindeutig.
-- Jede Datei im Archiv außer `manifest.json` besitzt genau einen Eintrag.
-- Abweichende Prüfsumme, Größe oder Dateityp bricht den Restore ab.
-- Archive ohne `entries[]` (Format 1) werden beim Lesen migriert und mit einer
-  Warnung im Restore-Protokoll versehen; sie werden nicht umgeschrieben.
+- Jede Archivdatei ausser `manifest.json` besitzt genau einen Manifest-Eintrag.
+- Pruefsumme, Groesse und Dateityp werden vor Restore validiert.
+- Altarchive ohne `entries[]` koennen gelesen und intern auf den aktuellen
+  Vertrag abgebildet werden; sie werden nicht stillschweigend umgeschrieben.
+
+## AVKK und Reference Data im Backup
+
+Seit Sprint 08B fuehrt das Backup zusaetzlich AVKK-/Reference-Data-Snapshots
+(`avkk.json`, `reference-data.json`). Diese Daten werden mit Manifest und
+Pruefsummen validiert.
+
+Wichtig: Der Browser-Restore **schreibt AVKK nicht in Supabase zurueck**.
+`restoreFromZip()` validiert IDs, Subjects, Katalogwerte und Katalogversionen
+und erzeugt einen Restore-Bericht. Verwaiste lokale Aufgabenbezuege werden als
+Quarantaene gemeldet. Ein Datenbank-Restore gehoert auf die Provider-/DB-Ebene
+und darf nicht als Browsertransaktion simuliert werden.
+
+Verbindliche Entscheidung: [ADR-0026](./ADR/0026-loeschstrategie-und-avkk-backup.md).
 
 ---
 
 # Supabase-Datenbankstand
 
-Stand: Dashboard 1.52.0 (Sprint 07B). Dieser Abschnitt beschreibt **den
-tatsächlich migrierten Zustand**, nicht die Planung. Geplante, aber nicht
-angelegte Tabellen sind hier nicht aufgeführt. Technische Begründungen:
-[ADR-0025](./ADR/0025-avkk-umsetzung-07b.md).
+Dieser Abschnitt beschreibt den tatsaechlich migrierten MVP-Stand. Supabase ist
+die fuehrende Authentifizierungs- und serverseitige Datenplattform des MVP.
+Projekte, Arbeitspakete und Taetigkeiten bleiben im aktuellen Modell weiterhin
+Local-First/browsergebunden.
 
-Alle Tabellen liegen im Schema `public`, haben RLS aktiviert und `id uuid`
-(Default `gen_random_uuid()`) als Primärschlüssel, sofern nicht anders
-vermerkt.
+Alle fachlichen Tabellen liegen im Schema `public`, sind durch explizite Grants
+und RLS abgesichert und werden ueber die versionierten Migrationen aufgebaut.
 
-## 1. Plattform- und Identitätstabellen (Bestand)
+## 1. Plattform- und Identitaetstabellen
 
-| Tabelle        | PK                  | Zweck                             | Besonderheiten                                         |
-| -------------- | ------------------- | --------------------------------- | ------------------------------------------------------ |
-| `profiles`     | `id` → `auth.users` | Benutzerprofil                    | Status `active/inactive/locked/archived`, kein DELETE  |
-| `user_roles`   | `id`                | Rollenzuordnung                   | `UNIQUE (user_id, role)`, Enum `app_role` (7 Werte)    |
-| `app_settings` | `key`               | Key/Value-Konfiguration (`jsonb`) | Audit-Trigger, kein DELETE                             |
-| `audit_log`    | `id`                | Zentrales Protokoll               | append-only, kein UPDATE/DELETE, nur Trigger schreiben |
+| Tabelle        | Zweck                                  | Besonderheiten                                      |
+| -------------- | -------------------------------------- | --------------------------------------------------- |
+| `profiles`     | Benutzerprofil                         | Bezug zu `auth.users`, Kontostatus, RLS             |
+| `user_roles`   | Rollenzuordnung                        | getrennt vom Profil, DB-seitige Schutzregeln        |
+| `app_settings` | globale Laufzeit-/Facheinstellungen    | authentifiziert lesbar, Schreiben berechtigt/audit  |
+| `audit_log`    | zentrales Pruefprotokoll               | append-orientiert, Schreibpfade kontrolliert        |
+
+Authentifizierungsidentitaeten selbst liegen in `auth.users` und werden von
+Supabase Auth verwaltet.
 
 ## 2. Reference Data
 
 ### `reference_catalog`
 
-`key` (unique), `name`, `description`, `domain`, `is_system`,
-`is_hierarchical`, `version` (Integer, durch Trigger erhöht), `created_at`,
-`updated_at`.
+Katalogkopf mit `key`, Name, Beschreibung, Domaene, System-/Hierarchieflag,
+Version und Zeitstempeln.
 
 ### `reference_value`
 
-`catalog_id` → `reference_catalog.id`, `key`, `label`, `description`,
-`sort_order`, `is_active`, `is_default`, `parent_value_id` →
-`reference_value.id` (Selbstreferenz für hierarchische Kataloge),
-`attributes jsonb`, `valid_from`, `valid_to`, `created_by`/`updated_by` →
-`auth.users.id`.
+Versionierbare Katalogwerte mit Key/Label, Sortierung, Aktivstatus, optionaler
+Hierarchie, Attributen, Gueltigkeit und Actor-Referenzen.
 
-- `UNIQUE (catalog_id, key)`
-- Index `(catalog_id, sort_order)`
-- Kein DELETE: Werte werden über `is_active = false` und `valid_to` beendet.
+Werte werden fachlich deaktiviert bzw. zeitlich beendet statt als regulaerer
+Pflegeweg entfernt.
 
 ### `reference_value_history`
 
-`value_id`, `catalog_id`, `operation` (`insert` | `update`), `snapshot jsonb`,
-`changed_by`, `changed_at`. Append-only, kein UPDATE/DELETE. Index
-`(value_id, changed_at DESC)`.
-
-**Trigger**: `reference_value_track_change` (AFTER INSERT/UPDATE) schreibt die
-Historie, erhöht `reference_catalog.version` und protokolliert in `audit_log`.
-`set_updated_at` auf beiden Tabellen.
+Append-orientierte Historie fuer Katalogaenderungen. Der Trigger
+`reference_value_track_change` schreibt Historie, erhoeht die Katalogversion und
+protokolliert den Vorgang im Audit.
 
 ## 3. AVKK
 
-### `avkk_subject` — polymorpher Aufgabenbezug
+### `avkk_subject`
 
-`subject_type text`, `subject_id text`, `subject_title_snapshot text`,
-`status text`, `version integer`, `created_by`, `updated_by`.
+Polymorpher Bezug eines AVKK-Sachverhalts auf ein Aufgabenobjekt. Der
+Datenbankvertrag akzeptiert aus Kompatibilitaetsgruenden die Typen
+`project`, `workpackage`, `activity` und `measure`.
 
-- `CHECK subject_type IN ('project','workpackage','activity','measure')`
-- `UNIQUE (subject_type, subject_id)`
-- **Keine Fremdschlüsselbeziehung** zu den Aufgabenobjekten — siehe
-  Abschnitt 6.
+**MVP-Fachscope:** In der produktiven AVKK-Arbeits- und Managementsicht sind nur
+`project` und `workpackage` delegierbare AVKK-Aufgaben. `activity` bleibt ein
+operativer Arbeits-/Leistungsnachweis; `measure` ist Zukunfts-/Legacy-Scope.
+Die breitere DB-Enum ist daher kein Auftrag, diese Typen in der MVP-UI als
+AVKK-Aufgaben anzuzeigen.
+
+Es besteht weiterhin keine relationale Fremdschluesselbeziehung zu den lokal
+gefuehrten Aufgabenobjekten. Titel-Snapshot, Typ-/ID-Eindeutigkeit und
+Servicepruefungen sichern diese Grenze ab.
 
 ### `avkk_responsibility`
 
-`avkk_subject_id` → `avkk_subject.id`, `person_id` → `profiles.id`,
-`role_value_id` → `reference_value.id`, `role_key_snapshot`,
-`role_label_snapshot`, `note`, `valid_from`, `valid_to`.
-Indizes auf `avkk_subject_id` und `person_id`. Einzige AVKK-Tabelle mit
-erlaubtem DELETE.
+Verantwortungszuordnung mit Person, Rollen-Snapshot, Notiz und
+Gueltigkeitszeitraum. Aenderungen an aktiver Verantwortung werden ueber die
+berechtigten AVKK-Verantwortungspfade vorgenommen; fachlich bevorzugt das
+aktuelle Modell Historisierung/Beendigung (`valid_to`) statt stiller
+Ueberschreibung.
 
 ### `avkk_responsibility_type`
 
-`responsibility_id` → `avkk_responsibility.id` (n:m zu Verantwortungsarten),
-`type_value_id` → `reference_value.id`, `type_key_snapshot`,
-`type_label_snapshot`. Kein UPDATE erlaubt.
+n:m-Zuordnung einer Verantwortung zu Verantwortungsarten mit Key-/Label-Snapshot.
 
 ### `avkk_competence`
 
-`avkk_subject_id`, `dimension_value_id` und `rating_value_id` →
-`reference_value.id` jeweils mit `key`/`label`-Snapshot, `support_needed`,
-`note`, `superseded_at`. Bewertungen werden **fortgeschrieben**: die alte Zeile
-erhält `superseded_at`, eine neue Zeile wird eingefügt. Index
-`(avkk_subject_id, superseded_at)`. Kein DELETE.
+Kompetenzdimension und Bewertung mit `support_needed`, Notiz und
+`superseded_at`. Neue Bewertungen schreiben eine neue fachliche Historienstufe;
+alte Bewertungen bleiben nachvollziehbar.
 
 ### `avkk_consequence`
 
-`avkk_subject_id`, `area_value_id`, `severity_value_id`,
-`schedule_impact_value_id` (je → `reference_value.id`, je mit
-`key`/`label`-Snapshot), `description`, `superseded_at`. Index
-`(avkk_subject_id, superseded_at)`. Kein DELETE.
-
-**Trigger**: `avkk_audit_change` (AFTER INSERT/UPDATE/DELETE) auf allen
-AVKK-Tabellen, `set_updated_at` wo `updated_at` existiert.
+Konsequenzbereich, Schweregrad, Terminwirkung, Beschreibung und
+`superseded_at`; ebenfalls historisierend.
 
 ## 4. Grants und RLS
 
-Für jede Tabelle gilt:
+Die konkrete Policy ist durch Migrationen definiert. Zusammengefasst:
 
-```sql
-GRANT SELECT, INSERT, UPDATE ON public.<table> TO authenticated;  -- DELETE nur avkk_responsibility(_type)
-GRANT ALL ON public.<table> TO service_role;
-ALTER TABLE public.<table> ENABLE ROW LEVEL SECURITY;
-```
+| Bereich                       | Lesen                         | Schreiben                                                     |
+| ----------------------------- | ----------------------------- | ------------------------------------------------------------- |
+| Reference Catalog/Values      | `referencedata.view`          | `referencedata.manage`                                        |
+| Reference History             | berechtigter Lesezugriff      | nur kontrollierte Triggerpfade                                |
+| AVKK Subject                  | `avkk.view`                   | `avkk.edit` / subjectbezogene Schreibpruefung                 |
+| AVKK Responsibility/Type     | `avkk.view`                   | `avkk.responsibility.assign`                                  |
+| AVKK Competence/Consequence  | `avkk.view`                   | `avkk_can_write(subject)`                                     |
 
-`anon` erhält durch **keine** Policy Zugriff auf AVKK- oder
-Reference-Data-Tabellen.
+`anon` erhaelt keinen fachlichen AVKK-/Reference-Data-Zugriff. Frontend-RBAC
+ist nur UI-Gating; die verbindliche Grenze liegt in RLS und serverseitigen
+Pruefungen.
 
-| Tabelle                    | SELECT               | INSERT / UPDATE                                         | DELETE   |
-| -------------------------- | -------------------- | ------------------------------------------------------- | -------- |
-| `reference_catalog`        | `referencedata.view` | `referencedata.manage`                                  | verboten |
-| `reference_value`          | `referencedata.view` | `referencedata.manage`                                  | verboten |
-| `reference_value_history`  | `referencedata.view` | nur Trigger                                             | verboten |
-| `avkk_subject`             | `avkk.view`          | `avkk.edit` (+ `created_by = auth.uid()` beim Einfügen) | verboten |
-| `avkk_responsibility`      | `avkk.view`          | `avkk.responsibility.assign`                            | erlaubt  |
-| `avkk_responsibility_type` | `avkk.view`          | `avkk.responsibility.assign`                            | erlaubt  |
-| `avkk_competence`          | `avkk.view`          | `avkk_can_write(avkk_subject_id)`                       | verboten |
-| `avkk_consequence`         | `avkk.view`          | `avkk_can_write(avkk_subject_id)`                       | verboten |
+## 5. Relevante Datenbankfunktionen
 
-## 5. Datenbankfunktionen
+| Funktion                         | Zweck                                                        |
+| -------------------------------- | ------------------------------------------------------------ |
+| `has_permission(uuid, text)`     | zentrale Berechtigungsentscheidung fuer Policies            |
+| `has_role(uuid, app_role)`       | Rollenpruefung                                               |
+| `has_any_role(uuid, app_role[])` | Mehrfachrollenpruefung                                       |
+| `is_account_active(uuid)`        | Kontostatus                                                  |
+| `avkk_can_write(uuid)`           | subjectbezogene AVKK-Schreibentscheidung                     |
+| `avkk_people_directory()`        | datensparsames Personenverzeichnis fuer AVKK-Zuordnung       |
 
-| Funktion                         | Modus           | Rückgabe  | Zweck                                                               |
-| -------------------------------- | --------------- | --------- | ------------------------------------------------------------------- |
-| `has_permission(uuid, text)`     | STABLE, INVOKER | `boolean` | Rollenmatrix, Basis aller Policies                                  |
-| `has_role(uuid, app_role)`       | STABLE, INVOKER | `boolean` | Einzelrollenprüfung                                                 |
-| `has_any_role(uuid, app_role[])` | STABLE, INVOKER | `boolean` | Mehrfachrollenprüfung                                               |
-| `is_account_active(uuid)`        | STABLE, INVOKER | `boolean` | Kontostatus                                                         |
-| `avkk_can_write(uuid)`           | STABLE, DEFINER | `boolean` | Schreibentscheidung je AVKK-Subject; Ingenieure nur eigen/zuständig |
+`avkk_people_directory()` gibt nur die fuer die Zuordnung erforderlichen
+Minimaldaten frei (ID, Anzeigename, Rolle, Status) und nicht E-Mail, Telefon,
+MFA-Informationen oder Profilbilder.
 
-Alle Funktionen setzen `search_path = public`. `avkk_can_write` ist für
-`authenticated` ausführbar — erforderlich für die Policy-Auswertung, bewertet
-und akzeptiert in ADR-0025 sowie im technischen Prüfbericht
-(`man:avkk-can-write-execute`).
+Die konkrete Ausfuehrungsberechtigung und `search_path`-Haertung werden durch
+die Migrationen und Security-Tests vorgegeben.
 
-## 6. Bekannte Integritätsgrenzen
+## 6. Bekannte Integritaets- und Betriebsgrenzen
 
-1. **Polymorphe Referenz ohne FK**: `avkk_subject.subject_id` ist `text` und
-   verweist auf lokal gespeicherte Aufgabenobjekte. Verwaiste Datensätze sind
-   möglich. Absicherung: `CHECK` auf den Typ, `UNIQUE (subject_type,
-subject_id)`, Titel-Snapshot, Existenzprüfung im Service und die
-   Integritätsprüfung `findOrphanSubjects()`.
-2. **Snapshot-Redundanz**: Katalogtexte werden in AVKK-Zeilen dupliziert. Das
-   ist bewusst — historische Datensätze bleiben nach Umbenennungen lesbar,
-   erfordern aber, dass Auswertungen den Snapshot und nicht den Katalog lesen.
-3. **Bestands-Enums noch nicht migriert**: `WorkPackageStatus`, `Priority`,
-   `ActivityCategory`, `ProjectStatus` und `BillingStatus` sind weiterhin
-   TypeScript-Union-Typen und Bestandteil von Import/Export und Backup 2.0.
-4. **AVKK ist nicht Teil des Export-/Backupformats**: Das JSON-Exportschema und
-   Backup 2.0 decken nur die Local-First-Daten ab. AVKK-Daten liegen
-   ausschließlich in Supabase und werden dort gesichert.
+1. **Polymorphe AVKK-Referenz ohne FK:** `subject_id` verweist auf lokal
+   gefuehrte Aufgabenobjekte. Verwaiste Subjects sind moeglich und werden durch
+   Service-/Backup-Pruefungen sichtbar gemacht.
+2. **Snapshot-Redundanz:** Katalogtexte werden in AVKK-Zeilen mitgefuehrt, damit
+   historische Sachverhalte auch nach Katalogaenderungen lesbar bleiben.
+3. **Bestands-Enums:** WorkPackage-/Projekt-/Taetigkeitsstatus und
+   Abrechnungsstatus sind weiterhin Teil des TypeScript-/Importvertrags und
+   nicht vollstaendig auf Reference Data umgestellt.
+4. **Gemischte Persistenz:** Lokale Fachobjekte und serverseitige AVKK-/Reference-
+   Data-Daten liegen nicht in einer gemeinsamen Datenbanktransaktion. Backup
+   kann beide Ebenen als Snapshot zusammenfuehren, der Browser-Restore darf aber
+   keinen DB-Restore vortaeuschen.
+5. **Provider-Backup:** Eine vollstaendige Wiederherstellung der serverseitigen
+   Supabase-Daten ist Provider-/Betriebsaufgabe. Vor einem spaeteren Wechsel zu
+   Azure SQL/Table oder einem autonomen Datenbankbetrieb ist ein eigener
+   DB-Backup-/Restore-Nachweis erforderlich.
