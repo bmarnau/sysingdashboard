@@ -22,8 +22,7 @@ die vier Demo-Konten nach `docs/DEMO-USERS.md` anlegen und im Dialog zuordnen.
 | Rollen-/Rechtematrix vollständig und widerspruchsfrei    | bestanden                                           | `bun run rbac:check`, `docs/RBAC-MATRIX.md`          |
 | Route-Guard: nicht angemeldeter Zugriff auf `/dashboard` | Weiterleitung nach `/auth`                          | `src/__tests__/routes/authenticated-guard.test.ts`   |
 | Datenzugriff ohne Anmeldung (Lesen und Schreiben)        | serverseitig abgewiesen (401/403), nicht nur UI     | Security-Suite, direkte Anfragen gegen die Datenbank |
-| Manipulation der Rolle im Browser wirkt nicht            | Rolle kommt aus `user_roles`, nicht aus dem Browser | `src/hooks/useCurrentUser.ts`, Security-Suite        |
-| Role Preview verändert ausschließlich die Darstellung    | keine Rechteerweiterung                             | RBAC-Suite, ADR-0007/0008                            |
+| Manipulation der Rolle im Browser wirkt nicht            | Rolle kommt aus `user_roles`, nicht aus dem Browser | RBAC-Suite, ADR-0007/0008                            |
 | Gesamte Testsuite                                        | 572 Tests grün, 4 todo (68 Dateien)                 | F-18-Restfix-Abschlussbericht v1.59.4                |
 
 ## 2. Fachlich abzuzeichnen
@@ -101,18 +100,18 @@ vollständig eingespielten Datensatz; sie sind maschinell abgesichert
 (`src/__tests__/lib/demo-data/personas.test.ts`) und werden aus dem Datensatz
 abgeleitet, nicht gepflegt.
 
-| #  | Anmeldung / Rolle                         | Erwartetes Ergebnis                                                                                         | Bewertung |
-| -- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- | --------- |
-| 1  | Alex (`engineer`), Mein AVKK              | 2 eigene Sachverhalte (Fälle A, C), davon 1 mit Handlungsbedarf, 1 fehlende Voraussetzung, 2 Arbeitspakete  | erfüllt   |
-| 2  | Sam (`engineer`), Mein AVKK               | 3 eigene Sachverhalte (Fälle B, D, E), alle mit Handlungsbedarf, 1 kritische Konsequenz, 3 Arbeitspakete    | erfüllt   |
-| 3  | Alex vs. Sam                              | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                       | erfüllt   |
-| 4  | Sam schreibt auf einen Fall von Alex      | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt        | erfüllt   |
-| 5  | Petra (`projectmanager`), Projektsicht    | Projektcockpit Netzwerk mit zugehörigen Arbeitspaketen, Tätigkeiten, AVKK und Projektbericht konsistent     | erfüllt   |
-| 6  | Petra (`projectmanager`), Delegation      | Verantwortung auf geeignetem AVKK-Sachverhalt neu zuweisbar; Engineer bleibt ohne Assign-Recht              |           |
-| 7  | Georg (`teamlead`), Management-Cockpit    | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)           | erfüllt   |
-| 8  | Georg, Managementbericht                  | Kennzahlen stimmen mit dem Cockpit überein; keine personenbezogene Rangliste oder Leistungsbewertung       | erfüllt   |
-| 9  | Georg (`teamlead`), Delegation            | Verantwortung auf geeignetem AVKK-Sachverhalt neu zuweisbar                                                |           |
-| 10 | Beliebige Rolle, Role Preview             | Darstellung wechselt, Datenumfang und Schreibrechte bleiben unverändert                                    |           |
+| #   | Anmeldung / Rolle                      | Erwartetes Ergebnis                                                                                        | Bewertung |
+| --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------- |
+| 1   | Alex (`engineer`), Mein AVKK           | 2 eigene Sachverhalte (Fälle A, C), davon 1 mit Handlungsbedarf, 1 fehlende Voraussetzung, 2 Arbeitspakete | erfüllt   |
+| 2   | Sam (`engineer`), Mein AVKK            | 3 eigene Sachverhalte (Fälle B, D, E), alle mit Handlungsbedarf, 1 kritische Konsequenz, 3 Arbeitspakete   | erfüllt   |
+| 3   | Alex vs. Sam                           | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                      | erfüllt   |
+| 4   | Sam schreibt auf einen Fall von Alex   | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt       | erfüllt   |
+| 5   | Petra (`projectmanager`), Projektsicht | Projektcockpit Netzwerk mit zugehörigen Arbeitspaketen, Tätigkeiten, AVKK und Projektbericht konsistent    | erfüllt   |
+| 6   | Petra (`projectmanager`), Delegation   | Verantwortung auf geeignetem AVKK-Sachverhalt neu zuweisbar; Engineer bleibt ohne Assign-Recht             |           |
+| 7   | Georg (`teamlead`), Management-Cockpit | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)          | erfüllt   |
+| 8   | Georg, Managementbericht               | Kennzahlen stimmen mit dem Cockpit überein; keine personenbezogene Rangliste oder Leistungsbewertung       | erfüllt   |
+| 9   | Georg (`teamlead`), Delegation         | Verantwortung auf geeignetem AVKK-Sachverhalt neu zuweisbar                                                |           |
+| 10  | Beliebige Rolle, Role Preview          | Darstellung wechselt, Datenumfang und Schreibrechte bleiben unverändert                                    |           |
 
 **Fachentscheidung Delegation, 2026-08-22:** Projektmanager und Teamleiter
 müssen delegieren können. `avkk.responsibility.assign` ist für beide Rollen
