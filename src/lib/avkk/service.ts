@@ -47,6 +47,12 @@ function assertSubjectType(subjectType: string): asserts subjectType is AvkkSubj
   }
 }
 
+function sameKeySet(left: readonly string[], right: readonly string[]): boolean {
+  const a = [...new Set(left)].sort();
+  const b = [...new Set(right)].sort();
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
 export async function createSubject(input: {
   subjectType: string;
   subjectId: string;
@@ -93,6 +99,25 @@ export async function assignResponsibility(input: {
   const types = await Promise.all(
     input.typeKeys.map((k) => requireValue(CATALOG_KEYS.responsibilityType, k)),
   );
+
+  const current = await repository.responsibilities.list(input.subjectRef);
+  const requestedTypeKeys = types.map((type) => type.key);
+  const duplicate = current.some(
+    (responsibility) =>
+      responsibility.validTo === null &&
+      responsibility.personId === input.personId &&
+      responsibility.roleKey === role.key &&
+      sameKeySet(
+        responsibility.types.map((type) => type.key),
+        requestedTypeKeys,
+      ),
+  );
+  if (duplicate) {
+    throw new AvkkError(
+      "AVKK_RESPONSIBILITY_DUPLICATE",
+      "Diese Verantwortung ist bereits aktiv zugeordnet.",
+    );
+  }
 
   const responsibilityId = await repository.responsibilities.create({
     subjectRef: input.subjectRef,
