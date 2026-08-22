@@ -3,6 +3,28 @@ import { greetingFirstNameOf, resolveDisplayName } from "@/lib/user-display-name
 import type { ReportActor } from "./types";
 
 /**
+ * Normalisiert nur eindeutig fehlerhaft einheitlich geschriebene, einfache
+ * Nachnamen. Mehrteilige oder gemischt geschriebene Eigennamen bleiben
+ * unangetastet, damit Schreibweisen wie `de Vries` oder `McDonald` nicht
+ * durch eine pauschale Title-Case-Regel verfälscht werden.
+ */
+function normalizeSimpleFamilyName(value: string): string {
+  const cleaned = value.replace(/\s+/g, " ").trim();
+  if (!cleaned || /[\s-]/u.test(cleaned)) return cleaned;
+
+  const letters = cleaned.replace(/[^\p{L}]/gu, "");
+  if (letters.length < 2) return cleaned;
+
+  const allLower = letters === letters.toLocaleLowerCase("de-DE");
+  const allUpper = letters === letters.toLocaleUpperCase("de-DE");
+  if (!allLower && !allUpper) return cleaned;
+
+  return (
+    cleaned.slice(0, 1).toLocaleUpperCase("de-DE") + cleaned.slice(1).toLocaleLowerCase("de-DE")
+  );
+}
+
+/**
  * Verbindliche Präsentationsabbildung für Berichtsersteller.
  *
  * Fachliche Berichte dürfen keine technischen Rollen-IDs wie
@@ -18,11 +40,11 @@ export function reportActorFromUser(user: UserProfile | null): ReportActor {
     };
   }
 
-  // Der Vorname wird über die bestehende zentrale Namenslogik normalisiert.
-  // Den Nachnamen übernehmen wir bewusst unverändert, um Eigenschreibweisen
-  // nicht durch pauschales Title-Casing zu beschädigen.
+  // Vorname und klar fehlerhaft einheitlich geschriebene einfache Nachnamen
+  // werden für die Berichtsdarstellung normalisiert. Komplexe Eigenschreibweisen
+  // bleiben unverändert.
   const firstName = user.firstName.trim() ? greetingFirstNameOf({ firstName: user.firstName }) : "";
-  const lastName = user.lastName.trim();
+  const lastName = normalizeSimpleFamilyName(user.lastName);
   const profileName = `${firstName} ${lastName}`.replace(/\s+/g, " ").trim();
 
   return {

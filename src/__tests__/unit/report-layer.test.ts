@@ -90,6 +90,28 @@ describe("Reporting-Schicht", () => {
     });
   });
 
+  it("normalisiert einen eindeutig kleingeschriebenen einfachen Nachnamen", () => {
+    const user: UserProfile = {
+      id: "alex-1",
+      firstName: "alex",
+      lastName: "marnau",
+      displayName: "alex marnau",
+      email: "alex@example.invalid",
+      phone: "",
+      role: "engineer",
+      status: "active",
+      mfaEnabled: false,
+      createdAt: "2026-08-22T00:00:00.000Z",
+      updatedAt: "2026-08-22T00:00:00.000Z",
+    };
+
+    expect(reportActorFromUser(user)).toEqual({
+      id: "alex-1",
+      displayName: "Alex Marnau",
+      role: "Systemingenieur",
+    });
+  });
+
   it("stellt Projekt- und Arbeitspaketstatus fachlich und PDF-sicher dar", () => {
     const project = demo.projects.find(
       (candidate) => candidate.name === "Netzwerkmodernisierung Verwaltungsstandort",
