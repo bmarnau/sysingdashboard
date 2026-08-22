@@ -4,6 +4,7 @@
 -- - AVKK-Leser sehen fuer bereits zugeordnete Verantwortungen einen Namen statt UUID.
 -- - Rollen mit avkk.responsibility.assign sehen zusaetzlich aktive Personen zur Delegation.
 -- - Vollstaendige Profile (E-Mail, Telefon, MFA, Profilbild usw.) bleiben geschuetzt.
+-- - Personen werden fachlich als "Vorname Nachname" dargestellt, sofern beide Werte vorliegen.
 
 CREATE OR REPLACE FUNCTION public.avkk_people_directory()
 RETURNS TABLE (
@@ -20,8 +21,8 @@ AS $function$
   SELECT
     p.id,
     COALESCE(
-      NULLIF(BTRIM(p.display_name), ''),
       NULLIF(BTRIM(p.first_name || ' ' || p.last_name), ''),
+      NULLIF(BTRIM(p.display_name), ''),
       'Unbenannt'
     ) AS display_name,
     ur.role,
@@ -55,4 +56,4 @@ REVOKE ALL ON FUNCTION public.avkk_people_directory() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.avkk_people_directory() TO authenticated;
 
 COMMENT ON FUNCTION public.avkk_people_directory() IS
-  'Minimaler AVKK-Personenvertrag: bestehende Verantwortliche fuer avkk.view; aktive Delegationsempfaenger zusaetzlich fuer avkk.responsibility.assign.';
+  'Minimaler AVKK-Personenvertrag: bestehende Verantwortliche fuer avkk.view; aktive Delegationsempfaenger zusaetzlich fuer avkk.responsibility.assign; bevorzugte Darstellung Vorname Nachname.';
