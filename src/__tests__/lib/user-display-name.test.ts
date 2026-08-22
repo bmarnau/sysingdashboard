@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   resolveDisplayName,
+  resolveProfileDisplayName,
   greetingNameOf,
   greetingFirstNameOf,
   looksLikeEmail,
@@ -69,6 +70,44 @@ describe("resolveDisplayName", () => {
   it("looksLikeEmail erkennt Adressen", () => {
     expect(looksLikeEmail("a@b.de")).toBe(true);
     expect(looksLikeEmail("Sam Infrastruktur")).toBe(false);
+  });
+});
+
+describe("resolveProfileDisplayName", () => {
+  it("normalisiert den gepflegten Vornamen für die Profilanzeige", () => {
+    expect(
+      resolveProfileDisplayName({
+        displayName: "petra Marnau",
+        firstName: "petra",
+        lastName: "Marnau",
+      }),
+    ).toBe("Petra Marnau");
+  });
+
+  it("erhält die gespeicherte Eigenschreibweise des Nachnamens", () => {
+    expect(
+      resolveProfileDisplayName({
+        displayName: "petra von Überlingen-Schmidt",
+        firstName: "petra",
+        lastName: "von Überlingen-Schmidt",
+      }),
+    ).toBe("Petra von Überlingen-Schmidt");
+    expect(
+      resolveProfileDisplayName({
+        displayName: "alex McDonald",
+        firstName: "alex",
+        lastName: "McDonald",
+      }),
+    ).toBe("Alex McDonald");
+  });
+
+  it("nutzt bei unvollständigen Profilnamen den bestehenden sicheren Fallback", () => {
+    expect(resolveProfileDisplayName({ displayName: "Demo Sam Infrastruktur" })).toBe(
+      "Demo Sam Infrastruktur",
+    );
+    expect(resolveProfileDisplayName({ displayName: "sam@example.org" })).toBe(
+      NEUTRAL_DISPLAY_NAME,
+    );
   });
 });
 
