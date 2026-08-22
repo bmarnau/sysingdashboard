@@ -1,3 +1,4 @@
+import { normalizePersonName } from "@/lib/user-display-name";
 import { fetchAvkkPeopleDirectoryRows } from "./people-directory-adapter";
 
 export interface AvkkPersonDirectoryEntry {
@@ -19,7 +20,7 @@ export async function listAvkkPeopleDirectory(): Promise<AvkkPersonDirectoryEntr
 
   return rows.map((row) => ({
     id: row.id,
-    displayName: row.display_name || "Unbenannt",
+    displayName: normalizePersonName(row.display_name || "Unbenannt"),
     role: row.role,
     status: row.status,
   }));

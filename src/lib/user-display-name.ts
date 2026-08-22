@@ -111,8 +111,12 @@ function toTitleCase(value: string): string {
     .replace(/(?:^|[\s-])\p{L}/gu, (match) => match.toUpperCase());
 }
 
-/** Normalisiert einen Vornamen: trimmt, entfernt Mehrfachleerzeichen und korrigiert einheitliche Schreibweise. */
-function normalizeFirstName(value: string): string {
+/**
+ * Normalisiert einen Personen- oder Vornamen: trimmt, entfernt Mehrfachleerzeichen
+ * und korrigiert überwiegend fehlerhafte Groß-/Kleinschreibung, ohne bereits
+ * korrekt geschriebene Eigennamen unnötig zu verändern.
+ */
+export function normalizePersonName(value: string): string {
   const cleaned = clean(value);
   if (!cleaned) return "";
 
@@ -150,16 +154,16 @@ function fromMetadataFirstName(
  */
 export function greetingFirstNameOf(sources: DisplayNameSources): string {
   const firstName = usable(sources.firstName);
-  if (firstName) return normalizeFirstName(firstName);
+  if (firstName) return normalizePersonName(firstName);
 
   const displayFirst = firstWord(sources.displayName);
-  if (displayFirst) return normalizeFirstName(displayFirst);
+  if (displayFirst) return normalizePersonName(displayFirst);
 
   const metaFirst = fromMetadataFirstName(sources.metadata);
-  if (metaFirst) return normalizeFirstName(metaFirst);
+  if (metaFirst) return normalizePersonName(metaFirst);
 
   const local = emailLocalPart(sources.email);
-  if (local) return normalizeFirstName(local);
+  if (local) return normalizePersonName(local);
 
   return NEUTRAL_DISPLAY_NAME;
 }
