@@ -7,42 +7,42 @@ Groups, Assignments) beschreibt ADR-0007.
 
 ## Rollen
 
-| Rolle                 | Kurzbeschreibung                                                                 |
-| --------------------- | -------------------------------------------------------------------------------- |
-| `systemadministrator` | Vollzugriff inkl. Rollenverwaltung und Azure DB-Aufbau.                          |
-| `administrator`       | Betrieb + Benutzerverwaltung, keine Rollenmatrix.                                |
+| Rolle                 | Kurzbeschreibung                                                                |
+| --------------------- | ------------------------------------------------------------------------------- |
+| `systemadministrator` | Vollzugriff inkl. Rollenverwaltung und Azure DB-Aufbau.                         |
+| `administrator`       | Betrieb + Benutzerverwaltung, keine Rollenmatrix.                               |
 | `teamlead`            | Projekte + Export + AVKK-Führungssicht; darf Verantwortung delegieren/zuweisen. |
-| `projectmanager`      | Projektbearbeitung + Export; darf Verantwortung delegieren/zuweisen.             |
-| `engineer`            | Arbeitspakete + Tätigkeiten (eigene); keine Verantwortungszuweisung.             |
-| `customer`            | Nur Dashboard + Dokumentation.                                                   |
-| `viewer`              | Read-only.                                                                       |
+| `projectmanager`      | Projektbearbeitung + Export; darf Verantwortung delegieren/zuweisen.            |
+| `engineer`            | Arbeitspakete + Tätigkeiten (eigene); keine Verantwortungszuweisung.            |
+| `customer`            | Nur Dashboard + Dokumentation.                                                  |
+| `viewer`              | Read-only.                                                                      |
 
 ## Matrix Rolle × Aktion (v1, flach)
 
 Legende: ● erlaubt · ○ verboten
 
-| Aktion                         | sysadmin | admin | teamlead | projmgr | engineer | customer | viewer |
-| ------------------------------ | :------: | :---: | :------: | :-----: | :------: | :------: | :----: |
-| `dashboard.view`               |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
-| `documentation.view`           |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
-| `systemstatus.view`            |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |
-| `project.edit`                 |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
-| `workpackage.edit`             |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
-| `activity.edit`                |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
-| `azure.connection.test`        |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `azure.export`                 |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
-| `azure.import`                 |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `azure.database.build`         |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `backup.restore`               |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `users.manage`                 |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `roles.manage`                 |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `auditlog.view`                |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `avkk.view`                    |    ●     |   ●   |    ●     |    ●    |    ●     |    ○     |   ●    |
-| `avkk.edit`                    |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
-| `avkk.responsibility.assign`   |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
-| `avkk.management.view`         |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
-| `referencedata.view`           |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
-| `referencedata.manage`         |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| Aktion                       | sysadmin | admin | teamlead | projmgr | engineer | customer | viewer |
+| ---------------------------- | :------: | :---: | :------: | :-----: | :------: | :------: | :----: |
+| `dashboard.view`             |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
+| `documentation.view`         |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
+| `systemstatus.view`          |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |
+| `project.edit`               |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
+| `workpackage.edit`           |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
+| `activity.edit`              |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
+| `azure.connection.test`      |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `azure.export`               |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
+| `azure.import`               |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `azure.database.build`       |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `backup.restore`             |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `users.manage`               |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `roles.manage`               |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `auditlog.view`              |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `avkk.view`                  |    ●     |   ●   |    ●     |    ●    |    ●     |    ○     |   ●    |
+| `avkk.edit`                  |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
+| `avkk.responsibility.assign` |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
+| `avkk.management.view`       |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
+| `referencedata.view`         |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
+| `referencedata.manage`       |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
 
 ### Fachregel Delegation
 
