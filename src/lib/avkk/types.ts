@@ -3,6 +3,16 @@
 export const SUBJECT_TYPES = ["project", "workpackage", "activity", "measure"] as const;
 export type AvkkSubjectType = (typeof SUBJECT_TYPES)[number];
 
+/**
+ * Steuerbare AVKK-Aufgaben im produktiven MVP-Arbeitsfluss.
+ *
+ * `activity` bleibt aus Kompatibilitätsgründen ein zulässiger historischer
+ * Subject-Typ, ist fachlich aber ein Arbeits-/Leistungsnachweis und keine
+ * delegierbare Aufgabe. `measure` bleibt ein separates Zukunftsthema.
+ */
+export const MVP_AVKK_TASK_SUBJECT_TYPES = ["project", "workpackage"] as const;
+export type MvpAvkkTaskSubjectType = (typeof MVP_AVKK_TASK_SUBJECT_TYPES)[number];
+
 export const SUBJECT_STATUS = ["draft", "active", "closed"] as const;
 export type AvkkSubjectStatus = (typeof SUBJECT_STATUS)[number];
 
