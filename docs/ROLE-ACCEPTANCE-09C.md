@@ -17,15 +17,15 @@ die vier Demo-Konten nach `docs/DEMO-USERS.md` anlegen und im Dialog zuordnen.
 
 ## 1. Automatisiert nachgewiesen
 
-| Nachweis                                                 | Ergebnis                                            | Quelle                                               |
-| -------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
-| Rollen-/Rechtematrix vollständig und widerspruchsfrei    | bestanden                                           | `bun run rbac:check`, `docs/RBAC-MATRIX.md`          |
-| Route-Guard: nicht angemeldeter Zugriff auf `/dashboard` | Weiterleitung nach `/auth`                          | `src/__tests__/routes/authenticated-guard.test.ts`   |
-| Datenzugriff ohne Anmeldung (Lesen und Schreiben)        | serverseitig abgewiesen (401/403), nicht nur UI     | Security-Suite, direkte Anfragen gegen die Datenbank |
-| Manipulation der Rolle im Browser wirkt nicht            | Rolle kommt aus `user_roles`, nicht aus dem Browser | `src/hooks/useCurrentUser.ts`, Security-Suite        |
+| Nachweis                                                 | Ergebnis                                             | Quelle                                               |
+| -------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------- |
+| Rollen-/Rechtematrix vollständig und widerspruchsfrei    | bestanden                                            | `bun run rbac:check`, `docs/RBAC-MATRIX.md`          |
+| Route-Guard: nicht angemeldeter Zugriff auf `/dashboard` | Weiterleitung nach `/auth`                           | `src/__tests__/routes/authenticated-guard.test.ts`   |
+| Datenzugriff ohne Anmeldung (Lesen und Schreiben)        | serverseitig abgewiesen (401/403), nicht nur UI      | Security-Suite, direkte Anfragen gegen die Datenbank |
+| Manipulation der Rolle im Browser wirkt nicht            | Rolle kommt aus `user_roles`, nicht aus dem Browser  | `src/hooks/useCurrentUser.ts`, Security-Suite        |
 | Systemstatus / Supabase-Backendnachweis                  | bestanden; geschützter Status nur mit `users.manage` | PR #33, CI #315, Security #305                       |
-| Role Preview                                             | **OPEN — kein aktueller Produkt-Einstiegspunkt**    | `docs/F11-MANUAL-EVIDENCE-2026-08-22.md`             |
-| Gesamte Testsuite (historischer Stand v1.59.4)           | 572 Tests grün, 4 todo (68 Dateien)                 | F-18-Restfix-Abschlussbericht v1.59.4                |
+| Role Preview                                             | **OPEN — kein aktueller Produkt-Einstiegspunkt**     | `docs/F11-MANUAL-EVIDENCE-2026-08-22.md`             |
+| Gesamte Testsuite (historischer Stand v1.59.4)           | 572 Tests grün, 4 todo (68 Dateien)                  | F-18-Restfix-Abschlussbericht v1.59.4                |
 
 **Korrektur Role Preview:** Die frühere Aussage, Role Preview sei als reine
 Darstellungsumschaltung automatisiert nachgewiesen, ist für den aktuellen
@@ -85,12 +85,12 @@ Ranglisten oder automatisierten Leistungsbewertungen nach ADR-0027.
 
 ### 2.4 Administrator / App-Entwickler
 
-| #   | Schritt                 | Erwartetes Ergebnis                                                           | Bewertung                                  |
-| --- | ----------------------- | ----------------------------------------------------------------------------- | ------------------------------------------ |
-| 1   | Benutzerverwaltung      | Benutzer und Rollen sichtbar und änderbar                                     | erfüllt                                    |
-| 2   | Role Preview            | fachliche Entscheidung, ob Funktion benötigt wird; aktuell kein Produktpfad   | offen — Produkt-/Dokudrift                 |
-| 3   | Systemstatus            | Version, Build, Supabase-/Backend- und Sicherheitsstatus vollständig          | teilweise — technisch PASS, Browser offen  |
-| 4   | Backup und Prüfberichte | Backup erzeugbar, Downloadbereich und Log Viewer erreichbar                   | offen                                      |
+| #   | Schritt                 | Erwartetes Ergebnis                                                         | Bewertung                                 |
+| --- | ----------------------- | --------------------------------------------------------------------------- | ----------------------------------------- |
+| 1   | Benutzerverwaltung      | Benutzer und Rollen sichtbar und änderbar                                   | erfüllt                                   |
+| 2   | Role Preview            | fachliche Entscheidung, ob Funktion benötigt wird; aktuell kein Produktpfad | offen — Produkt-/Dokudrift                |
+| 3   | Systemstatus            | Version, Build, Supabase-/Backend- und Sicherheitsstatus vollständig        | teilweise — technisch PASS, Browser offen |
+| 4   | Backup und Prüfberichte | Backup erzeugbar, Downloadbereich und Log Viewer erreichbar                 | offen                                     |
 
 ### 2.5 Negativtest ohne Berechtigung (Viewer / Customer)
 
@@ -120,7 +120,7 @@ abgeleitet, nicht gepflegt.
 | 7   | Georg (`teamlead`), Management-Cockpit | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)          | erfüllt   |
 | 8   | Georg, Managementbericht               | Kennzahlen stimmen mit dem Cockpit überein; keine personenbezogene Rangliste oder Leistungsbewertung       | erfüllt   |
 | 9   | Georg (`teamlead`), Delegation         | Verantwortung auf geeignetem AVKK-Sachverhalt neu zuweisbar                                                | erfüllt   |
-| 10  | Role Preview                           | aktueller Produktstand enthält keinen prüfbaren Einstiegspunkt                                              | offen     |
+| 10  | Role Preview                           | aktueller Produktstand enthält keinen prüfbaren Einstiegspunkt                                             | offen     |
 
 **Fachentscheidung Delegation, 2026-08-22:** Projektmanager und Teamleiter
 müssen delegieren können. `avkk.responsibility.assign` ist für beide Rollen
@@ -147,14 +147,14 @@ gerätübergreifende oder personenbezogene Trennung existiert dort nicht.
 
 ## 3. Abzeichnung
 
-| Rolle                  | Prüfer/in | Datum      | Ergebnis  | Bemerkung |
-| ---------------------- | --------- | ---------- | --------- | --------- |
-| Systemingenieur        | Betreiber | 2026-08-21 | erfüllt   | Alex: Login, persönlicher AVKK-Scope A/C, Kompetenz-Schreib- und Persistenztest, Managementsicht gesperrt sowie persönlicher Bericht in PDF, Druck, Word, JSON und CSV geprüft. Verantwortung korrekt read-only, da `avkk.responsibility.assign` fehlt. |
-| Projektmanager         | Betreiber | 2026-08-22 | erfüllt   | Petra: Projektcockpit, AVKK-Scope Projekte + Arbeitspakete, Projektbericht und Benutzerverwaltungs-Negativtest PASS. Neue Verantwortung `Sam Marnau — Verantwortlicher — Ergebnis` gespeichert und nach Hard Reload persistent. |
-| Teamleiter             | Betreiber | 2026-08-22 | erfüllt   | Georg: Management-Cockpit, keine Personenrangliste, Managementbericht und Delegation PASS. Exakter aktiver Duplikatfall `Sam Marnau — Stellvertreter — Koordination` wird erkannt und kann nicht erneut gespeichert werden. |
+| Rolle                  | Prüfer/in | Datum      | Ergebnis  | Bemerkung                                                                                                                                                                                                                                                                                                                             |
+| ---------------------- | --------- | ---------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Systemingenieur        | Betreiber | 2026-08-21 | erfüllt   | Alex: Login, persönlicher AVKK-Scope A/C, Kompetenz-Schreib- und Persistenztest, Managementsicht gesperrt sowie persönlicher Bericht in PDF, Druck, Word, JSON und CSV geprüft. Verantwortung korrekt read-only, da `avkk.responsibility.assign` fehlt.                                                                               |
+| Projektmanager         | Betreiber | 2026-08-22 | erfüllt   | Petra: Projektcockpit, AVKK-Scope Projekte + Arbeitspakete, Projektbericht und Benutzerverwaltungs-Negativtest PASS. Neue Verantwortung `Sam Marnau — Verantwortlicher — Ergebnis` gespeichert und nach Hard Reload persistent.                                                                                                       |
+| Teamleiter             | Betreiber | 2026-08-22 | erfüllt   | Georg: Management-Cockpit, keine Personenrangliste, Managementbericht und Delegation PASS. Exakter aktiver Duplikatfall `Sam Marnau — Stellvertreter — Koordination` wird erkannt und kann nicht erneut gespeichert werden.                                                                                                           |
 | Administrator          | Betreiber | 2026-08-22 | teilweise | Bernd Marnau: Benutzerverwaltung und Rollenänderung PASS (`Alexa Marnau: Viewer → Kunde → Viewer`, Ausgangszustand wiederhergestellt). Systemstatus technisch über PR #33 vollständig gegatet und in Lovable synchronisiert; manueller Runtime-Retest sowie Backup/Prüfberichte offen. Role Preview ist aktueller Produkt-/Dokudrift. |
-| Negativtest ohne Recht | Betreiber | 2026-08-22 | erfüllt   | Alexa/viewer: allgemeiner F-18-Retest und zusätzlicher Projektcockpit-Negativtest PASS; Projektdetail/AVKK lesbar, keine Projekt- oder AVKK-Schreibaktionen sichtbar. Serverseitige Schreibgrenze automatisiert nachgewiesen. |
-| Mehrbenutzerszenario   | Betreiber | 2026-08-22 | teilweise | Alex und Sam vollständig für persönliche Scope-Trennung geprüft; Sam→Alex-Schreibversuch abgewiesen. Petra- und Georg-Delegation PASS. Offen bleibt die fachliche Entscheidung zum nicht implementierten Role Preview. |
+| Negativtest ohne Recht | Betreiber | 2026-08-22 | erfüllt   | Alexa/viewer: allgemeiner F-18-Retest und zusätzlicher Projektcockpit-Negativtest PASS; Projektdetail/AVKK lesbar, keine Projekt- oder AVKK-Schreibaktionen sichtbar. Serverseitige Schreibgrenze automatisiert nachgewiesen.                                                                                                         |
+| Mehrbenutzerszenario   | Betreiber | 2026-08-22 | teilweise | Alex und Sam vollständig für persönliche Scope-Trennung geprüft; Sam→Alex-Schreibversuch abgewiesen. Petra- und Georg-Delegation PASS. Offen bleibt die fachliche Entscheidung zum nicht implementierten Role Preview.                                                                                                                |
 
 Solange Abschnitt 3 nicht vollständig mit `erfüllt` abgeschlossen ist, bleibt
 F-11 im Abnahmebericht als **MANUAL VERIFICATION REQUIRED** geführt. Die
