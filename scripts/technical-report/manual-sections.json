@@ -1,65 +1,65 @@
 {
-  "$comment": "Deklarative Nachweise für Prüfbereiche ohne eigenen Scanner (Sprint 04). Werden vom Aggregator 1:1 in report.sections übernommen. Status: passed | passed-with-findings | failed | not-run | not-applicable.",
+  "$comment": "Deklarative Nachweise fuer Pruefbereiche ohne eigenen Scanner. Status: passed | passed-with-findings | failed | not-run | not-applicable. Stand 2026-08-22; Aussagen trennen MVP-Istbetrieb, Readiness und noch ausstehende manuelle Nachweise.",
   "sections": {
     "auth": {
       "status": "passed-with-findings",
-      "evidence": "e2e/specs/navigation.spec.ts, test-report/security-report.md, docs/ADR/0013-security-release-gate.md",
-      "note": "Login, Logout, Session-Wiederherstellung, Redirect-Sicherheit umgesetzt. Realer Published-Login gegen Supabase außerhalb der CI verifiziert (Sprint 03B)."
+      "evidence": "src/routes/_authenticated/route.tsx, e2e/specs/navigation.spec.ts, docs/ROLE-ACCEPTANCE-09C.md, docs/MVP-REBASELINE-2026-08-22.md",
+      "note": "Supabase E-Mail/Passwort-Authentifizierung, Logout, Session-Wiederherstellung und geschuetzte Routen sind implementiert und automatisiert geprueft. Reale Rollen-Logins wurden im F-11-Mehrbenutzertest fuer Engineer, Projektmanager, Teamleiter, Viewer und System-Administrator geprueft. Verbleibende manuelle Administrator-Dialogpruefungen sind fuer den finalen Abschluss bewusst aufgeschoben."
     },
     "rls": {
       "status": "passed",
-      "evidence": "supabase/migrations/*, src/__tests__/security/rbac-v2.test.ts",
-      "note": "Policies für profiles, user_roles, audit_log aktiv; sysadmin-Lockout durch DB-Trigger geschützt."
+      "evidence": "supabase/migrations/*, src/__tests__/security/rbac-v2.test.ts, src/__tests__/security/avkk-rls.test.ts, docs/ADR/0025-avkk-umsetzung-07b.md",
+      "note": "Profile, Rollen, Audit, Reference Data und AVKK sind mit RLS, expliziten Grants und server-/datenbankseitigen Berechtigungspruefungen abgesichert. Negativtests fuer rollenfremde Schreibzugriffe und die F-11-Mehrbenutzerpruefung bestaetigen die vorgesehenen Grenzen."
     },
     "supabase": {
-      "status": "passed",
-      "evidence": "src/integrations/supabase/config.ts, supabase/config.toml",
-      "note": "Projektzuordnung erfolgt statisch über VITE_SUPABASE_*; Region wird beim Providerwechsel manuell bestätigt."
+      "status": "passed-with-findings",
+      "evidence": "src/integrations/supabase/, supabase/migrations/*, docs/DATA-SCHEMA.md, docs/ADR/0025-avkk-umsetzung-07b.md",
+      "note": "Supabase ist die fuehrende MVP-Plattform fuer Authentifizierung sowie serverseitige Profile, Rollen, Einstellungen, Reference Data, AVKK und Audit. Lokale Fachobjekte (Projekte, Arbeitspakete, Taetigkeiten) bleiben im aktuellen MVP browsergebunden. Providerwechsel zu Entra/Azure ist Architekturziel, nicht aktueller Laufzeitbetrieb."
     },
     "dockerPortability": {
-      "status": "not-applicable",
-      "evidence": "docs/DEPLOYMENT.md",
-      "note": "Zielumgebung ist Cloudflare Workers/Lovable Cloud. Docker-Portabilität ist geplant, aktuell nicht aktiviert (Sprint 05+)."
+      "status": "passed-with-findings",
+      "evidence": "docs/PROJECT-GOVERNANCE.md, docs/ARCHITECTURE.md, docs/DEPLOYMENT.md",
+      "note": "Portable Runtime und autonomer Docker-Betrieb sind verbindliche Architekturziele; Fachlogik, Providerzugriffe und framework-freie Server-Services sind getrennt. Noch nicht nachgewiesen sind Dockerfile/Container-Image, Reverse-Proxy-Konfiguration und ein Container-Smoke-/Health-Test. Daher Readiness-Nachweis, kein Betriebs-PASS."
     },
     "azureReadiness": {
-      "status": "not-applicable",
-      "evidence": "src/lib/azure/*, docs/ADR/0007-rbac-v2-scopes-and-resources.md",
-      "note": "Provider-Abstraktion vorhanden, Live-Azure-Anbindung nicht aktiviert. Nicht als Finding zu bewerten."
+      "status": "passed-with-findings",
+      "evidence": "src/lib/azure/*, backend/services/*, docs/ARCHITECTURE.md, docs/PROJECT-GOVERNANCE.md",
+      "note": "Provider-Separation und serverseitige Azure-Grenzen bereiten Azure SQL, Table Storage und Entra ID vor. Eine Live-Azure-/Entra-Anbindung ist nicht Bestandteil des aktuellen MVP und wurde nicht als produktiver Provider getestet."
     },
     "docs": {
-      "status": "passed",
-      "evidence": "scripts/check-docs-sync.mjs, src/lib/help-documentation.ts, docs/ARCHITECTURE.md",
-      "note": "Sync-Guard ohne Warnungen; alle Dialoge sind im Handbuch dokumentiert (Kapitel Dialog-Referenz); Architekturdokument in v1.50.0 vollständig neu aufgebaut."
+      "status": "passed-with-findings",
+      "evidence": "scripts/check-docs-sync.mjs, src/lib/help-avkk-topics.ts, docs/MVP-REBASELINE-2026-08-22.md, docs/DEPLOYMENT.md",
+      "note": "Kontextsensitive AVKK-Hilfe und Handbuchinhalte sind auf den aktuellen Scope Projekt + Arbeitspaket sowie die fachlichen Erklaerungen zu Verantwortung und Konsequenz gebracht. Der Governance-Rebaseline korrigiert zusaetzlich veraltete Betriebs-/Abnahmeaussagen; historische Handoffs bleiben als Zeitdokumente erhalten."
     },
     "governance": {
-      "status": "passed",
-      "evidence": "docs/PROJECT-GOVERNANCE.md, docs/PROJECT-STATUS.yaml, docs/project-status.schema.json, docs/ADR/0023-phasenmodell-infrastrukturabschluss.md",
-      "note": "Regelwerk, Phasenmodell und Dokumentenhierarchie verbindlich festgelegt; Phase 1 (Technische Plattform) mit v1.50.0 abgeschlossen."
+      "status": "passed-with-findings",
+      "evidence": "docs/PROJECT-GOVERNANCE.md, docs/MVP-REBASELINE-2026-08-22.md, docs/PROJECT-STATUS.yaml",
+      "note": "GitHub bleibt Source of Truth; kleine isolierte PRs, CI/Security-Gates und manuelle Rollenabnahme werden getrennt nachgewiesen. F-11 und MVP bleiben bis zu den bewusst verschobenen finalen Browserpruefungen offen; kein 100-Prozent- oder FINAL-READY-Status wird vorweggenommen."
     },
     "projectManifest": {
-      "status": "passed",
-      "evidence": "scripts/project-status/check.mjs, src/__tests__/scripts/project-status-validator.test.ts",
-      "note": "Manifest gegen JSON Schema 2020-12 (schemaVersion 1.3.0) geprüft; Validator durch 13 Tests abgesichert (inkl. realem Manifest)."
+      "status": "passed-with-findings",
+      "evidence": "scripts/project-status/check.mjs, src/__tests__/scripts/project-status-validator.test.ts, docs/PROJECT-STATUS.yaml, docs/MVP-REBASELINE-2026-08-22.md",
+      "note": "Schema und Validator sind aktiv. Der bestehende Manifeststand enthaelt noch historischen Sprint-/Nachweisdrift; der aktuelle datierte Rebaseline dokumentiert die Abweichung. Die formale Manifest-/Versionskonsolidierung erfolgt mit dem finalen MVP-Abschluss nach den verschobenen manuellen Pruefungen."
     },
     "ci": {
       "status": "passed",
-      "evidence": ".github/workflows/ci.yml, scripts/ci/quality-gate.mjs",
-      "note": "Gestaffelte Jobs: static (inkl. project-status:check und docs:check), lint, tests, security, tech-debt, build."
+      "evidence": ".github/workflows/ci.yml, .github/workflows/security.yml, scripts/ci/quality-gate.mjs",
+      "note": "Gestaffelte CI prueft Static/TypeScript/RBAC/Docs, Unit/Components, Backend, API, Security, Import/Export, Backup, Production Build, Playwright, Accessibility, Technical Debt sowie technischen Bericht und Quality Gate. PR #30 und PR #31 wurden jeweils vollstaendig gruen integriert."
     },
     "backupFormat": {
-      "status": "passed",
-      "evidence": "src/lib/backup/manifest.ts, src/__tests__/backup/manifest-v2.test.ts, docs/ADR/0022-backupformat-2.md",
-      "note": "Backupformat 2.0: Zuordnung ausschließlich über entries[]; SHA-256 je Eintrag; Altformat lesend migriert."
+      "status": "passed-with-findings",
+      "evidence": "src/lib/backup/, src/__tests__/backup/, docs/ADR/0022-backupformat-2.md, docs/ADR/0026-loeschstrategie-und-avkk-backup.md",
+      "note": "Backupformat 2.0 ist manifest- und pruefsummenbasiert; AVKK- und Reference-Data-Snapshots werden mitgesichert und validiert. Browser-Restore schreibt AVKK bewusst nicht in Supabase zurueck; ein Cloud-Datenbank-Restore ist Provider-/Betriebsaufgabe und kein Client-Restore."
     },
     "layerArchitecture": {
-      "status": "passed",
-      "evidence": "scripts/tech-debt/detectors/layer-violations.mjs, src/hooks/useDashboardPersistence.ts",
-      "note": "UI-Direktimport der Persistenz beseitigt (td-layer-d1e551ce); Grenzen automatisiert geprüft."
+      "status": "passed-with-findings",
+      "evidence": "scripts/tech-debt/detectors/layer-violations.mjs, docs/ARCHITECTURE.md, src/hooks/useDashboardPersistence.ts",
+      "note": "UI, Facades, Fachlogik, Persistenz und Providerzugriffe sind getrennt und werden automatisiert auf Layer-Verletzungen geprueft. Die Architektur-Dokumentation enthaelt noch einzelne historische Planungsformulierungen; der Rebaseline kennzeichnet diese als Dokumentationsdrift, nicht als Laufzeitabhaengigkeit."
     },
     "infrastructurePhase": {
-      "status": "passed",
-      "evidence": "docs/ENTWICKLUNGSTAGEBUCH.md, CHANGELOG.md (1.50.0), docs/PROJECT-STATUS.yaml (phases)",
-      "note": "Abschluss der Infrastrukturphase dokumentiert. Restrisiken: serverseitige Sitzungsdurchsetzung (TD-SESSION-SERVER) und Supabase-E2E mit kontrollierter Testsession (BACKLOG-TEST-001). Go fuer Sprint 07 (AVKK-Datenmodell)."
+      "status": "passed-with-findings",
+      "evidence": "docs/PROJECT-GOVERNANCE.md, docs/MVP-REBASELINE-2026-08-22.md, CHANGELOG.md",
+      "note": "Die technische Plattformbasis ist vorhanden; aktuell laeuft MVP-Hardening und Rollenabnahme. Offene Punkte sind die finalen manuellen Administrator-/Systemstatuspruefungen, Aktualisierung des gebundenen technischen Reports und der spaetere Docker-Runtime-Nachweis."
     }
   }
 }
