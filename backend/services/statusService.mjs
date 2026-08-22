@@ -17,6 +17,7 @@ import { getSyncMeta } from "./syncService.mjs";
 import { ALL_ROLES, ALL_PERMISSIONS } from "./rbac.mjs";
 
 const BOOT_AT = new Date().toISOString();
+const PUBLIC_GITHUB_REPOSITORY_URL = "https://github.com/bmarnau/sysingdashboard";
 
 function envOrNull(name) {
   if (typeof process === "undefined" || !process.env) return null;
@@ -63,11 +64,10 @@ export function getStatus() {
       startedAt: BOOT_AT,
     },
     github: {
-      repositoryUrl:
-        envOrNull("GITHUB_REPOSITORY_URL") ||
-        (envOrNull("GITHUB_REPOSITORY")
-          ? `https://github.com/${envOrNull("GITHUB_REPOSITORY")}`
-          : null),
+      // Public endpoint: never expose runtime Git remotes. Hosted environments
+      // may inject credential-bearing internal clone URLs. The canonical GitHub
+      // repository is project metadata and therefore fixed here intentionally.
+      repositoryUrl: PUBLIC_GITHUB_REPOSITORY_URL,
       branch: envOrNull("GITHUB_REF_NAME") || envOrNull("GIT_BRANCH"),
       commit: envOrNull("GITHUB_SHA") || envOrNull("GIT_COMMIT"),
     },
