@@ -7,36 +7,55 @@ Groups, Assignments) beschreibt ADR-0007.
 
 ## Rollen
 
-| Rolle                 | Kurzbeschreibung                                        |
-| --------------------- | ------------------------------------------------------- |
-| `systemadministrator` | Vollzugriff inkl. Rollenverwaltung und Azure DB-Aufbau. |
-| `administrator`       | Betrieb + Benutzerverwaltung, keine Rollenmatrix.       |
-| `teamlead`            | Projekte + Export, kein Import/DB-Bau.                  |
-| `projectmanager`      | Projektbearbeitung, Export.                             |
-| `engineer`            | Arbeitspakete + Tätigkeiten (eigene).                   |
-| `customer`            | Nur Dashboard + Dokumentation.                          |
-| `viewer`              | Read-only.                                              |
+| Rolle                 | Kurzbeschreibung                                                                 |
+| --------------------- | -------------------------------------------------------------------------------- |
+| `systemadministrator` | Vollzugriff inkl. Rollenverwaltung und Azure DB-Aufbau.                          |
+| `administrator`       | Betrieb + Benutzerverwaltung, keine Rollenmatrix.                                |
+| `teamlead`            | Projekte + Export + AVKK-Führungssicht; darf Verantwortung delegieren/zuweisen. |
+| `projectmanager`      | Projektbearbeitung + Export; darf Verantwortung delegieren/zuweisen.             |
+| `engineer`            | Arbeitspakete + Tätigkeiten (eigene); keine Verantwortungszuweisung.             |
+| `customer`            | Nur Dashboard + Dokumentation.                                                   |
+| `viewer`              | Read-only.                                                                       |
 
 ## Matrix Rolle × Aktion (v1, flach)
 
 Legende: ● erlaubt · ○ verboten
 
-| Aktion                  | sysadmin | admin | teamlead | projmgr | engineer | customer | viewer |
-| ----------------------- | :------: | :---: | :------: | :-----: | :------: | :------: | :----: |
-| `dashboard.view`        |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
-| `documentation.view`    |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
-| `systemstatus.view`     |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |
-| `project.edit`          |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
-| `workpackage.edit`      |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
-| `activity.edit`         |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
-| `azure.connection.test` |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `azure.export`          |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
-| `azure.import`          |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `azure.database.build`  |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `backup.restore`        |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `users.manage`          |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `roles.manage`          |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `auditlog.view`         |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| Aktion                         | sysadmin | admin | teamlead | projmgr | engineer | customer | viewer |
+| ------------------------------ | :------: | :---: | :------: | :-----: | :------: | :------: | :----: |
+| `dashboard.view`               |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
+| `documentation.view`           |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
+| `systemstatus.view`            |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |
+| `project.edit`                 |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
+| `workpackage.edit`             |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
+| `activity.edit`                |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
+| `azure.connection.test`        |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `azure.export`                 |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
+| `azure.import`                 |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `azure.database.build`         |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `backup.restore`               |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `users.manage`                 |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `roles.manage`                 |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `auditlog.view`                |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `avkk.view`                    |    ●     |   ●   |    ●     |    ●    |    ●     |    ○     |   ●    |
+| `avkk.edit`                    |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
+| `avkk.responsibility.assign`   |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
+| `avkk.management.view`         |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
+| `referencedata.view`           |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
+| `referencedata.manage`         |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+
+### Fachregel Delegation
+
+Projektmanager und Teamleiter müssen Verantwortung delegieren können. Deshalb
+ist `avkk.responsibility.assign` für beide Rollen bewusst gesetzt. Das Recht
+umfasst die fachliche Neu-/Umzuweisung von Verantwortung und ist kein
+Berechtigungsfehler.
+
+Die v1-Matrix ist dabei noch **flach**: das Delegationsrecht ist rollenbasiert,
+nicht auf Projekt- oder Team-Scopes begrenzt. Die Zielarchitektur v2 muss die
+Zuweisung über Ressourcenscopes aus ADR-0007 begrenzen, sodass Projektmanager
+nur im eigenen Projektkontext und Teamleiter nur im vorgesehenen
+Führungs-/Portfoliokontext delegieren können.
 
 Invarianten aus `scripts/check-rbac.mjs`:
 
@@ -46,6 +65,8 @@ Invarianten aus `scripts/check-rbac.mjs`:
 - `roles.manage` ⊆ {systemadministrator}
 - `viewer`/`customer` ohne `.edit`, `azure.*`, `*.manage`, `backup.*`
 - `customer` ohne `systemstatus.view`
+- `engineer` ohne `avkk.responsibility.assign`
+- `teamlead` und `projectmanager` mit `avkk.responsibility.assign`
 
 ## Ressourcentypen (v2)
 
