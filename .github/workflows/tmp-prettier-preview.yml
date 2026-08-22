@@ -1,0 +1,23 @@
+name: Temporary Prettier Preview
+
+on:
+  push:
+    branches:
+      - docs/avkk-responsibility-consequence-clarification
+
+permissions:
+  contents: read
+
+jobs:
+  format-preview:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Format only the two CI findings
+        run: bunx prettier --write docs/AVKK.md src/components/avkk/management/AvkkUnderstandPanel.tsx
+      - name: Print formatter diff
+        run: git diff -- docs/AVKK.md src/components/avkk/management/AvkkUnderstandPanel.tsx
