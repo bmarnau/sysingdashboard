@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { fetchAvkkPeopleDirectoryRows } from "./people-directory-adapter";
 
 export interface AvkkPersonDirectoryEntry {
   id: string;
@@ -7,28 +7,17 @@ export interface AvkkPersonDirectoryEntry {
   status: string;
 }
 
-type AvkkPersonDirectoryRow = {
-  id: string;
-  display_name: string;
-  role: string | null;
-  status: string;
-};
-
 /**
- * Liest den minimalen AVKK-Personenvertrag aus Supabase.
+ * Liest den minimalen AVKK-Personenvertrag ueber den Provider-Adapter.
  *
  * Der Server entscheidet anhand der RBAC-Berechtigungen, welche Personen
- * sichtbar sind. Der Client erhaelt bewusst keine vollstaendigen Profile.
+ * sichtbar sind. Der Fachservice erhaelt bewusst keine vollstaendigen Profile
+ * und kennt keine Supabase-spezifische Implementierung.
  */
 export async function listAvkkPeopleDirectory(): Promise<AvkkPersonDirectoryEntry[]> {
-  // Die RPC wird mit dieser Migration eingefuehrt. Bis die generierten
-  // Supabase-Typen nach Anwendung der Migration aktualisiert werden, wird nur
-  // der Funktionsname an der generierten Signatur vorbei typisiert; die
-  // Rueckgabe wird unten explizit validiert/gemappt.
-  const { data, error } = await supabase.rpc("avkk_people_directory" as never);
-  if (error) throw error;
+  const rows = await fetchAvkkPeopleDirectoryRows();
 
-  return ((data ?? []) as unknown as AvkkPersonDirectoryRow[]).map((row) => ({
+  return rows.map((row) => ({
     id: row.id,
     displayName: row.display_name || "Unbenannt",
     role: row.role,
