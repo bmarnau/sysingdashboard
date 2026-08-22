@@ -22,10 +22,9 @@ export function AvkkUnderstandPanel({ onOpenManual }: { onOpenManual: () => void
       <p className="rounded-lg border border-border bg-secondary/30 p-3 text-xs text-muted-foreground">
         AVKK dient der transparenten Aufgaben-, Verantwortungs- und Risikosteuerung. Das
         Verantwortungsgefühl ist eine Führungs- und Klärungsfrage und wird im Dashboard nicht als
-        Kennwert gemessen. AVKK ist{" "}
-        <strong className="font-semibold text-foreground">kein</strong> Instrument zur
-        automatisierten personenbezogenen Leistungsbewertung. Bewertet wird die Situation rund um
-        eine Aufgabe, nicht die Person.
+        Kennwert gemessen. AVKK ist <strong className="font-semibold text-foreground">kein</strong>{" "}
+        Instrument zur automatisierten personenbezogenen Leistungsbewertung. Bewertet wird die
+        Situation rund um eine Aufgabe, nicht die Person.
       </p>
     </section>
   );

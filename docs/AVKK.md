@@ -6,12 +6,12 @@
 
 AVKK steht verbindlich für:
 
-| Buchstabe | Bedeutung         | Leitfrage                                                                                                                       |
-| --------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **A**     | **Aufgabe**       | Was genau ist zu tun, bis wann, und woran ist die Erfüllung erkennbar?                                                         |
-| **V**     | **Verantwortung** | Fühle ich mich für diese Aufgabe und ihr Ergebnis verantwortlich — und ist klar, wofür ich Verantwortung übernehme?            |
-| **K**     | **Kompetenz**     | Sind alle Kompetenzen und Ressourcen vorhanden, um die Aufgabe mit der übernommenen Verantwortung erfolgreich umzusetzen?      |
-| **K**     | **Konsequenz**    | Welche negativen Folgen entstehen bei Nichterfüllung — für andere Mitwirkende, für den Kunden und für mich selbst?             |
+| Buchstabe | Bedeutung         | Leitfrage                                                                                                                 |
+| --------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **A**     | **Aufgabe**       | Was genau ist zu tun, bis wann, und woran ist die Erfüllung erkennbar?                                                    |
+| **V**     | **Verantwortung** | Fühle ich mich für diese Aufgabe und ihr Ergebnis verantwortlich — und ist klar, wofür ich Verantwortung übernehme?       |
+| **K**     | **Kompetenz**     | Sind alle Kompetenzen und Ressourcen vorhanden, um die Aufgabe mit der übernommenen Verantwortung erfolgreich umzusetzen? |
+| **K**     | **Konsequenz**    | Welche negativen Folgen entstehen bei Nichterfüllung — für andere Mitwirkende, für den Kunden und für mich selbst?        |
 
 AVKK ist **nicht nur ein Datenmodell**, sondern eine Führungsmethodik. Das
 Datenmodell (Abschnitt 8) ist lediglich die technische Abbildung dieser
@@ -61,11 +61,11 @@ liegen bleibt. In der Praxis entstehen daraus drei wiederkehrende Fehlerbilder:
 
 ### 1.3 Nutzen je Zielgruppe
 
-| Zielgruppe             | Nutzen                                                                                                                                                              |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Mitarbeitende          | Können Klarheit und Unterstützungsbedarf sachlich ansprechen. Fehlende Voraussetzungen sind ein Attribut der Aufgabe, keine Bewertung der Person.                  |
-| Projektverantwortliche | Sehen Verantwortungs-, Kompetenz- und Ressourcenlücken, bevor Termine reißen; können Zuständigkeiten belastbar nachweisen.                                        |
-| Führungskräfte         | Erhalten eine begründete Priorisierung und eine Risikosicht, die auf dokumentierten Auswirkungen beruht statt auf Bauchgefühl.                                    |
+| Zielgruppe             | Nutzen                                                                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mitarbeitende          | Können Klarheit und Unterstützungsbedarf sachlich ansprechen. Fehlende Voraussetzungen sind ein Attribut der Aufgabe, keine Bewertung der Person. |
+| Projektverantwortliche | Sehen Verantwortungs-, Kompetenz- und Ressourcenlücken, bevor Termine reißen; können Zuständigkeiten belastbar nachweisen.                        |
+| Führungskräfte         | Erhalten eine begründete Priorisierung und eine Risikosicht, die auf dokumentierten Auswirkungen beruht statt auf Bauchgefühl.                    |
 
 ### 1.4 Führungsgrundsatz und Abgrenzung
 
@@ -94,12 +94,12 @@ Die Aufgabe ist der Gegenstand, auf den AVKK angewendet wird. Im MVP sind
 
 ### 2.1 Fachlicher MVP-Scope und technische Subject-Typen
 
-| Typ          | Schlüssel     | Rolle im MVP                                                                                              |
-| ------------ | ------------- | ---------------------------------------------------------------------------------------------------------- |
-| Projekt      | `project`     | **delegierbare AVKK-Aufgabe**                                                                              |
-| Arbeitspaket | `workpackage` | **delegierbare AVKK-Aufgabe**                                                                              |
+| Typ          | Schlüssel     | Rolle im MVP                                                                                                  |
+| ------------ | ------------- | ------------------------------------------------------------------------------------------------------------- |
+| Projekt      | `project`     | **delegierbare AVKK-Aufgabe**                                                                                 |
+| Arbeitspaket | `workpackage` | **delegierbare AVKK-Aufgabe**                                                                                 |
 | Tätigkeit    | `activity`    | operativer Arbeits-/Leistungsnachweis; **keine delegierbare AVKK-Aufgabe**; technischer Typ bleibt kompatibel |
-| Maßnahme     | `measure`     | reservierter Erweiterungstyp für spätere operative Maßnahmen; **nicht Teil des MVP-Aufgabenscopes**        |
+| Maßnahme     | `measure`     | reservierter Erweiterungstyp für spätere operative Maßnahmen; **nicht Teil des MVP-Aufgabenscopes**           |
 
 Die bestehende Struktur wird **erweitert, nicht ersetzt**. Es entsteht keine
 zweite Facharchitektur: AVKK legt sich als eigene Ebene über die steuerbaren
@@ -375,14 +375,14 @@ activity = technischer Kompatibilitätstyp / operativer Arbeitsnachweis
 measure  = reservierter Erweiterungstyp
 ```
 
-| Entität               | Zweck                                         | Wesentliche Felder                                                                                                                                     |
-| --------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `avkk_subject`        | AVKK-Kopf zu einem technisch referenzierbaren Subject | `id` (PK, uuid), `subject_type`, `subject_id`, `title_snapshot`, `state`, `created_by`, `created_at`, `updated_at`                              |
-| `avkk_responsibility` | Verantwortungszuordnung                       | `id` (PK), `subject_id` (FK), `person_id` (FK profiles), `role_value_id` (FK reference_value), `type_value_ids` (Array/Join), `valid_from`, `valid_to` |
-| `avkk_competence`     | Bewertung je Dimension                        | `id` (PK), `subject_id` (FK), `dimension_value_id` (FK), `rating_value_id` (FK), `support_needed` (bool), `note`, `assessed_by`, `assessed_at`         |
-| `avkk_consequence`    | Auswirkung je Bereich                         | `id` (PK), `subject_id` (FK), `area_value_id` (FK), `severity_value_id` (FK), `schedule_impact_value_id` (FK), `note`                                  |
-| `reference_catalog`   | Katalogdefinition                             | siehe [REFERENCE-DATA.md](./REFERENCE-DATA.md)                                                                                                         |
-| `reference_value`     | Katalogwert                                   | siehe [REFERENCE-DATA.md](./REFERENCE-DATA.md)                                                                                                         |
+| Entität               | Zweck                                                 | Wesentliche Felder                                                                                                                                     |
+| --------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `avkk_subject`        | AVKK-Kopf zu einem technisch referenzierbaren Subject | `id` (PK, uuid), `subject_type`, `subject_id`, `title_snapshot`, `state`, `created_by`, `created_at`, `updated_at`                                     |
+| `avkk_responsibility` | Verantwortungszuordnung                               | `id` (PK), `subject_id` (FK), `person_id` (FK profiles), `role_value_id` (FK reference_value), `type_value_ids` (Array/Join), `valid_from`, `valid_to` |
+| `avkk_competence`     | Bewertung je Dimension                                | `id` (PK), `subject_id` (FK), `dimension_value_id` (FK), `rating_value_id` (FK), `support_needed` (bool), `note`, `assessed_by`, `assessed_at`         |
+| `avkk_consequence`    | Auswirkung je Bereich                                 | `id` (PK), `subject_id` (FK), `area_value_id` (FK), `severity_value_id` (FK), `schedule_impact_value_id` (FK), `note`                                  |
+| `reference_catalog`   | Katalogdefinition                                     | siehe [REFERENCE-DATA.md](./REFERENCE-DATA.md)                                                                                                         |
+| `reference_value`     | Katalogwert                                           | siehe [REFERENCE-DATA.md](./REFERENCE-DATA.md)                                                                                                         |
 
 ### 8.2 Kardinalitäten
 
@@ -427,15 +427,15 @@ measure  = reservierter Erweiterungstyp
 
 ### 8.5 Beziehung zu weiteren Bestandsobjekten
 
-| Objekt                | Beziehung zu AVKK                                                                                                                   |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Benutzer (`profiles`) | Ziel der Verantwortungszuordnung                                                                                                    |
-| Rollen (`user_roles`) | Steuern Sichtbarkeit und Änderungsrechte                                                                                            |
-| Tätigkeiten           | operative Arbeits-/Leistungsnachweise; wichtig für Kunde, Projektcockpit und Abrechnung, aber keine delegierbaren AVKK-Aufgaben   |
-| Dokumente             | später über Reference-Data-Katalog `document_type` und eine Verknüpfungstabelle                                                     |
-| Risiken               | Projektmanifest-Risiken bleiben Governance-Artefakt; operative Risiken können später über `measure` angebunden werden             |
-| Maßnahmen             | reservierter technischer Typ `measure`, nicht Teil des MVP                                                                          |
-| Audit/Historie        | bestehendes `audit_log` plus fachliche Gültigkeitsfelder                                                                            |
+| Objekt                | Beziehung zu AVKK                                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Benutzer (`profiles`) | Ziel der Verantwortungszuordnung                                                                                                |
+| Rollen (`user_roles`) | Steuern Sichtbarkeit und Änderungsrechte                                                                                        |
+| Tätigkeiten           | operative Arbeits-/Leistungsnachweise; wichtig für Kunde, Projektcockpit und Abrechnung, aber keine delegierbaren AVKK-Aufgaben |
+| Dokumente             | später über Reference-Data-Katalog `document_type` und eine Verknüpfungstabelle                                                 |
+| Risiken               | Projektmanifest-Risiken bleiben Governance-Artefakt; operative Risiken können später über `measure` angebunden werden           |
+| Maßnahmen             | reservierter technischer Typ `measure`, nicht Teil des MVP                                                                      |
+| Audit/Historie        | bestehendes `audit_log` plus fachliche Gültigkeitsfelder                                                                        |
 
 ---
 
@@ -494,10 +494,10 @@ Auswertungen:
 
 | Report               | Basis                                                                 |
 | -------------------- | --------------------------------------------------------------------- |
-| Verantwortungsmatrix | Projekt/Arbeitspaket × Verantwortungsart × Person                    |
-| Kompetenzübersicht   | Projekt/Arbeitspaket × Dimension × Bewertung                         |
+| Verantwortungsmatrix | Projekt/Arbeitspaket × Verantwortungsart × Person                     |
+| Kompetenzübersicht   | Projekt/Arbeitspaket × Dimension × Bewertung                          |
 | Kompetenzlücken      | Bewertungen `missing`/`partial` mit `support_needed`                  |
-| Konsequenzanalyse    | Perspektive/Bereich × Schweregrad × Terminwirkung                    |
+| Konsequenzanalyse    | Perspektive/Bereich × Schweregrad × Terminwirkung                     |
 | Kritische Aufgaben   | max. Schweregradrang ≥ hoch **und** Kompetenzlücke                    |
 | Projektstatus        | Aggregation über Projekt/Arbeitspaket                                 |
 | Managementübersicht  | Aggregation über alle AVKK-Aufgaben, inkl. „AVKK verstehen"-Erklärung |
