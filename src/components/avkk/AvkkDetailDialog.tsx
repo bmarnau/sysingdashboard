@@ -63,7 +63,9 @@ export function AvkkDetailDialog({
     for (const person of directory.people) {
       byId.set(person.id, { id: person.id, displayName: person.displayName });
     }
-    return [...byId.values()].sort((a, b) => a.displayName.localeCompare(b.displayName, "de"));
+    return [...byId.values()].sort((a, b) =>
+      a.displayName.localeCompare(b.displayName, "de"),
+    );
   })();
 
   async function guarded(action: () => Promise<void>, successText: string) {
