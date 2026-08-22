@@ -29,6 +29,19 @@ describe("Dashboard-Navigation im Benutzerhandbuch", () => {
     expect(topic?.content).toContain("AVKK-Projektkontext");
   });
 
+  it("überschreibt die historische Systemstatus-Hilfe mit dem aktuellen Betriebsmodell", () => {
+    const topic = HelpDocumentationService.getTopicById("system-status");
+
+    expect(topic?.lastUpdated).toBe("2026-08-22");
+    expect(topic?.content).toContain("https://github.com/bmarnau/sysingdashboard");
+    expect(topic?.content).toContain("Supabase");
+    expect(topic?.content).toContain("vom Hosting nicht bereitgestellt");
+    expect(topic?.content).toContain("nicht geprüft — users.manage erforderlich");
+    expect(topic?.content).toContain(
+      "allgemeine **/api/status** bleibt ein secret-freier Health-Endpunkt",
+    );
+  });
+
   it("überschreibt die historischen AVKK-Texte mit der fachnahen Handbuchfassung", () => {
     const model = HelpDocumentationService.getTopicById("avkk-modell");
     const workspace = HelpDocumentationService.getTopicById("avkk-arbeitsplatz");

@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.59.7 - 2026-08-22
+
+- **Systemstatus an den tatsächlichen MVP-Betrieb angepasst (F-11)**: Supabase wird als aktuelle Backend-/Auth-Plattform ausgewiesen; Auth-Konfiguration und Backend-Erreichbarkeit werden getrennt und ohne Verbindungsadressen, Schlüssel, Tokens oder Projektkennungen dargestellt.
+- **Geschützter Backend-Nachweis**: Nur Benutzer mit `users.manage` lösen den serverseitigen Supabase-Nachweis aus. Teamleiter können den allgemeinen Systemstatus sehen, rufen aber keinen administrativen Backend-Pfad auf; der öffentliche `/api/status` bleibt secret-frei.
+- **Git-/Hosting-Metadaten verständlicher**: Fehlt die Commit-ID in der Hosting-Runtime, wird dies als „vom Hosting nicht bereitgestellt“ gekennzeichnet statt als Konfigurationsfehler. Die kanonische Repository-URL bleibt `https://github.com/bmarnau/sysingdashboard`.
+- **Hilfe und Regressionstests nachgezogen**: Die kontextsensitive Systemstatus-Hilfe erklärt Berechtigungsgrenzen und Interpretation; Security-, Komponenten-, API-, Build-, E2E- und Quality-Gates sichern den Vertrag ab.
+
 ## 1.59.6 - 2026-08-22
 
 - **AVKK-Personenanzeige korrigiert (F-11)**: Bereits zugeordnete Verantwortliche erscheinen im AVKK-Detaildialog als „Vorname Nachname" statt als technische ID. Grundlage ist das datensparsame Personenverzeichnis, das in der verbundenen Backend-Datenbank aktiviert wurde.
@@ -38,7 +45,7 @@ Format pro Eintrag:
 - **F-18 behoben – Read-only-Rollen schreiben nicht mehr**: Die lokalen Fachobjekt-Funktionen (Projekte, Arbeitspakete, Tätigkeiten) sind jetzt durchgängig an die bestehende Berechtigungsmatrix gebunden.
 - **UI-Gating**: Das globale Menü „+ Neu" erscheint nur noch, wenn mindestens eine der Berechtigungen `project.edit`, `workpackage.edit` oder `activity.edit` vorliegt; die Einträge selbst sind einzeln berechtigt. „Neu", „Bearbeiten" und „Löschen" in Projekt-, Arbeitspaket-, Tätigkeits- und Abrechnungsansicht werden nur passend zur Berechtigung angeboten.
 - **Defensive Prüfung**: Die Speicher- und Löschpfade prüfen die Berechtigung unmittelbar vor der Änderung; ohne Berechtigung erfolgt keine Änderung des lokalen Bestands.
-- Keine Änderung der Rollenmatrix, keine Erweiterung der Engineer-Semantik, keine neue Backend-Infrastruktur.
+- Keine Änderung der Rollenmatrix, keine Erweiterung der Engineer-Eigentumssemantik, keine neue Backend-Infrastruktur.
 
 ## 1.59.2 - 2026-08-18
 
@@ -197,7 +204,7 @@ Format pro Eintrag:
 ## 1.50.0 - 2026-08-07
 
 - **Abschluss der Infrastrukturphase**: Phase 1 „Technische Plattform" ist abgeschlossen; Phase 2 „AVKK-Fachmodell" ist die nächste Phase (ADR-0023).
-- **Architektur**: `docs/ARCHITECTURE.md` vollständig neu aufgebaut — Schichtenmodell, Supabase, RBAC, RLS, Backup/Restore, Project Manifest, Governance, geplante Bausteine (Reference Data, AVKK, Report Service, Microsoft 365, KI-Agenten), Docker- und Azure-Zielarchitektur.
+- **Architektur**: `docs/ARCHITECTURE.md` vollständig neu aufgebaut — Schichtenmodell, Supabase, RBAC, RLS, Backup/Restore, Project Manifest, geplante Bausteine (Reference Data, AVKK, Report Service, Microsoft 365, KI-Agenten), Docker- und Azure-Zielarchitektur.
 - **Handbuch**: Neues Kapitel „Dialog-Referenz" dokumentiert die zehn bislang nicht beschriebenen Dialoge mit Zweck, Benutzergruppe, Berechtigung, Eingaben, Ergebnis und Besonderheiten; `docs:check` meldet keine offenen Dialoge mehr.
 - **Qualität**: Neue Testsuite `src/__tests__/scripts/project-status-validator.test.ts` prüft den Manifest-Validator (gültiges Manifest, YAML-Fehler, Schemaverstoß, doppelte IDs, unbekannter Sprint, Roadmap-Referenz, fehlende Pflichtfelder, Versionskonflikt) und validiert zusätzlich das reale Manifest.
 - **Project Manifest**: Neuer Abschnitt `phases` im Manifest und Schema (schemaVersion 1.3.0); Sprint 06B als abgeschlossen geführt, Roadmap und Risiken aktualisiert.
@@ -308,7 +315,7 @@ Format pro Eintrag:
 
 - **Compliance-Dashboard fertiggestellt** (`TechnicalReportDialog`): Management-Summary mit Severity-Kacheln, farbigem Statusband und Quellen-Chips; Trennung technisch vs. organisatorisch vs. akzeptiert über Tabs.
 - **Filter & Suche**: Volltextsuche plus Auswahllisten für Severity, Bereich, Kategorie, Status, Bucket und Aufwand mit Reset-Button.
-- **Drill-Down pro Finding**: aufklappbare Detailansicht mit vollständiger Beschreibung, Empfehlung, Komponenten-Chips, Evidence-Kopie und Metadaten-Grid.
+- **Drill-Down pro Finding**: aufklappbare Detailansicht mit vollständiger Beschreibung, Empfehlung, Komponenten-Chips und Metadaten-Grid.
 - **Historie & Diff**: Vergleichs­sektion mit Deltas gegenüber `technical-test-report.prev.json` und klappbaren ID-Listen pro Diff-Bucket.
 - **Druckansicht**: „Drucken / PDF"-Button aktiviert `@media print`-Regeln, die ausschließlich den Report-Dialog rendern (Body-Klasse `printing-compliance`).
 - **Responsive**: Bereichstabelle als Karten unterhalb `sm`, Filterleiste bricht sauber um, Dialog auf Tablet auf `min(96vw, 56rem)` verbreitert; alle Farben ausschließlich über Design-Tokens (`destructive`, `warning`, `success`, `muted`, `accent`).
@@ -458,7 +465,6 @@ Format pro Eintrag:
 - **Technical-Debt-Scanner (ADR-0010)**: Hybrider Ansatz aus acht automatisierten Detektoren (`scripts/tech-debt/detectors/`: `cyclic-deps`, `layer-violations`, `oversize-modules`, `endpoint-guards`, `orphan-modules`, `doc-drift`, `coverage-gaps`, `console-usage`) und einem kuratierten Manual-Katalog (`tech-debt/findings.json`). Gemeinsames Schema mit ID, Titel, Kategorie, Location, Beschreibung, Ursache, Auswirkung, Severity, Wahrscheinlichkeit, Empfehlung, Aufwand, Status, `firstDetected`, `lastChecked`, Version und Quelle.
 - **Aggregator** (`scripts/tech-debt/run.mjs`) validiert beide Quellen, mergt, priorisiert nach Prompt-Ranking (Security → Datenverlust → offener privilegierter Endpoint → RBAC → Backup → funktional → Stabilität → Architektur → Performance → Doku → Kosmetik) und produziert `test-report/tech-debt.{json,md}`, `tech-debt-summary.md`, `tech-debt-actions.md` sowie `tech-debt-diff.json` gegen den vorherigen Lauf.
 - **CI-Gate**: Nur Critical-Funde brechen die Pipeline (Exit 2); alles darüber ist Trend-Metrik. Actions-Cache persistiert `tech-debt.prev.json` pro Branch für echten Diff.
-- **Alter `scripts/check-tech-debt.mjs` entfernt** (LOC/TODO-Zähler passte nicht ins Schema).
 - Handbuch-Kapitel „Technical-Debt-Analyse" (Kategorie Service) inkl. Grenzen und bewusst nicht automatisierten Prüfpunkten; verlinkt im Hilfe-Quick-Menü.
 
 ## 1.28.0 - 2026-07-13
@@ -478,7 +484,7 @@ Format pro Eintrag:
 
 ## 1.27.0 - 2026-07-12
 
-- **Forensischer Actor-Kontext**: `UserManagementService.createUser/updateUser/deleteUser/setUserStatus/setUserRole` akzeptieren jetzt einen optionalen `ActorContext` (`actorId`, `actorRole`, `reason`). Audit-Log-Einträge enthalten damit sowohl Ziel- als auch Ausführer-Id. Fehlt der Actor, loggt der Service bewusst auf `warn`, damit der Log Viewer forensische Lücken sichtbar macht. `UserManagementDialog` reicht den aktiven Benutzer automatisch als Actor durch.
+- **Forensischer Actor-Kontext**: `UserManagementService.createUser/updateUser/deleteUser/setUserStatus/setUserRole` akzeptieren jetzt einen optionalen `ActorContext` (`actorId`, `actorRole`, `reason`). Audit-Log-Einträge enthalten damit sowohl Ziel- als Ausführer-Id. Fehlt der Actor, loggt der Service bewusst auf `warn`, damit der Log Viewer forensische Lücken sichtbar macht. `UserManagementDialog` reicht den aktiven Benutzer automatisch als Actor durch.
 - **RBAC v2 – Datenmodell vorbereitet** (additiv, kein Breaking Change): Neue Typen für `ResourceType`, hierarchische `ResourceScope`, `PermissionV2` (`resource:action`), `PermissionGroup` und `RoleAssignment` in `src/lib/rbac/types.ts`. Scope-Utilities (`parseScope`, `scopeIncludes`, `narrowestScope`) und `evaluateAccess()` mit v1-Fallback in `src/lib/rbac/{scope,access,permission-groups}.ts`. Dokumentiert in ADR-0007 und `docs/RBAC-MATRIX.md`.
 
 ## 1.26.1 - 2026-07-11
@@ -647,22 +653,22 @@ Format pro Eintrag:
 
 ## 1.16.0 - 2026-06-22
 
-- Backend-API jetzt auch im Lovable-/Cloudflare-Deployment erreichbar: TanStack-Server-Routes \`src/routes/api/sync.ts\` (POST) und \`src/routes/api/status.ts\` (GET) importieren dieselben framework-freien Services aus \`backend/services/\` wie der lokale Standalone-Server.
-- Module auf ESM vereinheitlicht: \`config/env.mjs\`, \`config/secretManager.mjs\`, \`backend/services/_.mjs\`, \`backend/routes/_.mjs\`, \`backend/server.mjs\`. Lokal weiterhin via \`node backend/server.mjs\` startbar. Eine Quelle für Sync-/Status-Logik.
+- Backend-API jetzt auch im Lovable-/Cloudflare-Deployment erreichbar: TanStack-Server-Routes `src/routes/api/sync.ts` (POST) und `src/routes/api/status.ts` (GET) importieren dieselben framework-freien Services aus `backend/services/` wie der lokale Standalone-Server.
+- Module auf ESM vereinheitlicht: `config/env.mjs`, `config/secretManager.mjs`, `backend/services/_.mjs`, `backend/routes/_.mjs`, `backend/server.mjs`. Lokal weiterhin via `node backend/server.mjs` startbar. Eine Quelle für Sync-/Status-Logik.
 
 ## 1.15.0 - 2026-06-22
 
-- Backend-API-Gerüst unter \`/backend\` (Node-HTTP-Server, ohne Dependencies): \`POST /api/sync\` und \`GET /api/status\` mit Trennung Routes/Services. Im development-Mode liefert der Sync ausschließlich Mock-Daten, Azure-Zugriffe sind via \`config/env.mjs\` blockiert. Status meldet Modus, Secret-Verfügbarkeit (maskiert) und letzten Sync-Lauf.
-- Hinweis: \`backend/server.mjs\` läuft nur lokal (\`node backend/server.mjs\`); für das Cloudflare-Deployment übernehmen die TanStack-Server-Routes dieselbe Aufgabe.
+- Backend-API-Gerüst unter `/backend` (Node-HTTP-Server, ohne Dependencies): `POST /api/sync` und `GET /api/status` mit Trennung Routes/Services. Im development-Mode liefert der Sync ausschließlich Mock-Daten, Azure-Zugriffe sind via `config/env.mjs` blockiert. Status meldet Modus, Secret-Verfügbarkeit (maskiert) und letzten Sync-Lauf.
+- Hinweis: `backend/server.mjs` läuft nur lokal (`node backend/server.mjs`); für das Cloudflare-Deployment übernehmen die TanStack-Server-Routes dieselbe Aufgabe.
 
 ## 1.14.0 - 2026-06-20
 
 - JSON-Import Stufe 2: vierstufiger Wizard (Datei → Vorschau → Mapping → Ausführung) mit Diff pro Bereich, drei Konflikt-Strategien (Merge/Überschreiben/Behalten), Pre-Snapshot der betroffenen Storage-Keys und automatischem Rollback bei Fehler.
 - Benutzer-Mapping (engineerId → bestehender User / neu anlegen / überspringen); im Single-Engineer-Modus wird der Schritt übersprungen und eingehende IDs dem aktiven Benutzer zugeordnet.
-- Kunden-Mapping mit automatischer Duplikat-Erkennung (Normalize-Schlüssel + Levenshtein ≤ 2) gegenüber bestehenden \`project.client\` / \`workPackage.client\`-Werten.
-- Konfliktregel \`timeEntries\` > \`activities\`: Datum/Dauer/Stundensatz/Abrechnungsstatus/Beschreibung werden aus \`timeEntries\` übernommen; Abweichungen erscheinen als Warnung im Protokoll.
+- Kunden-Mapping mit automatischer Duplikat-Erkennung (Normalize-Schlüssel + Levenshtein ≤ 2) gegenüber bestehenden `project.client` / `workPackage.client`-Werten.
+- Konfliktregel `timeEntries` > `activities`: Datum/Dauer/Stundensatz/Abrechnungsstatus/Beschreibung werden aus `timeEntries` übernommen; Abweichungen erscheinen als Warnung im Protokoll.
 - Persistiertes Import-Protokoll (IndexedDB, Default 90 Tage) mit Zeitstempel, Counts, Warnungen, Konflikten, Mapping-Entscheidungen und Snapshot-ID; Rollback und Löschen direkt aus der Tabelle.
-- ZIP-Backup bettet jetzt eine kanonische \`dashboard.json\` (Schema v1) ein — vorbereitend für einen schemavalidierten Restore-Pfad. Alte ZIPs bleiben uneingeschränkt lesbar.
+- ZIP-Backup bettet jetzt eine kanonische `dashboard.json` (Schema v1) ein — vorbereitend für einen schemavalidierten Restore-Pfad. Alte ZIPs bleiben uneingeschränkt lesbar.
 - Sensible Felder werden beim Import VOR der Validierung entfernt (Defense in depth gegen manipulierte Dateien).
 - Tests: `bun run test:examples` erweitert um Import-Round-Trip (jede Beispieldatei → buildPlan → applyPlan in einen In-Memory-Mock und zurück).
 - Handbuch-Kapitel „Import / Export (JSON)" um Wizard, Mapping, Konfliktregeln, Protokoll und eingebettete dashboard.json ergänzt.
