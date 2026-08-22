@@ -7,7 +7,15 @@ export const dashboardNavigationHelpTopics: HelpTopic[] = [
     category: "Dashboard",
     route: "/",
     component: "Dashboard",
-    keywords: ["Navigation", "Projekte", "Arbeitspakete", "Tätigkeiten", "Abrechnung", "AVKK", "Hilfe"],
+    keywords: [
+      "Navigation",
+      "Projekte",
+      "Arbeitspakete",
+      "Tätigkeiten",
+      "Abrechnung",
+      "AVKK",
+      "Hilfe",
+    ],
     lastUpdated: "2026-08-22",
     content: `## Hauptnavigation
 Die fachlichen Ansichten werden über die Tab-Leiste direkt unter dem Kopfbereich geöffnet:
@@ -36,7 +44,14 @@ Das **Fragezeichen** öffnet die Hilfe und das Benutzerhandbuch. Das **Zahnrad**
     category: "Erfassung",
     route: "/",
     component: "ProjectsView",
-    keywords: ["Projekt", "Projektcockpit", "Projektdetail", "Arbeitspaket", "Projektbericht", "Stift"],
+    keywords: [
+      "Projekt",
+      "Projektcockpit",
+      "Projektdetail",
+      "Arbeitspaket",
+      "Projektbericht",
+      "Stift",
+    ],
     lastUpdated: "2026-08-22",
     content: `## Projektübersicht
 Über den Tab **Projekte** gelangt man in die Projektübersicht.
