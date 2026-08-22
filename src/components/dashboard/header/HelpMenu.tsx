@@ -4,8 +4,13 @@
  */
 import { useState } from "react";
 import { HelpCircle } from "lucide-react";
+import { registerDashboardNavigationHelp } from "@/lib/help-navigation-topics";
+
+registerDashboardNavigationHelp();
 
 const HELP_QUICKLINKS: { id: string; label: string }[] = [
+  { id: "navigation-ansichten", label: "Navigation & Ansichten" },
+  { id: "projects", label: "Projekte & Projektdetail" },
   { id: "local-operation", label: "Lokaler Betrieb ohne Azure" },
   { id: "azure-service-area", label: "Azure Servicebereich" },
   { id: "azure-database-build", label: "Azure Datenbank aufbauen" },
