@@ -3,11 +3,12 @@
  * Verhaltensneutral aus dashboard.tsx extrahiert (Sprint 05).
  */
 import { useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { FolderOpen, Pencil, Plus, Trash2 } from "lucide-react";
 import type { Project, ProjectStatus, WorkPackage } from "@/lib/dashboard-data";
 import { fmtDate } from "../formatters";
 import { projectStatusLabel, projectStatusStyles } from "../constants";
 import { Card, IconBtn, PeriodToggle, SearchInput } from "../primitives";
+import { ProjectDetailView } from "./ProjectDetailView";
 
 export function ProjectsView({
   projects,
@@ -34,6 +35,25 @@ export function ProjectsView({
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"alle" | ProjectStatus>("alle");
   const [periodOnly, setPeriodOnly] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+
+  const selectedProject = selectedProjectId
+    ? (projects.find((project) => project.id === selectedProjectId) ?? null)
+    : null;
+
+  if (selectedProject) {
+    return (
+      <ProjectDetailView
+        project={selectedProject}
+        projects={projects}
+        workPackages={workPackages}
+        canEditProject={canEdit}
+        onBack={() => setSelectedProjectId(null)}
+        onEditProject={onEdit}
+      />
+    );
+  }
+
   const periodCount = projects.filter((p) => periodProjectIds.has(p.id)).length;
   const filtered = projects.filter((p) => {
     if (periodOnly && !periodProjectIds.has(p.id)) return false;
@@ -102,7 +122,14 @@ export function ProjectsView({
                   <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                     {p.id}
                   </p>
-                  <h3 className="mt-1 truncate font-semibold leading-tight">{p.name}</h3>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProjectId(p.id)}
+                    className="mt-1 block max-w-full truncate text-left font-semibold leading-tight hover:text-primary hover:underline"
+                    title={`${p.name} öffnen`}
+                  >
+                    {p.name}
+                  </button>
                   <p className="mt-1 text-xs text-muted-foreground">{p.client}</p>
                 </div>
                 <span
@@ -156,6 +183,9 @@ export function ProjectsView({
                   ))}
                 </div>
                 <div className="flex gap-1 no-print">
+                  <IconBtn onClick={() => setSelectedProjectId(p.id)} title="Projekt öffnen">
+                    <FolderOpen className="size-3.5" />
+                  </IconBtn>
                   {canEdit && (
                     <>
                       <IconBtn onClick={() => onEdit(p)} title="Bearbeiten">
