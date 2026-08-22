@@ -37,7 +37,9 @@ describe("Dashboard-Navigation im Benutzerhandbuch", () => {
     expect(topic?.content).toContain("Supabase");
     expect(topic?.content).toContain("vom Hosting nicht bereitgestellt");
     expect(topic?.content).toContain("nicht geprüft — users.manage erforderlich");
-    expect(topic?.content).toContain("allgemeine **/api/status** bleibt ein secret-freier Health-Endpunkt");
+    expect(topic?.content).toContain(
+      "allgemeine **/api/status** bleibt ein secret-freier Health-Endpunkt",
+    );
   });
 
   it("überschreibt die historischen AVKK-Texte mit der fachnahen Handbuchfassung", () => {
