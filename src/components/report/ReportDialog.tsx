@@ -44,6 +44,10 @@ interface ReportDialogProps {
   tasks: readonly AvkkTask[];
   projects: readonly Project[];
   workPackages: readonly WorkPackage[];
+  /** Optional: Bericht beim Öffnen aus einem fachlichen Kontext vorwählen. */
+  initialReportId?: string;
+  /** Optional: Projekt beim Öffnen aus dem Projektcockpit vorwählen. */
+  initialProjectId?: string;
 }
 
 export function ReportDialog({
@@ -52,6 +56,8 @@ export function ReportDialog({
   tasks,
   projects,
   workPackages,
+  initialReportId,
+  initialProjectId,
 }: ReportDialogProps) {
   const user = useCurrentUser();
   const catalogs = useReferenceData(CATALOG_LIST);
@@ -85,8 +91,16 @@ export function ReportDialog({
   const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    if (open && !reportId && reports.length) setReportId(reports[0].reportId);
-  }, [open, reportId, reports]);
+    if (!open || reports.length === 0) return;
+
+    if (initialReportId && reports.some((report) => report.reportId === initialReportId)) {
+      setReportId(initialReportId);
+    } else if (!reportId) {
+      setReportId(reports[0].reportId);
+    }
+
+    if (initialProjectId) setProjectId(initialProjectId);
+  }, [open, reportId, reports, initialReportId, initialProjectId]);
 
   const definition = reports.find((r) => r.reportId === reportId) ?? null;
   const needsProject = definition?.reportId === "avkk-project";
