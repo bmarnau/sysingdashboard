@@ -41,10 +41,10 @@ zuweisen oder bestehende Verantwortungszuordnungen verändern.
 | #   | Schritt                 | Erwartetes Ergebnis                                                                                                            | Bewertung |
 | --- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------- |
 | 1   | Anmelden                | Dashboard öffnet mit eigenen Projekten, Arbeitspaketen, Tätigkeiten und Zeiten                                                 | erfüllt   |
-| 2   | Tab „Mein AVKK"        | sichtbar; eigene Fälle, Kennzahlen und Frühindikatoren plausibel                                                               | erfüllt   |
+| 2   | Tab „Mein AVKK"         | sichtbar; eigene Fälle, Kennzahlen und Frühindikatoren plausibel                                                               | erfüllt   |
 | 3   | AVKK-Eintrag bearbeiten | Eigene AVKK-Bewertung im zulässigen Scope speichern; nach Neuladen vorhanden; Verantwortung bleibt ohne Assign-Recht read-only | erfüllt   |
 | 4   | Management-Cockpit      | **nicht** sichtbar                                                                                                             | erfüllt   |
-| 5   | Bericht „persönlich"   | erzeugbar als PDF, Druck, Word, JSON, CSV                                                                                      | erfüllt   |
+| 5   | Bericht „persönlich"    | erzeugbar als PDF, Druck, Word, JSON, CSV                                                                                      | erfüllt   |
 
 ### 2.2 Projektmanager
 
