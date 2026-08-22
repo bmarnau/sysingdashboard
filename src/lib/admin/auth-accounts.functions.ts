@@ -26,6 +26,31 @@ import type { AuthAccountSummary, AuthContext } from "@/lib/admin/auth-accounts.
 
 export type { AuthAccountSummary };
 
+export interface AuthBackendStatus {
+  provider: "supabase";
+  connected: true;
+}
+
+/**
+ * Minimaler, geschützter Backend-Nachweis für den Systemstatus.
+ *
+ * Es wird ausschließlich das aktuell angemeldete Admin-Konto serverseitig
+ * aufgelöst. Die Antwort enthält weder Benutzer-, Projekt- noch
+ * Verbindungsdaten und ersetzt ausdrücklich keinen öffentlichen Health-Endpunkt.
+ */
+export const getAuthBackendStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AuthBackendStatus> => {
+    const helpers = await import("@/lib/admin/auth-accounts.server");
+    await helpers.assertUserManage(context as unknown as AuthContext);
+    const admin = helpers.getAdminClient();
+    const { data, error } = await admin.auth.admin.getUserById(context.userId);
+    if (error || !data?.user?.id) {
+      throw new Error("Backend-Verbindung konnte nicht bestätigt werden.");
+    }
+    return { provider: "supabase", connected: true };
+  });
+
 export const listAuthAccounts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AuthAccountSummary[]> => {
