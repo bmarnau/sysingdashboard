@@ -1,30 +1,29 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const rpc = vi.fn();
+const { fetchRows } = vi.hoisted(() => ({
+  fetchRows: vi.fn(),
+}));
 
-vi.mock("@/integrations/supabase/client", () => ({
-  supabase: { rpc },
+vi.mock("@/lib/avkk/people-directory-adapter", () => ({
+  fetchAvkkPeopleDirectoryRows: fetchRows,
 }));
 
 import { listAvkkPeopleDirectory } from "@/lib/avkk/people-directory";
 
 describe("listAvkkPeopleDirectory", () => {
   beforeEach(() => {
-    rpc.mockReset();
+    fetchRows.mockReset();
   });
 
-  it("ruft ausschliesslich den dedizierten AVKK-Verzeichnisvertrag auf", async () => {
-    rpc.mockResolvedValue({
-      data: [
-        {
-          id: "user-georg",
-          display_name: "Georg Marnau",
-          role: "teamlead",
-          status: "active",
-        },
-      ],
-      error: null,
-    });
+  it("mappt ausschliesslich den minimalen AVKK-Verzeichnisvertrag", async () => {
+    fetchRows.mockResolvedValue([
+      {
+        id: "user-georg",
+        display_name: "Georg Marnau",
+        role: "teamlead",
+        status: "active",
+      },
+    ]);
 
     await expect(listAvkkPeopleDirectory()).resolves.toEqual([
       {
@@ -34,15 +33,14 @@ describe("listAvkkPeopleDirectory", () => {
         status: "active",
       },
     ]);
-    expect(rpc).toHaveBeenCalledTimes(1);
-    expect(rpc).toHaveBeenCalledWith("avkk_people_directory");
+    expect(fetchRows).toHaveBeenCalledTimes(1);
   });
 
-  it("reicht einen Serverfehler weiter und faellt nicht auf Vollprofile zurueck", async () => {
+  it("reicht einen Adapterfehler weiter und faellt nicht auf Vollprofile zurueck", async () => {
     const failure = new Error("RPC nicht verfuegbar");
-    rpc.mockResolvedValue({ data: null, error: failure });
+    fetchRows.mockRejectedValue(failure);
 
     await expect(listAvkkPeopleDirectory()).rejects.toBe(failure);
-    expect(rpc).toHaveBeenCalledWith("avkk_people_directory");
+    expect(fetchRows).toHaveBeenCalledTimes(1);
   });
 });
