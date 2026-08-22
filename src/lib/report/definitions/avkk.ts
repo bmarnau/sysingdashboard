@@ -13,9 +13,9 @@ import {
   buildActionGroups,
   buildManagementSummary,
   prioritize,
-  PRIORITY_RULE,
 } from "@/lib/avkk/management";
 import type { AvkkRow } from "@/lib/avkk/workspace";
+import type { ProjectStatus, WorkPackageStatus } from "@/lib/dashboard-data";
 import { DEFAULT_TEMPLATE_ID } from "../templates/default-provider";
 import type { ReportContext, ReportDefinition, ReportDocument, ReportSection } from "../types";
 import {
@@ -37,6 +37,27 @@ const SUBJECT_LABEL: Record<string, string> = {
   activity: "Tätigkeit",
   measure: "Maßnahme",
 };
+
+const PROJECT_STATUS_LABEL: Record<ProjectStatus, string> = {
+  on_track: "Im Plan",
+  at_risk: "Risiko",
+  delayed: "Verzug",
+  abgeschlossen: "Fertig",
+};
+
+const WORK_PACKAGE_STATUS_LABEL: Record<WorkPackageStatus, string> = {
+  offen: "Offen",
+  in_arbeit: "In Arbeit",
+  wartend: "Wartet",
+  erledigt: "Erledigt",
+};
+
+/**
+ * PDF-sichere, menschenlesbare Fassung der Priorisierungsregel.
+ * Der fachliche Algorithmus bleibt in `avkk/management.ts` unverändert.
+ */
+const REPORT_PRIORITY_RULE =
+  "Sortierung: kritische Konsequenz, danach gefährdet, hohe Konsequenz, überfällig, bald fällig und Titel.";
 
 function statusText(row: AvkkRow): string {
   if (!row.hasDossier) return "ohne AVKK-Stand";
@@ -192,7 +213,7 @@ export const avkkPersonalReport: ReportDefinition<AvkkReportInput> = {
       sections: [
         kpiSection(rows, "Eigener Stand"),
         actionSection(rows),
-        taskTable(rows, "Eigene Aufgaben", PRIORITY_RULE),
+        taskTable(rows, "Eigene Aufgaben", REPORT_PRIORITY_RULE),
         competenceSection(rows),
         consequenceSection(rows),
       ],
@@ -240,7 +261,7 @@ export const avkkProjectReport: ReportDefinition<AvkkReportInput> = {
         );
         return [
           w.title,
-          w.status,
+          WORK_PACKAGE_STATUS_LABEL[w.status],
           w.priority,
           w.due ?? "—",
           row ? statusText(row) : "nicht erfasst",
@@ -258,13 +279,16 @@ export const avkkProjectReport: ReportDefinition<AvkkReportInput> = {
         { label: "Projekt", value: project?.name ?? "Alle Projekte" },
         { label: "Kunde", value: project?.client ?? "—" },
         { label: "Projektleitung", value: project?.lead ?? "—" },
-        { label: "Projektstatus", value: project?.status ?? "—" },
+        {
+          label: "Projektstatus",
+          value: project ? PROJECT_STATUS_LABEL[project.status] : "—",
+        },
       ],
       sections: [
         kpiSection(rows, "Projektstand"),
         actionSection(rows),
         packageSection,
-        taskTable(rows, "Vorgänge nach Priorität", PRIORITY_RULE),
+        taskTable(rows, "Vorgänge nach Priorität", REPORT_PRIORITY_RULE),
         competenceSection(rows),
         consequenceSection(rows),
         {
@@ -314,7 +338,7 @@ export const avkkManagementReport: ReportDefinition<AvkkReportInput> = {
       return [
         project.name,
         project.client,
-        project.status,
+        PROJECT_STATUS_LABEL[project.status],
         state,
         summary.total,
         summary.atRisk,
@@ -356,7 +380,7 @@ export const avkkManagementReport: ReportDefinition<AvkkReportInput> = {
           id: "ursachen",
           title: "Nachvollziehbarkeit",
           paragraphs: [
-            `Priorisierungsregel: ${PRIORITY_RULE}`,
+            `Priorisierungsregel: ${REPORT_PRIORITY_RULE}`,
             "Der Bericht enthält bewusst keine personenbezogenen Ranglisten, Punktzahlen oder Leistungsbewertungen (ADR-0027).",
             "Kompetenz wird ausschließlich je Dimension, Verantwortung ausschließlich als Zuordnungsstatus verdichtet.",
           ],

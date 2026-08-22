@@ -1,7 +1,11 @@
 import "../env/test-instance";
 import { describe, expect, it } from "vitest";
 import { buildReportFileName, slugify } from "@/lib/report/filename";
-import { avkkManagementReport, avkkPersonalReport } from "@/lib/report/definitions/avkk";
+import {
+  avkkManagementReport,
+  avkkPersonalReport,
+  avkkProjectReport,
+} from "@/lib/report/definitions/avkk";
 import { reportActorFromUser } from "@/lib/report/presentation";
 import { buildPrintHtml } from "@/lib/report/renderers/print";
 import { buildReportJson } from "@/lib/report/renderers/json";
@@ -84,6 +88,38 @@ describe("Reporting-Schicht", () => {
       displayName: "Petra Marnau",
       role: "Projektmanager",
     });
+  });
+
+  it("stellt Projekt- und Arbeitspaketstatus fachlich und PDF-sicher dar", () => {
+    const project = demo.projects.find(
+      (candidate) => candidate.name === "Netzwerkmodernisierung Verwaltungsstandort",
+    );
+    expect(project).toBeDefined();
+
+    const doc = avkkProjectReport.build(
+      {
+        ...input,
+        projectId: project!.id,
+        scopeLabel: project!.name,
+      },
+      ctx,
+    );
+
+    const projectStatus = doc.meta.find((entry) => entry.label === "Projektstatus");
+    expect(projectStatus?.value).toBe("Im Plan");
+
+    const packages = doc.sections.find((section) => section.id === "arbeitspakete");
+    expect(packages?.kind).toBe("table");
+    if (packages?.kind === "table") {
+      const values = packages.rows.flat().map(String);
+      expect(values).toContain("In Arbeit");
+      expect(values).toContain("Erledigt");
+      expect(values).not.toContain("in_arbeit");
+    }
+
+    const serialized = JSON.stringify(doc);
+    expect(serialized).not.toContain("on_track");
+    expect(serialized).not.toContain("→");
   });
 
   it("erzeugt ein vollständiges Dokument ohne Daten", () => {
