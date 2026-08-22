@@ -22,7 +22,8 @@ die vier Demo-Konten nach `docs/DEMO-USERS.md` anlegen und im Dialog zuordnen.
 | Rollen-/Rechtematrix vollständig und widerspruchsfrei    | bestanden                                           | `bun run rbac:check`, `docs/RBAC-MATRIX.md`          |
 | Route-Guard: nicht angemeldeter Zugriff auf `/dashboard` | Weiterleitung nach `/auth`                          | `src/__tests__/routes/authenticated-guard.test.ts`   |
 | Datenzugriff ohne Anmeldung (Lesen und Schreiben)        | serverseitig abgewiesen (401/403), nicht nur UI     | Security-Suite, direkte Anfragen gegen die Datenbank |
-| Manipulation der Rolle im Browser wirkt nicht            | Rolle kommt aus `user_roles`, nicht aus dem Browser | RBAC-Suite, ADR-0007/0008                            |
+| Manipulation der Rolle im Browser wirkt nicht            | Rolle kommt aus `user_roles`, nicht aus dem Browser | `src/hooks/useCurrentUser.ts`, Security-Suite        |
+| Role Preview verändert ausschließlich die Darstellung    | keine Rechteerweiterung                             | RBAC-Suite, ADR-0007/0008                            |
 | Gesamte Testsuite                                        | 572 Tests grün, 4 todo (68 Dateien)                 | F-18-Restfix-Abschlussbericht v1.59.4                |
 
 ## 2. Fachlich abzuzeichnen
