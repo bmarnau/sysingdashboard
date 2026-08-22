@@ -63,9 +63,7 @@ export function AvkkDetailDialog({
     for (const person of directory.people) {
       byId.set(person.id, { id: person.id, displayName: person.displayName });
     }
-    return [...byId.values()].sort((a, b) =>
-      a.displayName.localeCompare(b.displayName, "de"),
-    );
+    return [...byId.values()].sort((a, b) => a.displayName.localeCompare(b.displayName, "de"));
   })();
 
   async function guarded(action: () => Promise<void>, successText: string) {
@@ -111,8 +109,8 @@ export function AvkkDetailDialog({
             role="alert"
             className="rounded-md border border-warning/30 bg-warning/10 p-3 text-xs text-warning"
           >
-            Personenverzeichnis konnte nicht geladen werden. Bestehende Verantwortung bleibt
-            lesbar; neue Verantwortung kann bis zur Behebung nicht zugeordnet werden.
+            Personenverzeichnis konnte nicht geladen werden. Bestehende Verantwortung bleibt lesbar;
+            neue Verantwortung kann bis zur Behebung nicht zugeordnet werden.
           </p>
         ) : null}
         {loading ? <p className="text-xs text-muted-foreground">Dossier wird geladen …</p> : null}
