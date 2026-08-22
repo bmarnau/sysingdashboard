@@ -1,68 +1,84 @@
 # Deployment Guide
 
+Stand: 2026-08-22
+
+Dieses Dokument trennt den **heutigen MVP-Betrieb** von der geplanten
+Portabilitaet. Aktuell wird die Anwendung ueber Lovable/Cloudflare Workers
+bereitgestellt und nutzt Supabase als fuehrende Authentifizierungs- und
+Datenplattform. Ein autonomer Docker-Betrieb ist verbindliches Zielbild, aber
+noch kein abgenommener Runtime-Pfad.
+
 ## Auth-Inbetriebnahme (Erstinstallation)
 
-1. **Cloud → Users → URL-Konfiguration**: Zulässige Redirect-URLs eintragen
+1. **Cloud → Users → URL-Konfiguration**: Zulaessige Redirect-URLs eintragen
    (mindestens `https://sysingdashboard.lovable.app/**` und aktuelle
    Preview-URL sowie `/reset-password`). Keine Wildcard `*`.
-2. **Confirm email**, **HIBP** aktiv (per `configure_auth` gesetzt),
-   Anonymous-Signups deaktiviert.
-3. **Ersten Benutzer** über `/auth` selbst registrieren — der DB-Trigger
+2. **Confirm email**, **HIBP** aktiv, Anonymous-Signups deaktiviert.
+3. **Ersten Benutzer** ueber `/auth` selbst registrieren — der DB-Trigger
    `handle_new_user` weist ihm atomar `systemadministrator` zu.
    Kein Passwort im Repo, kein Seed, keine manuelle Rollenvergabe.
 4. Weitere Benutzer starten als `viewer` und werden vom Sysadmin
-   über die Benutzerverwaltung hochgestuft.
+   ueber die Benutzerverwaltung hochgestuft.
 
-Reparaturpfad, falls ein Auth-Benutzer vor Trigger-Installation existiert
-(nicht der Regelfall — DB ist bei Erstinstallation leer):
+Reparaturpfade fuer Auth/DB gehoeren in die administrative Datenbankebene und
+werden nicht mit produktiven Kennungen oder Zugangsdaten in dieser allgemeinen
+Deployment-Anleitung dokumentiert. Fuer die konkreten Schutzregeln gelten die
+Supabase-Migrationen, `docs/BACKEND-ADMINISTRATION.md` und die RBAC/RLS-ADRs.
 
-```sql
--- Nur ausführen wenn der Benutzer eindeutig identifiziert ist.
--- Ersetze <UUID> durch die auth.users.id des Erstadmins.
-INSERT INTO public.profiles (id, email)
-  SELECT id, COALESCE(email, '') FROM auth.users WHERE id = '<UUID>'
-  ON CONFLICT (id) DO NOTHING;
-INSERT INTO public.user_roles (user_id, role, granted_by)
-  VALUES ('<UUID>', 'systemadministrator', '<UUID>')
-  ON CONFLICT DO NOTHING;
-```
+## Heutige Runtime
 
 Das Dashboard deployed als **TanStack Start** auf **Cloudflare Worker**
-(`compatibility_date: 2025-09-24`, `nodejs_compat`).
+(`nodejs_compat`). Konfiguration: [`wrangler.jsonc`](../wrangler.jsonc),
+Server-Entry: `src/server.ts`.
 
-Konfiguration: [`wrangler.jsonc`](../wrangler.jsonc), Entry: `src/server.ts`.
+Die aktuelle produktive Referenzumgebung ist die Lovable-App. GitHub bleibt die
+massgebliche Quelle fuer Code und Dokumentation; Lovable ist keine autoritative
+Codequelle.
+
+### Datenplattform im MVP
+
+Supabase ist heute produktiver Bestandteil der Anwendung und fuehrt insbesondere:
+
+- Authentifizierung (`auth.users`)
+- Profile und Rollen
+- globale Einstellungen
+- Audit-Log
+- Reference Data
+- AVKK-Fuehrungsdaten
+
+Projekte, Arbeitspakete und Taetigkeiten sind im aktuellen MVP weiterhin
+Local-First/browsergebunden. Details: [`DATA-SCHEMA.md`](./DATA-SCHEMA.md) und
+[`ADR-0025`](./ADR/0025-avkk-umsetzung-07b.md).
 
 ## Environment Variables
 
-Alle Werte in `.env` lokal (nicht committen) bzw. als Wrangler/Lovable-Secret
-in Production.
+Alle Werte lokal in einer nicht versionierten Umgebung bzw. als
+Provider-/Deployment-Secret in Production. Produktive Secret-Werte gehoeren
+weder in GitHub noch in Dokumentation oder Prompts.
 
 | Variable                        | Zweck                                                          | Pflicht (PROD)  |
 | ------------------------------- | -------------------------------------------------------------- | --------------- |
 | `VITE_SUPABASE_URL`             | Client-Auth-URL, statisch ins Vite-Bundle ersetzt              | Ja              |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Publishable Auth-Key für Browser-Client                        | Ja              |
-| `VITE_SUPABASE_PROJECT_ID`      | Projektkennung für Startprüfung/Diagnose                       | Ja              |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Publishable Auth-Key fuer Browser-Client                        | Ja              |
+| `VITE_SUPABASE_PROJECT_ID`      | Projektkennung fuer Startpruefung/Diagnose                     | Ja              |
 | `SUPABASE_URL`                  | Server-seitige Auth-/DB-URL                                    | Ja              |
-| `SUPABASE_PUBLISHABLE_KEY`      | Server-seitiger Publishable Key für Bearer-validierte Requests | Ja              |
+| `SUPABASE_PUBLISHABLE_KEY`      | Server-seitiger Publishable Key fuer Bearer-validierte Requests | Ja             |
 | `AZURE_SQL_CONNECTION`          | Verbindung zur Azure SQL DB                                    | Nur Azure-Live¹ |
 | `AZURE_TABLE_CONNECTION`        | Azure Table Storage                                            | Nur Azure-Live¹ |
-| `AZURE_STORAGE_SAS`             | SAS-URL für Blob Storage                                       | Nur Azure-Live¹ |
-| `AZURE_CLIENT_ID`               | Entra-App-Registration (App-Only)                              | Nur Azure-Live¹ |
+| `AZURE_STORAGE_SAS`             | Blob-/Storage-Anbindung                                        | Nur Azure-Live¹ |
+| `AZURE_CLIENT_ID`               | Entra-App-Registration                                         | Nur Azure-Live¹ |
 | `AZURE_TENANT_ID`               | Entra-Tenant                                                   | Nur Azure-Live¹ |
 
-¹ Nur nötig, sobald Azure-Sync live aktiviert wird. Ohne diese Werte startet
-das Dashboard trotzdem; `/api/status` meldet die fehlende Azure-Konfiguration
-secret-frei, blockiert aber Anmeldung und Health nicht.
+¹ Nur noetig, sobald Azure-Sync bzw. ein Azure-Provider live aktiviert wird.
+Ohne diese Werte startet der Supabase-MVP; fehlende Azure-Konfiguration darf
+nicht als Ausfall des heutigen MVP interpretiert werden.
 
-Die drei `VITE_SUPABASE_*`-Werte werden ausschließlich zur Build-Zeit per
-statischem Zugriff (`import.meta.env.VITE_SUPABASE_URL` usw.) ersetzt. Nach
-Änderungen an der Lovable-Cloud-Verbindung muss die veröffentlichte App über
-„Update" im Publish-Dialog neu gebaut werden.
+Die drei `VITE_SUPABASE_*`-Werte werden zur Build-Zeit bereitgestellt. Der
+Runtime-Fallback fuer Auth-Konfiguration ist separat abgesichert. Nach Aenderung
+der Deployment-Konfiguration ist ein neuer Publish-/Production-Build erforderlich,
+sofern der jeweilige Wert in das Vite-Bundle eingeht.
 
-Vollständige Vorlage: [`.env.example`](../.env.example).
-
-`process.env.*` darf nur **innerhalb** von `.handler()`-Bodies gelesen werden
-— Env wird zum Call-Zeitpunkt injiziert, nicht bei Modul-Load.
+Vollstaendige Vorlage: [`.env.example`](../.env.example).
 
 ## Build & Deploy
 
@@ -70,70 +86,117 @@ Vollständige Vorlage: [`.env.example`](../.env.example).
 
 ```bash
 bun install
-bun run dev      # Vite Dev Server (SSR)
+bun run dev
 ```
 
 ### Production Build
 
 ```bash
-bun run build    # → optimiertes Worker-Bundle
+bun run build
 ```
 
-Automatische Prüfungen davor: `bun run lint`, `bun run docs:check`, Tests
-(via CI). Nie manuell überspringen.
+Vor Merge/Release gelten die GitHub-CI-Gates; insbesondere TypeScript, Tests,
+Security, RBAC, Backup/Restore, Production Build, E2E und technischer
+Pruefbericht duerfen nicht manuell umgangen werden.
 
-### Deploy
+### Aktuelle Cloud-Deploy-Pfade
 
-Zwei Wege:
+1. **Lovable** — veroeffentlichte Referenzumgebung.
+2. **Wrangler / Cloudflare** — direkter Worker-Deploy, sofern die notwendige
+   Cloudflare-Konfiguration vorhanden ist.
 
-1. **Lovable** — Publish-Button oben rechts. Frontend-Änderungen erfordern
-   „Update" im Publish-Dialog; Backend-Änderungen (Server-Routen, ENV) gehen
-   sofort live.
-2. **Wrangler direkt** (nur für self-hosted):
-   ```bash
-   bunx wrangler deploy
-   ```
+Ein Wrangler-Deploy ist **kein autonomes Self-Hosting**; er bleibt ein
+Cloudflare-Deployment.
 
-### URLs
+### Docker / autonomer Betrieb — Zielbild
 
-- Stabile Preview: `project--<project-id>-dev.lovable.app`
-- Stabile Production: `project--<project-id>.lovable.app`
-- Custom Domain: konfigurierbar über Project Settings → Domains (nach erstem
-  Publish).
+Die Governance verlangt langfristig einen autonomen Docker-Betrieb ohne
+unersetzbare Lovable-Cloud-Abhaengigkeit. Die Codebasis ist darauf vorbereitet,
+aber der Runtime-Pfad ist noch nicht abgenommen.
+
+Vor einer Docker-Freigabe fehlen mindestens:
+
+- versioniertes Dockerfile / reproduzierbares Image
+- dokumentierte Runtime-ENV-Vertraege
+- Reverse-Proxy-/TLS-Konzept fuer den Unternehmensbetrieb
+- Healthcheck auf Basis eines dafuer geeigneten Endpunkts
+- Start-/Stop-/Restart- und Persistenz-Smoke-Test
+- Betriebsnachweis gegen eine vom Lovable-/Cloudflare-Hosting unabhaengige
+  Umgebung
+
+Bis diese Punkte bestanden sind, lautet der Status **Docker-Readiness vorhanden,
+Containerbetrieb nicht verifiziert**.
+
+## URLs
+
+- Produktive Referenz: `https://sysingdashboard.lovable.app`
+- Stabile Preview-/Projekt-URLs werden vom Hosting bereitgestellt und koennen
+  sich providerbedingt unterscheiden.
+- Kanonisches Repository: `https://github.com/bmarnau/sysingdashboard`
+
+Interne Clone-/Hosting-Remotes sind **keine** zulaessigen
+Repository-Metadaten fuer Systemstatus, Browser-Bundle oder oeffentliche API.
+Diese Grenze wird seit PR #30 durch Regressionstests abgesichert.
 
 ## CI/CD
 
-`.github/workflows/ci.yml` läuft bei jedem Push/PR:
+`.github/workflows/ci.yml` prueft gestaffelt unter anderem:
 
-1. `bun install`
-2. `bun run lint`
-3. `bun run docs:check`
-4. `bun run test:coverage` (inkl. A11y-Tests via `vitest-axe`)
-5. `bun run build`
+1. Setup
+2. Format, ESLint, TypeScript, RBAC, Dokumentation und Projektmanifest
+3. Unit-/Komponententests
+4. Backend und API
+5. Security/RBAC
+6. Import/Export und Backup/Restore
+7. Production Build
+8. Playwright E2E und Accessibility
+9. Technical Debt
+10. technischen Pruefbericht und Quality Gate
 
-`.github/workflows/security.yml`:
-
-- Gitleaks (Secret-Scan gegen `.gitleaks.toml`)
-- `scripts/security-check.mjs`
-- `scripts/check-rbac.mjs` (Frontend/Backend-Permission-Parity)
-
-Schlägt ein Schritt fehl, ist der PR blockiert.
+`.github/workflows/security.yml` ergaenzt den separaten Secret-/Security-Scan.
+Ein gruener PR-Head ist Voraussetzung fuer die kontrollierte Integration.
 
 ## Rollback
 
-Version = oberster Eintrag in [`CHANGELOG.md`](../CHANGELOG.md) (Single Source
-of Truth). Rollback: vorherigen Git-Commit re-deployen (Lovable-Versionshistorie
-oder `wrangler deployments list` + `wrangler rollback <id>`).
+Dashboard-Version = oberster Eintrag in [`CHANGELOG.md`](../CHANGELOG.md).
+Code-Rollback erfolgt ueber einen vorherigen, nachgewiesenen Git-Stand und einen
+neuen kontrollierten Deploy. Ein Code-Rollback ersetzt **keinen** Datenbank-
+Rollback.
 
-## Runtime-Constraints
+## Runtime-Constraints der heutigen Cloudflare-Auslieferung
 
-Cloudflare Worker mit `nodejs_compat` erlaubt **nicht**: `child_process`,
-Native-Addons (`sharp`, `canvas`), `fs.watch`, `puppeteer`. Details:
-[`ARCHITECTURE.md § 4`](./ARCHITECTURE.md#4-runtime-grenzen-cloudflare-worker).
+Die aktuelle Worker-Runtime (`nodejs_compat`) hat andere Grenzen als ein
+spaeterer Node-/Docker-Betrieb. Native Addons und prozessgebundene Werkzeuge sind
+im Worker nicht ohne Weiteres verfuegbar. Deshalb duerfen Fachlogik und
+Providervertraege nicht an Cloudflare-spezifische APIs gekoppelt werden.
 
-## Backups
+Details und Zielbild: [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
-- Automatisches lokales ZIP-Backup einmal pro Kalendertag (browserseitig,
-  siehe Handbuch-Kapitel „Backup").
-- Server-seitig gibt es aktuell **keine** DB — nichts zu sichern.
-- Nach Aktivierung von Azure: Backup-Strategie wird eigenes ADR.
+## Backup und Restore
+
+Es existieren **zwei unterschiedliche Sicherungsebenen**, die nicht vermischt
+werden duerfen.
+
+### 1. Anwendungs-/Browser-Backup
+
+Backupformat 2.0 sichert den browsergebundenen Arbeitsbestand und fuehrt
+zusaetzlich AVKK-/Reference-Data-Snapshots als Nachweis mit. Manifest und
+Pruefsummen werden vor Restore validiert.
+
+Der Browser-Restore schreibt AVKK-/Reference-Data-Snapshots bewusst **nicht** in
+Supabase zurueck. Das verhindert einen nicht-transaktionalen Misch-Restore aus
+lokalen und serverseitigen Daten und schuetzt Audit-/Historienketten.
+
+Verbindliche Entscheidung: [`ADR-0026`](./ADR/0026-loeschstrategie-und-avkk-backup.md).
+
+### 2. Supabase-/Datenbank-Wiederherstellung
+
+Supabase fuehrt reale serverseitige Daten. Deren Wiederherstellung ist eine
+**Provider-/Datenbank-Betriebsaufgabe** und kein Browser-Feature. Der aktuelle
+Client-Backupdialog darf daher nicht als vollstaendige Wiederherstellung einer
+verlorenen Supabase-Datenbank interpretiert werden.
+
+Vor einem spaeteren autonomen Unternehmensbetrieb muss fuer den jeweils
+verwendeten Datenbankprovider ein eigener Backup-/Restore-Nachweis vorliegen.
+Ein spaeterer Wechsel zu Azure SQL/Table/Blob benoetigt entsprechend einen
+providerbezogenen Betriebs- und Restore-Test.
