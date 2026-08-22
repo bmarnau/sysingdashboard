@@ -21,9 +21,7 @@ export function reportActorFromUser(user: UserProfile | null): ReportActor {
   // Der Vorname wird über die bestehende zentrale Namenslogik normalisiert.
   // Den Nachnamen übernehmen wir bewusst unverändert, um Eigenschreibweisen
   // nicht durch pauschales Title-Casing zu beschädigen.
-  const firstName = user.firstName.trim()
-    ? greetingFirstNameOf({ firstName: user.firstName })
-    : "";
+  const firstName = user.firstName.trim() ? greetingFirstNameOf({ firstName: user.firstName }) : "";
   const lastName = user.lastName.trim();
   const profileName = `${firstName} ${lastName}`.replace(/\s+/g, " ").trim();
 
