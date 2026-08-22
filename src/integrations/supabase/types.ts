@@ -603,6 +603,15 @@ export type Database = {
     }
     Functions: {
       avkk_can_write: { Args: { _subject: string }; Returns: boolean }
+      avkk_people_directory: {
+        Args: never
+        Returns: {
+          display_name: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          status: Database["public"]["Enums"]["user_status"]
+        }[]
+      }
       has_any_role: {
         Args: {
           _roles: Database["public"]["Enums"]["app_role"][]
