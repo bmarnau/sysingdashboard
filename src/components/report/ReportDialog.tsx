@@ -25,6 +25,7 @@ import type { Project, WorkPackage } from "@/lib/dashboard-data";
 import { ExportDownloadService } from "@/lib/export-download-service";
 import { downloadBlob } from "@/lib/export-archive";
 import { logger } from "@/lib/logger";
+import { reportActorFromUser } from "@/lib/report/presentation";
 import {
   listAvailableReports,
   renderReport,
@@ -119,11 +120,10 @@ export function ReportDialog({
         format: effectiveFormat,
         input,
         context: {
-          actor: {
-            id: user?.id ?? null,
-            displayName: user ? `${user.firstName} ${user.lastName}`.trim() : "Unbekannt",
-            role: user?.role ?? "viewer",
-          },
+          // Namen und Rollen werden vor dem Rendern einmal zentral in die
+          // fachliche Berichtsdarstellung übersetzt. Auth/RBAC bleiben davon
+          // vollständig unberührt.
+          actor: reportActorFromUser(user),
           generatedAt: new Date(),
           period: needsProject ? (project?.name ?? "") : "",
         },

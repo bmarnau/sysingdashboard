@@ -15,10 +15,24 @@ interface AutoTableDoc extends jsPDF {
   lastAutoTable?: { finalY: number };
 }
 
+interface TableLayout {
+  headFontSize: number;
+  bodyFontSize: number;
+  cellPadding: number;
+  columnStyles: Record<number, { halign?: "right"; cellWidth?: number }>;
+}
+
 const CONTENT_TOP_OFFSET_MM = 6;
 const CONTENT_BOTTOM_MM = 18;
 const SECTION_GAP_MM = 8;
 const MIN_SECTION_START_MM = 28;
+const WIDE_TABLE_COLUMN_THRESHOLD = 7;
+
+const WIDE_TABLE_PRESETS = [
+  { headFontSize: 7, bodyFontSize: 7.2, cellPadding: 1.2 },
+  { headFontSize: 6.6, bodyFontSize: 6.8, cellPadding: 1 },
+  { headFontSize: 6, bodyFontSize: 6.2, cellPadding: 0.8 },
+] as const;
 
 function drawHeader(doc: jsPDF, template: ReportTemplate, metadata: ReportRunMetadata) {
   const margin = template.page.marginMm;
@@ -60,19 +74,89 @@ function drawFooter(doc: jsPDF, template: ReportTemplate, metadata: ReportRunMet
 function tableColumnStyles(
   section: ReportTableSection,
   usableWidth: number,
+  minimumWidths?: readonly number[],
 ): Record<number, { halign?: "right"; cellWidth?: number }> {
   const weights = section.columns.map((column) => Math.max(0.5, column.weight ?? 1));
   const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+  const minimumTotal = minimumWidths?.reduce((sum, width) => sum + width, 0) ?? 0;
+  const distributableWidth = Math.max(0, usableWidth - minimumTotal);
   const styles: Record<number, { halign?: "right"; cellWidth?: number }> = {};
 
   section.columns.forEach((column, index) => {
     styles[index] = {
       ...(column.align === "right" ? { halign: "right" as const } : {}),
-      cellWidth: (usableWidth * weights[index]) / totalWeight,
+      cellWidth:
+        (minimumWidths?.[index] ?? 0) + (distributableWidth * weights[index]) / totalWeight,
     };
   });
 
   return styles;
+}
+
+function tokenWidths(
+  doc: jsPDF,
+  section: ReportTableSection,
+  template: ReportTemplate,
+  headFontSize: number,
+  bodyFontSize: number,
+  cellPadding: number,
+): number[] {
+  const measureTokens = (value: unknown, fontSize: number, fontStyle: "normal" | "bold") => {
+    doc.setFont(template.brand.fontFamily, fontStyle);
+    doc.setFontSize(fontSize);
+    return String(value ?? "")
+      .split(/\s+/)
+      .filter(Boolean)
+      .reduce((max, token) => Math.max(max, doc.getTextWidth(token)), 0);
+  };
+
+  return section.columns.map((column, index) => {
+    const headWidth = measureTokens(column.label, headFontSize, "bold");
+    const bodyWidth = section.rows.reduce(
+      (max, row) => Math.max(max, measureTokens(row[index], bodyFontSize, "normal")),
+      0,
+    );
+    return Math.max(headWidth, bodyWidth) + 2 * cellPadding + 0.6;
+  });
+}
+
+function tableLayout(
+  doc: jsPDF,
+  section: ReportTableSection,
+  template: ReportTemplate,
+  usableWidth: number,
+): TableLayout {
+  if (section.columns.length < WIDE_TABLE_COLUMN_THRESHOLD) {
+    return {
+      headFontSize: 8.5,
+      bodyFontSize: 8,
+      cellPadding: 1.6,
+      columnStyles: tableColumnStyles(section, usableWidth),
+    };
+  }
+
+  for (const preset of WIDE_TABLE_PRESETS) {
+    const minimumWidths = tokenWidths(
+      doc,
+      section,
+      template,
+      preset.headFontSize,
+      preset.bodyFontSize,
+      preset.cellPadding,
+    );
+    if (minimumWidths.reduce((sum, width) => sum + width, 0) <= usableWidth) {
+      return {
+        ...preset,
+        columnStyles: tableColumnStyles(section, usableWidth, minimumWidths),
+      };
+    }
+  }
+
+  const fallback = WIDE_TABLE_PRESETS[WIDE_TABLE_PRESETS.length - 1];
+  return {
+    ...fallback,
+    columnStyles: tableColumnStyles(section, usableWidth),
+  };
 }
 
 export function renderPdf(
@@ -179,6 +263,8 @@ export function renderPdf(
         doc.setTextColor(0);
       }
 
+      const layout = tableLayout(doc, section, template, usableTableWidth);
+
       autoTable(doc, {
         startY: cursor + 2,
         margin: { left: margin, right: margin, top: margin + 4, bottom: 16 },
@@ -195,16 +281,18 @@ export function renderPdf(
         headStyles: {
           fillColor: template.brand.primary,
           textColor: template.brand.tableHeaderText,
-          fontSize: 8.5,
+          fontSize: layout.headFontSize,
+          cellPadding: layout.cellPadding,
           valign: "middle",
+          overflow: "linebreak",
         },
         styles: {
-          fontSize: 8,
-          cellPadding: 1.6,
+          fontSize: layout.bodyFontSize,
+          cellPadding: layout.cellPadding,
           overflow: "linebreak",
           valign: "middle",
         },
-        columnStyles: tableColumnStyles(section, usableTableWidth),
+        columnStyles: layout.columnStyles,
         rowPageBreak: "avoid",
         didDrawPage: () => {
           drawHeader(doc, template, metadata);

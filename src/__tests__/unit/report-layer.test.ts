@@ -2,6 +2,7 @@ import "../env/test-instance";
 import { describe, expect, it } from "vitest";
 import { buildReportFileName, slugify } from "@/lib/report/filename";
 import { avkkManagementReport, avkkPersonalReport } from "@/lib/report/definitions/avkk";
+import { reportActorFromUser } from "@/lib/report/presentation";
 import { buildPrintHtml } from "@/lib/report/renderers/print";
 import { buildReportJson } from "@/lib/report/renderers/json";
 import { buildReportCsv } from "@/lib/report/renderers/csv";
@@ -9,6 +10,7 @@ import { DEFAULT_TEMPLATE } from "@/lib/report/templates/default-provider";
 import { listReports } from "@/lib/report/registry";
 import type { AvkkReportInput } from "@/lib/report/data/avkk-selectors";
 import type { ReportContext, ReportRunMetadata } from "@/lib/report/types";
+import type { UserProfile } from "@/lib/user-management";
 import { buildDemoDataset, isDemoId } from "@/lib/demo-data/dataset";
 
 const ctx: ReportContext = {
@@ -60,6 +62,28 @@ describe("Reporting-Schicht", () => {
 
   it("slugify ersetzt Umlaute", () => {
     expect(slugify("Übergrößen Bericht")).toBe("uebergroessen-bericht");
+  });
+
+  it("stellt Berichtsersteller mit normalisiertem Namen und fachlicher Rolle dar", () => {
+    const user: UserProfile = {
+      id: "petra-1",
+      firstName: "petra",
+      lastName: "Marnau",
+      displayName: "petra Marnau",
+      email: "petra@example.invalid",
+      phone: "",
+      role: "projectmanager",
+      status: "active",
+      mfaEnabled: false,
+      createdAt: "2026-08-21T00:00:00.000Z",
+      updatedAt: "2026-08-21T00:00:00.000Z",
+    };
+
+    expect(reportActorFromUser(user)).toEqual({
+      id: "petra-1",
+      displayName: "Petra Marnau",
+      role: "Projektmanager",
+    });
   });
 
   it("erzeugt ein vollständiges Dokument ohne Daten", () => {

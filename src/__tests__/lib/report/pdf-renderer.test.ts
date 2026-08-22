@@ -68,7 +68,7 @@ describe("renderPdf pagination", () => {
     expect(result.blob.type).toBe("application/pdf");
   });
 
-  it("berücksichtigt Spaltengewichte bei breiten Tabellen ohne Zusatzseite", () => {
+  it("dimensioniert breite AVKK-Tabellen mit langen Wörtern kompakt", () => {
     const document: ReportDocument = {
       reportId: "test-report",
       title: "Tabellentest",
@@ -94,10 +94,20 @@ describe("renderPdf pagination", () => {
               "Switch-Rollout Gebäude B",
               "Netzwerkmodernisierung Verwaltungsstandort",
               "gefährdet",
-              "2026-08-30",
+              "2026-08-27 (bald fällig)",
               1,
               "1/1",
               "hoch",
+            ],
+            [
+              "Arbeitspaket",
+              "Netzplanung und Segmentierung",
+              "Netzwerkmodernisierung Verwaltungsstandort",
+              "unvollständig",
+              "2026-08-08 (überfällig)",
+              1,
+              "0/0",
+              "gering",
             ],
           ],
         },
@@ -107,5 +117,6 @@ describe("renderPdf pagination", () => {
     const result = renderPdf(document, metadata, DEFAULT_TEMPLATE);
 
     expect(result.pages).toBe(2);
+    expect(result.blob.type).toBe("application/pdf");
   });
 });
