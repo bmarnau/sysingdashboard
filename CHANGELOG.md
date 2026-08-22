@@ -13,6 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.59.6 - 2026-08-22
+
+- **AVKK-Personenanzeige korrigiert (F-11)**: Bereits zugeordnete Verantwortliche erscheinen im AVKK-Detaildialog als „Vorname Nachname" statt als technische ID. Grundlage ist das datensparsame Personenverzeichnis, das in der verbundenen Backend-Datenbank aktiviert wurde.
+- **Delegation für Teamleitung und Projektleitung nutzbar**: Rollen mit der Berechtigung zur Verantwortungszuordnung können aktive Personen auswählen, ohne dass vollständige Benutzerprofile (E-Mail, Telefon, MFA, Profilbild) freigegeben werden.
+- **Keine Rechteerweiterung**: Engineer- und Viewer-Rollen erhalten weder Schreibrechte noch Benutzerverwaltung; die bestehenden Zugriffsregeln für Profile und Rollen bleiben unverändert.
+- **Verständlicher Fehlerzustand**: Ist das Personenverzeichnis nicht erreichbar, bleibt bestehende Verantwortung lesbar und eine neue Zuordnung wird bewusst deaktiviert.
+
 ## 1.59.5 - 2026-08-21
 
 - **Testinfrastruktur stabilisiert**: Die automatisierten Tests laufen jetzt auch ohne hinterlegte Backend-Zugangsdaten (z. B. in der CI) durch; die Meldung „Missing Supabase environment variable(s)" tritt nicht mehr auf.
