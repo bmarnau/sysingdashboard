@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { AvkkResponsibilitySection } from "@/components/avkk/AvkkResponsibilitySection";
 import type { AvkkResponsibility } from "@/lib/avkk";
@@ -43,6 +43,10 @@ function responsibility(personId: string): AvkkResponsibility {
   };
 }
 
+function successfulSave() {
+  return vi.fn(async () => true);
+}
+
 describe("AvkkResponsibilitySection", () => {
   it("zeigt fuer bekannte Verantwortliche den vollstaendigen Namen", () => {
     render(
@@ -53,7 +57,7 @@ describe("AvkkResponsibilitySection", () => {
         types={[type]}
         readOnly
         saving={false}
-        onSave={vi.fn()}
+        onSave={successfulSave()}
       />,
     );
 
@@ -69,7 +73,7 @@ describe("AvkkResponsibilitySection", () => {
         types={[type]}
         readOnly
         saving={false}
-        onSave={vi.fn()}
+        onSave={successfulSave()}
       />,
     );
 
@@ -89,11 +93,94 @@ describe("AvkkResponsibilitySection", () => {
         types={[type]}
         readOnly={false}
         saving={false}
-        onSave={vi.fn()}
+        onSave={successfulSave()}
       />,
     );
 
     expect(screen.getByRole("option", { name: "Georg Marnau" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "Petra Marnau" })).toBeInTheDocument();
+  });
+
+  it("blockiert eine identische bereits aktive Zuordnung", () => {
+    const onSave = successfulSave();
+    render(
+      <AvkkResponsibilitySection
+        responsibilities={[responsibility("user-sam")]}
+        people={[{ id: "user-sam", displayName: "Sam Marnau" }]}
+        roles={[role]}
+        types={[type]}
+        readOnly={false}
+        saving={false}
+        onSave={onSave}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("Person"), { target: { value: "user-sam" } });
+    fireEvent.click(screen.getByRole("checkbox", { name: "Umsetzung" }));
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Diese Verantwortung ist bereits aktiv zugeordnet.",
+    );
+    expect(screen.getByRole("button", { name: "Verantwortung zuordnen" })).toBeDisabled();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("setzt das Neuanlageformular erst nach erfolgreichem Speichern zurueck", async () => {
+    const onSave = successfulSave();
+    render(
+      <AvkkResponsibilitySection
+        responsibilities={[]}
+        people={[{ id: "user-sam", displayName: "Sam Marnau" }]}
+        roles={[role]}
+        types={[type]}
+        readOnly={false}
+        saving={false}
+        onSave={onSave}
+      />,
+    );
+
+    const person = screen.getByLabelText("Person");
+    const responsibilityType = screen.getByRole("checkbox", { name: "Umsetzung" });
+    const note = screen.getByLabelText("Notiz (optional)");
+
+    fireEvent.change(person, { target: { value: "user-sam" } });
+    fireEvent.click(responsibilityType);
+    fireEvent.change(note, { target: { value: "Testdelegation" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verantwortung zuordnen" }));
+
+    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(person).toHaveValue(""));
+    expect(responsibilityType).not.toBeChecked();
+    expect(note).toHaveValue("");
+    expect(screen.getByLabelText("Rolle")).toHaveValue("owner");
+  });
+
+  it("behaelt die Eingabe wenn Speichern fehlschlaegt", async () => {
+    const onSave = vi.fn(async () => false);
+    render(
+      <AvkkResponsibilitySection
+        responsibilities={[]}
+        people={[{ id: "user-sam", displayName: "Sam Marnau" }]}
+        roles={[role]}
+        types={[type]}
+        readOnly={false}
+        saving={false}
+        onSave={onSave}
+      />,
+    );
+
+    const person = screen.getByLabelText("Person");
+    const responsibilityType = screen.getByRole("checkbox", { name: "Umsetzung" });
+    const note = screen.getByLabelText("Notiz (optional)");
+
+    fireEvent.change(person, { target: { value: "user-sam" } });
+    fireEvent.click(responsibilityType);
+    fireEvent.change(note, { target: { value: "Nicht verloren" } });
+    fireEvent.click(screen.getByRole("button", { name: "Verantwortung zuordnen" }));
+
+    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+    expect(person).toHaveValue("user-sam");
+    expect(responsibilityType).toBeChecked();
+    expect(note).toHaveValue("Nicht verloren");
   });
 });
