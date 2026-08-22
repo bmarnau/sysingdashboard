@@ -6,13 +6,13 @@ import { HelpCircle } from "lucide-react";
 
 export const AVKK_EXPLANATIONS = {
   aufgabe:
-    "Aufgabe: Was genau ist zu tun, bis wann, und woran ist die Erfüllung erkennbar? Ohne klare Aufgabe sind die drei folgenden Dimensionen nicht bewertbar.",
+    "Aufgabe: Was genau ist zu tun, bis wann, und woran ist die Erfüllung erkennbar? Die Aufgabe muss für die ausführende Person klar und gemeinsam nachvollziehbar sein.",
   verantwortung:
-    "Verantwortung: Wer steht persönlich dafür ein — und wofür genau (Ergebnis, Termin, Qualität, Budget …)? Verantwortung ohne Namen ist keine Verantwortung.",
+    "Verantwortung: Fühle ich mich für diese Aufgabe und ihr Ergebnis verantwortlich — und ist klar, wofür ich Verantwortung übernehme? Die Zuordnung im Dashboard macht diese Verantwortungsübernahme sichtbar; sie misst kein Gefühl und bewertet keine Person.",
   kompetenz:
-    "Kompetenz: Ist die Aufgabe mit den vorhandenen Mitteln überhaupt erfüllbar — Fachwissen, Zeit, Material, Werkzeuge, Budget, Berechtigung, Unterstützung?",
+    "Kompetenz: Sind alle Kompetenzen und Ressourcen vorhanden, um die Aufgabe mit der übernommenen Verantwortung erfüllen zu können — Fachwissen, Erfahrung, Zeit, Material, Werkzeuge, Budget, Berechtigung, Unterstützung?",
   konsequenz:
-    "Konsequenz: Was passiert, wenn die Aufgabe nicht oder zu spät erfüllt wird — für Team, Projekt, Kunde, Compliance, Termine?",
+    "Konsequenz: Welche negativen Folgen entstehen, wenn die Aufgabe nicht, nicht vollständig oder zu spät erfüllt wird — für andere Mitwirkende, für den Kunden und für mich selbst?",
 } as const;
 
 export function AvkkExplainer({

@@ -28,4 +28,19 @@ describe("Dashboard-Navigation im Benutzerhandbuch", () => {
     expect(topic?.content).toContain("**Projektbericht**");
     expect(topic?.content).toContain("AVKK-Projektkontext");
   });
+
+  it("überschreibt die historischen AVKK-Texte mit der fachnahen Handbuchfassung", () => {
+    const model = HelpDocumentationService.getTopicById("avkk-modell");
+    const workspace = HelpDocumentationService.getTopicById("avkk-arbeitsplatz");
+
+    expect(model?.lastUpdated).toBe("2026-08-22");
+    expect(model?.content).toContain("Fühle ich mich für diese Aufgabe");
+    expect(model?.content).toContain("andere Mitwirkende");
+    expect(model?.content).toContain("für den Kunden und für mich selbst");
+    expect(model?.content).toContain("kein personenbezogener Kennwert");
+
+    expect(workspace?.content).toContain("Kompetenzen und Ressourcen");
+    expect(workspace?.content).toContain("identisch aktive Zuordnung");
+    expect(workspace?.content).toContain("kein Instrument zur automatisierten personenbezogenen");
+  });
 });

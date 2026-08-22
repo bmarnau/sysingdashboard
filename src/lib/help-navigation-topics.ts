@@ -1,4 +1,5 @@
 import { registerHelpTopics, type HelpTopic } from "@/lib/help-documentation";
+import { avkkHelpTopics } from "@/lib/help-avkk-topics";
 
 export const dashboardNavigationHelpTopics: HelpTopic[] = [
   {
@@ -71,5 +72,5 @@ Bearbeitungsaktionen erscheinen nur mit den vorhandenen Rechten für Projekt, Ar
 ];
 
 export function registerDashboardNavigationHelp(): void {
-  registerHelpTopics(...dashboardNavigationHelpTopics);
+  registerHelpTopics(...dashboardNavigationHelpTopics, ...avkkHelpTopics);
 }
