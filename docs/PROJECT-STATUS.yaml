@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-08-22"
+lastUpdated: "2026-08-21"
 
 project:
   name: "Sysing Dashboard"
@@ -46,7 +46,7 @@ architecturePrinciples:
     rule: "Keine produktiven Schlüssel, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts oder Dokumentation."
 
 versions:
-  dashboard: "1.59.7"
+  dashboard: "1.59.6"
   projectManifestSchema: "1.3.0"
 
   technicalReportSchema: "2.0.0"
@@ -64,13 +64,13 @@ currentState:
   previousSprint: "08B"
   previousSprintStatus: "completed"
   releaseReadiness: "passed-with-findings"
-  testsPassing: 612
+  testsPassing: 462
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
     noConsole: "passed"
     projectStatusCheck: "passed"
-    build: "passed"
+    build: "not-recorded-in-manifest"
   knownVerificationLimits:
     - id: "session-server-enforcement"
       status: "open"
@@ -152,11 +152,6 @@ phases:
       - "AVKK als Führungsmodell dokumentiert (docs/AVKK.md, ADR-0024)"
 
 completedSprints:
-  - id: "09C-10"
-    title: "F-11 Systemstatus und geschützter Supabase-Backendnachweis"
-    version: "1.59.7"
-    status: "completed"
-    summary: "Systemstatus zeigt den Supabase-MVP-Betrieb secret-frei und trennt den allgemeinen öffentlichen Health-Status von einem geschützten Backend-Nachweis für users.manage; fehlende Hosting-Commitmetadaten werden neutral gekennzeichnet."
   - id: "09C-9"
     title: "F-18 Read-only-Rollen im lokalen CRUD"
     version: "1.59.3"
@@ -461,10 +456,10 @@ adrs:
 
 quality:
   tests:
-    passing: 612
+    passing: 462
     failing: 0
-    skipped: "4 todo"
-    coverage: "59.53% lines"
+    skipped: "not-recorded"
+    coverage: "not-recorded"
   findings:
     source: "test-report/technical-test-report.json"
     currentCount: "not-synchronized"
@@ -472,15 +467,15 @@ quality:
     blockersOpen: 0
   gates:
     typecheck: "passed"
-    lint: "passed"
+    lint: "not-recorded-in-manifest"
     noConsole: "passed"
-    build: "passed"
+    build: "not-recorded-in-manifest"
     docsCheck: "passed"
     projectStatusCheck: "passed"
   updateRule: "Quality metrics are updated after each sprint or release."
 
 releaseManagement:
-  currentRelease: "1.59.7"
+  currentRelease: "1.59.6"
   stage: "production"
 
   status: "passed-with-findings"

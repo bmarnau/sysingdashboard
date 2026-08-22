@@ -7,7 +7,7 @@ Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam 
 dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
 Zugangsdaten, keine internen Adressen in dieser Datei.
 
-Stand: 2026-08-22 · Dashboard-Version 1.59.7
+Stand: 2026-08-22 · Dashboard-Version 1.59.6
 
 ## Vision
 
@@ -33,9 +33,9 @@ Leitplanken von Anfang an:
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Rollenmodell, Backup/Restore, Import/Export, Reporting und integriertem Handbuch. |
 | Zeitraum            | Mai 2026 bis August 2026                                                                                                     |
-| Aktueller Stand     | Version 1.59.7, F-11-Härtung weitgehend technisch nachgewiesen; restliche manuelle Rollenabnahme und Role Preview offen     |
-| Größte Hürden       | Fehlender Role Preview für die formale Rollenabnahme sowie noch ausstehende manuelle Runtime-/Rollenprüfungen               |
-| Nächster Nutzen     | F-11-Rollenabnahme vervollständigen, Role Preview sicher umsetzen und anschließend die MVP-Baseline neu bestätigen           |
+| Aktueller Stand     | Version 1.58.10, MVP-Härtung abgeschlossen, alle automatisierten Tests grün, manuelle Abnahme mit bekannten Findings offen   |
+| Größte Hürden       | Inbetriebnahme der Anmeldung, vollständiger PDF-Druck, Mehrbenutzer-Demo unter RLS/RBAC                                      |
+| Nächster Nutzen     | Manuelle Freigabeentscheidung, Word-Fassung SYSING-001, optionale Azure-Produktivumgebung                                    |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, Prüfpfad und automatisierter
@@ -99,7 +99,6 @@ Dokumentation.
 | 1.58.8        | 2026-08-14           | Passwort-Reset            | Serverseitige Recovery-Mail je Konto mit Audit-Log                      |
 | 1.58.9        | 2026-08-14           | Demo-Personenzuordnung    | Nachrüstbare Verantwortungszuweisung, Local-First-Hinweis (F-11)        |
 | 1.58.10       | 2026-08-15           | Begrüßung mit Vorname     | Dashboard-Anrede nur noch mit Vorname, normalisiert                     |
-| 1.59.7        | 2026-08-22           | Systemstatus & Supabase   | Geschützter Backendnachweis, secret-freie Statusanzeige, Hosting-Hinweis |
 
 ## Schwierigkeiten und ihre Lösung
 
@@ -175,8 +174,6 @@ umgestellt, überwacht durch ein CI-Tor.
 
 ## Offene Punkte und Ausblick
 
-- **Role Preview für die formale Rollenabnahme.** Die verbindliche Governance fordert eine reine Darstellungs-/Filtersimulation ohne Identitäts-, RBAC-, RLS- oder Datenzugriffsänderung. Diese Funktion ist im aktuellen Produktstand noch nicht implementiert.
-- **Restliche manuelle F-11-Abnahme.** Administrator-/Runtime-Sichtprüfungen werden nach Abschluss der technischen Härtung fortgesetzt; automatisierte Nachweise ersetzen diese Bedienabnahme nicht.
 - **Serverseitige Sitzungsdurchsetzung.** Die Abmeldung bei Inaktivität wirkt
   clientseitig; ein bereits entwendetes Zugriffstoken bleibt bis zum Ablauf
   gültig (ADR-0020).
@@ -738,34 +735,3 @@ Bearbeitungsdialoge besitzen zusätzlich ein zentrales Render-Gate. Die Suche
 bleibt für lesende Rollen unverändert nutzbar: Treffer werden gefunden und
 navigieren in die Fachansicht, nur der Editor bleibt verschlossen. Die
 defensiven Handler aus v1.59.3 bleiben unverändert bestehen (F-18).
-
-## Sprint 09C – Systemstatus und geschützter Supabase-Backendnachweis (v1.59.7)
-
-Die manuelle Administratorabnahme zeigte im Systemstatus zwei verschiedene
-Probleme: Eine interne Hosting-Git-Remote war zuvor als Repository-Adresse
-sichtbar, und der Dialog konnte den tatsächlichen Supabase-MVP-Betrieb nicht
-klar von optionalen Hosting-Metadaten unterscheiden. Der Remote-Leak wurde
-bereits separat geschlossen; v1.59.7 vervollständigt den Statusvertrag.
-
-Der allgemeine `/api/status` bleibt bewusst öffentlich und secret-frei. Ein
-echter Backend-Nachweis läuft deshalb nicht über diesen Endpoint, sondern nur
-über eine geschützte Serverfunktion. Sie verlangt eine gültige Supabase-Session
-und anschließend serverseitig `users.manage`; erst danach wird der privilegierte
-Backend-Client geladen. Zurückgegeben werden ausschließlich der Providername
-`supabase` und ein boolescher Verbindungsstatus. Keine Benutzerliste, keine
-URL, keine Projektkennung, keine Keys oder Tokens.
-
-Damit bleibt die Rechteabgrenzung nachvollziehbar: System-Administrator und
-Administrator können den geschützten Backendstatus prüfen. Ein Teamleiter darf
-den allgemeinen Systemstatus sehen, besitzt aber kein `users.manage`; für ihn
-wird der Admin-Nachweis nicht ausgeführt. Ein fehlender Git-Commit in der
-Hosting-Runtime wird nicht mehr als fehlerhafte Konfiguration dargestellt,
-sondern sachlich als „vom Hosting nicht bereitgestellt“.
-
-Die kontextsensitive Hilfe beschreibt diese Grenzen jetzt direkt im
-Systemstatus-Kapitel. Der technische Volltest des Implementierungsstands
-bestand 612 automatisierte Tests (4 TODO), Backend-/API-/Security-Suiten,
-Production Build, Playwright E2E, Accessibility, Technical Debt sowie den
-zentralen Technical Report & Quality Gate. Die restliche manuelle F-11-Abnahme
-bleibt bewusst offen; insbesondere ist der in der Governance geforderte Role
-Preview noch als eigenes Produktfeature umzusetzen.
