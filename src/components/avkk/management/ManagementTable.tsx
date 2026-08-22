@@ -120,7 +120,10 @@ export function ManagementTable({
           <tbody>
             {rows.map((row) => (
               <tr key={row.key} className="border-t border-border hover:bg-secondary/30">
-                <th scope="row" className="max-w-[16rem] overflow-hidden px-3 py-2 text-left font-medium">
+                <th
+                  scope="row"
+                  className="max-w-[16rem] overflow-hidden px-3 py-2 text-left font-medium"
+                >
                   <div className="w-[16rem] max-w-full min-w-0 overflow-hidden">
                     <button
                       type="button"
