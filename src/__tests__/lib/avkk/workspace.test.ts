@@ -204,14 +204,14 @@ describe("filterRows / sortRows / summarize", () => {
 });
 
 describe("tasksFromLocalData", () => {
-  it("bildet Projekte, Arbeitspakete und Tätigkeiten ab", () => {
+  it("bildet Projekte und Arbeitspakete ab, Tätigkeiten aber nicht als AVKK-Aufgaben", () => {
     const tasks = tasksFromLocalData({
       projects: [{ id: "p1", name: "Projekt A", client: "Kunde", deadline: "2026-09-01" }],
       workPackages: [{ id: "w1", title: "AP", projectId: "p1", due: "2026-08-20" }],
       activities: [{ id: "a1", title: "Tätigkeit", workPackageId: "w1", date: "2026-08-11" }],
     });
-    expect(tasks.map((t) => t.subjectType)).toEqual(["project", "workpackage", "activity"]);
+    expect(tasks.map((t) => t.subjectType)).toEqual(["project", "workpackage"]);
     expect(tasks[1]?.context).toBe("Projekt A");
-    expect(tasks[2]?.context).toBe("AP");
+    expect(tasks.some((t) => t.subjectId === "a1")).toBe(false);
   });
 });
