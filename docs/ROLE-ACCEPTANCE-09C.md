@@ -41,10 +41,10 @@ zuweisen oder bestehende Verantwortungszuordnungen verändern.
 | #   | Schritt                 | Erwartetes Ergebnis                                                                                                            | Bewertung |
 | --- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------- |
 | 1   | Anmelden                | Dashboard öffnet mit eigenen Projekten, Arbeitspaketen, Tätigkeiten und Zeiten                                                 | erfüllt   |
-| 2   | Tab „Mein AVKK"         | sichtbar; eigene Fälle, Kennzahlen und Frühindikatoren plausibel                                                               | erfüllt   |
+| 2   | Tab „Mein AVKK"        | sichtbar; eigene Fälle, Kennzahlen und Frühindikatoren plausibel                                                               | erfüllt   |
 | 3   | AVKK-Eintrag bearbeiten | Eigene AVKK-Bewertung im zulässigen Scope speichern; nach Neuladen vorhanden; Verantwortung bleibt ohne Assign-Recht read-only | erfüllt   |
 | 4   | Management-Cockpit      | **nicht** sichtbar                                                                                                             | erfüllt   |
-| 5   | Bericht „persönlich"    | erzeugbar als PDF, Druck, Word, JSON, CSV                                                                                      | erfüllt   |
+| 5   | Bericht „persönlich"   | erzeugbar als PDF, Druck, Word, JSON, CSV                                                                                      | erfüllt   |
 
 ### 2.2 Projektmanager
 
@@ -52,14 +52,14 @@ Projektmanager besitzen `avkk.responsibility.assign`. Das ist fachlich
 beabsichtigt: Projektverantwortung schließt die Möglichkeit ein, Verantwortung
 für Aufgaben und Arbeitspakete zu delegieren bzw. neu zuzuweisen.
 
-| #   | Schritt              | Erwartetes Ergebnis                                                                 | Bewertung |
-| --- | -------------------- | ----------------------------------------------------------------------------------- | --------- |
-| 1   | Projektsicht         | eigene Projekte mit Lage „im Plan", „gefährdet", „kritisch", „überfällig"           | erfüllt   |
-| 2   | Drill-down           | Projekt → Arbeitspakete → Tätigkeiten → AVKK bleiben konsistent                     | erfüllt   |
-| 3   | AVKK-Lücken          | fehlende Voraussetzungen und Konsequenzen je Arbeitspaket sichtbar                  | erfüllt   |
-| 4   | Projektbericht       | erzeugbar; Werte entsprechen der Oberfläche                                         | erfüllt   |
-| 5   | Verantwortung        | Verantwortung auf einem geeigneten AVKK-Sachverhalt delegierbar/neu zuweisbar       |           |
-| 6   | Benutzerverwaltung   | **nicht** aufrufbar                                                                 | erfüllt   |
+| #   | Schritt            | Erwartetes Ergebnis                                                           | Bewertung |
+| --- | ------------------ | ----------------------------------------------------------------------------- | --------- |
+| 1   | Projektsicht       | eigene Projekte mit Lage „im Plan", „gefährdet", „kritisch", „überfällig" | erfüllt   |
+| 2   | Drill-down         | Projekt → Arbeitspakete → Tätigkeiten → AVKK bleiben konsistent               | erfüllt   |
+| 3   | AVKK-Lücken        | fehlende Voraussetzungen und Konsequenzen je Arbeitspaket sichtbar            | erfüllt   |
+| 4   | Projektbericht     | erzeugbar; Werte entsprechen der Oberfläche                                   | erfüllt   |
+| 5   | Verantwortung      | Verantwortung auf einem geeigneten AVKK-Sachverhalt delegierbar/neu zuweisbar |           |
+| 6   | Benutzerverwaltung | **nicht** aufrufbar                                                           | erfüllt   |
 
 ### 2.3 Teamleiter / Managementsicht
 
@@ -68,12 +68,12 @@ Teamleitung muss Verantwortung delegieren und neu zuordnen können. Eine solche
 Delegation ist keine Personenbewertung und ändert nichts am Verbot von
 Ranglisten oder automatisierten Leistungsbewertungen nach ADR-0027.
 
-| #   | Schritt               | Erwartetes Ergebnis                                                                 | Bewertung |
-| --- | --------------------- | ----------------------------------------------------------------------------------- | --------- |
-| 1   | Management-Cockpit    | Portfoliolage, Handlungsbedarf, Konsequenzen, Verteilungen sichtbar                 | erfüllt   |
-| 2   | Keine Rangliste       | keine personenbezogene Bewertung oder Rangfolge (ADR-0027)                          | erfüllt   |
-| 3   | Managementbericht     | erzeugbar; Kennzahlen stimmen mit dem Cockpit überein                               | erfüllt   |
-| 4   | Verantwortung         | Verantwortung auf einem geeigneten AVKK-Sachverhalt delegierbar/neu zuweisbar       |           |
+| #   | Schritt            | Erwartetes Ergebnis                                                           | Bewertung |
+| --- | ------------------ | ----------------------------------------------------------------------------- | --------- |
+| 1   | Management-Cockpit | Portfoliolage, Handlungsbedarf, Konsequenzen, Verteilungen sichtbar           | erfüllt   |
+| 2   | Keine Rangliste    | keine personenbezogene Bewertung oder Rangfolge (ADR-0027)                    | erfüllt   |
+| 3   | Managementbericht  | erzeugbar; Kennzahlen stimmen mit dem Cockpit überein                         | erfüllt   |
+| 4   | Verantwortung      | Verantwortung auf einem geeigneten AVKK-Sachverhalt delegierbar/neu zuweisbar |           |
 
 ### 2.4 Administrator / App-Entwickler
 
@@ -139,14 +139,14 @@ gerätübergreifende oder personenbezogene Trennung existiert dort nicht.
 
 ## 3. Abzeichnung
 
-| Rolle                  | Prüfer/in | Datum      | Ergebnis  | Bemerkung |
-| ---------------------- | --------- | ---------- | --------- | --------- |
-| Systemingenieur        | Betreiber | 2026-08-21 | erfüllt   | Alex: Login, persönlicher AVKK-Scope A/C, Kompetenz-Schreib- und Persistenztest, Managementsicht gesperrt sowie persönlicher Bericht in PDF, Druck, Word, JSON und CSV geprüft. Verantwortung korrekt read-only, da `avkk.responsibility.assign` fehlt. |
+| Rolle                  | Prüfer/in | Datum      | Ergebnis  | Bemerkung                                                                                                                                                                                                                                                                                                     |
+| ---------------------- | --------- | ---------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Systemingenieur        | Betreiber | 2026-08-21 | erfüllt   | Alex: Login, persönlicher AVKK-Scope A/C, Kompetenz-Schreib- und Persistenztest, Managementsicht gesperrt sowie persönlicher Bericht in PDF, Druck, Word, JSON und CSV geprüft. Verantwortung korrekt read-only, da `avkk.responsibility.assign` fehlt.                                                       |
 | Projektmanager         | Betreiber | 2026-08-22 | teilweise | Petra: Projektcockpit für Netzwerkmodernisierung vollständig geprüft: Projektkopf/KPIs, zwei Arbeitspakete, projektspezifische Tätigkeiten, AVKK-Projektkontext, vorausgewählter SYSING-102 und Rücknavigation PASS. Benutzerverwaltung nicht sichtbar. Offen ist nur noch der explizite Delegationsnachweis. |
-| Teamleiter             | Betreiber | 2026-08-22 | teilweise | Georg: Management-Cockpit mit 3 Demo-Projekten und 8 AVKK-Sachverhalten geprüft; keine personenbezogene Rangliste. SYSING-103 fachlich PASS. Offen ist der explizite Delegationsnachweis. |
-| Administrator          |           |            | offen     | Vollständiger manueller Rollenlauf noch nicht dokumentiert. |
-| Negativtest ohne Recht | Betreiber | 2026-08-22 | erfüllt   | Alexa/viewer: allgemeiner F-18-Retest und zusätzlicher Projektcockpit-Negativtest PASS; Projektdetail/AVKK lesbar, keine Projekt- oder AVKK-Schreibaktionen sichtbar. Serverseitige Schreibgrenze automatisiert nachgewiesen. |
-| Mehrbenutzerszenario   | Betreiber | 2026-08-22 | teilweise | Alex und Sam vollständig für persönliche Scope-Trennung geprüft; Sam→Alex-Schreibversuch abgewiesen. Petra-Projektcockpit und Georg-Managementbericht bestätigt. Offen: Delegationsnachweise Petra/Georg und abschließender Role-Preview-Nachweis. |
+| Teamleiter             | Betreiber | 2026-08-22 | teilweise | Georg: Management-Cockpit mit 3 Demo-Projekten und 8 AVKK-Sachverhalten geprüft; keine personenbezogene Rangliste. SYSING-103 fachlich PASS. Offen ist der explizite Delegationsnachweis.                                                                                                                     |
+| Administrator          |           |            | offen     | Vollständiger manueller Rollenlauf noch nicht dokumentiert.                                                                                                                                                                                                                                                   |
+| Negativtest ohne Recht | Betreiber | 2026-08-22 | erfüllt   | Alexa/viewer: allgemeiner F-18-Retest und zusätzlicher Projektcockpit-Negativtest PASS; Projektdetail/AVKK lesbar, keine Projekt- oder AVKK-Schreibaktionen sichtbar. Serverseitige Schreibgrenze automatisiert nachgewiesen.                                                                                 |
+| Mehrbenutzerszenario   | Betreiber | 2026-08-22 | teilweise | Alex und Sam vollständig für persönliche Scope-Trennung geprüft; Sam→Alex-Schreibversuch abgewiesen. Petra-Projektcockpit und Georg-Managementbericht bestätigt. Offen: Delegationsnachweise Petra/Georg und abschließender Role-Preview-Nachweis.                                                            |
 
 Solange Abschnitt 3 nicht vollständig mit `erfüllt` abgeschlossen ist, bleibt
 F-11 im Abnahmebericht als **MANUAL VERIFICATION REQUIRED** geführt. Die
