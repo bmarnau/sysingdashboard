@@ -66,13 +66,15 @@ export function AvkkDetailDialog({
     return [...byId.values()].sort((a, b) => a.displayName.localeCompare(b.displayName, "de"));
   })();
 
-  async function guarded(action: () => Promise<void>, successText: string) {
+  async function guarded(action: () => Promise<void>, successText: string): Promise<boolean> {
     try {
       await action();
       toast.success(successText);
       onSaved();
+      return true;
     } catch (e) {
       toast.error(describeError(e));
+      return false;
     }
   }
 
@@ -138,7 +140,7 @@ export function AvkkDetailDialog({
             saving={saving}
             loading={loading || directory.loading}
             onSave={(input) =>
-              void guarded(() => saveResponsibility(input), "Verantwortung gespeichert.")
+              guarded(() => saveResponsibility(input), "Verantwortung gespeichert.")
             }
           />
         </AvkkExplainer>
