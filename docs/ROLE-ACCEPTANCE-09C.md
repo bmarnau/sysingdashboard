@@ -54,7 +54,7 @@ für Aufgaben und Arbeitspakete zu delegieren bzw. neu zuzuweisen.
 
 | #   | Schritt            | Erwartetes Ergebnis                                                           | Bewertung |
 | --- | ------------------ | ----------------------------------------------------------------------------- | --------- |
-| 1   | Projektsicht       | eigene Projekte mit Lage „im Plan", „gefährdet", „kritisch", „überfällig" | erfüllt   |
+| 1   | Projektsicht       | eigene Projekte mit Lage „im Plan", „gefährdet", „kritisch", „überfällig"     | erfüllt   |
 | 2   | Drill-down         | Projekt → Arbeitspakete → Tätigkeiten → AVKK bleiben konsistent               | erfüllt   |
 | 3   | AVKK-Lücken        | fehlende Voraussetzungen und Konsequenzen je Arbeitspaket sichtbar            | erfüllt   |
 | 4   | Projektbericht     | erzeugbar; Werte entsprechen der Oberfläche                                   | erfüllt   |
