@@ -48,7 +48,7 @@ Kann das Personenverzeichnis nicht geladen werden, bleibt vorhandene Verantwortu
 
 ## Datenschutz- und Architekturbegründung
 
-Der Vertrag folgt Least Privilege und trennt fachliche AVKK-Namensauflösung von der administrativen Benutzerverwaltung. Die bestehende `profiles`-RLS wird nicht für Teamlead/Projektmanager aufgeweicht. Die provider-spezifische Supabase-Funktion ist hinter einem kleinen Client-Service gekapselt und kann bei einem späteren Providerwechsel durch einen äquivalenten Directory-Provider ersetzt werden.
+Der Vertrag folgt Least Privilege und trennt fachliche AVKK-Namensauflösung von der administrativen Benutzerverwaltung. Die bestehende `profiles`-RLS wird nicht für Teamlead/Projektmanager aufgeweicht. Der provider-spezifische Supabase-Zugriff ist hinter einem kleinen AVKK-Adapter gekapselt und kann bei einem späteren Providerwechsel durch einen äquivalenten Directory-Provider ersetzt werden.
 
 ## Automatisierte Abnahmekriterien
 
@@ -72,19 +72,19 @@ F-11 bleibt bis zu diesen manuellen Nachweisen `MANUAL VERIFICATION REQUIRED`.
 
 ## Angewendeter Datenbankstand
 
-Stand 2026-08-22 wurde die Repository-Migration
-`supabase/migrations/20260822103100_f11_avkk_people_directory.sql` unverändert auf die mit
-diesem Projekt verbundene Backend-Datenbank angewendet.
+Stand 2026-08-22 wurde der bereits im Repository geprüfte SQL-Inhalt für `public.avkk_people_directory()` unverändert auf die mit diesem Projekt verbundene Backend-Datenbank angewendet. Lovable/Supabase hat die Anwendung in der Remote-Migrationshistorie unter folgender kanonischer Migration registriert:
+
+`supabase/migrations/20260822110427_2dd06fe8-b4fc-418f-bd4c-e37f52826a1d.sql`
+
+Die zuvor im Feature-PR verwendete, inhaltlich identische Datei `20260822103100_f11_avkk_people_directory.sql` war nicht in der Remote-Migrationshistorie registriert und wurde deshalb nach der Laufzeitanwendung aus dem Repository entfernt. Damit stimmen Repository und Supabase-Migrationshistorie wieder überein und spätere `supabase db push`-/Neuaufbaupfade erhalten nur eine kanonische Migration für diesen Schritt.
 
 Technisch geprüft:
 
 - `public.avkk_people_directory()` ist vorhanden (`SECURITY DEFINER`, `STABLE`, `search_path = ''`).
-- `PUBLIC` und `anon` besitzen kein `EXECUTE`; ausführbar sind ausschließlich `authenticated`
-  (sowie `postgres`/`service_role` als Eigentümer- bzw. Wartungsrollen).
+- `PUBLIC` und `anon` besitzen kein `EXECUTE`; ausführbar sind ausschließlich `authenticated` (sowie `postgres`/`service_role` als Eigentümer- bzw. Wartungsrollen).
 - Die Policies von `profiles` und `user_roles` sind unverändert (Self- bzw. Admin-Sicht).
+- Die Remote-Migrationshistorie führt Version `20260822110427` / `2dd06fe8-b4fc-418f-bd4c-e37f52826a1d`.
 
-Der Linterhinweis „Signed-In Users Can Execute SECURITY DEFINER Function" ist für diesen
-Vertrag beabsichtigt: die Funktion prüft die Berechtigungen `avkk.view` bzw.
-`avkk.responsibility.assign` intern und gibt nur Name, Rolle und Status aus.
+Der Linterhinweis „Signed-In Users Can Execute SECURITY DEFINER Function“ ist für diesen Vertrag beabsichtigt: Die Funktion prüft die Berechtigungen `avkk.view` bzw. `avkk.responsibility.assign` intern und gibt nur Benutzer-ID, Name, Rolle und Status aus. Eine breitere SELECT-Policy auf vollständige Profile wird ausdrücklich nicht benötigt.
 
 F-11 bleibt `MANUAL VERIFICATION REQUIRED` (Abnahme Georg Marnau, danach Petra Marnau).
