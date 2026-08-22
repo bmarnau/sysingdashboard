@@ -32,6 +32,7 @@ function fnBlock(name: string): string {
 }
 
 const PRIVILEGED_FNS = [
+  "getAuthBackendStatus",
   "listAuthAccounts",
   "confirmAuthAccount",
   "resendConfirmation",
@@ -63,6 +64,15 @@ describe("Admin-Serverfunktionen für Auth-Konten", () => {
     expect(FUNCTIONS).toContain('await import("@/lib/admin/auth-accounts.server")');
     // Der Dialog (Browser) darf den privilegierten Pfad nie importieren.
     expect(DIALOG).not.toMatch(/client\.server|auth-accounts\.server/);
+  });
+
+  it("should_keepBackendStatusMinimal_and_resolveOnlyCurrentAccount", () => {
+    const block = fnBlock("getAuthBackendStatus");
+    expect(block).toContain("auth.admin.getUserById(context.userId)");
+    expect(block).toContain('return { provider: "supabase", connected: true }');
+    expect(block).not.toMatch(
+      /email|access_token|refresh_token|recovery_token|service_role|projectId|repositoryUrl|publishableKey|metadata/i,
+    );
   });
 
   it("should_resolveTargetAccountServerSide_and_handleUnknownAccount", () => {
