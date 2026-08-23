@@ -15,16 +15,24 @@ Vorbedingung für die Durchführung: Demo-Datensatz über Servicemenü →
 niemals produktiv). Für den Mehrbenutzer-Nachweis (Abschnitt 2.6) zusätzlich
 die vier Demo-Konten nach `docs/DEMO-USERS.md` anlegen und im Dialog zuordnen.
 
-## 1. Automatisiert nachgewiesen (Stand v1.59.4)
+## 1. Automatisiert nachgewiesen
 
-| Nachweis                                                 | Ergebnis                                            | Quelle                                               |
-| -------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
-| Rollen-/Rechtematrix vollständig und widerspruchsfrei    | bestanden                                           | `bun run rbac:check`, `docs/RBAC-MATRIX.md`          |
-| Route-Guard: nicht angemeldeter Zugriff auf `/dashboard` | Weiterleitung nach `/auth`                          | `src/__tests__/routes/authenticated-guard.test.ts`   |
-| Datenzugriff ohne Anmeldung (Lesen und Schreiben)        | serverseitig abgewiesen (401/403), nicht nur UI     | Security-Suite, direkte Anfragen gegen die Datenbank |
-| Manipulation der Rolle im Browser wirkt nicht            | Rolle kommt aus `user_roles`, nicht aus dem Browser | `src/hooks/useCurrentUser.ts`, Security-Suite        |
-| Role Preview verändert ausschließlich die Darstellung    | keine Rechteerweiterung                             | RBAC-Suite, ADR-0007/0008                            |
-| Gesamte Testsuite                                        | 572 Tests grün, 4 todo (68 Dateien)                 | F-18-Restfix-Abschlussbericht v1.59.4                |
+| Nachweis                                                 | Ergebnis                                             | Quelle                                               |
+| -------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------- |
+| Rollen-/Rechtematrix vollständig und widerspruchsfrei    | bestanden                                            | `bun run rbac:check`, `docs/RBAC-MATRIX.md`          |
+| Route-Guard: nicht angemeldeter Zugriff auf `/dashboard` | Weiterleitung nach `/auth`                           | `src/__tests__/routes/authenticated-guard.test.ts`   |
+| Datenzugriff ohne Anmeldung (Lesen und Schreiben)        | serverseitig abgewiesen (401/403), nicht nur UI      | Security-Suite, direkte Anfragen gegen die Datenbank |
+| Manipulation der Rolle im Browser wirkt nicht            | Rolle kommt aus `user_roles`, nicht aus dem Browser  | `src/hooks/useCurrentUser.ts`, Security-Suite        |
+| Systemstatus / Supabase-Backendnachweis                  | bestanden; geschützter Status nur mit `users.manage` | PR #33, CI #315, Security #305                       |
+| Role Preview                                             | **OPEN — kein aktueller Produkt-Einstiegspunkt**     | `docs/F11-MANUAL-EVIDENCE-2026-08-22.md`             |
+| Gesamte Testsuite (historischer Stand v1.59.4)           | 572 Tests grün, 4 todo (68 Dateien)                  | F-18-Restfix-Abschlussbericht v1.59.4                |
+
+**Korrektur Role Preview:** Die frühere Aussage, Role Preview sei als reine
+Darstellungsumschaltung automatisiert nachgewiesen, ist für den aktuellen
+Produktstand nicht belegbar. Die aktuelle Codeprüfung findet weder einen
+Einstiegspunkt im Servicemenü noch eine Produktimplementierung; ADR-0007 und
+ADR-0008 definieren keine solche Produktfunktion. Bis zur fachlichen Entscheidung
+bleibt der Punkt offen und darf nicht als PASS gewertet werden.
 
 ## 2. Fachlich abzuzeichnen
 
@@ -58,7 +66,7 @@ für Aufgaben und Arbeitspakete zu delegieren bzw. neu zuzuweisen.
 | 2   | Drill-down         | Projekt → Arbeitspakete → Tätigkeiten → AVKK bleiben konsistent               | erfüllt   |
 | 3   | AVKK-Lücken        | fehlende Voraussetzungen und Konsequenzen je Arbeitspaket sichtbar            | erfüllt   |
 | 4   | Projektbericht     | erzeugbar; Werte entsprechen der Oberfläche                                   | erfüllt   |
-| 5   | Verantwortung      | Verantwortung auf einem geeigneten AVKK-Sachverhalt delegierbar/neu zuweisbar |           |
+| 5   | Verantwortung      | Verantwortung auf einem geeigneten AVKK-Sachverhalt delegierbar/neu zuweisbar | erfüllt   |
 | 6   | Benutzerverwaltung | **nicht** aufrufbar                                                           | erfüllt   |
 
 ### 2.3 Teamleiter / Managementsicht
@@ -73,16 +81,16 @@ Ranglisten oder automatisierten Leistungsbewertungen nach ADR-0027.
 | 1   | Management-Cockpit | Portfoliolage, Handlungsbedarf, Konsequenzen, Verteilungen sichtbar           | erfüllt   |
 | 2   | Keine Rangliste    | keine personenbezogene Bewertung oder Rangfolge (ADR-0027)                    | erfüllt   |
 | 3   | Managementbericht  | erzeugbar; Kennzahlen stimmen mit dem Cockpit überein                         | erfüllt   |
-| 4   | Verantwortung      | Verantwortung auf einem geeigneten AVKK-Sachverhalt delegierbar/neu zuweisbar |           |
+| 4   | Verantwortung      | Verantwortung auf einem geeigneten AVKK-Sachverhalt delegierbar/neu zuweisbar | erfüllt   |
 
 ### 2.4 Administrator / App-Entwickler
 
-| #   | Schritt                 | Erwartetes Ergebnis                                          | Bewertung |
-| --- | ----------------------- | ------------------------------------------------------------ | --------- |
-| 1   | Benutzerverwaltung      | Benutzer und Rollen sichtbar und änderbar                    |           |
-| 2   | Role Preview            | Darstellung wechselt; eigene Rechte bleiben unverändert      |           |
-| 3   | Systemstatus            | Version, Build, Datenbank- und Sicherheitsstatus vollständig |           |
-| 4   | Backup und Prüfberichte | Backup erzeugbar, Downloadbereich und Log Viewer erreichbar  |           |
+| #   | Schritt                 | Erwartetes Ergebnis                                                         | Bewertung                                 |
+| --- | ----------------------- | --------------------------------------------------------------------------- | ----------------------------------------- |
+| 1   | Benutzerverwaltung      | Benutzer und Rollen sichtbar und änderbar                                   | erfüllt                                   |
+| 2   | Role Preview            | fachliche Entscheidung, ob Funktion benötigt wird; aktuell kein Produktpfad | offen — Produkt-/Dokudrift                |
+| 3   | Systemstatus            | Version, Build, Supabase-/Backend- und Sicherheitsstatus vollständig        | teilweise — technisch PASS, Browser offen |
+| 4   | Backup und Prüfberichte | Backup erzeugbar, Downloadbereich und Log Viewer erreichbar                 | offen                                     |
 
 ### 2.5 Negativtest ohne Berechtigung (Viewer / Customer)
 
@@ -108,11 +116,11 @@ abgeleitet, nicht gepflegt.
 | 3   | Alex vs. Sam                           | keine gemeinsamen Sachverhalte in „Mein AVKK"; Kennzahlen unterscheiden sich sichtbar                      | erfüllt   |
 | 4   | Sam schreibt auf einen Fall von Alex   | Speichern wird von der Datenbank abgewiesen (`avkk_can_write`), nicht nur in der Oberfläche gesperrt       | erfüllt   |
 | 5   | Petra (`projectmanager`), Projektsicht | Projektcockpit Netzwerk mit zugehörigen Arbeitspaketen, Tätigkeiten, AVKK und Projektbericht konsistent    | erfüllt   |
-| 6   | Petra (`projectmanager`), Delegation   | Verantwortung auf geeignetem AVKK-Sachverhalt neu zuweisbar; Engineer bleibt ohne Assign-Recht             |           |
+| 6   | Petra (`projectmanager`), Delegation   | Verantwortung auf geeignetem AVKK-Sachverhalt neu zuweisbar; Engineer bleibt ohne Assign-Recht             | erfüllt   |
 | 7   | Georg (`teamlead`), Management-Cockpit | alle 3 Demo-Projekte und 8 Sachverhalte im Portfolio; keine personenbezogene Rangfolge (ADR-0027)          | erfüllt   |
 | 8   | Georg, Managementbericht               | Kennzahlen stimmen mit dem Cockpit überein; keine personenbezogene Rangliste oder Leistungsbewertung       | erfüllt   |
-| 9   | Georg (`teamlead`), Delegation         | Verantwortung auf geeignetem AVKK-Sachverhalt neu zuweisbar                                                |           |
-| 10  | Beliebige Rolle, Role Preview          | Darstellung wechselt, Datenumfang und Schreibrechte bleiben unverändert                                    |           |
+| 9   | Georg (`teamlead`), Delegation         | Verantwortung auf geeignetem AVKK-Sachverhalt neu zuweisbar                                                | erfüllt   |
+| 10  | Role Preview                           | aktueller Produktstand enthält keinen prüfbaren Einstiegspunkt                                             | offen     |
 
 **Fachentscheidung Delegation, 2026-08-22:** Projektmanager und Teamleiter
 müssen delegieren können. `avkk.responsibility.assign` ist für beide Rollen
@@ -139,14 +147,14 @@ gerätübergreifende oder personenbezogene Trennung existiert dort nicht.
 
 ## 3. Abzeichnung
 
-| Rolle                  | Prüfer/in | Datum      | Ergebnis  | Bemerkung                                                                                                                                                                                                                                                                                                     |
-| ---------------------- | --------- | ---------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Systemingenieur        | Betreiber | 2026-08-21 | erfüllt   | Alex: Login, persönlicher AVKK-Scope A/C, Kompetenz-Schreib- und Persistenztest, Managementsicht gesperrt sowie persönlicher Bericht in PDF, Druck, Word, JSON und CSV geprüft. Verantwortung korrekt read-only, da `avkk.responsibility.assign` fehlt.                                                       |
-| Projektmanager         | Betreiber | 2026-08-22 | teilweise | Petra: Projektcockpit für Netzwerkmodernisierung vollständig geprüft: Projektkopf/KPIs, zwei Arbeitspakete, projektspezifische Tätigkeiten, AVKK-Projektkontext, vorausgewählter SYSING-102 und Rücknavigation PASS. Benutzerverwaltung nicht sichtbar. Offen ist nur noch der explizite Delegationsnachweis. |
-| Teamleiter             | Betreiber | 2026-08-22 | teilweise | Georg: Management-Cockpit mit 3 Demo-Projekten und 8 AVKK-Sachverhalten geprüft; keine personenbezogene Rangliste. SYSING-103 fachlich PASS. Offen ist der explizite Delegationsnachweis.                                                                                                                     |
-| Administrator          |           |            | offen     | Vollständiger manueller Rollenlauf noch nicht dokumentiert.                                                                                                                                                                                                                                                   |
-| Negativtest ohne Recht | Betreiber | 2026-08-22 | erfüllt   | Alexa/viewer: allgemeiner F-18-Retest und zusätzlicher Projektcockpit-Negativtest PASS; Projektdetail/AVKK lesbar, keine Projekt- oder AVKK-Schreibaktionen sichtbar. Serverseitige Schreibgrenze automatisiert nachgewiesen.                                                                                 |
-| Mehrbenutzerszenario   | Betreiber | 2026-08-22 | teilweise | Alex und Sam vollständig für persönliche Scope-Trennung geprüft; Sam→Alex-Schreibversuch abgewiesen. Petra-Projektcockpit und Georg-Managementbericht bestätigt. Offen: Delegationsnachweise Petra/Georg und abschließender Role-Preview-Nachweis.                                                            |
+| Rolle                  | Prüfer/in | Datum      | Ergebnis  | Bemerkung                                                                                                                                                                                                                                                                                                                             |
+| ---------------------- | --------- | ---------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Systemingenieur        | Betreiber | 2026-08-21 | erfüllt   | Alex: Login, persönlicher AVKK-Scope A/C, Kompetenz-Schreib- und Persistenztest, Managementsicht gesperrt sowie persönlicher Bericht in PDF, Druck, Word, JSON und CSV geprüft. Verantwortung korrekt read-only, da `avkk.responsibility.assign` fehlt.                                                                               |
+| Projektmanager         | Betreiber | 2026-08-22 | erfüllt   | Petra: Projektcockpit, AVKK-Scope Projekte + Arbeitspakete, Projektbericht und Benutzerverwaltungs-Negativtest PASS. Neue Verantwortung `Sam Marnau — Verantwortlicher — Ergebnis` gespeichert und nach Hard Reload persistent.                                                                                                       |
+| Teamleiter             | Betreiber | 2026-08-22 | erfüllt   | Georg: Management-Cockpit, keine Personenrangliste, Managementbericht und Delegation PASS. Exakter aktiver Duplikatfall `Sam Marnau — Stellvertreter — Koordination` wird erkannt und kann nicht erneut gespeichert werden.                                                                                                           |
+| Administrator          | Betreiber | 2026-08-22 | teilweise | Bernd Marnau: Benutzerverwaltung und Rollenänderung PASS (`Alexa Marnau: Viewer → Kunde → Viewer`, Ausgangszustand wiederhergestellt). Systemstatus technisch über PR #33 vollständig gegatet und in Lovable synchronisiert; manueller Runtime-Retest sowie Backup/Prüfberichte offen. Role Preview ist aktueller Produkt-/Dokudrift. |
+| Negativtest ohne Recht | Betreiber | 2026-08-22 | erfüllt   | Alexa/viewer: allgemeiner F-18-Retest und zusätzlicher Projektcockpit-Negativtest PASS; Projektdetail/AVKK lesbar, keine Projekt- oder AVKK-Schreibaktionen sichtbar. Serverseitige Schreibgrenze automatisiert nachgewiesen.                                                                                                         |
+| Mehrbenutzerszenario   | Betreiber | 2026-08-22 | teilweise | Alex und Sam vollständig für persönliche Scope-Trennung geprüft; Sam→Alex-Schreibversuch abgewiesen. Petra- und Georg-Delegation PASS. Offen bleibt die fachliche Entscheidung zum nicht implementierten Role Preview.                                                                                                                |
 
 Solange Abschnitt 3 nicht vollständig mit `erfüllt` abgeschlossen ist, bleibt
 F-11 im Abnahmebericht als **MANUAL VERIFICATION REQUIRED** geführt. Die
@@ -158,7 +166,9 @@ fachlicher Abzeichnung.
 ## 4. Manueller Evidenzstand 2026-08-22
 
 Die bis zu diesem Stand im Betreiber-Test tatsächlich belegten manuellen
-Nachweise werden getrennt von noch offenen Prüfschritten festgehalten:
+Nachweise werden getrennt von noch offenen Prüfschritten festgehalten. Die
+detaillierte, revisionssichere Evidenz liegt zusätzlich in
+`docs/F11-MANUAL-EVIDENCE-2026-08-22.md`.
 
 - **Alex / engineer:** erfolgreicher Login; „Mein AVKK" zeigt genau zwei eigene
   Arbeitspakete (Fälle A/C), davon einen gefährdeten Fall und eine fehlende
@@ -175,21 +185,26 @@ Nachweise werden getrennt von noch offenen Prüfschritten festgehalten:
   der Schreibversuch auf die Kompetenznotiz wurde jedoch mit „Speichern nicht
   möglich" abgewiesen; nach Hard Reload blieb Alex' ursprüngliche Notiz
   unverändert. Damit ist die Schreibgrenze im manuellen Mehrbenutzertest
-  bestätigt. Nicht blockierende UI-Beobachtung: In Sams Ansicht wurde der
-  Verantwortliche des fremden Falls als technische UUID statt Anzeigename
-  dargestellt; dies wird als LOW-UI-Finding für die spätere Bereinigung geführt.
-- **Petra / projectmanager:** Projektcockpit „Netzwerkmodernisierung
-  Verwaltungsstandort" vollständig geprüft. Projektkopf und KPIs, genau zwei
-  Arbeitspakete, drei projektspezifische Tätigkeiten, AVKK-Projektkontext,
-  vorausgewählter SYSING-102 und Rücknavigation sind PASS. SYSING-102 ist auch
-  als finales 3-Seiten-PDF fachlich und visuell abgenommen. Offen bleibt der
-  gezielte Delegationsnachweis.
-- **Georg / teamlead:** erfolgreicher Login; Management-Cockpit mit allen drei
-  Demo-Projekten und acht AVKK-Sachverhalten sichtbar; sieben gefährdete und ein
-  unauffälliger Fall; keine personenbezogene Rangliste. SYSING-103 wurde am
-  2026-08-22 als 3-Seiten-PDF geprüft: Kennzahlen und Projektaggregation sind
-  plausibel, keine Personenrangliste/Leistungsbewertung. Offen bleibt der
-  gezielte Delegationsnachweis.
+  bestätigt.
+- **Petra Marnau / projectmanager:** Projektcockpit und AVKK-Management geprüft.
+  Der korrigierte AVKK-Scope umfasst 7 Projekte + 11 Arbeitspakete = 18
+  AVKK-Aufgaben; 12 Tätigkeiten werden nicht als AVKK-Aufgaben gezählt. Für
+  `Cloud Identity 2026` wurde `Sam Marnau — Verantwortlicher — Ergebnis`
+  erfolgreich zugeordnet und nach Hard Reload persistent bestätigt.
+- **Georg Marnau / teamlead:** Management-Cockpit mit allen drei Demo-Projekten
+  und acht AVKK-Sachverhalten geprüft; keine personenbezogene Rangliste.
+  Delegation ist verfügbar. Der exakte aktive Duplikatfall `Sam Marnau —
+Stellvertreter — Koordination` wird mit der Warnung „Diese Verantwortung ist
+  bereits aktiv zugeordnet." erkannt; der Speichern-Button bleibt deaktiviert.
+- **Bernd Marnau / System-Administrator:** Servicemenü, `Benutzer & Profile` und
+  Benutzerverwaltung geprüft. Benutzer und Rollen sind sichtbar. Die Rolle von
+  Alexa Marnau wurde kontrolliert `Viewer → Kunde → Viewer` geändert; der
+  Ausgangszustand wurde wiederhergestellt. Der Systemstatus wurde vor PR #30
+  geöffnet und führte zur Entdeckung einer internen Hosting-Git-Remote in der
+  Repository-Anzeige. PR #30 behob den Leakpfad; PR #33 ergänzt den geschützten
+  Supabase-Backendnachweis. Beide PRs bestanden vollständige CI/Security-Gates.
+  Lovable hat den Merge von PR #33 (`77d0f535…`) als `completed` verarbeitet;
+  der visuelle Runtime-Retest bleibt bewusst verschoben.
 - **Alexa / viewer:** erfolgreicher Login; AVKK read-only; Management- und
   Benutzerverwaltungsfunktionen nicht verfügbar; nach v1.59.4 kein `+ Neu`, keine
   Neu-/Bearbeiten-/Löschen-Aktionen in Projekte, Arbeitspakete, Tätigkeiten oder
@@ -200,11 +215,12 @@ Nachweise werden getrennt von noch offenen Prüfschritten festgehalten:
 
 Noch nicht vollständig als manueller Rollenlauf dokumentiert sind insbesondere:
 
-- Administrator/App-Entwickler einschließlich Role Preview, Systemstatus,
-  Backup und Prüfberichten,
-- Delegation/Verantwortungszuweisung mit Petra (`projectmanager`) und Georg
-  (`teamlead`),
-- abschließender Role-Preview-Nachweis.
+- Systemstatus-Runtime-Retest nach PR #30/#33,
+- visueller Namens-Retest Benutzerverwaltung nach PR #31,
+- Backup, Downloadbereich, Log Viewer und Technischer Prüfbericht,
+- abschließende Administratorabnahme,
+- fachliche Entscheidung, ob Role Preview wieder implementiert oder als
+  historischer, nicht mehr zutreffender Abnahmepunkt entfernt wird.
 
 ## Nachtrag F-18 (v1.59.3)
 

@@ -52,7 +52,7 @@ Nachgewiesen:
 
 Noch offen:
 
-- vollständiger Systemstatus-Retest nach Security-Fix #30,
+- visueller Systemstatus-Retest nach Security-Fix #30 und Systemstatus-Erweiterung #33,
 - Backup / Downloadbereich / Log Viewer,
 - Technischer Prüfbericht,
 - weitere manuelle Administrator-Sichtprüfungen.
@@ -93,6 +93,53 @@ Automatische Abnahme PR #30:
 
 Manueller Runtime-Retest nach Merge bleibt verschoben.
 
+## Systemstatus / Supabase-Backendnachweis — PR #33
+
+Nach dem Security-Fix #30 wurde der Systemstatus technisch vervollständigt, ohne
+den öffentlichen `/api/status` um sensible Backenddetails zu erweitern.
+
+Technische Umsetzung:
+
+- PR #33 `Fix/F-11: Systemstatus mit sicherem Supabase-Backendnachweis`,
+- Merge-Commit `77d0f535e08ea637d6e1ca9c9d248ca006c1b395`,
+- Supabase wird als aktuelle MVP-Datenplattform ausgewiesen,
+- Auth-Konfigurationsstatus wird secret-frei dargestellt,
+- echter Backendnachweis läuft ausschließlich hinter gültiger Anmeldung und
+  serverseitigem `users.manage`,
+- Teamleiter mit `systemstatus.view`, aber ohne `users.manage`, lösen keinen
+  Admin-Backendstatuscall aus,
+- Rückgabe des geschützten Status enthält nur Provider und Verbindungsstatus —
+  keine Benutzerliste, URL, Projektkennung, Keys, Tokens oder Rohmetadaten,
+- fehlender Git-Commit in einer Hosting-Runtime wird neutral als
+  `vom Hosting nicht bereitgestellt` gekennzeichnet.
+
+Automatische Abnahme PR #33 auf Head
+`b63c4eacbb327c462a3b6a9b0c019e6702deb76b`:
+
+- Security Workflow #305: PASS,
+- CI #315: PASS,
+- Static / Prettier / ESLint / TypeScript / RBAC / Docs / Manifest: PASS,
+- Unit & Components: PASS,
+- Backend: PASS,
+- API: PASS,
+- RBAC & Security: PASS,
+- Import / Export: PASS,
+- Backup / Restore: PASS,
+- Production Build: PASS,
+- Playwright E2E: PASS,
+- Accessibility: PASS,
+- Technical Debt: PASS,
+- Technical Report & Quality Gate: PASS.
+
+GitHub `main` wurde nach Merge exakt auf `77d0f535e08ea637d6e1ca9c9d248ca006c1b395`
+verifiziert. Lovable hat denselben Merge-Commit als `completed` verarbeitet. Der
+Lovable-Projektstatus bestätigt außerdem ein aktiviertes Datenbank-Backend mit
+Stack `supabase`.
+
+Diese Nachweise belegen Code, Gates und GitHub→Lovable-Synchronisation. Sie
+ersetzen **nicht** die noch ausstehende visuelle Browserabnahme des produktiven
+Systemstatus.
+
 ## Namensdarstellung in der Benutzerverwaltung
 
 Beim Administrator-Test wurden in der Benutzerliste einzelne gespeicherte Anzeigenamen mit fehlerhafter Vornamensschreibweise sichtbar, z. B. `petra Marnau`.
@@ -109,7 +156,7 @@ Manueller visueller Retest ist verschoben.
 
 ## Role Preview — offener Driftbefund
 
-Die bestehende Checkliste `docs/ROLE-ACCEPTANCE-09C.md` fordert einen manuellen `Role Preview`-Nachweis und beschreibt ihn als reine Darstellungsumschaltung ohne Rechteerweiterung.
+Die bestehende Checkliste `docs/ROLE-ACCEPTANCE-09C.md` fordert einen manuellen `Role Preview`-Nachweis und beschrieb ihn bisher als reine Darstellungsumschaltung ohne Rechteerweiterung.
 
 Die Prüfung des aktuellen `main` ergibt jedoch:
 
@@ -131,7 +178,7 @@ Bis dahin bleibt dieser Punkt **OPEN** und darf nicht als PASS gewertet werden.
 
 Die restlichen manuellen Prüfungen wurden auf Wunsch des Betreibers bewusst verschoben. Dazu gehören insbesondere:
 
-- Runtime-Sichtprüfung Systemstatus nach PR #30,
+- visueller Runtime-Sichttest des Systemstatus nach PR #30/#33,
 - visueller Namens-Retest Benutzerverwaltung nach PR #31,
 - Backup / Downloadbereich / Log Viewer,
 - Technischer Prüfbericht,
