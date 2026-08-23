@@ -1,0 +1,35 @@
+name: TEMP Format F11
+
+on:
+  push:
+    branches:
+      - docs/f11-evidence-sync-2026-08-22
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/f11-evidence-sync-2026-08-22
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Format F-11 acceptance document
+        run: bunx prettier --write docs/ROLE-ACCEPTANCE-09C.md
+      - name: Commit formatter result only
+        run: |
+          if git diff --quiet -- docs/ROLE-ACCEPTANCE-09C.md; then
+            echo "No formatting changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/ROLE-ACCEPTANCE-09C.md
+          git commit -m "chore(docs): format F-11 acceptance checklist"
+          git push origin HEAD:docs/f11-evidence-sync-2026-08-22
