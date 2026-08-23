@@ -77,9 +77,7 @@ function main() {
       "",
       "| Job | Ergebnis | Gate |",
       "| --- | --- | --- |",
-      ...results.map(
-        (r) => `| ${r.id} | ${r.result} | ${r.soft ? "warn-only" : "hart"} |`,
-      ),
+      ...results.map((r) => `| ${r.id} | ${r.result} | ${r.soft ? "warn-only" : "hart"} |`),
       "",
     ].join("\n"),
   );
@@ -121,7 +119,9 @@ function main() {
       `- Warn-Only-Fehler: ${softFails.length}`,
       "",
       "## Bundle",
-      bundleTotals ? `- Gesamt: ${bundleTotals.totalKB} KB` : "- Kein aktueller Bundle-Report verfügbar.",
+      bundleTotals
+        ? `- Gesamt: ${bundleTotals.totalKB} KB`
+        : "- Kein aktueller Bundle-Report verfügbar.",
       "",
       "## Warnungen",
       warnings.length ? warnings.map((w) => `- ${w}`).join("\n") : "Keine.",
