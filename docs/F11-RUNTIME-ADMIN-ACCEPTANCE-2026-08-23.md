@@ -38,6 +38,28 @@ Nachgewiesen am 2026-08-23 über die verbundene Lovable-Projektinstanz:
 
 Abgrenzung: Dieser Nachweis bestätigt den Plattform-/Backend-Grundstatus. Er ersetzt nicht den visuellen F-11-Systemstatus-Retest und keine RBAC-/RLS-Einzelprüfung.
 
+## Schritt 3 — UI-Pfade und Testgrenze aus aktuellem `main`
+
+Status: **TECHNISCH PASS — Prüfanweisung verifiziert**
+
+Aus `src/components/dashboard/header/ServiceMenu.tsx` auf der Baseline wurden die aktuellen Bedienpfade verifiziert. Ausgangspunkt ist jeweils der Dashboard-Button `Einstellungen und Services`.
+
+- Benutzerverwaltung: `Einstellungen und Services` → `Benutzer & Profile…`
+- Downloadbereich: `Einstellungen und Services` → `Downloads…`
+- Backup: `Einstellungen und Services` → `Backup…`; Anzeige ist an `backup.restore` gebunden.
+- Log Viewer: `Einstellungen und Services` → `Log Viewer…`
+- Systemstatus: `Einstellungen und Services` → `Systemstatus…`; Anzeige ist an `systemstatus.view` gebunden.
+- Backend-/Auth-Administration: `Einstellungen und Services` → `Backend & Auth-Konten…`; Anzeige ist an `users.manage` gebunden.
+
+Der aktuelle Systemstatus-Dialog weist ausdrücklich darauf hin, dass nur sichere Status- und Metadaten und keine Secrets oder Verbindungswerte dargestellt werden. Für die visuelle Abnahme sind insbesondere folgende Bereiche relevant:
+
+- Application: Version, Build-Datum, Runtime-Modus,
+- GitHub: kanonische Repository-URL, Branch und optional Commit; fehlt der Hosting-Commit, ist `vom Hosting nicht bereitgestellt` der erwartete neutrale Zustand,
+- Lovable: Publish-URL und Deployment-Status,
+- Security/Auth: Authentication mode, Auth-Konfiguration, RBAC-Status und geschützter Backendstatus.
+
+Die Playwright-Spezifikation `e2e/specs/service-menu.spec.ts` bestätigt für `systemadministrator`, dass Log Viewer, Systemstatus und Backup im Servicemenü sichtbar sind. Die Spezifikation grenzt sich aber selbst ausdrücklich als Smoke-Prüfung ab: Das Öffnen eines Dialogs ist kein Funktionstest. Die verbleibenden manuellen F-11-Prüfungen werden deshalb nicht durch diesen automatischen Nachweis ersetzt.
+
 ## Noch offene F-11-Restschritte
 
 1. Visueller Runtime-Sichttest des Systemstatus nach PR #30/#33.
@@ -59,6 +81,8 @@ Die Repository-Suche auf aktuellem `main` zeigt keinen aktuellen Produktcode-Ein
 - GitHub-Baseline verifiziert: PASS
 - Lovable-Synchronisation verifiziert: PASS
 - Supabase-Backend-Grundstatus verifiziert: PASS
+- aktuelle UI-Prüfpfade verifiziert: PASS
+- automatische Smoke-Testgrenze dokumentiert: PASS
 - visuelle Administrator-Restabnahme: OFFEN
 - Role Preview: OFFEN
 - F-11 gesamt: `MANUAL VERIFICATION REQUIRED`
