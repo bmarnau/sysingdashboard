@@ -60,6 +60,34 @@ Der aktuelle Systemstatus-Dialog weist ausdrücklich darauf hin, dass nur sicher
 
 Die Playwright-Spezifikation `e2e/specs/service-menu.spec.ts` bestätigt für `systemadministrator`, dass Log Viewer, Systemstatus und Backup im Servicemenü sichtbar sind. Die Spezifikation grenzt sich aber selbst ausdrücklich als Smoke-Prüfung ab: Das Öffnen eines Dialogs ist kein Funktionstest. Die verbleibenden manuellen F-11-Prüfungen werden deshalb nicht durch diesen automatischen Nachweis ersetzt.
 
+## Schritt 4 — Automatisierter Lovable-Runtime-Versuch
+
+Status: **NOT TESTED — keine angemeldete Administrator-Session verfügbar**
+
+Am 2026-08-23 wurde die verbundene Lovable-Projektinstanz ausdrücklich read-only angewiesen, die verbliebenen F-11-Administratorpfade ohne Code-, Datenbank-, Benutzer-, Rollen- oder Konfigurationsänderung zu prüfen.
+
+Der Auftrag wurde von Lovable angenommen, konnte aber die geschützten Administrator-Dialoge ohne vorhandene authentifizierte Sitzung nicht belastbar als manuellen Runtime-Nachweis abschließen. Deshalb wird daraus kein PASS abgeleitet.
+
+Konsequenz: Die visuelle Restabnahme erfolgt bewusst durch den Betreiber in der veröffentlichten App. Die Ergebnisse werden unmittelbar danach in diesem GitHub-Branch dokumentiert.
+
+## Manueller Prüfschritt A — Systemstatus
+
+Status: **OFFEN — Betreiberprüfung erforderlich**
+
+Bedienpfad:
+
+1. Als `System-Administrator` anmelden.
+2. `Einstellungen und Services` öffnen.
+3. `Systemstatus…` öffnen.
+4. Prüfen, ob der Dialog vollständig und ohne sichtbaren Fehler rendert.
+5. Prüfen, ob unter GitHub ausschließlich die kanonische öffentliche Repository-Adresse `github.com/bmarnau/sysingdashboard` angezeigt bzw. verlinkt wird; keine interne Hosting-Remote, keine Zugangsinformationen.
+6. Prüfen, ob ein fehlender Hosting-Commit neutral als `vom Hosting nicht bereitgestellt` erscheint und nicht als Konfigurationsfehler.
+7. Prüfen, ob Lovable-Publish-URL und Deploymentstatus plausibel dargestellt werden.
+8. Prüfen, ob `Authentication mode` / Auth-Konfiguration / RBAC-Status plausibel sind.
+9. Für den System-Administrator prüfen, ob der geschützte Backendstatus als erreichbar/verbunden angezeigt wird; keine Benutzerlisten, Projektkennungen, Schlüssel, Tokens oder Rohmetadaten dürfen im Systemstatus erscheinen.
+
+Erwartetes Ergebnis: **PASS**, wenn alle Punkte erfüllt sind. Bei Abweichung Screenshot/angezeigten Text sichern und Punkt als FAIL oder TEILWEISE führen.
+
 ## Noch offene F-11-Restschritte
 
 1. Visueller Runtime-Sichttest des Systemstatus nach PR #30/#33.
@@ -83,6 +111,8 @@ Die Repository-Suche auf aktuellem `main` zeigt keinen aktuellen Produktcode-Ein
 - Supabase-Backend-Grundstatus verifiziert: PASS
 - aktuelle UI-Prüfpfade verifiziert: PASS
 - automatische Smoke-Testgrenze dokumentiert: PASS
+- automatisierter Lovable-Runtime-Test ohne Auth: NOT TESTED
+- visueller Systemstatus: OFFEN
 - visuelle Administrator-Restabnahme: OFFEN
 - Role Preview: OFFEN
 - F-11 gesamt: `MANUAL VERIFICATION REQUIRED`
