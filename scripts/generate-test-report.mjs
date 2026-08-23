@@ -22,7 +22,10 @@ function safeReadJson(p) {
 const coverage = safeReadJson(join(ROOT, "coverage/coverage-summary.json"));
 const bundle = safeReadJson(join(REPORT_DIR, "bundle.json"));
 const debt = safeReadJson(join(REPORT_DIR, "tech-debt.json"));
-const security = safeReadJson(join(ROOT, "security-report/findings.json"));
+// Der zentrale CI-Bericht darf nur den im aktuellen Lauf eingesammelten
+// Security-Report verwenden. `security-report/findings.json` kann als lokales
+// Scanner-Artefakt historisch im Checkout liegen und ist kein Laufnachweis.
+const security = safeReadJson(join(REPORT_DIR, "security-report.json"));
 
 const summary = {
   generatedAt: new Date().toISOString(),
