@@ -194,7 +194,7 @@ detaillierte, revisionssichere Evidenz liegt zusätzlich in
 - **Georg Marnau / teamlead:** Management-Cockpit mit allen drei Demo-Projekten
   und acht AVKK-Sachverhalten geprüft; keine personenbezogene Rangliste.
   Delegation ist verfügbar. Der exakte aktive Duplikatfall `Sam Marnau —
-  Stellvertreter — Koordination` wird mit der Warnung „Diese Verantwortung ist
+Stellvertreter — Koordination` wird mit der Warnung „Diese Verantwortung ist
   bereits aktiv zugeordnet." erkannt; der Speichern-Button bleibt deaktiviert.
 - **Bernd Marnau / System-Administrator:** Servicemenü, `Benutzer & Profile` und
   Benutzerverwaltung geprüft. Benutzer und Rollen sind sichtbar. Die Rolle von
