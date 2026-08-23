@@ -19,9 +19,24 @@ export const RESTORE_LOG_KEY = "backup:restoreLog";
 export const RESTORE_LOG_MAX = 100;
 
 /**
- * localStorage-Keys/Prefixes, die zum Dashboard gehören und gesichert werden
- * sollen. Bewusst breit gehalten (alle App-eigenen Keys), aber per Denylist
- * werden potenzielle Secrets ausgefiltert.
+ * Aktuelle Local-First-Datenschlüssel. Die Basisschlüssel gelten sowohl
+ * ungescoped (Legacy) als auch user-scoped im Format `<base>::<user-id>`.
+ *
+ * Absichtlich KEIN pauschales `northbit-`-Präfix: Account-/Auth-Metadaten wie
+ * `northbit-users` oder `northbit-active-user` gehören nicht in das Datenbackup.
+ */
+export const NORTHBIT_APP_DATA_KEYS = [
+  "northbit-dashboard-v2",
+  "northbit-target-time-models",
+  "northbit-perf-preset",
+  "northbit-perf-custom",
+  "northbit-dashboard-viewmode",
+  "northbit-dashboard-period",
+  "northbit-dashboard-perf-report",
+] as const;
+
+/**
+ * Historische/weitere App-Präfixe, die weiterhin gesichert werden.
  */
 export const APP_KEY_ALLOWLIST_PREFIXES = [
   "engineer-dashboard",
@@ -75,7 +90,16 @@ export function buildFileName(date = new Date()): string {
   )}-${pad(date.getHours())}-${pad(date.getMinutes())}.zip`;
 }
 
+function matchesNorthbitDataKey(key: string, base: string): boolean {
+  return key === base || key.startsWith(`${base}::`);
+}
+
+export function isCurrentDashboardStorageKey(key: string): boolean {
+  return matchesNorthbitDataKey(key, "northbit-dashboard-v2");
+}
+
 export function isAppKey(key: string): boolean {
+  if (NORTHBIT_APP_DATA_KEYS.some((base) => matchesNorthbitDataKey(key, base))) return true;
   return APP_KEY_ALLOWLIST_PREFIXES.some((p) => key.startsWith(p));
 }
 

@@ -21,6 +21,104 @@ import type {
   CreateBackupResult,
 } from "./types";
 
+const AUTO_BACKUP_LOCK_KEY = "backup:autoDailyLock";
+const AUTO_BACKUP_LOCK_TTL_MS = 5 * 60 * 1000;
+let autoBackupInFlight = false;
+
+interface AutoBackupLock {
+  token: string;
+  day: string;
+  expiresAt: number;
+}
+
+function readAutoBackupLock(): AutoBackupLock | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(AUTO_BACKUP_LOCK_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<AutoBackupLock>;
+    if (
+      typeof parsed.token !== "string" ||
+      typeof parsed.day !== "string" ||
+      typeof parsed.expiresAt !== "number"
+    ) {
+      return null;
+    }
+    return { token: parsed.token, day: parsed.day, expiresAt: parsed.expiresAt };
+  } catch {
+    return null;
+  }
+}
+
+function acquireAutoBackupLock(day: string): string | null {
+  if (typeof window === "undefined" || autoBackupInFlight) return null;
+
+  const now = Date.now();
+  const current = readAutoBackupLock();
+  if (current && current.day === day && current.expiresAt > now) return null;
+
+  const token = crypto.randomUUID();
+  try {
+    const next: AutoBackupLock = {
+      token,
+      day,
+      expiresAt: now + AUTO_BACKUP_LOCK_TTL_MS,
+    };
+    window.localStorage.setItem(AUTO_BACKUP_LOCK_KEY, JSON.stringify(next));
+    const confirmed = readAutoBackupLock();
+    if (!confirmed || confirmed.token !== token) return null;
+  } catch {
+    // Wenn localStorage für den Lock nicht verfügbar ist, schützt weiterhin
+    // der synchrone In-Flight-Schalter innerhalb dieser App-Instanz.
+  }
+
+  autoBackupInFlight = true;
+  return token;
+}
+
+function releaseAutoBackupLock(token: string): void {
+  autoBackupInFlight = false;
+  if (typeof window === "undefined") return;
+  try {
+    const current = readAutoBackupLock();
+    if (current?.token === token) window.localStorage.removeItem(AUTO_BACKUP_LOCK_KEY);
+  } catch {
+    // Ein abgelaufener Lock wird beim nächsten Lauf überschrieben.
+  }
+}
+
+function dayOfLastAutoBackup(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(LAST_BACKUP_KEY)?.slice(0, 10) ?? null;
+}
+
+/**
+ * Führt genau einen fälligen automatischen Tageslauf aus.
+ *
+ * Der In-Flight-Schalter verhindert Doppelstarts innerhalb derselben
+ * App-Instanz. Der kurzlebige localStorage-Lease koordiniert zusätzlich
+ * parallele Tabs/Instanzen derselben Origin. Nach Erwerb des Locks wird der
+ * letzte Auto-Zeitpunkt erneut geprüft, damit ein inzwischen abgeschlossener
+ * Lauf keinen zweiten Tageslauf auslöst.
+ */
+export async function runDailyBackupIfDue(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+
+  const today = new Date().toISOString().slice(0, 10);
+  if (dayOfLastAutoBackup() === today) return false;
+
+  const lockToken = acquireAutoBackupLock(today);
+  if (!lockToken) return false;
+
+  try {
+    if (dayOfLastAutoBackup() === today) return false;
+    const result = await BackupService.createBackup({ manual: false });
+    return result.ok;
+  } finally {
+    releaseAutoBackupLock(lockToken);
+  }
+}
+
 export const BackupService = {
   buildFileName,
 
@@ -81,7 +179,7 @@ export const BackupService = {
         bytes: record.bytes,
       };
       await dbTx("readwrite", (s) => s.put(stored));
-      window.localStorage.setItem(LAST_BACKUP_KEY, record.createdAt);
+      if (!manual) window.localStorage.setItem(LAST_BACKUP_KEY, record.createdAt);
 
       const logEntry: BackupLogEntry = {
         id,
@@ -177,12 +275,7 @@ export const BackupService = {
     if (typeof window === "undefined") return;
 
     const tryRun = () => {
-      const last = window.localStorage.getItem(LAST_BACKUP_KEY);
-      const today = new Date().toISOString().slice(0, 10);
-      const lastDay = last?.slice(0, 10);
-      if (lastDay === today) return;
-      // Nicht blockierend
-      void this.createBackup({ manual: false }).catch((err) => {
+      void runDailyBackupIfDue().catch((err) => {
         logger.error("Scheduled backup failed", err, { manual: false });
       });
     };

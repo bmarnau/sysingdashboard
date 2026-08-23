@@ -6,7 +6,12 @@
 
 import { strFromU8, unzipSync } from "fflate";
 import { checksumOf } from "./checksum";
-import { PROJECT_NAME, contentTypeForPath, looksSensitive } from "./constants";
+import {
+  PROJECT_NAME,
+  contentTypeForPath,
+  isCurrentDashboardStorageKey,
+  looksSensitive,
+} from "./constants";
 import { loadManifest } from "./manifest";
 import { validateAvkkPayload, type AvkkValidation } from "./avkk-payload";
 import type { BackupCheckResult, BackupCheckStatus, BackupManifestV2, Snapshot } from "./types";
@@ -128,11 +133,12 @@ export function runConsistencyCheck(snapshot: Snapshot): BackupCheckResult {
     status = "warning";
   }
 
-  // Auf bekannte Top-Level-Keys testen (rein heuristisch)
+  // Aktueller Local-First-Vertrag plus bekannte Legacy-Top-Level-Keys.
   const importantHints = ["engineer", "user", "working", "target"];
   const keys = Object.keys(snapshot.data);
+  const hasCurrentDashboardState = keys.some(isCurrentDashboardStorageKey);
   const hits = importantHints.filter((h) => keys.some((k) => k.toLowerCase().includes(h)));
-  if (snapshot.manifest.keyCount > 0 && hits.length === 0) {
+  if (snapshot.manifest.keyCount > 0 && !hasCurrentDashboardState && hits.length === 0) {
     msgs.push(
       "Keine typischen App-Schlüssel erkannt (Engineer/User/WorkingTime/TargetTime). " +
         "Vermutlich frisch initialisierte Installation.",
