@@ -240,6 +240,9 @@ jobs:
       - name: Bundle report
         run: bun run test:perf
       - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: bundle-reports, path: test-report/bundle.json }
+      - uses: actions/upload-artifact@v4
         with: { name: dist, path: dist/ }
 
   # 11 – E2E (Playwright, inkl. Security-Specs) ---------------------------
@@ -324,6 +327,16 @@ jobs:
             tech-debt-main-
       - run: bun install --frozen-lockfile
       - run: bun run test:debt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: debt-reports
+          path: |
+            test-report/tech-debt.json
+            test-report/tech-debt.md
+            test-report/tech-debt-diff.json
+            test-report/tech-debt-actions.md
+            test-report/tech-debt-summary.md
 
   # 14 – Zentraler Prüfbericht + Quality-Gate -----------------------------
   report:
@@ -344,7 +357,12 @@ jobs:
             node_modules
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
-      - name: Download all reports
+      - name: Remove checked-in volatile reports
+        run: |
+          find test-report -maxdepth 1 -type f ! -name 'release-override.json' -delete
+          rm -rf test-report-in coverage
+      - name: Download current report artifacts
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           path: test-report-in
@@ -354,6 +372,17 @@ jobs:
         run: |
           mkdir -p test-report
           cp -r test-report-in/* test-report/ 2>/dev/null || true
+      - name: Download current coverage
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage
+          path: coverage
+      - name: Write current CI operations evidence
+        env:
+          CI_JOB_RESULTS: ${{ toJson(needs) }}
+          CI_TESTED_SHA: ${{ github.sha }}
+        run: node scripts/ci/write-current-ops-report.mjs
       - name: Aggregate test report
         run: bun run test:report
       - name: Technical report (Prompt 2A.8)
