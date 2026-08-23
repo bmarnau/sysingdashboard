@@ -23,7 +23,7 @@ export default defineConfig({
     exclude: ["node_modules", "dist", ".output", ".vinxi"],
     coverage: {
       provider: "v8",
-      reporter: ["text", "html", "lcov"],
+      reporter: ["text", "html", "lcov", "json-summary"],
       reportsDirectory: "coverage",
       include: ["src/lib/**", "src/hooks/**"],
       exclude: [
