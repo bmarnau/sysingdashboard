@@ -72,31 +72,78 @@ Konsequenz: Die visuelle Restabnahme erfolgt bewusst durch den Betreiber in der 
 
 ## Manueller Prüfschritt A — Systemstatus
 
-Status: **OFFEN — Betreiberprüfung erforderlich**
+Status: **FUNKTIONAL PASS — 3 Findings dokumentiert**
 
-Bedienpfad:
+Manuell am 2026-08-23 als System-Administrator in der veröffentlichten App geprüft. Drei Screenshots decken den Systemstatus vom oberen Application-/GitHub-/Lovable-Bereich bis Security, Data, Documentation, Backend health und Security-Scan ab. Die Bildinhalte wurden in diesem Git-Nachweis transkribiert; der Prüfschritt hängt damit nicht ausschließlich an einer temporären Bilddatei.
 
-1. Als `System-Administrator` anmelden.
-2. `Einstellungen und Services` öffnen.
-3. `Systemstatus…` öffnen.
-4. Prüfen, ob der Dialog vollständig und ohne sichtbaren Fehler rendert.
-5. Prüfen, ob unter GitHub ausschließlich die kanonische öffentliche Repository-Adresse `github.com/bmarnau/sysingdashboard` angezeigt bzw. verlinkt wird; keine interne Hosting-Remote, keine Zugangsinformationen.
-6. Prüfen, ob ein fehlender Hosting-Commit neutral als `vom Hosting nicht bereitgestellt` erscheint und nicht als Konfigurationsfehler.
-7. Prüfen, ob Lovable-Publish-URL und Deploymentstatus plausibel dargestellt werden.
-8. Prüfen, ob `Authentication mode` / Auth-Konfiguration / RBAC-Status plausibel sind.
-9. Für den System-Administrator prüfen, ob der geschützte Backendstatus als erreichbar/verbunden angezeigt wird; keine Benutzerlisten, Projektkennungen, Schlüssel, Tokens oder Rohmetadaten dürfen im Systemstatus erscheinen.
+### Bestanden
 
-Erwartetes Ergebnis: **PASS**, wenn alle Punkte erfüllt sind. Bei Abweichung Screenshot/angezeigten Text sichern und Punkt als FAIL oder TEILWEISE führen.
+- Dialog `Systemstatus` öffnet vollständig, ist scrollbar und visuell ohne erkennbare Überlagerung oder Renderfehler.
+- Application: `Engineer Console`, Version `1.59.6`, Runtime mode `production`.
+- GitHub: Repository-Anzeige `bmarnau/sysingdashboard`; Branch `main`.
+- GitHub-Commit: neutraler Zustand `vom Hosting nicht bereitgestellt` — erwartungskonform und kein Fehler.
+- Keine interne Git-Remote, kein lokaler Pfad und keine Zugangsinformation in der GitHub-Anzeige sichtbar.
+- Lovable Publish URL: `sysingdashboard.lovable.app`.
+- Authentication mode: `supabase`.
+- Auth-Konfiguration: `vollständig konfiguriert`.
+- RBAC: `enabled — 7 roles · 20 permissions`.
+- Secret management: `enabled (secretManager.mjs)`.
+- MVP-Datenplattform: `Supabase`.
+- Geschützte Backend-Verbindung: `erreichbar — geschützte Admin-Prüfung`.
+- `/api/status`: `reachable (production)`.
+- Correlation-ID-Middleware aktiv.
+- Security-Scan verweist auf Custom-Scanner, gitleaks und Security-Workflow.
+- In den Screenshots sind keine Passwörter, Access-/Refresh-Tokens, API-Keys, Service-Role-Keys, Connection-String-Werte, Benutzerlisten oder E-Mail-Listen sichtbar.
+- Bei fehlenden Azure-Variablen werden ausschließlich Variablennamen, keine Werte dargestellt.
+
+### Finding SYSSTAT-01 — Lovable Deploymentstatus nicht laufzeitaktuell
+
+Beobachtung:
+
+- `Current publish URL` ist korrekt und die App ist nachweislich veröffentlicht.
+- Im Dialog stehen gleichzeitig `Deployment status: Not configured` und `Last deployment: Not configured`.
+
+Bewertung: **nicht blockierend für die aktuelle Funktion**, aber sachlich irreführende Statusdarstellung. Die verbundene Lovable-Projektinstanz hatte die Baseline zuvor als `completed` bestätigt. Vor endgültigem F-11-Abschluss ist zu entscheiden, ob der Systemstatus diesen Wert korrekt aus einer verfügbaren Quelle beziehen oder neutral als `nicht vom Hosting bereitgestellt` kennzeichnen soll.
+
+### Finding SYSSTAT-02 — Lovable Project ID sichtbar
+
+Beobachtung:
+
+- Der Dialog zeigt eine Lovable `Project ID` als UUID.
+
+Bewertung: **kein Secret im engeren Sinn**, aber unnötige provider-spezifische Kennung in einer Oberfläche, deren Zweck ausdrücklich sichere/minimale Betriebsmetadaten sind. Die F-11-Prüfanweisung hatte Projektkennungen vorsorglich ausgeschlossen. Empfehlung: vor endgültigem Abschluss prüfen, ob die Kennung einen operativen Nutzen hat; andernfalls aus der normalen Systemstatus-Anzeige entfernen oder nur in einem gezielt administrativen Detailbereich zeigen.
+
+### Finding SYSSTAT-03 — optionale Azure-Zielplattform erzeugt roten ENV-Fehler
+
+Beobachtung:
+
+- Azure SQL, Azure Table Storage, Azure Blob/SAS, Azure auth mode und Key Vault sind `Not configured`.
+- Gleichzeitig zeigt Security `ENV validation: failed — 5 missing` und nennt ausschließlich die fehlenden Azure-Variablennamen.
+- Der produktive MVP arbeitet nachweislich mit Supabase; Azure ist der vorgesehene spätere Provider-/Migrationspfad.
+
+Bewertung: **kein aktueller Supabase-MVP-Ausfall und kein Secret-Leak**. Die Darstellung kann jedoch den Eindruck eines produktiven Sicherheitsfehlers erzeugen, obwohl ausschließlich optionale zukünftige Azure-Konfiguration fehlt. Vor endgültigem Abschluss sollte die Validierung zwischen für den aktuellen Provider erforderlichen ENV-Werten und optionalen Zielprovider-Werten unterscheiden oder den Zustand entsprechend als optional/nicht konfiguriert kennzeichnen.
+
+### Ergebnis des manuellen Systemstatus-Tests
+
+- Bedienbarkeit: PASS
+- Supabase/Auth/RBAC/Backend-Kernnachweis: PASS
+- GitHub-Minimalisierung nach PR #30/#33: PASS
+- Secret-/Credential-Sichtprüfung: PASS
+- Lovable-Deploymentanzeige: FINDING
+- provider-spezifische Project ID: FINDING
+- Azure-ENV-Statusdarstellung: FINDING
+
+Der Systemstatus-Retest ist damit **manuell durchgeführt und funktional bestanden**. Die drei Findings bleiben als konkrete Restpunkte sichtbar und werden nicht durch ein pauschales `Systemstatus ok` verloren.
 
 ## Noch offene F-11-Restschritte
 
-1. Visueller Runtime-Sichttest des Systemstatus nach PR #30/#33.
-2. Visueller Namens-Retest in der Benutzerverwaltung nach PR #31.
-3. Backup als visueller Administrator-Bedienpfad.
-4. Downloadbereich als visueller Administrator-Bedienpfad.
-5. Log Viewer als visueller Administrator-Bedienpfad.
-6. Abschließende Administrator-Sichtprüfung.
-7. Fachliche Entscheidung zu `Role Preview` und anschließende Dokumentationsbereinigung oder gezielte Folgeumsetzung.
+1. Visueller Namens-Retest in der Benutzerverwaltung nach PR #31.
+2. Backup als visueller Administrator-Bedienpfad.
+3. Downloadbereich als visueller Administrator-Bedienpfad.
+4. Log Viewer als visueller Administrator-Bedienpfad.
+5. Abschließende Administrator-Sichtprüfung.
+6. Fachliche Entscheidung zu `Role Preview` und anschließende Dokumentationsbereinigung oder gezielte Folgeumsetzung.
+7. Einordnung/Behebung der Systemstatus-Findings `SYSSTAT-01` bis `SYSSTAT-03` vor formalem F-11-Abschluss.
 
 ## Role Preview — aktueller technischer Befund
 
@@ -112,7 +159,7 @@ Die Repository-Suche auf aktuellem `main` zeigt keinen aktuellen Produktcode-Ein
 - aktuelle UI-Prüfpfade verifiziert: PASS
 - automatische Smoke-Testgrenze dokumentiert: PASS
 - automatisierter Lovable-Runtime-Test ohne Auth: NOT TESTED
-- visueller Systemstatus: OFFEN
+- visueller Systemstatus: FUNKTIONAL PASS, 3 Findings
 - visuelle Administrator-Restabnahme: OFFEN
 - Role Preview: OFFEN
 - F-11 gesamt: `MANUAL VERIFICATION REQUIRED`
