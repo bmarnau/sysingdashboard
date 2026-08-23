@@ -135,9 +135,38 @@ Bewertung: **kein aktueller Supabase-MVP-Ausfall und kein Secret-Leak**. Die Dar
 
 Der Systemstatus-Retest ist damit **manuell durchgeführt und funktional bestanden**. Die drei Findings bleiben als konkrete Restpunkte sichtbar und werden nicht durch ein pauschales `Systemstatus ok` verloren.
 
+## Manueller Prüfschritt B — Benutzerverwaltung / Namensdarstellung
+
+Status: **OFFEN — nächster Betreiber-Test**
+
+Ziel: Visueller Retest der mit PR #31 korrigierten Namensdarstellung, ohne Benutzer-, Rollen- oder Profildaten zu verändern.
+
+Bedienpfad:
+
+1. Als `System-Administrator` angemeldet bleiben.
+2. `Einstellungen und Services` öffnen.
+3. `Benutzer & Profile…` öffnen.
+4. Prüfen, ob der Dialog ohne sichtbaren Fehler vollständig rendert.
+5. Mehrere vorhandene Benutzerzeilen prüfen: Namen müssen als fachlich lesbare Personennamen erscheinen; insbesondere darf keine UUID oder technische ID anstelle eines Namens verwendet werden.
+6. Die Korrektur aus PR #31 prüfen: der Vorname soll in normalisierter Schreibweise dargestellt werden; der Nachname wird nicht künstlich umgeschrieben, sondern in seiner fachlich gespeicherten Form beibehalten.
+7. Rolle und Kontostatus sollen pro Zeile plausibel und eindeutig erkennbar sein.
+8. Für diesen Prüfschritt nichts bearbeiten, keine Rolle ändern, kein Passwort setzen und keine Benutzeraktion ausführen.
+9. Einen Screenshot anfertigen, der den Dialog und mehrere repräsentative Benutzerzeilen zeigt. Wenn personenbezogene Kontaktdaten sichtbar sind, genügt der Screenshot im bestehenden geschützten Projektkontext; für den Git-Nachweis werden nur die für die Abnahme notwendigen Beobachtungen transkribiert.
+
+PASS-Kriterien:
+
+- Dialog öffnet und rendert fehlerfrei.
+- Keine UUID/technische ID als Personenname sichtbar.
+- Vornamen erscheinen in erwarteter normalisierter Schreibweise.
+- Nachnamen werden nicht unerwartet verändert.
+- Rollen/Status sind plausibel.
+- Keine unbeabsichtigte Datenänderung während des Tests.
+
+Bei Abweichungen wird der Punkt nicht pauschal als PASS markiert, sondern mit sichtbarem Text/Screenshotbefund als Finding dokumentiert.
+
 ## Noch offene F-11-Restschritte
 
-1. Visueller Namens-Retest in der Benutzerverwaltung nach PR #31.
+1. Visueller Namens-Retest in der Benutzerverwaltung nach PR #31 — Prüfanweisung vorbereitet.
 2. Backup als visueller Administrator-Bedienpfad.
 3. Downloadbereich als visueller Administrator-Bedienpfad.
 4. Log Viewer als visueller Administrator-Bedienpfad.
@@ -160,6 +189,7 @@ Die Repository-Suche auf aktuellem `main` zeigt keinen aktuellen Produktcode-Ein
 - automatische Smoke-Testgrenze dokumentiert: PASS
 - automatisierter Lovable-Runtime-Test ohne Auth: NOT TESTED
 - visueller Systemstatus: FUNKTIONAL PASS, 3 Findings
+- Benutzerverwaltung/Namensdarstellung: OFFEN, Prüfanweisung gesichert
 - visuelle Administrator-Restabnahme: OFFEN
 - Role Preview: OFFEN
 - F-11 gesamt: `MANUAL VERIFICATION REQUIRED`
