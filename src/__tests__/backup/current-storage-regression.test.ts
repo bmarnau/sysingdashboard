@@ -35,9 +35,7 @@ describe("Backup aktueller Local-First-Speichervertrag", () => {
     const created = await BackupService.createBackup({ manual: true });
     expect(created.ok).toBe(true);
     expect(created.record).toBeDefined();
-    expect(created.log.consistency.messages.join(" ")).not.toMatch(
-      /Keine typischen App-Schlüssel/,
-    );
+    expect(created.log.consistency.messages.join(" ")).not.toMatch(/Keine typischen App-Schlüssel/);
 
     const record = await BackupService.get(created.record!.id);
     const bytes = new Uint8Array(await record!.blob.arrayBuffer());
