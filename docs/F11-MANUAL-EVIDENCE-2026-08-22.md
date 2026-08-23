@@ -2,7 +2,7 @@
 
 ## Zweck
 
-Dieses Dokument hält ausschließlich den am 22.08.2026 tatsächlich belegten manuellen Abnahmestand fest. Es ersetzt nicht `docs/ROLE-ACCEPTANCE-09C.md`, sondern dient als nachvollziehbare Evidenzbasis für dessen späteren Abschluss.
+Dieses Dokument hält den am 22.08.2026 tatsächlich belegten manuellen Abnahmestand fest und ergänzt ihn ausschließlich um ausdrücklich datierte technische Nachweise, die unmittelbar aus dieser Restabnahme entstanden sind. Es ersetzt nicht `docs/ROLE-ACCEPTANCE-09C.md`, sondern dient als nachvollziehbare Evidenzbasis für dessen späteren Abschluss.
 
 Nicht durchgeführte oder verschobene Prüfungen werden ausdrücklich als offen geführt und nicht als bestanden interpretiert.
 
@@ -49,12 +49,12 @@ Nachgewiesen:
 - Benutzer und Rollen sichtbar.
 - Rollenänderung funktional geprüft mit Alexa Marnau: `Viewer -> Kunde -> Viewer`.
 - Ausgangszustand des Testkontos wurde wiederhergestellt.
+- Technischer Prüfbericht nach PR #37 aus laufaktueller CI-Evidenz erzeugt und inhaltlich geprüft.
 
 Noch offen:
 
 - visueller Systemstatus-Retest nach Security-Fix #30 und Systemstatus-Erweiterung #33,
-- Backup / Downloadbereich / Log Viewer,
-- Technischer Prüfbericht,
+- Backup / Downloadbereich / Log Viewer als visueller Bedienpfad,
 - weitere manuelle Administrator-Sichtprüfungen.
 
 ## Security-Befund Systemstatus / Repository-URL
@@ -140,6 +140,60 @@ Diese Nachweise belegen Code, Gates und GitHub→Lovable-Synchronisation. Sie
 ersetzen **nicht** die noch ausstehende visuelle Browserabnahme des produktiven
 Systemstatus.
 
+## Technischer Prüfbericht — Nachtrag 2026-08-23
+
+Bei der F-11-Restprüfung wurde festgestellt, dass der zentrale technische Prüfbericht zwar grün war, aber aktuelle Testergebnisse mit eingecheckten historischen Laufartefakten vom 13.08.2026 vermischen konnte. Dieser Nachweisdrift wurde nicht als Produktfehler behandelt, sondern als Fehler der CI-Evidenzkette.
+
+Technische Behebung:
+
+- PR #37 `Fix/CI: technischen Prüfbericht nur aus aktuellem Lauf aufbauen`,
+- Merge-Commit `eacfd74e6b9c09785a91dd37b50cfe5568580110`,
+- volatile historische Laufberichte werden vor der finalen Aggregation entfernt,
+- Coverage, Bundle, Security und Technical Debt werden aus demselben aktuellen Workflow-Lauf eingesammelt,
+- Build-/Ops-Evidenz wird aus den tatsächlichen GitHub-Actions-Jobresultaten des aktuellen Laufs erzeugt,
+- Vitest erzeugt zusätzlich `coverage-summary.json` für die maschinenlesbare Coverage-Aggregation,
+- ein fehlgeschlagener harter Vorjob kann nicht mehr durch historische PASS-Artefakte verdeckt werden.
+
+Negativkontrolle:
+
+- bei absichtlich fehlgeschlagenem Static-Gate wurden nicht ausgeführte Bereiche als fehlend bzw. fehlgeschlagen ausgewiesen,
+- das Quality Gate schlug korrekt fehl,
+- keine historische Evidenz wurde als aktueller PASS wiederverwendet.
+
+Finaler Erfolgsnachweis auf Head `d183d3bf7fab8368cc13122a6702fb9b75a6495a`:
+
+- Security Run #326 (`32618109973`): PASS,
+- CI Run #336 (`32618110002`): PASS,
+- Static / Prettier / ESLint / TypeScript / RBAC / Docs / Manifest: PASS,
+- Unit & Components inklusive Coverage: PASS,
+- Backend: PASS,
+- API: PASS,
+- RBAC & Security: PASS,
+- Import / Export: PASS,
+- Backup / Restore: PASS,
+- Production Build und Bundle-Report: PASS,
+- Playwright E2E: PASS,
+- Accessibility: PASS,
+- Technical Debt: PASS,
+- Technical Report: PASS,
+- Quality Gate: PASS.
+
+Inhaltsprüfung des finalen `test-report`-Artefakts:
+
+- Coverage: OK,
+- Bundle: OK, 11012 KB,
+- Technical Debt: OK, 58 Findings, davon Critical 0 und High 1,
+- Security: OK, 9 Findings,
+- Run: `32618110002`,
+- aktueller PR-Merge-Testcommit: `0c9fd22467c30534db66d65c0d1bfc624a60e44d`,
+- harte Fehler: 0,
+- Warn-Only-Fehler: 0,
+- Build-Zeit: `2026-08-23T04:39:17.255Z`,
+- Blocker: 0,
+- vorgeschlagene und effektive Freigabestufe: `production`.
+
+Bewertung: **Technischer Prüfbericht als reproduzierbarer, laufaktueller CI-Nachweis PASS.** Die Bedienpfade `Backup`, `Downloadbereich` und `Log Viewer` bleiben davon getrennt als visuelle Administrator-Prüfung offen.
+
 ## Namensdarstellung in der Benutzerverwaltung
 
 Beim Administrator-Test wurden in der Benutzerliste einzelne gespeicherte Anzeigenamen mit fehlerhafter Vornamensschreibweise sichtbar, z. B. `petra Marnau`.
@@ -180,8 +234,7 @@ Die restlichen manuellen Prüfungen wurden auf Wunsch des Betreibers bewusst ver
 
 - visueller Runtime-Sichttest des Systemstatus nach PR #30/#33,
 - visueller Namens-Retest Benutzerverwaltung nach PR #31,
-- Backup / Downloadbereich / Log Viewer,
-- Technischer Prüfbericht,
+- Backup / Downloadbereich / Log Viewer als visueller Bedienpfad,
 - abschließende Administratorabnahme,
 - Entscheidung und ggf. Nachweis zu Role Preview.
 
