@@ -360,7 +360,11 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
                     : HOSTING_METADATA_UNAVAILABLE
               }
               ok={
-                lvStatus === "configured" ? true : lvStatus === "not_configured" ? false : undefined
+                lvStatus === "configured"
+                  ? true
+                  : lvStatus === "not_configured"
+                    ? false
+                    : undefined
               }
             />
             <Row
@@ -443,7 +447,10 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
               }
             />
             {envMissing.length > 0 && (
-              <Row label="Missing active-provider ENV (names only)" value={<EnvChips names={envMissing} />} />
+              <Row
+                label="Missing active-provider ENV (names only)"
+                value={<EnvChips names={envMissing} />}
+              />
             )}
             <Row
               label="Key Vault readiness"
