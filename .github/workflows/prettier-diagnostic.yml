@@ -4,7 +4,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   prettier-diff:
@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: diag/prettier-systemstatus-2026-08-24
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
@@ -19,9 +21,18 @@ jobs:
         with:
           node-version: "22"
       - run: bun install --frozen-lockfile
-      - name: Format target in runner only
+      - name: Format target
         run: bunx prettier --write src/components/SystemStatusDialog.tsx
       - name: Print exact formatter diff
+        run: git diff --no-ext-diff -- src/components/SystemStatusDialog.tsx
+      - name: Persist formatted target on diagnostic branch only
         run: |
-          git diff --no-ext-diff -- src/components/SystemStatusDialog.tsx
-          test -n "$(git status --porcelain -- src/components/SystemStatusDialog.tsx)"
+          if git diff --quiet -- src/components/SystemStatusDialog.tsx; then
+            echo "Target already formatted; no diagnostic commit needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/components/SystemStatusDialog.tsx
+          git commit -m "chore(diag): persist exact Prettier output"
+          git push origin HEAD:diag/prettier-systemstatus-2026-08-24
