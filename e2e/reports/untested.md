@@ -1,50 +1,101 @@
 # Nicht getestete UI-Funktionen (E2E-Lücken)
 
-Stand: v1.31.0. Diese Datei ist die **bewusste** Lücken-Dokumentation zum E2E-Prompt 2A.4.
-Was hier steht, ist NICHT durch automatisierte E2E-Tests abgedeckt und braucht in
-einem Folgeschritt entweder stabile `data-testid`-Anker oder eine Test-Refactor-Runde.
+Stand: MVP-Baseline v1.59.6 vom 2026-08-24. Diese Datei dokumentiert bewusst nur die verbleibenden Lücken der automatisierten Playwright-E2E-Abdeckung.
 
-## Dashboard-Interaktionen (nur Smoke, nicht funktional geprüft)
+Was hier steht, ist NICHT durch belastbare funktionale E2E-Tests abgedeckt. Ein vorhandener Sichtbarkeits-, Smoke- oder Rollenanker darf nicht als vollständiger Funktionsnachweis interpretiert werden.
 
-- Bearbeitung von Aufgaben, Projekten, Arbeitspaketen, Tätigkeiten inline
-- Zeiterfassung: Start/Stop, Buchungs-Validierung
-- Filter- und Sortier-Kombinationen (Persistenz, Reset)
-- Wechsel View Woche ↔ Monat inkl. Navigation Vorheriger/Nächster Zeitraum
-- KPI-Berechnung gegen Testdaten (nur "sichtbar" geprüft, nicht "korrekt")
+## Bereits vorhandene E2E-Basis
 
-## Servicemenü-Dialoge (nur „öffnet sich"-Ebene)
+Die aktuelle E2E-Suite enthält unter anderem:
 
-- Log Viewer: Filter, Level-Umschaltung, Export
-- Systemstatus: Live-Aktualisierung, GitHub/Azure-Sektionen
-- System Health: Metriken-Refresh
-- Backup: manueller Trigger, Download-Verifikation
-- Download Center: PDF-Vorschau, Retention-Löschlogik
-- Import/Export-Wizard: 4-Schritt-Flow inkl. Rollback
-- Azure-Datenbereich: Verbindung, Sync
-- Benutzerverwaltung: Anlegen/Rollenwechsel, Admin-Lockout
-- Handbuch-Suche und Deep-Links
-- Release Readiness
+- Dashboard-/Navigations-Smoke,
+- Error-State- und Correlation-ID-Prüfungen,
+- rollenbasierte Sichtbarkeitsprüfungen,
+- serverseitige Denial-/Endpoint-Anker,
+- Accessibility-Smoke,
+- Responsive-Smoke,
+- Servicemenü-Smoke.
 
-## RBAC
+Die zentrale Playwright-Fixture bildet den angemeldeten Zustand über deterministische synthetische Supabase-Sessions ab und mockt die Supabase-HTTP-Grenze. Damit ist die historische Aussage „client-seitige User-Auswahl / keine Auth-Session“ nicht mehr gültig.
 
-- Nur Sichtbarkeit des Servicemenü-Buttons ist matrix-geprüft. Einzelne
-  Menü-Einträge, Dialog-Aktionen und Feld-Level-Gating fehlen.
-- Backend-Denial ist auf die zwei aktuell registrierten Endpoints beschränkt.
-  Sobald `/api/azure/*` und `/api/rbac/assignments` live sind, müssen sie ergänzt werden.
+Wichtig: Die synthetische Session ist eine reproduzierbare Testgrenze. Sie ersetzt keinen produktiven End-to-End-Test gegen echte Supabase-Auth-Dienste.
+
+## Dashboard-Interaktionen (funktional nicht vollständig geprüft)
+
+- vollständige CRUD-Flows für Projekte, Arbeitspakete und Tätigkeiten einschließlich Persistenz über mehrere Navigationsschritte,
+- Zeiterfassung/Buchungsvalidierung in komplexen Randfällen,
+- kombinierte Filter-/Sortierzustände einschließlich Persistenz und Reset,
+- Wechsel Woche ↔ Monat mit vollständiger fachlicher Prüfung der Periodengrenzen,
+- KPI-Berechnungen gegen bekannte Testdaten; derzeit sind primär Rendering-/Sichtbarkeitsanker vorhanden,
+- umfangreiche Abrechnungs- und Leistungsnachweis-Interaktionen über reine Sicht-/RBAC-Prüfungen hinaus.
+
+## Servicemenü-Dialoge
+
+`e2e/specs/service-menu.spec.ts` prüft bewusst nur, dass zentrale Menüeinträge erreichbar sind. Das ist ein Smoke-Test, kein Funktionsnachweis der Dialoge.
+
+Noch nicht als tiefe funktionale E2E-Flows abgedeckt sind insbesondere:
+
+- Log Viewer: Filter, Level-Umschaltung, Export,
+- Systemstatus: Live-Aktualisierung und vollständige Detailzustände,
+- Backup: manueller Trigger, Download und Restore-Verifikation,
+- Download Center: Vorschau, Dateiinhalte und Retention-Löschlogik,
+- Import/Export: vollständiger Mehrschritt-Flow einschließlich Fehler-/Rollbackpfaden,
+- Azure-Datenbereich: optionale Verbindung und Sync-Pfade,
+- Benutzer-/Auth-Administration: Anlegen, Rollenwechsel, administratives Passwortsetzen und Schutzpfade als vollständige Browser-Flows,
+- Handbuch-Suche und Deep-Links über reine Erreichbarkeit hinaus,
+- technischer Prüfbericht/Release-Readiness als tiefer Browser-Flow.
+
+Mehrere dieser Bereiche sind manuell bzw. durch Unit/API/RBAC/Security-Tests abgenommen. Das ändert nichts daran, dass die Playwright-Funktionstiefe bewusst geringer ist.
+
+## RBAC und Auth
+
+Vorhanden:
+
+- rollenbasierte Start-/Sichtbarkeitsanker,
+- zentrale RBAC-Matrixprüfungen außerhalb von Playwright,
+- serverseitige Permission-/Denial-Tests,
+- Viewer-/Negativpfade in der MVP-Abnahme.
+
+Verbleibende E2E-Lücken:
+
+- vollständige Feld- und Aktionsprüfung jedes Servicemenü-Dialogs pro Rolle,
+- vollständige Browser-Negativtests für alle geschützten Adminaktionen,
+- produktiver Login-/Logout-/Recovery-/Session-Ablauf gegen einen echten Supabase-Auth-Dienst,
+- abgelaufene bzw. widerrufene Sessions und Token-Refresh als echter Provider-E2E-Fall,
+- Cross-User-/Cross-Scope-Flows in größerer Breite als die aktuellen Abnahmefälle.
+
+## Backend-/API-Grenze
+
+`e2e/specs/rbac/backend-denial.spec.ts` enthält weiterhin einen schlanken Endpoint-Anker für `/api/status` und `/api/sync`.
+
+Neue oder wesentlich geänderte geschützte Endpunkte müssen weiterhin in API-/Security-Tests und – wo sinnvoll – in Playwright-Negativtests aufgenommen werden. Ein Endpoint darf nicht allein aufgrund von UI-Gating als geschützt gelten.
 
 ## Accessibility
 
-- Nur Startseite wird gegen axe geprüft. Servicemenü-Dialoge und Wizards fehlen.
-- Fokus-Reihenfolge wird nur an einem Anker (Hilfe-Button) geprüft.
-- Screenreader-Namen für dynamische Toasts, Live-Regions: nicht geprüft.
+Die vorhandenen axe-Prüfungen sind ein guter Smoke-Anker, aber keine vollständige Accessibility-Abnahme aller Zustände.
+
+Noch nicht systematisch abgedeckt:
+
+- alle Servicemenü-Dialoge und Wizards,
+- vollständige Tastatur-/Fokusreihenfolge in komplexen Dialogen,
+- Screenreader-Namen dynamischer Meldungen/Toasts/Live-Regions,
+- Fehlerzustände und Validierungsfeedback aller Formulare.
 
 ## Responsive
 
-- Nur „Main-Landmark sichtbar" pro Viewport. Kein Layout-Regressions-Snapshot,
-  kein tap-target-Größencheck, kein Overflow-Regressions-Detector.
+Die Suite prüft mehrere Viewports als Smoke. Nicht vollständig automatisiert sind:
 
-## Cross-Browser & Sessions
+- visuelle Layout-Regressions-Snapshots,
+- systematische Mindestgrößen von Touch-Zielen,
+- Overflow-Regressionsprüfung für alle Tabellen/Dialoge,
+- vollständige mobile Interaktionen in komplexen Verwaltungsdialogen.
 
-- Nur Chromium. Firefox/WebKit bewusst nicht in CI (ADR-0012).
-- Abgelaufene Sessions: nicht geprüft (App nutzt aktuell keine Auth-Session
-  mit Ablauf – client-seitige User-Auswahl).
+## Cross-Browser und Sessions
+
+- Chromium ist der verbindliche CI-Browser; Firefox/WebKit bleiben gemäß bestehender Testentscheidung außerhalb des Pflicht-CI-Scopes.
+- Authentifizierte E2E-Fälle laufen mit synthetischen Supabase-Sessions gegen die gemockte Provider-Grenze.
+- Echte Provider-Fälle wie abgelaufene, serverseitig widerrufene oder extern erneuerte Supabase-Sessions sind noch nicht als produktive Browser-E2E-Tests vorhanden.
+
+## Pflege-Regel
+
+Diese Datei wird nur dann gekürzt, wenn konkrete automatisierte Tests die betreffende Lücke tatsächlich schließen. Manuelle Abnahme, Unit-Tests, API-Tests, Security-Tests und Playwright-Smoke erfüllen unterschiedliche Zwecke und dürfen nicht gegenseitig als gleichwertige Testabdeckung umetikettiert werden.
