@@ -36,7 +36,9 @@ describe("Systemstatus — Backend-Evidenz", () => {
   });
 
   it("should_reportSupabaseAsMvpAuthProvider_whenNoOverrideExists", () => {
-    expect(STATUS_SERVICE).toContain('authMode: envOrNull("AUTH_PROVIDER") || "supabase"');
-    expect(STATUS_SERVICE).not.toContain('authMode: envOrNull("AUTH_PROVIDER") || "local"');
+    expect(STATUS_SERVICE).toContain("function resolveAuthProvider()");
+    expect(STATUS_SERVICE).toContain('envOrNull("AUTH_PROVIDER") || "supabase"');
+    expect(STATUS_SERVICE).toContain("const authMode = resolveAuthProvider();");
+    expect(STATUS_SERVICE).not.toContain('envOrNull("AUTH_PROVIDER") || "local"');
   });
 });
