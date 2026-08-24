@@ -1,6 +1,6 @@
 # F-11 — Systemstatus Runtime-Retest 2026-08-24
 
-Status: **VORBEREITET / PRODUKTIVER STAND VERÖFFENTLICHT / MANUELLER RETEST OFFEN**
+Status: **RUNTIME PASS — SYSSTAT-01 BIS SYSSTAT-04 ABGESCHLOSSEN**
 
 ## Zweck
 
@@ -25,50 +25,94 @@ Read-only geprüft am 2026-08-24:
 - Produktive URL: `https://sysingdashboard.lovable.app`
 - aktuelle Lovable Preview-/Screenshot-Referenz enthält `76247b77`
 
-Damit ist der gezielte manuelle Re-Test auf dem neuen Produktstand zulässig.
+Damit war der gezielte manuelle Re-Test auf dem neuen Produktstand zulässig.
 
-## Zu prüfende Findings
+## Manueller Runtime-Sichtnachweis
+
+Der Betreiber prüfte am 2026-08-24 als System-Administrator den veröffentlichten Systemstatus vollständig read-only. Zwei Screenshots decken die Bereiche Application, GitHub, Lovable, Azure und Security ab.
+
+### Allgemeiner Produktstand
+
+- Application name: `Engineer Console`
+- Version: `1.59.6`
+- Build date: `24.8.2026, 16:32:05`
+- Runtime mode: `production`
+- Repository: `bmarnau/sysingdashboard`
+- Current branch: `main`
+- GitHub Commit hash: neutral `vom Hosting nicht bereitgestellt`
+- keine mutierende Administratoraktion ausgeführt
+- keine Passwörter, Tokens, API-Keys, Service-Role-Keys oder Verbindungswerte sichtbar
 
 ### SYSSTAT-01 — Lovable Deploymentstatus
 
-Erwartung nach Fix:
+**PASS**
 
-- fehlende Hosting-Metadaten werden neutral als `vom Hosting nicht bereitgestellt` dargestellt,
-- kein irreführendes rotes `Not configured`, wenn Lovable die konkrete Deployment-Metadaten nicht an `/api/status` liefert.
+Sichtbarer Zustand nach Fix:
+
+- Current publish URL: `sysingdashboard.lovable.app`
+- Deployment status: `vom Hosting nicht bereitgestellt`
+- Last deployment: `vom Hosting nicht bereitgestellt`
+- kein irreführendes rotes `Not configured`
+
+Damit werden fehlende Hosting-Metadaten neutral und sachlich korrekt dargestellt.
 
 ### SYSSTAT-02 — Lovable Project ID
 
-Erwartung nach Fix:
+**PASS**
 
-- keine Lovable Project ID in der normalen Systemstatusansicht,
-- öffentliche `/api/status`-Antwort enthält keine Project ID.
+In der normalen Systemstatusansicht ist keine Lovable Project ID mehr sichtbar. Der Lovable-Bereich enthält nur die für die Betriebsübersicht benötigten Angaben zur Publish-URL und zu den vom Hosting bereitgestellten beziehungsweise nicht bereitgestellten Deployment-Metadaten.
+
+Der secret-freie öffentliche Payload wurde bereits im technischen Fix durch Regressionstests abgesichert; der manuelle Re-Test bestätigt die erwartete UI-Minimalisierung.
 
 ### SYSSTAT-03 — aktive Provider-ENV
 
-Erwartung nach Fix:
+**PASS**
 
-- Supabase bleibt produktive MVP-Plattform,
-- fehlende optionale Azure-Zielvariablen erzeugen kein allgemeines rotes Security-ENV-Fail,
-- `Runtime ENV (aktive Plattform)` zeigt den aktiven Provider korrekt und grün/neutral.
+Der Security-Abschnitt zeigt:
+
+- Authentication mode: `supabase`
+- Auth configuration: `vollständig konfiguriert`
+- RBAC: `enabled — 7 roles · 20 permissions`
+- Secret management: `enabled (secretManager.mjs)`
+- Runtime ENV (aktive Plattform): `configured — 0 missing`
+
+Die produktive Supabase-Plattform wird damit korrekt als aktive Plattform bewertet. Die fehlenden optionalen Azure-Zielvariablen erzeugen keinen globalen roten Security-/ENV-Fehler mehr.
 
 ### SYSSTAT-04 — Azure optional/readiness
 
-Erwartung nach Fix:
+**PASS**
 
-- Azure-Zielprovider bleibt als optional erkennbar,
-- fehlende Azure-Konfiguration wird über Count/neutralen Status dargestellt,
-- verborgene ENV-Namen werden nicht mehr als `alle gesetzt` fehlinterpretiert,
-- optionale Azure auth mode / Key Vault readiness sind neutral statt rot.
+Der Azure-Bereich zeigt:
 
-## Manueller Ablauf
+- Azure access: `allowed (production)`
+- Azure SQL: `Not configured`
+- Azure Table Storage: `Not configured`
+- Azure Blob/SAS: `Not configured`
+- Azure auth mode: `optional`
+- Last connection test: `Not configured`
+- Azure ENV readiness: `optional target — 5 not configured`
 
-1. Als System-Administrator in der veröffentlichten App anmelden.
-2. `Einstellungen und Services → Systemstatus…` öffnen.
-3. Dialog vollständig prüfen bzw. scrollen.
-4. Screenshots so erstellen, dass mindestens Lovable-, Azure- und Security-Abschnitt lesbar sind.
-5. Keine mutierende Admin-Aktion durchführen.
-6. Ergebnis gegen SYSSTAT-01 bis SYSSTAT-04 bewerten.
+Damit ist Azure eindeutig als optionale Zielplattform dargestellt. Der Missing-Count wird korrekt verwendet; die fehlende optionale Azure-Konfiguration wird nicht als produktiver Supabase-Fehler interpretiert.
 
-## Abschlusskriterium
+## Sicherheitsbewertung
 
-Issue #42 wird nur dann als `completed` geschlossen, wenn der produktive Runtime-Re-Test die vier erwarteten Darstellungen bestätigt. Bei Abweichung bleibt Issue #42 offen und der konkrete Runtime-Befund wird separat dokumentiert.
+Der manuelle Sichttest bestätigt die vorgesehene Architekturgrenze:
+
+- Supabase bleibt produktiver MVP-Provider.
+- Azure bleibt optionaler Zielprovider.
+- keine Secret-Werte werden in der Betriebsübersicht dargestellt.
+- keine Auth-, RBAC-, RLS- oder Datenbankänderung war für den Runtime-Re-Test erforderlich.
+- der Systemstatus trennt aktive Plattformkonfiguration und optionale Azure-Readiness nachvollziehbar.
+
+## Abschlussbewertung
+
+- SYSSTAT-01: PASS
+- SYSSTAT-02: PASS
+- SYSSTAT-03: PASS
+- SYSSTAT-04: PASS
+- produktiver Systemstatus-Retest: PASS
+- Issue #42: kann als `completed` geschlossen werden
+
+## Abschlussbericht
+
+Systemstatus-Hardening technisch umgesetzt: PASS · CI/Security des Produktfixes: PASS · Lovable-Synchronisation und Veröffentlichung: PASS · produktiver Betreiber-Runtime-Re-Test: PASS · Hosting-Metadaten neutral: PASS · Lovable Project ID aus der normalen Ansicht entfernt: PASS · Supabase Runtime ENV `configured — 0 missing`: PASS · Azure als optionales Ziel mit `5 not configured` korrekt dargestellt: PASS · keine Secrets sichtbar · SYSSTAT-01 bis SYSSTAT-04 abgeschlossen.
