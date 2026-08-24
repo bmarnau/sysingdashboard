@@ -27,23 +27,110 @@ Planungsprinzip:
 
 ## 3. Operative Sprintfolge
 
-| Sprint / Phase | Schwerpunkt | Arbeits-Prompts | Lovable-Einsatz | Zentrales Gate |
-| --- | --- | ---: | ---: | --- |
-| **09C-FINAL** | F-11 fertigstellen: letzter Systemstatus-Retest, Role-Preview-N/A, Doku-Konsolidierung | 1–2 | 0–1 | F-11 vollständig abgezeichnet |
-| **MVP-BASELINE** | finaler Release-Gate-Lauf, PROJECT-STATUS, MVP-Abnahme, CHANGELOG, SYSING-001 | 1 | 0–1 | **MVP = 100 % / BASELINE** |
-| **BSF-01** | Planungs-/Architekturbaseline, ADR-Review, Provider- und Scope-Grenzen | 1 | 0 | verbindlicher BSF-Start |
-| **BSF-02** | Kundenmodell als stabile Fachentität | 1–2 | 0–1 | Kunde → Projekt → Arbeitspaket → Tätigkeit belastbar |
-| **BSF-03** | Kundenverantwortung, „Meine Kunden“, Sicht-/Schreibscope | 2 | 1 | RBAC/RLS-Kundensicht PASS |
-| **BSF-04** | zentrale/synchronisierte Datenhaltung, Local-First-Grenze | 2 | 0–1 | persistenter Mehrbenutzer-Datenpfad / Providergrenze |
-| **BSF-05** | Canonical Import Model + SharePoint-Contract | 2 | 0–1 | partielle Quelldaten, Provenienz, Idempotenz, READ/SYNC |
-| **BSF-06** | Betreiberhoheit, Supabase/Postgres-Portabilität, Docker, Exit-Pfad | 2–3 | 0 | Betrieb ohne technisch unersetzbare Lovable-Runtime |
-| **BSF-07** | Managementcockpit 2 mit Kunden-/Projektkontext | 1–2 | 1–2 | rollenbezogene Führungssichten PASS |
-| **BSF-08** | Kundenabrechnung V1 als Leistungsnachweis + Projektmanager-Controlling | 2–3 | 1–2 | Teamlead-Finalisierung und PM-Auswertung sauber getrennt |
-| **BSF-09** | Reporting 2, Kunden-/Projektberichte, Formate konsolidieren | 1–2 | 1 | Reporting-Baseline BSF |
-| **BSF-10** | isoliertes KI-/Agenten-Labor mit Mock-/Demodaten | 1–2 | 0–1 | Human-in-the-loop, keine autonome Produktivaktion |
-| **BSF-FINAL** | SYSING-001 fortschreiben, Gesamtprüfung, BSF-Abnahme | 2 | 0–1 | **BSF = 100 % / BASELINE** |
-| **INTEGRATION-READINESS** | Source of Truth, Matching, Provenienz, Audit, Schreibgrenzen, Provider prüfen | 1 | 0 | GO/NO-GO Integration |
-| **INTEGRATION 10A–10D** | Microsoft Graph / Exchange Online gemäß Post-MVP-Detailplan | 1–2 je Schritt | 0–1 je UI-Schritt | kontrollierte Integration |
+### 09C-FINAL — F-11 abschließen
+
+- Schwerpunkt: letzter Systemstatus-Retest, Role-Preview-N/A, Doku-Konsolidierung.
+- Arbeits-Prompts: 1–2.
+- Lovable-Einsatz: 0–1.
+- Gate: F-11 vollständig abgezeichnet.
+
+### MVP-BASELINE — formaler MVP-Abschluss
+
+- Schwerpunkt: finaler Release-Gate-Lauf, PROJECT-STATUS, MVP-Abnahme, CHANGELOG und SYSING-001.
+- Arbeits-Prompts: 1.
+- Lovable-Einsatz: 0–1.
+- Gate: **MVP = 100 % / BASELINE**.
+
+### BSF-01 — Planungs- und Architekturbaseline
+
+- Schwerpunkt: ADR-Review, Providergrenzen, Rollen-/Scope-Modell und BSF-Gates.
+- Arbeits-Prompts: 1.
+- Lovable-Einsatz: 0.
+- Gate: verbindlicher BSF-Start.
+
+### BSF-02 — Kundenmodell
+
+- Schwerpunkt: Kunde als stabile Fachentität; Zuordnung von Projekten, Arbeitspaketen und Tätigkeiten.
+- Arbeits-Prompts: 1–2.
+- Lovable-Einsatz: 0–1.
+- Gate: Kunde → Projekt → Arbeitspaket → Tätigkeit belastbar.
+
+### BSF-03 — Kundenverantwortung
+
+- Schwerpunkt: „Meine Kunden“, mehrere Kunden je Sysing, Sicht- und Schreibscope getrennt.
+- Arbeits-Prompts: 2.
+- Lovable-Einsatz: 1.
+- Gate: RBAC/RLS-Kundensicht PASS.
+
+### BSF-04 — zentrale oder synchronisierte Datenhaltung
+
+- Schwerpunkt: Local-First-Grenze, persistenter Mehrbenutzer-Datenpfad und Providertrennung.
+- Arbeits-Prompts: 2.
+- Lovable-Einsatz: 0–1.
+- Gate: zentrale/synchronisierte Datenstrategie technisch und fachlich bestätigt.
+
+### BSF-05 — Canonical Import Model und SharePoint-Contract
+
+- Schwerpunkt: partielle Quelldaten, Provenienz, stabile Quell-IDs, Idempotenz und READ/SYNC.
+- Arbeits-Prompts: 2.
+- Lovable-Einsatz: 0–1.
+- Gate: Importvertrag PASS.
+
+### BSF-06 — Betreiberhoheit und Docker
+
+- Schwerpunkt: Supabase/Postgres-Portabilität, Backup/Restore, Docker und Exit-Pfad aus Lovable Cloud.
+- Arbeits-Prompts: 2–3.
+- Lovable-Einsatz: 0.
+- Gate: Betrieb ohne technisch unersetzbare Lovable-Runtime nachgewiesen.
+
+### BSF-07 — Managementcockpit 2
+
+- Schwerpunkt: Kunden- und Projektkontext für Projektmanager, Teamlead, Systemingenieur und Administration.
+- Arbeits-Prompts: 1–2.
+- Lovable-Einsatz: 1–2.
+- Gate: rollenbezogene Führungssichten PASS.
+
+### BSF-08 — Kundenabrechnung V1 und Projektmanager-Controlling
+
+- Schwerpunkt: kundenbezogener Leistungsnachweis für Teamlead sowie reine Auswertungssicht für Projektmanager.
+- Arbeits-Prompts: 2–3.
+- Lovable-Einsatz: 1–2.
+- Gate: Teamlead-Finalisierung und Projektmanager-Auswertung sauber getrennt.
+
+### BSF-09 — Reporting 2
+
+- Schwerpunkt: Kunden-/Projektberichte und Konsolidierung der Ausgabeformate.
+- Arbeits-Prompts: 1–2.
+- Lovable-Einsatz: 1.
+- Gate: Reporting-Baseline BSF.
+
+### BSF-10 — KI-/Agenten-Labor
+
+- Schwerpunkt: isoliertes Lern- und Demonstrationslabor mit Mock-/Demodaten und Human-in-the-loop.
+- Arbeits-Prompts: 1–2.
+- Lovable-Einsatz: 0–1.
+- Gate: keine autonome Produktivaktion, nachvollziehbare Beleg- und Freigabekette.
+
+### BSF-FINAL — Gesamtprüfung und Baseline
+
+- Schwerpunkt: SYSING-001 fortschreiben, Rollen-/RLS-/Import-/Docker-/Reporting-Abnahme und Gesamtfreigabe.
+- Arbeits-Prompts: 2.
+- Lovable-Einsatz: 0–1.
+- Gate: **BSF = 100 % / BASELINE**.
+
+### INTEGRATION-READINESS
+
+- Schwerpunkt: Source of Truth, Matching, Provenienz, Audit, Konfliktregeln, Schreibgrenzen und Providertrennung.
+- Arbeits-Prompts: 1.
+- Lovable-Einsatz: 0.
+- Gate: GO/NO-GO für produktive Integration.
+
+### INTEGRATION 10A–10D
+
+- Schwerpunkt: Microsoft Graph / Exchange Online gemäß späterem Post-MVP-Detailplan.
+- Arbeits-Prompts: 1–2 je Ausbauschritt.
+- Lovable-Einsatz: 0–1 je UI-Schritt.
+- Gate: kontrollierte Integration, zunächst read-only und erst später freigegebene Schreibpfade.
 
 ## 4. BSF-08 — fachlich bereits vorgemerkt
 
