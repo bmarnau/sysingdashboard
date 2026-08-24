@@ -173,11 +173,23 @@ Die dort bereits vorgesehene Customer Registry kann grundsätzlich bestehen blei
 
 ## 5. Sprintzuordnung
 
-| Konzept | Hauptsprint | Vor-/Folgesprints | Pflicht-Gate |
-| --- | --- | --- | --- |
-| C-01 Kundenverantwortung | BSF-03 | BSF-02, BSF-07 | RBAC/RLS-Kundenscope PASS |
-| C-02 Leistungsnachweis/Controlling | BSF-08 | BSF-07, BSF-09 | Teamlead-Finalisierung und PM-Auswertung getrennt |
-| C-03 Kundenidentität | BSF-02 / BSF-05 | BSF-01, Integration Readiness | kein Cross-Systemhaus-Matching; stabile Quellzuordnung |
+### C-01 Kundenverantwortung
+
+- Hauptsprint: **BSF-03**
+- Vor-/Folgesprints: BSF-02, BSF-07
+- Pflicht-Gate: RBAC/RLS-Kundenscope PASS
+
+### C-02 Leistungsnachweis/Controlling
+
+- Hauptsprint: **BSF-08**
+- Vor-/Folgesprints: BSF-07, BSF-09
+- Pflicht-Gate: Teamlead-Finalisierung und Projektmanager-Auswertung sauber getrennt
+
+### C-03 Kundenidentität
+
+- Hauptsprints: **BSF-02 / BSF-05**
+- Vor-/Folgesprints: BSF-01, Integration Readiness
+- Pflicht-Gate: kein Cross-Systemhaus-Matching; stabile Quellzuordnung
 
 ## 6. Gemeinsame Architekturregeln
 
