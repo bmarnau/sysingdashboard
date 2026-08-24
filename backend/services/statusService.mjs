@@ -7,7 +7,11 @@
  * SAS-Tokens oder Secrets.
  */
 import { getMode, isDev } from "../../config/env.mjs";
-import { KNOWN as KNOWN_AZURE_ENVS, has, status as secretStatus } from "../../config/secretManager.mjs";
+import {
+  KNOWN as KNOWN_AZURE_ENVS,
+  has,
+  status as secretStatus,
+} from "../../config/secretManager.mjs";
 import { isKeyVaultConfigured } from "../../config/keyVault.mjs";
 import { getSyncMeta } from "./syncService.mjs";
 import { ALL_ROLES, ALL_PERMISSIONS } from "./rbac.mjs";
