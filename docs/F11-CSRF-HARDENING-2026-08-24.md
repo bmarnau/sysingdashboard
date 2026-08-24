@@ -2,13 +2,13 @@
 
 Stand: 2026-08-24  
 Finding: Issue #57  
-Status: **TECHNISCHE ABNAHME AUSSTEHEND**
+Status: **TECHNISCH PASS — FINAL-HEAD-RETEST LÄUFT**
 
 ## 1. Befund
 
-Ein aktueller Playwright-Lauf meldete während der Verarbeitung geschützter TanStack-Serverfunktionen ausdrücklich, dass die Server Functions nicht durch die TanStack-CSRF-Middleware geschützt sind.
+Ein vorheriger Playwright-Lauf meldete während der Verarbeitung geschützter TanStack-Serverfunktionen ausdrücklich, dass die Server Functions nicht durch die TanStack-CSRF-Middleware geschützt sind.
 
-`src/start.ts` definiert eine eigene `createStart()`-Konfiguration. Dadurch wird der von TanStack sonst automatisch installierte Server-Function-CSRF-Schutz nicht automatisch ergänzt.
+`src/start.ts` definiert eine eigene `createStart()`-Konfiguration. Dadurch wurde der von TanStack sonst automatisch installierte Server-Function-CSRF-Schutz nicht automatisch ergänzt.
 
 ## 2. Bestehende Schutzschichten
 
@@ -64,26 +64,76 @@ Nicht geändert werden:
 - Fachlogik,
 - Lovable-spezifische Runtime-Konfiguration.
 
-## 6. Abnahmekriterien
+## 6. Technische Abnahme — erster vollständiger Fix-Head
 
-Vor Merge müssen auf demselben finalen Head mindestens bestanden sein:
+Fix-Head vor Evidenzcommit: `b261b8e816e2f7666e65de005ce808a12ed18d15`
+
+### Security
+
+Security #379 / Run `32736984940`: **PASS**
+
+- Custom Scanner: PASS
+- Gitleaks: PASS
+
+### CI
+
+CI #388 / Run `32736985111`: **PASS**
+
+- Setup: PASS
+- Static: PASS
+  - Prettier: PASS
+  - ESLint: PASS
+  - TypeScript: PASS
+  - RBAC matrix: PASS
+  - No-console guard: PASS
+  - Docs sync: PASS
+  - Project manifest: PASS
+- Unit & Components + Coverage: PASS
+- Backend: PASS
+- API inklusive Discovery/Smoke/Functional: PASS
+- RBAC & Security: PASS
+- Import/Export: PASS
+- Backup/Restore: PASS
+- Production Build + Bundle Report: PASS
+- Playwright E2E: **54/54 PASS**
+- Accessibility: PASS
+- Technical Debt: PASS
+- Technical Report: PASS
+- Quality Gate: PASS
+
+### CSRF-Runtimenachweis
+
+Der vollständige Playwright-Job `11 · E2E (Playwright)` wurde nach Abschluss auf die ursprüngliche Frameworkwarnung geprüft.
+
+Ergebnis: **PASS**
+
+Die vorherige TanStack-Meldung, Server Functions seien nicht durch die CSRF-Middleware geschützt, kommt im aktuellen E2E-Log **nicht mehr vor**.
+
+Damit ist nachgewiesen, dass nicht nur der Quelltextvertrag erfüllt wird, sondern TanStack den Server-Function-CSRF-Schutz im tatsächlichen Testserver akzeptiert.
+
+### Nicht blockierende Resthinweise
+
+Im E2E-Log bleiben zwei getrennte Hinweisarten sichtbar, die den CSRF-Fix nicht infrage stellen:
+
+- optionale Azure-ENV-Hinweise im Dev-Testkontext,
+- TanStack-Deprecation für `createServerFn().inputValidator()`; separat als Post-MVP-Wartung in Issue #59 dokumentiert.
+
+## 7. Final-Head-Regel
+
+Dieser Evidenzcommit verändert nur die Dokumentation, erzeugt aber einen neuen PR-Head. Deshalb wird vor Merge die vollständige CI-/Security-Kette auf genau diesem finalen Head erneut ausgeführt.
+
+Merge-Freigabe erst wenn auf dem finalen Head erneut bestanden sind:
 
 - Security Workflow,
-- Prettier / ESLint / TypeScript,
-- Security-/RBAC-Suite inklusive neuer Regression,
-- Unit & Components,
-- Backend,
-- API,
-- Import/Export,
-- Backup/Restore,
+- vollständige CI inklusive Static, Unit/Components, Backend, API, RBAC/Security, Import/Export und Backup/Restore,
 - Production Build,
 - Playwright E2E,
 - Accessibility,
 - Technical Debt,
 - Technical Report & Quality Gate.
 
-Zusätzlich wird der aktuelle Playwright-Log geprüft: Die bisherige TanStack-Meldung, Server Functions seien nicht durch CSRF-Middleware geschützt, darf nicht mehr auftreten.
+## 8. Releasewirkung
 
-## 7. Releasewirkung
+Nach erfolgreichem Final-Head-Retest kann Issue #57 mit dem Merge-Nachweis geschlossen werden.
 
-Das Finding wird vor der formalen MVP-Baseline geschlossen. Der Fix erweitert keine Fachfunktion, sondern härtet einen bestehenden privilegierten Server-Function-Pfad entsprechend dem Frameworkvertrag ab.
+Der Fix erweitert keine Fachfunktion, sondern härtet einen bestehenden privilegierten Server-Function-Pfad entsprechend dem Frameworkvertrag ab. Er ist damit ein Release-Security-Hardening vor der formalen MVP-Baseline.
