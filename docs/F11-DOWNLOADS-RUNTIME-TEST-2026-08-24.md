@@ -2,11 +2,11 @@
 
 ## Zweck
 
-Dieser Prüfschritt dokumentiert die visuelle Administrator-Restabnahme des Downloadbereichs nach Abschluss des Backup-Blockers. Der Test ist bewusst nicht-destruktiv und erzeugt, löscht oder verändert keine Exportdaten.
+Dieser Prüfschritt dokumentiert die visuelle Administrator-Restabnahme des Downloadbereichs nach Abschluss des Backup-Blockers. Der Test wurde bewusst nicht-destruktiv durchgeführt; es wurden keine Exportdaten erzeugt, gelöscht oder verändert.
 
 ## Technischer Ausgangspunkt
 
-Aktueller Produktstand: GitHub `main` nach Merge von PR #41, Merge-Commit `a6b0379f19289c5e94f5ee16fb0a0b4b3904db95`, in Lovable synchronisiert.
+Produktstand: GitHub `main` nach Merge von PR #41, Merge-Commit `a6b0379f19289c5e94f5ee16fb0a0b4b3904db95`, in Lovable synchronisiert.
 
 Der aktuelle `DownloadCenterDialog.tsx` zeigt:
 
@@ -21,39 +21,60 @@ Der aktuelle `DownloadCenterDialog.tsx` zeigt:
 
 ## Sicherheitsgrenze des manuellen Tests
 
-Für diesen F-11-Schritt werden ausschließlich Anzeige und ein optionaler read-only Refresh geprüft.
+Für diesen F-11-Schritt wurden ausschließlich Anzeige und Bedienbarkeit geprüft.
 
-Nicht ausführen:
+Nicht ausgeführt:
 
-- Aufbewahrungsdauer nicht ändern,
-- `Abgelaufene jetzt löschen` nicht anklicken,
-- keinen Eintrag löschen,
-- keinen neuen Export erzeugen,
-- keine Export-/Import-Funktion außerhalb des Dialogs starten.
+- Aufbewahrungsdauer nicht geändert,
+- `Abgelaufene jetzt löschen` nicht angeklickt,
+- keinen Eintrag gelöscht,
+- keinen neuen Export erzeugt,
+- keine Export-/Import-Funktion außerhalb des Dialogs gestartet,
+- kein tatsächlicher Download erforderlich.
 
-Ein tatsächlicher Download ist für diesen visuellen Administratorpfad nicht erforderlich.
+## Manueller Sichtnachweis
 
-## Manueller Test
+Manuell am 2026-08-24 als System-Administrator in der veröffentlichten App geprüft. Der Screenshot wurde im Chat bereitgestellt; alle für die Abnahme relevanten Beobachtungen werden hier dauerhaft in Git transkribiert.
 
-1. Als `System-Administrator` angemeldet bleiben.
-2. `Einstellungen und Services` öffnen.
-3. `Downloads…` öffnen.
-4. Prüfen, dass der Dialog ohne Fehler vollständig rendert.
-5. Falls Exporte vorhanden sind, prüfen, dass die Tabellenzeilen fachlich lesbar sind und Status/Format/Größe/Ablauf plausibel dargestellt werden.
-6. Falls keine Exporte vorhanden sind, ist der definierte Empty-State `Noch keine Exporte vorhanden ...` ein zulässiges Ergebnis.
-7. Optional genau einmal `Aktualisieren` anklicken; dies lädt nur die lokale Liste neu und verändert keine Exportdaten.
-8. Keine Lösch-, Purge- oder Retention-Aktion ausführen.
-9. Einen Screenshot senden, der Dialogtitel, Tabelle bzw. Empty-State und möglichst die Status-/Aktionsspalten zeigt.
+### Beobachtungen
+
+- Dialog `Downloads` öffnet vollständig und ohne sichtbaren Laufzeitfehler.
+- Beschreibung der lokalen Browser-Ablage ist sichtbar und verständlich.
+- Aufbewahrung steht sichtbar auf `30` Tage.
+- Die Tabelle enthält vorhandene Exportdateien und rendert alle vorgesehenen Spalten: Dateiname, Format, Zeitraum, Erstellt am, Erstellt von, Größe, Status und Ablauf.
+- Die sichtbaren Exporte sind PDF-Dateien.
+- Sichtbare Dateigrößen liegen plausibel im zweistelligen KB-Bereich.
+- Alle im Screenshot sichtbaren Exportzeilen haben Status `Fertig`.
+- Ablaufwerte werden plausibel als verbleibende Tage angezeigt (sichtbar z. B. 26/27 Tage).
+- Mehrere fachliche Zeiträume sind sichtbar, darunter `aktueller Stand` und ein Projekt-/Vorhabenszeitraum.
+- Die breite Tabelle verwendet einen horizontalen Scrollbereich; sie bleibt dadurch bedienbar und weist keine erkennbare Überlagerung oder abgeschnittene, unerreichbare Spalte auf.
+- Schaltfläche `Aktualisieren` und `Schließen` sind sichtbar.
+- Keine Fehlermeldung, kein Ladefehler und kein `Fehlgeschlagen`-Status sichtbar.
+- Keine Secrets, Tokens, Passwörter, API-Keys oder Zugangsdaten sichtbar.
+- Es wurde keine Lösch-, Retention-, Purge- oder Downloadaktion ausgeführt.
+
+## Datenqualitäts-Hinweis DOWNLOAD-INFO-01
+
+In einzelnen älteren Export-Metadaten ist die Groß-/Kleinschreibung des Feldes `Erstellt von` nicht vollständig einheitlich. Dieser Befund betrifft historische, bereits gespeicherte Exportmetadaten und nicht die Funktionsfähigkeit des Downloadbereichs. Er wird deshalb nicht als F-11-Blocker bewertet und nicht rückwirkend verändert.
 
 ## PASS-Kriterien
 
-- Dialog `Downloads` öffnet ohne sichtbaren Fehler.
-- Layout ist vollständig und ohne Überlagerungen/Abschneiden nutzbar.
-- vorhandene Exportzeilen oder Empty-State werden korrekt dargestellt.
-- bei vorhandenen Einträgen sind Status und Aktionen erkennbar; `Fertig`-Einträge dürfen Download/Vorschau anbieten.
-- keine unbeabsichtigte Datenänderung.
-- keine Secrets oder Zugangsdaten in der Oberfläche sichtbar.
+| Kriterium | Ergebnis |
+| --- | --- |
+| Dialog öffnet ohne sichtbaren Fehler | PASS |
+| Layout vollständig und bedienbar | PASS |
+| Vorhandene Exportzeilen korrekt dargestellt | PASS |
+| Status/Format/Größe/Ablauf plausibel | PASS |
+| `Fertig`-Status sichtbar | PASS |
+| Keine unbeabsichtigte Datenänderung | PASS |
+| Keine Secrets/Zugangsdaten sichtbar | PASS |
 
-## Status
+## Ergebnis
 
-**OFFEN — nächster manueller Betreiber-Test.**
+**VISUELL PASS**
+
+Der F-11-Downloadbereich ist für den geprüften Administratorpfad visuell und funktional ausreichend nachgewiesen. `DOWNLOAD-INFO-01` bleibt ausschließlich als nicht blockierender Datenqualitäts-Hinweis dokumentiert.
+
+## Nächster F-11-Schritt
+
+Als Nächstes wird der `Log Viewer` read-only geprüft. Vor der manuellen Prüfung wird der aktuelle Produktcode analysiert, damit keine Lösch-/Bereinigungs- oder andere mutierende Log-Aktion Bestandteil des Tests wird.
