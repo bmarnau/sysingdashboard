@@ -89,14 +89,14 @@ Die permission-gebundenen Administratorfunktionen sind damit vollständig sichtb
 
 ## Bewertung
 
-| Kriterium | Ergebnis |
-| --- | --- |
-| Servicemenü öffnet ohne sichtbaren Fehler | PASS |
-| Allgemeine Serviceeinträge vollständig/lesbar | PASS |
-| Permission-gebundene Administrator-Einträge sichtbar | PASS |
-| Unterer Menübereich vollständig erreichbar | PASS |
-| Keine Layout-/Clipping-Blockade | PASS |
-| Keine unbeabsichtigte Aktion/Datenänderung | PASS |
+| Kriterium                                            | Ergebnis |
+| ---------------------------------------------------- | -------- |
+| Servicemenü öffnet ohne sichtbaren Fehler            | PASS     |
+| Allgemeine Serviceeinträge vollständig/lesbar        | PASS     |
+| Permission-gebundene Administrator-Einträge sichtbar | PASS     |
+| Unterer Menübereich vollständig erreichbar           | PASS     |
+| Keine Layout-/Clipping-Blockade                      | PASS     |
+| Keine unbeabsichtigte Aktion/Datenänderung           | PASS     |
 
 ## Status
 
