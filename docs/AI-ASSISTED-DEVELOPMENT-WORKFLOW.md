@@ -9,17 +9,30 @@ KI-gestützte Entwicklungsarbeit soll nachvollziehbar, sicher und ressourcenscho
 
 GitHub bleibt Source of Truth.
 
+### 1.1 Schreibschutzregel für `main`
+
+Für ChatGPT, Codex, Lovable und andere schreibende Werkzeuge gilt verbindlich:
+
+- **keine direkte reguläre Änderung auf `main`,**
+- jede schreibende Aufgabe erhält einen eindeutig benannten Branch bzw. eine nachweislich getrennte Variant,
+- Integration erfolgt über Pull Request und die vorgesehenen CI-/Security-Gates,
+- ein Plan-, Chat- oder Analysemodus eines externen Werkzeugs wird **nicht automatisch als read-only angenommen**,
+- nach jedem externen Schreibvorgang werden GitHub-Commit, Branch und Diff unabhängig geprüft,
+- ein direkter `main`-Write ist nur als bewusst autorisierte administrative Ausnahme zulässig und muss anschließend revisionssicher dokumentiert werden.
+
+Technischer Branch Protection bzw. ein GitHub-Ruleset soll diese organisatorische Regel zusätzlich erzwingen. Bis dieser Schutz nachweislich aktiv ist, wird die Regel prozessual strikt eingehalten.
+
 ## 2. Werkzeug-Priorität
 
 Für jede Aufgabe gilt folgende Reihenfolge:
 
 1. **GitHub prüfen** — aktuellen Code-, Doku- und Commitstand feststellen.
 2. **ChatGPT analysiert** — Ursache, Scope, Risiken, betroffene Dateien, Teststrategie und Abnahmekriterien vorab klären.
-3. **GitHub-Arbeiten direkt über ChatGPT** — Dokumentation, Statuspflege, Roadmap, Prüfberichte und sonstige sichere Repository-Änderungen werden vorrangig direkt im Repository erledigt.
+3. **GitHub-Arbeiten direkt über ChatGPT** — Dokumentation, Statuspflege, Roadmap, Prüfberichte und sonstige sichere Repository-Änderungen werden vorrangig direkt im Repository erledigt; schreibende Änderungen erfolgen auf eigenem Branch mit PR.
 4. **Lokale Entwicklung / Codex / VS Code bevorzugen**, wenn eine Änderung ohne Lovable-spezifische Laufzeitfunktion sauber implementiert und getestet werden kann.
 5. **Lovable nur gezielt einsetzen**, wenn Live-App, Lovable-Laufzeit, UI-Preview, plattformspezifische Funktionen oder eine dort sinnvollere technische Umsetzung erforderlich sind.
 6. **Manuell abnehmen** — fachliche Oberflächen- und Rollenprüfungen werden außerhalb der Build-Schleife durchgeführt.
-7. **GitHub nachprüfen** — tatsächlich erzeugten Commit, Diff, Version und Dokumentation unabhängig kontrollieren.
+7. **GitHub nachprüfen** — tatsächlich erzeugten Commit, Zielbranch, Diff, Version und Dokumentation unabhängig kontrollieren.
 
 ## 3. Regeln für Lovable-Prompts
 
@@ -30,6 +43,9 @@ Jeder Lovable-Prompt folgt verbindlich:
 Zusätzlich gilt:
 
 - Ausgangs-Commit und erwarteten aktuellen HEAD nennen.
+- Vor jeder schreibenden Aufgabe Zielbranch/Variant ausdrücklich nennen und verifizieren.
+- `main` darf nicht Ziel regulärer Lovable-Schreibvorgänge sein.
+- Einen Plan-/Chatmodus nicht als read-only behandeln, solange die tatsächliche Schreibwirkung nicht technisch bestätigt ist.
 - Bereits bestätigte Root Causes nicht erneut breit analysieren lassen.
 - Betroffene Dateien und bestehende Architektur nennen, soweit bekannt.
 - Scope und **Nicht-Scope** ausdrücklich festlegen.
@@ -39,6 +55,7 @@ Zusätzlich gilt:
 - Konkrete Tests, Quality Gates und Abnahmekriterien vorgeben.
 - Nach dem Abschlussbericht keine selbstständigen Folgeänderungen zulassen.
 - Bei Abbruch trotzdem einen Zwischen-Abschlussbericht verlangen.
+- Nach jedem Lovable-Lauf zuerst GitHub-Branch, Commit und Diff prüfen, bevor ein weiterer Prompt gestartet wird.
 
 ## 4. Neue Lovable-Unterhaltung statt Kontextballast
 
@@ -48,6 +65,7 @@ Der neue Prompt enthält den notwendigen Kontext kompakt selbst:
 
 - Repository,
 - Ausgangs-Commit,
+- Zielbranch/Variant,
 - Ziel,
 - bereits bekannte Analyseergebnisse,
 - relevante Architekturregeln,
@@ -71,6 +89,8 @@ Ziel ist nicht die minimale Zahl an Prompts um jeden Preis, sondern die minimale
 ## 6. Planung ohne Build
 
 Brainstorming, Architekturentscheidungen, Roadmap, Prompt-Entwurf und Fehleranalyse erfolgen grundsätzlich außerhalb eines Build-/Edit-Modus. Wenn Lovable einen reinen Chat-/Planungsmodus im verwendeten Plan anbietet, kann er dafür genutzt werden; erforderlich ist er nicht, da diese Arbeiten vorrangig in ChatGPT und GitHub stattfinden.
+
+Auch bei einem als „Plan“ oder „Chat“ bezeichneten Modus wird vor der Nutzung geprüft, ob er tatsächlich keine Repository-Änderungen erzeugt. Die Bezeichnung allein ist kein Sicherheitsnachweis.
 
 ## 7. Lokale Entwicklung nach dem MVP
 
@@ -101,7 +121,7 @@ Für die operative Planung gilt nutzerseitig bestätigt zum Stand 2026-08-24:
 - Als Planungsheuristik können etwa 2 Credits für UI/Preview, 1–2 Credits für klar abgegrenzte Implementierung/Korrektur und 1 Credit als Reserve vorgesehen werden.
 - Credits sollen nicht unnötig verfallen, wenn sinnvolle Lovable-Arbeit ohnehin ansteht und sicher vorgezogen werden kann.
 - Gleichzeitig werden **keine künstlichen Änderungen, Testschleifen oder Feature-Aufträge nur zum Aufbrauchen von Credits** erzeugt.
-- GitHub-Source-of-Truth, Scope-Trennung, CI/Security-Gates und manuelle Abnahme haben Vorrang vor Credit-Auslastung.
+- GitHub-Source-of-Truth, Scope-Trennung, Branch-/PR-Governance, CI/Security-Gates und manuelle Abnahme haben Vorrang vor Credit-Auslastung.
 
 ## 9. Abschlussbericht als Übergabevertrag
 
@@ -109,6 +129,7 @@ Jeder substanzielle technische Schritt endet mit einem Abschlussbericht. Je nach
 
 - Aufgabe und Scope,
 - Ausgangs- und End-Commit,
+- Zielbranch/PR,
 - Version,
 - Root Cause bzw. Analyseergebnis,
 - tatsächlich geänderte Dateien,
@@ -132,10 +153,15 @@ Unverändert verbindlich:
 - RBAC und RLS nicht durch reine UI-Logik ersetzen,
 - Fachlogik, Authentifizierung, Datenzugriff und Provider-spezifische Implementierung getrennt halten,
 - Änderungen testbar, dokumentiert, containerfähig und migrationsfähig halten,
-- GitHub ist die maßgebliche Quelle für den aktuellen Stand.
+- GitHub ist die maßgebliche Quelle für den aktuellen Stand,
+- reguläre Tool- und Entwicklungsänderungen nicht direkt auf `main` schreiben,
+- vor Merge PR-Diff und vorgesehene CI-/Security-Gates prüfen,
+- Force Pushes oder History-Rewrite auf `main` nicht als normalen Korrekturweg verwenden.
 
 ## 11. Praktische Konsequenz für das laufende Projekt
 
 Bis zur MVP-Baseline werden Lovable-Läufe nur noch verwendet, wenn ein technischer Abschluss-Gate-Lauf oder ein tatsächlich notwendiger Plattformtest nicht sinnvoll außerhalb von Lovable erbracht werden kann. Das tägliche Credit-Budget wird dabei bewusst geplant, aber nicht zum Selbstzweck verbraucht.
+
+Bis technischer Branch Protection für `main` nachweislich aktiv ist, wird keine schreibende Lovable-/Codex-Aufgabe ohne vorher eindeutig festgelegten Arbeitsbranch gestartet. Nach jedem externen Lauf wird GitHub unabhängig kontrolliert.
 
 Die offene F-11-Abnahme ist manuelle Fachprüfung und verbraucht daher grundsätzlich keine Lovable-Credits. GitHub-Dokumentation und formale Abzeichnung werden nach bestätigten Testergebnissen direkt im Repository gepflegt.
