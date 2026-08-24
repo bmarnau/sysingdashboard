@@ -1,0 +1,27 @@
+name: Prettier Diagnostic
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  prettier-diff:
+    name: Prettier exact diff (diagnostic only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: bun install --frozen-lockfile
+      - name: Format target in runner only
+        run: bunx prettier --write src/components/SystemStatusDialog.tsx
+      - name: Print exact formatter diff
+        run: |
+          git diff --no-ext-diff -- src/components/SystemStatusDialog.tsx
+          test -n "$(git status --porcelain -- src/components/SystemStatusDialog.tsx)"
