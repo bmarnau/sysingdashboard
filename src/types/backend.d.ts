@@ -28,10 +28,9 @@ declare module "*/backend/services/statusService.mjs" {
       commit: string | null;
     };
     lovable: {
-      projectId: string | null;
       publishedUrl: string | null;
       lastDeploymentAt: string | null;
-      status: "configured" | "not_configured";
+      status: "configured" | null;
     };
     azure: {
       allowed: boolean;
@@ -53,10 +52,13 @@ declare module "*/backend/services/statusService.mjs" {
       secretManager: {
         enabled: boolean;
         missing: string[];
+        missingCount: number;
       };
       envValidation: {
+        scope: string;
         ok: boolean;
         missing: string[];
+        missingCount: number;
       };
       keyVault: { configured: boolean };
       correlationId: {

@@ -8,7 +8,7 @@
  *
  * Sicherheit: das Frontend liest niemals ENV. Alle ENV-/Secret-/Azure-
  * Informationen kommen ausschließlich aus dem secret-freien Payload
- * von `/api/status` (nur Booleans und Variablennamen).
+ * von `/api/status` (nur Booleans, Counts und ggf. freigegebene Namen).
  */
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 
@@ -28,7 +28,6 @@ export interface SystemStatusPayload {
     commit?: string | null;
   };
   lovable?: {
-    projectId?: string | null;
     publishedUrl?: string | null;
     lastDeploymentAt?: string | null;
     status?: "configured" | "not_configured" | null;
@@ -41,12 +40,18 @@ export interface SystemStatusPayload {
     storage?: AzureComponentStatus | null;
     lastConnectionTestAt?: string | null;
     missingEnv?: string[] | null;
+    missingEnvCount?: number | null;
   };
   security?: {
     authMode?: string | null;
     rbac?: { enabled?: boolean; rolesCount?: number; permissionsCount?: number } | null;
-    secretManager?: { enabled?: boolean; missing?: string[] } | null;
-    envValidation?: { ok?: boolean; missing?: string[] } | null;
+    secretManager?: { enabled?: boolean; missing?: string[]; missingCount?: number } | null;
+    envValidation?: {
+      scope?: string | null;
+      ok?: boolean;
+      missing?: string[];
+      missingCount?: number;
+    } | null;
     keyVault?: { configured?: boolean } | null;
   };
   data?: {

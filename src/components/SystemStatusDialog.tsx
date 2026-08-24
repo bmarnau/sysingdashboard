@@ -45,6 +45,7 @@ interface SystemStatusDialogProps {
 }
 
 const NOT_CONFIGURED = "Not configured";
+const HOSTING_METADATA_UNAVAILABLE = "vom Hosting nicht bereitgestellt";
 type AdminBackendState = "idle" | "checking" | "connected" | "unavailable";
 
 function fmtDate(value: string | null | undefined): string {
@@ -78,13 +79,6 @@ function BoolBadge({
 }
 
 function EnvChips({ names }: { names: string[] }) {
-  if (!names || names.length === 0) {
-    return (
-      <span className="text-success inline-flex items-center gap-1">
-        <CheckCircle2 className="size-4" /> alle gesetzt
-      </span>
-    );
-  }
   return (
     <div className="flex flex-wrap gap-1">
       {names.map((n) => (
@@ -218,14 +212,14 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
       ? commitUrl()
       : null;
 
-  // Lovable — Server-ENV bevorzugt, sonst feste PROJECT_INFO.
+  // Lovable — Publish-URL darf auf feste Projektmetadaten zurückfallen. Ein
+  // Deploymentstatus wird dagegen nur angezeigt, wenn das Hosting ihn liefert.
   const lvPublished = p.lovable?.publishedUrl || PROJECT_INFO.lovable.publishedUrl || null;
-  const lvProject = p.lovable?.projectId || PROJECT_INFO.lovable.projectId || null;
   const lvDeployAt = p.lovable?.lastDeploymentAt ?? null;
-  const lvStatus: "configured" | "not_configured" =
-    p.lovable?.status ?? (lvPublished ? "configured" : "not_configured");
+  const lvStatus = p.lovable?.status ?? null;
 
-  // Azure
+  // Azure — optionaler Zielprovider. Fehlende Konfiguration ist neutral und
+  // wird über Counts statt über öffentlich sichtbare ENV-Namen bewertet.
   const az = p.azure ?? {};
   const azAllowed = az.allowed ?? null;
   const azSql = Boolean(az.sql?.configured);
@@ -233,11 +227,14 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
   const azStorage = Boolean(az.storage?.configured);
   const azAuthMode = az.authMode || NOT_CONFIGURED;
   const azMissing = az.missingEnv ?? [];
+  const azMissingCount = az.missingEnvCount ?? azMissing.length;
 
-  // Security
+  // Security — allgemeine ENV-Ampel bezieht sich nur auf die aktive Plattform.
   const sec = p.security ?? {};
   const envOk = sec.envValidation?.ok ?? null;
   const envMissing = sec.envValidation?.missing ?? [];
+  const envMissingCount = sec.envValidation?.missingCount ?? envMissing.length;
+  const envScope = sec.envValidation?.scope || sec.authMode || "active";
   const rbacRoles = sec.rbac?.rolesCount;
   const rbacPerms = sec.rbac?.permissionsCount;
   const kvOk = Boolean(sec.keyVault?.configured);
@@ -338,7 +335,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
                     {BUILD_INFO.dirty && <span className="text-warning">(uncommitted)</span>}
                   </span>
                 ) : (
-                  "vom Hosting nicht bereitgestellt"
+                  HOSTING_METADATA_UNAVAILABLE
                 )
               }
               href={ghCommitHref}
@@ -355,11 +352,21 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
             />
             <Row
               label="Deployment status"
-              value={lvStatus === "configured" ? "configured" : NOT_CONFIGURED}
-              ok={lvStatus === "configured"}
+              value={
+                lvStatus === "configured"
+                  ? "configured"
+                  : lvStatus === "not_configured"
+                    ? NOT_CONFIGURED
+                    : HOSTING_METADATA_UNAVAILABLE
+              }
+              ok={
+                lvStatus === "configured" ? true : lvStatus === "not_configured" ? false : undefined
+              }
             />
-            <Row label="Last deployment" value={fmtDate(lvDeployAt)} />
-            <Row label="Project ID" value={fmtText(lvProject)} mono />
+            <Row
+              label="Last deployment"
+              value={lvDeployAt ? fmtDate(lvDeployAt) : HOSTING_METADATA_UNAVAILABLE}
+            />
           </Section>
 
           {/* 4) Azure */}
@@ -380,11 +387,22 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
             <Row label="Azure Blob/SAS" value={<BoolBadge ok={azStorage} />} />
             <Row
               label="Azure auth mode"
-              value={azAuthMode === "none" ? NOT_CONFIGURED : azAuthMode}
-              ok={azAuthMode !== "none" && azAuthMode !== NOT_CONFIGURED}
+              value={azAuthMode === "none" ? "optional" : azAuthMode}
+              ok={azAuthMode !== "none" && azAuthMode !== NOT_CONFIGURED ? true : undefined}
             />
             <Row label="Last connection test" value={fmtDate(az.lastConnectionTestAt)} />
-            <Row label="Missing ENV variables" value={<EnvChips names={azMissing} />} />
+            <Row
+              label="Azure ENV readiness"
+              value={
+                azMissingCount === 0
+                  ? "all known Azure ENVs present"
+                  : `optional target — ${azMissingCount} not configured`
+              }
+              ok={azMissingCount === 0 ? true : undefined}
+            />
+            {azMissing.length > 0 && (
+              <Row label="Missing Azure ENV (names only)" value={<EnvChips names={azMissing} />} />
+            )}
           </Section>
 
           {/* 5) Security */}
@@ -414,23 +432,26 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
               value={sec.secretManager?.enabled ? "enabled (secretManager.mjs)" : NOT_CONFIGURED}
             />
             <Row
-              label="ENV validation"
+              label="Runtime ENV (aktive Plattform)"
               ok={envOk ?? undefined}
               value={
                 envOk === null
                   ? NOT_CONFIGURED
                   : envOk
-                    ? "ok — all required ENVs present"
-                    : `failed — ${envMissing.length} missing`
+                    ? `${envScope} — ok`
+                    : `${envScope} — ${envMissingCount} required missing`
               }
             />
             {envMissing.length > 0 && (
-              <Row label="Missing ENV (names only)" value={<EnvChips names={envMissing} />} />
+              <Row
+                label="Missing active-provider ENV (names only)"
+                value={<EnvChips names={envMissing} />}
+              />
             )}
             <Row
               label="Key Vault readiness"
-              value={kvOk ? "configured" : NOT_CONFIGURED}
-              ok={kvOk}
+              value={kvOk ? "configured" : "optional"}
+              ok={kvOk ? true : undefined}
             />
           </Section>
 
