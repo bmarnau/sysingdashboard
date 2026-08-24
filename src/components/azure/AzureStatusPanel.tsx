@@ -94,15 +94,7 @@ export function AzureStatusPanel() {
   );
 }
 
-function StatusRow({
-  label,
-  ok,
-  value,
-}: {
-  label: string;
-  ok?: boolean;
-  value?: string;
-}) {
+function StatusRow({ label, ok, value }: { label: string; ok?: boolean; value?: string }) {
   return (
     <div className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2">
       <span className="text-muted-foreground">{label}</span>
