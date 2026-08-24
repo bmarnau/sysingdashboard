@@ -360,11 +360,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
                     : HOSTING_METADATA_UNAVAILABLE
               }
               ok={
-                lvStatus === "configured"
-                  ? true
-                  : lvStatus === "not_configured"
-                    ? false
-                    : undefined
+                lvStatus === "configured" ? true : lvStatus === "not_configured" ? false : undefined
               }
             />
             <Row
