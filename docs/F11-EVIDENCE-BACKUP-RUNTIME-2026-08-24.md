@@ -47,17 +47,17 @@ Damit ist der grüne Status des neuen manuellen Backups ein belastbarer technisc
 
 ## Bewertung der PASS-Kriterien
 
-| Kriterium | Ergebnis |
-| --- | --- |
-| Manueller Backup-Lauf erfolgreich | PASS |
-| Neuer manueller Eintrag genau einmal sichtbar | PASS |
-| Neuer manueller Eintrag `geprüft` statt `mit Warnungen` | PASS |
-| Konsistenz-/ZIP-Status ohne Warnung gemäß Produktcode | PASS |
-| Auto-Backup-Zeitstempel durch manuellen Lauf unverändert | PASS |
-| Neuer automatischer Lauf nach Fix ebenfalls `geprüft` | PASS |
-| Kein sichtbarer Doppelstart des manuellen Laufs | PASS |
-| Scheduler-Doppelstart zusätzlich automatisiert abgesichert | PASS |
-| Keine Secrets/Zugangsdaten sichtbar | PASS |
+| Kriterium                                                  | Ergebnis |
+| ---------------------------------------------------------- | -------- |
+| Manueller Backup-Lauf erfolgreich                          | PASS     |
+| Neuer manueller Eintrag genau einmal sichtbar              | PASS     |
+| Neuer manueller Eintrag `geprüft` statt `mit Warnungen`    | PASS     |
+| Konsistenz-/ZIP-Status ohne Warnung gemäß Produktcode      | PASS     |
+| Auto-Backup-Zeitstempel durch manuellen Lauf unverändert   | PASS     |
+| Neuer automatischer Lauf nach Fix ebenfalls `geprüft`      | PASS     |
+| Kein sichtbarer Doppelstart des manuellen Laufs            | PASS     |
+| Scheduler-Doppelstart zusätzlich automatisiert abgesichert | PASS     |
+| Keine Secrets/Zugangsdaten sichtbar                        | PASS     |
 
 ## Abschlussbewertung Issue #40
 
