@@ -115,17 +115,17 @@ Der Drift wurde bewusst nicht per Direkt-Revert korrigiert. Recovery erfolgte ü
 - `14 · Technical Report & Quality Gate`: PASS,
 - Merge mit Expected-Head-SHA.
 
-Aktueller `main` nach PR #66:
+Recovery-Referenzstand nach PR #66:
 
 `425fbed6cecbf5900a0eda17c735f90221d31d8d`
 
-Der Dateibaum von `425fbed6...` ist gegenüber `ea28740...` weiterhin identisch. Der Incident ist damit technisch vollständig zurückgeführt; die Commit-Historie bleibt als Governance-Evidenz erhalten.
+Der vollständige Dateibaum dieses Recovery-Referenzstands ist gegenüber `ea28740...` identisch. Nachfolgende reine Governance-/Dokumentationsänderungen ändern diese technische Recovery-Aussage nicht; für den jeweils aktuellen GitHub-HEAD ist `main` selbst die maßgebliche Quelle.
 
 ## Offener Governance-Befund
 
 Issue #53 bleibt offen: Der GitHub-Branch `main` ist auch nach Recovery #66 noch nicht technisch durch Branch Protection / Rulesets geschützt.
 
-Nachgewiesener Ist-Stand:
+Nachgewiesener Ist-Stand nach Recovery #66:
 
 - `protected: false`,
 - `protection.enabled: false`,
