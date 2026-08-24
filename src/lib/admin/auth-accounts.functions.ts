@@ -60,7 +60,7 @@ export const listAuthAccounts = createServerFn({ method: "POST" })
   });
 
 export const confirmAuthAccount = createServerFn({ method: "POST" })
-  .inputValidator((input: { userId: string }) => {
+  .validator((input: { userId: string }) => {
     if (!input || typeof input.userId !== "string" || input.userId.length < 10) {
       throw new Error("Ungültige Kontokennung.");
     }
@@ -78,7 +78,7 @@ export const confirmAuthAccount = createServerFn({ method: "POST" })
   });
 
 export const resendConfirmation = createServerFn({ method: "POST" })
-  .inputValidator((input: { email: string }) => {
+  .validator((input: { email: string }) => {
     const email = String(input?.email ?? "").trim();
     if (!email || email.length > 254 || !email.includes("@")) {
       throw new Error("Ungültige E-Mail-Adresse.");
@@ -109,7 +109,7 @@ export const resendConfirmation = createServerFn({ method: "POST" })
  * gesendet.
  */
 export const requestPasswordReset = createServerFn({ method: "POST" })
-  .inputValidator((input: { userId: string }) => {
+  .validator((input: { userId: string }) => {
     if (!input || typeof input.userId !== "string" || input.userId.length < 10) {
       throw new Error("Ungültige Kontokennung.");
     }
@@ -143,7 +143,7 @@ export const requestPasswordReset = createServerFn({ method: "POST" })
   });
 
 export const deleteAuthAccount = createServerFn({ method: "POST" })
-  .inputValidator((input: { userId: string }) => {
+  .validator((input: { userId: string }) => {
     if (!input || typeof input.userId !== "string" || input.userId.length < 10) {
       throw new Error("Ungültige Kontokennung.");
     }
@@ -183,7 +183,7 @@ export const deleteAuthAccount = createServerFn({ method: "POST" })
  * (Konto-ID, Profil, Rolle, AVKK-Zuordnungen) bleibt unverändert.
  */
 export const setAccountPassword = createServerFn({ method: "POST" })
-  .inputValidator((input: { userId: string; password: string }) => {
+  .validator((input: { userId: string; password: string }) => {
     if (!input || typeof input.userId !== "string" || input.userId.length < 10) {
       throw new Error("Ungültige Kontokennung.");
     }
