@@ -2,15 +2,15 @@
  * Status Service (ESM)
  *
  * Liefert einen vollständigen, secret-freien Snapshot des Betriebszustands
- * für /api/status. Enthält ausschließlich Booleans, ENV-Namen und
- * Metadaten — niemals Werte, Connection-Strings, SAS-Tokens oder Secrets.
+ * für /api/status. Enthält ausschließlich Booleans, Counts, optional
+ * freigegebene ENV-Namen und Metadaten — niemals Werte, Connection-Strings,
+ * SAS-Tokens oder Secrets.
  */
 import { getMode, isDev } from "../../config/env.mjs";
 import {
   KNOWN as KNOWN_AZURE_ENVS,
   has,
   status as secretStatus,
-  validate as validateEnv,
 } from "../../config/secretManager.mjs";
 import { isKeyVaultConfigured } from "../../config/keyVault.mjs";
 import { getSyncMeta } from "./syncService.mjs";
@@ -18,6 +18,7 @@ import { ALL_ROLES, ALL_PERMISSIONS } from "./rbac.mjs";
 
 const BOOT_AT = new Date().toISOString();
 const PUBLIC_GITHUB_REPOSITORY_URL = "https://github.com/bmarnau/sysingdashboard";
+const ENTRA_PROVIDER_NAMES = new Set(["entra", "entra-id", "azure-ad"]);
 
 function envOrNull(name) {
   if (typeof process === "undefined" || !process.env) return null;
@@ -36,25 +37,40 @@ function resolveAzureAuthMode() {
   return "none";
 }
 
-export function getStatus() {
-  let envValidation;
-  try {
-    envValidation = validateEnv();
-  } catch (err) {
-    // validate() wirft in PROD bei Fehlen — fangen, damit /api/status
-    // selbst dann antworten kann und das UI die fehlenden Namen sieht.
-    const msg = err && err.message ? String(err.message) : "validation failed";
-    const missing = msg
-      .replace(/^Missing required ENV variables:\s*/, "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-    envValidation = { mode: getMode(), missing, ok: false };
-  }
+function resolveAuthProvider() {
+  return (envOrNull("AUTH_PROVIDER") || "supabase").toLowerCase();
+}
 
+/**
+ * Bewertet nur Pflichtvariablen der aktuell aktiven Auth-Plattform.
+ *
+ * Supabase ist der produktive MVP-Provider und benötigt im Backend keine
+ * Azure-Secrets. Optionale Azure-Daten-/Zielintegration wird separat unter
+ * `azure` ausgewiesen und darf die allgemeine Security-Ampel nicht rot färben.
+ * Für einen später aktivierten Entra-Provider sind Client- und Tenant-ID die
+ * derzeit bekannten Mindestanforderungen.
+ */
+function getActiveProviderEnvStatus(authProvider) {
+  const required = ENTRA_PROVIDER_NAMES.has(authProvider)
+    ? ["AZURE_CLIENT_ID", "AZURE_TENANT_ID"]
+    : [];
+  const missing = required.filter((name) => !has(name));
+
+  return {
+    scope: authProvider,
+    ok: missing.length === 0,
+    // Öffentlicher Status: in PROD nur Count, keine Infrastruktur-Fingerprints.
+    missing: isDev() ? missing : [],
+    missingCount: missing.length,
+  };
+}
+
+export function getStatus() {
   const azureSecrets = secretStatus(); // { NAME: boolean }
   const azureMissing = KNOWN_AZURE_ENVS.filter((n) => !azureSecrets[n]);
-
+  const authMode = resolveAuthProvider();
+  const activeProviderEnv = getActiveProviderEnvStatus(authMode);
+  const lovablePublishedUrl = envOrNull("LOVABLE_PUBLISHED_URL");
   const sync = getSyncMeta();
 
   return {
@@ -72,10 +88,11 @@ export function getStatus() {
       commit: envOrNull("GITHUB_SHA") || envOrNull("GIT_COMMIT"),
     },
     lovable: {
-      projectId: envOrNull("LOVABLE_PROJECT_ID"),
-      publishedUrl: envOrNull("LOVABLE_PUBLISHED_URL"),
+      // Project IDs gehören nicht in den öffentlichen Status-Payload.
+      publishedUrl: lovablePublishedUrl,
       lastDeploymentAt: envOrNull("LOVABLE_DEPLOYED_AT"),
-      status: envOrNull("LOVABLE_PUBLISHED_URL") ? "configured" : "not_configured",
+      // Fehlende Hosting-Metadaten sind "unbekannt", nicht "nicht deployed".
+      status: lovablePublishedUrl ? "configured" : null,
     },
     azure: {
       allowed: !isDev(),
@@ -92,14 +109,18 @@ export function getStatus() {
     security: {
       // Supabase ist der produktive MVP-Provider. Ein zukünftiger Provider
       // (z. B. Entra) kann weiterhin explizit über AUTH_PROVIDER gesetzt werden.
-      authMode: envOrNull("AUTH_PROVIDER") || "supabase",
+      authMode,
       rbac: {
         enabled: true,
         rolesCount: ALL_ROLES.length,
         permissionsCount: ALL_PERMISSIONS.length,
       },
-      secretManager: { enabled: true, missing: envValidation.missing },
-      envValidation: { ok: envValidation.ok, missing: envValidation.missing },
+      secretManager: {
+        enabled: true,
+        missing: isDev() ? azureMissing : [],
+        missingCount: azureMissing.length,
+      },
+      envValidation: activeProviderEnv,
       keyVault: { configured: isKeyVaultConfigured() },
       correlationId: {
         middlewareActive: true,
