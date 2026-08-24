@@ -12,9 +12,8 @@ import { useSystemStatusHealth } from "@/hooks/useSystemStatusHealth";
 export function AzureStatusPanel() {
   const health = useSystemStatusHealth();
   const azure = health.payload?.azure;
-  const security = health.payload?.security;
-
   const reachable = health.apiReachable !== false;
+  const missingEnvCount = azure?.missingEnvCount ?? azure?.missingEnv?.length ?? 0;
 
   return (
     <div className="space-y-4 text-sm">
@@ -48,30 +47,30 @@ export function AzureStatusPanel() {
         <StatusRow label="Azure erlaubt" ok={azure?.allowed === true} />
         <StatusRow
           label="Auth-Modus"
-          ok={!!azure?.authMode && azure?.authMode !== "none"}
-          value={azure?.authMode ?? "not configured"}
+          ok={azure?.authMode && azure.authMode !== "none" ? true : undefined}
+          value={azure?.authMode && azure.authMode !== "none" ? azure.authMode : "optional"}
         />
         <StatusRow label="SQL konfiguriert" ok={azure?.sql?.configured === true} />
         <StatusRow label="Table konfiguriert" ok={azure?.table?.configured === true} />
         <StatusRow label="Storage konfiguriert" ok={azure?.storage?.configured === true} />
         <StatusRow
-          label="ENV-Validierung"
-          ok={security?.envValidation?.ok === true}
+          label="Azure ENV-Bereitschaft"
+          ok={missingEnvCount === 0 ? true : undefined}
           value={
-            security?.envValidation?.ok
-              ? "ok"
-              : `fehlend: ${(security?.envValidation?.missing ?? []).length}`
+            missingEnvCount === 0
+              ? "alle bekannten gesetzt"
+              : `optional · ${missingEnvCount} nicht konfiguriert`
           }
         />
       </section>
 
-      {security?.envValidation?.missing && security.envValidation.missing.length > 0 ? (
+      {azure?.missingEnv && azure.missingEnv.length > 0 ? (
         <section className="rounded-md border border-warning/40 bg-warning/10 p-3">
           <p className="mb-1 text-xs font-semibold text-warning">
-            Fehlende ENV-Variablen (nur Namen, keine Werte):
+            Fehlende Azure-ENV-Variablen (nur Namen, keine Werte):
           </p>
           <div className="flex flex-wrap gap-1">
-            {security.envValidation.missing.map((n) => (
+            {azure.missingEnv.map((n) => (
               <span
                 key={n}
                 className="rounded border border-warning/40 bg-warning/10 px-1.5 py-0.5 font-mono text-xs text-warning"
@@ -95,18 +94,28 @@ export function AzureStatusPanel() {
   );
 }
 
-function StatusRow({ label, ok, value }: { label: string; ok: boolean; value?: string }) {
+function StatusRow({
+  label,
+  ok,
+  value,
+}: {
+  label: string;
+  ok?: boolean;
+  value?: string;
+}) {
   return (
     <div className="flex items-center justify-between rounded-md border border-border bg-background px-3 py-2">
       <span className="text-muted-foreground">{label}</span>
-      {ok ? (
+      {ok === true ? (
         <span className="inline-flex items-center gap-1 text-success">
           <CheckCircle2 className="size-4" /> {value ?? "configured"}
         </span>
-      ) : (
+      ) : ok === false ? (
         <span className="inline-flex items-center gap-1 text-muted-foreground">
           <XCircle className="size-4" /> {value ?? "Not configured"}
         </span>
+      ) : (
+        <span className="text-muted-foreground">{value ?? "optional"}</span>
       )}
     </div>
   );
