@@ -47,10 +47,10 @@ Nachgewiesen sind unter anderem:
 
 ## MVP-Abschluss
 
-Die fachliche F-11-Abzeichnung ist abgeschlossen. Der letzte formale Schritt ist der frische CI-/Security-/Technical-Report-/Quality-Gate-Lauf dieses Konsolidierungsstands.
+Die fachliche F-11-Abzeichnung ist abgeschlossen. Der vollständige Konsolidierungsstand wurde mit CI #403 / Run `32745266068` und Security #394 erfolgreich geprüft; Technical Report und Quality Gate sind PASS.
 
-Bis dieser Lauf vollständig grün ist, gilt:
+Damit gilt:
 
-**MVP: funktional und fachlich abgenommen · finale Baseline-Kennzeichnung noch ausstehend.**
+**MVP: 100 % / BASELINE READY — die Baseline wird mit dem Merge von PR #60 wirksam, sofern der finale Head nach dieser reinen Statusfortschreibung erneut vollständig grün ist.**
 
-Erst nach dem grünen Abschlusslauf wird `MVP 100 % / BASELINE` verbindlich gesetzt und der Baseline-Commit dokumentiert.
+Die Statusfortschreibung selbst enthält keine Produkt-, Auth-, RBAC-, RLS- oder Datenbankänderung. Nach dem finalen grünen Head-Gate wird PR #60 mit Head-SHA-Schutz gemergt; der resultierende `main`-Commit ist die verbindliche MVP-Baseline und wird anschließend ohne weitere Codeänderung eindeutig referenziert.
