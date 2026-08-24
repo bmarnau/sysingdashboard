@@ -82,15 +82,15 @@ Bewertung: **kein Fehler des Log Viewers**. Der Log Viewer erfüllt gerade seine
 
 ## PASS-Kriterien
 
-| Kriterium | Ergebnis |
-| --- | --- |
-| Dialog ohne sichtbaren Laufzeitfehler | PASS |
-| Keine IndexedDB-Read-Fehlermeldung | PASS |
-| Filter/Zeitraum/Quelle verständlich dargestellt | PASS |
-| Loganzahl sichtbar | PASS |
-| Logzeilen lesbar | PASS |
-| Keine offensichtlichen Secrets/Zugangsdaten in der Hauptliste | PASS |
-| Keine unbeabsichtigte Datenänderung | PASS |
+| Kriterium                                                     | Ergebnis |
+| ------------------------------------------------------------- | -------- |
+| Dialog ohne sichtbaren Laufzeitfehler                         | PASS     |
+| Keine IndexedDB-Read-Fehlermeldung                            | PASS     |
+| Filter/Zeitraum/Quelle verständlich dargestellt               | PASS     |
+| Loganzahl sichtbar                                            | PASS     |
+| Logzeilen lesbar                                              | PASS     |
+| Keine offensichtlichen Secrets/Zugangsdaten in der Hauptliste | PASS     |
+| Keine unbeabsichtigte Datenänderung                           | PASS     |
 
 ## Ergebnis
 
