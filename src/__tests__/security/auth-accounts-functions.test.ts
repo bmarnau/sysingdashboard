@@ -41,6 +41,11 @@ const PRIVILEGED_FNS = [
 ];
 
 describe("Admin-Serverfunktionen für Auth-Konten", () => {
+  it("should_useCanonicalTanStackValidatorApi", () => {
+    expect(FUNCTIONS).not.toContain(".inputValidator(");
+    expect(FUNCTIONS.match(/\.validator\(/g)).toHaveLength(5);
+  });
+
   it("should_requireAuthenticatedSession_forEveryFunction", () => {
     for (const name of PRIVILEGED_FNS) {
       expect(fnBlock(name), `${name} ohne requireSupabaseAuth`).toContain(
