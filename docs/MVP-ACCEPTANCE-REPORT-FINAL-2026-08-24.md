@@ -5,7 +5,7 @@
 - **Daten-/Auth-Plattform MVP:** Supabase
 - **F-11:** CLOSED / PASS
 - **F-18:** CLOSED / PASS
-- **Freigabestatus:** funktional und fachlich abgenommen; formales Baseline-Gate dieser Konsolidierung noch ausstehend
+- **Freigabestatus:** **MVP 100 % / BASELINE READY — wirksam mit Merge des final vollständig grünen Heads von PR #60**
 
 ## 1. Zweck und Bezug zum historischen Abnahmebericht
 
@@ -95,7 +95,23 @@ Evidenz-PR #39 wurde mit vollständig grünen Gates gemergt:
 - Technical Report: PASS
 - Quality Gate: PASS
 
-Diese Nachweise gelten für den unmittelbar vor dieser Abschlusskonsolidierung gemergten F-11-Evidenzstand.
+Der vollständige Abschluss-/Konsolidierungsstand von PR #60 wurde anschließend ebenfalls vollständig gegatet:
+
+- Security #394: PASS
+- CI #403 / Run `32745266068`: PASS
+- Prettier, ESLint, TypeScript, RBAC, Docs und Projektmanifest: PASS
+- Unit & Components: PASS
+- Backend: PASS
+- API: PASS
+- RBAC & Security: PASS
+- Import/Export: PASS
+- Backup/Restore: PASS
+- Production Build: PASS
+- Playwright E2E: PASS
+- Accessibility: PASS
+- Technical Debt: PASS
+- Technical Report: PASS
+- Quality Gate: PASS
 
 ## 6. Authentifizierung und Datenzugriff
 
@@ -141,12 +157,8 @@ Diese Punkte sind von der abgeschlossenen F-11-Rollen- und Administratorabnahme 
 
 ## 10. Freigabeentscheidung
 
-Fachlich gilt:
+Fachlich und technisch gilt:
 
-> **MVP FUNKTIONAL UND FACHLICH ABGENOMMEN — F-11 CLOSED / PASS.**
+> **MVP FUNKTIONAL UND FACHLICH ABGENOMMEN — F-11 CLOSED / PASS — 100 % / BASELINE READY.**
 
-Formal gilt bis zum Abschluss des frischen Gates dieser Konsolidierung:
-
-> **MVP BASELINE GATE PENDING.**
-
-Nach vollständig grünem CI-/Security-/Technical-Report-/Quality-Gate-Lauf dieses Branches kann die Baseline-Kennzeichnung gesetzt und der resultierende `main`-Commit als verbindliche MVP-Baseline dokumentiert werden.
+Der vollständige Konsolidierungsstand hat CI #403 und Security #394 bestanden. Diese reine Statusfortschreibung wird selbst noch einmal vollständig gegatet. Wenn der finale Head ebenfalls grün ist, wird PR #60 mit Head-SHA-Schutz nach `main` gemergt. Mit diesem Merge wird die Baseline wirksam; der resultierende `main`-Commit ist die verbindliche MVP-Baseline.
