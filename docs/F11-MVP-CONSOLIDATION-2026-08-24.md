@@ -34,15 +34,15 @@ Der aktuelle `main` enthält außerdem das zuvor vollständig abgenommene CSRF-H
 
 ## 3. F-11 — konsolidierte Abnahme
 
-| Bereich | Ergebnis | Nachweis |
-| --- | --- | --- |
-| Systemingenieur | PASS | reale Rollensicht, eigener AVKK-Scope, Schreib-/Persistenztest, Managementsicht gesperrt, persönlicher Bericht |
-| Projektmanager | PASS | Projektsicht, Drill-down, Bericht, Delegation, Benutzerverwaltung gesperrt |
-| Teamleitung | PASS | Management-Cockpit, Managementbericht, Delegation, keine Personenrangliste |
-| Viewer / Negativrolle | PASS | keine Fachobjekt-/AVKK-Schreibaktionen, keine Management-/Benutzerverwaltung, serverseitige Schreibgrenze |
-| Mehrbenutzerszenario | PASS | Alex/Sam-Scope, Fremdschreibversuch abgewiesen, Projekt-/Teamleitungsfälle geprüft |
-| Administrator | PASS | Benutzerverwaltung, Backup, Downloads, Log Viewer, Systemstatus, finale Servicemenü-Gesamtsicht |
-| Role Preview | N/A | kein aktueller Produktbestandteil; fachlich entschieden, keine Impersonation eingeführt |
+| Bereich               | Ergebnis | Nachweis                                                                                                       |
+| --------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| Systemingenieur       | PASS     | reale Rollensicht, eigener AVKK-Scope, Schreib-/Persistenztest, Managementsicht gesperrt, persönlicher Bericht |
+| Projektmanager        | PASS     | Projektsicht, Drill-down, Bericht, Delegation, Benutzerverwaltung gesperrt                                     |
+| Teamleitung           | PASS     | Management-Cockpit, Managementbericht, Delegation, keine Personenrangliste                                     |
+| Viewer / Negativrolle | PASS     | keine Fachobjekt-/AVKK-Schreibaktionen, keine Management-/Benutzerverwaltung, serverseitige Schreibgrenze      |
+| Mehrbenutzerszenario  | PASS     | Alex/Sam-Scope, Fremdschreibversuch abgewiesen, Projekt-/Teamleitungsfälle geprüft                             |
+| Administrator         | PASS     | Benutzerverwaltung, Backup, Downloads, Log Viewer, Systemstatus, finale Servicemenü-Gesamtsicht                |
+| Role Preview          | N/A      | kein aktueller Produktbestandteil; fachlich entschieden, keine Impersonation eingeführt                        |
 
 ## 4. Administrator-Restabnahme
 
@@ -61,12 +61,12 @@ Issue #40 zum Backup-Fix ist abgeschlossen. Issue #42 zum Systemstatus-Hardening
 
 Produktiver Betreiber-Re-Test am 2026-08-24:
 
-| Finding | Erwartung | Ergebnis |
-| --- | --- | --- |
-| SYSSTAT-01 | fehlende Lovable-Hostingmetadaten neutral statt irreführend rot | PASS |
-| SYSSTAT-02 | keine Lovable Project ID in normaler Betriebsübersicht | PASS |
-| SYSSTAT-03 | Supabase aktive Plattform; optionale Azure-ENV kein globaler Security-Fehler | PASS |
-| SYSSTAT-04 | Azure optional/readiness Count-basiert und neutral | PASS |
+| Finding    | Erwartung                                                                    | Ergebnis |
+| ---------- | ---------------------------------------------------------------------------- | -------- |
+| SYSSTAT-01 | fehlende Lovable-Hostingmetadaten neutral statt irreführend rot              | PASS     |
+| SYSSTAT-02 | keine Lovable Project ID in normaler Betriebsübersicht                       | PASS     |
+| SYSSTAT-03 | Supabase aktive Plattform; optionale Azure-ENV kein globaler Security-Fehler | PASS     |
+| SYSSTAT-04 | Azure optional/readiness Count-basiert und neutral                           | PASS     |
 
 Sichtbar waren unter anderem:
 
