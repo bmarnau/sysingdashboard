@@ -14,18 +14,18 @@ Die Abnahme trennt weiterhin:
 
 ## 2. Automatisierte Sicherheits- und Berechtigungsnachweise
 
-| Nachweis | Ergebnis |
-| --- | --- |
-| Rollen-/Rechtematrix widerspruchsfrei | PASS |
+| Nachweis                                        | Ergebnis                       |
+| ----------------------------------------------- | ------------------------------ |
+| Rollen-/Rechtematrix widerspruchsfrei           | PASS                           |
 | Nicht angemeldeter Zugriff auf geschützte Route | PASS — Weiterleitung/Abweisung |
-| Datenzugriff ohne Anmeldung | PASS — serverseitig abgewiesen |
-| Browsermanipulation der Rolle | PASS — keine Rechteausweitung |
-| RBAC-Prüfungen | PASS |
-| RLS-/serverseitige Schreibgrenzen | PASS |
-| Backup-/Restore-Regressionssuite | PASS |
-| Systemstatus-/Backend-Sicherheitsnachweis | PASS |
-| CSRF-Schutz für TanStack Server Functions | PASS |
-| Security Workflow | PASS |
+| Datenzugriff ohne Anmeldung                     | PASS — serverseitig abgewiesen |
+| Browsermanipulation der Rolle                   | PASS — keine Rechteausweitung  |
+| RBAC-Prüfungen                                  | PASS                           |
+| RLS-/serverseitige Schreibgrenzen               | PASS                           |
+| Backup-/Restore-Regressionssuite                | PASS                           |
+| Systemstatus-/Backend-Sicherheitsnachweis       | PASS                           |
+| CSRF-Schutz für TanStack Server Functions       | PASS                           |
+| Security Workflow                               | PASS                           |
 
 Die laufaktuelle Referenz für den Evidenz-PR #39 ist CI #398 / Run `32743583294` und Security #389; beide sind vollständig bestanden.
 
@@ -33,70 +33,70 @@ Die laufaktuelle Referenz für den Evidenz-PR #39 ist CI #398 / Run `32743583294
 
 ### 3.1 Systemingenieur
 
-| Prüfschritt | Ergebnis |
-| --- | --- |
-| Anmeldung und eigene Arbeits-/Projektsicht | PASS |
-| `Mein AVKK` mit eigenem Scope | PASS |
-| AVKK-Bewertung im zulässigen Scope speichern und nach Reload erhalten | PASS |
-| Verantwortung ohne Assign-Recht nicht neu zuweisen | PASS |
-| Management-Cockpit nicht sichtbar | PASS |
-| persönlicher Bericht PDF/Druck/Word/JSON/CSV | PASS |
+| Prüfschritt                                                           | Ergebnis |
+| --------------------------------------------------------------------- | -------- |
+| Anmeldung und eigene Arbeits-/Projektsicht                            | PASS     |
+| `Mein AVKK` mit eigenem Scope                                         | PASS     |
+| AVKK-Bewertung im zulässigen Scope speichern und nach Reload erhalten | PASS     |
+| Verantwortung ohne Assign-Recht nicht neu zuweisen                    | PASS     |
+| Management-Cockpit nicht sichtbar                                     | PASS     |
+| persönlicher Bericht PDF/Druck/Word/JSON/CSV                          | PASS     |
 
 ### 3.2 Projektmanager
 
-| Prüfschritt | Ergebnis |
-| --- | --- |
-| Projektsicht und Drill-down | PASS |
-| AVKK-Lücken und Konsequenzen sichtbar | PASS |
-| Projektbericht konsistent | PASS |
-| Verantwortung delegieren/neu zuweisen | PASS |
-| Benutzerverwaltung nicht aufrufbar | PASS |
+| Prüfschritt                           | Ergebnis |
+| ------------------------------------- | -------- |
+| Projektsicht und Drill-down           | PASS     |
+| AVKK-Lücken und Konsequenzen sichtbar | PASS     |
+| Projektbericht konsistent             | PASS     |
+| Verantwortung delegieren/neu zuweisen | PASS     |
+| Benutzerverwaltung nicht aufrufbar    | PASS     |
 
 ### 3.3 Teamleitung / Management
 
-| Prüfschritt | Ergebnis |
-| --- | --- |
-| Management-Cockpit | PASS |
-| Portfoliolage und Handlungsbedarf | PASS |
-| Managementbericht konsistent | PASS |
-| Verantwortung delegieren/neu zuweisen | PASS |
-| keine personenbezogene Rangliste/Leistungsbewertung | PASS |
+| Prüfschritt                                         | Ergebnis |
+| --------------------------------------------------- | -------- |
+| Management-Cockpit                                  | PASS     |
+| Portfoliolage und Handlungsbedarf                   | PASS     |
+| Managementbericht konsistent                        | PASS     |
+| Verantwortung delegieren/neu zuweisen               | PASS     |
+| keine personenbezogene Rangliste/Leistungsbewertung | PASS     |
 
 ### 3.4 Viewer / Negativrolle
 
-| Prüfschritt | Ergebnis |
-| --- | --- |
-| keine Projekt-/Arbeitspaket-/Tätigkeitsmutation | PASS |
-| AVKK read-only | PASS |
-| Management-Cockpit nicht sichtbar | PASS |
-| Benutzerverwaltung nicht sichtbar | PASS |
-| Abrechnung ohne Edit-Aktion | PASS |
-| globale Suche navigiert ohne Editor | PASS |
-| serverseitiger Fremd-/Schreibzugriff abgewiesen | PASS |
+| Prüfschritt                                     | Ergebnis |
+| ----------------------------------------------- | -------- |
+| keine Projekt-/Arbeitspaket-/Tätigkeitsmutation | PASS     |
+| AVKK read-only                                  | PASS     |
+| Management-Cockpit nicht sichtbar               | PASS     |
+| Benutzerverwaltung nicht sichtbar               | PASS     |
+| Abrechnung ohne Edit-Aktion                     | PASS     |
+| globale Suche navigiert ohne Editor             | PASS     |
+| serverseitiger Fremd-/Schreibzugriff abgewiesen | PASS     |
 
 ### 3.5 Mehrbenutzerszenario
 
-| Prüfschritt | Ergebnis |
-| --- | --- |
-| Alex und Sam mit getrennten persönlichen AVKK-Sichten | PASS |
-| Fremdschreibversuch Sam → Alex serverseitig abgewiesen | PASS |
-| Petra mit Projektmanager-Sicht und Delegation | PASS |
-| Georg mit Managementsicht, Bericht und Delegation | PASS |
-| keine personenbezogene Rangliste | PASS |
+| Prüfschritt                                            | Ergebnis |
+| ------------------------------------------------------ | -------- |
+| Alex und Sam mit getrennten persönlichen AVKK-Sichten  | PASS     |
+| Fremdschreibversuch Sam → Alex serverseitig abgewiesen | PASS     |
+| Petra mit Projektmanager-Sicht und Delegation          | PASS     |
+| Georg mit Managementsicht, Bericht und Delegation      | PASS     |
+| keine personenbezogene Rangliste                       | PASS     |
 
 ### 3.6 Administrator / App-Entwickler
 
-| Prüfschritt | Ergebnis |
-| --- | --- |
-| Benutzerverwaltung und Rollenpflege | PASS |
-| Namensdarstellung ohne technische ID als Personenname | PASS |
-| Backup-Runtime | PASS |
-| Downloadbereich | PASS |
-| Log Viewer | PASS |
-| Systemstatus | PASS |
-| finale Administrator-Servicemenü-Gesamtsicht | PASS |
-| keine unbeabsichtigte Mutation bei Sichttests | PASS |
-| keine Secrets/Zugangsdaten in den geprüften Statusansichten | PASS |
+| Prüfschritt                                                 | Ergebnis |
+| ----------------------------------------------------------- | -------- |
+| Benutzerverwaltung und Rollenpflege                         | PASS     |
+| Namensdarstellung ohne technische ID als Personenname       | PASS     |
+| Backup-Runtime                                              | PASS     |
+| Downloadbereich                                             | PASS     |
+| Log Viewer                                                  | PASS     |
+| Systemstatus                                                | PASS     |
+| finale Administrator-Servicemenü-Gesamtsicht                | PASS     |
+| keine unbeabsichtigte Mutation bei Sichttests               | PASS     |
+| keine Secrets/Zugangsdaten in den geprüften Statusansichten | PASS     |
 
 ## 4. Role Preview
 
@@ -131,15 +131,15 @@ Die folgenden Punkte sind keine offenen F-11-Prüfschritte:
 
 ## 7. Formale Abzeichnung
 
-| Rolle / Szenario | Ergebnis | Datum |
-| --- | --- | --- |
-| Systemingenieur | erfüllt | 2026-08-21 |
-| Projektmanager | erfüllt | 2026-08-22 |
-| Teamleitung | erfüllt | 2026-08-22 |
-| Viewer / Negativtest | erfüllt | 2026-08-22 |
-| Mehrbenutzerszenario | erfüllt | 2026-08-24 |
-| Administrator | erfüllt | 2026-08-24 |
-| Role Preview | N/A | 2026-08-24 |
+| Rolle / Szenario     | Ergebnis | Datum      |
+| -------------------- | -------- | ---------- |
+| Systemingenieur      | erfüllt  | 2026-08-21 |
+| Projektmanager       | erfüllt  | 2026-08-22 |
+| Teamleitung          | erfüllt  | 2026-08-22 |
+| Viewer / Negativtest | erfüllt  | 2026-08-22 |
+| Mehrbenutzerszenario | erfüllt  | 2026-08-24 |
+| Administrator        | erfüllt  | 2026-08-24 |
+| Role Preview         | N/A      | 2026-08-24 |
 
 ## 8. Abschluss
 
