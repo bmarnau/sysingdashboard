@@ -51,9 +51,12 @@ Planungsprinzip:
 ### BSF-02 — Kundenmodell
 
 - Schwerpunkt: Kunde als stabile Fachentität; Zuordnung von Projekten, Arbeitspaketen und Tätigkeiten.
+- Kundenidentität gilt systemhausgebunden als `(systemhouseId, customerId)`, nicht installations- oder systemhausübergreifend global.
+- Eine providerneutrale Customer-Identity-/Mapping-Schicht muss SharePoint, Sysing Dashboard und Reportfamilie innerhalb desselben Systemhauses auf dieselbe Kundenidentität beziehen können.
+- `systemhouseId` darf nicht fest an Microsoft Tenant ID oder einen anderen Provider gekoppelt werden.
 - Arbeits-Prompts: 1–2.
 - Lovable-Einsatz: 0–1.
-- Gate: Kunde → Projekt → Arbeitspaket → Tätigkeit belastbar.
+- Gate: Kunde → Projekt → Arbeitspaket → Tätigkeit belastbar; Identitätsgrenze je Systemhaus fachlich und technisch eindeutig.
 
 ### BSF-03 — Kundenverantwortung
 
@@ -72,9 +75,12 @@ Planungsprinzip:
 ### BSF-05 — Canonical Import Model und SharePoint-Contract
 
 - Schwerpunkt: partielle Quelldaten, Provenienz, stabile Quell-IDs, Idempotenz und READ/SYNC.
+- SharePoint darf fachliche Kundenquelle bleiben, auch wenn dort zunächst keine gemeinsame `customerId` existiert.
+- Quellmapping wird innerhalb eines vorher feststehenden `systemhouseId` ausgeführt und verwendet stabile Quellreferenzen wie `sourceSystem`, `sourceInstance` und `sourceRecordId`.
+- Unsichere Matches dürfen nicht automatisch zusammengeführt werden; Cross-Systemhaus- und Cross-Tenant-Matching ist ausgeschlossen.
 - Arbeits-Prompts: 2.
 - Lovable-Einsatz: 0–1.
-- Gate: Importvertrag PASS.
+- Gate: Importvertrag PASS; derselbe Kunde kann innerhalb eines Systemhauses eindeutig zwischen SharePoint, Sysing Dashboard und Reportfamilie aufgelöst werden, ohne Kundenräume verschiedener Systemhäuser zu vermischen.
 
 ### BSF-06 — Betreiberhoheit und Docker
 
@@ -168,13 +174,19 @@ Projektmanager erhält eine **reine Auswertungssicht**, keine Teamlead-Abrechnun
 
 1. **09C-FINAL → MVP-BASELINE:** keine neue MVP-Fachfunktion mehr; nur Abnahme, Doku und Gate.
 2. **MVP-BASELINE → BSF-01:** BSF beginnt erst nach formaler MVP-Baseline.
-3. **BSF-02 → BSF-05:** Kundenmodell und Kundenverantwortung vor realer Datenintegration stabilisieren.
+3. **BSF-02 → BSF-05:** Kundenmodell und Kundenverantwortung vor realer Datenintegration stabilisieren; die systemhausgebundene Kundenidentität muss vor SharePoint-/Cross-Project-Mapping entschieden sein.
 4. **BSF-06 vor BSF-FINAL:** Betreiberhoheit und Portabilität sind BSF-Pflicht, nicht Nacharbeit.
 5. **BSF-FINAL → INTEGRATION-READINESS:** Microsoft Graph/Exchange erst nach bestandener BSF-Baseline und eigenem Readiness-Gate.
 
 Providerneutrale Importkette bleibt verbindlich:
 
 `SOURCE → NORMALIZE → VALIDATE → MATCH → ENRICH → REVIEW → PERSIST → AVKK`
+
+Für Kunden-Matching gilt zusätzlich zwingend:
+
+`SYSTEMHOUSE SCOPE → SOURCE MAPPING → CUSTOMER RESOLUTION`
+
+Kein Matching darf Kundenräume unterschiedlicher Systemhäuser zusammenführen.
 
 ## 6. Planungsgrößen
 
