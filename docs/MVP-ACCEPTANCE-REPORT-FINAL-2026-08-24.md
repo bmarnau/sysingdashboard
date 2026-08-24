@@ -21,24 +21,24 @@ Wesentliche Korrekturen gegenüber historischen Zwischenständen:
 
 ## 2. Funktionale Abnahme
 
-| Bereich | Ergebnis |
-| --- | --- |
-| Anmeldung und Sitzung | PASS |
-| Rollen-/Berechtigungsmodell | PASS |
-| AVKK-Arbeitsplatz | PASS |
-| Projektmanager-Cockpit | PASS |
-| Management-Cockpit | PASS |
-| Delegation Projektmanager/Teamleitung | PASS im aktuellen RBAC-Scope |
-| Reporting PDF/Druck/Word/JSON/CSV | PASS |
-| Import/Export | PASS |
-| Backup/Restore/Integrität | PASS |
-| Downloadbereich | PASS |
-| Log Viewer | PASS |
-| Systemstatus | PASS |
-| Benutzer-/Auth-Administration | PASS |
-| Viewer-/Negativpfade | PASS |
-| Mehrbenutzerszenario | PASS |
-| Role Preview | N/A — kein Produktbestandteil |
+| Bereich                               | Ergebnis                      |
+| ------------------------------------- | ----------------------------- |
+| Anmeldung und Sitzung                 | PASS                          |
+| Rollen-/Berechtigungsmodell           | PASS                          |
+| AVKK-Arbeitsplatz                     | PASS                          |
+| Projektmanager-Cockpit                | PASS                          |
+| Management-Cockpit                    | PASS                          |
+| Delegation Projektmanager/Teamleitung | PASS im aktuellen RBAC-Scope  |
+| Reporting PDF/Druck/Word/JSON/CSV     | PASS                          |
+| Import/Export                         | PASS                          |
+| Backup/Restore/Integrität             | PASS                          |
+| Downloadbereich                       | PASS                          |
+| Log Viewer                            | PASS                          |
+| Systemstatus                          | PASS                          |
+| Benutzer-/Auth-Administration         | PASS                          |
+| Viewer-/Negativpfade                  | PASS                          |
+| Mehrbenutzerszenario                  | PASS                          |
+| Role Preview                          | N/A — kein Produktbestandteil |
 
 Excel bleibt bewusst Post-MVP.
 
