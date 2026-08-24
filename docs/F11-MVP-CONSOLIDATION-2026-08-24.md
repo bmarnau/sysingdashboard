@@ -1,10 +1,10 @@
 # F-11 / MVP — Abschlusskonsolidierung 2026-08-24
 
-Status: **F-11 CLOSED / PASS · MVP BASELINE GATE PENDING**
+Status: **F-11 CLOSED / PASS · MVP 100 % / BASELINE READY — WIRKSAM MIT MERGE VON PR #60**
 
 ## 1. Zweck
 
-Dieses Dokument konsolidiert die seit dem ursprünglichen Sprint-09C-Abnahmebericht entstandene technische und manuelle Evidenz. Es trennt den fachlich abgeschlossenen Befund F-11 vom noch ausstehenden formalen Baseline-Gate des Gesamt-MVP.
+Dieses Dokument konsolidiert die seit dem ursprünglichen Sprint-09C-Abnahmebericht entstandene technische und manuelle Evidenz. Es trennt den fachlich abgeschlossenen Befund F-11 vom formalen Baseline-Aktivierungsschritt des Gesamt-MVP.
 
 Die historischen Abnahme- und Planungsdokumente werden nicht rückwirkend umgeschrieben. Für den aktuellen Status gilt `docs/CURRENT-STATUS.md` als Einstiegspunkt.
 
@@ -31,6 +31,16 @@ Ausgangspunkt dieser Konsolidierung ist GitHub `main` nach Merge von PR #39:
 - Quality Gate: PASS
 
 Der aktuelle `main` enthält außerdem das zuvor vollständig abgenommene CSRF-Hardening der TanStack Server Functions aus PR #58.
+
+Der vollständige Konsolidierungsstand dieses PRs wurde zusätzlich geprüft:
+
+- CI #403 / Run `32745266068`: **PASS**
+- Security #394: **PASS**
+- Prettier, ESLint, TypeScript, RBAC, Docs und Projektmanifest: PASS
+- Unit & Components, Backend, API, RBAC & Security, Import/Export, Backup/Restore: PASS
+- Production Build, Playwright E2E, Accessibility und Technical Debt: PASS
+- Technical Report: PASS
+- Quality Gate: PASS
 
 ## 3. F-11 — konsolidierte Abnahme
 
@@ -111,12 +121,17 @@ Diese Punkte sind keine offenen F-11-Abnahmehandlungen.
 
 Es verbleibt kein manueller F-11-Resttest. Die vorherigen OPEN-/PARTIAL-Aussagen in älteren Sprint-/RC-Dokumenten sind historische Zwischenstände und werden durch die datierten Abschlussnachweise fortgeschrieben.
 
-## 9. Noch ausstehender MVP-Schritt
+## 9. MVP-Baseline-Aktivierung
 
-Vor der verbindlichen Kennzeichnung `MVP 100 % / BASELINE` wird dieser Konsolidierungsstand selbst noch einmal vollständig durch CI, Security, Technical Report und Quality Gate geprüft.
+Der Konsolidierungsstand ist mit CI #403 und Security #394 vollständig grün geprüft. Deshalb ist der MVP **100 % / BASELINE READY**.
 
-Bis zu diesem Ergebnis gilt:
+Diese reine Statusfortschreibung enthält keine Produkt-, Auth-, RBAC-, RLS- oder Datenbankänderung und wird selbst noch einmal durch den finalen Head-Gate-Lauf geprüft.
+
+Für den Abschluss gilt:
 
 - F-11: **CLOSED / PASS**
 - Produktiver MVP: **funktional und fachlich abgenommen**
-- formale MVP-Baseline: **PENDING FINAL CONSOLIDATION GATE**
+- formale MVP-Baseline: **100 % / BASELINE READY**
+- Wirksamkeit: **mit Merge des final vollständig grünen Heads von PR #60 nach `main`**
+
+Der resultierende `main`-Commit wird anschließend als verbindliche MVP-Baseline eindeutig referenziert, ohne danach den Baseline-Code erneut zu verändern.
