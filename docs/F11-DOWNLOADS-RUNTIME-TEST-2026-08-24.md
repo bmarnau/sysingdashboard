@@ -59,15 +59,15 @@ In einzelnen älteren Export-Metadaten ist die Groß-/Kleinschreibung des Feldes
 
 ## PASS-Kriterien
 
-| Kriterium | Ergebnis |
-| --- | --- |
-| Dialog öffnet ohne sichtbaren Fehler | PASS |
-| Layout vollständig und bedienbar | PASS |
-| Vorhandene Exportzeilen korrekt dargestellt | PASS |
-| Status/Format/Größe/Ablauf plausibel | PASS |
-| `Fertig`-Status sichtbar | PASS |
-| Keine unbeabsichtigte Datenänderung | PASS |
-| Keine Secrets/Zugangsdaten sichtbar | PASS |
+| Kriterium                                   | Ergebnis |
+| ------------------------------------------- | -------- |
+| Dialog öffnet ohne sichtbaren Fehler        | PASS     |
+| Layout vollständig und bedienbar            | PASS     |
+| Vorhandene Exportzeilen korrekt dargestellt | PASS     |
+| Status/Format/Größe/Ablauf plausibel        | PASS     |
+| `Fertig`-Status sichtbar                    | PASS     |
+| Keine unbeabsichtigte Datenänderung         | PASS     |
+| Keine Secrets/Zugangsdaten sichtbar         | PASS     |
 
 ## Ergebnis
 
