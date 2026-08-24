@@ -56,15 +56,44 @@ Begründung: Die Detailansicht kann vollständigen JSON-Kontext und Stacktraces 
 9. Keine Export-, Lösch-, Kopier- oder Detailaktion ausführen.
 10. Einen Screenshot senden, der Titel, Toolbar, Filter und mehrere Logzeilen bzw. den Empty-State zeigt.
 
+## Manueller Sichtnachweis
+
+Status: **VISUELL PASS**
+
+Der Betreiber-Screenshot vom 2026-08-24 zeigt:
+
+- Dialog `Log Viewer` öffnet vollständig und ohne sichtbare Laufzeit- oder IndexedDB-Fehlermeldung.
+- Toolbar mit Volltextsuche, `Auto (5 s)`, `Aktualisieren`, `Export` und `Löschen` ist vollständig gerendert.
+- Level-Filter `debug`, `info`, `warn`, `error` sind sichtbar und aktiviert.
+- Zeitraumfilter steht auf `Letzte 24 Stunden`.
+- Quellenfilter steht auf `Alle Quellen`.
+- Zähler zeigt `3 von 189 Einträgen`.
+- Sichtbar sind zwei `INFO`-Einträge mit Message `JsonExport built` und Quelle `JsonExportService`.
+- Zusätzlich ist ein `WARN`-Eintrag mit Quelle `supabase/env-check` sichtbar.
+- Kein `error`-Eintrag ist in der sichtbaren Liste vorhanden.
+- In der sichtbaren Hauptliste sind keine Passwörter, Tokens, API-Keys, Service-Role-Keys, Connection Strings oder vergleichbare Zugangsdaten im Klartext erkennbar.
+- Es wurde keine Export-, Lösch-, Kopier- oder Detailaktion für die Abnahme benötigt.
+
+### LOG-INFO-01 — vorhandener Warn-Eintrag
+
+Beobachtung: Ein `WARN` aus `supabase/env-check` ist sichtbar. Der Inhalt wurde für diese F-11-Sichtprüfung bewusst nicht durch Öffnen der Detailansicht erweitert.
+
+Bewertung: **kein Fehler des Log Viewers**. Der Log Viewer erfüllt gerade seinen Zweck, indem er ein Warnereignis sichtbar macht. Die fachliche Ursache wird nicht aus diesem Screenshot abgeleitet. Bei der späteren Einordnung der bereits offenen Systemstatus-/ENV-Findings kann geprüft werden, ob dieser Warn-Eintrag damit zusammenhängt.
+
 ## PASS-Kriterien
 
-- Dialog `Log Viewer` öffnet ohne sichtbaren Laufzeitfehler.
-- Keine IndexedDB-Read-Fehlermeldung sichtbar; falls doch, wird dies als Finding dokumentiert.
-- Filter/Zeitraum und Loganzahl sind verständlich dargestellt.
-- Vorhandene Logzeilen sind lesbar oder Empty-State ist korrekt.
-- Keine offensichtlichen Secrets/Zugangsdaten in der Hauptliste sichtbar.
-- Keine unbeabsichtigte Datenänderung.
+| Kriterium | Ergebnis |
+| --- | --- |
+| Dialog ohne sichtbaren Laufzeitfehler | PASS |
+| Keine IndexedDB-Read-Fehlermeldung | PASS |
+| Filter/Zeitraum/Quelle verständlich dargestellt | PASS |
+| Loganzahl sichtbar | PASS |
+| Logzeilen lesbar | PASS |
+| Keine offensichtlichen Secrets/Zugangsdaten in der Hauptliste | PASS |
+| Keine unbeabsichtigte Datenänderung | PASS |
 
-## Status
+## Ergebnis
 
-**OFFEN — nächster manueller Betreiber-Test.**
+**Log Viewer: VISUELL PASS.**
+
+Der vorhandene `WARN` wird als `LOG-INFO-01` dokumentiert, blockiert aber die Abnahme des Log-Viewer-Bedienpfads nicht.
