@@ -57,16 +57,49 @@ Nicht anklicken:
 - Menü ist auf dem verwendeten Desktop-Viewport vollständig nutzbar; keine wichtigen Einträge sind durch Layout/Clipping unerreichbar.
 - Keine unbeabsichtigte Aktion oder Datenänderung.
 
-## Manueller Test
+## Manueller Sichtnachweis
 
-1. Als `System-Administrator` angemeldet bleiben.
-2. Nur `Einstellungen und Services` öffnen.
-3. Keine Menüaktion auslösen.
-4. Prüfen, ob die oben genannten Administrator-Einträge sichtbar und lesbar sind.
-5. Falls nicht alle Einträge in einem Bild sichtbar sind, zwei Screenshots aufnehmen: oberer und unterer Menüteil.
-6. Besonders darauf achten, dass `Backend & Auth-Konten…`, `Automatische Abmeldung…`, `Abmelden` und `Reset` am unteren Ende tatsächlich erreichbar sind.
-7. Screenshot(s) senden.
+Der Betreiber öffnete am 24.08.2026 als `System-Administrator` ausschließlich das Servicemenü und löste keine Menüaktion aus.
+
+Im Screenshot sind vollständig und lesbar sichtbar:
+
+- `Export…`
+- `Berichte…`
+- `Leistungsreport anzeigen`
+- `Benutzer & Profile…`
+- `Engineer-Stammdaten…`
+- `Arbeitszeitmodell…`
+- `Downloads…`
+- `Backup…`
+- `Log Viewer…`
+- `Import / Export…`
+- `Azure Daten…`
+- `Systemstatus…`
+- `Technischer Prüfbericht…`
+- `PDF Drucken`
+- `Handbuch…`
+- `Entwicklungstagebuch…`
+- `Demo-Datensatz…`
+- `Backend & Auth-Konten…`
+- `Automatische Abmeldung…`
+- `Abmelden`
+- `Reset`
+
+Die permission-gebundenen Administratorfunktionen sind damit vollständig sichtbar. Der untere Menübereich einschließlich `Backend & Auth-Konten…`, `Automatische Abmeldung…`, `Abmelden` und `Reset` ist erreichbar und nicht durch Clipping verdeckt. Es ist keine Fehlermeldung oder Überlagerung sichtbar. Es wurde keine mutierende Aktion ausgelöst.
+
+## Bewertung
+
+| Kriterium | Ergebnis |
+| --- | --- |
+| Servicemenü öffnet ohne sichtbaren Fehler | PASS |
+| Allgemeine Serviceeinträge vollständig/lesbar | PASS |
+| Permission-gebundene Administrator-Einträge sichtbar | PASS |
+| Unterer Menübereich vollständig erreichbar | PASS |
+| Keine Layout-/Clipping-Blockade | PASS |
+| Keine unbeabsichtigte Aktion/Datenänderung | PASS |
 
 ## Status
 
-**OFFEN — nächster manueller Betreiber-Test.**
+**VISUELL PASS — finaler Administrator-Sichttest abgeschlossen.**
+
+Damit sind die geplanten manuellen Administrator-UI-Pfade `Systemstatus`, `Benutzer & Profile`, `Backup`, `Downloads`, `Log Viewer` und die finale Servicemenü-Gesamtsicht abgearbeitet. Offen bleiben außerhalb dieses Sichttests die fachliche Einordnung/Behebung der Systemstatus-Findings `SYSSTAT-01` bis `SYSSTAT-03`, die Entscheidung zu `Role Preview` sowie die finale F-11-Dokument-/CI-Konsolidierung.
