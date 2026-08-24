@@ -1,6 +1,6 @@
 # KI-gestützter Entwicklungsworkflow — GitHub, ChatGPT, Lovable und lokale Werkzeuge
 
-Stand: 2026-08-21  
+Stand: 2026-08-24  
 Status: verbindliche Arbeitsregel für Sysing Dashboard
 
 ## 1. Ziel
@@ -90,6 +90,19 @@ Vor einem Lovable-Prompt wird die Aufgabe gedanklich klassifiziert:
 
 Kann eine Aufgabe ohne Qualitätsverlust direkt über GitHub oder lokal erledigt werden, wird kein Lovable-Lauf verwendet.
 
+### 8.1 Tagesbudget Lovable
+
+Für die operative Planung gilt nutzerseitig bestätigt zum Stand 2026-08-24:
+
+- Pro Tag stehen **5 neue Lovable-Credits** zur Verfügung.
+- Diese Zahl ist als tarifabhängige Planungsgröße zu behandeln und bei Tarif-/Produktänderungen neu zu verifizieren.
+- Zu Beginn eines Arbeitstages wird geprüft, welche Aufgaben des Tages tatsächlich von Lovable profitieren.
+- Bevorzugte Einsatzfelder sind UI-/Preview-/Layout-Arbeit, produktionsnahe Sichtprüfung, klar abgegrenzte Lovable-spezifische Implementierungen und ein gezielter Korrekturlauf nach bestätigtem Befund.
+- Als Planungsheuristik können etwa 2 Credits für UI/Preview, 1–2 Credits für klar abgegrenzte Implementierung/Korrektur und 1 Credit als Reserve vorgesehen werden.
+- Credits sollen nicht unnötig verfallen, wenn sinnvolle Lovable-Arbeit ohnehin ansteht und sicher vorgezogen werden kann.
+- Gleichzeitig werden **keine künstlichen Änderungen, Testschleifen oder Feature-Aufträge nur zum Aufbrauchen von Credits** erzeugt.
+- GitHub-Source-of-Truth, Scope-Trennung, CI/Security-Gates und manuelle Abnahme haben Vorrang vor Credit-Auslastung.
+
 ## 9. Abschlussbericht als Übergabevertrag
 
 Jeder substanzielle technische Schritt endet mit einem Abschlussbericht. Je nach Aufgabe enthält er:
@@ -123,6 +136,6 @@ Unverändert verbindlich:
 
 ## 11. Praktische Konsequenz für das laufende Projekt
 
-Bis zur MVP-Baseline werden Lovable-Läufe nur noch verwendet, wenn ein technischer Abschluss-Gate-Lauf oder ein tatsächlich notwendiger Plattformtest nicht sinnvoll außerhalb von Lovable erbracht werden kann.
+Bis zur MVP-Baseline werden Lovable-Läufe nur noch verwendet, wenn ein technischer Abschluss-Gate-Lauf oder ein tatsächlich notwendiger Plattformtest nicht sinnvoll außerhalb von Lovable erbracht werden kann. Das tägliche Credit-Budget wird dabei bewusst geplant, aber nicht zum Selbstzweck verbraucht.
 
-Die offene F-11-Abnahme ist manuelle Fachprüfung und verbraucht daher keine Lovable-Credits. GitHub-Dokumentation und formale Abzeichnung werden nach bestätigten Testergebnissen direkt im Repository gepflegt.
+Die offene F-11-Abnahme ist manuelle Fachprüfung und verbraucht daher grundsätzlich keine Lovable-Credits. GitHub-Dokumentation und formale Abzeichnung werden nach bestätigten Testergebnissen direkt im Repository gepflegt.
