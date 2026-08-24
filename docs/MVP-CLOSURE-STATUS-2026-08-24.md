@@ -2,13 +2,13 @@
 
 Dashboard-Version: `1.59.6`  
 F-11: **CLOSED / PASS**  
-MVP: **FUNKTIONAL UND FACHLICH ABGENOMMEN · BASELINE GATE PENDING**
+MVP: **100 % / BASELINE READY — WIRKSAM MIT MERGE VON PR #60**
 
 ## 1. Zweck
 
 Dieses Dokument ist die aktuelle Fortschreibung des MVP-Abschlussstatus. `docs/MVP-CLOSURE-STATUS-2026-08-21.md` bleibt als historischer Zwischenstand erhalten.
 
-Der technische und fachliche Abschluss wird nicht mit der formalen Baseline gleichgesetzt: Die Kennzeichnung `MVP 100 % / BASELINE` erfolgt erst nach einem frischen grünen CI-/Security-/Technical-Report-/Quality-Gate-Lauf auf genau diesem Konsolidierungsstand.
+Der technische und fachliche Abschluss ist nachgewiesen. Der vollständige Konsolidierungsstand wurde mit CI #403 / Run `32745266068` und Security #394 erfolgreich geprüft; Technical Report und Quality Gate sind PASS. Die Baseline wird mit dem Merge des final erneut vollständig grünen Heads von PR #60 nach `main` wirksam.
 
 ## 2. Aktueller Produktstand
 
@@ -47,9 +47,9 @@ Maßgebliche Nachweise:
 - `docs/F11-MVP-CONSOLIDATION-2026-08-24.md`
 - die F-11-Runtime-Evidenz aus PR #39
 
-## 4. Laufaktuelle technische Evidenz vor der Konsolidierung
+## 4. Technische Gate-Evidenz
 
-PR #39 wurde nach vollständiger Abnahme gemergt.
+PR #39 wurde nach vollständiger F-11-Abnahme gemergt.
 
 CI #398 / Run `32743583294`:
 
@@ -69,6 +69,18 @@ CI #398 / Run `32743583294`:
 - Quality Gate: PASS
 
 Security #389: **PASS**.
+
+Der vollständige Abschluss-/Konsolidierungsstand von PR #60 wurde ebenfalls geprüft:
+
+- CI #403 / Run `32745266068`: **PASS**
+- Security #394: **PASS**
+- Static, Unit/Components, Backend, API, RBAC/Security, Import/Export und Backup/Restore: PASS
+- Production Build: PASS
+- Playwright E2E: PASS
+- Accessibility: PASS
+- Technical Debt: PASS
+- laufaktueller Technical Report: PASS
+- Quality Gate: PASS
 
 Der aktuelle `main` enthält zusätzlich das CSRF-Hardening der TanStack Server Functions aus PR #58 einschließlich bestandener Security-/CI-/E2E-Abnahme.
 
@@ -120,20 +132,13 @@ Der formale F-11-Abschluss bedeutet nicht, dass alle langfristigen Architektur- 
 
 Vor der BSF-Planung werden diese Punkte gegen den jeweils aktuellen technischen Prüfbericht erneut auf Statusdrift geprüft.
 
-## 8. Noch offener formaler Schritt
+## 8. Baseline-Aktivierung
 
-Für die finale Baseline fehlt nur noch die Abnahme dieses Konsolidierungsstands selbst:
+Der vollständige Konsolidierungsstand ist grün gegatet. Deshalb gilt:
 
-1. CI vollständig grün,
-2. Security vollständig grün,
-3. Technical Report laufaktuell PASS,
-4. Quality Gate PASS,
-5. anschließend Merge nach `main`,
-6. Baseline-Commit auf `main` dokumentieren.
+> **MVP 100 % / BASELINE READY.**
 
-Bis dahin ist die korrekte Formulierung:
-
-> **MVP funktional und fachlich abgenommen; formale Baseline-Kennzeichnung wartet ausschließlich auf den finalen Konsolidierungs-Gate-Lauf.**
+Die jetzt vorgenommene reine Statusfortschreibung wird selbst noch einmal vollständig durch CI, Security, Technical Report und Quality Gate geprüft. Wenn dieser finale Head ebenfalls grün ist, wird PR #60 mit Head-SHA-Schutz nach `main` gemergt. Mit diesem Merge wird die Baseline wirksam; der resultierende `main`-Commit ist die verbindliche MVP-Baseline.
 
 ## 9. Abschlussbericht
 
@@ -145,4 +150,4 @@ Bis dahin ist die korrekte Formulierung:
 - Auth/RBAC/RLS: **nachgewiesen im aktuellen MVP-Scope**
 - Supabase: **aktive MVP-Plattform**
 - Azure/Entra: **optionaler Zukunfts-/Migrationspfad**
-- MVP-Baseline: **PENDING FINAL CONSOLIDATION GATE**
+- MVP-Baseline: **100 % / BASELINE READY — WIRKSAM MIT MERGE VON PR #60**
