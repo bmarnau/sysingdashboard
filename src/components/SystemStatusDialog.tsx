@@ -359,13 +359,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
                     ? NOT_CONFIGURED
                     : HOSTING_METADATA_UNAVAILABLE
               }
-              ok={
-                lvStatus === "configured"
-                  ? true
-                  : lvStatus === "not_configured"
-                    ? false
-                    : undefined
-              }
+              ok={lvStatus === "configured" ? true : lvStatus === "not_configured" ? false : undefined}
             />
             <Row
               label="Last deployment"
