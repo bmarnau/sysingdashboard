@@ -1,22 +1,24 @@
 # Sysing Dashboard — BSF-Konzeptregister
 
-Stand: 2026-08-24  
-Status: fachliche Vormerkungen für spätere BSF-Sprints  
-Geltung: keine MVP-Umsetzung; GitHub bleibt Source of Truth
+Stand: 2026-08-25  
+Status: aktive fachliche Planungsgrundlage für BSF  
+Geltung: keine MVP-Nacharbeit; GitHub bleibt Source of Truth
 
 ## 1. Zweck
 
-Dieses Register bündelt fachliche Entscheidungen, die bereits getroffen wurden, aber erst nach der formalen MVP-Baseline umgesetzt werden sollen. Es verhindert, dass solche Entscheidungen nur in Chats oder dauerhaft offenen Draft-PRs erhalten bleiben.
+Dieses Register bündelt fachliche Entscheidungen, die bereits getroffen wurden und in den zugeordneten BSF-Sprints umgesetzt werden sollen. Es verhindert, dass solche Entscheidungen nur in Chats oder dauerhaft offenen Draft-PRs erhalten bleiben.
 
 Verbindliche Regel:
 
 > Ein Eintrag in diesem Register ist eine gesicherte Planungsgrundlage, aber noch keine Implementierungsfreigabe. Umsetzung erfolgt erst im zugeordneten Sprint nach Analyse, Architekturabgleich, RBAC/RLS-Prüfung, Tests, Dokumentation und Abnahme.
 
+Die Planungs-/Architekturbaseline aus BSF-01 wird durch `docs/BSF-01-ARCHITECTURE-BASELINE.md` und ADR-0029 ergänzt.
+
 ## 2. C-01 — Kundenverantwortung
 
 Quelle: PR #27 `Docs/Concept: Kundenverantwortung für spätere Umsetzung sichern`  
 Zielsprint: **BSF-03**, mit Vorarbeit in BSF-02  
-Status: fachlich vorgemerkt
+Status: fachlich vorgemerkt; BSF-01-Scopegrenzen bestätigt
 
 ### Gesicherte Entscheidungen
 
@@ -25,7 +27,7 @@ Status: fachlich vorgemerkt
 - Ein Kunde besitzt zunächst `0..1` primär verantwortlichen Sysing-Benutzer.
 - Eine spätere Mehrfachverantwortung je Kunde soll architektonisch möglich bleiben.
 - Es gibt perspektivisch einen Einstieg **Meine Kunden**.
-- Kundenverantwortung ist ein fachlicher Scope und keine neue globale Rolle.
+- Kundenverantwortung ist ein fachlicher Scope bzw. eine Beziehung und keine neue globale Rolle.
 - Kundenverantwortung ist nicht gleich AVKK-Verantwortung.
 - Sichtbarkeit aufgrund Kundenverantwortung erzeugt nicht automatisch globale Schreibrechte.
 - Der verantwortliche Sysing soll im zulässigen Scope alle Projekte, Arbeitspakete und Tätigkeiten des Kunden sehen können.
@@ -33,6 +35,8 @@ Status: fachlich vorgemerkt
 - Kundenverantwortung darf keine impliziten Rechte auf Benutzerverwaltung, Rollen oder Systemeinstellungen erzeugen.
 - Verantwortungswechsel müssen historisiert und auditierbar sein.
 - Durchsetzung muss serverseitig über RBAC/RLS bzw. providerneutrale Datenzugriffsschichten erfolgen.
+- Die fachliche Kundenidentität folgt ADR-0029 und ist an `(systemhouseId, customerId)` gebunden.
+- BSF-03 setzt voraus, dass BSF-02 einen serverseitig nutzbaren gemeinsamen Kunden-/Objekt-Read-Pfad bereitstellt.
 
 ### Offene Discovery-Fragen
 
@@ -45,8 +49,8 @@ Status: fachlich vorgemerkt
 ## 3. C-02 — Leistungsnachweis V1 und Projektmanager-Controlling
 
 Quelle: PR #29 `Docs/Concept: Abrechnung V1 als kundenbezogenen Leistungsnachweis sichern`  
-Zielsprint: **BSF-08**, mit UI-/Cockpit-Vorbereitung in BSF-07  
-Status: fachlich vorgemerkt
+Zielsprints: **BSF-03A Projektmanager-Controlling** und **BSF-03B Teamlead-Leistungsnachweis**  
+Status: fachlich vorgemerkt; aus dem historischen BSF-08-Platz vorgezogen
 
 ### Gesicherte Entscheidungen Teamlead
 
@@ -95,6 +99,8 @@ Mindestens sichtbar bzw. filterbar:
 
 Die Sicht wird serverseitig auf den zulässigen Projekt-/Verantwortungsscope begrenzt. Sie erzeugt kein Recht zur Finalisierung eines Leistungsnachweises.
 
+BSF-01 bestätigt zusätzlich: Die Projektmanager-Sicht ist read-only; der Teamlead-Leistungsnachweis ist ein separater Write-/Finalisierungs-/Audit-Scope.
+
 ### Offene Discovery-Fragen
 
 - Rundungsregeln,
@@ -106,9 +112,10 @@ Die Sicht wird serverseitig auf den zulässigen Projekt-/Verantwortungsscope beg
 ## 4. C-03 — systemhausgebundene Kundenidentität
 
 Quelle: PR #51 `Docs/Concept: systemhausgebundene Kundenidentität sichern`  
+Architekturentscheidung: **ADR-0029**  
 Zielsprints: **BSF-02**, **BSF-05**, Integration Readiness  
 Cross-Project: `bmarnau/report-family-platform`  
-Status: Architekturpräzisierung vorgemerkt
+Status: BSF-01-Architekturbaseline bestätigt
 
 ### Gesicherte Entscheidungen
 
@@ -127,6 +134,9 @@ Dabei gilt:
 - `customerId` kann technisch eine UUID sein.
 - Ihre fachliche Eindeutigkeit gilt innerhalb eines `systemhouseId`-Scopes.
 - `systemhouseId` bleibt providerneutral und wird nicht fest mit einer Microsoft Tenant ID gekoppelt.
+- Microsoft Entra Tenant ID, Supabase-Projekt-ID und andere Providerkennungen sind Mapping-/Providerdaten, keine fachlichen Primärscopes.
+- Neue BSF-Scopes verwenden fachlich Systemhaus-Semantik; die ältere `tenant`-Terminologie aus ADR-0007/0008 bleibt historische Pre-BSF-Evidenz.
+- Vor Runtime-Änderungen ist zu prüfen, ob alte `tenant:`-Scopes oder andere persistierte Altwerte tatsächlich migriert werden müssen.
 - Ein anderes Systemhaus besitzt einen getrennten Kundenidentitätsraum, auch wenn dort dieselbe Reportfamilie eingesetzt wird.
 - Keine automatische Cross-Systemhaus- oder Cross-Tenant-Zuordnung.
 - Kundenname ist kein stabiler technischer Schlüssel.
@@ -136,6 +146,12 @@ Dabei gilt:
 - Mappingentscheidungen und Aliase müssen nachvollziehbar und auditierbar sein.
 - RBAC/RLS und Datenzugriff müssen den Systemhaus-Scope serverseitig erzwingen.
 - Die Architektur muss providerneutral, containerfähig und ohne unersetzbare Lovable-Cloud-Abhängigkeit bleiben.
+
+### Minimale Datenabhängigkeit aus BSF-01
+
+Projekte, Arbeitspakete und Tätigkeiten sind im MVP user-scoped lokal. BSF-02 muss deshalb zusätzlich zur Customer-Entität genau die minimale gemeinsame bzw. synchronisierte Daten-/Read-Basis schaffen, die BSF-03 und BSF-03A für echte Mehrbenutzersichten benötigen.
+
+Der vollständige Datenhaltungsumbau bleibt BSF-04.
 
 ### Empfohlene Quellreferenz
 
@@ -161,7 +177,7 @@ Für die spätere gemeinsame Architektur ist zu präzisieren:
 
 Die dort bereits vorgesehene Customer Registry kann grundsätzlich bestehen bleiben, benötigt aber einen expliziten Systemhaus-/Mandantenscope.
 
-### Offene Discovery-Fragen
+### Offene Discovery-Fragen für BSF-02/05
 
 - Wie wird `systemhouseId` erzeugt und administriert?
 - Wo wird die Customer Identity Registry betrieben?
@@ -181,14 +197,16 @@ Die dort bereits vorgesehene Customer Registry kann grundsätzlich bestehen blei
 
 ### C-02 Leistungsnachweis/Controlling
 
-- Hauptsprint: **BSF-08**
-- Vor-/Folgesprints: BSF-07, BSF-09
+- Projektmanager-Controlling: **BSF-03A**
+- Teamlead-Leistungsnachweis V1: **BSF-03B**
+- historischer Planungsplatz BSF-08 erzeugt keinen zweiten Implementierungssprint
 - Pflicht-Gate: Teamlead-Finalisierung und Projektmanager-Auswertung sauber getrennt
 
 ### C-03 Kundenidentität
 
+- Architektur-Baseline: **BSF-01 / ADR-0029**
 - Hauptsprints: **BSF-02 / BSF-05**
-- Vor-/Folgesprints: BSF-01, Integration Readiness
+- Vor-/Folgesprints: BSF-03, Integration Readiness
 - Pflicht-Gate: kein Cross-Systemhaus-Matching; stabile Quellzuordnung
 
 ## 6. Gemeinsame Architekturregeln
@@ -200,13 +218,14 @@ Für alle drei Konzepte gelten:
 - RBAC/RLS und serverseitige Scopes sind maßgeblich.
 - Auditierbarkeit bei Verantwortungs-, Mapping- und Finalisierungsänderungen.
 - Keine produktiven Secrets in Code, Prompts, Berichten oder Mappingdaten.
-- Supabase bleibt MVP-Plattform; spätere Entra-ID-/Azure-SQL-/Azure-Storage-Fähigkeit darf nicht verbaut werden.
+- Supabase bleibt MVP-/BSF-Ausgangsprovider; spätere Entra-ID-/Azure-SQL-/Azure-Storage-Fähigkeit darf nicht verbaut werden.
 - Docker-/On-Premises-Betrieb muss möglich bleiben.
 - Lovable Cloud darf keine technisch unersetzbare Laufzeitabhängigkeit werden.
+- Lovable wird für UI-/Preview-Nutzen eingesetzt, nicht als Quelle für Architektur-, Datenmodell- oder Sicherheitsentscheidungen.
 
 ## 7. Wiederaufnahme-Regel
 
-Beim Start eines zugeordneten BSF-Sprints ist dieses Register zusammen mit `docs/ROADMAP-MVP-BSF.md`, `docs/SPRINT-PLAN-MVP-BSF.md`, den relevanten ADRs und dem aktuellen GitHub-`main` zu prüfen.
+Beim Start eines zugeordneten BSF-Sprints ist dieses Register zusammen mit `docs/ROADMAP-MVP-BSF.md`, `docs/SPRINT-PLAN-MVP-BSF.md`, `docs/BSF-CURRENT-PRIORITIES.md`, den relevanten ADRs und dem aktuellen GitHub-`main` zu prüfen.
 
 Erst danach wird ein konkreter Implementierungs-Prompt formuliert.
 
@@ -216,6 +235,4 @@ Jeder Implementierungs-Prompt endet mit:
 
 ## 8. Abgrenzung zum MVP
 
-C-01, C-02 und C-03 sind **keine offenen MVP-Funktionen** und dürfen den laufenden 09C-FINAL-/MVP-BASELINE-Abschluss nicht erweitern.
-
-Sie sind bewusst als BSF-Planungsgrundlage gesichert.
+C-01, C-02 und C-03 sind **keine offenen MVP-Funktionen**. Der MVP ist abgeschlossen; diese Konzepte bilden die priorisierte BSF-Planungsgrundlage.
