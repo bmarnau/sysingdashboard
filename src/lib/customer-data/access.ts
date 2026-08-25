@@ -57,7 +57,11 @@ export interface CustomerAccessDecision {
 
 type WindowState = "active" | "not_yet_valid" | "expired";
 
-function windowState(validFrom: string | undefined, validTo: string | null | undefined, now: number): WindowState {
+function windowState(
+  validFrom: string | undefined,
+  validTo: string | null | undefined,
+  now: number,
+): WindowState {
   if (validFrom) {
     const from = Date.parse(validFrom);
     if (!Number.isFinite(from) || now < from) return "not_yet_valid";
