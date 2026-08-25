@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-08-24
+Stand: 2026-08-25
 
 ## Zweck
 
@@ -98,7 +98,7 @@ Damit gilt seit dem Merge von PR #60:
 
 ### Lovable-Governance-Vorfall und Recovery PR #66
 
-Am 24.08.2026 erzeugte ein ausdrücklich als Plan-/Analyseauftrag ohne Code-/GitHub-Änderung gestarteter Lovable-Lauf dennoch direkte Änderungen auf dem ungeschützten GitHub-Branch `main`:
+Am 24.08.2026 erzeugte ein ausdrücklich als Plan-/Analyseauftrag ohne Code-/GitHub-Änderung gestarteter Lovable-Lauf dennoch direkte Änderungen auf dem damals ungeschützten GitHub-Branch `main`:
 
 - Commit `2f6ea1050ba5bc27938a793c970ae729df05641f` änderte unbeauftragt `src/integrations/supabase/client.ts` und fügte `src/integrations/supabase/previewAuthStorage.ts` hinzu,
 - Commit `0e561578beae51c4850ecffeeed337af22233c23` fügte `.lovable/plan.md` hinzu,
@@ -121,42 +121,52 @@ Recovery-Referenzstand nach PR #66:
 
 Der vollständige Dateibaum dieses Recovery-Referenzstands ist gegenüber `ea28740...` identisch. Nachfolgende reine Governance-/Dokumentationsänderungen ändern diese technische Recovery-Aussage nicht; für den jeweils aktuellen GitHub-HEAD ist `main` selbst die maßgebliche Quelle.
 
-## Offener Governance-Befund
+### PR #68 — Lovable-Governance dauerhaft dokumentiert
 
-Issue #53 bleibt offen: Der GitHub-Branch `main` ist auch nach Recovery #66 noch nicht technisch durch Branch Protection / Rulesets geschützt.
+- `docs/CURRENT-STATUS.md` und `docs/AI-ASSISTED-DEVELOPMENT-WORKFLOW.md` auf den nach Recovery #66 geltenden sicheren Kooperationsmodus fortgeschrieben,
+- Lovable-Planmodus-Vorfall als Governance-Evidenz verankert,
+- isolierte Project Variant / Nicht-main-Arbeitsfläche als bevorzugter Lovable-Arbeitsmodus dokumentiert,
+- Security #411: PASS,
+- CI #420: PASS einschließlich Docs-Sync, E2E sowie `14 · Technical Report & Quality Gate`,
+- Issue #67 als `completed` geschlossen.
 
-Nachgewiesener Ist-Stand nach Recovery #66:
+## Branch Protection aktiv — Issue #53 abgeschlossen
 
-- `protected: false`,
-- `protection.enabled: false`,
-- Required Status Checks nicht erzwungen.
+Issue #53 ist seit 25.08.2026 **CLOSED / COMPLETED**. GitHub schützt den Default-Branch `main` jetzt technisch mit dem Repository-Ruleset `main-release-governance`.
 
-Verbindliche Zielchecks:
+Verifizierter Ruleset-Stand:
 
-- `14 · Technical Report & Quality Gate`,
-- `Secrets, Headers, Azure-Strings`.
+- Ruleset-ID: `21372842`,
+- Enforcement: `active`,
+- Target: `~DEFAULT_BRANCH` (`main`),
+- GitHub Branch API: `protected: true`,
+- Bypass-Liste: leer,
+- `current_user_can_bypass: never`,
+- Branch-Löschung blockiert (`deletion`),
+- Force-/Non-Fast-Forward-Pushes blockiert (`non_fast_forward`),
+- Pull Request vor Merge verpflichtend,
+- Required approvals: `0`,
+- Required Check: `14 · Technical Report & Quality Gate`,
+- Required Check: `Secrets, Headers, Azure-Strings`,
+- `strict_required_status_checks_policy: true` — der PR-Branch muss vor Merge mit dem aktuellen `main` abgeglichen sein.
 
-Bis zur technischen Aktivierung gilt:
+Damit ist die frühere organisatorische PR-/CI-Regel nun durch GitHub selbst technisch erzwungen. Die klassische Branch-Protection-Unterstruktur kann dabei weiterhin `protection.enabled: false` melden; maßgeblich für den aktuellen Schutz sind `protected: true` und das aktive Ruleset.
 
-- keine direkten regulären Tool-/Bot-Writes auf `main`,
-- Änderungen über eindeutig benannten Branch + Pull Request,
-- Merge erst nach vollständigen grünen Security-/CI-Gates,
-- Merge mit Expected-Head-SHA-Schutz,
-- Force Push und Branch-Löschung sollen durch die künftige GitHub-Regel verhindert werden.
+### Lovable-Arbeitsregel unter aktivem Branch-Schutz
 
-### Lovable-Sonderregel bis Branch Protection aktiv ist
+Branch Protection ist eine letzte technische Sicherheitsgrenze und ersetzt nicht den kontrollierten Entwicklungsprozess.
 
-Der reproduzierte Planmodus-Vorfall verschärft die Übergangsregel:
+- GitHub bleibt Source of Truth.
+- Änderungen werden weiterhin über benannte Branches bzw. nachweislich isolierte Arbeitsflächen vorbereitet und über Pull Requests integriert.
+- Lovable wird bevorzugt auf einer **nachweislich isolierten Project Variant / Nicht-main-Arbeitsfläche** mit festem freigegebenem `base_sha` eingesetzt.
+- Der Lovable-Main-Agent ist **nicht die reguläre Implementierungsarbeitsfläche**; der Planmodus-Vorfall bleibt Referenz dafür, dass ein als Analyse deklarierter Lauf Schreibwirkung haben kann.
+- Ein Variant = ein Auftrag = ein Scope.
+- ChatGPT koordiniert Scope, GitHub-Diff, Security/CI und Abnahme; kopierfertige Lovable-Prompts können nach verifizierter Isolation manuell übergeben werden.
+- Zusatzbefunde werden nur vorgeschlagen, nicht ungefragt umgesetzt.
+- Auth/RBAC/RLS/Supabase/Migrationen/Seeds und `src/integrations/supabase/*` werden nur bei ausdrücklichem Scope geändert.
+- Merge erfolgt erst nach den durch das Ruleset erzwungenen Required Checks; Expected-Head-SHA bleibt zusätzliches Integritätssignal, soweit das Merge-Werkzeug dies unterstützt.
 
-- **keine Nachrichten an den Lovable-Main-Agenten — auch nicht für Plan-/Analyseaufträge**,
-- Lovable nur auf einer nachweislich isolierten Project Variant / Nicht-main-Arbeitsfläche mit explizitem freigegebenem `base_sha`,
-- ein Variant = ein Auftrag = ein Scope,
-- wenn die Lovable-Oberfläche keine isolierte Arbeitsfläche eindeutig bestätigt, wird kein Prompt ausgeführt,
-- ChatGPT koordiniert Scope, GitHub-Diff, Security/CI und Abnahme; kopierfertige Lovable-Prompts können nach verifizierter Isolation manuell übergeben werden,
-- Zusatzbefunde werden nur vorgeschlagen, nicht ungefragt umgesetzt,
-- Auth/RBAC/RLS/Supabase/Migrationen/Seeds und `src/integrations/supabase/*` nur bei ausdrücklichem Scope.
-
-Der fehlende technische Branch-Schutz ist ein Governance-/Releasefinding und **kein Rückfall des fachlichen MVP-Status**.
+Der frühere Governance-Befund ist damit geschlossen und **kein Rückfall des fachlichen MVP-Status**.
 
 ## Bewusst zurückgestellter Zukunftsscope
 
