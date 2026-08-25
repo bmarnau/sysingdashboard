@@ -1,0 +1,38 @@
+name: TEMP SEC03 Audit Fix
+
+on:
+  push:
+    branches:
+      - sec/sec-03-audit-fix-2026-08-25
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: sec/sec-03-audit-fix-2026-08-25
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install exact locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Apply audit fixes within declared dependency ranges
+        run: bun audit fix
+      - name: Show package diff
+        run: git diff -- package.json bun.lock
+      - name: Commit dependency files only
+        run: |
+          if git diff --quiet -- package.json bun.lock; then
+            echo "No dependency changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json bun.lock
+          git commit -m "chore(security): apply compatible dependency audit fixes"
+          git push origin HEAD:sec/sec-03-audit-fix-2026-08-25
