@@ -1,8 +1,8 @@
 # ADR-0030 — Customer-Entität und minimaler gemeinsamer Read-Pfad
 
-Status: vorgeschlagen für BSF-02  
-Datum: 2026-08-25  
-Vorgänger: ADR-0029
+- Status: vorgeschlagen für BSF-02
+- Datum: 2026-08-25
+- Vorgänger: ADR-0029
 
 ## Kontext
 
@@ -77,27 +77,11 @@ Customer-/Projekt-/Leistungsfachlogik darf keine Supabase-spezifischen Abfragen 
 
 Die endgültigen SQL-Spalten werden erst nach Testspezifikation festgeschrieben. Fachlich werden mindestens benötigt:
 
-- `systemhouse`
-  - stabile interne ID
-  - Name/Anzeigename
-  - Status
-- `customer`
-  - stabile interne ID
-  - `systemhouseId`
-  - Name/Anzeigename
-  - Status
-- gemeinsame operative Projektion für `project`
-  - bestehende Projekt-ID
-  - `customerId`
-  - fachlich notwendige Anzeige-/Statusfelder
-- gemeinsame operative Projektion für `work_package`
-  - bestehende ID
-  - `projectId`
-- gemeinsame operative Projektion für `activity`
-  - bestehende ID
-  - `workPackageId`
-  - `engineerId`
-  - Datum, Dauer, Abrechenbarkeit und für spätere Leistungssichten notwendige Felder
+- `systemhouse`: stabile interne ID, Name/Anzeigename und Status.
+- `customer`: stabile interne ID, `systemhouseId`, Name/Anzeigename und Status.
+- gemeinsame operative Projektion für `project`: bestehende Projekt-ID, `customerId` und fachlich notwendige Anzeige-/Statusfelder.
+- gemeinsame operative Projektion für `work_package`: bestehende ID und `projectId`.
+- gemeinsame operative Projektion für `activity`: bestehende ID, `workPackageId`, `engineerId`, Datum, Dauer, Abrechenbarkeit und für spätere Leistungssichten notwendige Felder.
 
 ## Migrationsregeln
 
