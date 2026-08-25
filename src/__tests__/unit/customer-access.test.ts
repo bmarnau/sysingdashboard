@@ -35,6 +35,16 @@ const request: CustomerAccessRequest = {
   now: NOW,
 };
 
+function membershipWith(
+  overrides: Partial<SystemhouseMembershipRecord>,
+): SystemhouseMembershipRecord[] {
+  return [{ ...membership, ...overrides }];
+}
+
+function grantWith(overrides: Partial<CustomerAccessGrantRecord>): CustomerAccessGrantRecord[] {
+  return [{ ...readGrant, ...overrides }];
+}
+
 function decide(
   overrides: Partial<CustomerAccessRequest> = {},
   memberships: readonly SystemhouseMembershipRecord[] = [membership],
@@ -45,113 +55,92 @@ function decide(
 
 describe("customer access contract", () => {
   it("should_allowRead_when_membershipScopeAndPermissionAreValid", () => {
-    expect(decide()).toEqual({ allowed: true, reason: "allowed" });
+    const decision = decide();
+    expect(decision).toEqual({ allowed: true, reason: "allowed" });
   });
 
   it("should_allowRead_when_writeScopeExists", () => {
-    expect(decide({}, [membership], [{ ...readGrant, accessLevel: "write" }])).toEqual({
-      allowed: true,
-      reason: "allowed",
-    });
+    const decision = decide({}, [membership], grantWith({ accessLevel: "write" }));
+    expect(decision).toEqual({ allowed: true, reason: "allowed" });
   });
 
   it("should_denyWrite_when_onlyReadScopeExists", () => {
-    expect(decide({ operation: "write" })).toEqual({
-      allowed: false,
-      reason: "customer_scope_insufficient",
-    });
+    const decision = decide({ operation: "write" });
+    expect(decision).toEqual({ allowed: false, reason: "customer_scope_insufficient" });
   });
 
   it("should_denyWrite_when_resourcePermissionIsMissing_evenWithWriteScope", () => {
-    expect(
-      decide(
-        { operation: "write", hasResourcePermission: false },
-        [membership],
-        [{ ...readGrant, accessLevel: "write" }],
-      ),
-    ).toEqual({ allowed: false, reason: "resource_permission_missing" });
+    const decision = decide(
+      { operation: "write", hasResourcePermission: false },
+      [membership],
+      grantWith({ accessLevel: "write" }),
+    );
+    expect(decision).toEqual({ allowed: false, reason: "resource_permission_missing" });
   });
 
   it("should_denyCrossSystemhouse_when_customerIdMatches", () => {
-    expect(decide({ systemhouseId: "systemhouse-b" })).toEqual({
-      allowed: false,
-      reason: "membership_missing",
-    });
+    const decision = decide({ systemhouseId: "systemhouse-b" });
+    expect(decision).toEqual({ allowed: false, reason: "membership_missing" });
   });
 
   it("should_denyCrossCustomer_when_membershipExists", () => {
-    expect(decide({ customerId: "customer-2" })).toEqual({
-      allowed: false,
-      reason: "customer_scope_missing",
-    });
+    const decision = decide({ customerId: "customer-2" });
+    expect(decision).toEqual({ allowed: false, reason: "customer_scope_missing" });
   });
 
   it("should_denyGuessedCustomerId_when_noExactGrantExists", () => {
-    expect(decide({ customerId: "customer-guessed" })).toEqual({
-      allowed: false,
-      reason: "customer_scope_missing",
-    });
+    const decision = decide({ customerId: "customer-guessed" });
+    expect(decision).toEqual({ allowed: false, reason: "customer_scope_missing" });
   });
 
   it("should_deny_when_membershipIsInactive", () => {
-    expect(decide({}, [{ ...membership, status: "inactive" }])).toEqual({
-      allowed: false,
-      reason: "membership_inactive",
-    });
+    const decision = decide({}, membershipWith({ status: "inactive" }));
+    expect(decision).toEqual({ allowed: false, reason: "membership_inactive" });
   });
 
   it("should_deny_when_membershipIsNotYetValid", () => {
-    expect(decide({}, [{ ...membership, validFrom: "2026-08-26T00:00:00.000Z" }])).toEqual({
-      allowed: false,
-      reason: "membership_not_yet_valid",
-    });
+    const decision = decide(
+      {},
+      membershipWith({ validFrom: "2026-08-26T00:00:00.000Z" }),
+    );
+    expect(decision).toEqual({ allowed: false, reason: "membership_not_yet_valid" });
   });
 
   it("should_deny_when_membershipHasExpired", () => {
-    expect(decide({}, [{ ...membership, validTo: "2026-08-25T07:59:59.000Z" }])).toEqual({
-      allowed: false,
-      reason: "membership_expired",
-    });
+    const decision = decide({}, membershipWith({ validTo: "2026-08-25T07:59:59.000Z" }));
+    expect(decision).toEqual({ allowed: false, reason: "membership_expired" });
   });
 
   it("should_deny_whenCustomerScopeIsInactive", () => {
-    expect(decide({}, [membership], [{ ...readGrant, status: "inactive" }])).toEqual({
-      allowed: false,
-      reason: "customer_scope_inactive",
-    });
+    const decision = decide({}, [membership], grantWith({ status: "inactive" }));
+    expect(decision).toEqual({ allowed: false, reason: "customer_scope_inactive" });
   });
 
   it("should_deny_whenCustomerScopeIsNotYetValid", () => {
-    expect(
-      decide(
-        {},
-        [membership],
-        [{ ...readGrant, validFrom: "2026-08-26T00:00:00.000Z" }],
-      ),
-    ).toEqual({ allowed: false, reason: "customer_scope_not_yet_valid" });
+    const decision = decide(
+      {},
+      [membership],
+      grantWith({ validFrom: "2026-08-26T00:00:00.000Z" }),
+    );
+    expect(decision).toEqual({ allowed: false, reason: "customer_scope_not_yet_valid" });
   });
 
   it("should_deny_whenCustomerScopeHasExpired", () => {
-    expect(
-      decide(
-        {},
-        [membership],
-        [{ ...readGrant, validTo: "2026-08-25T07:59:59.000Z" }],
-      ),
-    ).toEqual({ allowed: false, reason: "customer_scope_expired" });
+    const decision = decide(
+      {},
+      [membership],
+      grantWith({ validTo: "2026-08-25T07:59:59.000Z" }),
+    );
+    expect(decision).toEqual({ allowed: false, reason: "customer_scope_expired" });
   });
 
   it("should_notProvideImplicitSystemadminBypass_when_membershipIsMissing", () => {
-    expect(decide({}, [], [{ ...readGrant, accessLevel: "write" }])).toEqual({
-      allowed: false,
-      reason: "membership_missing",
-    });
+    const decision = decide({}, [], grantWith({ accessLevel: "write" }));
+    expect(decision).toEqual({ allowed: false, reason: "membership_missing" });
   });
 
   it("should_denyInvalidValidityTimestamp_insteadOfFailingOpen", () => {
-    expect(decide({}, [{ ...membership, validFrom: "not-a-date" }])).toEqual({
-      allowed: false,
-      reason: "membership_not_yet_valid",
-    });
+    const decision = decide({}, membershipWith({ validFrom: "not-a-date" }));
+    expect(decision).toEqual({ allowed: false, reason: "membership_not_yet_valid" });
   });
 });
