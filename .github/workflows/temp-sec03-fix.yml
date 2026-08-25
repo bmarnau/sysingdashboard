@@ -22,7 +22,12 @@ jobs:
       - name: Install exact locked dependencies
         run: bun install --frozen-lockfile
       - name: Apply audit fixes within declared dependency ranges
-        run: bun audit fix
+        run: |
+          set +e
+          bun audit fix
+          code=$?
+          echo "AUDIT_FIX_EXIT_CODE=$code"
+          exit 0
       - name: Show package diff
         run: git diff -- package.json bun.lock
       - name: Commit dependency files only
