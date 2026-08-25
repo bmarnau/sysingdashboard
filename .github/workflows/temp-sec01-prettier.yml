@@ -1,0 +1,39 @@
+name: TEMP SEC01 Prettier
+
+on:
+  push:
+    branches:
+      - sec/sec-01-hardening-review-2026-08-25
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: sec/sec-01-hardening-review-2026-08-25
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Format SEC-01 files with repository Prettier
+        run: >-
+          bunx prettier --write
+          CHANGELOG.md
+          docs/DATA-SCHEMA.md
+          scripts/technical-report/manual-findings.json
+      - name: Commit formatter result only
+        run: |
+          if git diff --quiet -- CHANGELOG.md docs/DATA-SCHEMA.md scripts/technical-report/manual-findings.json; then
+            echo "No formatting changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md docs/DATA-SCHEMA.md scripts/technical-report/manual-findings.json
+          git commit -m "style(sec01): apply exact Prettier output"
+          git push origin HEAD:sec/sec-01-hardening-review-2026-08-25
