@@ -123,15 +123,21 @@ describe("customer access contract", () => {
 
   it("should_deny_whenCustomerScopeIsNotYetValid", () => {
     expect(
-      decide({}, [membership], [
-        { ...readGrant, validFrom: "2026-08-26T00:00:00.000Z" },
-      ]),
+      decide(
+        {},
+        [membership],
+        [{ ...readGrant, validFrom: "2026-08-26T00:00:00.000Z" }],
+      ),
     ).toEqual({ allowed: false, reason: "customer_scope_not_yet_valid" });
   });
 
   it("should_deny_whenCustomerScopeHasExpired", () => {
     expect(
-      decide({}, [membership], [{ ...readGrant, validTo: "2026-08-25T07:59:59.000Z" }]),
+      decide(
+        {},
+        [membership],
+        [{ ...readGrant, validTo: "2026-08-25T07:59:59.000Z" }],
+      ),
     ).toEqual({ allowed: false, reason: "customer_scope_expired" });
   });
 
