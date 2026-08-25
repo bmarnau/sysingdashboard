@@ -1,0 +1,33 @@
+name: TEMP SEC03 Dependency Audit
+
+on:
+  push:
+    branches:
+      - audit/sec-03-dependency-review-2026-08-25
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Show bun audit help
+        run: bun audit --help || true
+      - name: Run dependency audit
+        run: |
+          set +e
+          bun audit --json > sec03-audit.json 2> sec03-audit.stderr
+          code=$?
+          echo "AUDIT_EXIT_CODE=$code"
+          echo "--- audit json ---"
+          cat sec03-audit.json || true
+          echo "--- audit stderr ---"
+          cat sec03-audit.stderr || true
+          exit 0
