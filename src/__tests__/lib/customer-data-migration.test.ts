@@ -106,9 +106,7 @@ describe("BSF-02 customer data migration planning", () => {
       systemhouseId: "sys-a",
       projects: [],
       workPackages: [],
-      activities: [
-        activity({ id: "A-9006", workPackageId: null, client: "Stadtwerke Lindau" }),
-      ],
+      activities: [activity({ id: "A-9006", workPackageId: null, client: "Stadtwerke Lindau" })],
       customerMappings: [{ legacyName: "Stadtwerke Lindau", customerId: "c-stadtwerke" }],
     });
 
