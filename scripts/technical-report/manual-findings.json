@@ -15,12 +15,36 @@
       "cause": "RLS-Policies auf avkk_subject, avkk_competence und avkk_consequence rufen die Funktion im USING-/WITH-CHECK-Ausdruck auf. Postgres wertet diese Ausdrücke mit den Rechten des aufrufenden Nutzers aus.",
       "rootCause": "Notwendige Rechtevergabe für policybasierte Autorisierung, keine Fehlkonfiguration.",
       "impact": "Ein angemeldeter Nutzer kann für eine geratene Subject-UUID die boolesche Antwort „darf ich schreiben“ erfragen. Die Funktion liefert ausschließlich true/false, keine Tabelleninhalte, keine Fremddaten und keine Existenzaussage über konkrete Sachdaten.",
-      "recommendation": "Beibehalten. EXECUTE bleibt auf authenticated und service_role beschränkt (kein anon). Funktion bleibt SECURITY DEFINER, STABLE, mit search_path = public und boolescher Rückgabe. Abgesichert durch src/__tests__/security/avkk-rls.test.ts.",
+      "recommendation": "Beibehalten. EXECUTE bleibt auf authenticated und service_role beschränkt (kein PUBLIC, kein anon). Funktion bleibt SECURITY DEFINER (SECURITY INVOKER erzeugt RLS-Rekursion über avkk_subject_update), STABLE, seit SEC-01 (Issue #89) mit search_path = '' und vollständig schemaqualifizierten Referenzen. Abgesichert durch src/__tests__/security/avkk-rls.test.ts und supabase/tests/sec01-settings-and-avkk-definer.sql.",
       "evidence": {
         "file": "docs/ADR/0025-avkk-umsetzung-07b.md",
         "reportRef": "supabase linter: function_execute_grant"
       },
       "components": ["public.avkk_can_write", "RLS AVKK"],
+      "adrRef": "ADR-0025",
+      "owner": "Plattform",
+      "effort": "S"
+    },
+    {
+      "id": "man:avkk-people-directory-definer",
+      "severity": "LOW",
+      "status": "accepted",
+      "accepted": true,
+      "classification": "accepted-debt",
+      "gateRelevant": false,
+      "category": "RBAC",
+      "area": "RBAC",
+      "title": "avkk_people_directory ist als SECURITY DEFINER für authenticated ausführbar",
+      "description": "Der Datenbank-Linter meldet, dass public.avkk_people_directory() von der Rolle authenticated ausgeführt werden darf. Das ist der Zweck des Vertrags: profiles gibt Nicht-Administratoren per RLS nur die eigene Zeile frei, die AVKK-Delegation benötigt jedoch die Namensauflösung fremder Personen. Bewertung: docs/F11-DELEGATION-DIRECTORY.md und docs/DATA-SCHEMA.md, Abschnitt 5.",
+      "cause": "Namensauflösung für AVKK-Verantwortungen erfordert Lesezugriff über die eigene profiles-Zeile hinaus.",
+      "rootCause": "Bewusste Kapselung eines minimalen Personenvertrags statt Aufweichung der profiles-RLS.",
+      "impact": "Angemeldete Benutzer mit avkk.view erhalten ID, Anzeigename, Rolle und Kontostatus sichtbarer Personen. Keine E-Mail, Telefonnummer, MFA-Information, Profilbilder oder Zeitstempel. Ohne avkk.view liefert die Funktion keine Zeilen; PUBLIC und anon besitzen kein EXECUTE.",
+      "recommendation": "Beibehalten. Alternative (breitere SELECT-Policy auf profiles für Teamlead/Projektmanager) offenbart deutlich mehr Daten. Vertrag ist gehärtet: search_path = '', vollständige Schemaqualifikation, auth.uid()- und has_permission-Prüfung im Rumpf, vier Rückgabespalten. Spaltenvertrag durch supabase/tests/sec01-settings-and-avkk-definer.sql abgesichert.",
+      "evidence": {
+        "file": "docs/F11-DELEGATION-DIRECTORY.md",
+        "reportRef": "supabase linter: 0029_authenticated_security_definer_function_executable"
+      },
+      "components": ["public.avkk_people_directory", "RLS AVKK"],
       "adrRef": "ADR-0025",
       "owner": "Plattform",
       "effort": "S"

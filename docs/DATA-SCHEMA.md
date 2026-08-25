@@ -238,11 +238,40 @@ Reference-Data-Tabellen.
 | `has_any_role(uuid, app_role[])` | STABLE, INVOKER | `boolean` | Mehrfachrollenprüfung                                               |
 | `is_account_active(uuid)`        | STABLE, INVOKER | `boolean` | Kontostatus                                                         |
 | `avkk_can_write(uuid)`           | STABLE, DEFINER | `boolean` | Schreibentscheidung je AVKK-Subject; Ingenieure nur eigen/zuständig |
+| `avkk_people_directory()`        | STABLE, DEFINER | Tabelle   | Minimaler AVKK-Personenvertrag (ID, Name, Rolle, Status)            |
 
-Alle Funktionen setzen `search_path = public`. `avkk_can_write` ist für
-`authenticated` ausführbar — erforderlich für die Policy-Auswertung, bewertet
-und akzeptiert in ADR-0025 sowie im technischen Prüfbericht
-(`man:avkk-can-write-execute`).
+Die INVOKER-Funktionen setzen `search_path = public`. Die beiden
+SECURITY-DEFINER-Funktionen setzen seit SEC-01 (Issue #89) `search_path = ''`
+und referenzieren alle Objekte vollständig schemaqualifiziert.
+
+`avkk_can_write` bleibt bewusst SECURITY DEFINER: Sie liest `avkk_subject` und
+wird zugleich in der UPDATE-Policy genau dieser Tabelle ausgewertet — als
+SECURITY INVOKER entstünde eine RLS-Rekursion. Sie ist für `authenticated`
+ausführbar, weil die Policy-Auswertung das erfordert; bewertet und akzeptiert
+in ADR-0025 sowie im technischen Prüfbericht (`man:avkk-can-write-execute`).
+
+`avkk_people_directory()` bleibt ebenfalls SECURITY DEFINER, weil `profiles`
+Nicht-Administratoren per RLS nur die eigene Zeile freigibt. Die Funktion prüft
+`auth.uid()` und `avkk.view` im Rumpf und gibt ausschließlich ID, Anzeigename,
+Rolle und Status aus — keine E-Mail, Telefonnummer, MFA-Information oder
+Profilbilder (`man:avkk-people-directory-definer`).
+
+Für beide Funktionen besitzen `PUBLIC` und `anon` kein `EXECUTE`.
+
+### Lesbarkeit von `app_settings` (SEC-01)
+
+Angemeldete Benutzer lesen nur die ausdrücklich freigegebenen Keys
+`idle_timeout_minutes` und `avkk.risk_threshold`
+(`app_settings_read_public_keys`). Alle übrigen — auch künftig hinzugefügten —
+Keys sind ausschließlich mit der Berechtigung `users.manage` lesbar
+(`app_settings_read_admin`). Damit gilt deny-by-default: Ein neuer
+client-lesbarer Key erfordert bewusst eine Migration. Schreibende Zugriffe
+bleiben unverändert an `users.manage` gebunden. Nachweis:
+`supabase/tests/sec01-settings-and-avkk-definer.sql`.
+
+Settings mit Vertraulichkeitsbedarf (Endpunkte, Kennungen,
+Integrationsparameter) gehören nicht in `app_settings`, sondern in die
+Secret-Verwaltung bzw. eine ausschließlich serverseitig gelesene Tabelle.
 
 ## 6. Bekannte Integritätsgrenzen
 

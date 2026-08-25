@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-08-25 · Dashboard-Version 1.59.6
+Stand: 2026-08-25 · Dashboard-Version 1.59.7
 
 ## Vision
 
@@ -40,7 +40,7 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis August 2026                                                                                                                                |
-| Aktueller Stand     | Version 1.59.6; F-18 und F-11 CLOSED/PASS; MVP 100 % / BASELINE READY; `main` technisch durch GitHub-Ruleset geschützt; BSF-01 läuft.                   |
+| Aktueller Stand     | Version 1.59.7; F-18 und F-11 CLOSED/PASS; MVP 100 % / BASELINE READY; `main` technisch durch GitHub-Ruleset geschützt; BSF-01 läuft.                   |
 | Größte Hürden       | Der operative Fachbestand ist noch teilweise user-scoped lokal; echte Kunden-/Mehrbenutzersichten benötigen einen kontrollierten gemeinsamen Read-Pfad. |
 | Nächster Nutzen     | Kundenmodell → Kundenverantwortung/„Meine Kunden“ → Projektmanager-Leistungssicht → Teamlead-Leistungsnachweis.                                         |
 
