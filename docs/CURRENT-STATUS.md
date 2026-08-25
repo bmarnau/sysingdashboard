@@ -17,6 +17,14 @@ Für den F-11-/MVP-Abschluss gelten in dieser Reihenfolge:
 5. die mit PR #39 nach `main` übernommene F-11-Runtime-Evidenz
 6. der laufaktuelle technische Prüfbericht aus dem jeweils letzten vollständig grünen CI-Lauf
 
+Für den laufenden BSF-Ausbau gelten zusätzlich:
+
+1. `docs/BSF-CURRENT-PRIORITIES.md` — operative Reihenfolge und Lovable-Einsatz,
+2. `docs/SPRINT-PLAN-MVP-BSF.md` — operative Sprintfolge,
+3. `docs/BSF-01-ARCHITECTURE-BASELINE.md` — Architektur-Baseline,
+4. `docs/ADR/0029-systemhouse-customer-scope.md` — kanonischer Systemhaus-/Customer-Scope,
+5. `docs/BSF-CONCEPT-REGISTER.md` — gesicherte fachliche Entscheidungen.
+
 Historische Dokumente wie `docs/ROLE-ACCEPTANCE-09C.md`, `docs/MVP-ACCEPTANCE-REPORT.md`, `docs/MVP-CLOSURE-STATUS-2026-08-21.md` und ältere `.lovable/plan/*` werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und sind durch die oben genannten Abschlussnachweise fortgeschrieben.
 
 ## Produkt- und Plattformstatus
@@ -30,6 +38,7 @@ Historische Dokumente wie `docs/ROLE-ACCEPTANCE-09C.md`, `docs/MVP-ACCEPTANCE-RE
 - Lovable: veröffentlichte Referenzumgebung und gezieltes Implementierungs-/Preview-Werkzeug, keine fachlich unersetzbare Laufzeitlogik und keine Merge-/Release-Instanz
 - Fachlogik, Authentifizierung, Datenzugriff und provider-spezifische Implementierungen bleiben als getrennte Verantwortungsbereiche zu behandeln
 - Docker-/Container-Portabilität sowie Azure-/Entra-Migrationsfähigkeit bleiben verbindliche Architekturziele für den weiteren Ausbau
+- MVP bleibt **100 % / BASELINE READY**; der aktive Entwicklungshorizont ist jetzt **BSF — Betriebsfähiges Systemhaus-Fundament**.
 
 ## F-11
 
@@ -130,6 +139,25 @@ Der vollständige Dateibaum dieses Recovery-Referenzstands ist gegenüber `ea287
 - CI #420: PASS einschließlich Docs-Sync, E2E sowie `14 · Technical Report & Quality Gate`,
 - Issue #67 als `completed` geschlossen.
 
+### PR #70 — aktiven Branch-Schutz in laufender Governance festgeschrieben
+
+- `docs/CURRENT-STATUS.md` und `docs/AI-ASSISTED-DEVELOPMENT-WORKFLOW.md` auf das aktive Ruleset fortgeschrieben,
+- Security #413: PASS,
+- CI #422: PASS einschließlich E2E, Accessibility, Technical Debt und `14 · Technical Report & Quality Gate`,
+- Merge mit Expected-Head-SHA,
+- Issue #69 als `completed` geschlossen.
+
+### PR #74 — operative BSF-Prioritäten und Lovable-Einsatz
+
+- neue tägliche Source of Truth `docs/BSF-CURRENT-PRIORITIES.md`,
+- `docs/SPRINT-PLAN-MVP-BSF.md` auf den priorisierten Nutzwertpfad synchronisiert,
+- Projektmanager-Leistungssicht als BSF-03A und Teamlead-Leistungsnachweis als BSF-03B vorgezogen,
+- Dokumentationskonsolidierung sowie SYSING-001/TDF und Board-Zugriff als eigene DOC-Schritte verankert,
+- Lovable-Einsatz je priorisiertem Punkt und 5-Credit-Tagesregel dokumentiert,
+- Security #416: PASS,
+- CI #425: PASS einschließlich Docs-Sync, E2E, Accessibility, Technical Debt und `14 · Technical Report & Quality Gate`,
+- Issue #71 als `completed` geschlossen.
+
 ## Branch Protection aktiv — Issue #53 abgeschlossen
 
 Issue #53 ist seit 25.08.2026 **CLOSED / COMPLETED**. GitHub schützt den Default-Branch `main` jetzt technisch mit dem Repository-Ruleset `main-release-governance`.
@@ -167,6 +195,41 @@ Branch Protection ist eine letzte technische Sicherheitsgrenze und ersetzt nicht
 - Merge erfolgt erst nach den durch das Ruleset erzwungenen Required Checks; Expected-Head-SHA bleibt zusätzliches Integritätssignal, soweit das Merge-Werkzeug dies unterstützt.
 
 Der frühere Governance-Befund ist damit geschlossen und **kein Rückfall des fachlichen MVP-Status**.
+
+## BSF aktiv — BSF-01 Planungs-/Architekturbaseline
+
+Mit Abschluss des MVP ist BSF der aktive Entwicklungshorizont. Die operative Reihenfolge ist in `docs/BSF-CURRENT-PRIORITIES.md` festgeschrieben.
+
+BSF-01 legt ohne Produktcode die verbindliche Architekturgrundlage für Kundenmodell, Kundenverantwortung und Leistungssichten fest:
+
+- kanonische Kundenidentität: `(systemhouseId, customerId)`,
+- `systemhouseId` ist providerneutral und nicht gleich Microsoft Entra Tenant ID,
+- ältere `tenant`-Terminologie aus ADR-0007/0008 bleibt historische Pre-BSF-Evidenz,
+- neue BSF-Scopes verwenden fachlich Systemhaus-Semantik,
+- Kundenverantwortung ist Scope/Beziehung, keine globale Rolle,
+- Projektmanager-Leistungssicht ist read-only,
+- Teamlead-Leistungsnachweis besitzt einen getrennten Write-/Finalisierungs-/Audit-Scope,
+- weil Projekte, Arbeitspakete und Tätigkeiten im MVP user-scoped lokal liegen, muss BSF-02 neben der Customer-Entität die **minimal notwendige gemeinsame/synchronisierte Daten-/Read-Basis** für echte Kunden- und Leistungssichten schaffen,
+- der vollständige Datenhaltungsumbau bleibt BSF-04.
+
+Maßgebliche Nachweise:
+
+- `docs/ADR/0029-systemhouse-customer-scope.md`,
+- `docs/BSF-01-ARCHITECTURE-BASELINE.md`,
+- aktualisiertes `docs/BSF-CONCEPT-REGISTER.md`,
+- aktualisiertes `docs/ENTWICKLUNGSTAGEBUCH.md`.
+
+Lovable-Einsatz in BSF-01: **0 Credits**. Architektur-, Datenmodell- und Sicherheitsgrenzen werden nicht an Lovable delegiert.
+
+Nach vollständiger Security-/CI-Abnahme und Merge des BSF-01-PRs gilt BSF-01 als **DONE**. Unmittelbar nächster Punkt ist **BSF-02 — Kundenmodell + minimale gemeinsame Daten-/Read-Basis**, mit geplantem Lovable-Einsatz **0–1 Credit** für gezielte UI-/Kundenkontext-Visualisierung nach festgelegter Architektur.
+
+## Dokumentationszustand
+
+- `docs/ENTWICKLUNGSTAGEBUCH.md` ist auf MVP-Baseline, Branch Protection und BSF-01 fortgeschrieben.
+- `SYSING-001` existiert bereits als Living Document `docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md` mit gemeinsamer Markdown-Quelle für PDF/Word.
+- SYSING-001 wird in BSF-DOC-02 kontrolliert aktualisiert und TDF-konform abgenommen; es wird keine zweite Dokumentquelle erzeugt.
+- BSF-DOC-03 macht die freigegebene SYSING-001-Fassung read-only aus dem Board erreichbar.
+- Kontext-sensitive Hilfe und Benutzerhandbuch werden ab BSF als Teil der Definition of Done jedes betroffenen Fachsprints synchron gehalten; BSF-DOC-01 bleibt zusätzlicher Konsolidierungsblock.
 
 ## Bewusst zurückgestellter Zukunftsscope
 

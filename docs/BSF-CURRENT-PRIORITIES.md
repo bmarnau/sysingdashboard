@@ -29,8 +29,8 @@ Sie ist die kompakte operative Source of Truth für die aktuelle Reihenfolge. Di
    - Kernergebnis: Aktiver GitHub-`main`-Schutz ist in der laufenden Governance-Dokumentation festgeschrieben; Security #413 und CI #422 PASS.
    - Lovable-Einsatz: **0 Credits**.
 
-2. **BSF-01 — Planungs-/Architekturbaseline (#73) — IN ARBEIT**
-   - Kernergebnis: Systemhaus-/Customer-Scope, Daten-, RBAC/RLS- und Providergrenzen für die priorisierten BSF-Funktionen verbindlich festlegen.
+2. **BSF-01 — Planungs-/Architekturbaseline (#73) — DONE mit Merge des BSF-01-PRs**
+   - Kernergebnis: Providerneutraler Systemhaus-/Customer-Scope über ADR-0029; gemeinsame Daten-/Read-Basis als notwendige Abhängigkeit für Kunden- und Leistungssichten; Kundenverantwortung, PM-Controlling und Teamlead-Leistungsnachweis als getrennte Scopes.
    - Lovable-Einsatz: **0 Credits**.
 
 3. **BSF-02 — Kundenmodell + minimale gemeinsame Daten-/Read-Basis — NÄCHSTER PUNKT**
