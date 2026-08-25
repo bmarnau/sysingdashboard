@@ -1,4 +1,4 @@
-name: TEMP PORT01 Lockfile Portability
+name: TEMP PORT01 Public Lock Candidate
 
 on:
   push:
@@ -6,45 +6,35 @@ on:
       - audit/port-01-lockfile-portability-2026-08-25
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  portability:
+  candidate:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: audit/port-01-lockfile-portability-2026-08-25
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - name: Baseline Lovable registry references
-        run: |
-          echo "BASELINE_LOVABLE_REGISTRY_REFERENCES=$(grep -c 'lovable-core-prod/sandbox-npm-cache' bun.lock || true)"
-          echo "BASELINE_UNIQUE_HOSTS:"
-          grep -oE 'https://[^/]*npm\.pkg\.dev' bun.lock | sort -u || true
       - name: Regenerate lockfile against public npm registry only
         run: |
-          cp bun.lock /tmp/bun.lock.baseline
           rm -rf node_modules "$HOME/.bun/install/cache" bun.lock
           BUN_CONFIG_REGISTRY=https://registry.npmjs.org bun install --lockfile-only --registry https://registry.npmjs.org
-          echo "REGENERATED_LOVABLE_REGISTRY_REFERENCES=$(grep -c 'lovable-core-prod/sandbox-npm-cache' bun.lock || true)"
-          echo "REGENERATED_NPMJS_REFERENCES=$(grep -c 'registry.npmjs.org' bun.lock || true)"
-          echo "REGENERATED_LOCKFILE_LINES=$(wc -l < bun.lock)"
-          echo "BASELINE_LOCKFILE_LINES=$(wc -l < /tmp/bun.lock.baseline)"
-          git diff --no-index --stat /tmp/bun.lock.baseline bun.lock || true
-      - name: Prove frozen install from regenerated public lockfile
+          test "$(grep -c 'lovable-core-prod/sandbox-npm-cache' bun.lock || true)" = "0"
+      - name: Prove public frozen install and clean audit
         run: |
           rm -rf node_modules "$HOME/.bun/install/cache"
-          set +e
-          timeout 180 env BUN_CONFIG_REGISTRY=https://registry.npmjs.org bun install --frozen-lockfile --registry https://registry.npmjs.org > port01-public-install.log 2>&1
-          code=$?
-          echo "PUBLIC_REGISTRY_FROZEN_INSTALL_EXIT_CODE=$code"
-          tail -n 60 port01-public-install.log || true
-          exit 0
-      - name: Audit regenerated public lockfile
+          BUN_CONFIG_REGISTRY=https://registry.npmjs.org bun install --frozen-lockfile --registry https://registry.npmjs.org
+          bun audit --json > /tmp/port01-audit.json
+          cat /tmp/port01-audit.json
+          test "$(cat /tmp/port01-audit.json)" = "{}"
+      - name: Commit lockfile candidate only
         run: |
-          set +e
-          bun audit --json > port01-public-audit.json 2>/dev/null
-          code=$?
-          echo "PUBLIC_REGISTRY_AUDIT_EXIT_CODE=$code"
-          cat port01-public-audit.json || true
-          exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bun.lock
+          git commit -m "chore(portability): regenerate bun lockfile from public npm registry"
+          git push origin HEAD:audit/port-01-lockfile-portability-2026-08-25
