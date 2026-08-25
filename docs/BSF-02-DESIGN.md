@@ -1,9 +1,10 @@
 # BSF-02 — Customer-Entität und minimale gemeinsame Datenbasis
 
 Stand: 2026-08-25  
-Status: Design in Arbeit  
+Status: Design abgenommen; Implementierungsfundament in Arbeit  
 Issue: #76  
-ADR: `docs/ADR/0030-customer-entity-shared-read-path.md`
+ADR: `docs/ADR/0030-customer-entity-shared-read-path.md`  
+Design-Abnahme: PR #77, Security #428 PASS, CI #437 PASS
 
 ## 1. Ziel
 
@@ -22,7 +23,7 @@ Der vollständige Umbau der Datenhaltung bleibt BSF-04.
 - `Project.customerId` und `Activity.engineerId` sind optionale Brückenfelder des Import-/Export-Layers.
 - Supabase enthält aktuell zentrale Identitäts-, Rollen-, Settings-, Audit-, Reference-Data- und AVKK-Tabellen.
 - AVKK referenziert lokale operative Objekte über stabile `subject_id`-Werte ohne FK.
-- Das verbundene Supabase-Projekt war bei der BSF-02-Aufnahme `INACTIVE`; es wurde für diese Designphase nicht reaktiviert oder verändert.
+- Das verbundene Supabase-Projekt war bei der BSF-02-Aufnahme `INACTIVE`; es wurde für die Design- und Fundamentphase nicht reaktiviert oder verändert.
 
 ## 3. Fachlicher Contract
 
@@ -80,16 +81,17 @@ Nicht fachlich für BSF-03/03A benötigte UI-Zustände, Ansichtspräferenzen und
 
 ### Phase M2 — Customer-Kandidaten
 
-- eindeutige Kundenkandidaten aus `project.client` bilden,
+- eindeutige Kundenkandidaten aus vorhandenen `client`-Werten bilden,
 - Normalisierung nur zur Unterstützung des Matchings verwenden,
 - keine Identität aus Anzeigenamen ableiten,
 - nicht eindeutige Fälle kennzeichnen statt automatisch zusammenzuführen.
 
 ### Phase M3 — stabile Zuordnung
 
-- jedem Projekt eine echte `customerId` zuweisen,
+- jedem eindeutig auflösbaren Objekt eine echte `customerId` über eine explizite Zuordnung geben,
 - bestehende Projekt-/WorkPackage-/Activity-IDs erhalten,
-- Customer-/Systemhouse-Scope serverseitig persistieren.
+- Customer-/Systemhouse-Scope später serverseitig persistieren,
+- zulässige Bestandsobjekte ohne Parent-Beziehung erhalten.
 
 ### Phase M4 — Kompatibilitätsprüfung
 
@@ -103,7 +105,7 @@ Nicht fachlich für BSF-03/03A benötigte UI-Zustände, Ansichtspräferenzen und
 
 Die spätere Supabase-Implementierung erhält explizite Grants und RLS. Grants und RLS sind getrennte Schutzschichten.
 
-Vor Runtime-Code werden Testfälle definiert:
+Vor DDL/Runtime-Freigabe werden Testfälle definiert:
 
 1. Cross-Systemhouse SELECT = verweigert/leer.
 2. Cross-Customer SELECT = verweigert/leer, wenn Scope fehlt.
@@ -150,9 +152,10 @@ Aktueller externer Hinweis: Seit 30. Mai 2026 ist bei neuen Supabase-Projekten d
 ### Unit
 
 - Customer-Domänenvalidierung,
-- Mapping Legacy `project.client` -> Customer-Kandidat,
+- Mapping Legacy-`client` -> Customer-Kandidat,
 - IDs bleiben stabil,
-- Konflikt-/Ambiguitätsfälle.
+- Konflikt-/Ambiguitätsfälle,
+- Parent-Beziehungen `linked` / `none` / `missing` getrennt von der Customer-Auflösung.
 
 ### Integration
 
@@ -178,11 +181,13 @@ Aktueller externer Hinweis: Seit 30. Mai 2026 ist bei neuen Supabase-Projekten d
 
 ## 10. Lovable-Einsatz
 
-Für das Daten-/Security-Design: **0 Credits**.
+Für das Daten-/Security-Design und das providerneutrale Fundament: **0 Credits**.
 
 Optional maximal 1 Credit erst dann, wenn eine isolierte Customer-UI-Preview einen echten visuellen Nutzen liefert. Kein Auth-/RLS-/Migrationsthema an Lovable delegieren.
 
 ## 11. Abnahme vor Implementierungsphase
+
+Die Design-Abnahme ist mit PR #77 erfolgt:
 
 - ADR-0030 konsistent mit ADR-0029,
 - Customer-/Systemhouse-ID providerneutral,
@@ -192,8 +197,20 @@ Optional maximal 1 Credit erst dann, wenn eine isolierte Customer-UI-Preview ein
 - Import/Export/Backup betroffen und in Tests aufgenommen,
 - Security-Negativfälle vor DDL definiert,
 - Supabase-/Azure-/Docker-Providergrenze gewahrt,
-- keine produktive Datenbankänderung in der Designphase.
+- keine produktive Datenbankänderung in der Designphase,
+- Security #428 PASS,
+- CI #437 inklusive E2E, Accessibility, Technical Debt und Technical Report & Quality Gate PASS.
 
-## 12. Nächster technischer Schritt
+## 12. Aktueller technischer Schritt
 
-Nach Abnahme dieses Designs folgt die Repository-Inventur der konkreten TypeScript-Domänenmodelle, bestehenden Supabase-Migrationen und Test-Harnesses. Erst daraus wird die kleinste sichere DDL-/Adapter-Änderung abgeleitet.
+Das erste Implementierungsfundament entsteht providerneutral und ohne DDL:
+
+1. Customer-/Shared-Data-Domänentypen,
+2. verlustfreie Migrationsplanung mit explizitem Legacy-Name -> Customer-ID-Mapping,
+3. keine automatische Customer-ID-Erzeugung aus Namen oder synthetischen Export-IDs,
+4. stabile Projekt-/WorkPackage-/Activity-IDs,
+5. zulässige Parent-losen Datensätze bleiben erhalten; fehlende Parent-Referenzen werden separat markiert,
+6. `systemhouse:` additiv im vorbereitenden RBAC-v2-Scope bei Erhalt historischer `tenant:`-Scopes,
+7. Architektur-Scanner bindet `customer-data` in die bestehende Service/Repository/Adapter-Grenze ein.
+
+Erst nach grüner Abnahme dieses Fundaments folgt die konkrete Membership-/DDL-/RLS-Stufe.
