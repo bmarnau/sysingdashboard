@@ -20,10 +20,7 @@
         "file": "docs/ADR/0025-avkk-umsetzung-07b.md",
         "reportRef": "supabase linter: function_execute_grant"
       },
-      "components": [
-        "public.avkk_can_write",
-        "RLS AVKK"
-      ],
+      "components": ["public.avkk_can_write", "RLS AVKK"],
       "adrRef": "ADR-0025",
       "owner": "Plattform",
       "effort": "S"
@@ -47,10 +44,7 @@
         "file": "docs/F11-DELEGATION-DIRECTORY.md",
         "reportRef": "supabase linter: 0029_authenticated_security_definer_function_executable"
       },
-      "components": [
-        "public.avkk_people_directory",
-        "RLS AVKK"
-      ],
+      "components": ["public.avkk_people_directory", "RLS AVKK"],
       "adrRef": "ADR-0025",
       "owner": "Plattform",
       "effort": "S"

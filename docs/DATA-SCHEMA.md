@@ -273,7 +273,6 @@ Settings mit Vertraulichkeitsbedarf (Endpunkte, Kennungen,
 Integrationsparameter) gehören nicht in `app_settings`, sondern in die
 Secret-Verwaltung bzw. eine ausschließlich serverseitig gelesene Tabelle.
 
-
 ## 6. Bekannte Integritätsgrenzen
 
 1. **Polymorphe Referenz ohne FK**: `avkk_subject.subject_id` ist `text` und

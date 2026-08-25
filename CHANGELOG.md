@@ -22,7 +22,6 @@ Format pro Eintrag:
 
 ## 1.59.6 - 2026-08-22
 
-
 - **AVKK-Personenanzeige korrigiert (F-11)**: Bereits zugeordnete Verantwortliche erscheinen im AVKK-Detaildialog als „Vorname Nachname" statt als technische ID. Grundlage ist das datensparsame Personenverzeichnis, das in der verbundenen Backend-Datenbank aktiviert wurde.
 - **Delegation für Teamleitung und Projektleitung nutzbar**: Rollen mit der Berechtigung zur Verantwortungszuordnung können aktive Personen auswählen, ohne dass vollständige Benutzerprofile (E-Mail, Telefon, MFA, Profilbild) freigegeben werden.
 - **Keine Rechteerweiterung**: Engineer- und Viewer-Rollen erhalten weder Schreibrechte noch Benutzerverwaltung; die bestehenden Zugriffsregeln für Profile und Rollen bleiben unverändert.
