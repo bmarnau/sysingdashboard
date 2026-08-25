@@ -25,18 +25,45 @@ Sie ist die kompakte operative Source of Truth für die aktuelle Reihenfolge. Di
 
 ## Aktuelle Prioritätenliste
 
-| Nr. | Arbeitspaket | Status | Kernergebnis | Lovable-Einsatz |
-| --- | --- | --- | --- | --- |
-| 1 | Governance-Nachlauf #69 / PR #70 | **DONE** | Aktiven GitHub-`main`-Schutz in laufender Governance-Dokumentation festgeschrieben; Security #413 und CI #422 PASS | **0** |
-| 2 | BSF-01 — Planungs-/Architekturbaseline (#73) | **IN ARBEIT** | Systemhaus-/Customer-Scope, Daten-, RBAC/RLS- und Providergrenzen für die priorisierten BSF-Funktionen verbindlich festlegen | **0** |
-| 3 | BSF-02 — Kundenmodell + minimale gemeinsame Daten-/Read-Basis | **NÄCHSTER PUNKT** | Kunde als stabile Fachentität; belastbare Kette Kunde → Projekt → Arbeitspaket → Tätigkeit; minimaler gemeinsamer Mehrbenutzer-Read-/Datenpfad für BSF-03/03A | **0–1** |
-| 4 | BSF-03 — Kundenverantwortung / Kundensicht | **GEPLANT** | `Meine Kunden`, Sichtscope, RBAC/RLS, Sicht- und Schreibrechte getrennt | **1–2** |
-| 5 | BSF-03A — Projektmanager-Leistungssicht / Controlling | **GEPLANT** | Read-only Auswertung nach Zeitraum, Kunde, Projekt, Tätigkeiten, abrechenbar/nicht abrechenbar, Summen und Drill-down | **2–4** |
-| 6 | BSF-03B — Leistungsnachweis Teamlead V1 | **GEPLANT** | Vorbereitung, Abrechenbarkeit, Finalisierung, unveränderbarer Snapshot, Doppelabrechnungsschutz und Audit; keine Rechnung | **2–4** |
-| 7 | BSF-DOC-01 — Dokumentationskonsolidierung | **GEPLANT** | Kontextsensitive Hilfe, Benutzerhandbuch, technische Doku und Entwicklungstagebuch vollständig synchron | **0–1** |
-| 8 | BSF-DOC-02 — SYSING-001 im TDF-Format fortschreiben | **GEPLANT** | Bestehendes Living Document `SYSING-001` kontrolliert auf aktuellen Produkt-/BSF-Stand aktualisieren und TDF-konform abnehmen | **0** |
-| 9 | BSF-DOC-03 — SYSING-001 aus dem Board erreichbar | **GEPLANT** | Read-only Zugriff über Hilfe/Dokumentation im Dashboard; keine zweite Dokumentquelle | **1–2** |
-| 10 | Fortsetzung strategische BSF-Roadmap ab BSF-04 | **GEPLANT** | vollständige zentrale/synchronisierte Datenstrategie, Import/SharePoint, Betreiberhoheit/Docker, Managementcockpit 2, Reporting 2, KI-Labor, BSF-FINAL, Integration Readiness | **je Sprint neu** |
+1. **Governance-Nachlauf #69 / PR #70 — DONE**
+   - Kernergebnis: Aktiver GitHub-`main`-Schutz ist in der laufenden Governance-Dokumentation festgeschrieben; Security #413 und CI #422 PASS.
+   - Lovable-Einsatz: **0 Credits**.
+
+2. **BSF-01 — Planungs-/Architekturbaseline (#73) — IN ARBEIT**
+   - Kernergebnis: Systemhaus-/Customer-Scope, Daten-, RBAC/RLS- und Providergrenzen für die priorisierten BSF-Funktionen verbindlich festlegen.
+   - Lovable-Einsatz: **0 Credits**.
+
+3. **BSF-02 — Kundenmodell + minimale gemeinsame Daten-/Read-Basis — NÄCHSTER PUNKT**
+   - Kernergebnis: Kunde als stabile Fachentität; belastbare Kette Kunde → Projekt → Arbeitspaket → Tätigkeit; minimaler gemeinsamer Mehrbenutzer-Read-/Datenpfad für BSF-03/03A.
+   - Lovable-Einsatz: **0–1 Credit**.
+
+4. **BSF-03 — Kundenverantwortung / Kundensicht — GEPLANT**
+   - Kernergebnis: `Meine Kunden`, Sichtscope, RBAC/RLS sowie getrennte Sicht- und Schreibrechte.
+   - Lovable-Einsatz: **1–2 Credits**.
+
+5. **BSF-03A — Projektmanager-Leistungssicht / Controlling — GEPLANT**
+   - Kernergebnis: Read-only-Auswertung nach Zeitraum, Kunde, Projekt, Tätigkeiten, abrechenbar/nicht abrechenbar, Summen und Drill-down.
+   - Lovable-Einsatz: **2–4 Credits**.
+
+6. **BSF-03B — Leistungsnachweis Teamlead V1 — GEPLANT**
+   - Kernergebnis: Vorbereitung, Abrechenbarkeit, Finalisierung, unveränderbarer Snapshot, Doppelabrechnungsschutz und Audit; keine Rechnung.
+   - Lovable-Einsatz: **2–4 Credits**.
+
+7. **BSF-DOC-01 — Dokumentationskonsolidierung — GEPLANT**
+   - Kernergebnis: Kontextsensitive Hilfe, Benutzerhandbuch, technische Doku und Entwicklungstagebuch vollständig synchron.
+   - Lovable-Einsatz: **0–1 Credit**.
+
+8. **BSF-DOC-02 — SYSING-001 im TDF-Format fortschreiben — GEPLANT**
+   - Kernergebnis: Bestehendes Living Document `SYSING-001` kontrolliert auf aktuellen Produkt-/BSF-Stand aktualisieren und TDF-konform abnehmen.
+   - Lovable-Einsatz: **0 Credits**.
+
+9. **BSF-DOC-03 — SYSING-001 aus dem Board erreichbar — GEPLANT**
+   - Kernergebnis: Read-only-Zugriff über Hilfe/Dokumentation im Dashboard; keine zweite Dokumentquelle.
+   - Lovable-Einsatz: **1–2 Credits**.
+
+10. **Fortsetzung strategische BSF-Roadmap ab BSF-04 — GEPLANT**
+    - Kernergebnis: vollständige zentrale/synchronisierte Datenstrategie, Import/SharePoint, Betreiberhoheit/Docker, Managementcockpit 2, Reporting 2, KI-Labor, BSF-FINAL und Integration Readiness.
+    - Lovable-Einsatz: **je Sprint neu festlegen**.
 
 ## Architekturhinweis zur Priorisierung
 
