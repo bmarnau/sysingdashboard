@@ -99,10 +99,7 @@ describe("customer access contract", () => {
   });
 
   it("should_deny_when_membershipIsNotYetValid", () => {
-    const decision = decide(
-      {},
-      membershipWith({ validFrom: "2026-08-26T00:00:00.000Z" }),
-    );
+    const decision = decide({}, membershipWith({ validFrom: "2026-08-26T00:00:00.000Z" }));
     expect(decision).toEqual({ allowed: false, reason: "membership_not_yet_valid" });
   });
 
@@ -117,20 +114,12 @@ describe("customer access contract", () => {
   });
 
   it("should_deny_whenCustomerScopeIsNotYetValid", () => {
-    const decision = decide(
-      {},
-      [membership],
-      grantWith({ validFrom: "2026-08-26T00:00:00.000Z" }),
-    );
+    const decision = decide({}, [membership], grantWith({ validFrom: "2026-08-26T00:00:00.000Z" }));
     expect(decision).toEqual({ allowed: false, reason: "customer_scope_not_yet_valid" });
   });
 
   it("should_deny_whenCustomerScopeHasExpired", () => {
-    const decision = decide(
-      {},
-      [membership],
-      grantWith({ validTo: "2026-08-25T07:59:59.000Z" }),
-    );
+    const decision = decide({}, [membership], grantWith({ validTo: "2026-08-25T07:59:59.000Z" }));
     expect(decision).toEqual({ allowed: false, reason: "customer_scope_expired" });
   });
 
