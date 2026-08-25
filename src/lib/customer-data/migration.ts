@@ -30,7 +30,8 @@ function buildMappingIndex(mappings: readonly LegacyCustomerMapping[]): Map<stri
     const normalized = normalizeLegacyCustomerName(mapping.legacyName);
     const customerId = mapping.customerId.trim();
     if (!normalized) throw new Error("Customer mapping requires a legacyName");
-    if (!customerId) throw new Error(`Customer mapping for "${mapping.legacyName}" requires customerId`);
+    if (!customerId)
+      throw new Error(`Customer mapping for "${mapping.legacyName}" requires customerId`);
 
     const existing = index.get(normalized);
     if (existing && existing !== customerId) {
@@ -109,9 +110,7 @@ function resolveCustomer(
     observedByNormalized.set(normalized, values);
   }
 
-  const observedNames = [...observedByNormalized.values()]
-    .flatMap((values) => [...values])
-    .sort();
+  const observedNames = [...observedByNormalized.values()].flatMap((values) => [...values]).sort();
 
   if (observedByNormalized.size === 0) {
     return {
@@ -158,7 +157,9 @@ function linkStatus(parentId: string | null | undefined, parentExists: boolean):
   return parentExists ? "linked" : "missing";
 }
 
-export function buildSharedDataMigrationPlan(input: SharedDataMigrationInput): SharedDataMigrationPlan {
+export function buildSharedDataMigrationPlan(
+  input: SharedDataMigrationInput,
+): SharedDataMigrationPlan {
   const systemhouseId = input.systemhouseId.trim();
   if (!systemhouseId) throw new Error("systemhouseId is required");
 
