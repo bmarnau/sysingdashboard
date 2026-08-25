@@ -1,9 +1,9 @@
 # BSF-02 — Customer-Entität und minimale gemeinsame Datenbasis
 
-Stand: 2026-08-25  
-Status: Design in Arbeit  
-Issue: #76  
-ADR: `docs/ADR/0030-customer-entity-shared-read-path.md`
+- Stand: 2026-08-25
+- Status: Design in Arbeit
+- Issue: #76
+- ADR: `docs/ADR/0030-customer-entity-shared-read-path.md`
 
 ## 1. Ziel
 
