@@ -4,6 +4,8 @@
  * Reine Logik-Tests der additiven v2-Schicht (`src/lib/rbac/access.ts`,
  * `src/lib/rbac/scope.ts`). Assignments sind heute nicht produktiv im
  * Auth-Pfad — der Test verifiziert, dass die Bausteine trag­fähig sind.
+ * Neue BSF-Scopes verwenden `systemhouse`; historische `tenant`-Fixtures
+ * bleiben als Kompatibilitätsnachweis bestehen.
  */
 import { describe, expect, it } from "vitest";
 import "../env/test-instance";
@@ -46,6 +48,14 @@ const anyUser: UserProfile = {
 describe("RBAC v2 – Scope-Utilities", () => {
   it.each([
     ["*", []],
+    ["systemhouse:acme", [{ type: "systemhouse", id: "acme" }]],
+    [
+      "systemhouse:acme/customer:c-42",
+      [
+        { type: "systemhouse", id: "acme" },
+        { type: "customer", id: "c-42" },
+      ],
+    ],
     ["tenant:acme", [{ type: "tenant", id: "acme" }]],
     [
       "tenant:acme/customer:c-42",
@@ -64,25 +74,36 @@ describe("RBAC v2 – Scope-Utilities", () => {
   });
 
   it("should_matchWithWildcardsAndInheritance_when_scopeIncludesEvaluated", () => {
-    expect(scopeIncludes("*", "tenant:a/customer:c")).toBe(true);
+    expect(scopeIncludes("*", "systemhouse:a/customer:c")).toBe(true);
+    expect(scopeIncludes("systemhouse:a", "systemhouse:a/customer:c")).toBe(true);
+    expect(scopeIncludes("systemhouse:a/customer:*", "systemhouse:a/customer:c1")).toBe(true);
+    expect(scopeIncludes("systemhouse:a/customer:c1", "systemhouse:a")).toBe(false);
+    expect(scopeIncludes("systemhouse:a", "systemhouse:b")).toBe(false);
+    expect(scopeIncludes("systemhouse:a", "tenant:a/customer:c")).toBe(false);
+
+    // Historische Pre-BSF-Scopes bleiben weiterhin parsebar und auswertbar.
     expect(scopeIncludes("tenant:a", "tenant:a/customer:c")).toBe(true);
     expect(scopeIncludes("tenant:a/customer:*", "tenant:a/customer:c1")).toBe(true);
-    expect(scopeIncludes("tenant:a/customer:c1", "tenant:a")).toBe(false);
     expect(scopeIncludes("tenant:a", "tenant:b")).toBe(false);
     expect(scopeIncludes("tenant:a", "customer:c")).toBe(false); // Typ-Mismatch
   });
 
   it("should_returnNarrowerOrNull_when_narrowestScopeIsChecked", () => {
+    expect(narrowestScope("systemhouse:a", "systemhouse:a/customer:c")).toBe(
+      "systemhouse:a/customer:c",
+    );
+    expect(narrowestScope("systemhouse:a", "systemhouse:b")).toBeNull();
     expect(narrowestScope("tenant:a", "tenant:a/customer:c")).toBe("tenant:a/customer:c");
-    expect(narrowestScope("tenant:a", "tenant:b")).toBeNull();
   });
 
-  it.each(["customer:c-42", "azure.subscription:sub-01", "azure.resourceGroup:rg-prod"])(
-    "should_acceptFixtureScope_when_parsingRealWorldExample_%s",
-    (scope) => {
-      expect(() => parseScope(scope)).not.toThrow();
-    },
-  );
+  it.each([
+    "customer:c-42",
+    "azure.subscription:sub-01",
+    "azure.resourceGroup:rg-prod",
+    "systemhouse:sys-a/customer:c-42",
+  ])("should_acceptFixtureScope_when_parsingRealWorldExample_%s", (scope) => {
+    expect(() => parseScope(scope)).not.toThrow();
+  });
 });
 
 describe("RBAC v2 – Assignment-Auswertung", () => {
@@ -99,32 +120,50 @@ describe("RBAC v2 – Assignment-Auswertung", () => {
     expect(ok).toBe(false);
   });
 
-  it("should_allowActiveAssignment_when_scopeMatches", () => {
-    const active = mkAssignment({ role: "administrator", scope: "tenant:a" });
+  it("should_allowActiveAssignment_when_systemhouseScopeMatches", () => {
+    const active = mkAssignment({ role: "administrator", scope: "systemhouse:a" });
     const ok = evaluateAccess(anyUser, "users.manage", {
       assignments: [active],
-      scope: "tenant:a/customer:c",
+      scope: "systemhouse:a/customer:c",
       now: REF_NOW,
     });
     expect(ok).toBe(true);
   });
 
-  it("should_denyAssignment_when_scopeDoesNotInclude", () => {
-    const foreign = mkAssignment({ role: "administrator", scope: "tenant:b" });
+  it("should_denyAssignment_when_systemhouseScopeDoesNotInclude", () => {
+    const foreign = mkAssignment({ role: "administrator", scope: "systemhouse:b" });
     const ok = evaluateAccess(anyUser, "users.manage", {
       assignments: [foreign],
-      scope: "tenant:a",
+      scope: "systemhouse:a",
       now: REF_NOW,
     });
     expect(ok).toBe(false);
   });
 
+  it("should_supportHistoricalTenantAssignment_withoutMixingScopeTypes", () => {
+    const legacy = mkAssignment({ role: "administrator", scope: "tenant:a" });
+    expect(
+      evaluateAccess(anyUser, "users.manage", {
+        assignments: [legacy],
+        scope: "tenant:a/customer:c",
+        now: REF_NOW,
+      }),
+    ).toBe(true);
+    expect(
+      evaluateAccess(anyUser, "users.manage", {
+        assignments: [legacy],
+        scope: "systemhouse:a/customer:c",
+        now: REF_NOW,
+      }),
+    ).toBe(false);
+  });
+
   it("should_supportMultipleAssignments_when_oneMatches", () => {
-    const a1 = mkAssignment({ id: "a1", role: "viewer", scope: "tenant:a" });
-    const a2 = mkAssignment({ id: "a2", role: "administrator", scope: "tenant:a" });
+    const a1 = mkAssignment({ id: "a1", role: "viewer", scope: "systemhouse:a" });
+    const a2 = mkAssignment({ id: "a2", role: "administrator", scope: "systemhouse:a" });
     const ok = evaluateAccess(anyUser, "users.manage", {
       assignments: [a1, a2],
-      scope: "tenant:a",
+      scope: "systemhouse:a",
       now: REF_NOW,
     });
     expect(ok).toBe(true);
@@ -164,10 +203,16 @@ describe("RBAC v2 – evaluateAccessV2 (native)", () => {
     );
   });
 
-  it("should_grant_when_assignmentHasMatchingPermissionAndScope", () => {
-    const a = mkAssignment({ role: "administrator", scope: "tenant:a" });
+  it("should_grant_when_assignmentHasMatchingSystemhouseScope", () => {
+    const a = mkAssignment({ role: "administrator", scope: "systemhouse:a" });
     expect(
-      evaluateAccessV2("project:edit", [a], "tenant:a/customer:c", rolePerms as never, REF_NOW),
+      evaluateAccessV2(
+        "project:edit",
+        [a],
+        "systemhouse:a/customer:c",
+        rolePerms as never,
+        REF_NOW,
+      ),
     ).toBe(true);
   });
 });
