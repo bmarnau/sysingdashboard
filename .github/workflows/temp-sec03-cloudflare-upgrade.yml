@@ -1,0 +1,57 @@
+name: TEMP SEC03 Cloudflare Upgrade Probe
+
+on:
+  push:
+    branches:
+      - audit/sec03-cloudflare-upgrade-2026-08-25
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Baseline install and audit
+        run: |
+          bun install --frozen-lockfile
+          echo "CURRENT_PLUGIN=$(bun pm ls | grep '@cloudflare/vite-plugin' | head -1 || true)"
+          set +e
+          bun audit --json > /tmp/audit-before.json
+          echo "AUDIT_BEFORE_EXIT=$?"
+          cat /tmp/audit-before.json
+          exit 0
+      - name: Discover latest Cloudflare plugin
+        run: |
+          echo "NPM_LATEST=$(npm view @cloudflare/vite-plugin version)"
+          npm view @cloudflare/vite-plugin@latest engines dependencies peerDependencies --json || true
+      - name: Upgrade only in disposable runner
+        run: |
+          latest=$(npm view @cloudflare/vite-plugin version)
+          bun add "@cloudflare/vite-plugin@$latest" --exact
+          echo "UPGRADED_PLUGIN=$latest"
+          echo "--- dependency paths ---"
+          bun pm why miniflare || true
+          bun pm why sharp || true
+          bun pm why undici || true
+          echo "--- package/lock diff summary ---"
+          git diff --stat -- package.json bun.lock
+          git diff -- package.json | cat
+      - name: Audit upgraded disposable graph
+        run: |
+          set +e
+          bun audit --json > /tmp/audit-after.json
+          code=$?
+          echo "AUDIT_AFTER_EXIT=$code"
+          cat /tmp/audit-after.json
+          exit 0
+      - name: Smoke static and production build with upgraded graph
+        run: |
+          bunx prettier --check .
+          bun run lint
+          bun run typecheck
+          bun run build
