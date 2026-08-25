@@ -1,6 +1,6 @@
 # KI-gestützter Entwicklungsworkflow — GitHub, ChatGPT, Lovable und lokale Werkzeuge
 
-Stand: 2026-08-24  
+Stand: 2026-08-25  
 Status: verbindliche Arbeitsregel für Sysing Dashboard
 
 ## 1. Ziel
@@ -18,9 +18,19 @@ Für ChatGPT, Codex, Lovable und andere schreibende Werkzeuge gilt verbindlich:
 - Integration erfolgt über Pull Request und die vorgesehenen CI-/Security-Gates,
 - ein Plan-, Chat- oder Analysemodus eines externen Werkzeugs wird **nicht als read-only angenommen**,
 - nach jedem externen Schreibvorgang werden GitHub-Commit, Branch und Diff unabhängig geprüft,
-- ein direkter `main`-Write ist nur als bewusst autorisierte administrative Ausnahme zulässig und muss anschließend revisionssicher dokumentiert werden.
+- administrative Ausnahmen dürfen die aktiven GitHub-Schutzregeln nicht stillschweigend umgehen.
 
-Technischer Branch Protection bzw. ein GitHub-Ruleset soll diese organisatorische Regel zusätzlich erzwingen. Bis dieser Schutz nachweislich aktiv ist, wird die Regel prozessual strikt eingehalten.
+Seit 25.08.2026 erzwingt das aktive GitHub-Ruleset `main-release-governance` diese Regel zusätzlich technisch für den Default-Branch `main`:
+
+- `protected: true`,
+- Pull Request vor Merge erforderlich,
+- Required Check `14 · Technical Report & Quality Gate`,
+- Required Check `Secrets, Headers, Azure-Strings`,
+- PR-Branch muss vor Merge aktuell sein,
+- Branch-Löschung und Force-/Non-Fast-Forward-Pushes sind blockiert,
+- keine Bypass-Akteure; `current_user_can_bypass: never`.
+
+Branch Protection ist damit die technische Sicherheitsgrenze. Der dokumentierte Entwicklungsprozess bleibt trotzdem verbindlich und wird nicht durch den Schutz ersetzt.
 
 ### 1.2 Nachgewiesener Lovable-Planmodus-Vorfall
 
@@ -28,11 +38,11 @@ Am 24.08.2026 wurde ein Lovable-Auftrag ausdrücklich als Plan-/Analyseauftrag o
 
 - ein unbeauftragter Commit mit Änderungen am Supabase-Client und neuer Preview-Auth-Storage-Logik,
 - ein weiterer Commit mit `.lovable/plan.md`,
-- anschließend ein direkter Lovable-Bot-Merge auf den ungeschützten GitHub-Branch `main`.
+- anschließend ein direkter Lovable-Bot-Merge auf den damals ungeschützten GitHub-Branch `main`.
 
-Der Vorfall wurde über Recovery-PR #66 vollständig zurückgeführt und durch Security #407 sowie CI #416 einschließlich Technical Report und Quality Gate erneut abgenommen. Der aktuelle Dateibaum nach Recovery ist identisch zum zuvor vollständig akzeptierten Stand.
+Der Vorfall wurde über Recovery-PR #66 vollständig zurückgeführt und durch Security #407 sowie CI #416 einschließlich Technical Report und Quality Gate erneut abgenommen. Der Recovery-Dateibaum war identisch zum zuvor vollständig akzeptierten Stand.
 
-Daraus folgt verbindlich: **Solange Branch Protection für `main` nicht nachweislich aktiv ist, wird der Lovable-Main-Agent überhaupt nicht verwendet — auch nicht im Plan-, Chat- oder Analysemodus.**
+Issue #53 ist seit 25.08.2026 abgeschlossen; `main` ist nun technisch geschützt. Der Vorfall bleibt jedoch verbindliche Governance-Evidenz: **Der Lovable-Main-Agent ist nicht die reguläre Implementierungs- oder Analysearbeitsfläche.** Lovable wird bevorzugt auf einer nachweislich isolierten Project Variant / Nicht-main-Arbeitsfläche betrieben, damit Scope, Diff und Ergebnis bereits vor dem PR sauber getrennt bleiben.
 
 ## 2. Werkzeug-Priorität
 
@@ -50,15 +60,13 @@ Für jede Aufgabe gilt folgende Reihenfolge:
 
 ### 3.1 Vorbedingung: isolierte Arbeitsfläche
 
-Ein Lovable-Prompt darf erst ausgeführt werden, wenn vor dem Prompt eindeutig nachgewiesen ist:
+Ein regulärer Lovable-Implementierungsauftrag wird erst ausgeführt, wenn vor dem Prompt eindeutig nachgewiesen ist:
 
 - die Arbeitsfläche ist eine **Project Variant oder sonstige nachweislich getrennte Nicht-main-Arbeitsfläche**,
 - sie basiert auf einem ausdrücklich freigegebenen `base_sha`,
 - `main` ist nicht Ziel des Laufs.
 
-Wenn die Lovable-Oberfläche diese Isolation nicht eindeutig erkennen lässt, wird **kein Prompt** ausgeführt.
-
-Die in der Integrationsschnittstelle angebotene automatische Variant-Funktion war zum dokumentierten Prüfzeitpunkt technisch nicht nutzbar. Daraus entsteht keine Ausnahme für die Nutzung des Main-Agenten.
+Wenn die Lovable-Oberfläche diese Isolation nicht eindeutig erkennen lässt, wird kein regulärer Implementierungsauftrag gestartet. Branch Protection reduziert zwar die Auswirkung eines versehentlichen Main-Writes, ist aber kein Ersatz für eine saubere Arbeitsfläche.
 
 ### 3.2 Rollenverteilung ChatGPT ↔ Bernd ↔ Lovable
 
@@ -108,9 +116,9 @@ Vor Integration gilt:
 4. Pull Request öffnen,
 5. separaten Security-Workflow vollständig grün abwarten,
 6. vollständige CI einschließlich `14 · Technical Report & Quality Gate` vollständig grün abwarten,
-7. nur den geprüften Head mit Expected-Head-SHA mergen.
+7. nur den geprüften Head mit Expected-Head-SHA mergen, soweit das Merge-Werkzeug dies unterstützt.
 
-Branch Protection bleibt die technische Zielabsicherung; der Prozess ersetzt diesen Schutz nur übergangsweise.
+Das aktive Ruleset `main-release-governance` erzwingt Pull Request, beide Required Checks und den aktuellen Branchstand zusätzlich technisch. Der Prozess bleibt trotzdem die fachliche und organisatorische Abnahmegrundlage.
 
 ## 6. Neue Lovable-Unterhaltung statt Kontextballast
 
@@ -141,13 +149,13 @@ Bei einem fehlgeschlagenen Lovable-Lauf gilt:
 
 Ziel ist die minimale Zahl unklarer oder wiederholter Build-Versuche.
 
-## 8. Planung ohne Lovable-Schreibwirkung
+## 8. Planung ohne unbeabsichtigte Schreibwirkung
 
 Brainstorming, Architekturentscheidungen, Roadmap, Prompt-Entwurf und Fehleranalyse erfolgen grundsätzlich in ChatGPT, GitHub oder lokalen Werkzeugen.
 
-**Solange Issue #53 offen und `main` ungeschützt ist, wird Lovable dafür nicht im Main-Agenten verwendet.** Der nachgewiesene Planmodus-Vorfall zeigt, dass die Bezeichnung „Plan“ oder „Chat“ keinen Sicherheitsnachweis darstellt.
+Der nachgewiesene Lovable-Planmodus-Vorfall zeigt, dass die Bezeichnung „Plan“ oder „Chat“ keinen Read-only-Nachweis darstellt. Branch Protection schützt nun `main`, ändert aber nichts an dieser Werkzeug-Eigenschaft.
 
-Lovable darf für Analyse nur verwendet werden, wenn auch hierfür zuvor eine nachweislich isolierte Variant/Nicht-main-Arbeitsfläche bereitsteht und ein eventueller Commit dort unschädlich bleibt.
+Wenn Lovable für Analyse oder Experiment genutzt wird, soll auch dafür bevorzugt eine nachweislich isolierte Variant/Nicht-main-Arbeitsfläche verwendet werden, sodass eventuelle Schreibwirkung vom Referenzstand getrennt bleibt.
 
 ## 9. Lokale Entwicklung nach dem MVP
 
@@ -218,13 +226,15 @@ Unverändert verbindlich:
 
 F-11 und der MVP sind abgeschlossen. Aktueller Fokus ist kontrollierte Post-MVP-Wartung und bewusst priorisierter Ausbau.
 
-Solange Branch Protection für `main` nicht nachweislich aktiv ist:
+Seit 25.08.2026 gilt:
 
-- GitHub-Änderungen ausschließlich über Branch + PR,
-- Lovable-Main-Agent nicht verwenden,
-- Lovable nur nach bestätigter Variant-/Nicht-main-Isolation,
-- GitHub nach jedem externen Lauf unabhängig prüfen,
-- Issue #53 offen halten,
-- zukünftigen BSF-Scope wie Issue #63 nicht stillschweigend starten.
+- `main` ist durch das aktive Ruleset `main-release-governance` technisch geschützt,
+- GitHub-Änderungen erfolgen weiterhin ausschließlich über Branch + PR,
+- die zwei Required Checks sind vor Merge verpflichtend,
+- der PR-Branch muss vor Merge aktuell sein,
+- Lovable wird bevorzugt nur nach bestätigter Variant-/Nicht-main-Isolation eingesetzt,
+- GitHub wird nach jedem externen Lauf unabhängig geprüft,
+- Issue #53 ist `completed`,
+- zukünftiger BSF-Scope wie Issue #63 wird nicht stillschweigend gestartet.
 
-Der reproduzierte Lovable-Vorfall und Recovery #66 sind Referenzbeispiel dafür, warum organisatorische Regeln bis zur technischen Branch Protection strikt eingehalten werden müssen.
+Der reproduzierte Lovable-Vorfall und Recovery #66 bleiben Referenzbeispiel dafür, warum organisatorische Regeln und technische Branch Protection gemeinsam erforderlich sind.
