@@ -35,6 +35,7 @@ Leitplanken von Anfang an:
 
 ## Managementübersicht
 
+<!-- prettier-ignore -->
 | Frage               | Antwort                                                                                                                                                 |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
@@ -52,6 +53,7 @@ Betreiberhoheit und spätere Integrationen.
 
 ## Zeitstrahl: Idee → Prototyp → MVP → Betriebsreife → BSF
 
+<!-- prettier-ignore -->
 | Phase         | Zeitraum                  | Versionen | Ergebnis                                                                                      |
 | ------------- | ------------------------- | --------- | --------------------------------------------------------------------------------------------- |
 | Idee          | 2026-05                   | –         | Dashboard für Systemingenieur als einzelne Auswertungsansicht                                 |
@@ -63,6 +65,7 @@ Betreiberhoheit und spätere Integrationen.
 
 ## Sprintübersicht
 
+<!-- prettier-ignore -->
 | Version       | Datum                | Schwerpunkt               | Ergebnis                                                                |
 | ------------- | -------------------- | ------------------------- | ----------------------------------------------------------------------- |
 | 1.7.0         | 2026-06-14           | Arbeitszeitmodell         | Engineurprofil übernimmt Modellwerte                                    |
@@ -176,6 +179,7 @@ Source-of-Truth- und Merge-Grenzen müssen technisch durchgesetzt werden.
 
 ## Architekturentscheidungen
 
+<!-- prettier-ignore -->
 | ADR  | Entscheidung                                                  |
 | ---- | ------------------------------------------------------------- |
 | 0001 | TanStack Start als Framework                                  |
