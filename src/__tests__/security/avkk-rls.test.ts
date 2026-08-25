@@ -1,5 +1,5 @@
 /**
- * Security-Suite — AVKK / Reference Data (Sprint 07B).
+ * Security-Suite — AVKK / Reference Data / Customer Data.
  *
  * Statische Absicherung der Architektur- und Sicherheitsgrenzen:
  *  1. Supabase-Zugriff ausschließlich in den Adaptermodulen (Layer-Regel);
@@ -16,7 +16,11 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = process.cwd();
-const MODULES = [join(ROOT, "src", "lib", "avkk"), join(ROOT, "src", "lib", "reference-data")];
+const MODULES = [
+  join(ROOT, "src", "lib", "avkk"),
+  join(ROOT, "src", "lib", "reference-data"),
+  join(ROOT, "src", "lib", "customer-data"),
+];
 
 function filesOf(dir: string): string[] {
   return readdirSync(dir)
@@ -24,7 +28,7 @@ function filesOf(dir: string): string[] {
     .map((f) => join(dir, f));
 }
 
-describe("AVKK / Reference Data — Zugriffsgrenzen", () => {
+describe("AVKK / Reference Data / Customer Data — Zugriffsgrenzen", () => {
   it("should_importSupabaseClientOnlyInAdapter_when_scanningDomainModules", () => {
     const offenders: string[] = [];
     for (const dir of MODULES) {
