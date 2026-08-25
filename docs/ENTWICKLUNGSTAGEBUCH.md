@@ -3,47 +3,54 @@
 Fortschreibbare Projektchronik. Diese Datei ist die **einzige Quelle** für die
 Ansicht _Service → Entwicklungstagebuch_ im Dashboard.
 
-Pflegehinweis: Pro Sprint wird unten ein neuer Abschnitt ergänzt — gemeinsam mit
-dem zugehörigen `CHANGELOG.md`-Eintrag. Keine Namen von Personen, keine
-Zugangsdaten, keine internen Adressen in dieser Datei.
+Pflegehinweis: Pro Sprint bzw. relevantem Projektmeilenstein wird unten ein neuer
+Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätzlich
+`CHANGELOG.md` fortgeschrieben. Reine Architektur-/Governance-Sprints erzeugen
+keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
+dieser Datei.
 
-Stand: 2026-08-22 · Dashboard-Version 1.59.6
+Stand: 2026-08-25 · Dashboard-Version 1.59.6
 
 ## Vision
 
 Das Sysing Dashboard ist das Arbeits- und Steuerungswerkzeug für die
 Systemingenieurs-Projektabwicklung: Projekte, Arbeitspakete, Tätigkeiten und
-Zeiten an einer Stelle, mit belastbaren Auswertungen für Abrechnung und
-Leistungsbewertung.
+Zeiten an einer Stelle, mit belastbaren Auswertungen für Leistungsnachweis,
+Projektsteuerung und Führung.
 
 Leitplanken von Anfang an:
 
-- **Nachvollziehbarkeit vor Funktionsumfang.** Jede Änderung ist in CHANGELOG,
-  Handbuch und – bei Architekturrelevanz – in einer ADR dokumentiert.
+- **Nachvollziehbarkeit vor Funktionsumfang.** Jede Änderung ist in der dafür
+  maßgeblichen Dokumentation und – bei Architekturrelevanz – in einer ADR
+  dokumentiert.
 - **Betriebsfähigkeit statt Demo.** Prüfberichte, Qualitätstore und
   Sicherheitsprüfungen laufen automatisiert in der CI.
-- **Datenhoheit.** Lokale Arbeitsfähigkeit (Offline), Exporte in offene
-  Formate, Azure-Anbindung als Option statt als Zwang.
+- **Datenhoheit.** Lokale Arbeitsfähigkeit, Exporte in offene Formate und
+  austauschbare Provider bleiben Teil des Zielbilds.
 - **Sicherheit als Standardzustand.** Rollenmodell, serverseitig erzwungene
   Regeln, keine Geheimnisse im Client, Protokollierung ohne sensible Inhalte.
+- **Providerneutralität.** Supabase trägt den MVP/BSF-Ausbau, ohne Entra ID,
+  Azure SQL, Azure Storage oder autonomen Docker-Betrieb architektonisch zu
+  verbauen.
 
 ## Managementübersicht
 
-| Frage               | Antwort                                                                                                                      |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Rollenmodell, Backup/Restore, Import/Export, Reporting und integriertem Handbuch. |
-| Zeitraum            | Mai 2026 bis August 2026                                                                                                     |
-| Aktueller Stand     | Version 1.58.10, MVP-Härtung abgeschlossen, alle automatisierten Tests grün, manuelle Abnahme mit bekannten Findings offen   |
-| Größte Hürden       | Inbetriebnahme der Anmeldung, vollständiger PDF-Druck, Mehrbenutzer-Demo unter RLS/RBAC                                      |
-| Nächster Nutzen     | Manuelle Freigabeentscheidung, Word-Fassung SYSING-001, optionale Azure-Produktivumgebung                                    |
+| Frage               | Antwort                                                                                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
+| Zeitraum            | Mai 2026 bis August 2026                                                                                                                                |
+| Aktueller Stand     | Version 1.59.6; F-18 und F-11 CLOSED/PASS; MVP 100 % / BASELINE READY; `main` technisch durch GitHub-Ruleset geschützt; BSF-01 läuft.                   |
+| Größte Hürden       | Der operative Fachbestand ist noch teilweise user-scoped lokal; echte Kunden-/Mehrbenutzersichten benötigen einen kontrollierten gemeinsamen Read-Pfad. |
+| Nächster Nutzen     | Kundenmodell → Kundenverantwortung/„Meine Kunden“ → Projektmanager-Leistungssicht → Teamlead-Leistungsnachweis.                                         |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
-Anwendung mit Anmeldung, Rechteverwaltung, Prüfpfad und automatisierter
-Qualitätssicherung gewachsen. Der Schwerpunkt lag ab Juli 2026 nicht mehr auf
-neuen Funktionen, sondern auf Betriebsreife: Tests, Prüfberichte, Sicherheit und
-Dokumentation.
+Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
+Qualitätssicherung gewachsen. Nach der formalen MVP-Baseline verschiebt sich der
+Schwerpunkt auf das **Betriebsfähige Systemhaus-Fundament (BSF)**: belastbare
+Kundenbeziehungen, rollenübergreifende Leistungssichten, Dokumentationsqualität,
+Betreiberhoheit und spätere Integrationen.
 
-## Zeitstrahl: Idee → Prototyp → MVP → Betriebsreife
+## Zeitstrahl: Idee → Prototyp → MVP → Betriebsreife → BSF
 
 | Phase         | Zeitraum                  | Versionen | Ergebnis                                                                                      |
 | ------------- | ------------------------- | --------- | --------------------------------------------------------------------------------------------- |
@@ -51,7 +58,8 @@ Dokumentation.
 | Prototyp      | 2026-06-05 bis 2026-06-16 | 1.0–1.9   | Persistenz, Druckansicht, Arbeitszeitmodell, Handbuch, Backup                                 |
 | MVP           | 2026-06-17 bis 2026-07-02 | 1.10–1.19 | Downloads, JSON-Schnittstelle, Betriebsmodi, Backend-Routen, RBAC, Azure-Bereich              |
 | Härtung       | 2026-07-04 bis 2026-07-16 | 1.20–1.38 | Tests, Logger, Store, ADRs, Prüfbericht, Qualitätstore                                        |
-| Betriebsreife | 2026-07-17 bis 2026-08-03 | 1.39–1.47 | Anmeldung, Compliance-Bericht, Refactoring, Sitzungs-Timeout, Chronik, Backup-Modularisierung |
+| Betriebsreife | 2026-07-17 bis 2026-08-24 | 1.39–1.59 | Anmeldung, AVKK, Reporting, Mehrbenutzer-/Rollenabnahme, formale MVP-Baseline                |
+| BSF           | ab 2026-08-25             | 1.59.6+   | Kundenmodell, Kundensicht, Leistungssichten, Dokumentation und Betriebsfundament              |
 
 ## Sprintübersicht
 
@@ -89,16 +97,20 @@ Dokumentation.
 | 1.53.0        | 2026-08-11           | Persönlicher AVKK-Platz   | Mein AVKK-Workspace mit Filtern und Risikoindikatoren                   |
 | 1.54.0        | 2026-08-12           | AVKK-Backup/Export        | AVKK in Backup/Restore, JSON-Schema v1.1.0, Löschstrategie (ADR-0026)   |
 | 1.55.0        | 2026-08-13           | AVKK-Cockpit              | Rollenbasierte Führungssicht, Action-Need, Verteilung (ADR-0027)        |
-| 1.56.0        | 2026-08-13           | Reporting                 | Corporate Templates, TDF-Ausgabe, Demo-Daten-Seed (ADR-0028)            |
+| 1.56.0        | 2026-08-13           | Reporting                 | Corporate Templates, TDF-Ausgabe, Demo-Daten-Seed (ADR-0028)           |
 | 1.57.0        | 2026-08-13           | Demo-Schulung             | Idempotenter AVKK-Demo-Datensatz, UI-Steuerung, soft retirement         |
 | 1.58.0        | 2026-08-13           | MVP-Freigabe              | Release-Candidate, MVP-Acceptance-Report (**GO WITH FINDINGS**)         |
-| 1.58.1–1.58.4 | 2026-08-14           | AVKK-UI-Härtung           | Detaildialog-Zustand, Tooltips, Textlängen, 490 Tests grün              |
+| 1.58.1–1.58.4 | 2026-08-14           | AVKK-UI-Härtung           | Detaildialog-Zustand, Tooltips, Textlängen, Rollenabnahme vorbereitet   |
 | 1.58.5        | 2026-08-14           | Sichtbares Abmelden       | Logout-Button im Header                                                 |
 | 1.58.6        | 2026-08-14           | Fachliche Begrüßung       | Anzeigename zentral aus Profil, Auth-Metadaten, kein E-Mail-Fallback    |
 | 1.58.7        | 2026-08-14           | Backend-Administration    | Auth-Konten im Service-Menü, keine Supabase-Dashboard-Links (F-15)      |
-| 1.58.8        | 2026-08-14           | Passwort-Reset            | Serverseitige Recovery-Mail je Konto mit Audit-Log                      |
+| 1.58.8        | 2026-08-14           | Passwort-Recovery         | Serverseitiger Recovery-Pfad je Konto mit Audit-Log                     |
 | 1.58.9        | 2026-08-14           | Demo-Personenzuordnung    | Nachrüstbare Verantwortungszuweisung, Local-First-Hinweis (F-11)        |
 | 1.58.10       | 2026-08-15           | Begrüßung mit Vorname     | Dashboard-Anrede nur noch mit Vorname, normalisiert                     |
+| 1.59.0        | 2026-08-16           | Zentraler Daten-Refresh   | Kontrollierter Read-Refresh ohne Seiten-Reload                          |
+| 1.59.2        | 2026-08-18           | Passwortadministration    | Administratives Passwortsetzen serverseitig kontrolliert und auditiert  |
+| 1.59.3–1.59.4 | 2026-08-18 bis 08-21 | Viewer-/CRUD-Härtung      | Local-First-Schreibpfade und Dialoggrenzen fail-closed                  |
+| 1.59.5–1.59.6 | 2026-08-21 bis 08-24 | F-11 / MVP-Abschluss      | Rollen-/Negativtests abgeschlossen; MVP 100 % / BASELINE READY          |
 
 ## Schwierigkeiten und ihre Lösung
 
@@ -146,6 +158,22 @@ Protokolleinträge konnten Verbindungszeichenfolgen enthalten. Die Redaktionsreg
 wurden erweitert und die Konsolennutzung projektweit auf den zentralen Logger
 umgestellt, überwacht durch ein CI-Tor.
 
+### Organisatorische Git-Regel ohne technischen Schutz (2026-08-24/25)
+
+Ein ausdrücklich als Lovable-Plan-/Analyseauftrag formulierter Lauf schrieb trotz
+des erwarteten Read-only-Verhaltens direkt auf den ungeschützten `main` und
+änderte unbeauftragt Supabase-Auth-/Preview-Dateien. Die technische Recovery
+wurde über PR #66 vollständig auf den akzeptierten Dateibaum zurückgeführt.
+
+Die Lehre wurde nicht nur dokumentiert, sondern technisch erzwungen: Das
+GitHub-Ruleset `main-release-governance` verlangt Pull Request, die beiden
+Required Checks, einen aktuellen Branch und blockiert Löschung sowie Force
+Pushes. PR #70 war der erste vollständig unter diesem Schutz gemergte
+Governance-Nachlauf.
+
+**Lehre:** Ein Werkzeugmodus mit dem Namen „Plan“ ist kein Sicherheitsnachweis;
+Source-of-Truth- und Merge-Grenzen müssen technisch durchgesetzt werden.
+
 ## Architekturentscheidungen
 
 | ADR  | Entscheidung                                                  |
@@ -171,16 +199,29 @@ umgestellt, überwacht durch ein CI-Tor.
 | 0019 | Refactoring-Plan für zu große Module                          |
 | 0020 | Providerneutrale Abmeldung bei Inaktivität                    |
 | 0021 | Modularisierung des Backup-/Restore-Service                   |
+| 0022 | Backupformat 2.0 und manifestbasierte Restore-Zuordnung       |
+| 0023 | Phasen-/Governance-Grenze nach Plattformabschluss             |
+| 0024 | AVKK-Führungsmodell und Reference-Data-Architektur            |
+| 0025 | AVKK-Datenbank, Reference Data und Local-First-Grenze         |
+| 0026 | AVKK Backup/Restore/Export und Historisierungsgrenze          |
+| 0027 | AVKK-Management und Kontextindikatoren                        |
+| 0028 | Reporting-Architektur und Corporate Templates                 |
+| 0029 | Providerneutraler Systemhaus- und Customer-Scope              |
 
 ## Offene Punkte und Ausblick
 
 - **Serverseitige Sitzungsdurchsetzung.** Die Abmeldung bei Inaktivität wirkt
   clientseitig; ein bereits entwendetes Zugriffstoken bleibt bis zum Ablauf
   gültig (ADR-0020).
-- **E2E-Test der Abmeldung.** Erfordert eine echte Sitzung im Testlauf und ist
-  bewusst zurückgestellt.
 - **Mehrsprachigkeit.** Vorbereitet, aber nur Deutsch gepflegt.
-- **Azure-Produktivbetrieb.** Verbindungen sind im Entwicklungsmodus gesperrt.
+- **Eigene Produktdomain/Auth-Mail.** Für BSF ist ein kontrollierter Mailpfad mit
+  eigener Domain, SPF, DKIM und DMARC vorgemerkt.
+- **Gemeinsame operative Datenbasis.** Kundenverantwortung und eine echte
+  Projektmanager-Leistungssicht benötigen einen kontrollierten gemeinsamen
+  Read-/Datenpfad; BSF-02 zieht nur das fachlich notwendige Minimum vor,
+  BSF-04 behandelt die vollständige Datenhaltungsstrategie.
+- **Betreiberhoheit.** Docker-/On-Premises-Betrieb und der Exit-Pfad aus
+  plattformverwalteter Laufzeit bleiben BSF-Pflicht.
 
 ## Meilenstein: Abschluss der Infrastrukturphase (1.50.0, 2026-08-07)
 
@@ -204,7 +245,7 @@ Suiten für Backup/Restore, API-Vertrag, Sicherheit, RBAC, Barrierefreiheit und
 Manifest-Validierung; Prüfbericht und Tech-Debt-Scanner erzeugen bei jedem Lauf
 vergleichbare Artefakte. Offene Restpunkte sind benannt statt verschwiegen: die
 serverseitige Sitzungsdurchsetzung und der echte Supabase-E2E-Test mit kontrollierter
-Testsession bleiben offen (TD-SESSION-SERVER, BACKLOG-TEST-001).
+Testsession bleiben als technische Grenzen dokumentiert.
 
 **Übergang zur Fachentwicklungsphase.** Infrastrukturarbeit ist ab Version 1.50.0 nur
 noch als Wartung, Fehlerbehebung oder ausdrücklich begründete Voraussetzung eines
@@ -214,6 +255,27 @@ geprüft.
 **Beginn AVKK.** Phase 2 startet mit dem AVKK-Datenmodell (Sprint 07): fachliche
 Erweiterung der Arbeitspakete, Migration mit RLS und Grants, Berücksichtigung in
 Import, Export und Backupformat. Erst danach folgt die AVKK-Arbeitsansicht (Sprint 08).
+
+## Meilenstein: Formale MVP-Baseline und Übergang zu BSF (2026-08-24/25)
+
+Die manuelle F-11-Rollenabnahme, die Viewer-/CRUD-Negativpfade und die formalen
+Release-Gates sind abgeschlossen. PR #60 etablierte die wirksame MVP-Baseline;
+Dashboard-Version 1.59.6 bleibt der Produktstand. F-18 und F-11 sind
+**CLOSED / PASS**, der MVP ist **100 % / BASELINE READY**.
+
+Nach dem Lovable-Incident wurde der Dateibaum über PR #66 exakt auf den zuvor
+akzeptierten Stand zurückgeführt. PR #68 schrieb den isolierten Lovable-Arbeitsmodus
+fest. Am 25.08.2026 wurde das Ruleset `main-release-governance` aktiviert und
+technisch verifiziert; PR #70 synchronisierte die laufende Governance-Dokumentation.
+
+PR #74 schreibt die operative BSF-Prioritätenfolge fest. Sie richtet den weiteren
+Ausbau am unmittelbaren Nutzwert aus:
+
+`Kunde → Kundenverantwortung → Projektmanager-Leistungssicht → Teamlead-Leistungsnachweis → Dokumentationskonsolidierung → SYSING-001/TDF → Board-Zugriff`
+
+Die täglich verfügbaren Lovable-Credits werden pro Sprint geplant und nur für
+UI-/Preview-/Runtime-Nutzen eingesetzt. Architektur-, Datenmodell- und
+Sicherheitsentscheidungen bleiben außerhalb Lovable.
 
 ---
 
@@ -565,9 +627,8 @@ alles; „Mein AVKK" trennt in der Sicht, nicht in der Datenbank. Zweitens liege
 Projekte, Arbeitspakete und Tätigkeiten weiterhin lokal im Browser und kennen
 überhaupt keine Personentrennung. Beides steht jetzt als Befund im
 Abnahmebericht, statt durch schnell nachgezogene Policies verdeckt zu werden.
-Die Unterschriften der Rollenabnahme fehlen weiterhin; F-11 bleibt deshalb
-MANUAL VERIFICATION REQUIRED, nun aber mit einem Szenario, das eine Abzeichnung
-überhaupt aussagekräftig macht.
+Die fehlenden Unterschriften wurden in den nachfolgenden F-11-Abnahmeschritten
+vollständig nachgezogen; F-11 ist inzwischen CLOSED/PASS.
 
 ## AVKK UI Quick Check – Behebung der Anzeigefehler (v1.58.4)
 
@@ -588,9 +649,8 @@ Bewertung; und das leere Personenfeld unter einer bereits gefüllten
 Verantwortungsliste sah wie eine Korrekturmöglichkeit aus, obwohl es
 ausschließlich ergänzt. Beides ist nun ausgeschrieben. Die Aufgabenliste zeigt
 lange Titel per Tooltip vollständig; in der Kartenansicht werden sie
-umgebrochen statt abgeschnitten. Die verbleibenden Befunde des Quick Checks —
-unscharfe Kennzahldefinitionen und das fehlende Beenden einer Zuordnung —
-bleiben bewusst offen und sind nach dem MVP eingeplant.
+umgebrochen statt abgeschnitten. Weiterführende Vertretungs-/Personensichten
+sind als Post-MVP-/BSF-Thema in Issue #63 gesichert.
 
 ## Sichtbares Abmelden im Kopfbereich (v1.58.5)
 
@@ -640,10 +700,10 @@ dokumentiert.
 Für die manuelle Mehrbenutzer-Abnahme fehlte ein sicherer Weg, ein vergessenes
 Passwort zurückzusetzen. Bewusst _nicht_ umgesetzt wurde das direkte Setzen
 eines Passworts durch Administratoren: Damit entstünde ein Kennwort, das eine
-zweite Person kennt. Stattdessen löst die neue Aktion nur den regulären
-Wiederherstellungsablauf aus — eine Recovery-Mail an die registrierte Adresse,
-das neue Passwort vergibt ausschließlich die Kontoinhaberin oder der
-Kontoinhaber.
+zweite Person kennt. Stattdessen löste diese Ausbaustufe den regulären
+Wiederherstellungsablauf aus. Die spätere administrative Passwortsetzung wurde
+als eigener, serverseitig geschützter Betriebsweg ergänzt und ist unten als
+v1.59.2 dokumentiert.
 
 Die Zieladresse wird serverseitig aus dem Konto aufgelöst; ein vom Browser
 gelieferter Wert wird nicht verwendet. Vor der Ausführung prüft die
@@ -658,7 +718,7 @@ den Browser gelangen kann.
 
 Die manuelle Mehrbenutzer-Abnahme zeigte einen reproduzierbaren Befund: Nach
 der Zuordnung der Demo-Personen zu echten Anmeldekonten blieb „Mein AVKK" für
-die Systemingenieurin leer. Ursache waren zwei unabhängige Punkte.
+ein Systemingenieur-Konto leer. Ursache waren zwei unabhängige Punkte.
 
 Erstens war die Idempotenz des Seeds zu grob: Ein bereits vorhandener, offener
 Demofall wurde vollständig übersprungen — samt Verantwortungszuweisung. Wer die
@@ -679,13 +739,12 @@ den Prüfenden zu überlassen.
 
 ## Begrüßung nur mit Vorname (v1.58.10)
 
-Die Dashboard-Anrede zeigte bisher den vollständigen fachlichen Anzeigenamen,
-also etwa „Guten Tag, alex marnau.". Das war inhaltlich korrekt, aber wirkte
-unaufgeräumt, wenn die Schreibweise der Daten nicht gepflegt war. Ab v1.58.10
-wird ausschließlich der Vorname verwendet und dabei normalisiert: „alex",
-„ALEX", „aLeX" und „Alex Marnau" werden alle zu „Alex". Zusammengesetzte
-Namen wie „Jörg-Michael" bleiben erhalten, wenn sie bereits korrekt geschrieben
-sind; einheitlich falsche Schreibweise wird sanft korrigiert.
+Die Dashboard-Anrede zeigte bisher den vollständigen fachlichen Anzeigenamen.
+Das war inhaltlich korrekt, wirkte aber unaufgeräumt, wenn die Schreibweise der
+Daten nicht gepflegt war. Ab v1.58.10 wird ausschließlich der Vorname verwendet
+und dabei normalisiert. Zusammengesetzte Namen bleiben erhalten, wenn sie
+bereits korrekt geschrieben sind; einheitlich falsche Schreibweise wird sanft
+korrigiert.
 
 Die Priorität folgt bewusst der Datenquelle: zuerst das echte Profilfeld
 `first_name`, dann das erste Wort des fachlichen Anzeigenamens, dann die
@@ -696,17 +755,17 @@ angezeigt. Header und Profilanzeige verwenden weiterhin den vollständigen Namen
 ## Administratives Passwort setzen (v1.59.2)
 
 Die Recovery-Mails der plattformverwalteten Auth-Komponente erreichen externe
-Adressen ohne eigene Absenderdomäne nicht zuverlässig (F-16). Für die laufende
-Abnahme war damit kein Weg zurück in ein bestehendes Konto vorhanden. Statt
-eine zweite Auth-Administration aufzubauen, wurde die vorhandene Infrastruktur
-erweitert: dieselbe Serverfunktionsschicht, dieselbe Berechtigungsprüfung,
-dasselbe Prüfprotokoll.
+Adressen ohne eigene Absenderdomäne nicht zuverlässig. Für die laufende Abnahme
+war damit kein verlässlicher Weg zurück in ein bestehendes Konto vorhanden.
+Statt eine zweite Auth-Administration aufzubauen, wurde die vorhandene
+Infrastruktur erweitert: dieselbe Serverfunktionsschicht, dieselbe
+Berechtigungsprüfung, dasselbe Prüfprotokoll.
 
 Bewusst nicht umgesetzt wurde die Bezeichnung „temporäres Passwort" — der
 Auth-Dienst kennt keinen erzwungenen Wechsel bei der nächsten Anmeldung. Die
-Oberfläche formuliert deshalb als Empfehlung, nicht als technische Zusicherung
-(F-17, akzeptiert, BSF-Follow-up). Die Drosselung nutzt vorhandene Auditdaten
-statt neuer Rate-Limit-Persistenz.
+Oberfläche formuliert deshalb als Empfehlung, nicht als technische
+Zusicherung. Die Drosselung nutzt vorhandene Auditdaten statt neuer
+Rate-Limit-Persistenz.
 
 ## Read-only-Rollen im lokalen Bestand (v1.59.3)
 
@@ -735,3 +794,61 @@ Bearbeitungsdialoge besitzen zusätzlich ein zentrales Render-Gate. Die Suche
 bleibt für lesende Rollen unverändert nutzbar: Treffer werden gefunden und
 navigieren in die Fachansicht, nur der Editor bleibt verschlossen. Die
 defensiven Handler aus v1.59.3 bleiben unverändert bestehen (F-18).
+
+## v1.59.5–1.59.6 — F-11-Abschluss und formale MVP-Baseline
+
+Die letzten realen Rollen- und Negativtests wurden abgeschlossen. Viewer bleibt
+read-only, administrative Funktionen sind serverseitig geschützt und die
+Mehrbenutzerabnahme wurde mit realen Konten statt über eine künstliche
+Role-Preview-Abkürzung durchgeführt. `Role Preview` ist für den aktuellen MVP
+N/A und kein Produktbestandteil.
+
+Mit PR #60 wurde der finale MVP-Stand vollständig durch Security- und CI-Gates
+geführt und als Baseline gemergt. Seitdem gilt: **F-18 CLOSED/PASS, F-11
+CLOSED/PASS, MVP 100 % / BASELINE READY.** Produktversion bleibt 1.59.6.
+
+## Post-MVP — Recovery, Branch Protection und Arbeitsprozess (2026-08-24/25)
+
+Nach dem unbeauftragten Lovable-Main-Write wurde der technische Dateibaum über
+PR #66 exakt auf den zuvor vollständig akzeptierten Stand zurückgeführt.
+PR #68 dokumentierte anschließend den isolierten Lovable-Arbeitsmodus.
+
+Am 25.08.2026 wurde `main` mit dem Ruleset `main-release-governance` technisch
+geschützt: PR-Pflicht, Required Security-/Quality-Gates, aktueller Branch,
+Löschschutz und Force-Push-Schutz. Die Schutzschicht ersetzt nicht den
+kontrollierten Prozess, verhindert aber reguläre ungeprüfte Direktwrites.
+
+PR #74 führte zusätzlich die kompakte operative BSF-Prioritätenliste ein. Nach
+jedem abgeschlossenen Punkt wird diese Liste aktualisiert und im Abschlussbericht
+vollständig gezeigt; der geplante Lovable-Einsatz steht direkt am jeweiligen
+Arbeitspaket.
+
+## BSF-01 — Planungs- und Architekturbaseline (2026-08-25)
+
+BSF startet bewusst mit Architektur statt mit einer Oberfläche. Die Prüfung des
+bestehenden Daten- und Berechtigungsmodells zeigte zwei entscheidende Grenzen:
+
+1. Kundenidentität darf nicht an einen Microsoft-Tenant oder einen anderen
+   Provider gekoppelt sein. Kanonisch ist `(systemhouseId, customerId)`.
+2. Projekte, Arbeitspakete und Tätigkeiten sind heute user-scoped lokal. Eine
+   echte Kundenverantwortung und eine Projektmanager-Leistungssicht über mehrere
+   Personen benötigen deshalb vor ihrer Umsetzung einen minimalen gemeinsamen
+   bzw. synchronisierten Read-/Datenpfad.
+
+ADR-0029 legt den providerneutralen Systemhaus-/Customer-Scope fest. Die ältere
+`tenant`-Terminologie aus den vorbereitenden RBAC-v2-ADRs bleibt historische
+Evidenz und wird nicht stillschweigend als Microsoft-Tenant-Scope
+uminterpretiert.
+
+BSF-02 zieht nur die **minimal notwendige** gemeinsame Datenbasis vor. Die
+vollständige zentrale/synchronisierte Datenhaltungsstrategie bleibt BSF-04.
+Kundenverantwortung bleibt eine fachliche Beziehung/Scope und keine globale
+Rolle; Projektmanager-Controlling bleibt read-only; der Teamlead-Leistungsnachweis
+behält einen getrennten Write-/Finalisierungs-/Audit-Scope.
+
+Lovable-Einsatz in BSF-01: **0 Credits**. Die täglich verfügbaren Lovable-Credits
+werden erst nach dieser Baseline gezielt für Kundenkontext, `Meine Kunden`,
+Leistungssichten und spätere Hilfe-/Dokumentationsnavigation eingesetzt.
+
+Dokumentation: `docs/BSF-01-ARCHITECTURE-BASELINE.md`, ADR-0029,
+`docs/BSF-CURRENT-PRIORITIES.md` und `docs/BSF-CONCEPT-REGISTER.md`.
