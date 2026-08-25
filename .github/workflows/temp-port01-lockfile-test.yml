@@ -1,0 +1,34 @@
+name: TEMP PORT01 Lockfile Portability
+
+on:
+  push:
+    branches:
+      - audit/port-01-lockfile-portability-2026-08-25
+
+permissions:
+  contents: read
+
+jobs:
+  portability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Count Lovable registry references
+        run: |
+          echo "LOVABLE_REGISTRY_REFERENCES=$(grep -c 'lovable-core-prod/sandbox-npm-cache' bun.lock || true)"
+          echo "UNIQUE_HOSTS:"
+          grep -oE 'https://[^/]*npm\.pkg\.dev' bun.lock | sort -u || true
+      - name: Prove frozen install with Lovable registry hosts blocked
+        run: |
+          rm -rf node_modules "$HOME/.bun/install/cache"
+          echo '127.0.0.1 europe-west1-npm.pkg.dev' | sudo tee -a /etc/hosts
+          echo '127.0.0.1 europe-west4-npm.pkg.dev' | sudo tee -a /etc/hosts
+          set +e
+          timeout 120 bun install --frozen-lockfile > port01-install.log 2>&1
+          code=$?
+          echo "FROZEN_INSTALL_WITH_LOVABLE_HOSTS_BLOCKED_EXIT_CODE=$code"
+          tail -n 80 port01-install.log || true
+          exit 0
