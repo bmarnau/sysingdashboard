@@ -101,9 +101,10 @@ describe("customer access contract", () => {
   });
 
   it("should_deny_when_membershipIsNotYetValid", () => {
-    expect(
-      decide({}, [{ ...membership, validFrom: "2026-08-26T00:00:00.000Z" }]),
-    ).toEqual({ allowed: false, reason: "membership_not_yet_valid" });
+    expect(decide({}, [{ ...membership, validFrom: "2026-08-26T00:00:00.000Z" }])).toEqual({
+      allowed: false,
+      reason: "membership_not_yet_valid",
+    });
   });
 
   it("should_deny_when_membershipHasExpired", () => {
@@ -122,7 +123,9 @@ describe("customer access contract", () => {
 
   it("should_deny_whenCustomerScopeIsNotYetValid", () => {
     expect(
-      decide({}, [membership], [{ ...readGrant, validFrom: "2026-08-26T00:00:00.000Z" }]),
+      decide({}, [membership], [
+        { ...readGrant, validFrom: "2026-08-26T00:00:00.000Z" },
+      ]),
     ).toEqual({ allowed: false, reason: "customer_scope_not_yet_valid" });
   });
 
