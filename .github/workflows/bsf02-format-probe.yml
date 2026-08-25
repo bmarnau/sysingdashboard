@@ -1,0 +1,23 @@
+name: BSF02 Format Probe
+
+on:
+  push:
+    branches:
+      - feat/bsf-02-customer-data-foundation-2026-08-25
+
+permissions:
+  contents: read
+
+jobs:
+  prettier-diff:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Show exact Prettier diff
+        run: |
+          bunx prettier --write docs/ADR/0030-customer-entity-shared-read-path.md docs/BSF-02-DESIGN.md
+          git diff -- docs/ADR/0030-customer-entity-shared-read-path.md docs/BSF-02-DESIGN.md
