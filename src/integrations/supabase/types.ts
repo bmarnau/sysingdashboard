@@ -390,6 +390,95 @@ export type Database = {
         }
         Relationships: []
       }
+      customer: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          status: string
+          systemhouse_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          status?: string
+          systemhouse_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          status?: string
+          systemhouse_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_systemhouse_fk"
+            columns: ["systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "systemhouse"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_access: {
+        Row: {
+          access_level: string
+          created_at: string
+          customer_id: string
+          id: string
+          status: string
+          systemhouse_id: string
+          updated_at: string
+          user_id: string
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          access_level: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          status?: string
+          systemhouse_id: string
+          updated_at?: string
+          user_id: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          access_level?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          status?: string
+          systemhouse_id?: string
+          updated_at?: string
+          user_id?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_access_customer_fk"
+            columns: ["customer_id", "systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "customer"
+            referencedColumns: ["id", "systemhouse_id"]
+          },
+          {
+            foreignKeyName: "customer_access_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -573,6 +662,78 @@ export type Database = {
         }
         Relationships: []
       }
+      systemhouse: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      systemhouse_membership: {
+        Row: {
+          created_at: string
+          id: string
+          status: string
+          systemhouse_id: string
+          updated_at: string
+          user_id: string
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: string
+          systemhouse_id: string
+          updated_at?: string
+          user_id: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: string
+          systemhouse_id?: string
+          updated_at?: string
+          user_id?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "systemhouse_membership_systemhouse_fk"
+            columns: ["systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "systemhouse"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "systemhouse_membership_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           granted_at: string
@@ -612,9 +773,22 @@ export type Database = {
           status: Database["public"]["Enums"]["user_status"]
         }[]
       }
+      has_active_systemhouse_membership: {
+        Args: { _systemhouse_id: string; _user_id: string }
+        Returns: boolean
+      }
       has_any_role: {
         Args: {
           _roles: Database["public"]["Enums"]["app_role"][]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_customer_access: {
+        Args: {
+          _customer_id: string
+          _required_level: string
+          _systemhouse_id: string
           _user_id: string
         }
         Returns: boolean

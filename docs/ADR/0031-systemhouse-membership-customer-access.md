@@ -1,6 +1,6 @@
 # ADR-0031 — Systemhouse-Membership und Customer-Zugriff als serverseitige BSF-Grenze
 
-- Status: vorgeschlagen für BSF-02
+- Status: umgesetzt in BSF-02B (Issue #86), siehe `docs/BSF-02B-IMPLEMENTATION.md`
 - Datum: 2026-08-25
 - Vorgänger: ADR-0029, ADR-0030
 
