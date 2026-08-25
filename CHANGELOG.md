@@ -13,7 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.59.7 - 2026-08-25
+
+- **Systemeinstellungen nur noch gezielt lesbar (SEC-01)**: Angemeldete Benutzer sehen ausschließlich die freigegebenen Einstellungen „Abmeldezeit bei Inaktivität" und „AVKK-Schwellwert". Alle weiteren — auch künftig ergänzte — Einstellungen sind nur mit Benutzerverwaltungs-Recht sichtbar.
+- **Änderungsrecht unverändert**: Einstellungen ändern darf weiterhin ausschließlich, wer die Benutzerverwaltung nutzen darf.
+- **AVKK-Prüffunktionen gehärtet**: Die interne Schreibrechtsprüfung und das Personenverzeichnis arbeiten mit festem, leerem Suchpfad und eindeutigen Objektverweisen. Fachlich ändert sich nichts; nicht angemeldete Besucher können beide Funktionen ausdrücklich nicht aufrufen.
+- **Nachweis**: Neue Datenbank-Testmatrix `supabase/tests/sec01-settings-and-avkk-definer.sql` prüft Freigabeliste, Rollenmatrix und den Rückgabeumfang des Personenverzeichnisses (keine E-Mail-, Telefon- oder MFA-Daten).
+
 ## 1.59.6 - 2026-08-22
+
 
 - **AVKK-Personenanzeige korrigiert (F-11)**: Bereits zugeordnete Verantwortliche erscheinen im AVKK-Detaildialog als „Vorname Nachname" statt als technische ID. Grundlage ist das datensparsame Personenverzeichnis, das in der verbundenen Backend-Datenbank aktiviert wurde.
 - **Delegation für Teamleitung und Projektleitung nutzbar**: Rollen mit der Berechtigung zur Verantwortungszuordnung können aktive Personen auswählen, ohne dass vollständige Benutzerprofile (E-Mail, Telefon, MFA, Profilbild) freigegeben werden.

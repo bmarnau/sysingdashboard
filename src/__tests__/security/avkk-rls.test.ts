@@ -90,4 +90,51 @@ describe("avkk_can_write — akzeptierte, begründete Ausnahme", () => {
     expect(entry?.status).toBe("accepted");
     expect(entry?.description ?? "").toMatch(/ADR-0025/);
   });
+
+  it("should_documentAcceptedFinding_when_peopleDirectoryIsSecurityDefiner", () => {
+    const entry = findings.findings.find((f) => f.id === "man:avkk-people-directory-definer");
+    expect(
+      entry,
+      "Finding man:avkk-people-directory-definer fehlt in manual-findings.json",
+    ).toBeDefined();
+    expect(entry?.status).toBe("accepted");
+  });
+});
+
+/**
+ * SEC-01 (Issue #89) — die Härtung ist Bestandteil einer Migration und muss
+ * auch nach einem Neuaufbau aus `supabase/migrations` gelten. Der Test prüft
+ * daher die Migrationsquelle, nicht den Live-Stand.
+ */
+describe("SEC-01 — Härtung ist in der Migrationsquelle verankert", () => {
+  const migrationDir = join(ROOT, "supabase", "migrations");
+  const sql = readdirSync(migrationDir)
+    .filter((f) => f.endsWith(".sql"))
+    .map((f) => readFileSync(join(migrationDir, f), "utf8"))
+    .join("\n");
+
+  it("should_restrictAppSettingsReads_when_migrationsApplied", () => {
+    expect(sql).toMatch(/DROP POLICY IF EXISTS app_settings_read_authenticated/);
+    expect(sql).toMatch(/app_settings_read_public_keys/);
+    expect(sql).toMatch(/idle_timeout_minutes/);
+    expect(sql).toMatch(/app_settings_read_admin/);
+    expect(sql).toMatch(/users\.manage/);
+  });
+
+  it("should_hardenSecurityDefinerFunctions_when_migrationsApplied", () => {
+    expect(sql).toMatch(/CREATE OR REPLACE FUNCTION public\.avkk_can_write/);
+    expect(sql).toMatch(/SET search_path = ''/);
+    expect(sql).toMatch(/REVOKE EXECUTE ON FUNCTION public\.avkk_can_write\(uuid\) FROM PUBLIC/);
+    expect(sql).toMatch(/REVOKE EXECUTE ON FUNCTION public\.avkk_people_directory\(\) FROM PUBLIC/);
+  });
+
+  it("should_provideReproducibleDatabaseTest_when_sec01Applied", () => {
+    const test = readFileSync(
+      join(ROOT, "supabase", "tests", "sec01-settings-and-avkk-definer.sql"),
+      "utf8",
+    );
+    expect(test).toMatch(/id,display_name,role,status/);
+    expect(test).toMatch(/sec01\.probe\.private/);
+    expect(test).toMatch(/ROLLBACK;/);
+  });
 });

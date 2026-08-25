@@ -1823,8 +1823,18 @@ Das Frontend liest nie ENV. Alle Azure-Aufrufe werden später serverseitig ausge
     id: "security-principles",
     title: "Sicherheitsprinzipien",
     category: "Sicherheit",
-    keywords: ["Sicherheit", "Prinzipien", "Secrets", "RBAC", "Least Privilege", "ENV", "Logging"],
-    lastUpdated: "2026-06-30",
+    keywords: [
+      "Sicherheit",
+      "Prinzipien",
+      "Secrets",
+      "RBAC",
+      "Least Privilege",
+      "ENV",
+      "Logging",
+      "Systemeinstellungen",
+      "Personenverzeichnis",
+    ],
+    lastUpdated: "2026-08-25",
     content: `## Leitlinien
 - **Least Privilege** — jede Rolle erhält nur die für ihre Aufgabe nötigen Permissions. Importe sind strikter als Exporte; Datenbankaufbau und Rollenverwaltung nur für System-Administratoren.
 - **Defense in Depth** — UI-Gating (\`PermissionGate\`) plus serverseitige Guards (\`requirePermission\`) plus RLS/Provider-seitige Prüfungen.
@@ -1836,10 +1846,19 @@ Das Frontend liest nie ENV. Alle Azure-Aufrufe werden später serverseitig ausge
 - **Audit** — Importe, Konflikt-Entscheidungen und Sync-Läufe werden protokolliert.
 - **CI-Security** — \`scripts/security-check.mjs\` plus gitleaks blockieren CRITICAL/HIGH-Funde vor dem Merge.
 
+## Systemeinstellungen: Freigabeliste statt Pauschalzugriff
+Angemeldete Benutzer lesen ausschließlich die ausdrücklich freigegebenen Systemeinstellungen — derzeit die Abmeldezeit bei Inaktivität und den AVKK-Schwellwert. Alle weiteren, auch künftig ergänzten Einstellungen sind nur mit dem Recht zur Benutzerverwaltung sichtbar. Eine neue client-lesbare Einstellung erfordert bewusst eine geprüfte Datenbankänderung. Einstellungen ändern darf unverändert nur die Benutzerverwaltung.
+
+Einstellungen mit Vertraulichkeitsbedarf (Endpunkte, Kennungen, Integrationsparameter) gehören nicht in die Einstellungstabelle, sondern in die Secret-Verwaltung.
+
+## AVKK-Personenverzeichnis
+Für die Zuordnung von Verantwortungen liefert das Backend nur Benutzer-ID, Anzeigename, Rolle und Kontostatus. E-Mail, Telefonnummer, MFA-Status und Profilbilder werden nicht ausgegeben. Nicht angemeldete Besucher können das Verzeichnis nicht abrufen; ohne die Berechtigung „AVKK ansehen" bleibt es leer.
+
 ## Verantwortung der Anwender
 - ZIP-Backups verschlüsselt aufbewahren.
 - Keine produktiven Secrets in Test-/Dev-Umgebungen verwenden.
 - Bei Verdacht auf Kompromittierung umgehend Secrets rotieren und Audit-Logs prüfen.`,
+
     relatedTopics: [
       "rbac-rollen-berechtigungen",
       "env-validation",
