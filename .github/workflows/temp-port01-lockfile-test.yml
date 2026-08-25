@@ -16,19 +16,35 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - name: Count Lovable registry references
+      - name: Baseline Lovable registry references
         run: |
-          echo "LOVABLE_REGISTRY_REFERENCES=$(grep -c 'lovable-core-prod/sandbox-npm-cache' bun.lock || true)"
-          echo "UNIQUE_HOSTS:"
+          echo "BASELINE_LOVABLE_REGISTRY_REFERENCES=$(grep -c 'lovable-core-prod/sandbox-npm-cache' bun.lock || true)"
+          echo "BASELINE_UNIQUE_HOSTS:"
           grep -oE 'https://[^/]*npm\.pkg\.dev' bun.lock | sort -u || true
-      - name: Prove frozen install with Lovable registry hosts blocked
+      - name: Regenerate lockfile against public npm registry only
+        run: |
+          cp bun.lock /tmp/bun.lock.baseline
+          rm -rf node_modules "$HOME/.bun/install/cache" bun.lock
+          BUN_CONFIG_REGISTRY=https://registry.npmjs.org bun install --lockfile-only --registry https://registry.npmjs.org
+          echo "REGENERATED_LOVABLE_REGISTRY_REFERENCES=$(grep -c 'lovable-core-prod/sandbox-npm-cache' bun.lock || true)"
+          echo "REGENERATED_NPMJS_REFERENCES=$(grep -c 'registry.npmjs.org' bun.lock || true)"
+          echo "REGENERATED_LOCKFILE_LINES=$(wc -l < bun.lock)"
+          echo "BASELINE_LOCKFILE_LINES=$(wc -l < /tmp/bun.lock.baseline)"
+          git diff --no-index --stat /tmp/bun.lock.baseline bun.lock || true
+      - name: Prove frozen install from regenerated public lockfile
         run: |
           rm -rf node_modules "$HOME/.bun/install/cache"
-          echo '127.0.0.1 europe-west1-npm.pkg.dev' | sudo tee -a /etc/hosts
-          echo '127.0.0.1 europe-west4-npm.pkg.dev' | sudo tee -a /etc/hosts
           set +e
-          timeout 120 bun install --frozen-lockfile > port01-install.log 2>&1
+          timeout 180 env BUN_CONFIG_REGISTRY=https://registry.npmjs.org bun install --frozen-lockfile --registry https://registry.npmjs.org > port01-public-install.log 2>&1
           code=$?
-          echo "FROZEN_INSTALL_WITH_LOVABLE_HOSTS_BLOCKED_EXIT_CODE=$code"
-          tail -n 80 port01-install.log || true
+          echo "PUBLIC_REGISTRY_FROZEN_INSTALL_EXIT_CODE=$code"
+          tail -n 60 port01-public-install.log || true
+          exit 0
+      - name: Audit regenerated public lockfile
+        run: |
+          set +e
+          bun audit --json > port01-public-audit.json 2>/dev/null
+          code=$?
+          echo "PUBLIC_REGISTRY_AUDIT_EXIT_CODE=$code"
+          cat port01-public-audit.json || true
           exit 0
