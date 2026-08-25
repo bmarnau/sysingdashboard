@@ -6,9 +6,10 @@
  * Datenformen, auf die spätere Iterationen aufsetzen:
  *
  *  - **Resource Types** — Ressourcenhierarchie inklusive späterer Azure-
- *    Ressourcen und Multi-Customer.
- *  - **ResourceScope** — hierarchische Zeichenkette der Form
- *    `tenant:{id}/customer:{id}/project:{id}/...`; Wildcards mit `*`.
+ *    Ressourcen und Multi-Customer. Für neue BSF-Scopes ist `systemhouse`
+ *    kanonisch; `tenant` bleibt als historische Pre-BSF-Kompatibilität erhalten.
+ *  - **ResourceScope** — neue BSF-Hierarchie der Form
+ *    `systemhouse:{id}/customer:{id}/project:{id}/...`; Wildcards mit `*`.
  *  - **Permission v2** — `resource:action`-Format, koexistent mit den
  *    heutigen flachen v1-Strings (siehe ADR-0007 Migrationspfad).
  *  - **PermissionGroup** — benannte Bündel für UI-Auswahl und Entra-
@@ -18,14 +19,16 @@
  *    aus `UserProfile.role`.
  *  - **AccessContext** — Auswertungs-Input für `evaluateAccess()`.
  *
- * Sicherheitsdisclaimer bleibt: solange keine echte Auth aktiv ist, sind
- * alle Prüfungen UI-Komfort und keine Sicherheitsgrenze (siehe ADR-0002).
+ * Sicherheitsdisclaimer bleibt: Diese v2-Schicht ist vorbereitend und noch
+ * nicht die produktive serverseitige Sicherheitsgrenze. Sie darf RLS oder
+ * Server-Autorisierung nicht ersetzen.
  */
 
 import type { UserRole } from "@/lib/user-management";
 
 /** Ressourcentypen der Hierarchie. Reihenfolge = Vererbungsrichtung. */
 export type ResourceType =
+  | "systemhouse"
   | "tenant"
   | "customer"
   | "project"
@@ -36,6 +39,7 @@ export type ResourceType =
   | "system";
 
 export const ALL_RESOURCE_TYPES: readonly ResourceType[] = [
+  "systemhouse",
   "tenant",
   "customer",
   "project",
@@ -68,15 +72,22 @@ export type PermissionV2 = `${ResourceType}:${Action}`;
 /**
  * Hierarchische Scope-Kennung.
  *
- * Format:  `tenant:{id}[/customer:{id}[/project:{id}[/workpackage:{id}[/activity:{id}]]]]`
- * Wildcard: `*` an einer beliebigen Ebene (`tenant:acme/customer:*`).
+ * Neue BSF-Form:
+ * `systemhouse:{id}[/customer:{id}[/project:{id}[/workpackage:{id}[/activity:{id}]]]]`
+ *
+ * Historische Pre-BSF-Scopes mit `tenant:{id}` bleiben parsebar und werden
+ * nicht stillschweigend in Systemhaus- oder Microsoft-Tenant-Semantik
+ * umgedeutet (ADR-0029/0030).
+ *
+ * Wildcard: `*` an einer beliebigen Ebene (`systemhouse:acme/customer:*`).
  * Root:     `*` bedeutet globaler Zugriff (system-weit).
  *
  * Beispiele:
- *  - `tenant:acme`                                → gesamter Mandant Acme
- *  - `tenant:acme/customer:c-42`                  → Kunde c-42 in Acme
- *  - `tenant:acme/customer:*`                     → alle Kunden in Acme
- *  - `azure.subscription:sub-01`                  → einzelne Azure-Subscription
+ *  - `systemhouse:acme`                            → gesamtes Systemhaus Acme
+ *  - `systemhouse:acme/customer:c-42`              → Kunde c-42 in Acme
+ *  - `systemhouse:acme/customer:*`                 → alle Kunden in Acme
+ *  - `tenant:legacy-a/customer:c-42`               → historischer Pre-BSF-Scope
+ *  - `azure.subscription:sub-01`                   → einzelne Azure-Subscription
  */
 export type ResourceScope = string;
 

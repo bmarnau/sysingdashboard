@@ -29,15 +29,18 @@ Sie ist die kompakte operative Source of Truth für die aktuelle Reihenfolge. Di
    - Kernergebnis: Aktiver GitHub-`main`-Schutz ist in der laufenden Governance-Dokumentation festgeschrieben; Security #413 und CI #422 PASS.
    - Lovable-Einsatz: **0 Credits**.
 
-2. **BSF-01 — Planungs-/Architekturbaseline (#73) — DONE mit Merge des BSF-01-PRs**
+2. **BSF-01 — Planungs-/Architekturbaseline (#73) — DONE**
    - Kernergebnis: Providerneutraler Systemhaus-/Customer-Scope über ADR-0029; gemeinsame Daten-/Read-Basis als notwendige Abhängigkeit für Kunden- und Leistungssichten; Kundenverantwortung, PM-Controlling und Teamlead-Leistungsnachweis als getrennte Scopes.
+   - Design-/Abnahme: PR #75 gemergt; Security #419 und CI #428 PASS.
    - Lovable-Einsatz: **0 Credits**.
 
-3. **BSF-02 — Kundenmodell + minimale gemeinsame Daten-/Read-Basis — NÄCHSTER PUNKT**
-   - Kernergebnis: Kunde als stabile Fachentität; belastbare Kette Kunde → Projekt → Arbeitspaket → Tätigkeit; minimaler gemeinsamer Mehrbenutzer-Read-/Datenpfad für BSF-03/03A.
-   - Lovable-Einsatz: **0–1 Credit**.
+3. **BSF-02 — Kundenmodell + minimale gemeinsame Daten-/Read-Basis (#76) — IN ARBEIT**
+   - Design-Baseline: ADR-0030 und `docs/BSF-02-DESIGN.md` über PR #77 abgenommen; Security #428 und CI #437 einschließlich E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate PASS.
+   - Aktiver Implementierungsschritt: providerneutrale Customer-/Shared-Data-Domänentypen, verlustfreie Migrationsplanung, kanonischer `systemhouse:`-Scope bei Erhalt historischer `tenant:`-Scopes und Architektur-Scanner — bewusst noch ohne Supabase-DDL.
+   - Kernergebnis des Gesamtsprints: Kunde als stabile Fachentität; belastbare, auch bei zulässigen parentlosen Bestandsobjekten verlustfreie Kette Kunde → Projekt → Arbeitspaket → Tätigkeit; minimaler gemeinsamer Mehrbenutzer-Read-/Datenpfad für BSF-03/03A.
+   - Lovable-Einsatz aktuell: **0 Credits**; optional später höchstens 1 Credit für isolierte Customer-UI-Preview.
 
-4. **BSF-03 — Kundenverantwortung / Kundensicht — GEPLANT**
+4. **BSF-03 — Kundenverantwortung / Kundensicht — NÄCHSTER PUNKT**
    - Kernergebnis: `Meine Kunden`, Sichtscope, RBAC/RLS sowie getrennte Sicht- und Schreibrechte.
    - Lovable-Einsatz: **1–2 Credits**.
 
@@ -74,6 +77,8 @@ Die fachliche Kundenidentität bleibt systemhausgebunden und providerneutral:
 `(systemhouseId, customerId)`
 
 Eine Microsoft Tenant ID kann später Provider-/Mappinginformation sein, ist aber nicht der fachliche Primärscope des Sysing Dashboards.
+
+Für neue BSF-Scopes ist `systemhouse:{id}` kanonisch. Historische vorbereitende `tenant:{id}`-Scopes bleiben als Pre-BSF-Kompatibilität erhalten und werden nicht stillschweigend als Microsoft-Tenant oder Systemhaus umgedeutet.
 
 ## Definition of Done ab BSF
 
