@@ -21,13 +21,13 @@ GitHub bleibt Source of Truth. Datenbank-, Grant-, RLS- und vergleichbare Supaba
 
 ## 2. Prioritäten dieser Woche
 
-| Priorität | Sprint / Arbeitspaket | Wochenziel | Status zu Wochenbeginn |
-| --- | --- | --- | --- |
-| 1 | SEC-02 — Reference-Data Grants | abgebrochenen Lauf vollständig bis READY FOR PR / DONE führen | JETZT ZUERST |
-| 2 | BSF-02C — gemeinsamer Customer-Read-Pfad | minimale Shared Projection real implementieren, absichern und abnehmen | HAUPTSPRINT |
-| 3 | BSF-03 — Kundenverantwortung / Kundensicht | `Meine Kunden` und sicheren Customer-Scope beginnen; bei gutem Verlauf abschließen | NÄCHSTER FEATURE-SPRINT |
-| 4 | BSF-03A — Projektmanager-Leistungssicht | Architektur/ersten kontrollierten Umsetzungsschritt vorbereiten | STRETCH |
-| später | BSF-03B — Teamlead Leistungsnachweis V1 | noch nicht vorziehen | GEPLANT |
+| Priorität | Sprint / Arbeitspaket                      | Wochenziel                                                                         | Status zu Wochenbeginn  |
+| --------- | ------------------------------------------ | ---------------------------------------------------------------------------------- | ----------------------- |
+| 1         | SEC-02 — Reference-Data Grants             | abgebrochenen Lauf vollständig bis READY FOR PR / DONE führen                      | JETZT ZUERST            |
+| 2         | BSF-02C — gemeinsamer Customer-Read-Pfad   | minimale Shared Projection real implementieren, absichern und abnehmen             | HAUPTSPRINT             |
+| 3         | BSF-03 — Kundenverantwortung / Kundensicht | `Meine Kunden` und sicheren Customer-Scope beginnen; bei gutem Verlauf abschließen | NÄCHSTER FEATURE-SPRINT |
+| 4         | BSF-03A — Projektmanager-Leistungssicht    | Architektur/ersten kontrollierten Umsetzungsschritt vorbereiten                    | STRETCH                 |
+| später    | BSF-03B — Teamlead Leistungsnachweis V1    | noch nicht vorziehen                                                               | GEPLANT                 |
 
 ## 3. Montag — SEC-02 vollständig abschließen
 
