@@ -25,6 +25,7 @@ Die Prüfung darf manuell oder automatisiert angestoßen werden. Die Governance-
 Die Prüfung umfasst mindestens:
 
 #### Issues
+
 - offene Issues auf Aktualität und fachliche Relevanz prüfen,
 - erledigte Arbeiten erkennen, deren Issue noch offen ist,
 - überholte, doppelte oder widersprüchliche Issues kennzeichnen,
@@ -33,6 +34,7 @@ Die Prüfung umfasst mindestens:
 - Reihenfolge gegen Gesamtplan und aktuelle Prioritäten prüfen.
 
 #### Pull Requests
+
 - offene PRs einschließlich Draft-/Ready-Status prüfen,
 - Mergeability und Branch-Drift gegen aktuellen `main` prüfen,
 - laufende, fehlgeschlagene oder veraltete Checks erkennen,
@@ -40,12 +42,14 @@ Die Prüfung umfasst mindestens:
 - offene Review-Threads und fehlende Abschlussnachweise berücksichtigen.
 
 #### GitHub Actions und Workflow-Runs
+
 - fehlgeschlagene, abgebrochene, dauerhaft wartende oder wiederholt auffällige Runs prüfen,
 - wiederkehrende Fehler nicht als Einzelereignis ignorieren,
 - Security-, CI- und Quality-Gate-Ergebnisse auf aktuellem Head einordnen,
 - bei relevanten Abweichungen ein nachvollziehbares Follow-up erzeugen.
 
 #### Workflow-Definitionen und Actions
+
 - `.github/workflows/*` regelmäßig auf Aktualität prüfen,
 - veraltete/deprecated Actions oder Runner-Versionen erkennen,
 - unnötige, doppelte oder deaktivierte Workflows prüfen,
@@ -53,6 +57,7 @@ Die Prüfung umfasst mindestens:
 - keine Warnung allein deshalb akzeptieren, weil der Workflow bisher noch funktioniert.
 
 #### Repository-Gesamtzustand
+
 - verwaiste Branches bzw. Alt-Arbeit berücksichtigen,
 - Widersprüche zwischen ADRs, Issues, Gesamtplan, Checkpoint und `main` erkennen,
 - sicherstellen, dass abgeschlossene Änderungen dokumentiert und offene Folgearbeiten auffindbar sind.
@@ -62,6 +67,7 @@ Die Prüfung umfasst mindestens:
 Die regelmäßige Prüfung ist grundsätzlich **read-only**.
 
 Sie darf Findings sammeln, klassifizieren und konkrete nächste Aktionen empfehlen. Sie darf jedoch nicht automatisch:
+
 - Issues schließen oder umschreiben,
 - Pull Requests mergen oder schließen,
 - Branches löschen,
@@ -84,6 +90,7 @@ Security-, Berechtigungs-, Secrets-, RLS-/RBAC-, Supply-Chain- und Branch-Protec
 ### 5. Ergebnis der Prüfung
 
 Das Ergebnis soll kompakt mindestens enthalten:
+
 - neue oder geänderte offene Issues/PRs,
 - fehlgeschlagene oder noch laufende relevante Actions-Runs,
 - erkannte Blocker,
@@ -97,6 +104,7 @@ Wenn die Prüfung zeigt, dass ein dauerhaft relevantes Arbeitspaket fehlt, wird 
 ADR-0033 ergänzt ADR-0029 und ändert dessen Branch-/Writer-/CI-Regeln nicht.
 
 Weiterhin gilt insbesondere:
+
 - GitHub `main` ist Source of Truth,
 - keine regulären direkten Änderungen auf `main`,
 - Integration über Branch + PR + Required Checks,
