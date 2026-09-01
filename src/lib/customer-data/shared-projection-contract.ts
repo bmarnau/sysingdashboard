@@ -25,10 +25,7 @@ export interface SharedProjectionSkip extends SharedProjectionRef {
 }
 
 export interface SharedProjectionUnresolved extends SharedProjectionRef {
-  reason:
-    | "mapping_missing"
-    | "missing_customer_context"
-    | "customer_context_conflict";
+  reason: "mapping_missing" | "missing_customer_context" | "customer_context_conflict";
 }
 
 export interface SharedCustomerPublishBatch {
