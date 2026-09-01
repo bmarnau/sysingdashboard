@@ -6,7 +6,7 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 
 ## Index
 
-Vollständig und lückenlos ADR-0001 bis ADR-0032. Alle ADRs liegen ausschließlich
+Vollständig und lückenlos ADR-0001 bis ADR-0033. Alle ADRs liegen ausschließlich
 in diesem Verzeichnis (`docs/ADR/`); das frühere zweite Verzeichnis `docs/adr/`
 wurde in Sprint 09B aufgelöst, weil zwei Verzeichnisse mit gleichem Namen unter
 Windows kollidieren.
@@ -45,10 +45,13 @@ Windows kollidieren.
 | 0030 | [Customer-Entität und minimaler gemeinsamer Read-Pfad](./0030-customer-entity-shared-read-path.md)                           | Proposed |
 | 0031 | [Systemhouse-Membership und Customer-Zugriff als serverseitige BSF-Grenze](./0031-systemhouse-membership-customer-access.md) | Accepted |
 | 0032 | [BSF-02C als abgeleitete persistente Shared Projection](./0032-bsf-02c-shared-projection.md)                                 | Accepted |
+| 0033 | [Regelmäßige GitHub-Repository-Governance und Arbeitsvorratsprüfung](./0033-regelmaessige-github-repository-governance.md)   | Accepted |
 
-Stand der Prüfung: 2026-08-25 / BSF-02C-Design. ADR-0031 ist in BSF-02B umgesetzt.
+Stand der Prüfung: 2026-09-01. ADR-0031 ist in BSF-02B umgesetzt.
 ADR-0032 konkretisiert ADR-0030 für den minimalen gemeinsamen Mehrbenutzer-Read-Pfad,
-ohne BSF-04 vorwegzunehmen.
+ohne BSF-04 vorwegzunehmen. ADR-0033 ergänzt ADR-0029 um die regelmäßige
+read-only Prüfung von Issues, Pull Requests, Actions-/Workflow-Runs und
+Workflow-Definitionen als verbindlichen Governance-Schritt.
 
 ## Template
 
