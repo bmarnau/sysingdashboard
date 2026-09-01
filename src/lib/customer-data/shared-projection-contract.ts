@@ -114,9 +114,7 @@ function collisionKeys(plan: SharedDataMigrationPlan): Set<string> {
     occurrences.set(key, (occurrences.get(key) ?? 0) + 1);
   }
 
-  return new Set(
-    [...occurrences.entries()].filter(([, count]) => count > 1).map(([key]) => key),
-  );
+  return new Set([...occurrences.entries()].filter(([, count]) => count > 1).map(([key]) => key));
 }
 
 function isColliding(
