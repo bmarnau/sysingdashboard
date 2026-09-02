@@ -662,6 +662,267 @@ export type Database = {
         }
         Relationships: []
       }
+      shared_activity_projection: {
+        Row: {
+          activity_date: string
+          billable: boolean
+          billing_status: string
+          created_at: string
+          customer_id: string
+          duration_hours: number
+          engineer_id: string
+          id: string
+          is_active: boolean
+          legacy_client: string
+          parent_link_status: string
+          published_at: string
+          published_by: string
+          source_hash: string
+          source_id: string
+          source_revision: number
+          systemhouse_id: string
+          title: string
+          updated_at: string
+          withdrawn_at: string | null
+          work_package_ref: string | null
+          work_package_source_id: string | null
+        }
+        Insert: {
+          activity_date?: string
+          billable?: boolean
+          billing_status?: string
+          created_at?: string
+          customer_id: string
+          duration_hours?: number
+          engineer_id: string
+          id?: string
+          is_active?: boolean
+          legacy_client?: string
+          parent_link_status?: string
+          published_at?: string
+          published_by: string
+          source_hash?: string
+          source_id: string
+          source_revision?: number
+          systemhouse_id: string
+          title?: string
+          updated_at?: string
+          withdrawn_at?: string | null
+          work_package_ref?: string | null
+          work_package_source_id?: string | null
+        }
+        Update: {
+          activity_date?: string
+          billable?: boolean
+          billing_status?: string
+          created_at?: string
+          customer_id?: string
+          duration_hours?: number
+          engineer_id?: string
+          id?: string
+          is_active?: boolean
+          legacy_client?: string
+          parent_link_status?: string
+          published_at?: string
+          published_by?: string
+          source_hash?: string
+          source_id?: string
+          source_revision?: number
+          systemhouse_id?: string
+          title?: string
+          updated_at?: string
+          withdrawn_at?: string | null
+          work_package_ref?: string | null
+          work_package_source_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_activity_projection_customer_fk"
+            columns: ["customer_id", "systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "customer"
+            referencedColumns: ["id", "systemhouse_id"]
+          },
+          {
+            foreignKeyName: "shared_activity_projection_engineer_id_fkey"
+            columns: ["engineer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_activity_projection_parent_fk"
+            columns: ["work_package_ref", "systemhouse_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "shared_work_package_projection"
+            referencedColumns: ["id", "systemhouse_id", "customer_id"]
+          },
+          {
+            foreignKeyName: "shared_activity_projection_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_project_projection: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          is_active: boolean
+          legacy_client: string
+          name: string
+          published_at: string
+          published_by: string
+          source_hash: string
+          source_id: string
+          source_revision: number
+          status: string
+          systemhouse_id: string
+          updated_at: string
+          withdrawn_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_active?: boolean
+          legacy_client?: string
+          name?: string
+          published_at?: string
+          published_by: string
+          source_hash?: string
+          source_id: string
+          source_revision?: number
+          status?: string
+          systemhouse_id: string
+          updated_at?: string
+          withdrawn_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_active?: boolean
+          legacy_client?: string
+          name?: string
+          published_at?: string
+          published_by?: string
+          source_hash?: string
+          source_id?: string
+          source_revision?: number
+          status?: string
+          systemhouse_id?: string
+          updated_at?: string
+          withdrawn_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_project_projection_customer_fk"
+            columns: ["customer_id", "systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "customer"
+            referencedColumns: ["id", "systemhouse_id"]
+          },
+          {
+            foreignKeyName: "shared_project_projection_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_work_package_projection: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          is_active: boolean
+          legacy_client: string
+          parent_link_status: string
+          priority: string
+          project_ref: string | null
+          project_source_id: string | null
+          published_at: string
+          published_by: string
+          source_hash: string
+          source_id: string
+          source_revision: number
+          status: string
+          systemhouse_id: string
+          title: string
+          updated_at: string
+          withdrawn_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_active?: boolean
+          legacy_client?: string
+          parent_link_status?: string
+          priority?: string
+          project_ref?: string | null
+          project_source_id?: string | null
+          published_at?: string
+          published_by: string
+          source_hash?: string
+          source_id: string
+          source_revision?: number
+          status?: string
+          systemhouse_id: string
+          title?: string
+          updated_at?: string
+          withdrawn_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_active?: boolean
+          legacy_client?: string
+          parent_link_status?: string
+          priority?: string
+          project_ref?: string | null
+          project_source_id?: string | null
+          published_at?: string
+          published_by?: string
+          source_hash?: string
+          source_id?: string
+          source_revision?: number
+          status?: string
+          systemhouse_id?: string
+          title?: string
+          updated_at?: string
+          withdrawn_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_work_package_projection_customer_fk"
+            columns: ["customer_id", "systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "customer"
+            referencedColumns: ["id", "systemhouse_id"]
+          },
+          {
+            foreignKeyName: "shared_work_package_projection_parent_fk"
+            columns: ["project_ref", "systemhouse_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "shared_project_projection"
+            referencedColumns: ["id", "systemhouse_id", "customer_id"]
+          },
+          {
+            foreignKeyName: "shared_work_package_projection_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       systemhouse: {
         Row: {
           created_at: string
