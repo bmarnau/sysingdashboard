@@ -54,6 +54,12 @@ const activitySchema = z.object({
 const publishSchema = z.object({
   systemhouseId: uuid,
   customerId: uuid,
+  /**
+   * Reconciliation ist nur mit einem vollständigen Local-First-Snapshot
+   * zulässig. Teilmengen dürfen niemals implizit als gelöschte Sources
+   * interpretiert werden.
+   */
+  snapshotComplete: z.literal(true),
   customerMappings: z.array(customerMappingSchema).max(5000),
   projects: z.array(projectSchema).max(10000),
   workPackages: z.array(workPackageSchema).max(20000),
@@ -131,6 +137,9 @@ async function assertPermission(
  * veröffentlichen. Rollen ohne `project.edit`, aber mit `activity.edit`,
  * veröffentlichen ausschließlich eigene Activities gegen bereits aktive
  * WorkPackage-Projections.
+ *
+ * Der Write-Endpunkt akzeptiert ausschließlich ausdrücklich als vollständig
+ * markierte Local-First-Snapshots (`snapshotComplete: true`).
  */
 export const publishSharedCustomerProjectionFn = createServerFn({ method: "POST" })
   .validator((input: unknown) => publishSchema.parse(input))
