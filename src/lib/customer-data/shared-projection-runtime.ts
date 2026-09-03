@@ -80,6 +80,20 @@ export interface SharedProjectionPublishResult extends SharedProjectionWriteCoun
 }
 
 /**
+ * Alle Source-IDs, die im aktuellen lokalen Snapshot tatsächlich vorkommen.
+ *
+ * Diese Menge ist bewusst größer als der publizierbare Batch: Ein vorhandenes
+ * Objekt kann wegen Collision, unresolved Customer, Parent- oder Engineer-Regel
+ * temporär nicht publizierbar sein. Das macht es noch nicht zu einer gelöschten
+ * bzw. stale Source.
+ */
+export interface SharedProjectionObservedSources {
+  projects: ReadonlySet<string>;
+  workPackages: ReadonlySet<string>;
+  activities: ReadonlySet<string>;
+}
+
+/**
  * Providerneutraler Persistenz-Port für BSF-02C.
  *
  * Die Domäne kennt weder Supabase noch HTTP/TanStack. Der aktive Provider muss
@@ -87,7 +101,10 @@ export interface SharedProjectionPublishResult extends SharedProjectionWriteCoun
  * nicht mit privilegierten Client-Credentials umgehen.
  */
 export interface SharedProjectionRepository {
-  publish(batch: SharedCustomerPublishBatch): Promise<SharedProjectionWriteCounts>;
+  publish(
+    batch: SharedCustomerPublishBatch,
+    observedSources: SharedProjectionObservedSources,
+  ): Promise<SharedProjectionWriteCounts>;
   readCustomer(input: {
     systemhouseId: string;
     customerId: string;
@@ -100,9 +117,21 @@ function requireNonEmpty(value: string, field: string): string {
   return normalized;
 }
 
+function observedSources(plan: SharedDataMigrationPlan): SharedProjectionObservedSources {
+  return {
+    projects: new Set(plan.projects.map((entry) => entry.id)),
+    workPackages: new Set(plan.workPackages.map((entry) => entry.id)),
+    activities: new Set(plan.activities.map((entry) => entry.id)),
+  };
+}
+
 /**
  * Rechnet den Fail-Closed-Publish-Vertrag erneut im Serverpfad aus und reicht
  * nur den daraus resultierenden Batch an den Provider weiter.
+ *
+ * Für Soft Withdraw wird separat der vollständige lokale Source-Bestand
+ * übergeben. Nur eine Source, die dort wirklich nicht mehr vorkommt, darf vom
+ * aktuellen Publisher als stale zurückgezogen werden.
  */
 export async function publishSharedCustomerProjection(
   repository: SharedProjectionRepository,
@@ -117,7 +146,7 @@ export async function publishSharedCustomerProjection(
     customerId: input.customerId,
     publisherUserId: input.publisherUserId,
   });
-  const counts = await repository.publish(batch);
+  const counts = await repository.publish(batch, observedSources(input.plan));
 
   return {
     ...counts,
