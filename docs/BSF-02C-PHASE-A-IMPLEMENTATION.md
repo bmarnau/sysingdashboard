@@ -1,6 +1,6 @@
 # BSF-02C Phase A — Shared-Projection-Implementierung
 
-Status: **DB/RLS ACCEPTANCE PASS — FINALER GITHUB-NACHWEIS NACH DOKU-UPDATE AUSSTEHEND**  
+Status: **DB/RLS ACCEPTANCE PASS — MERGE NUR MIT GRÜNEM EXACT-HEAD-GATE**  
 Stand: 2026-09-03  
 Issue: #88  
 ADR: ADR-0032  
@@ -39,7 +39,7 @@ Der Lovable-Workspace enthielt vor der Implementierung ausschließlich bekannte 
 
 Diese Overlay-Dateien sind **nicht** Bestandteil des bereinigten BSF-02C-Integrationsstands.
 
-Die Live-Datenbank ist bis zur abschließenden Repository-Integration kontrolliert dem GitHub-`main` voraus. Die DB-/RLS-Abnahme ist am 2026-09-03 erfolgreich erfolgt; Merge und Deploy bleiben bis zum abschließenden GitHub-Gate gesperrt.
+Die Live-Datenbank ist bis zur abschließenden Repository-Integration kontrolliert dem GitHub-`main` voraus. Die DB-/RLS-Abnahme ist am 2026-09-03 erfolgreich erfolgt. Merge und Deploy dürfen unabhängig vom Dokumentationszeitpunkt ausschließlich mit einem grünen Security-/CI-Gate auf dem jeweils aktuellen PR-Exact-Head erfolgen.
 
 ## 3. Datenbankartefakt
 
@@ -233,6 +233,8 @@ Für `ebf244ed71e9a057c0a18a08a18bc50b5c39c58e` wurden nach der Testhärtung aus
 - Technical Debt: **PASS**,
 - `14 · Technical Report & Quality Gate`: **PASS**.
 
+Der danach erzeugte reine Dokumentations-Head `6bc67d9cd5ac3c69410bd2f63ee8ead150c26f26` wurde ebenfalls vollständig geprüft: Security Workflow #485 **PASS**, CI Workflow #493 **PASS** einschließlich E2E, Accessibility, Technical Debt und finalem Quality Gate.
+
 ## 10. Lovable-Workspace-Nebeneffekt
 
 Der Lovable-Abschlussbericht behauptete zunächst `CODE-/REPO-AENDERUNGEN = NEIN`. Eine unabhängige Diff-Prüfung nach dem Lauf zeigte jedoch einen rein formatterartigen Edit in der isolierten Lovable-Workspace-Variante von:
@@ -268,7 +270,7 @@ Issue #88 bleibt deshalb auch nach einem erfolgreichen Phase-A-Merge offen, bis 
 
 ## 12. Merge-Gate nach DB-Acceptance
 
-Erfüllt:
+Dauerhaft nachgewiesen:
 
 - reale T01–T30: **PASS**,
 - T19/T22/T26b exakte strukturelle Constraints: **PASS**,
@@ -276,13 +278,13 @@ Erfüllt:
 - keine Testdatenreste: **PASS**,
 - Grants/RLS: **PASS**,
 - keine neue BSF-02C-Security-Advisor-Warnung: **PASS**,
-- GitHub Security #484 auf Acceptance-Head: **PASS**,
-- GitHub CI #492 auf Acceptance-Head: **PASS**,
+- GitHub Security #484 / CI #492 auf dem real getesteten Acceptance-Head: **PASS / PASS**,
+- GitHub Security #485 / CI #493 auf dem anschließenden reinen Dokumentations-Head: **PASS / PASS**,
 - Lovable-Workspace-Nebeneffekt nicht in GitHub übernommen: **PASS**.
 
-Nach dieser reinen Dokumentationsaktualisierung ist noch einmal zu belegen, dass gegenüber dem Acceptance-Head ausschließlich diese Markdown-Datei geändert wurde und dass Security/CI auf dem daraus resultierenden finalen PR-Head grün sind. Da Testartefakt, Migration und generierte Supabase-Typen dabei unverändert bleiben, bleibt die DB-Acceptance an den unveränderten Test-Blob `94ac0c835348beac9b5790361a07e24e0d87e29f` gebunden.
+Die DB-Acceptance bleibt an den unveränderten Test-Blob `94ac0c835348beac9b5790361a07e24e0d87e29f` gebunden. Dokumentationsänderungen nach dem Acceptance-Head ändern diesen Nachweis nur dann nicht, wenn Migration, Testartefakt und generierte Supabase-Typen unverändert bleiben.
 
-Ready-for-Review und Merge dürfen erst nach diesem letzten GitHub-Gate erfolgen.
+Für Ready-for-Review und Merge gilt zusätzlich zeitlos: **Security und vollständige CI müssen auf dem jeweils aktuellen PR-Exact-Head grün sein.** Der aktuelle Exact-Head-Nachweis wird deshalb in PR #110 und Issue #88 geführt und nicht als vergänglicher Status in diesem Dokument festgeschrieben.
 
 ## 13. Abschlussstatus
 
@@ -294,8 +296,7 @@ Ready-for-Review und Merge dürfen erst nach diesem letzten GitHub-Gate erfolgen
 - Testdatenreste: **0**
 - Grants/RLS vertragskonform: **JA**
 - neue BSF-02C-Advisor-Warnung: **NEIN**
-- GitHub Security #484 / CI #492 am Acceptance-Head: **PASS / PASS**
 - unbeauftragter Lovable-Workspace-Formatter-Edit erkannt: **JA, VERWORFEN / NICHT IN GITHUB**
 - Preview/Auth-Overlay übernommen: **NEIN**
-- Merge/Deploy: **NEIN**
-- Status: **DB/RLS ACCEPTANCE PASS / FINALER GITHUB-DOKU-GATE AUSSTEHEND**
+- Merge/Deploy: **nur nach grünem Exact-Head-Gate**
+- Status: **DB/RLS ACCEPTANCE PASS / MERGE NUR MIT GRÜNEM EXACT-HEAD-GATE**
