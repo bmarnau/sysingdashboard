@@ -155,7 +155,8 @@ Damit können RLS-DENY und strukturelle Constraint-DENY nicht mehr versehentlich
 Sobald der Lovable-Verifikationslauf ausgeführt wird:
 
 1. aktuellen GitHub- und DB-Stand read-only verifizieren,
-2. Migration **nicht erneut anwenden**,n3. das committed und gehärtete Testartefakt exakt gegen den verbundenen Supabase-Kontext ausführen,
+2. Migration **nicht erneut anwenden**,
+3. das committed und gehärtete Testartefakt exakt gegen den verbundenen Supabase-Kontext ausführen,
 4. T01–T30 vollständig dokumentieren,
 5. synthetische Testdaten durch `ROLLBACK` vollständig verwerfen,
 6. Security Advisor / Grants / RLS read-only erneut prüfen,
