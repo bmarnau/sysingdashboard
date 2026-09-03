@@ -3,6 +3,7 @@ import type { Activity, Project, WorkPackage } from "@/lib/dashboard-data";
 import { buildSharedDataMigrationPlan } from "@/lib/customer-data/migration";
 import {
   publishSharedCustomerProjection,
+  publishSharedOwnActivities,
   readSharedCustomerProjection,
   type SharedCustomerProjectionSnapshot,
   type SharedProjectionRepository,
@@ -78,7 +79,7 @@ function repository(snapshot?: SharedCustomerProjectionSnapshot): SharedProjecti
 }
 
 describe("BSF-02C shared projection runtime", () => {
-  it("publishes only the provider-neutral fail-closed batch", async () => {
+  it("publishes the full fail-closed batch with full reconciliation scope", async () => {
     const repo = repository();
 
     const result = await publishSharedCustomerProjection(repo, {
@@ -88,7 +89,7 @@ describe("BSF-02C shared projection runtime", () => {
     });
 
     expect(repo.publish).toHaveBeenCalledTimes(1);
-    const [publishedBatch, observedSources] = vi.mocked(repo.publish).mock.calls[0] ?? [];
+    const [publishedBatch, scope] = vi.mocked(repo.publish).mock.calls[0] ?? [];
     expect(publishedBatch).toEqual(
       expect.objectContaining({
         systemhouseId: "sys-a",
@@ -99,9 +100,14 @@ describe("BSF-02C shared projection runtime", () => {
         activities: [expect.objectContaining({ id: "A-1", engineerId: "user-1" })],
       }),
     );
-    expect(observedSources?.projects).toEqual(new Set(["P-1"]));
-    expect(observedSources?.workPackages).toEqual(new Set(["W-1"]));
-    expect(observedSources?.activities).toEqual(new Set(["A-1"]));
+    expect(scope).toMatchObject({
+      reconcileProjects: true,
+      reconcileWorkPackages: true,
+      reconcileActivities: true,
+    });
+    expect(scope?.observedSources.projects).toEqual(new Set(["P-1"]));
+    expect(scope?.observedSources.workPackages).toEqual(new Set(["W-1"]));
+    expect(scope?.observedSources.activities).toEqual(new Set(["A-1"]));
     expect(result).toMatchObject({
       upsertedProjects: 1,
       upsertedWorkPackages: 1,
@@ -127,9 +133,9 @@ describe("BSF-02C shared projection runtime", () => {
       publisherUserId: "user-1",
     });
 
-    const [publishedBatch, observedSources] = vi.mocked(repo.publish).mock.calls[0] ?? [];
+    const [publishedBatch, scope] = vi.mocked(repo.publish).mock.calls[0] ?? [];
     expect(publishedBatch?.activities).toEqual([]);
-    expect(observedSources?.activities).toEqual(new Set(["A-1"]));
+    expect(scope?.observedSources.activities).toEqual(new Set(["A-1"]));
     expect(result.skipped).toContainEqual({
       entityType: "activity",
       sourceId: "A-1",
@@ -153,14 +159,58 @@ describe("BSF-02C shared projection runtime", () => {
       publisherUserId: "user-1",
     });
 
-    const [publishedBatch, observedSources] = vi.mocked(repo.publish).mock.calls[0] ?? [];
+    const [publishedBatch, scope] = vi.mocked(repo.publish).mock.calls[0] ?? [];
     expect(publishedBatch?.projects).toEqual([]);
-    expect(observedSources?.projects).toEqual(new Set(["P-1"]));
-    expect(observedSources?.workPackages).toEqual(new Set(["W-1"]));
-    expect(observedSources?.activities).toEqual(new Set(["A-1"]));
+    expect(scope?.observedSources.projects).toEqual(new Set(["P-1"]));
+    expect(scope?.observedSources.workPackages).toEqual(new Set(["W-1"]));
+    expect(scope?.observedSources.activities).toEqual(new Set(["A-1"]));
     expect(result.unresolved).toEqual(
       expect.arrayContaining([expect.objectContaining({ entityType: "project", sourceId: "P-1" })]),
     );
+  });
+
+  it("publishes own linked activities against an already available WorkPackage parent", async () => {
+    const repo = repository();
+
+    const result = await publishSharedOwnActivities(repo, {
+      plan: plan(),
+      customerId: "cust-a",
+      publisherUserId: "user-1",
+      availableWorkPackageSourceIds: new Set(["W-1"]),
+    });
+
+    const [publishedBatch, scope] = vi.mocked(repo.publish).mock.calls[0] ?? [];
+    expect(publishedBatch?.projects).toEqual([]);
+    expect(publishedBatch?.workPackages).toEqual([]);
+    expect(publishedBatch?.activities).toEqual([
+      expect.objectContaining({ id: "A-1", workPackageId: "W-1", engineerId: "user-1" }),
+    ]);
+    expect(scope).toMatchObject({
+      reconcileProjects: false,
+      reconcileWorkPackages: false,
+      reconcileActivities: true,
+    });
+    expect(result.skipped).toEqual([]);
+  });
+
+  it("skips a linked own activity when its server parent is unavailable", async () => {
+    const repo = repository();
+
+    const result = await publishSharedOwnActivities(repo, {
+      plan: plan(),
+      customerId: "cust-a",
+      publisherUserId: "user-1",
+      availableWorkPackageSourceIds: new Set(),
+    });
+
+    const [publishedBatch] = vi.mocked(repo.publish).mock.calls[0] ?? [];
+    expect(publishedBatch?.activities).toEqual([]);
+    expect(result.skipped).toContainEqual({
+      entityType: "activity",
+      sourceId: "A-1",
+      reason: "parent_unpublishable",
+      detail: "W-1",
+    });
   });
 
   it("reads through the provider-neutral repository port", async () => {
