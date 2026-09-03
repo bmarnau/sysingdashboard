@@ -1,6 +1,6 @@
 # Sysing Dashboard — Strategischer Gesamtplan
 
-Stand: 2026-09-01  
+Stand: 2026-09-03  
 Status: strategische Gesamtplanung, unabhängig von Wochenplänen  
 Repository: `bmarnau/sysingdashboard`  
 Ausgangs-`main`: `87ac1e3dab38c383b9ae92a1d19ea43d22b1c37d`
@@ -11,7 +11,7 @@ Dieser Gesamtplan beschreibt die fachlich und technisch sinnvolle Reihenfolge de
 
 Wochenpläne dürfen Arbeitspakete daraus priorisieren, ändern aber nicht automatisch die strategische Reihenfolge.
 
-GitHub bleibt Source of Truth. Bestehende Sprint-/Issue-Nummern werden aus Traceability-Gründen nicht rückwirkend umnummeriert. Die hier dargestellte Reihenfolge ist fachlich maßgeblich; Suffixe wie `BSF-03A`, `BSF-03B`, `BSF-03C` und `BSF-03D` sind daher nicht zwingend alphabetisch abzuarbeiten.
+GitHub bleibt Source of Truth. Bestehende Sprint-/Issue-Nummern werden aus Traceability-Gründen nicht rückwirkend umnummeriert. Die hier dargestellte Reihenfolge ist fachlich maßgeblich; Suffixe wie `BSF-03A`, `BSF-03B`, `BSF-03C`, `BSF-03D` und `BSF-03E` sind daher nicht zwingend alphabetisch abzuarbeiten.
 
 ## 2. Unveränderte Architekturprinzipien
 
@@ -56,7 +56,8 @@ Arbeitsregel:
 - Customer-/Systemhouse-Domänenfundament vorhanden.
 - Membership-/Customer-Access-Basis vorhanden.
 - providerneutraler Shared-Projection-Contract über PR #101 auf `main`.
-- offen bleibt der reale gemeinsame serverseitige Read-/Projection-Pfad mit DB/RLS-Abnahme.
+- Shared-Projection-DDL, Grants, RLS und T01–T30 über PR #110 abgenommen und auf `main`.
+- offen bleibt der vollständige Runtime-Abschluss: transaktionaler Publish-Pfad, Shared Read-Service, Runtime-/Regressionstests und finale Abnahme von #88/#76.
 
 ## 4. Strategische Entwicklungsreihenfolge
 
@@ -74,6 +75,7 @@ Minimaler Scope:
 - Composite-Identität über Systemhouse + Customer + stabile Source-ID,
 - Customer-Scope-RLS,
 - Least-Privilege-Grants,
+- transaktionaler Publish-Pfad im selben User-JWT,
 - Cross-Systemhouse/Cross-Customer/IDOR-Negativtests,
 - Import/Export-/Backup-Kompatibilität,
 - AVKK-ID-Stabilität,
@@ -197,7 +199,33 @@ Umfang:
 
 ---
 
-### Phase 6 — BSF-03C: Kunden-PDF / Kundenpaket
+### Phase 6 — BSF-03E: Vertretungs- und Personensicht für Verantwortlichkeiten
+
+Ziel:
+
+Verantwortlichkeiten werden nach den Kernfunktionen aus BSF-03/03D/03A/03B auch aus Personen- und Vertretungssicht nachvollziehbar, ohne eine zweite konkurrierende Responsibility-Logik einzuführen.
+
+Umfang:
+
+- Management-Personensicht auf Customer-/Project-Verantwortlichkeiten,
+- Verantwortung hinzufügen, übertragen oder beenden,
+- temporäre Vertretung mit optionaler zeitlicher Gültigkeit,
+- Customer Responsibility, Project Responsibility und Vertretung bleiben getrennte, kombinierbare Beziehungen,
+- bestehende Personen-/AVKK-Identitäten wiederverwenden,
+- Audit sowie RBAC/RLS für jede Änderung,
+- keine Krankheitsgründe, Diagnosen oder sonstigen Gesundheitsdaten.
+
+Nicht Bestandteil:
+
+- neue globale Rolle für Vertretung,
+- Vertretungslogik auf Activity-Ebene,
+- parallele zweite Kundenverantwortungsimplementierung.
+
+**Gate:** Personen- und Vertretungssicht verwendet dieselbe Responsibility-Basis wie BSF-03; keine impliziten globalen Rechte und keine Gesundheitsdaten.
+
+---
+
+### Phase 7 — BSF-03C: Kunden-PDF / Kundenpaket
 
 Ziel:
 
@@ -215,11 +243,11 @@ Sysing Dashboard liefert z. B.:
 
 Später optional gemeinsames Kundenpaket mit der Reportfamilie, jedoch ohne Vermischung der Fachlogik.
 
-**Gate:** Datenminimierung, Customer-Scope, reproduzierbarer Snapshot und TDF-konformes Rendering.
+**Gate:** belastbare Kunden-/Leistungs-/Verantwortungsbasis einschließlich BSF-03E, Datenminimierung, Customer-Scope, reproduzierbarer Snapshot und TDF-konformes Rendering.
 
 ---
 
-### Phase 7 — Dokumentationsblock BSF-DOC-01 bis BSF-DOC-03
+### Phase 8 — Dokumentationsblock BSF-DOC-01 bis BSF-DOC-03
 
 #### BSF-DOC-01 — Dokumentationskonsolidierung
 
@@ -247,7 +275,7 @@ Später optional gemeinsames Kundenpaket mit der Reportfamilie, jedoch ohne Verm
 
 ---
 
-### Phase 8 — BSF-04: vollständige zentrale/synchronisierte Datenstrategie
+### Phase 9 — BSF-04: vollständige zentrale/synchronisierte Datenstrategie
 
 Ziel:
 
@@ -268,7 +296,7 @@ Entscheidungen:
 
 ---
 
-### Phase 9 — BSF-04A: Vorlagen und wiederkehrende AP/Tätigkeiten (#102)
+### Phase 10 — BSF-04A: Vorlagen und wiederkehrende AP/Tätigkeiten (#102)
 
 Diese Funktion folgt bewusst **nach** BSF-04, damit Templates und Serien nicht als temporäre Local-First-Sonderlösung gebaut werden.
 
@@ -324,7 +352,7 @@ Template-Änderungen verändern bereits erzeugte Instanzen niemals rückwirkend.
 
 ---
 
-### Phase 10 — BSF-05: Canonical Import Model und SharePoint-Vertrag
+### Phase 11 — BSF-05: Canonical Import Model und SharePoint-Vertrag
 
 Ziel:
 
@@ -349,7 +377,7 @@ Umfang:
 
 ---
 
-### Phase 11 — BSF-06: Betreiberhoheit und Docker
+### Phase 12 — BSF-06: Betreiberhoheit und Docker
 
 Ziel:
 
@@ -369,7 +397,7 @@ Umfang:
 
 ---
 
-### Phase 12 — BSF-07: Managementcockpit 2
+### Phase 13 — BSF-07: Managementcockpit 2
 
 Ziel:
 
@@ -397,7 +425,7 @@ Mögliche Inhalte:
 
 ---
 
-### Phase 13 — BSF-09: Reporting 2
+### Phase 14 — BSF-09: Reporting 2
 
 Ziel:
 
@@ -417,7 +445,7 @@ Umfang:
 
 ---
 
-### Phase 14 — BSF-10: KI-/Agenten-Labor
+### Phase 15 — BSF-10: KI-/Agenten-Labor
 
 Ziel:
 
@@ -441,7 +469,7 @@ Antworten basieren auf nachweisbaren Customer-/Projekt-/AP-/AVKK-Daten statt fre
 
 ---
 
-### Phase 15 — BSF-FINAL
+### Phase 16 — BSF-FINAL
 
 Gesamtprüfung:
 
@@ -465,7 +493,7 @@ Gesamtprüfung:
 
 ---
 
-### Phase 16 — INTEGRATION-READINESS
+### Phase 17 — INTEGRATION-READINESS
 
 Vor jeder produktiven externen Integration:
 
@@ -483,7 +511,7 @@ Vor jeder produktiven externen Integration:
 
 ---
 
-### Phase 17 — produktive Integrationen / Automation
+### Phase 18 — produktive Integrationen / Automation
 
 Erst nach Integration Readiness:
 
@@ -541,6 +569,7 @@ BSF-02C Shared Read
   -> BSF-03D AP-Kategorien
   -> BSF-03A PM-Controlling
   -> BSF-03B Leistungsnachweis
+  -> BSF-03E Vertretungs-/Personensicht
   -> BSF-03C Kunden-PDF
   -> Dokumentationsblock
   -> BSF-04 zentrale/synchronisierte Datenstrategie
