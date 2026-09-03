@@ -49,9 +49,7 @@ function nextRevision(existing: ExistingRow | undefined, sourceHash: string): nu
 async function sha256(value: unknown): Promise<string> {
   const bytes = new TextEncoder().encode(JSON.stringify(value));
   const digest = await globalThis.crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)]
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 function staleSourceIds(
@@ -251,9 +249,7 @@ export function createSupabaseSharedProjectionRepository(
         "Activity",
       );
 
-      const projectExistingBySource = new Map(
-        projectExisting.map((row) => [row.source_id, row]),
-      );
+      const projectExistingBySource = new Map(projectExisting.map((row) => [row.source_id, row]));
       const projectRows: ProjectInsert[] = await Promise.all(
         batch.projects.map(async (project) => {
           const sourceHash = await sha256({
@@ -349,9 +345,7 @@ export function createSupabaseSharedProjectionRepository(
         workPackageRefs = new Map((data ?? []).map((row) => [row.source_id, row.id]));
       }
 
-      const activityExistingBySource = new Map(
-        activityExisting.map((row) => [row.source_id, row]),
-      );
+      const activityExistingBySource = new Map(activityExisting.map((row) => [row.source_id, row]));
       const activityRows: ActivityInsert[] = await Promise.all(
         batch.activities.map(async (activity) => {
           const linkedWorkPackageRef =
