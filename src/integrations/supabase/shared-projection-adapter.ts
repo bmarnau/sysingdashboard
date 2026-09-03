@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database, Tables, TablesInsert } from "@/integrations/supabase/types";
+import type { SharedCustomerPublishBatch } from "@/lib/customer-data/shared-projection-contract";
 import type {
   SharedActivityRecord,
   SharedCustomerProjectionSnapshot,
@@ -7,8 +9,6 @@ import type {
   SharedProjectRecord,
   SharedWorkPackageRecord,
 } from "@/lib/customer-data/shared-projection-runtime";
-import type { SharedCustomerPublishBatch } from "@/lib/customer-data/shared-projection-contract";
-import type { Database, Tables, TablesInsert } from "@/integrations/supabase/types";
 
 type ProjectRow = Tables<"shared_project_projection">;
 type WorkPackageRow = Tables<"shared_work_package_projection">;
@@ -26,7 +26,11 @@ function fail(operation: string): never {
   throw new Error(`Shared Projection: ${operation} fehlgeschlagen.`);
 }
 
-function assertOwned(existing: readonly ExistingRow[], publisherUserId: string, entity: string): void {
+function assertOwned(
+  existing: readonly ExistingRow[],
+  publisherUserId: string,
+  entity: string,
+): void {
   const conflict = existing.find((row) => row.published_by !== publisherUserId);
   if (conflict) {
     throw new Error(
@@ -45,7 +49,24 @@ function nextRevision(existing: ExistingRow | undefined, sourceHash: string): nu
 async function sha256(value: unknown): Promise<string> {
   const bytes = new TextEncoder().encode(JSON.stringify(value));
   const digest = await globalThis.crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function staleSourceIds(
+  existing: readonly ExistingRow[],
+  publisherUserId: string,
+  activeSourceIds: ReadonlySet<string>,
+): string[] {
+  return existing
+    .filter(
+      (row) =>
+        row.published_by === publisherUserId &&
+        row.is_active &&
+        !activeSourceIds.has(row.source_id),
+    )
+    .map((row) => row.source_id);
 }
 
 async function withdrawProjects(
@@ -55,24 +76,18 @@ async function withdrawProjects(
   activeSourceIds: ReadonlySet<string>,
   now: string,
 ): Promise<number> {
-  const stale = existing
-    .filter(
-      (row) =>
-        row.published_by === batch.publisherUserId &&
-        row.is_active &&
-        !activeSourceIds.has(row.source_id),
-    )
-    .map((row) => row.source_id);
+  const stale = staleSourceIds(existing, batch.publisherUserId, activeSourceIds);
   if (stale.length === 0) return 0;
 
-  const { error } = await client
+  const { data, error } = await client
     .from("shared_project_projection")
     .update({ is_active: false, withdrawn_at: now })
     .eq("systemhouse_id", batch.systemhouseId)
     .eq("customer_id", batch.customerId)
     .eq("published_by", batch.publisherUserId)
-    .in("source_id", stale);
-  if (error) fail("Project-Withdraw");
+    .in("source_id", stale)
+    .select("source_id");
+  if (error || (data ?? []).length !== stale.length) fail("Project-Withdraw");
   return stale.length;
 }
 
@@ -83,24 +98,18 @@ async function withdrawWorkPackages(
   activeSourceIds: ReadonlySet<string>,
   now: string,
 ): Promise<number> {
-  const stale = existing
-    .filter(
-      (row) =>
-        row.published_by === batch.publisherUserId &&
-        row.is_active &&
-        !activeSourceIds.has(row.source_id),
-    )
-    .map((row) => row.source_id);
+  const stale = staleSourceIds(existing, batch.publisherUserId, activeSourceIds);
   if (stale.length === 0) return 0;
 
-  const { error } = await client
+  const { data, error } = await client
     .from("shared_work_package_projection")
     .update({ is_active: false, withdrawn_at: now })
     .eq("systemhouse_id", batch.systemhouseId)
     .eq("customer_id", batch.customerId)
     .eq("published_by", batch.publisherUserId)
-    .in("source_id", stale);
-  if (error) fail("WorkPackage-Withdraw");
+    .in("source_id", stale)
+    .select("source_id");
+  if (error || (data ?? []).length !== stale.length) fail("WorkPackage-Withdraw");
   return stale.length;
 }
 
@@ -111,24 +120,18 @@ async function withdrawActivities(
   activeSourceIds: ReadonlySet<string>,
   now: string,
 ): Promise<number> {
-  const stale = existing
-    .filter(
-      (row) =>
-        row.published_by === batch.publisherUserId &&
-        row.is_active &&
-        !activeSourceIds.has(row.source_id),
-    )
-    .map((row) => row.source_id);
+  const stale = staleSourceIds(existing, batch.publisherUserId, activeSourceIds);
   if (stale.length === 0) return 0;
 
-  const { error } = await client
+  const { data, error } = await client
     .from("shared_activity_projection")
     .update({ is_active: false, withdrawn_at: now })
     .eq("systemhouse_id", batch.systemhouseId)
     .eq("customer_id", batch.customerId)
     .eq("published_by", batch.publisherUserId)
-    .in("source_id", stale);
-  if (error) fail("Activity-Withdraw");
+    .in("source_id", stale)
+    .select("source_id");
+  if (error || (data ?? []).length !== stale.length) fail("Activity-Withdraw");
   return stale.length;
 }
 
@@ -195,7 +198,6 @@ export function createSupabaseSharedProjectionRepository(
   return {
     async publish(batch): Promise<SharedProjectionWriteCounts> {
       const now = new Date().toISOString();
-
       const [projectExistingResult, workPackageExistingResult, activityExistingResult] =
         await Promise.all([
           client
@@ -227,19 +229,31 @@ export function createSupabaseSharedProjectionRepository(
       const workPackageExisting = (workPackageExistingResult.data ?? []) as ExistingRow[];
       const activityExisting = (activityExistingResult.data ?? []) as ExistingRow[];
 
-      assertOwned(projectExisting.filter((row) => batch.projects.some((p) => p.id === row.source_id)), batch.publisherUserId, "Project");
+      const requestedProjectIds = new Set(batch.projects.map((project) => project.id));
+      const requestedWorkPackageIds = new Set(
+        batch.workPackages.map((workPackage) => workPackage.id),
+      );
+      const requestedActivityIds = new Set(batch.activities.map((activity) => activity.id));
+
       assertOwned(
-        workPackageExisting.filter((row) => batch.workPackages.some((wp) => wp.id === row.source_id)),
+        projectExisting.filter((row) => requestedProjectIds.has(row.source_id)),
+        batch.publisherUserId,
+        "Project",
+      );
+      assertOwned(
+        workPackageExisting.filter((row) => requestedWorkPackageIds.has(row.source_id)),
         batch.publisherUserId,
         "WorkPackage",
       );
       assertOwned(
-        activityExisting.filter((row) => batch.activities.some((activity) => activity.id === row.source_id)),
+        activityExisting.filter((row) => requestedActivityIds.has(row.source_id)),
         batch.publisherUserId,
         "Activity",
       );
 
-      const projectExistingBySource = new Map(projectExisting.map((row) => [row.source_id, row]));
+      const projectExistingBySource = new Map(
+        projectExisting.map((row) => [row.source_id, row]),
+      );
       const projectRows: ProjectInsert[] = await Promise.all(
         batch.projects.map(async (project) => {
           const sourceHash = await sha256({
@@ -270,7 +284,9 @@ export function createSupabaseSharedProjectionRepository(
           .from("shared_project_projection")
           .upsert(projectRows, { onConflict: "systemhouse_id,customer_id,source_id" })
           .select("id,source_id");
-        if (error) fail("Projects veröffentlichen");
+        if (error || (data ?? []).length !== projectRows.length) {
+          fail("Projects veröffentlichen");
+        }
         projectRefs = new Map((data ?? []).map((row) => [row.source_id, row.id]));
       }
 
@@ -288,6 +304,7 @@ export function createSupabaseSharedProjectionRepository(
               `Shared Projection: Project-Parent ${workPackage.projectId ?? ""} fehlt im Publish-Batch.`,
             );
           }
+
           const sourceHash = await sha256({
             projectId: workPackage.projectId,
             title: workPackage.title,
@@ -326,7 +343,9 @@ export function createSupabaseSharedProjectionRepository(
           .from("shared_work_package_projection")
           .upsert(workPackageRows, { onConflict: "systemhouse_id,customer_id,source_id" })
           .select("id,source_id");
-        if (error) fail("WorkPackages veröffentlichen");
+        if (error || (data ?? []).length !== workPackageRows.length) {
+          fail("WorkPackages veröffentlichen");
+        }
         workPackageRefs = new Map((data ?? []).map((row) => [row.source_id, row.id]));
       }
 
@@ -344,6 +363,7 @@ export function createSupabaseSharedProjectionRepository(
               `Shared Projection: WorkPackage-Parent ${activity.workPackageId ?? ""} fehlt im Publish-Batch.`,
             );
           }
+
           const sourceHash = await sha256({
             workPackageId: activity.workPackageId,
             engineerId: activity.engineerId,
@@ -380,15 +400,14 @@ export function createSupabaseSharedProjectionRepository(
       );
 
       if (activityRows.length > 0) {
-        const { error } = await client
+        const { data, error } = await client
           .from("shared_activity_projection")
-          .upsert(activityRows, { onConflict: "systemhouse_id,customer_id,source_id" });
-        if (error) fail("Activities veröffentlichen");
+          .upsert(activityRows, { onConflict: "systemhouse_id,customer_id,source_id" })
+          .select("source_id");
+        if (error || (data ?? []).length !== activityRows.length) {
+          fail("Activities veröffentlichen");
+        }
       }
-
-      const activeProjectIds = new Set(batch.projects.map((project) => project.id));
-      const activeWorkPackageIds = new Set(batch.workPackages.map((workPackage) => workPackage.id));
-      const activeActivityIds = new Set(batch.activities.map((activity) => activity.id));
 
       // Children zuerst zurückziehen; dadurch bleibt die fachliche Parent-Kette
       // während der Snapshot-Reconciliation möglichst konsistent sichtbar.
@@ -396,21 +415,21 @@ export function createSupabaseSharedProjectionRepository(
         client,
         batch,
         activityExisting,
-        activeActivityIds,
+        requestedActivityIds,
         now,
       );
       const withdrawnWorkPackages = await withdrawWorkPackages(
         client,
         batch,
         workPackageExisting,
-        activeWorkPackageIds,
+        requestedWorkPackageIds,
         now,
       );
       const withdrawnProjects = await withdrawProjects(
         client,
         batch,
         projectExisting,
-        activeProjectIds,
+        requestedProjectIds,
         now,
       );
 
