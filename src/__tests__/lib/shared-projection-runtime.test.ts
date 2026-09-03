@@ -88,7 +88,8 @@ describe("BSF-02C shared projection runtime", () => {
     });
 
     expect(repo.publish).toHaveBeenCalledTimes(1);
-    expect(repo.publish).toHaveBeenCalledWith(
+    const [publishedBatch, observedSources] = vi.mocked(repo.publish).mock.calls[0] ?? [];
+    expect(publishedBatch).toEqual(
       expect.objectContaining({
         systemhouseId: "sys-a",
         customerId: "cust-a",
@@ -98,6 +99,9 @@ describe("BSF-02C shared projection runtime", () => {
         activities: [expect.objectContaining({ id: "A-1", engineerId: "user-1" })],
       }),
     );
+    expect(observedSources?.projects).toEqual(new Set(["P-1"]));
+    expect(observedSources?.workPackages).toEqual(new Set(["W-1"]));
+    expect(observedSources?.activities).toEqual(new Set(["A-1"]));
     expect(result).toMatchObject({
       upsertedProjects: 1,
       upsertedWorkPackages: 1,
@@ -107,7 +111,7 @@ describe("BSF-02C shared projection runtime", () => {
     });
   });
 
-  it("keeps skipped diagnostics outside the provider write payload", async () => {
+  it("keeps skipped sources observed so they are not treated as deleted", async () => {
     const repo = repository();
     const migrationPlan = buildSharedDataMigrationPlan({
       systemhouseId: "sys-a",
@@ -123,13 +127,40 @@ describe("BSF-02C shared projection runtime", () => {
       publisherUserId: "user-1",
     });
 
-    const publishedBatch = vi.mocked(repo.publish).mock.calls[0]?.[0];
+    const [publishedBatch, observedSources] = vi.mocked(repo.publish).mock.calls[0] ?? [];
     expect(publishedBatch?.activities).toEqual([]);
+    expect(observedSources?.activities).toEqual(new Set(["A-1"]));
     expect(result.skipped).toContainEqual({
       entityType: "activity",
       sourceId: "A-1",
       reason: "engineer_mismatch",
     });
+  });
+
+  it("keeps unresolved sources observed so they are not treated as deleted", async () => {
+    const repo = repository();
+    const migrationPlan = buildSharedDataMigrationPlan({
+      systemhouseId: "sys-a",
+      projects: [project()],
+      workPackages: [workPackage()],
+      activities: [activity()],
+      customerMappings: [],
+    });
+
+    const result = await publishSharedCustomerProjection(repo, {
+      plan: migrationPlan,
+      customerId: "cust-a",
+      publisherUserId: "user-1",
+    });
+
+    const [publishedBatch, observedSources] = vi.mocked(repo.publish).mock.calls[0] ?? [];
+    expect(publishedBatch?.projects).toEqual([]);
+    expect(observedSources?.projects).toEqual(new Set(["P-1"]));
+    expect(observedSources?.workPackages).toEqual(new Set(["W-1"]));
+    expect(observedSources?.activities).toEqual(new Set(["A-1"]));
+    expect(result.unresolved).toEqual(
+      expect.arrayContaining([expect.objectContaining({ entityType: "project", sourceId: "P-1" })]),
+    );
   });
 
   it("reads through the provider-neutral repository port", async () => {
