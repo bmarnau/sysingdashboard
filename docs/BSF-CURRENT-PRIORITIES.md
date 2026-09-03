@@ -118,13 +118,14 @@ Der Wochenplan ist bewusst seriell. Es wird kein paralleler neuer Fachsprint er�
 
 8. **BSF-03E — Vertretungs- und Personensicht (#63) — GEPLANT**
    - nach den Kernfunktionen #105, #103, #106 und #107,
+   - bewusst vor der abschließenden Kunden-PDF #98,
    - Personensicht für Management,
    - Verantwortung und Vertretung als getrennte Beziehungen,
    - keine Gesundheits-/Krankheitsdaten,
    - bestehende Responsibility-Logik wiederverwenden, nicht duplizieren.
 
 9. **BSF-03C — Kunden-PDF / Kundenpaket (#98) — GEPLANT**
-   - nach belastbarer Kunden-/Leistungsbasis,
+   - nach belastbarer Kunden-/Leistungs-/Verantwortungsbasis einschließlich #63,
    - operative Kundensicht als PDF,
    - keine Duplizierung der Reportfamilie-Fachlogik,
    - Datenminimierung und reproduzierbarer Snapshot,
@@ -215,6 +216,4 @@ Nach jedem vollständig abgeschlossenen Punkt dieser Liste wird:
 
 ## Fachlicher roter Faden
 
-`BSF-02C → BSF-03 → BSF-03D → BSF-03A → BSF-03B → BSF-03E/03C → Dokumentationsblock → BSF-04 → BSF-04A → BSF-05 ff.`
-
-Die genaue Einordnung von BSF-03E gegenüber BSF-03C wird vor dem PDF-Sprint fachlich feinjustiert; sie erzeugt keinen parallelen zweiten Responsibility-Scope.
+`BSF-02C → BSF-03 → BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → Dokumentationsblock → BSF-04 → BSF-04A → BSF-05 ff.`
