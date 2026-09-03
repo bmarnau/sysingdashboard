@@ -7,6 +7,7 @@ import { buildSharedDataMigrationPlan } from "@/lib/customer-data/migration";
 import { prepareSharedCustomerPublishBatch } from "@/lib/customer-data/shared-projection-contract";
 import {
   publishSharedCustomerProjection,
+  publishSharedOwnActivities,
   readSharedCustomerProjection,
   type SharedCustomerProjectionSnapshot,
   type SharedProjectionPublishResult,
@@ -95,17 +96,27 @@ async function assertCommonScope(
   }
 }
 
-async function assertPermission(
+async function hasPermission(
   supabase: UserSupabaseClient,
   userId: string,
   permission: string,
-): Promise<void> {
+): Promise<boolean> {
   const { data, error } = await supabase.rpc("has_permission", {
     _user_id: userId,
     _perm: permission,
   });
   if (error) throw new Error("Berechtigungsprüfung konnte nicht ausgeführt werden.");
-  if (!data) throw new Error("Erforderliche Fachberechtigung fehlt.");
+  return data === true;
+}
+
+async function assertPermission(
+  supabase: UserSupabaseClient,
+  userId: string,
+  permission: string,
+): Promise<void> {
+  if (!(await hasPermission(supabase, userId, permission))) {
+    throw new Error("Erforderliche Fachberechtigung fehlt.");
+  }
 }
 
 /**
@@ -115,6 +126,11 @@ async function assertPermission(
  * Der Client liefert weder Publisher-Identität noch bereits vorbereitete
  * Projection-Zeilen. Customer-Auflösung, Collision-/Parent-Contract und
  * Publisher-Bindung werden im Serverpfad erneut berechnet.
+ *
+ * Rollen mit `project.edit` dürfen gemeinsame Project-/WorkPackage-Struktur
+ * veröffentlichen. Rollen ohne `project.edit`, aber mit `activity.edit`,
+ * veröffentlichen ausschließlich eigene Activities gegen bereits aktive
+ * WorkPackage-Projections.
  */
 export const publishSharedCustomerProjectionFn = createServerFn({ method: "POST" })
   .validator((input: unknown) => publishSchema.parse(input))
@@ -127,32 +143,53 @@ export const publishSharedCustomerProjectionFn = createServerFn({ method: "POST"
       activities: data.activities,
       customerMappings: data.customerMappings,
     });
-    const batch = prepareSharedCustomerPublishBatch({
-      plan,
-      customerId: data.customerId,
-      publisherUserId: context.userId,
-    });
     const supabase = context.supabase as UserSupabaseClient;
 
     await assertCommonScope(supabase, context.userId, data.systemhouseId, data.customerId, "write");
     await assertPermission(supabase, context.userId, "dashboard.view");
 
-    if (batch.projects.length > 0 || batch.workPackages.length > 0) {
-      await assertPermission(supabase, context.userId, "project.edit");
-    }
-    if (batch.activities.length > 0) {
-      await assertPermission(supabase, context.userId, "activity.edit");
-    }
+    const [canEditProjects, canEditActivities] = await Promise.all([
+      hasPermission(supabase, context.userId, "project.edit"),
+      hasPermission(supabase, context.userId, "activity.edit"),
+    ]);
 
     const { createSupabaseSharedProjectionRepository } =
       await import("@/integrations/supabase/shared-projection-adapter");
     const repository = createSupabaseSharedProjectionRepository(supabase);
 
-    return publishSharedCustomerProjection(repository, {
-      plan,
-      customerId: data.customerId,
-      publisherUserId: context.userId,
-    });
+    if (canEditProjects) {
+      const structuralBatch = prepareSharedCustomerPublishBatch({
+        plan,
+        customerId: data.customerId,
+        publisherUserId: context.userId,
+      });
+      if (structuralBatch.activities.length > 0 && !canEditActivities) {
+        throw new Error("Erforderliche Fachberechtigung für Activities fehlt.");
+      }
+
+      return publishSharedCustomerProjection(repository, {
+        plan,
+        customerId: data.customerId,
+        publisherUserId: context.userId,
+      });
+    }
+
+    if (canEditActivities) {
+      const current = await readSharedCustomerProjection(repository, {
+        systemhouseId: data.systemhouseId,
+        customerId: data.customerId,
+      });
+      return publishSharedOwnActivities(repository, {
+        plan,
+        customerId: data.customerId,
+        publisherUserId: context.userId,
+        availableWorkPackageSourceIds: new Set(
+          current.workPackages.map((workPackage) => workPackage.sourceId),
+        ),
+      });
+    }
+
+    throw new Error("Erforderliche Fachberechtigung zum Veröffentlichen fehlt.");
   });
 
 /**
