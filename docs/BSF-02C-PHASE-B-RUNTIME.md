@@ -43,7 +43,7 @@ Damit bleiben Domain-Vertrag, Datenzugriff und Auth-/Provider-Bindung getrennt.
 Der Client darf keine `published_by`-Identität vorgeben und keine bereits vorbereiteten
 DB-Zeilen einsenden.
 
-Der Server erhält:
+Der Server erhält für die Reconciliation den vollständigen aktuellen Local-First-Snapshot:
 
 - `systemhouseId`,
 - Ziel-`customerId`,
@@ -55,10 +55,11 @@ Im Serverpfad werden erneut ausgeführt:
 1. Payload-Validierung,
 2. `buildSharedDataMigrationPlan(...)`,
 3. `prepareSharedCustomerPublishBatch(...)`,
-4. aktive Account-/Membership-/Customer-Write-Prüfung,
-5. fachliche Permission-Prüfung für tatsächlich zu veröffentlichende Entity-Arten,
-6. Persistenz im selben User-JWT,
-7. RLS als maßgebliche Datenbank-Sicherheitsgrenze.
+4. Ermittlung der im lokalen Snapshot tatsächlich beobachteten Source-IDs,
+5. aktive Account-/Membership-/Customer-Write-Prüfung,
+6. fachliche Permission-Prüfung für tatsächlich zu veröffentlichende Entity-Arten,
+7. Persistenz im selben User-JWT,
+8. RLS als maßgebliche Datenbank-Sicherheitsgrenze.
 
 Unresolved Customer-Zuordnungen, Kollisionen, fehlende Parents und fremde
 Activity-Engineer-Identitäten bleiben fail-closed.
@@ -75,7 +76,9 @@ Der Adapter:
 - setzt `source_hash` als SHA-256 über den fachlichen Source-Inhalt,
 - erhöht `source_revision` nur bei fachlicher Source-Änderung,
 - reaktiviert erneut vorhandene eigene Zeilen,
-- zieht stale eigene Projection-Zeilen per Soft Withdraw zurück,
+- zieht nur tatsächlich stale eigene Projection-Zeilen per Soft Withdraw zurück,
+- prüft bei Update/Upsert zusätzlich die tatsächlich von Supabase zurückgegebenen Zeilen,
+  damit ein RLS-bedingtes `0 rows` nicht als erfolgreicher Write gewertet wird,
 - löscht keine Projection-Zeile.
 
 Die bestehende DB erzwingt weiterhin zusätzlich:
@@ -112,7 +115,13 @@ Snapshot-Reconciliation zieht ausschließlich Zeilen zurück, die:
 - zum gleichen Systemhouse/Customer gehören,
 - vom aktuellen Benutzer publiziert wurden,
 - aktuell aktiv sind,
-- im neuen Publish-Batch nicht mehr vorkommen.
+- im vollständigen aktuellen lokalen Source-Snapshot wirklich nicht mehr vorkommen.
+
+**Nicht publizierbar ist nicht gleich gelöscht.** Ein im lokalen Snapshot noch vorhandenes
+Objekt bleibt deshalb als beobachtete Source geschützt, auch wenn es im aktuellen Lauf
+wegen `source_id_collision`, `parent_missing`, `parent_unpublishable`,
+`engineer_missing`, `engineer_mismatch` oder unresolved Customer-Zuordnung nicht in den
+publizierbaren Batch gelangt.
 
 Andere Publisher werden weder überschrieben noch zurückgezogen. Ein Konflikt auf einer
 bereits fremd publizierten Source-ID wird fail-closed gemeldet.
@@ -159,7 +168,9 @@ BSF-03.
 - serverseitige Payload-/Customer-/Permission-Prüfung,
 - Parent-Auflösung fail-closed,
 - fremde Publisher-Source-ID fail-closed,
-- Soft Withdraw nur publisher-eigen,
+- Soft Withdraw nur publisher-eigen und nur bei im Local-First-Snapshot wirklich fehlender Source,
+- skipped/unresolved Sources werden nicht versehentlich als stale zurückgezogen,
+- RLS-bedingtes `0 rows` wird bei Writes nicht als Erfolg akzeptiert,
 - Shared Customer Read nur im zulässigen Scope,
 - Unit-/Security-/Backend-/API-/E2E-/Accessibility-/Technical-Debt-Regression PASS,
 - vollständige Exact-Head-CI und Security-Workflow PASS,
