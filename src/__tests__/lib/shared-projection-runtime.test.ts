@@ -64,14 +64,15 @@ function repository(snapshot?: SharedCustomerProjectionSnapshot): SharedProjecti
       withdrawnWorkPackages: 0,
       withdrawnActivities: 0,
     })),
-    readCustomer: vi.fn(async ({ systemhouseId, customerId }) =>
-      snapshot ?? {
-        systemhouseId,
-        customerId,
-        projects: [],
-        workPackages: [],
-        activities: [],
-      },
+    readCustomer: vi.fn(
+      async ({ systemhouseId, customerId }) =>
+        snapshot ?? {
+          systemhouseId,
+          customerId,
+          projects: [],
+          workPackages: [],
+          activities: [],
+        },
     ),
   };
 }
