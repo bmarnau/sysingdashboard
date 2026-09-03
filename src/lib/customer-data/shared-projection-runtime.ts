@@ -1,5 +1,6 @@
 import {
   prepareSharedCustomerPublishBatch,
+  prepareSharedOwnActivityPublishBatch,
   type SharedCustomerPublishBatch,
   type SharedProjectionSkip,
   type SharedProjectionUnresolved,
@@ -93,6 +94,13 @@ export interface SharedProjectionObservedSources {
   activities: ReadonlySet<string>;
 }
 
+export interface SharedProjectionPublishScope {
+  observedSources: SharedProjectionObservedSources;
+  reconcileProjects: boolean;
+  reconcileWorkPackages: boolean;
+  reconcileActivities: boolean;
+}
+
 /**
  * Providerneutraler Persistenz-Port für BSF-02C.
  *
@@ -103,7 +111,7 @@ export interface SharedProjectionObservedSources {
 export interface SharedProjectionRepository {
   publish(
     batch: SharedCustomerPublishBatch,
-    observedSources: SharedProjectionObservedSources,
+    scope: SharedProjectionPublishScope,
   ): Promise<SharedProjectionWriteCounts>;
   readCustomer(input: {
     systemhouseId: string;
@@ -125,9 +133,19 @@ function observedSources(plan: SharedDataMigrationPlan): SharedProjectionObserve
   };
 }
 
+function result(
+  counts: SharedProjectionWriteCounts,
+  batch: SharedCustomerPublishBatch,
+): SharedProjectionPublishResult {
+  return {
+    ...counts,
+    skipped: batch.skipped,
+    unresolved: batch.unresolved,
+  };
+}
+
 /**
- * Rechnet den Fail-Closed-Publish-Vertrag erneut im Serverpfad aus und reicht
- * nur den daraus resultierenden Batch an den Provider weiter.
+ * Full-Structure-Publish für Benutzer mit `project.edit`.
  *
  * Für Soft Withdraw wird separat der vollständige lokale Source-Bestand
  * übergeben. Nur eine Source, die dort wirklich nicht mehr vorkommt, darf vom
@@ -146,13 +164,47 @@ export async function publishSharedCustomerProjection(
     customerId: input.customerId,
     publisherUserId: input.publisherUserId,
   });
-  const counts = await repository.publish(batch, observedSources(input.plan));
+  const counts = await repository.publish(batch, {
+    observedSources: observedSources(input.plan),
+    reconcileProjects: true,
+    reconcileWorkPackages: true,
+    reconcileActivities: true,
+  });
 
-  return {
-    ...counts,
-    skipped: batch.skipped,
-    unresolved: batch.unresolved,
-  };
+  return result(counts, batch);
+}
+
+/**
+ * Publish-Pfad für eigene Activities ohne gemeinsame Strukturautorität.
+ *
+ * Project/WorkPackage werden weder geschrieben noch reconciled. Verlinkte
+ * Activities dürfen nur auf serverseitig bereits aktive WorkPackage-Sources
+ * zeigen. Damit bleibt `project.edit` für gemeinsame Struktur zwingend, ohne
+ * Engineers ihre eigene `activity.edit`-Leistung zu blockieren.
+ */
+export async function publishSharedOwnActivities(
+  repository: SharedProjectionRepository,
+  input: {
+    plan: SharedDataMigrationPlan;
+    customerId: string;
+    publisherUserId: string;
+    availableWorkPackageSourceIds: ReadonlySet<string>;
+  },
+): Promise<SharedProjectionPublishResult> {
+  const batch = prepareSharedOwnActivityPublishBatch({
+    plan: input.plan,
+    customerId: input.customerId,
+    publisherUserId: input.publisherUserId,
+    availableWorkPackageSourceIds: input.availableWorkPackageSourceIds,
+  });
+  const counts = await repository.publish(batch, {
+    observedSources: observedSources(input.plan),
+    reconcileProjects: false,
+    reconcileWorkPackages: false,
+    reconcileActivities: true,
+  });
+
+  return result(counts, batch);
 }
 
 export async function readSharedCustomerProjection(
