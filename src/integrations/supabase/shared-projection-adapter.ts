@@ -4,6 +4,7 @@ import type { SharedCustomerPublishBatch } from "@/lib/customer-data/shared-proj
 import type {
   SharedActivityRecord,
   SharedCustomerProjectionSnapshot,
+  SharedProjectionObservedSources,
   SharedProjectionRepository,
   SharedProjectionWriteCounts,
   SharedProjectRecord,
@@ -55,14 +56,14 @@ async function sha256(value: unknown): Promise<string> {
 function staleSourceIds(
   existing: readonly ExistingRow[],
   publisherUserId: string,
-  activeSourceIds: ReadonlySet<string>,
+  observedSourceIds: ReadonlySet<string>,
 ): string[] {
   return existing
     .filter(
       (row) =>
         row.published_by === publisherUserId &&
         row.is_active &&
-        !activeSourceIds.has(row.source_id),
+        !observedSourceIds.has(row.source_id),
     )
     .map((row) => row.source_id);
 }
@@ -71,10 +72,10 @@ async function withdrawProjects(
   client: SupabaseClient<Database>,
   batch: SharedCustomerPublishBatch,
   existing: readonly ExistingRow[],
-  activeSourceIds: ReadonlySet<string>,
+  observedSourceIds: ReadonlySet<string>,
   now: string,
 ): Promise<number> {
-  const stale = staleSourceIds(existing, batch.publisherUserId, activeSourceIds);
+  const stale = staleSourceIds(existing, batch.publisherUserId, observedSourceIds);
   if (stale.length === 0) return 0;
 
   const { data, error } = await client
@@ -93,10 +94,10 @@ async function withdrawWorkPackages(
   client: SupabaseClient<Database>,
   batch: SharedCustomerPublishBatch,
   existing: readonly ExistingRow[],
-  activeSourceIds: ReadonlySet<string>,
+  observedSourceIds: ReadonlySet<string>,
   now: string,
 ): Promise<number> {
-  const stale = staleSourceIds(existing, batch.publisherUserId, activeSourceIds);
+  const stale = staleSourceIds(existing, batch.publisherUserId, observedSourceIds);
   if (stale.length === 0) return 0;
 
   const { data, error } = await client
@@ -115,10 +116,10 @@ async function withdrawActivities(
   client: SupabaseClient<Database>,
   batch: SharedCustomerPublishBatch,
   existing: readonly ExistingRow[],
-  activeSourceIds: ReadonlySet<string>,
+  observedSourceIds: ReadonlySet<string>,
   now: string,
 ): Promise<number> {
-  const stale = staleSourceIds(existing, batch.publisherUserId, activeSourceIds);
+  const stale = staleSourceIds(existing, batch.publisherUserId, observedSourceIds);
   if (stale.length === 0) return 0;
 
   const { data, error } = await client
@@ -194,7 +195,10 @@ export function createSupabaseSharedProjectionRepository(
   client: SupabaseClient<Database>,
 ): SharedProjectionRepository {
   return {
-    async publish(batch): Promise<SharedProjectionWriteCounts> {
+    async publish(
+      batch,
+      observedSources: SharedProjectionObservedSources,
+    ): Promise<SharedProjectionWriteCounts> {
       const now = new Date().toISOString();
       const [projectExistingResult, workPackageExistingResult, activityExistingResult] =
         await Promise.all([
@@ -403,27 +407,28 @@ export function createSupabaseSharedProjectionRepository(
         }
       }
 
-      // Children zuerst zurückziehen; dadurch bleibt die fachliche Parent-Kette
-      // während der Snapshot-Reconciliation möglichst konsistent sichtbar.
+      // Children zuerst zurückziehen. Dabei zählt die vollständige lokale
+      // Source-Menge, nicht nur der publizierbare Batch: skipped/unresolved
+      // Sources bleiben aktiv, bis sie im lokalen Snapshot wirklich fehlen.
       const withdrawnActivities = await withdrawActivities(
         client,
         batch,
         activityExisting,
-        requestedActivityIds,
+        observedSources.activities,
         now,
       );
       const withdrawnWorkPackages = await withdrawWorkPackages(
         client,
         batch,
         workPackageExisting,
-        requestedWorkPackageIds,
+        observedSources.workPackages,
         now,
       );
       const withdrawnProjects = await withdrawProjects(
         client,
         batch,
         projectExisting,
-        requestedProjectIds,
+        observedSources.projects,
         now,
       );
 
