@@ -1,0 +1,186 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { buildSharedDataMigrationPlan } from "@/lib/customer-data/migration";
+import { prepareSharedCustomerPublishBatch } from "@/lib/customer-data/shared-projection-contract";
+import {
+  publishSharedCustomerProjection,
+  readSharedCustomerProjection,
+  type SharedCustomerProjectionSnapshot,
+  type SharedProjectionPublishResult,
+} from "@/lib/customer-data/shared-projection-runtime";
+
+const uuid = z.string().uuid();
+const sourceId = z.string().trim().min(1).max(255);
+const text = z.string().max(2000);
+
+const customerMappingSchema = z.object({
+  legacyName: z.string().trim().min(1).max(500),
+  customerId: uuid,
+});
+
+const projectSchema = z.object({
+  id: sourceId,
+  name: text,
+  client: z.string().max(500),
+  status: z.enum(["on_track", "at_risk", "delayed", "abgeschlossen"]),
+});
+
+const workPackageSchema = z.object({
+  id: sourceId,
+  title: text,
+  projectId: sourceId.nullish(),
+  client: z.string().max(500).optional(),
+  status: z.enum(["offen", "in_arbeit", "wartend", "erledigt"]),
+  priority: z.enum(["niedrig", "mittel", "hoch", "kritisch"]),
+});
+
+const activitySchema = z.object({
+  id: sourceId,
+  title: text,
+  workPackageId: sourceId.nullish(),
+  engineerId: uuid.optional(),
+  client: z.string().max(500).optional(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  duration: z.number().finite().nonnegative(),
+  hourlyRate: z.number().finite().nonnegative(),
+  billable: z.boolean(),
+  billingStatus: z.enum(["offen", "abgerechnet", "nicht_abrechenbar"]),
+});
+
+const publishSchema = z.object({
+  systemhouseId: uuid,
+  customerId: uuid,
+  customerMappings: z.array(customerMappingSchema).max(5000),
+  projects: z.array(projectSchema).max(10000),
+  workPackages: z.array(workPackageSchema).max(20000),
+  activities: z.array(activitySchema).max(50000),
+});
+
+const readSchema = z.object({
+  systemhouseId: uuid,
+  customerId: uuid,
+});
+
+type UserContext = Parameters<
+  typeof import("@/integrations/supabase/shared-projection-adapter").createSupabaseSharedProjectionRepository
+>[0];
+
+async function assertCommonScope(
+  supabase: UserContext,
+  userId: string,
+  systemhouseId: string,
+  customerId: string,
+  level: "read" | "write",
+): Promise<void> {
+  const [active, membership, access] = await Promise.all([
+    supabase.rpc("is_account_active", { _user_id: userId }),
+    supabase.rpc("has_active_systemhouse_membership", {
+      _user_id: userId,
+      _systemhouse_id: systemhouseId,
+    }),
+    supabase.rpc("has_customer_access", {
+      _user_id: userId,
+      _systemhouse_id: systemhouseId,
+      _customer_id: customerId,
+      _required_level: level,
+    }),
+  ]);
+
+  if (active.error || membership.error || access.error) {
+    throw new Error("Customer-Autorisierung konnte nicht geprüft werden.");
+  }
+  if (!active.data || !membership.data || !access.data) {
+    throw new Error("Keine Berechtigung für den angeforderten Customer-Scope.");
+  }
+}
+
+async function assertPermission(
+  supabase: UserContext,
+  userId: string,
+  permission: string,
+): Promise<void> {
+  const { data, error } = await supabase.rpc("has_permission", {
+    _user_id: userId,
+    _perm: permission,
+  });
+  if (error) throw new Error("Berechtigungsprüfung konnte nicht ausgeführt werden.");
+  if (!data) throw new Error("Erforderliche Fachberechtigung fehlt.");
+}
+
+/**
+ * Publish-Pfad gemäß ADR-0032:
+ * Browser -> Serverfunktion -> Supabase im selben User-JWT -> Grants + RLS.
+ *
+ * Der Client liefert weder Publisher-Identität noch bereits vorbereitete
+ * Projection-Zeilen. Customer-Auflösung, Collision-/Parent-Contract und
+ * Publisher-Bindung werden im Serverpfad erneut berechnet.
+ */
+export const publishSharedCustomerProjectionFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => publishSchema.parse(input))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<SharedProjectionPublishResult> => {
+    const plan = buildSharedDataMigrationPlan({
+      systemhouseId: data.systemhouseId,
+      projects: data.projects,
+      workPackages: data.workPackages,
+      activities: data.activities,
+      customerMappings: data.customerMappings,
+    });
+    const batch = prepareSharedCustomerPublishBatch({
+      plan,
+      customerId: data.customerId,
+      publisherUserId: context.userId,
+    });
+
+    await assertCommonScope(
+      context.supabase as UserContext,
+      context.userId,
+      data.systemhouseId,
+      data.customerId,
+      "write",
+    );
+
+    if (batch.projects.length > 0 || batch.workPackages.length > 0) {
+      await assertPermission(context.supabase as UserContext, context.userId, "project.edit");
+    }
+    if (batch.activities.length > 0) {
+      await assertPermission(context.supabase as UserContext, context.userId, "activity.edit");
+    }
+
+    const { createSupabaseSharedProjectionRepository } = await import(
+      "@/integrations/supabase/shared-projection-adapter"
+    );
+    const repository = createSupabaseSharedProjectionRepository(context.supabase as UserContext);
+
+    return publishSharedCustomerProjection(repository, {
+      plan,
+      customerId: data.customerId,
+      publisherUserId: context.userId,
+    });
+  });
+
+/**
+ * Minimaler Shared-Customer-Read-Pfad für BSF-03 und spätere Führungssichten.
+ * RLS bleibt die maßgebliche Zeilengrenze; diese Funktion prüft Session,
+ * Customer-Scope und dashboard.view zusätzlich im Benutzerkontext.
+ */
+export const readSharedCustomerProjectionFn = createServerFn({ method: "POST" })
+  .validator((input: unknown) => readSchema.parse(input))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<SharedCustomerProjectionSnapshot> => {
+    await assertCommonScope(
+      context.supabase as UserContext,
+      context.userId,
+      data.systemhouseId,
+      data.customerId,
+      "read",
+    );
+    await assertPermission(context.supabase as UserContext, context.userId, "dashboard.view");
+
+    const { createSupabaseSharedProjectionRepository } = await import(
+      "@/integrations/supabase/shared-projection-adapter"
+    );
+    const repository = createSupabaseSharedProjectionRepository(context.supabase as UserContext);
+    return readSharedCustomerProjection(repository, data);
+  });
