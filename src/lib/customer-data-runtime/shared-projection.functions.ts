@@ -134,13 +134,7 @@ export const publishSharedCustomerProjectionFn = createServerFn({ method: "POST"
     });
     const supabase = context.supabase as UserSupabaseClient;
 
-    await assertCommonScope(
-      supabase,
-      context.userId,
-      data.systemhouseId,
-      data.customerId,
-      "write",
-    );
+    await assertCommonScope(supabase, context.userId, data.systemhouseId, data.customerId, "write");
     await assertPermission(supabase, context.userId, "dashboard.view");
 
     if (batch.projects.length > 0 || batch.workPackages.length > 0) {
@@ -151,7 +145,7 @@ export const publishSharedCustomerProjectionFn = createServerFn({ method: "POST"
     }
 
     const { createSupabaseSharedProjectionRepository } = await import(
-      "@/integrations/supabase/shared-projection-adapter"
+      "@/integrations/supabase/shared-projection-adapter",
     );
     const repository = createSupabaseSharedProjectionRepository(supabase);
 
@@ -173,17 +167,11 @@ export const readSharedCustomerProjectionFn = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<SharedCustomerProjectionSnapshot> => {
     const supabase = context.supabase as UserSupabaseClient;
 
-    await assertCommonScope(
-      supabase,
-      context.userId,
-      data.systemhouseId,
-      data.customerId,
-      "read",
-    );
+    await assertCommonScope(supabase, context.userId, data.systemhouseId, data.customerId, "read");
     await assertPermission(supabase, context.userId, "dashboard.view");
 
     const { createSupabaseSharedProjectionRepository } = await import(
-      "@/integrations/supabase/shared-projection-adapter"
+      "@/integrations/supabase/shared-projection-adapter",
     );
     const repository = createSupabaseSharedProjectionRepository(supabase);
     return readSharedCustomerProjection(repository, data);
