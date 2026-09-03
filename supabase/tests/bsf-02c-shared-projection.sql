@@ -29,6 +29,35 @@ BEGIN
   RAISE EXCEPTION 'FAIL % (statement unexpectedly succeeded)', label;
 END; $$;
 
+CREATE OR REPLACE FUNCTION pg_temp.assert_constraint_violation(
+  stmt text,
+  expected_sqlstate text,
+  expected_constraint text,
+  label text
+)
+RETURNS void LANGUAGE plpgsql AS $$
+DECLARE
+  got_sqlstate text;
+  got_constraint text;
+  got_message text;
+BEGIN
+  BEGIN
+    EXECUTE stmt;
+  EXCEPTION WHEN OTHERS THEN
+    GET STACKED DIAGNOSTICS
+      got_sqlstate = RETURNED_SQLSTATE,
+      got_constraint = CONSTRAINT_NAME,
+      got_message = MESSAGE_TEXT;
+    IF got_sqlstate = expected_sqlstate AND got_constraint = expected_constraint THEN
+      RAISE NOTICE 'PASS % (constraint % / SQLSTATE %)', label, got_constraint, got_sqlstate;
+      RETURN;
+    END IF;
+    RAISE EXCEPTION 'FAIL % (expected % / %, got % / %: %)',
+      label, expected_constraint, expected_sqlstate, got_constraint, got_sqlstate, got_message;
+  END;
+  RAISE EXCEPTION 'FAIL % (statement unexpectedly succeeded)', label;
+END; $$;
+
 -- ---------------------------------------------------------------------------
 -- Statische Struktur-/Grant-/RLS-Verträge
 -- ---------------------------------------------------------------------------
@@ -119,8 +148,8 @@ SELECT pg_temp.assert((
 --   U_READ   ...0002 read@C1  (viewer)
 --   U_NOACC  ...0003 Membership SH1, kein Customer Access (teamlead)
 --   U_NOMEM  ...0004 keine Membership (teamlead)
---   U_ENG    ...0005 write@C1, engineer (activity.edit, kein project.edit)
---   U_OTHER  ...0006 write@C1, teamlead (fremder Publisher)
+--   U_ENG    ...0005 write@C1, engineer (workpackage.edit + activity.edit, kein project.edit)
+--   U_OTHER  ...0006 write@C1+C2, teamlead (fremder Publisher / autorisierter C2-Strukturtest)
 
 INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password,
                         email_confirmed_at, created_at, updated_at,
@@ -175,7 +204,8 @@ INSERT INTO public.customer_access (systemhouse_id, customer_id, user_id, access
   ('00000000-0000-0000-0000-0000000aa001','00000000-0000-0000-0000-0000000bb001','00000000-0000-0000-0000-00000000c001','write','active'),
   ('00000000-0000-0000-0000-0000000aa001','00000000-0000-0000-0000-0000000bb001','00000000-0000-0000-0000-00000000c002','read','active'),
   ('00000000-0000-0000-0000-0000000aa001','00000000-0000-0000-0000-0000000bb001','00000000-0000-0000-0000-00000000c005','write','active'),
-  ('00000000-0000-0000-0000-0000000aa001','00000000-0000-0000-0000-0000000bb001','00000000-0000-0000-0000-00000000c006','write','active');
+  ('00000000-0000-0000-0000-0000000aa001','00000000-0000-0000-0000-0000000bb001','00000000-0000-0000-0000-00000000c006','write','active'),
+  ('00000000-0000-0000-0000-0000000aa001','00000000-0000-0000-0000-0000000bb002','00000000-0000-0000-0000-00000000c006','write','active');
 
 -- Hilfsmakro: Rolle + JWT-Claim setzen
 CREATE OR REPLACE FUNCTION pg_temp.act_as(uid uuid)
@@ -224,28 +254,41 @@ VALUES ('00000000-0000-0000-0000-0000000ee001','00000000-0000-0000-0000-0000000a
 SELECT pg_temp.assert((SELECT count(*)=1 FROM public.shared_work_package_projection
   WHERE id='00000000-0000-0000-0000-0000000ee001'), 'T17 workpackage insert linked parent');
 
--- T26: doppelte fachliche Identity fail-closed
+-- T26a: doppelte fachliche Identity im selben Customer fail-closed
 SELECT pg_temp.assert_denied(
   $$INSERT INTO public.shared_project_projection
       (systemhouse_id, customer_id, source_id, name, status, published_by)
     VALUES ('00000000-0000-0000-0000-0000000aa001','00000000-0000-0000-0000-0000000bb001',
             'P-101','Duplikat','active','00000000-0000-0000-0000-00000000c001')$$,
   'T26a duplicate identity denied');
-SELECT pg_temp.assert_denied(
+
+-- T26b/T19 werden mit einem für C2 autorisierten Writer ausgeführt, damit nicht RLS,
+-- sondern nachweislich die jeweilige strukturelle Constraint-Grenze den Zugriff stoppt.
+SELECT pg_temp.act_reset();
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c006');
+
+SELECT pg_temp.assert_constraint_violation(
   $$INSERT INTO public.shared_project_projection
       (systemhouse_id, customer_id, source_id, name, status, published_by)
     VALUES ('00000000-0000-0000-0000-0000000aa001','00000000-0000-0000-0000-0000000bb002',
-            'P-101','Cross-Customer-Kollision','active','00000000-0000-0000-0000-00000000c001')$$,
-  'T26b cross-customer source collision denied');
+            'P-101','Cross-Customer-Kollision','active','00000000-0000-0000-0000-00000000c006')$$,
+  '23505',
+  'shared_project_projection_source_collision_unique',
+  'T26b cross-customer source collision denied by source collision constraint');
 
--- T19: WorkPackage Parent aus fremdem Customer DENY
-SELECT pg_temp.assert_denied(
+-- T19: WorkPackage Parent aus fremdem Customer muss am Composite-FK scheitern.
+SELECT pg_temp.assert_constraint_violation(
   $$INSERT INTO public.shared_work_package_projection
       (systemhouse_id, customer_id, source_id, project_ref, parent_link_status, title, published_by)
     VALUES ('00000000-0000-0000-0000-0000000aa001','00000000-0000-0000-0000-0000000bb002',
             'WP-9999','00000000-0000-0000-0000-0000000dd001','linked','Fremder Parent',
-            '00000000-0000-0000-0000-00000000c001')$$,
-  'T19 cross-customer parent denied');
+            '00000000-0000-0000-0000-00000000c006')$$,
+  '23503',
+  'shared_work_package_projection_parent_fk',
+  'T19 cross-customer parent denied by workpackage parent FK');
+
+SELECT pg_temp.act_reset();
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c001');
 
 -- T20: Activity own engineer + activity.edit + write access PASS
 INSERT INTO public.shared_activity_projection
@@ -267,16 +310,22 @@ SELECT pg_temp.assert_denied(
             '00000000-0000-0000-0000-00000000c001')$$,
   'T21 foreign engineer_id denied');
 
--- T22: Activity Parent aus fremdem Scope DENY
-SELECT pg_temp.assert_denied(
+-- T22: Activity Parent aus fremdem Customer muss bei gültigem C2-Writer am Composite-FK scheitern.
+SELECT pg_temp.act_reset();
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c006');
+SELECT pg_temp.assert_constraint_violation(
   $$INSERT INTO public.shared_activity_projection
       (systemhouse_id, customer_id, source_id, work_package_ref, parent_link_status,
        engineer_id, title, published_by)
     VALUES ('00000000-0000-0000-0000-0000000aa001','00000000-0000-0000-0000-0000000bb002',
             'A-3003','00000000-0000-0000-0000-0000000ee001','linked',
-            '00000000-0000-0000-0000-00000000c001','Fremder Parent',
-            '00000000-0000-0000-0000-00000000c001')$$,
-  'T22 cross-scope activity parent denied');
+            '00000000-0000-0000-0000-00000000c006','Fremder Parent',
+            '00000000-0000-0000-0000-00000000c006')$$,
+  '23503',
+  'shared_activity_projection_parent_fk',
+  'T22 cross-customer activity parent denied by activity parent FK');
+SELECT pg_temp.act_reset();
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c001');
 
 -- T27: publisher-eigener Soft Withdraw via UPDATE PASS
 UPDATE public.shared_project_projection
@@ -319,7 +368,7 @@ SELECT pg_temp.assert_denied(
   'T13 read access insert denied');
 SELECT pg_temp.act_reset();
 
--- T14/T18: engineer (write access, activity.edit, ohne project.edit)
+-- T14/T18: engineer (write access, workpackage.edit + activity.edit, ohne project.edit)
 SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c005');
 SELECT pg_temp.assert_denied(
   $$INSERT INTO public.shared_project_projection
