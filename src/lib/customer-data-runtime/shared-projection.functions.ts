@@ -144,9 +144,8 @@ export const publishSharedCustomerProjectionFn = createServerFn({ method: "POST"
       await assertPermission(supabase, context.userId, "activity.edit");
     }
 
-    const { createSupabaseSharedProjectionRepository } = await import(
-      "@/integrations/supabase/shared-projection-adapter",
-    );
+    const { createSupabaseSharedProjectionRepository } =
+      await import("@/integrations/supabase/shared-projection-adapter");
     const repository = createSupabaseSharedProjectionRepository(supabase);
 
     return publishSharedCustomerProjection(repository, {
@@ -170,9 +169,8 @@ export const readSharedCustomerProjectionFn = createServerFn({ method: "POST" })
     await assertCommonScope(supabase, context.userId, data.systemhouseId, data.customerId, "read");
     await assertPermission(supabase, context.userId, "dashboard.view");
 
-    const { createSupabaseSharedProjectionRepository } = await import(
-      "@/integrations/supabase/shared-projection-adapter",
-    );
+    const { createSupabaseSharedProjectionRepository } =
+      await import("@/integrations/supabase/shared-projection-adapter");
     const repository = createSupabaseSharedProjectionRepository(supabase);
     return readSharedCustomerProjection(repository, data);
   });
