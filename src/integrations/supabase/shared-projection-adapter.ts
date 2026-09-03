@@ -4,7 +4,7 @@ import type { SharedCustomerPublishBatch } from "@/lib/customer-data/shared-proj
 import type {
   SharedActivityRecord,
   SharedCustomerProjectionSnapshot,
-  SharedProjectionObservedSources,
+  SharedProjectionPublishScope,
   SharedProjectionRepository,
   SharedProjectionWriteCounts,
   SharedProjectRecord,
@@ -134,6 +134,12 @@ async function withdrawActivities(
   return stale.length;
 }
 
+function activeRefs(existing: readonly ExistingRow[]): Map<string, string> {
+  return new Map(
+    existing.filter((row) => row.is_active).map((row) => [row.source_id, row.id] as const),
+  );
+}
+
 function toProject(row: ProjectRow): SharedProjectRecord {
   return {
     projectionId: row.id,
@@ -195,10 +201,7 @@ export function createSupabaseSharedProjectionRepository(
   client: SupabaseClient<Database>,
 ): SharedProjectionRepository {
   return {
-    async publish(
-      batch,
-      observedSources: SharedProjectionObservedSources,
-    ): Promise<SharedProjectionWriteCounts> {
+    async publish(batch, scope: SharedProjectionPublishScope): Promise<SharedProjectionWriteCounts> {
       const now = new Date().toISOString();
       const [projectExistingResult, workPackageExistingResult, activityExistingResult] =
         await Promise.all([
@@ -278,7 +281,7 @@ export function createSupabaseSharedProjectionRepository(
         }),
       );
 
-      let projectRefs = new Map<string, string>();
+      const projectRefs = activeRefs(projectExisting);
       if (projectRows.length > 0) {
         const { data, error } = await client
           .from("shared_project_projection")
@@ -287,7 +290,7 @@ export function createSupabaseSharedProjectionRepository(
         if (error || (data ?? []).length !== projectRows.length) {
           fail("Projects veröffentlichen");
         }
-        projectRefs = new Map((data ?? []).map((row) => [row.source_id, row.id]));
+        for (const row of data ?? []) projectRefs.set(row.source_id, row.id);
       }
 
       const workPackageExistingBySource = new Map(
@@ -337,7 +340,7 @@ export function createSupabaseSharedProjectionRepository(
         }),
       );
 
-      let workPackageRefs = new Map<string, string>();
+      const workPackageRefs = activeRefs(workPackageExisting);
       if (workPackageRows.length > 0) {
         const { data, error } = await client
           .from("shared_work_package_projection")
@@ -346,7 +349,7 @@ export function createSupabaseSharedProjectionRepository(
         if (error || (data ?? []).length !== workPackageRows.length) {
           fail("WorkPackages veröffentlichen");
         }
-        workPackageRefs = new Map((data ?? []).map((row) => [row.source_id, row.id]));
+        for (const row of data ?? []) workPackageRefs.set(row.source_id, row.id);
       }
 
       const activityExistingBySource = new Map(activityExisting.map((row) => [row.source_id, row]));
@@ -410,27 +413,33 @@ export function createSupabaseSharedProjectionRepository(
       // Children zuerst zurückziehen. Dabei zählt die vollständige lokale
       // Source-Menge, nicht nur der publizierbare Batch: skipped/unresolved
       // Sources bleiben aktiv, bis sie im lokalen Snapshot wirklich fehlen.
-      const withdrawnActivities = await withdrawActivities(
-        client,
-        batch,
-        activityExisting,
-        observedSources.activities,
-        now,
-      );
-      const withdrawnWorkPackages = await withdrawWorkPackages(
-        client,
-        batch,
-        workPackageExisting,
-        observedSources.workPackages,
-        now,
-      );
-      const withdrawnProjects = await withdrawProjects(
-        client,
-        batch,
-        projectExisting,
-        observedSources.projects,
-        now,
-      );
+      const withdrawnActivities = scope.reconcileActivities
+        ? await withdrawActivities(
+            client,
+            batch,
+            activityExisting,
+            scope.observedSources.activities,
+            now,
+          )
+        : 0;
+      const withdrawnWorkPackages = scope.reconcileWorkPackages
+        ? await withdrawWorkPackages(
+            client,
+            batch,
+            workPackageExisting,
+            scope.observedSources.workPackages,
+            now,
+          )
+        : 0;
+      const withdrawnProjects = scope.reconcileProjects
+        ? await withdrawProjects(
+            client,
+            batch,
+            projectExisting,
+            scope.observedSources.projects,
+            now,
+          )
+        : 0;
 
       return {
         upsertedProjects: projectRows.length,
