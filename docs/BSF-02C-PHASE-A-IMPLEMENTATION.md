@@ -1,7 +1,7 @@
 # BSF-02C Phase A — Shared-Projection-Implementierung
 
 Status: **IMPLEMENTIERT / VERIFIKATION AUSSTEHEND — NICHT MERGEBEREIT**  
-Stand: 2026-09-02  
+Stand: 2026-09-03  
 Issue: #88  
 ADR: ADR-0032  
 Design: `docs/BSF-02C-DESIGN.md`
@@ -47,7 +47,7 @@ Historische, bereits live angewendete Migration:
 
 `supabase/migrations/20260902031900_6d4075e1-9916-42fd-8076-31420c84c71c.sql`
 
-Diese Datei wird im Repository **bit-identisch zum angewendeten Lovable-Artefakt** übernommen. Historische, bereits angewendete Migrationen werden nicht nachträglich umgeschrieben. Falls die Verifikation morgen eine fachliche Korrektur verlangt, erfolgt sie ausschließlich als neue Folgemigration über einen erneut freigegebenen Lovable-Auftrag.
+Diese Datei wird im Repository **bit-identisch zum angewendeten Lovable-Artefakt** übernommen. Historische, bereits angewendete Migrationen werden nicht nachträglich umgeschrieben. Falls die Verifikation eine fachliche Korrektur verlangt, erfolgt sie ausschließlich als neue Folgemigration über einen erneut freigegebenen Lovable-Auftrag.
 
 Die Migration führt ein:
 
@@ -128,23 +128,34 @@ Datei:
 
 Der erste Lovable-Teillauf erzeugte das Testartefakt, konnte es wegen des Lauf-/Creditlimits aber nicht real ausführen. Beim anschließenden Repository-Review wurde am Dateiende ein syntaktisch ungültiger Marker (`RAISE_ROLLBACK: DO ...`) erkannt.
 
-Die GitHub-Integrationsfassung korrigiert **nur den Test-Runner-Vertrag**:
+Die erste GitHub-Integrationskorrektur stellte den Runner-Vertrag her:
 
 - `\set ON_ERROR_STOP on` analog zum bewährten BSF-02B-Testmuster,
 - Assertions bleiben fail-fast,
 - der ungültige Marker wurde entfernt,
-- ein erfolgreicher Lauf endet regulär mit `ROLLBACK;`,
-- die fachliche T01–T30-Testlogik wurde nicht verändert.
+- ein erfolgreicher Lauf endet regulär mit `ROLLBACK;`.
 
-**Wichtig:** Die korrigierte Testfassung ist am 2026-09-02 noch nicht gegen die Live-Datenbank ausgeführt. `T01–T30 = PASS` darf bis zum realen Lauf nicht behauptet werden.
+Vor der realen DB-Abnahme am 2026-09-03 wurde die Testmatrix zusätzlich fachlich gegen den aktuellen RBAC- und Scope-Vertrag geprüft. Dabei wurde erkannt, dass T19, T22 und T26b in der ursprünglichen Fassung bereits an fehlendem C2-Customer-Access scheitern konnten. Damit wäre ein scheinbares PASS möglich gewesen, ohne die jeweils beabsichtigte strukturelle Constraint-Grenze tatsächlich zu erreichen.
+
+Die Testfassung wurde deshalb **nur als Testhärtung, ohne DB-/Produktänderung** präzisiert:
+
+- der synthetische Benutzer `U_OTHER` besitzt zusätzlich `write`-Access auf C2,
+- T26b prüft bei einem fachlich autorisierten C2-Writer explizit SQLSTATE `23505` und Constraint `shared_project_projection_source_collision_unique`,
+- T19 prüft explizit SQLSTATE `23503` und Constraint `shared_work_package_projection_parent_fk`,
+- T22 prüft explizit SQLSTATE `23503` und Constraint `shared_activity_projection_parent_fk`,
+- eine temporäre Assertion prüft SQLSTATE und Constraint-Namen fail-fast,
+- T18 bleibt fachlich unverändert; der aktuelle RBAC-Vertrag bestätigt für `engineer` `workpackage.edit` und `activity.edit`, aber kein `project.edit`.
+
+Damit können RLS-DENY und strukturelle Constraint-DENY nicht mehr versehentlich miteinander verwechselt werden.
+
+**Wichtig:** Die gehärtete Testfassung ist am 2026-09-03 noch nicht gegen die Live-Datenbank ausgeführt. `T01–T30 = PASS` darf bis zum realen Lauf nicht behauptet werden.
 
 ## 8. Verbindlicher nächster DB-Schritt
 
-Sobald wieder Lovable-Credits verfügbar sind:
+Sobald der Lovable-Verifikationslauf ausgeführt wird:
 
 1. aktuellen GitHub- und DB-Stand read-only verifizieren,
-2. Migration **nicht erneut anwenden**,
-3. das committed Testartefakt exakt gegen den verbundenen Supabase-Kontext ausführen,
+2. Migration **nicht erneut anwenden**,n3. das committed und gehärtete Testartefakt exakt gegen den verbundenen Supabase-Kontext ausführen,
 4. T01–T30 vollständig dokumentieren,
 5. synthetische Testdaten durch `ROLLBACK` vollständig verwerfen,
 6. Security Advisor / Grants / RLS read-only erneut prüfen,
@@ -183,12 +194,13 @@ Dieser Integrationsstand bleibt **DRAFT / NOT MERGEABLE**, bis mindestens vorlie
 - Netto-Diff ohne Lovable Preview/Auth-Overlay,
 - Merge ausschließlich mit Expected-Head-SHA.
 
-## 11. Abschlussstatus 2026-09-02
+## 11. Abschlussstatus 2026-09-03 vor DB-Abnahme
 
 - DB-Migration durch Lovable angewendet: **JA**
 - Migration im Integrationsbranch historisch unverändert gesichert: **JA**
 - generierte Projection-Typen gesichert: **JA**
-- T01–T30-Testartefakt syntaktisch für den nächsten Lauf korrigiert: **JA**
+- T01–T30-Testartefakt syntaktisch und semantisch für den nächsten Lauf gehärtet: **JA**
+- T19/T22/T26b gegen RLS-False-Positive abgesichert: **JA**
 - T01–T30 real ausgeführt: **NEIN**
 - weitere DB-Änderung nach Lovable-Teillauf: **NEIN**
 - Preview/Auth-Overlay übernommen: **NEIN**
