@@ -1,8 +1,8 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-08-25  
+Stand: 2026-09-03  
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
-Strategische Grundlage: `docs/ROADMAP-MVP-BSF.md`  
+Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Operative Detailplanung: `docs/SPRINT-PLAN-MVP-BSF.md`
 
 ## Zweck
@@ -12,65 +12,159 @@ Diese Datei beantwortet für jede Arbeitssitzung vier Fragen:
 1. Was ist bereits abgeschlossen?
 2. Woran arbeiten wir gerade?
 3. Was ist der nächste fachliche Schritt?
-4. Wo bringt Lovable mit den täglich verfügbaren 5 Credits den größten Nutzen?
+4. Wo ist Lovable tatsächlich notwendig?
 
-Sie ist die kompakte operative Source of Truth für die aktuelle Reihenfolge. Die strategische Roadmap bleibt erhalten; bereits verwendete Sprintnummern werden nicht rückwirkend umnummeriert. Priorisierte Zwischenschritte erhalten Suffixe wie `BSF-03A` und `BSF-03B`.
+Sie ist die kompakte operative Source of Truth für den täglichen Wiederanlauf. Der strategische Gesamtplan bleibt für die fachliche Reihenfolge maßgeblich; Wochen- und Tagesplanung dürfen diese Reihenfolge konkretisieren, aber nicht stillschweigend verändern.
 
 ## Statuslegende
 
 - `DONE` — vollständig abgeschlossen und dokumentiert
 - `IN ARBEIT` — aktuell laufender Punkt
+- `BLOCKED` — fachlich aktiv, aber mit klar benanntem Gate/Blocker
 - `NÄCHSTER PUNKT` — unmittelbar nach Abschluss des laufenden Punkts
 - `GEPLANT` — verbindlich vorgesehen, aber noch nicht begonnen
 
+## Wochenfokus 31.08.–06.09.2026
+
+Der Wochenplan ist bewusst seriell. Es wird kein paralleler neuer Fachsprint eröffnet, solange BSF-02C nicht vollständig abgeschlossen ist.
+
+1. **BSF-02C Phase A — DONE**
+   - Shared-Projection-DDL, Grants, RLS und T01–T30 sind abgenommen.
+   - PR #110 ist auf `main` gemergt.
+   - `main` nach Phase A: `18d4f460955831ce35fa8186a11578bbbe5dee18`.
+
+2. **BSF-02C Phase B Runtime — IN ARBEIT / PR #111 DRAFT**
+   - providerneutraler Repository-/Service-Vertrag,
+   - Supabase-Adapter,
+   - User-JWT-Publish-/Read-Pfad,
+   - `snapshotComplete: true` als Reconciliation-Grenze,
+   - skipped/unresolved wird nicht mit gelöscht gleichgesetzt,
+   - Engineer-Activity-Publish bleibt von Project-Strukturrechten getrennt.
+
+3. **BSF-02C Phase B2 transaktionale Publish-RPC — BLOCKED BIS LOVABLE-LAUF**
+   - Nachgewiesene Lücke: mehrere einzelne Data-API-Writes bilden keinen atomaren Snapshot.
+   - Erforderlich ist eine transaktionale `SECURITY INVOKER`-RPC im selben User-JWT.
+   - DB-/Function-/Grant-Änderung ausschließlich über ausdrücklich freigegebenen Lovable-Prompt gemäß `docs/DATABASE-CHANGE-GOVERNANCE.md`.
+   - Kritisches Gate: vollständiger Atomic-Rollback-Test eines absichtlich spät fehlschlagenden Snapshot-Publish.
+
+4. **BSF-02C finalisieren — nach B2**
+   - DB-B2 separat abnehmen und integrieren,
+   - PR #111 auf die abgenommene RPC umstellen,
+   - Runtime-/Security-/Import-Export-/Backup-Restore-/AVKK-Regression,
+   - Exact-Head Security + vollständige CI,
+   - erst danach #88 und Parent #76 schließen.
+
+5. **BSF-03 beginnen — nur falls BSF-02C vollständig DONE**
+   - `Meine Kunden`, Kundenverantwortung, Sichtscope, getrennte Sicht-/Schreibrechte.
+
 ## Aktuelle Prioritätenliste
 
-1. **Governance-Nachlauf #69 / PR #70 — DONE**
-   - Kernergebnis: Aktiver GitHub-`main`-Schutz ist in der laufenden Governance-Dokumentation festgeschrieben; Security #413 und CI #422 PASS.
+1. **Governance / MVP / BSF-01 — DONE**
+   - geschützter `main`-Pfad,
+   - MVP-Baseline,
+   - providerneutraler Systemhouse-/Customer-Scope,
+   - Kundenverantwortung als Beziehung/Scope statt globale Rolle,
+   - Projektmanager-Leistungssicht read-only abgegrenzt,
+   - Teamlead-Leistungsnachweis als eigener Write-/Finalisierungs-/Audit-Scope.
    - Lovable-Einsatz: **0 Credits**.
 
-2. **BSF-01 — Planungs-/Architekturbaseline (#73) — DONE**
-   - Kernergebnis: Providerneutraler Systemhaus-/Customer-Scope über ADR-0029; gemeinsame Daten-/Read-Basis als notwendige Abhängigkeit für Kunden- und Leistungssichten; Kundenverantwortung, PM-Controlling und Teamlead-Leistungsnachweis als getrennte Scopes.
-   - Design-/Abnahme: PR #75 gemergt; Security #419 und CI #428 PASS.
-   - Lovable-Einsatz: **0 Credits**.
+2. **BSF-02 — Customer-Entität + minimale gemeinsame Mehrbenutzer-Datenbasis (#76) — IN ARBEIT**
+   - BSF-02A/B-Grundlage ist vorhanden.
+   - BSF-02C ist der letzte offene Teil.
+   - fachliche Identität bleibt `(systemhouseId, customerId)`.
+   - vollständige Local-First-Ablösung bleibt ausdrücklich BSF-04.
 
-3. **BSF-02 — Kundenmodell + minimale gemeinsame Daten-/Read-Basis (#76) — IN ARBEIT**
-   - Design-Baseline: ADR-0030 und `docs/BSF-02-DESIGN.md` über PR #77 abgenommen; Security #428 und CI #437 einschließlich E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate PASS.
-   - Aktiver Implementierungsschritt: providerneutrale Customer-/Shared-Data-Domänentypen, verlustfreie Migrationsplanung, kanonischer `systemhouse:`-Scope bei Erhalt historischer `tenant:`-Scopes und Architektur-Scanner — bewusst noch ohne Supabase-DDL.
-   - Kernergebnis des Gesamtsprints: Kunde als stabile Fachentität; belastbare, auch bei zulässigen parentlosen Bestandsobjekten verlustfreie Kette Kunde → Projekt → Arbeitspaket → Tätigkeit; minimaler gemeinsamer Mehrbenutzer-Read-/Datenpfad für BSF-03/03A.
-   - Lovable-Einsatz aktuell: **0 Credits**; optional später höchstens 1 Credit für isolierte Customer-UI-Preview.
+3. **BSF-02C — gemeinsamer Customer-Read-/Projection-Pfad (#88) — IN ARBEIT / B2 BLOCKED**
+   - Phase A: DONE via PR #110.
+   - Phase B: Runtime-Code in Draft-PR #111 vorbereitet.
+   - aktueller Blocker: transaktionale Snapshot-RPC als additive DB-Ergänzung über Lovable.
+   - kein Merge von #111 vor atomarer DB-Abnahme.
+   - Gate: real nutzbarer, fail-closed Customer-Pfad `Customer → Project → WorkPackage → Activity` mit vollständiger Security-/CI-Abnahme.
 
-4. **BSF-03 — Kundenverantwortung / Kundensicht — NÄCHSTER PUNKT**
-   - Kernergebnis: `Meine Kunden`, Sichtscope, RBAC/RLS sowie getrennte Sicht- und Schreibrechte.
-   - Lovable-Einsatz: **1–2 Credits**.
+4. **BSF-03 — Kundenverantwortung / Kundensicht (#105) — NÄCHSTER PUNKT**
+   - `Meine Kunden`,
+   - mehrere Kunden je verantwortlichem Systemingenieur,
+   - Customer Responsibility als Scope/Beziehung, keine neue globale Rolle,
+   - Customer-Sicht und Schreibrechte getrennt,
+   - serverseitige Customer-Grenze; Cross-Customer bleibt DENY.
+   - Lovable-Einsatz: **1–2 Credits**, vor allem für UI/Preview nach festem Sicherheitsvertrag.
 
-5. **BSF-03A — Projektmanager-Leistungssicht / Controlling — GEPLANT**
-   - Kernergebnis: Read-only-Auswertung nach Zeitraum, Kunde, Projekt, Tätigkeiten, abrechenbar/nicht abrechenbar, Summen und Drill-down.
-   - Lovable-Einsatz: **2–4 Credits**.
+5. **BSF-03D — Arbeitspaket-Kategorien (#103) — GEPLANT**
+   - bewusst **nach BSF-03 und vor BSF-03A**,
+   - systemhausweite editierbare Stammdaten,
+   - optional genau eine Hauptkategorie je Arbeitspaket,
+   - Standard: keine Kategorie,
+   - freie Tags bleiben unabhängig,
+   - Kategorie erzwingt weder Billable noch Priorität noch Status.
+   - bevorzugt Reference Data `workpackage.category`, sofern Systemhouse-Scope sauber bestätigt ist.
 
-6. **BSF-03B — Leistungsnachweis Teamlead V1 — GEPLANT**
-   - Kernergebnis: Vorbereitung, Abrechenbarkeit, Finalisierung, unveränderbarer Snapshot, Doppelabrechnungsschutz und Audit; keine Rechnung.
-   - Lovable-Einsatz: **2–4 Credits**.
+6. **BSF-03A — Projektmanager-Leistungssicht / Controlling (#106) — GEPLANT**
+   - reine Read-only-Auswertung,
+   - Filter nach Zeitraum, Kunde, Projekt, Arbeitspaket, AP-Kategorie und Billable,
+   - Summen und Drill-down,
+   - keine Teamlead-Finalisierung oder Abrechnungsfreigabe.
+   - Lovable-Einsatz: **2–4 Credits** für UI/Preview nach festem Read-Vertrag.
 
-7. **BSF-DOC-01 — Dokumentationskonsolidierung — GEPLANT**
-   - Kernergebnis: Kontextsensitive Hilfe, Benutzerhandbuch, technische Doku und Entwicklungstagebuch vollständig synchron.
-   - Lovable-Einsatz: **0–1 Credit**.
+7. **BSF-03B — Leistungsnachweis Teamlead V1 (#107) — GEPLANT**
+   - Leistungsnachweis, keine Rechnung,
+   - Kunde + fester Zeitraum,
+   - billable und non-billable in Prüfsicht,
+   - Teamlead darf Billable vor Finalisierung ändern,
+   - unveränderbarer finaler Snapshot,
+   - Doppelverwendung verhindern,
+   - Audit,
+   - Kundenausgabe ohne automatische Nennung des Leistungserbringers.
+   - Lovable-Einsatz: **2–4 Credits** für Prüfsicht, Finalisierungsdialog und Export-Preview.
 
-8. **BSF-DOC-02 — SYSING-001 im TDF-Format fortschreiben — GEPLANT**
-   - Kernergebnis: Bestehendes Living Document `SYSING-001` kontrolliert auf aktuellen Produkt-/BSF-Stand aktualisieren und TDF-konform abnehmen.
-   - Lovable-Einsatz: **0 Credits**.
+8. **BSF-03E — Vertretungs- und Personensicht (#63) — GEPLANT**
+   - nach den Kernfunktionen #105, #103, #106 und #107,
+   - Personensicht für Management,
+   - Verantwortung und Vertretung als getrennte Beziehungen,
+   - keine Gesundheits-/Krankheitsdaten,
+   - bestehende Responsibility-Logik wiederverwenden, nicht duplizieren.
 
-9. **BSF-DOC-03 — SYSING-001 aus dem Board erreichbar — GEPLANT**
-   - Kernergebnis: Read-only-Zugriff über Hilfe/Dokumentation im Dashboard; keine zweite Dokumentquelle.
-   - Lovable-Einsatz: **1–2 Credits**.
+9. **BSF-03C — Kunden-PDF / Kundenpaket (#98) — GEPLANT**
+   - nach belastbarer Kunden-/Leistungsbasis,
+   - operative Kundensicht als PDF,
+   - keine Duplizierung der Reportfamilie-Fachlogik,
+   - Datenminimierung und reproduzierbarer Snapshot,
+   - finaler Leistungsnachweis ohne automatische Nennung des Leistungserbringers.
 
-10. **Fortsetzung strategische BSF-Roadmap ab BSF-04 — GEPLANT**
-    - Kernergebnis: vollständige zentrale/synchronisierte Datenstrategie, Import/SharePoint, Betreiberhoheit/Docker, Managementcockpit 2, Reporting 2, KI-Labor, BSF-FINAL und Integration Readiness.
-    - Lovable-Einsatz: **je Sprint neu festlegen**.
+10. **BSF-DOC-01 bis BSF-DOC-03 — GEPLANT**
+    - Dokumentationskonsolidierung,
+    - SYSING-001 im TDF-Format auf realen Stand fortschreiben,
+    - freigegebenes SYSING-001 read-only aus dem Board erreichbar machen,
+    - keine zweite divergierende Dokumentquelle.
+
+11. **BSF-04 — zentrale/synchronisierte Datenstrategie (#108) — GEPLANT**
+    - vollständige Local-First-Grenze,
+    - Source of Truth,
+    - Sync-/Konfliktregeln,
+    - Migration,
+    - Provideradapter,
+    - Backup/Restore,
+    - Docker-/On-Premises- und spätere Azure-/Entra-Fähigkeit.
+
+12. **BSF-04A — Vorlagen und wiederkehrende AP/Tätigkeiten (#102) — GEPLANT NACH BSF-04**
+    - zuerst Template Library / manuelle Instanziierung,
+    - danach wiederkehrende Serien,
+    - Vorlage bleibt editierbarer Vorschlag,
+    - keine automatische Ist-Leistung, Finalisierung oder Abrechnung,
+    - Serien idempotent und Docker-/On-Premises-fähig.
+
+13. **BSF-05 ff. — GEPLANT**
+    - Canonical Import Model / SharePoint,
+    - Betreiberhoheit / Docker,
+    - Managementcockpit 2,
+    - Reporting 2,
+    - kontrolliertes NAVIS-/KI-Labor,
+    - BSF-FINAL,
+    - Integration Readiness,
+    - erst danach produktive Microsoft-Integrationen.
 
 ## Architekturhinweis zur Priorisierung
 
-BSF-02 übernimmt nur die **minimal erforderliche gemeinsame Daten-/Read-Basis**, die Kundenverantwortung und eine rollenübergreifende Projektmanager-Leistungssicht überhaupt belastbar macht. Der spätere BSF-04-Sprint bleibt bestehen und behandelt die vollständige zentrale/synchronisierte Datenhaltungsstrategie, Local-First-Grenzen, Migration und Providertrennung. Dadurch wird kein Big-Bang-Umbau vorgezogen.
+BSF-02/02C übernimmt nur die **minimal erforderliche gemeinsame Daten-/Read-Basis**, damit Kundenverantwortung und spätere Leistungssichten belastbar werden. Der vollständige Architekturentscheid über zentrale bzw. synchronisierte operative Daten bleibt BSF-04.
 
 Die fachliche Kundenidentität bleibt systemhausgebunden und providerneutral:
 
@@ -96,19 +190,19 @@ Je nach Scope gehören dazu:
 
 Historische, datierte Abschlussdokumente werden nicht rückwirkend umgeschrieben.
 
-## Lovable-Tagesbudget
+## Lovable-Einsatz
 
-Operative Planungsgröße: **5 neue Lovable-Credits pro Tag**.
+Lovable wird nicht nach Credit-Verbrauch, sondern nach notwendigem Nutzen eingesetzt.
 
 Grundsätze:
 
-- Credits gezielt dort einsetzen, wo UI-, Preview- oder Runtime-Nutzen besteht.
+- DB-/RLS-/Grant-/Function-Änderungen ausschließlich nach ausdrücklich freigegebenem Lovable-Prompt gemäß DB-Governance.
+- UI-/Preview-/Layout-Aufgaben bevorzugt mit Lovable, wenn dies gegenüber Code-only sinnvoll ist.
 - Keine künstliche Credit-Auslastung und keine unnötigen Build-/Fix-Schleifen.
-- Bei Lovable-relevanten Arbeitstagen bevorzugt 3–4 Credits für einen eng definierten Umsetzungs-/Preview-Auftrag und 1–2 Credits als echte Korrektur-/Abnahmereserve einplanen.
-- BSF-01 verwendet 0 Credits: Architektur- und Scope-Entscheidungen werden in GitHub/ChatGPT getroffen.
-- BSF-02 verwendet höchstens 0–1 Credit für Kundenkontext-/UI-Visualisierung; Datenmodell, Auth, RLS und Providergrenzen werden nicht an Lovable delegiert.
-- Bevorzugte nächste Lovable-Einsatzfelder sind anschließend `Meine Kunden`, Projektmanager-Leistungssicht, Leistungsnachweis-UI sowie später kontextsensitive Hilfe und Dokumentationszugriff.
-- Lovable bleibt Implementierungs-/Preview-Werkzeug; Integration erfolgt über isolierte Variant/Nicht-main-Arbeitsfläche → GitHub-Branch → PR → Required Checks.
+- Bei Lovable-relevanten Tagen möglichst echte Korrektur-/Abnahmereserve lassen.
+- Lovable arbeitet auf isolierter Nicht-`main`-Variant.
+- Lovable entscheidet nicht über Merge oder Release.
+- Integration erfolgt über GitHub-Branch → PR → Required Checks → dokumentierte Abnahme.
 
 ## Regel zur Übersicht im Chat
 
@@ -117,10 +211,10 @@ Nach jedem vollständig abgeschlossenen Punkt dieser Liste wird:
 1. diese Datei aktualisiert,
 2. der abgeschlossene Punkt auf `DONE` gesetzt,
 3. der nächste aktive Punkt eindeutig als `IN ARBEIT` bzw. `NÄCHSTER PUNKT` markiert,
-4. dem Nutzer im Abschlussbericht die **vollständige aktuelle Liste** erneut gezeigt — einschließlich geplantem Lovable-Einsatz.
+4. dem Nutzer im Abschlussbericht die vollständige aktuelle Reihenfolge erneut gezeigt.
 
 ## Fachlicher roter Faden
 
-`Kunde → Kundenverantwortung → Projektmanager-Leistungssicht → Teamlead-Leistungsnachweis → Dokumentationskonsolidierung → SYSING-001/TDF → Board-Zugriff auf Dokumentation`
+`BSF-02C → BSF-03 → BSF-03D → BSF-03A → BSF-03B → BSF-03E/03C → Dokumentationsblock → BSF-04 → BSF-04A → BSF-05 ff.`
 
-Erst danach wird die bestehende technische BSF-Roadmap ab BSF-04 fortgesetzt, sofern kein neuer priorisierter Befund eine bewusste Planänderung erfordert.
+Die genaue Einordnung von BSF-03E gegenüber BSF-03C wird vor dem PDF-Sprint fachlich feinjustiert; sie erzeugt keinen parallelen zweiten Responsibility-Scope.
