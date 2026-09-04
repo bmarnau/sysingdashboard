@@ -1034,6 +1034,21 @@ export type Database = {
           status: Database["public"]["Enums"]["user_status"]
         }[]
       }
+      bsf02c_publish_shared_projection_snapshot: {
+        Args: {
+          p_activities?: Json
+          p_customer_id: string
+          p_mode: string
+          p_observed_activity_source_ids?: string[]
+          p_observed_project_source_ids?: string[]
+          p_observed_work_package_source_ids?: string[]
+          p_projects?: Json
+          p_snapshot_complete: boolean
+          p_systemhouse_id: string
+          p_work_packages?: Json
+        }
+        Returns: Json
+      }
       has_active_systemhouse_membership: {
         Args: { _systemhouse_id: string; _user_id: string }
         Returns: boolean
