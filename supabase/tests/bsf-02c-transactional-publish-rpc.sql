@@ -60,14 +60,14 @@ END; $$;
 -- ---------------------------------------------------------------------------
 
 -- T31: Funktion existiert mit exakter Signatur.
-SELECT pg_temp.assert((
-  SELECT count(*) = 1
-  FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-  WHERE n.nspname = 'public'
-    AND p.proname = 'bsf02c_publish_shared_projection_snapshot'
-    AND pg_get_function_identity_arguments(p.oid)
-        = 'uuid, uuid, text, boolean, jsonb, jsonb, jsonb, text[], text[], text[]'
-), 'T31 function exists with exact signature');
+-- Robust ueber to_regprocedure(), da pg_get_function_identity_arguments()
+-- in diesem Projekt die Parameternamen zusammen mit den Typen rendert.
+SELECT pg_temp.assert(
+  to_regprocedure(
+    'public.bsf02c_publish_shared_projection_snapshot(uuid,uuid,text,boolean,jsonb,jsonb,jsonb,text[],text[],text[])'
+  ) IS NOT NULL,
+  'T31 function exists with exact signature'
+);
 
 -- T32: SECURITY INVOKER (prosecdef = false) und fixierter search_path.
 SELECT pg_temp.assert((
