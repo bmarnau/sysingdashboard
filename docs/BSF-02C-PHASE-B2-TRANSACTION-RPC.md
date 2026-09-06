@@ -6,19 +6,17 @@ ADR: `docs/ADR/0032-bsf-02c-shared-projection.md`
 
 ## 1. Ausgangsproblem
 
-Der in BSF-02C Phase B vorbereitete Runtime-Adapter publiziert einen vollständigen Shared-Projection-Snapshot über mehrere getrennte Data-API-Aufrufe: Project-Upsert, WorkPackage-Upsert, Activity-Upsert sowie die jeweiligen Soft-Withdraw-Schritte. Grants und RLS sichern jeden Einzelaufruf ab, bilden diese Aufrufe aber nicht zu einer gemeinsamen Datenbanktransaktion zusammen.
+Der vorbereitete BSF-02C-Runtime-Adapter publizierte einen vollständigen Shared-Projection-Snapshot über mehrere getrennte Data-API-Aufrufe. Grants und RLS sicherten jeden Einzelaufruf ab, bildeten Project-/WorkPackage-/Activity-Upserts und Soft-Withdraws aber nicht zu einer gemeinsamen Datenbanktransaktion zusammen.
 
-Damit bestand eine Atomicity Gap: Ein früher erfolgreicher Project-Write hätte bestehen bleiben können, obwohl ein späterer WorkPackage- oder Activity-Schritt desselben fachlichen Publish-Vorgangs fehlschlägt.
-
-Phase B2 schließt ausschließlich diese Lücke.
+Damit bestand eine Atomicity Gap: Ein früher erfolgreicher Project-Write hätte bestehen bleiben können, obwohl ein späterer WorkPackage- oder Activity-Schritt desselben fachlichen Publish-Vorgangs fehlschlägt. Phase B2 schließt ausschließlich diese Lücke.
 
 ## 2. Additive Migration
 
-Die Implementierung erfolgt über die additive Migration:
+Migration:
 
 `supabase/migrations/20260904041745_5bfaeb5b-147b-4f8d-a6e3-4705c6233a15.sql`
 
-Die bereits angewendete Phase-A-Migration wurde nicht verändert. Bestehende Tabellen, Table-Grants, RLS-Policies und Identity-/FK-Constraints wurden nicht gelockert.
+Die bereits angewendete Phase-A-Migration wurde nicht verändert. Bestehende Tabellen, Table-Grants, RLS-Policies, Identity-Guards und FK-/Unique-Constraints wurden nicht gelockert.
 
 ## 3. Function Contract
 
@@ -26,11 +24,11 @@ Funktion:
 
 `public.bsf02c_publish_shared_projection_snapshot(uuid, uuid, text, boolean, jsonb, jsonb, jsonb, text[], text[], text[])`
 
-Fachliche Parameter:
+Parameter:
 
 - `p_systemhouse_id uuid`
 - `p_customer_id uuid`
-- `p_mode text` mit `structure` oder `activities`
+- `p_mode text` (`structure` oder `activities`)
 - `p_snapshot_complete boolean`
 - `p_projects jsonb`
 - `p_work_packages jsonb`
@@ -39,11 +37,11 @@ Fachliche Parameter:
 - `p_observed_work_package_source_ids text[]`
 - `p_observed_activity_source_ids text[]`
 
-`snapshot_complete` muss `true` sein. Der Actor und `published_by` werden nicht als vertrauenswürdige Clientparameter akzeptiert, sondern aus `auth.uid()` abgeleitet. Interne Parent-Projection-UUIDs werden ebenfalls nicht vom Client übernommen.
+`snapshot_complete` muss `true` sein. Actor und `published_by` werden ausschließlich aus `auth.uid()` abgeleitet. Interne Parent-Projection-UUIDs werden nicht als vertrauenswürdige Client-Eingaben akzeptiert.
 
 ## 4. Security Boundary
 
-Die Funktion ist `SECURITY INVOKER` und läuft damit mit den Rechten des aufrufenden Benutzers. `search_path` ist auf `public` fixiert.
+Die Funktion ist `SECURITY INVOKER`; `search_path` ist auf `public` fixiert.
 
 Function-EXECUTE:
 
@@ -55,15 +53,15 @@ Der normale Runtime-Pfad bleibt:
 
 Browser → authentifizierte Server Function → derselbe User-JWT → Supabase RPC → bestehende Table-Grants + RLS.
 
-Es wird keine Service Role im normalen Publish-Pfad verwendet. Die vorhandene RLS bleibt eine aktive Security Boundary.
+Es wird keine Service Role im normalen Publish-Pfad verwendet. RLS bleibt eine aktive Security Boundary.
 
 ## 5. Betriebsarten
 
 ### `structure`
 
-Erforderlich sind:
+Erforderlich:
 
-- authentifizierter Actor (`auth.uid()`)
+- `auth.uid()` vorhanden
 - aktives Konto
 - aktive Systemhouse-Membership
 - Customer Access `write` im exakt adressierten `(systemhouse_id, customer_id)`-Scope
@@ -75,7 +73,7 @@ Erlaubt sind Project-/WorkPackage-Upserts, eigene Activity-Upserts und publisher
 
 ### `activities`
 
-Erforderlich sind:
+Erforderlich:
 
 - authentifizierter Actor
 - aktives Konto
@@ -84,16 +82,16 @@ Erforderlich sind:
 - `dashboard.view`
 - `activity.edit`
 
-Project-/WorkPackage-Payload und Project-/WorkPackage-Reconciliation werden fail-closed abgewiesen. Dieser Modus erlaubt ausschließlich eigene Activities.
+Project-/WorkPackage-Payload sowie Project-/WorkPackage-Reconciliation werden fail-closed abgewiesen. Der Modus erlaubt ausschließlich eigene Activities.
 
 ## 6. Parent-Auflösung
 
-Parent-Referenzen werden serverseitig anhand der fachlichen `source_id` aufgelöst.
+Parent-Referenzen werden serverseitig über `source_id` aufgelöst:
 
 - WorkPackage → Project
 - Activity → WorkPackage
 
-Die Auflösung ist auf exakt denselben `(systemhouse_id, customer_id)`-Scope begrenzt und berücksichtigt nur aktive Parent-Projections. Ein fehlender, fremder oder nicht sichtbarer Parent führt zu einem Fehler; es wird keine Parent-ID geraten oder aus einem fremden Scope übernommen.
+Die Auflösung ist auf exakt denselben `(systemhouse_id, customer_id)`-Scope begrenzt und berücksichtigt nur aktive Parent-Projections. Fehlende, fremde oder nicht sichtbare Parents führen zu einem Fehler.
 
 ## 7. Publisher- und Engineer-Bindung
 
@@ -102,36 +100,35 @@ Die Auflösung ist auf exakt denselben `(systemhouse_id, customer_id)`-Scope beg
 Für Activities gilt zusätzlich:
 
 - persistierter `engineer_id = auth.uid()`
-- ein im JSON angegebener abweichender `engineer_id` wird abgewiesen
+- abweichende `engineer_id` im JSON → DENY
 - fremde Publisher-Projections dürfen weder überschrieben noch withdrawn werden
 
-Die bestehenden Identity-Guards der Phase-A-Tabellen bleiben wirksam.
+Die bestehenden Identity-Guards aus Phase A bleiben wirksam.
 
 ## 8. Reconciliation und Soft Withdraw
 
-Reconciliation löscht keine Zeilen hart.
+Reconciliation verwendet keine Hard Deletes.
 
-Soft Withdraw erfolgt nur für Zeilen, die:
+Soft Withdraw erfolgt nur für aktive Zeilen, die:
 
-- zum gleichen Systemhouse und Customer gehören,
+- zum gleichen Systemhouse/Customer gehören,
 - `published_by = auth.uid()` besitzen,
-- aktuell aktiv sind,
-- in der vollständigen jeweiligen `observed_*_source_ids`-Menge nicht mehr enthalten sind.
+- in der vollständigen jeweiligen `observed_*_source_ids`-Menge nicht mehr vorkommen.
 
-Dabei werden `is_active=false` und `withdrawn_at` gesetzt. Fremde Publisher bleiben unberührt. Skipped/unresolved Sources müssen weiterhin in den observed-Mengen geführt werden und werden deshalb nicht allein wegen fehlender Publizierbarkeit zurückgezogen.
+Dabei werden `is_active=false` und `withdrawn_at` gesetzt. Fremde Publisher bleiben unberührt. Skipped/unresolved Sources müssen weiterhin in den observed-Mengen geführt werden.
 
 ## 9. Source Revision und Hash
 
-Der bestehende Vertrag bleibt erhalten:
+Vertrag:
 
 - neue Source → `source_revision = 1`
 - gleicher `source_hash` → Revision unverändert
 - geänderter `source_hash` → Revision exakt `+1`
-- Reaktivierung setzt `is_active=true` und `withdrawn_at=NULL`
+- Reaktivierung → `is_active=true`, `withdrawn_at=NULL`
 
 ## 10. Reproduzierbares Testartefakt T31–T51
 
-Persistentes Testartefakt:
+Persistentes Artefakt:
 
 `supabase/tests/bsf-02c-transactional-publish-rpc.sql`
 
@@ -140,22 +137,22 @@ Eigenschaften:
 - äußerer `BEGIN` / `ROLLBACK`
 - fail-fast Assertions
 - ausschließlich synthetische `bsf02c-b2-*@example.invalid`-Identitäten
-- feste B2-spezifische Test-UUIDs und Source-IDs
-- JWT-/Rollen-Simulation mit `SET LOCAL ROLE authenticated` und `request.jwt.claims`
+- B2-spezifische Test-UUIDs und Source-IDs
+- JWT-/Rollen-Simulation über `SET LOCAL ROLE authenticated` und `request.jwt.claims`
 - keine dauerhaften Testdaten
 
-Die Matrix deckt T31–T51 ab:
+Matrix:
 
 - T31 exakte Function-Signatur
-- T32 `SECURITY INVOKER` und fixierter `search_path`
+- T32 `SECURITY INVOKER` + fixierter `search_path`
 - T33 PUBLIC EXECUTE DENY
 - T34 anon EXECUTE DENY
-- T35 authenticated EXECUTE ALLOW sowie RLS-/Grant-Regression-Guards
+- T35 authenticated EXECUTE ALLOW + RLS-/Grant-Regression-Guards
 - T36 `auth.uid() IS NULL` DENY
 - T37 fehlende Membership DENY
 - T38 fehlender Customer-Write-Zugriff DENY
 - T39 `structure` ohne `project.edit` DENY
-- T40 `activities` mit Struktur-Payload/-Reconciliation DENY
+- T40 `activities` mit Struktur-Payload/-Reconciliation DENY; unvollständiger Snapshot DENY
 - T41 eigener Engineer-Activity-Publish gegen zulässigen Parent PASS
 - T42 fremde `engineer_id` DENY
 - T43 fehlender/unzulässiger Parent DENY
@@ -170,19 +167,25 @@ Die Matrix deckt T31–T51 ab:
 
 ### T51 – Atomizitätsnachweis
 
-T51 ruft die RPC genau einmal mit einem Payload auf, der zuerst einen gültigen neuen Project-Write enthält und danach einen absichtlich ungültigen WorkPackage-Schritt mit nicht auflösbarem Parent ausführt.
+T51 ruft die RPC einmal mit einem Payload auf, der zuerst einen gültigen neuen Project-Write enthält und danach einen absichtlich ungültigen WorkPackage-Schritt mit nicht auflösbarem Parent ausführt.
 
-Der erwartete RPC-Fehler wird in einem PL/pgSQL-Exception-Subblock abgefangen. Direkt danach, noch vor dem äußeren Test-`ROLLBACK`, wird geprüft, dass weder der frühe Project-Write noch ein WorkPackage-Teilwrite existiert.
+Der erwartete Fehler wird in einem PL/pgSQL-Exception-Subblock abgefangen. Direkt danach, noch vor dem äußeren Test-`ROLLBACK`, wird geprüft, dass weder der frühe Project-Write noch ein WorkPackage-Teilwrite existiert.
 
-Am 2026-09-06 wurde diese Matrix real gegen den verbundenen Supabase-Kontext ausgeführt. Der fail-fast Batch erreichte den regulären äußeren `ROLLBACK`; T31–T51 waren PASS. T51 bestätigte dabei ausdrücklich, dass der frühe Project-Write bereits durch den fehlgeschlagenen RPC-Aufruf zurückgerollt worden war und nicht erst durch den äußeren Test-`ROLLBACK` verschwand.
+Ergebnis am 2026-09-06: PASS. Der frühe Project-Write wurde bereits durch den fehlgeschlagenen RPC-Aufruf zurückgerollt und verschwand nicht erst durch den äußeren Test-`ROLLBACK`.
 
-Hinweis zur T31-Testhärtung: `pg_get_function_identity_arguments()` rendert in diesem Projekt die Parameternamen zusammen mit den Typen. Eine types-only-Stringprüfung wäre daher ein Harness-Fehler. Für die reale Abnahme wurde die exakte Signatur robust über `to_regprocedure('public.bsf02c_publish_shared_projection_snapshot(uuid,uuid,text,boolean,jsonb,jsonb,jsonb,text[],text[],text[])')` verifiziert. Das persistente Artefakt ist entsprechend auf diese robuste Prüfung zu bringen.
+### T31-Testhärtung
+
+`pg_get_function_identity_arguments()` rendert in diesem Projekt Parameternamen zusammen mit den Typen. Die zunächst angelegte types-only-Stringprüfung war deshalb ein reiner Testharness-Fehler. Das persistente Artefakt prüft die exakte Signatur nun robust über:
+
+`to_regprocedure('public.bsf02c_publish_shared_projection_snapshot(uuid,uuid,text,boolean,jsonb,jsonb,jsonb,text[],text[],text[])')`
+
+Nach dieser Korrektur wurde die **gespeicherte Branch-Fassung** des Testartefakts erneut als ein kompletter SQL-Batch ausgeführt. Für den SQL-API-Runner wurden ausschließlich die psql-Metakommandos `\set` und `\echo` ausgelassen. Alle echten SQL-Statements von `BEGIN` bis `ROLLBACK` liefen unverändert und ohne Fehler bis zum regulären Rollback.
 
 ## 11. Rollback und Residuen
 
-Nach dem realen T31–T51-Lauf wurde der äußere Test-`ROLLBACK` regulär ausgeführt.
+Nach dem finalen gespeicherten T31–T51-Lauf wurde der äußere `ROLLBACK` regulär ausgeführt.
 
-Eine separate read-only Nachprüfung ergab jeweils 0 Residuen für:
+Separate read-only Nachprüfung: jeweils 0 Residuen für
 
 - `auth.users` mit `bsf02c-b2-%@example.invalid`
 - Test-Profiles
@@ -197,43 +200,44 @@ Eine separate read-only Nachprüfung ergab jeweils 0 Residuen für:
 
 ## 12. Generierte Supabase-Typen
 
-`src/integrations/supabase/types.ts` enthält den RPC-Typ mit den zehn Parametern und `Returns: Json` bereits korrekt. Gegen den Pre-Implementation-Stand besteht hierfür nur der notwendige RPC-Eintrag; keine Vollregenerierung oder formatterartige Nebenänderung ist erforderlich.
+`src/integrations/supabase/types.ts` enthält den RPC-Typ mit den zehn Parametern und `Returns: Json` korrekt. Gegen den Pre-Implementation-Stand besteht ausschließlich der notwendige RPC-Eintrag; keine Vollregenerierung oder formatterartige Nebenänderung ist erforderlich.
 
 ## 13. Security Advisor / Sicherheitsnachprüfung
 
-Ein erneuter offizieller Supabase-Advisor-Aufruf konnte am 2026-09-06 über den verfügbaren Connector wegen fehlender Advisor-Berechtigung nicht ausgeführt werden.
+Ein erneuter offizieller Supabase-Security-Advisor-Aufruf konnte am 2026-09-06 über den verfügbaren Connector wegen fehlender Advisor-Berechtigung nicht ausgeführt werden.
 
-Die Live-Datenbank wurde deshalb zusätzlich read-only gegen die relevanten Advisor-Verträge geprüft:
+Als zusätzliche read-only Sicherheitsnachprüfung wurde live bestätigt:
 
 - B2-Funktion ist nicht `SECURITY DEFINER`
-- anon besitzt kein EXECUTE auf der B2-RPC
+- `anon` besitzt kein EXECUTE auf der B2-RPC
 - keine DELETE-/ALL-Policy auf den drei Shared-Projection-Tabellen
 - RLS bleibt auf allen drei Tabellen aktiv
 - die bekannte SEC-01-Baseline umfasst weiterhin genau die beiden ausführbaren `SECURITY DEFINER`-Funktionen `avkk_can_write` und `avkk_people_directory`
-- keine neue BSF-02C-bezogene Definer-/anon-Exposition wurde festgestellt
+- keine neue BSF-02C-bezogene Definer-/anon-Exposition festgestellt
 
-Die bekannten SEC-01-Findings liegen außerhalb des BSF-02C-Scope und wurden nicht verändert.
+Die bekannten SEC-01-Findings liegen außerhalb dieses Scope und wurden nicht verändert.
 
-## 14. Referenzen und Work Delta
+## 14. Referenzen und finaler Work Delta
 
 - Pre-Implementation-Head: `0ef5aeb959c9947cc3e951c3036a79582ce324d7`
 - B2-Migrationsstand / Lovable Edit: `ccdc9e8858c579f5f8273997a9847eb88a68bb65` / `edt-f3d15052-9f77-4635-a1dd-9814d8aa54bc`
 - Testartefakt-Commit: `d2a4a7814cbe31361dd730a5b7bbb7ce68c34372`
 - isolierter Integrationsbranch: `bsf/02c-phase-b2-transaction-rpc`
+- T31-Harness-Korrektur: `24e7cc583a8f83fd792a08f87666a0f0764dd503`
 
-Der fachliche B2-Delta darf ausschließlich aus folgenden Dateien bestehen:
+Der finale fachliche B2-Delta gegen `0ef5aeb...` umfasst genau vier Dateien:
 
 1. `supabase/migrations/20260904041745_5bfaeb5b-147b-4f8d-a6e3-4705c6233a15.sql`
 2. `src/integrations/supabase/types.ts` – ausschließlich der notwendige RPC-Eintrag
 3. `supabase/tests/bsf-02c-transactional-publish-rpc.sql`
 4. `docs/BSF-02C-PHASE-B2-TRANSACTION-RPC.md`
 
-Die Lovable-Preview/Auth-Overlays `src/integrations/supabase/client.ts` und `src/integrations/supabase/previewAuthStorage.ts` gehören nicht zum B2-Produktdelta.
+Die Lovable-Preview/Auth-Overlays `src/integrations/supabase/client.ts` und `src/integrations/supabase/previewAuthStorage.ts` sind nicht Teil dieses Deltas.
 
-## 15. Restrisiken / formaler Restpunkt
+## 15. Restrisiko / formaler Restpunkt
 
-Die fachliche und transaktionale Live-Abnahme T31–T51 einschließlich T51 ist erfolgreich. Für einen vollständig reproduzierbaren Repository-Nachweis muss die persistente T31-Assertion noch auf die bereits real verwendete robuste `to_regprocedure(...)`-Prüfung korrigiert und das so korrigierte Artefakt nochmals als exakter gespeicherter Batch ausgeführt werden.
+Die fachliche, RLS-bezogene und transaktionale Abnahme T31–T51 einschließlich des T51-Atomizitätsnachweises ist vollständig bestanden. Das persistente Testartefakt ist korrigiert und in seiner gespeicherten Fassung erfolgreich reproduziert worden; Residuen sind 0.
 
-Zusätzlich bleibt ein offizieller Supabase-Advisor-Rerun offen, solange der verwendete Connector dafür keine Berechtigung besitzt. Die durchgeführte strukturelle Live-Nachprüfung zeigt jedoch keine neue BSF-02C-Sicherheitsexposition.
+Offen bleibt ausschließlich der **offizielle Supabase-Security-Advisor-Rerun**, weil der derzeit verfügbare Connector dafür keine Berechtigung besitzt. Die separate strukturelle Live-Nachprüfung zeigt keine neue BSF-02C-Sicherheitsexposition.
 
-Bis diese beiden formalen Nachweise geschlossen sind, ist der Branch technisch weitgehend abgenommen, aber noch nicht als vollständig `READY FOR PR` zu kennzeichnen.
+Nach dem verbindlichen Abnahmekriterium dieser Phase wird deshalb noch nicht `READY FOR PR` erklärt, bis der offizielle Advisor-Lauf verfügbar und ohne neue BSF-02C-Warnung abgeschlossen ist.
