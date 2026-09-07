@@ -203,7 +203,10 @@ export function createSupabaseSharedProjectionRepository(
   client: SupabaseClient<Database>,
 ): SharedProjectionRepository {
   return {
-    async publish(batch, scope: SharedProjectionPublishScope): Promise<SharedProjectionWriteCounts> {
+    async publish(
+      batch,
+      scope: SharedProjectionPublishScope,
+    ): Promise<SharedProjectionWriteCounts> {
       const mode = publishMode(scope);
       const [projects, workPackages, activities] = await Promise.all([
         projectPayload(batch),
