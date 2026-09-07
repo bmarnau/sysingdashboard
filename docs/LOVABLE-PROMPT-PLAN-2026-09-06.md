@@ -25,6 +25,7 @@ Die Werte sind Planungsbereiche, keine Verbrauchsgarantie. Ziel ist nicht, Promp
 
 ## Geplanter Lovable-Aufwand
 
+<!-- prettier-ignore -->
 | Reihenfolge | Sprint | Kurzinhalt | Geplante Lovable-Prompts | Tatsächlich | Abweichung / Kommentar |
 |---:|---|---|---:|---:|---|
 | 1 | BSF-02C Abschluss | B2 integrieren, PR #111 auf RPC umstellen, Gesamtabnahme | 0–1 | offen | |
