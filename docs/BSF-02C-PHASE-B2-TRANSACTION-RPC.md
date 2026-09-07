@@ -1,6 +1,6 @@
 # BSF-02C Phase B2 – Transaktionale Shared-Projection-Publish-RPC
 
-Stand: 2026-09-06
+Stand: 2026-09-07
 Issue: #88
 ADR: `docs/ADR/0032-bsf-02c-shared-projection.md`
 
@@ -200,44 +200,56 @@ Separate read-only Nachprüfung: jeweils 0 Residuen für
 
 ## 12. Generierte Supabase-Typen
 
-`src/integrations/supabase/types.ts` enthält den RPC-Typ mit den zehn Parametern und `Returns: Json` korrekt. Gegen den Pre-Implementation-Stand besteht ausschließlich der notwendige RPC-Eintrag; keine Vollregenerierung oder formatterartige Nebenänderung ist erforderlich.
+`src/integrations/supabase/types.ts` enthält den RPC-Typ mit den zehn Parametern und `Returns: Json` korrekt. Gegen den fachlichen Pre-Implementation-Stand besteht ausschließlich der notwendige RPC-Eintrag; eine Vollregenerierung oder formatterartige Nebenänderung ist nicht Bestandteil des B2-Scope.
 
 ## 13. Security Advisor / Sicherheitsnachprüfung
 
-Ein erneuter offizieller Supabase-Security-Advisor-Aufruf konnte am 2026-09-06 über den verfügbaren Connector wegen fehlender Advisor-Berechtigung nicht ausgeführt werden.
+Der verpflichtende offizielle Supabase Security Advisor wurde am 2026-09-07 read-only erfolgreich ausgeführt.
 
-Als zusätzliche read-only Sicherheitsnachprüfung wurde live bestätigt:
+Ergebnis:
 
-- B2-Funktion ist nicht `SECURITY DEFINER`
+- Supabase-Linter: 2 Issues, 1 Typ — `0029_authenticated_security_definer_function_executable` (`WARN`)
+- Security-Scan: 1 `WARN`, identischer Typ
+- keine `ERROR`- oder `CRITICAL`-Findings
+- live betroffene Funktionen exakt `public.avkk_can_write(_subject uuid)` und `public.avkk_people_directory()`
+- damit unverändert ausschließlich die bekannte SEC-01-Baseline
+- `public.bsf02c_publish_shared_projection_snapshot` erscheint nicht in der Advisor-Ausgabe
+- B2-RPC weiterhin `prosecdef=false` / `SECURITY INVOKER`
+- keine neue BSF-02C-Warnung
+
+Die bekannten SEC-01-Findings liegen außerhalb dieses Scope und wurden nicht verändert.
+
+Zusätzlich bleiben die zuvor bestätigten Strukturmerkmale unverändert:
+
 - `anon` besitzt kein EXECUTE auf der B2-RPC
 - keine DELETE-/ALL-Policy auf den drei Shared-Projection-Tabellen
 - RLS bleibt auf allen drei Tabellen aktiv
-- die bekannte SEC-01-Baseline umfasst weiterhin genau die beiden ausführbaren `SECURITY DEFINER`-Funktionen `avkk_can_write` und `avkk_people_directory`
-- keine neue BSF-02C-bezogene Definer-/anon-Exposition festgestellt
 
-Die bekannten SEC-01-Findings liegen außerhalb dieses Scope und wurden nicht verändert.
+**Security-Advisor-Gate: PASS.**
 
 ## 14. Referenzen und finaler Work Delta
 
 - Pre-Implementation-Head: `0ef5aeb959c9947cc3e951c3036a79582ce324d7`
 - B2-Migrationsstand / Lovable Edit: `ccdc9e8858c579f5f8273997a9847eb88a68bb65` / `edt-f3d15052-9f77-4635-a1dd-9814d8aa54bc`
 - Testartefakt-Commit: `d2a4a7814cbe31361dd730a5b7bbb7ce68c34372`
-- isolierter Integrationsbranch: `bsf/02c-phase-b2-transaction-rpc`
 - T31-Harness-Korrektur: `24e7cc583a8f83fd792a08f87666a0f0764dd503`
+- fachlich abgenommener B2-Head: `a771ff01ff90881356ec060a219ddcefbf432836`
+- ursprünglicher B2-Evidenzbranch: `bsf/02c-phase-b2-transaction-rpc`
+- sauberer PR-Carrier ab GitHub-`main`: `bsf/02c-phase-b2-transaction-rpc-pr`
 
-Der finale fachliche B2-Delta gegen `0ef5aeb...` umfasst genau vier Dateien:
+Der finale fachliche B2-Delta umfasst genau vier Dateien:
 
 1. `supabase/migrations/20260904041745_5bfaeb5b-147b-4f8d-a6e3-4705c6233a15.sql`
 2. `src/integrations/supabase/types.ts` – ausschließlich der notwendige RPC-Eintrag
 3. `supabase/tests/bsf-02c-transactional-publish-rpc.sql`
 4. `docs/BSF-02C-PHASE-B2-TRANSACTION-RPC.md`
 
-Die Lovable-Preview/Auth-Overlays `src/integrations/supabase/client.ts` und `src/integrations/supabase/previewAuthStorage.ts` sind nicht Teil dieses Deltas.
+Die Lovable-Preview/Auth-Overlays `src/integrations/supabase/client.ts` und `src/integrations/supabase/previewAuthStorage.ts` sind nicht Teil des PR-Carriers.
 
-## 15. Restrisiko / formaler Restpunkt
+## 15. Abnahmeergebnis
 
 Die fachliche, RLS-bezogene und transaktionale Abnahme T31–T51 einschließlich des T51-Atomizitätsnachweises ist vollständig bestanden. Das persistente Testartefakt ist korrigiert und in seiner gespeicherten Fassung erfolgreich reproduziert worden; Residuen sind 0.
 
-Offen bleibt ausschließlich der **offizielle Supabase-Security-Advisor-Rerun**, weil der derzeit verfügbare Connector dafür keine Berechtigung besitzt. Die separate strukturelle Live-Nachprüfung zeigt keine neue BSF-02C-Sicherheitsexposition.
+Der verpflichtende offizielle Supabase Security Advisor ist ebenfalls PASS; es bestehen keine neuen BSF-02C-Warnungen. Die verbleibenden WARNs sind ausschließlich die unveränderte bekannte SEC-01-Baseline.
 
-Nach dem verbindlichen Abnahmekriterium dieser Phase wird deshalb noch nicht `READY FOR PR` erklärt, bis der offizielle Advisor-Lauf verfügbar und ohne neue BSF-02C-Warnung abgeschlossen ist.
+**STATUS: READY_FOR_PR.**
