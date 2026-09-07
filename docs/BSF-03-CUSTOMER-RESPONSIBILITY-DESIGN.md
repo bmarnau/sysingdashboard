@@ -1,7 +1,7 @@
 # BSF-03 – Customer Responsibility / „Meine Kunden“
 
-Stand: 2026-09-07  
-Issue: #105  
+Stand: 2026-09-07\
+Issue: #105\
 Voraussetzung: BSF-02 / BSF-02C vollständig DONE
 
 ## 1. Ziel
@@ -124,6 +124,7 @@ Bevorzugte Richtung: eigene Permission `customer.responsibility.manage`, zugeord
 Mindestens:
 
 ### „Meine Kunden“
+
 - Liste ausschließlich der fachlich verantworteten **und** technisch zulässigen Kunden,
 - Kundenname,
 - Status,
@@ -132,6 +133,7 @@ Mindestens:
 - leere Sicht mit verständlichem Hinweis, wenn keine zulässigen Kunden vorhanden sind.
 
 ### Kundendetail
+
 - Kundenkopf,
 - verantwortlicher Systemingenieur,
 - Read-/Write-Status,
