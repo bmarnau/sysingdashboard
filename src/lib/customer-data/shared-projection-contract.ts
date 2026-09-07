@@ -287,3 +287,88 @@ export function prepareSharedCustomerPublishBatch(input: {
     unresolved: unresolvedEntries(input.plan),
   };
 }
+
+/**
+ * Activity-only Runtime-Variante für Rollen ohne `project.edit`.
+ *
+ * Der Struktur-Publish bleibt unverändert streng: Project/WorkPackage werden
+ * hier nie veröffentlicht. Eine verlinkte Activity ist nur zulässig, wenn ihr
+ * WorkPackage bereits als aktive Shared Projection für denselben Customer
+ * serverseitig sichtbar ist. Damit kann ein Engineer seine eigene Leistung
+ * veröffentlichen, ohne gemeinsame Strukturautorität zu erhalten.
+ */
+export function prepareSharedOwnActivityPublishBatch(input: {
+  plan: SharedDataMigrationPlan;
+  customerId: string;
+  publisherUserId: string;
+  availableWorkPackageSourceIds: ReadonlySet<string>;
+}): SharedCustomerPublishBatch {
+  const systemhouseId = requireNonEmpty(input.plan.systemhouseId, "systemhouseId");
+  const customerId = requireNonEmpty(input.customerId, "customerId");
+  const publisherUserId = requireNonEmpty(input.publisherUserId, "publisherUserId");
+  const collisions = collisionKeys(input.plan);
+  const skipped: SharedProjectionSkip[] = [];
+
+  const activities = input.plan.activities.filter((entry) => {
+    if (entry.customerResolution.status !== "resolved" || entry.customerId !== customerId) {
+      return false;
+    }
+    if (isColliding(collisions, "activity", entry.id)) {
+      skipped.push({
+        entityType: "activity",
+        sourceId: entry.id,
+        reason: "source_id_collision",
+      });
+      return false;
+    }
+    if (entry.workPackageLinkStatus === "missing") {
+      skipped.push({
+        entityType: "activity",
+        sourceId: entry.id,
+        reason: "parent_missing",
+        detail: entry.workPackageId ?? undefined,
+      });
+      return false;
+    }
+    if (
+      entry.workPackageLinkStatus === "linked" &&
+      (!entry.workPackageId || !input.availableWorkPackageSourceIds.has(entry.workPackageId))
+    ) {
+      skipped.push({
+        entityType: "activity",
+        sourceId: entry.id,
+        reason: "parent_unpublishable",
+        detail: entry.workPackageId ?? undefined,
+      });
+      return false;
+    }
+    if (!entry.engineerId?.trim()) {
+      skipped.push({
+        entityType: "activity",
+        sourceId: entry.id,
+        reason: "engineer_missing",
+      });
+      return false;
+    }
+    if (entry.engineerId !== publisherUserId) {
+      skipped.push({
+        entityType: "activity",
+        sourceId: entry.id,
+        reason: "engineer_mismatch",
+      });
+      return false;
+    }
+    return true;
+  });
+
+  return {
+    systemhouseId,
+    customerId,
+    publisherUserId,
+    projects: [],
+    workPackages: [],
+    activities,
+    skipped,
+    unresolved: unresolvedEntries(input.plan),
+  };
+}
