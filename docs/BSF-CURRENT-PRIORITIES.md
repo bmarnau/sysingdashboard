@@ -73,6 +73,7 @@ Verbindlicher Vertrag:
 
 Der unveränderliche Ausgangsplan steht in `docs/LOVABLE-PROMPT-PLAN-2026-09-06.md`. Die operative Bilanz wird hier fortgeschrieben.
 
+<!-- prettier-ignore -->
 | Sprint | Plan laut Snapshot | Verbraucht | Noch erwartet | Status / Lovable-Grund |
 |---|---:|---:|---:|---|
 | BSF-02C Abschluss | 0–1 | **1** | **0** | DONE; offizieller B2-Advisor-/Abnahmelauf |
