@@ -28,25 +28,15 @@ async function sha256(value: unknown): Promise<string> {
 }
 
 function publishMode(scope: SharedProjectionPublishScope): PublishMode {
-  if (
-    scope.reconcileProjects &&
-    scope.reconcileWorkPackages &&
-    scope.reconcileActivities
-  ) {
+  if (scope.reconcileProjects && scope.reconcileWorkPackages && scope.reconcileActivities) {
     return "structure";
   }
 
-  if (
-    !scope.reconcileProjects &&
-    !scope.reconcileWorkPackages &&
-    scope.reconcileActivities
-  ) {
+  if (!scope.reconcileProjects && !scope.reconcileWorkPackages && scope.reconcileActivities) {
     return "activities";
   }
 
-  throw new Error(
-    "Shared Projection: Publish-Scope passt nicht zum transaktionalen RPC-Vertrag.",
-  );
+  throw new Error("Shared Projection: Publish-Scope passt nicht zum transaktionalen RPC-Vertrag.");
 }
 
 function sortedSourceIds(values: ReadonlySet<string>): string[] {
