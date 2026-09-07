@@ -44,6 +44,8 @@ Nachweise:
 - CI Run #527 / `34080533041`: PASS
 - Static, Unit/Components, Backend, API, RBAC/Security, Import/Export, Backup/Restore, Production Build, Playwright E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate: PASS
 - Runtime-Merge auf `main`: `60ed2d81542cc25543dafa2b4821740cfff45043`
+- Abschluss-/Planungsdokumentation: PR #115 — DONE
+- #88 und Parent #76: CLOSED / COMPLETED
 - kein Service-Role-Normalpfad
 - keine Lovable-Preview/Auth-Overlay-Dateien in den Produkt-PRs
 
@@ -53,21 +55,32 @@ Der fachliche Pfad lautet nun:
 
 mit providerneutralem Runtime-Service und Supabase als austauschbarem MVP-Provider. Die vollständige Ablösung der Local-First-Datenhaltung bleibt bewusst BSF-04.
 
-### Nächster fachlicher Punkt
+### BSF-03 — Kundenverantwortung / „Meine Kunden“ (#105) — IN ARBEIT / DESIGN
 
-**BSF-03 — Kundenverantwortung / „Meine Kunden“ (#105) — NÄCHSTER PUNKT**
-
-Start erst nach formalem Abschluss der Dokumentations-/Issue-Konsolidierung von #88 und Parent #76.
+Die Design-/Security-Baseline wird in `docs/BSF-03-DESIGN.md` festgeschrieben. Noch wurde keine BSF-03-DB- oder UI-Änderung ausgeführt und kein BSF-03-Lovable-Prompt verbraucht.
 
 Verbindlicher Vertrag:
 
 - Customer Responsibility ist Beziehung/Scope, keine neue globale Rolle,
+- Customer Responsibility ist nicht AVKK-Verantwortung,
 - ein Systemingenieur kann für mehrere Kunden verantwortlich sein,
-- ein Kunde kann einen verantwortlichen Systemingenieur haben,
+- ein Kunde kann in V1 maximal einen aktuell primär verantwortlichen Systemingenieur haben,
 - Sichtbarkeit und Schreibrechte bleiben getrennt,
+- Verantwortung erweitert nur den Read-Scope,
+- `customer_access(write)` plus bestehende Fachpermission bleiben für Writes zwingend,
+- Teamlead erhält einen expliziten systemhouse-begrenzten All-Customer-Read-Scope,
+- Systemadministrator/Administrator verwalten Verantwortung in V1,
+- Viewer und Customer können keine Kundenverantwortung tragen,
 - Customer-Grenze wird serverseitig erzwungen,
 - Cross-Customer und Cross-Systemhouse bleiben DENY,
 - keine UI-Regel ersetzt RBAC/RLS.
+
+Nächster Gate-Schritt:
+
+1. Design-PR vollständig abnehmen,
+2. danach genau einen kontrollierten Lovable-DB-Prompt für additive Tabelle/RBAC/RLS/RPC/Testartefakt formulieren,
+3. DB-Lauf real prüfen und Security Advisor ausführen,
+4. erst danach Runtime/UI auf der abgenommenen DB-Basis umsetzen.
 
 ## Tägliche Lovable-Prompt-Steuerung
 
@@ -77,7 +90,7 @@ Der unveränderliche Ausgangsplan steht in `docs/LOVABLE-PROMPT-PLAN-2026-09-06.
 | Sprint | Plan laut Snapshot | Verbraucht | Noch erwartet | Status / Lovable-Grund |
 |---|---:|---:|---:|---|
 | BSF-02C Abschluss | 0–1 | **1** | **0** | DONE; offizieller B2-Advisor-/Abnahmelauf |
-| BSF-03 | 1–2 | 0 | 1–2 | UI/Preview sowie ggf. ausdrücklich freigegebene DB-/RLS-Arbeit |
+| BSF-03 | 1–2 | **0** | **1–2** | IN ARBEIT / DESIGN; DB/RLS-Prompt erst nach Designabnahme |
 | BSF-03D | 1–2 | 0 | 1–2 | Stammdaten-/UI-Preview; DB nur nach Governance |
 | BSF-03A | 2–3 | 0 | 2–3 | Filter, Tabellen, Summen, Rollen-Preview |
 | BSF-03B | 2–3 | 0 | 2–3 | Prüfsicht, Finalisierung, Export-Preview |
@@ -101,7 +114,7 @@ Zählregeln:
 ## Verbindliche operative Reihenfolge
 
 1. **BSF-02 / BSF-02C — DONE**
-2. **BSF-03 — NÄCHSTER PUNKT**
+2. **BSF-03 — IN ARBEIT / DESIGN**
 3. **BSF-03D — GEPLANT**
 4. **BSF-03A — GEPLANT**
 5. **BSF-03B — GEPLANT**
