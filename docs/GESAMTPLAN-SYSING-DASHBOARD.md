@@ -1,9 +1,8 @@
 # Sysing Dashboard — Strategischer Gesamtplan
 
-Stand: 2026-09-03  
+Stand: 2026-09-09  
 Status: strategische Gesamtplanung, unabhängig von Wochenplänen  
-Repository: `bmarnau/sysingdashboard`  
-Ausgangs-`main`: `87ac1e3dab38c383b9ae92a1d19ea43d22b1c37d`
+Repository: `bmarnau/sysingdashboard`
 
 ## 1. Zweck
 
@@ -21,19 +20,19 @@ Für alle folgenden Schritte gelten weiterhin:
 - Fachlogik, Authentifizierung, Datenzugriff und Provideradapter bleiben getrennt.
 - Fachliche Kundenidentität: `(systemhouseId, customerId)`.
 - `systemhouseId` ist providerneutral und nicht Microsoft Entra Tenant ID.
-- keine Service Role im Browser.
+- keine Service Role im Browser oder normalen User-Pfad.
 - RBAC und RLS werden getrennt geprüft; UI-Gating ist keine Sicherheitsgrenze.
 - Cross-Systemhouse, Cross-Customer und IDOR/BOLA müssen fail-closed sein.
 - keine produktiven Secrets, Tokens oder Passwörter in Code, Prompts oder Dokumentation.
 - Lovable Cloud darf keine technisch unersetzbare Laufzeitabhängigkeit werden.
 - Docker-/On-Premises-Betrieb und spätere Entra-/Azure-SQL-/Azure-Storage-Fähigkeit bleiben Zielbedingungen.
 - bestehende Project-/WorkPackage-/Activity-IDs bleiben soweit möglich stabil, insbesondere wegen AVKK.
-- Änderungen erfolgen über Branch -> PR -> Required Checks -> dokumentierte Abnahme.
+- Änderungen erfolgen über Branch → PR → Required Checks → dokumentierte Abnahme.
 - jeder größere Arbeitsauftrag endet mit einem Abschlussbericht.
 
 Arbeitsregel:
 
-`Analysieren -> minimal umsetzen -> testen -> dokumentieren -> Abschlussbericht -> Abnahme`
+`Analysieren → minimal umsetzen → testen → dokumentieren → Abschlussbericht → Abnahme`
 
 ## 3. Bereits erreichte Grundlage
 
@@ -51,25 +50,34 @@ Arbeitsregel:
 - Projektmanager-Leistungssicht read-only abgegrenzt.
 - Teamlead-Leistungsnachweis als eigener Write-/Finalisierungs-/Audit-Scope definiert.
 
-### BSF-02 Fundament — weitgehend DONE / BSF-02C noch aktiv
+### BSF-02 / BSF-02C — DONE
 
 - Customer-/Systemhouse-Domänenfundament vorhanden.
 - Membership-/Customer-Access-Basis vorhanden.
 - providerneutraler Shared-Projection-Contract über PR #101 auf `main`.
 - Shared-Projection-DDL, Grants, RLS und T01–T30 über PR #110 abgenommen und auf `main`.
-- offen bleibt der vollständige Runtime-Abschluss: transaktionaler Publish-Pfad, Shared Read-Service, Runtime-/Regressionstests und finale Abnahme von #88/#76.
+- transaktionale `SECURITY INVOKER` Publish-RPC über PR #116 integriert.
+- providerneutraler Runtime Publish-/Read-Pfad über PR #111 integriert.
+- T31–T51 einschließlich Atomic Rollback PASS.
+- offizieller Supabase Security Advisor ohne neue BSF-02C-Warnung.
+- vollständige Security-/CI-/E2E-/Accessibility-/Technical-Debt-/Quality-Gates PASS.
+- #88 und Parent #76 geschlossen.
+
+Gemeinsamer fachlicher Pfad:
+
+`Systemhouse → Customer → Project → WorkPackage → Activity → Leistungserbringer`
 
 ## 4. Strategische Entwicklungsreihenfolge
 
 ### Phase 1 — BSF-02C abschließen: gemeinsamer Customer-Read-Pfad
 
-**Status: AKTIV**
+**Status: DONE**
 
 Ziel:
 
-`Systemhouse -> Customer -> Project -> WorkPackage -> Activity -> Leistungserbringer`
+`Systemhouse → Customer → Project → WorkPackage → Activity → Leistungserbringer`
 
-Minimaler Scope:
+Abgenommen:
 
 - Shared-Projection-Tabellen bzw. kleinster bestätigter Persistenzpfad,
 - Composite-Identität über Systemhouse + Customer + stabile Source-ID,
@@ -81,33 +89,46 @@ Minimaler Scope:
 - AVKK-ID-Stabilität,
 - vollständige CI/Security/Quality-Gates.
 
-Nicht vorziehen:
+Bewusst nicht vorgezogen:
 
 - vollständige Local-First-Ablösung,
 - BSF-04-Gesamtmigration,
 - Customer-UI jenseits der notwendigen Testbarkeit.
 
-**Gate:** BSF-02/02C vollständig DONE und Parent #76 schließbar.
+**Gate:** erfüllt; BSF-02/02C vollständig DONE, #88 und Parent #76 geschlossen.
 
 ---
 
 ### Phase 2 — BSF-03: Kundenverantwortung und „Meine Kunden“
 
+**Status: AKTIV**
+
 Ziel:
 
 Ein Systemingenieur kann für einen oder mehrere Kunden verantwortlich sein und erhält dadurch die fachlich erlaubte Kundensicht.
 
-Umfang:
+Verbindlicher Vertrag:
 
 - Beziehung `User <-> Customer Responsibility`,
-- „Meine Kunden“,
+- `systemhouse_membership`, `customer_access` und `customer_responsibility` bleiben getrennt,
+- „Meine Kunden“ nur bei aktivem Konto, aktiver Membership, aktueller Responsibility, Customer Access >= read und `dashboard.view`,
+- Responsibility allein eröffnet weder Customer-Daten noch Schreibrechte,
 - Kundenkontext öffnen,
 - Projekte/AP/Tätigkeiten im zulässigen Customer-Scope sehen,
 - Sichtrecht und Schreibrecht strikt getrennt,
 - nachvollziehbarer Sichtgrund,
-- RLS/Serverprüfung statt UI-only.
+- RLS/Serverprüfung statt UI-only,
+- `customer.responsibility.manage` nur für Systemadministrator, Administrator und Teamlead,
+- zulässige Responsibility-Zielrollen: Systemadministrator, Administrator, Teamlead, Projektmanager, Engineer,
+- Viewer und Customer ausgeschlossen.
 
-**Gate:** Kundenverantwortung erzeugt keine globalen Rechte; Cross-Customer bleibt DENY.
+Aktueller Implementierungspfad:
+
+1. **BSF-03 1A:** Schema / RBAC / RLS / Grants / Generated Types / technische Doku.
+2. **BSF-03 1B:** R01–R18 / offizieller Security Advisor / Null-Residuen / BSF-02C-Regression.
+3. Danach Runtime/UI `Meine Kunden` und Kundendetail über den bestehenden Shared-Projection-Read-Pfad.
+
+**Gate:** Kundenverantwortung erzeugt keine globalen Rechte; Cross-Customer bleibt DENY; vollständige Exact-Head-Abnahme PASS.
 
 ---
 
@@ -381,19 +402,22 @@ Umfang:
 
 Ziel:
 
-Nachweis, dass das Produkt unabhängig von Lovable Cloud betrieben werden kann.
+Nachweis, dass das Produkt unabhängig von Lovable Cloud betrieben und sauber installiert werden kann.
 
 Umfang:
 
-- Docker-Container,
+- Docker-Container bzw. dokumentierter Container-Stack,
 - Supabase/Postgres-Portabilität,
 - Backup/Restore,
 - Konfiguration/Secrets über sichere Runtime-Konfiguration,
-- Betriebsdokumentation,
+- Betriebs- und Installationsdokumentation,
+- reproduzierbarer Setup-/Update-/Restore-Pfad,
 - Exit-/Migrationspfad,
 - Vorbereitung Azure SQL / Azure Storage / Entra ID.
 
 **Gate:** autonomer Unternehmensbetrieb technisch nachgewiesen.
+
+**Installierbarkeits-Meilenstein:** Nach erfolgreichem BSF-06-Gate soll eine Organisation das Sysing Dashboard unabhängig von Lovable Cloud reproduzierbar als Docker-/On-Premises-Stack installieren, konfigurieren, aktualisieren, sichern, wiederherstellen und betreiben können. Browserbasierte Nutzung auf verschiedenen Endgeräten ist früher möglich, stellt aber noch keinen nachgewiesenen autonomen Installationsbetrieb dar. Für belastbaren produktiven Multi-Device-Betrieb ist die stabile zentrale/synchronisierte Datenstrategie aus BSF-04 eine wesentliche Vorstufe.
 
 ---
 
@@ -564,8 +588,8 @@ Deaktivierte Kategorien bleiben bei historischen AP nachvollziehbar.
 ## 6. Empfohlener roter Faden
 
 ```text
-BSF-02C Shared Read
-  -> BSF-03 Meine Kunden
+BSF-02C Shared Read — DONE
+  -> BSF-03 Meine Kunden — AKTIV
   -> BSF-03D AP-Kategorien
   -> BSF-03A PM-Controlling
   -> BSF-03B Leistungsnachweis
@@ -575,7 +599,7 @@ BSF-02C Shared Read
   -> BSF-04 zentrale/synchronisierte Datenstrategie
   -> BSF-04A Templates + Wiederholungen
   -> BSF-05 Import/SharePoint
-  -> BSF-06 Docker/Betreiberhoheit
+  -> BSF-06 Docker/Betreiberhoheit / Installierbarkeit
   -> BSF-07 Managementcockpit 2
   -> BSF-09 Reporting 2
   -> BSF-10 KI-/Agenten-Labor

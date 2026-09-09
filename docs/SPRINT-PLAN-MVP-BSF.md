@@ -1,13 +1,13 @@
 # Sysing Dashboard — Operative Sprintplanung MVP → BSF → Integration
 
-Stand: 2026-09-03  
+Stand: 2026-09-09  
 Status: operative Planung auf Basis von `docs/GESAMTPLAN-SYSING-DASHBOARD.md`
 
 ## 1. Zweck
 
 Dieses Dokument übersetzt den strategischen Gesamtplan in eine konkrete Sprintfolge. Der Gesamtplan bleibt die fachlich maßgebliche Langfristquelle; diese Planung dient Durchführung, Wochenfokus, Aufwandseinschätzung und späterer Wiederaufnahme.
 
-Für den täglichen Arbeitsfokus ist zusätzlich `docs/BSF-CURRENT-PRIORITIES.md` maßgeblich.
+Für den täglichen Arbeitsfokus ist zusätzlich `docs/BSF-CURRENT-PRIORITIES.md` maßgeblich; dauerhafter Wiederanlaufpunkt ist Issue #35.
 
 Arbeitsregel je Sprint:
 
@@ -25,45 +25,46 @@ GitHub ist Source of Truth. Lovable wird gezielt für UI, Preview, plattformspez
 - Lovable arbeitet nur auf isolierter Nicht-`main`-Variant; Merge/Release erfolgt ausschließlich über GitHub-PR und Required Checks.
 - Credits werden nicht künstlich verbraucht. Vor jedem Lovable-Lauf werden Notwendigkeit und aktuelle Verfügbarkeit geprüft.
 
-### 2.1 Wochenfokus 31.08.–06.09.2026
+### 2.1 Aktueller Fokus 09.09.2026
 
-Die Woche bleibt bis zum Abschluss von BSF-02C auf einem einzigen Hauptpfad:
-
-1. **BSF-02C Phase A — DONE**
+1. **BSF-02 / BSF-02C — DONE**
    - Shared Projection für Project/WorkPackage/Activity,
    - Least-Privilege-Grants,
    - Customer-/Systemhouse-RLS,
-   - T01–T30 real PASS,
-   - PR #110 gemergt,
-   - `main` danach `18d4f460955831ce35fa8186a11578bbbe5dee18`.
+   - T01–T30 und T31–T51 einschließlich Atomic Rollback PASS,
+   - transaktionale `SECURITY INVOKER`-RPC integriert,
+   - Runtime Publish-/Read-Pfad integriert,
+   - offizieller Security Advisor ohne neue BSF-02C-Warnung,
+   - vollständige Exact-Head-CI inkl. E2E, Accessibility, Technical Debt und Quality Gate PASS,
+   - #88 und Parent #76 geschlossen.
 
-2. **BSF-02C Phase B Runtime — IN ARBEIT / PR #111 DRAFT**
-   - providerneutraler Repository-/Service-Vertrag,
-   - Supabase-Adapter,
-   - User-JWT Publish-/Read-Pfad,
-   - `snapshotComplete: true` für Reconciliation,
-   - skipped/unresolved != gelöscht,
-   - Engineer darf eigene Activities ohne `project.edit` gegen bereits aktive WorkPackage-Projections publizieren.
+2. **BSF-03 — IN ARBEIT / Issue #105**
+   - Fach-/Security-Vertrag über PR #118 auf `main`,
+   - Customer Responsibility bleibt Beziehung/Scope, keine globale Rolle,
+   - `systemhouse_membership`, `customer_access` und `customer_responsibility` bleiben getrennt,
+   - `Meine Kunden` fail-closed über aktives Konto, Membership, Responsibility, Customer Access >= read und `dashboard.view`,
+   - `customer.responsibility.manage` nur für Systemadministrator, Administrator und Teamlead.
 
-3. **BSF-02C Phase B2 — JETZT AKTIV / LOVABLE-DB-GATE**
-   - nachgewiesene Lücke: mehrere Data-API-Writes sind einzeln RLS-geschützt, aber als Snapshot nicht atomar,
-   - erforderlich: eine transaktionale `SECURITY INVOKER`-RPC im selben User-JWT,
-   - additive Migration, Function-Grant und reale Negativ-/Atomizitätstests ausschließlich über freigegebenen Lovable-Prompt,
-   - kritisches Gate: absichtlich später Fehler innerhalb desselben RPC-Aufrufs muss alle frühen Writes zurückrollen.
+3. **BSF-03 1A — NÄCHSTER AUSFÜHRUNGSSCHRITT**
+   - additive Tabelle `customer_responsibility`,
+   - DB-RBAC-Mirror,
+   - RLS/Least-Privilege-Grants,
+   - Generated Types,
+   - technische Dokumentation.
 
-4. **B2 separat integrieren**
-   - unabhängiger Diff-/Security-/RLS-Review,
-   - eigener DB-PR,
-   - kein Vermischen mit Preview/Auth-Overlays.
+4. **BSF-03 1B — DANACH**
+   - persistentes Testartefakt R01–R18,
+   - offizieller Supabase Security Advisor,
+   - Null-Residuen,
+   - BSF-02C-Regression.
 
-5. **PR #111 auf die abgenommene RPC umstellen und BSF-02C abschließen**
-   - Runtime-/Security-/Import-Export-/Backup-Restore-/AVKK-Regression,
-   - vollständige Exact-Head-CI inkl. E2E, Accessibility, Technical Debt und Quality Gate,
-   - #88 und Parent #76 erst danach schließen.
+5. **Runtime/UI erst nach 1A/1B**
+   - `Meine Kunden`,
+   - Kundendetail,
+   - Shared-Projection-Read-Pfad wiederverwenden,
+   - Accessibility, Rollen-Preview und E2E.
 
-6. **BSF-03 nur beginnen, wenn BSF-02C vollständig DONE ist.**
-
-### 2.2 Verbindliche operative Reihenfolge ab Abschluss BSF-02C
+### 2.2 Verbindliche operative Reihenfolge
 
 `BSF-03 → BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → BSF-DOC-01 → BSF-DOC-02 → BSF-DOC-03 → BSF-04 → BSF-04A → BSF-05 → BSF-06 → BSF-07 → BSF-09 → BSF-10 → BSF-FINAL → INTEGRATION-READINESS`
 
@@ -94,16 +95,16 @@ Diese Reihenfolge synchronisiert die operative Planung mit `docs/GESAMTPLAN-SYSI
 - Schwerpunkt: Kunde als stabile Fachentität; Zuordnung von Projekten, Arbeitspaketen und Tätigkeiten.
 - Kundenidentität ist systemhausgebunden: `(systemhouseId, customerId)`.
 - `systemhouseId` ist providerneutral und nicht Microsoft Tenant ID.
-- BSF-02A/B-Grundlage ist vorhanden; BSF-02C ist der letzte offene Teil.
+- BSF-02A/B-Grundlage und BSF-02C-Runtime sind abgeschlossen.
 - Die vollständige zentrale/synchronisierte Datenstrategie und Local-First-Ablösung bleiben BSF-04.
 - Gate: minimaler gemeinsamer Read-/Datenpfad für Kunden- und Leistungssichten real nutzbar.
-- Status: **IN ARBEIT**.
+- Status: **DONE**.
 
 ### BSF-02C — Shared Projection + realer Runtime-Pfad (#88)
 
 - Phase A DB/RLS: **DONE** via PR #110.
-- Phase B Runtime: **IN ARBEIT** in Draft-PR #111.
-- Phase B2: transaktionale Publish-RPC als separate Lovable-DB-Änderung erforderlich.
+- Phase B2 transaktionale Publish-RPC: **DONE** via PR #116.
+- Phase B Runtime: **DONE** via PR #111.
 - Normaler Pfad bleibt:
 
 `Browser → authentifizierte Serverfunktion → gleicher User-JWT → Supabase RPC/Adapter → Grants + RLS`
@@ -112,9 +113,10 @@ Diese Reihenfolge synchronisiert die operative Planung mit `docs/GESAMTPLAN-SYSI
 - `snapshotComplete: true` zwingend für Reconciliation,
 - skipped/unresolved wird nicht als gelöscht behandelt,
 - Activity-Publish eigener Engineer getrennt vom Project-/WorkPackage-Strukturscope,
-- Snapshot-Publish muss atomar sein.
-- Gate: positive/negative Runtime-Tests, Atomic Rollback, Import/Export, Backup/Restore, AVKK, Security und vollständige CI PASS.
-- Status: **IN ARBEIT / B2 BLOCKED BIS LOVABLE-ABNAHME**.
+- Snapshot-Publish atomar,
+- T01–T30 und T31–T51 einschließlich Atomic Rollback PASS,
+- Import/Export, Backup/Restore, AVKK, Security und vollständige CI PASS.
+- Status: **DONE**.
 
 ### BSF-03 — Kundenverantwortung und „Meine Kunden“ (#105)
 
@@ -122,9 +124,10 @@ Diese Reihenfolge synchronisiert die operative Planung mit `docs/GESAMTPLAN-SYSI
 - Kundenverantwortung ist eine fachliche Beziehung/Scope, keine neue globale Rolle.
 - Systemingenieur kann für mehrere Kunden verantwortlich sein; ein Kunde kann einen verantwortlichen Systemingenieur haben.
 - Customer-Sicht benötigt serverseitigen Scope; Cross-Customer bleibt DENY.
-- Lovable-Einsatz: bevorzugt 1–2 Credits für UI/Preview nach festgelegtem Sicherheitsvertrag.
+- Fach-/Security-Vertrag über PR #118 integriert.
+- nächster technischer Schritt: 1A Schema/RBAC/RLS/Grants; danach 1B R01–R18/Advisor; erst danach Runtime/UI.
 - Gate: Kundensicht/RBAC/RLS PASS; Sichtbarkeit erzeugt keine impliziten globalen Schreibrechte.
-- Status: **NÄCHSTER PUNKT NACH #88/#76**.
+- Status: **IN ARBEIT**.
 
 ### BSF-03D — Arbeitspaket-Kategorien (#103)
 
@@ -284,10 +287,13 @@ Für Customer-Matching zusätzlich:
 - Backup/Restore,
 - Docker,
 - sichere Runtime-Konfiguration/Secrets,
-- Betriebsdokumentation,
+- Betriebs- und Installationsdokumentation,
+- reproduzierbarer Setup-/Update-/Restore-Pfad,
 - Exit-/Migrationspfad,
 - Vorbereitung Azure SQL / Azure Storage / Entra ID.
 - Gate: autonomer Unternehmensbetrieb ohne technisch unersetzbare Lovable-Runtime nachgewiesen.
+
+**Installierbarkeits-Meilenstein:** Nach erfolgreichem BSF-06-Gate soll das Dashboard als dokumentierter Docker-/On-Premises-Stack unabhängig von Lovable Cloud reproduzierbar installierbar, konfigurierbar, aktualisierbar, sicherbar und wiederherstellbar sein. Browserbasierte Nutzung auf verschiedenen Endgeräten ist früher möglich, aber noch kein nachgewiesener autonomer Installationsbetrieb.
 
 ### BSF-07 — Managementcockpit 2
 
@@ -384,11 +390,20 @@ Projektmanager erhält eine reine Auswertungssicht, keine Teamlead-Abrechnungsre
 - Drill-down,
 - serverseitige Begrenzung auf zulässigen Customer-/Projekt-Scope.
 
-## 5. Verbindliche Übergänge
+## 5. Installierbarkeit und Gerätebetrieb
+
+Zwei Reifegrade sind zu unterscheiden:
+
+1. **Browserbasierte Nutzung auf verschiedenen Endgeräten:** bereits vor BSF-06 möglich, solange eine zentrale veröffentlichte Umgebung erreichbar ist. Das ist keine lokale autonome Installation.
+2. **Saubere autonome Installation / Self-Hosting:** verbindlicher Meilenstein ist BSF-06. Dann müssen Containerbetrieb, Konfiguration, Backup/Restore, Update und Betriebsdokumentation unabhängig von Lovable Cloud nachgewiesen sein.
+
+Für einen belastbaren produktiven Multi-Device-Betrieb ist die stabile zentrale/synchronisierte Datenstrategie aus BSF-04 eine wesentliche Vorstufe.
+
+## 6. Verbindliche Übergänge
 
 1. **MVP → BSF-01:** abgeschlossen.
-2. **BSF-01 → BSF-02/02C:** abgeschlossen bzw. aktuell im letzten 02C-Runtime-Schritt.
-3. **BSF-02C → BSF-03:** #88 und Parent #76 müssen vollständig DONE sein.
+2. **BSF-01 → BSF-02/02C:** abgeschlossen.
+3. **BSF-02C → BSF-03:** abgeschlossen; BSF-03 ist aktiv.
 4. **BSF-03 → BSF-03D:** Customer-/Responsibility-Scope vor AP-Kategorie-Nutzung stabilisieren.
 5. **BSF-03D → BSF-03A:** AP-Kategorie vor Controlling verfügbar machen.
 6. **BSF-03A → BSF-03B:** read-only Controlling vor Teamlead-Finalisierung stabilisieren.
@@ -399,7 +414,7 @@ Projektmanager erhält eine reine Auswertungssicht, keine Teamlead-Abrechnungsre
 11. **BSF-06 vor BSF-FINAL:** Betreiberhoheit und Portabilität sind Pflicht, nicht Nacharbeit.
 12. **BSF-FINAL → INTEGRATION-READINESS:** produktive Microsoft-/Automationsintegration erst nach BSF-Baseline und eigenem Readiness-Gate.
 
-## 6. Definition of Done
+## 7. Definition of Done
 
 Ein Fachpunkt gilt nur dann als abgeschlossen, wenn neben Code und Tests auch alle betroffenen Dokumentationsflächen aktuell sind.
 
@@ -415,8 +430,8 @@ Je nach Scope gehören dazu:
 - Security-/RBAC-/RLS-Nachweise,
 - vollständige Required Checks auf dem Exact Head.
 
-## 7. Abgrenzung
+## 8. Abgrenzung
 
 Produktive Microsoft-Graph-/Exchange-/SharePoint-Schreibintegration und produktive Agentenautomation sind nicht Bestandteil der laufenden BSF-Fachschritte. Sie beginnen erst nach BSF-FINAL und INTEGRATION-READINESS.
 
-Historische datierte Abschlussdokumente werden nicht rückwirkend umgeschrieben. Der strategische Gesamtplan und diese operative Planung werden dagegen bei bewussten Reihenfolgeänderungen synchron fortgeschrieben.
+Historische datierte Abschlussdokumente werden nicht rückwirkend umgeschrieben. Der strategische Gesamtplan und diese operative Planung werden dagegen bei Status- oder Reihenfolgeänderungen synchron fortgeschrieben.
