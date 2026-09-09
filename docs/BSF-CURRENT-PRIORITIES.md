@@ -1,83 +1,70 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-09-07  
+Stand: 2026-09-09  
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Operative Detailplanung: `docs/SPRINT-PLAN-MVP-BSF.md`  
+Dauerhafter Wiederanlaufpunkt: Issue #35  
 Historische Lovable-Planbasis: `docs/LOVABLE-PROMPT-PLAN-2026-09-06.md`
 
 ## Zweck
 
-Diese Datei ist die kompakte operative Source of Truth für den laufenden BSF-Ausbau. Sie beantwortet für jede Arbeitssitzung:
-
-1. Was ist abgeschlossen?
-2. Woran wird als Nächstes gearbeitet?
-3. Welches Gate gilt vor dem nächsten Sprint?
-4. Wo ist Lovable tatsächlich notwendig?
-5. Wie viele Lovable-Prompts waren geplant, wurden verbraucht und werden noch erwartet?
-
-Historische, datierte Abschlussdokumente werden nicht rückwirkend umgeschrieben. Abweichende ältere Statusaussagen werden durch diesen laufenden Stand und die jeweils neueren Abschlussnachweise fortgeschrieben.
-
-## Statuslegende
-
-- `DONE` — vollständig abgeschlossen, getestet und integriert
-- `IN ARBEIT` — aktuell laufender Punkt
-- `BLOCKED` — fachlich aktiv, aber mit benanntem Gate
-- `NÄCHSTER PUNKT` — unmittelbar als nächstes vorgesehen
-- `GEPLANT` — verbindlich vorgesehen, aber noch nicht begonnen
+Diese Datei ist die kompakte operative Source of Truth für den laufenden BSF-Ausbau. Historische, datierte Abschlussdokumente werden nicht rückwirkend umgeschrieben; Statusdrift wird hier und in den laufenden Planungsdokumenten fortgeschrieben.
 
 ## Aktueller Stand
 
 ### BSF-02 / BSF-02C — DONE
 
-Der minimale gemeinsame Mehrbenutzer-Daten-/Read-Pfad ist abgeschlossen.
+Der minimale gemeinsame Mehrbenutzer-Daten-/Read-Pfad ist vollständig abgeschlossen.
 
 Nachweise:
 
-- Phase A Shared Projection / Grants / RLS: PR #110 — DONE
-- B2 transaktionale `SECURITY INVOKER`-Publish-RPC: PR #116 — DONE
-- Runtime Publish-/Read-Pfad auf akzeptierter RPC: PR #111 — DONE
-- B2 T31–T51 einschließlich T51 Atomic Rollback: PASS
-- offizieller Supabase Security Advisor vom 2026-09-07: PASS für B2; keine neue BSF-02C-Warnung
-- finaler Runtime-Head vor Merge: `0cc1fb4179aebff059a22217d638445b9986dd32`
-- Security Run #519 / `34080533051`: PASS
-- CI Run #527 / `34080533041`: PASS
-- Static, Unit/Components, Backend, API, RBAC/Security, Import/Export, Backup/Restore, Production Build, Playwright E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate: PASS
-- Runtime-Merge auf `main`: `60ed2d81542cc25543dafa2b4821740cfff45043`
-- kein Service-Role-Normalpfad
-- keine Lovable-Preview/Auth-Overlay-Dateien in den Produkt-PRs
+- Phase A Shared Projection / Grants / RLS: PR #110 — DONE,
+- B2 transaktionale `SECURITY INVOKER`-Publish-RPC: PR #116 — DONE,
+- Runtime Publish-/Read-Pfad auf akzeptierter RPC: PR #111 — DONE,
+- T01–T30 und T31–T51 einschließlich Atomic Rollback: PASS,
+- offizieller Supabase Security Advisor: PASS; keine neue BSF-02C-Warnung,
+- #88 und Parent #76: CLOSED / COMPLETED,
+- kein Service-Role-Normalpfad,
+- vollständige Security-/CI-/E2E-/Accessibility-/Technical-Debt-/Quality-Gates: PASS.
 
-Der fachliche Pfad lautet nun:
+Der gemeinsame fachliche Pfad lautet:
 
 `Customer → Project → WorkPackage → Activity → Leistungserbringer`
 
-mit providerneutralem Runtime-Service und Supabase als austauschbarem MVP-Provider. Die vollständige Ablösung der Local-First-Datenhaltung bleibt bewusst BSF-04.
+### BSF-03 — Kundenverantwortung / „Meine Kunden“ (#105) — IN ARBEIT
 
-### Nächster fachlicher Punkt
+Der Fach-/Security-Vertrag ist über PR #118 auf `main` integriert.
 
-**BSF-03 — Kundenverantwortung / „Meine Kunden“ (#105) — NÄCHSTER PUNKT**
+Verbindlich:
 
-Start erst nach formalem Abschluss der Dokumentations-/Issue-Konsolidierung von #88 und Parent #76.
+- Customer Responsibility ist fachliche Beziehung/Scope, keine globale Rolle,
+- `systemhouse_membership`, `customer_access` und `customer_responsibility` bleiben getrennt,
+- Responsibility allein eröffnet weder Customer-Daten noch Schreibrechte,
+- `Meine Kunden` ist fail-closed die Schnittmenge aus aktivem Konto, aktiver Membership, aktueller Responsibility, Customer Access >= read und `dashboard.view`,
+- Customer Identity bleibt `(systemhouseId, customerId)`,
+- Cross-Systemhouse, Cross-Customer und IDOR/BOLA bleiben DENY,
+- `customer.responsibility.manage` nur für `systemadministrator`, `administrator`, `teamlead`,
+- zulässige Responsibility-Ziele: `systemadministrator`, `administrator`, `teamlead`, `projectmanager`, `engineer`,
+- `viewer` und `customer` sind als Ziel ausgeschlossen,
+- keine Service Role im normalen User-Pfad.
 
-Verbindlicher Vertrag:
+Noch offen:
 
-- Customer Responsibility ist Beziehung/Scope, keine neue globale Rolle,
-- ein Systemingenieur kann für mehrere Kunden verantwortlich sein,
-- ein Kunde kann einen verantwortlichen Systemingenieur haben,
-- Sichtbarkeit und Schreibrechte bleiben getrennt,
-- Customer-Grenze wird serverseitig erzwungen,
-- Cross-Customer und Cross-Systemhouse bleiben DENY,
-- keine UI-Regel ersetzt RBAC/RLS.
+1. **BSF-03 1A** — Schema / RBAC / RLS / Grants / Generated Types / technische Doku.
+2. **BSF-03 1B** — R01–R18 / offizieller Security Advisor / Null-Residuen / BSF-02C-Regression.
+3. Danach Runtime/UI `Meine Kunden` und Kundendetail über den vorhandenen Shared-Projection-Read-Pfad.
+4. Vollständige Exact-Head-CI, Accessibility, Rollen-Preview, Import/Export-/Backup-Auswirkungen und Abschlussdokumentation.
 
 ## Tägliche Lovable-Prompt-Steuerung
 
-Der unveränderliche Ausgangsplan steht in `docs/LOVABLE-PROMPT-PLAN-2026-09-06.md`. Die operative Bilanz wird hier fortgeschrieben.
+Der unveränderliche Ausgangsplan steht in `docs/LOVABLE-PROMPT-PLAN-2026-09-06.md`. Die operative Bilanz berücksichtigt tatsächlich gestartete Läufe, auch wenn ein Lauf nach einem Precheck ohne Implementierung endet.
 
 <!-- prettier-ignore -->
 | Sprint | Plan laut Snapshot | Verbraucht | Noch erwartet | Status / Lovable-Grund |
 |---|---:|---:|---:|---|
 | BSF-02C Abschluss | 0–1 | **1** | **0** | DONE; offizieller B2-Advisor-/Abnahmelauf |
-| BSF-03 | 1–2 | 0 | 1–2 | UI/Preview sowie ggf. ausdrücklich freigegebene DB-/RLS-Arbeit |
+| BSF-03 | 1–2 | **1** | **2–3** | IN ARBEIT; erster Lauf endete nach Precheck ohne Implementierung; 1A + 1B + ggf. UI/Preview offen |
 | BSF-03D | 1–2 | 0 | 1–2 | Stammdaten-/UI-Preview; DB nur nach Governance |
 | BSF-03A | 2–3 | 0 | 2–3 | Filter, Tabellen, Summen, Rollen-Preview |
 | BSF-03B | 2–3 | 0 | 2–3 | Prüfsicht, Finalisierung, Export-Preview |
@@ -88,20 +75,12 @@ Der unveränderliche Ausgangsplan steht in `docs/LOVABLE-PROMPT-PLAN-2026-09-06.
 | BSF-DOC-03 | 1–2 | 0 | 1–2 | Navigation / Board-Preview |
 | BSF-04 | 2–3 | 0 | 2–3 | Persistenz-/Providergrenzen; DB-Arbeit nur nach Governance |
 | BSF-04A | 2–3 | 0 | 2–3 | Template-/Serien-Preview und ggf. kontrollierte Persistenz |
-| **GESAMT bis einschließlich BSF-04A** | **13–23** | **1** | **12–22** | operative Gesamtbilanz |
-
-Zählregeln:
-
-- **Plan** bleibt der historische Snapshot und wird nicht rückwirkend angepasst.
-- **Verbraucht** zählt nur tatsächlich gestartete fachliche Lovable-Arbeitsläufe seit dem Snapshot.
-- **Noch erwartet** ist die aktuelle Restschätzung und darf sich begründet verändern.
-- Weniger Prompts als geplant sind kein Mangel; Qualität, Sicherheit, Tests, Dokumentation und sauberer GitHub-Integrationsweg sind maßgeblich.
-- Nach jedem Lovable-Lauf wird die Bilanz fortgeschrieben.
+| **GESAMT bis einschließlich BSF-04A** | **13–23** | **2** | **13–23** | Restschätzung erhöht, weil der erste BSF-03-Lauf nur Precheck war |
 
 ## Verbindliche operative Reihenfolge
 
 1. **BSF-02 / BSF-02C — DONE**
-2. **BSF-03 — NÄCHSTER PUNKT**
+2. **BSF-03 — IN ARBEIT**
 3. **BSF-03D — GEPLANT**
 4. **BSF-03A — GEPLANT**
 5. **BSF-03B — GEPLANT**
@@ -125,8 +104,8 @@ Zählregeln:
 ### BSF-03D — Arbeitspaket-Kategorien (#103)
 
 - systemhausweite editierbare Stammdaten,
-- Standard: keine Kategorie,
-- optional maximal eine Hauptkategorie pro Arbeitspaket,
+- Default keine Kategorie,
+- optional maximal eine Hauptkategorie je Arbeitspaket,
 - freie Tags bleiben separat,
 - stabile Key-/ID-Identität,
 - Kategorie erzwingt weder Billable noch Priorität noch Status.
@@ -143,7 +122,7 @@ Zählregeln:
 
 - Leistungsnachweis, keine Rechnung,
 - Kunde + fester Zeitraum,
-- billable/non-billable in Prüfsicht,
+- billable/non-billable gemeinsam in Prüfsicht,
 - Teamlead darf Billable vor Finalisierung ändern,
 - unveränderbarer finaler Snapshot,
 - Doppelverwendung verhindern,
@@ -180,17 +159,16 @@ BSF-04A folgt danach mit Templates und wiederkehrenden Serien; Templates sind Vo
 
 ## Definition of Done ab BSF
 
-Ein Fachpunkt ist erst DONE, wenn je nach betroffenem Scope neben Code und Tests auch die erforderlichen Dokumentations- und Evidenzflächen aktuell sind:
+Ein Fachpunkt ist erst DONE, wenn neben Code und Tests alle betroffenen Evidenz-/Dokumentationsflächen aktuell sind:
 
 - technische Dokumentation,
-- kontextsensitive Hilfe / Benutzerhandbuch, sofern UI oder Bedienung betroffen sind,
-- Entwicklungstagebuch bzw. datierter Abschlussnachweis,
-- `docs/CURRENT-STATUS.md`, soweit dessen langfristiger Status betroffen ist,
+- kontextsensitive Hilfe / Benutzerhandbuch, sofern UI oder Bedienung betroffen ist,
+- Entwicklungstagebuch bzw. Abschlussnachweis,
+- `docs/CURRENT-STATUS.md`, soweit betroffen,
 - technischer Prüfbericht / CI-Quality-Gate-Evidenz,
 - Security-/RBAC-/RLS-Nachweise,
-- SYSING-001 ab seiner BSF-Fortschreibung.
-
-Bei reinem Backend-/Datenpfad ohne neue Bedienoberfläche entsteht keine künstliche Hilfe-/Handbuchänderung.
+- SYSING-001 ab seiner BSF-Fortschreibung,
+- vollständige Required Checks auf dem Exact Head.
 
 ## Architekturhinweis
 
@@ -202,4 +180,4 @@ Die fachliche Customer-Identität bleibt:
 
 ## Fachlicher roter Faden
 
-`BSF-03 → BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → Dokumentationsblock → BSF-04 → BSF-04A → BSF-05 ff.`
+`BSF-03 → BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → Dokumentationsblock → BSF-04 → BSF-04A → BSF-05 → BSF-06 → BSF-07 → BSF-09 → BSF-10 → BSF-FINAL → INTEGRATION-READINESS`
