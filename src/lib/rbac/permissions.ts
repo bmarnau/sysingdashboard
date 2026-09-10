@@ -42,7 +42,8 @@ export type Permission =
   | "avkk.responsibility.assign"
   | "avkk.management.view"
   | "referencedata.view"
-  | "referencedata.manage";
+  | "referencedata.manage"
+  | "customer.responsibility.manage";
 
 export const ALL_PERMISSIONS: readonly Permission[] = [
   "dashboard.view",
@@ -65,6 +66,7 @@ export const ALL_PERMISSIONS: readonly Permission[] = [
   "avkk.management.view",
   "referencedata.view",
   "referencedata.manage",
+  "customer.responsibility.manage",
 ] as const;
 
 export const PERMISSION_LABEL: Record<Permission, string> = {
@@ -88,6 +90,7 @@ export const PERMISSION_LABEL: Record<Permission, string> = {
   "avkk.management.view": "AVKK-Führungssicht ansehen",
   "referencedata.view": "Kataloge lesen",
   "referencedata.manage": "Kataloge pflegen",
+  "customer.responsibility.manage": "Kundenverantwortung verwalten",
 };
 
 /**
@@ -122,6 +125,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "avkk.management.view",
     "referencedata.view",
     "referencedata.manage",
+    "customer.responsibility.manage",
   ],
   administrator: [
     "dashboard.view",
@@ -142,6 +146,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "avkk.management.view",
     "referencedata.view",
     "referencedata.manage",
+    "customer.responsibility.manage",
   ],
   teamlead: [
     "dashboard.view",
@@ -156,6 +161,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "avkk.responsibility.assign",
     "avkk.management.view",
     "referencedata.view",
+    "customer.responsibility.manage",
   ],
   projectmanager: [
     "dashboard.view",
