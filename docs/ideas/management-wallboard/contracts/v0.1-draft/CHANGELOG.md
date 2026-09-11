@@ -31,7 +31,8 @@ Added:
 
 Versioning note:
 
-- the Management-Wallboard TDF document currently remains `0.6.0-draft`,
+- the Management-Wallboard TDF document is now `0.7.0-draft`,
+- the previous Management-Wallboard TDF document `0.6.0-draft` remains historical and is not overwritten,
 - the JSON contract package and its producer requirements are versioned independently as `0.1.0-draft`,
 - the draft package has not been declared externally binding or production-ready,
 - no released production contract has been overwritten.
