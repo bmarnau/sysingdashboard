@@ -3,7 +3,8 @@
 Status: **DRAFT / CONTRACT PLANNING ONLY**  
 Contract version: **0.1.0-draft**  
 Date: **2026-09-11**  
-Related: Issue #123, Issue #125, Draft PR #124
+Related: Issue #123, Issue #125, Draft PR #124  
+Management document: `TDF-Operatives-Management-Wallboard_0.7.0-draft.md`
 
 ## 1. Purpose
 
@@ -38,9 +39,11 @@ Responsible for:
 - reading source systems such as SharePoint, PRTG and Exchange Online,
 - mapping source-specific values to the agreed contract,
 - supplying syntactically valid JSON,
-- stable source identifiers,
-- correct timestamps and source status,
+- stable source identifiers and relationship references,
+- correct timestamps, source status and freshness,
+- mapping/provenance documentation,
 - data quality on the producer side,
+- retry/idempotency behavior,
 - test deliveries for contract acceptance.
 
 Detailed producer and quality requirements are defined in `EXTERNAL-DATA-TEAM-REQUIREMENTS.md`.
@@ -79,7 +82,7 @@ Source-specific acquisition stays outside the Sysing Dashboard UI. The JSON cont
 | --- | --- | --- |
 | C0 | now | scope, responsibility boundary, non-impact rules |
 | C1 | parallel to BSF-03 | JSON Schema 0.1 draft + examples + producer quality profile |
-| C2 | after external-team feedback | field review and 0.2 draft |
+| C2 | after external-team feedback | field/semantic/freshness review and next draft |
 | C3 | before BSF-05 | compatibility, evolution and validation rules stabilized |
 | C4 | BSF-05 after BSF-04 decisions | contract 1.0 candidate / binding interface |
 | C5 | BSF-05 or later | productive importer, monitoring and persistence |
@@ -111,6 +114,7 @@ Every delivery contains at least:
 - `producer`,
 - `scope.systemhouseId`,
 - `completeness.snapshotComplete`,
+- `completeness.missingDomains`,
 - `sourceStatus`,
 - `data`.
 
@@ -132,16 +136,9 @@ Delta delivery is deliberately reserved for later contract versions and must not
 
 ## 9. Freshness and partial source failure
 
-Each source has a `sourceStatus` entry with:
+Each source has a `sourceStatus` entry with source name, state (`ok`, `delayed`, `stale`, `error`), observation time and optional non-sensitive message/code.
 
-- source name,
-- state (`ok`, `delayed`, `stale`, `error`),
-- observation time,
-- optional message/code that contains no secret or personal content.
-
-A source failure must not invalidate unrelated domains. The consumer can therefore display healthy management areas while marking one source as unavailable/stale.
-
-The producer-side freshness targets and data-quality SLOs are documented in `EXTERNAL-DATA-TEAM-REQUIREMENTS.md` and remain draft values until joint review.
+A source failure must not invalidate unrelated domains. The producer-side freshness targets and data-quality SLOs are documented in `EXTERNAL-DATA-TEAM-REQUIREMENTS.md` and remain draft values until joint review.
 
 ## 10. Identity rules
 
@@ -167,18 +164,21 @@ No external team must know internal database primary keys. Final identity/matchi
 
 ## 12. Versioning
 
-`schemaVersion` follows semantic versioning once the contract reaches 1.0.
+The two lifecycles are deliberately separate:
 
-During draft development:
+- Management TDF: `0.7.0-draft`,
+- JSON contract + producer requirements: `0.1.0-draft`.
 
-- `0.1.x` - first shared field contract,
+The previous management version `0.6.0-draft` remains historical and is not silently overwritten.
+
+During contract development:
+
+- `0.1.x` - first shared field and producer-quality contract,
 - `0.2.x` - external-team feedback / field refinement,
 - `0.x` - compatibility hardening,
 - `1.0.0` - first binding production contract after BSF-04/BSF-05 review.
 
-Each published schema version is immutable. Changes create a new versioned schema file/package.
-
-The TDF Management document has its own document-version lifecycle and must not be confused with the JSON contract version.
+Each published schema version is immutable. Changes create a new versioned schema/package.
 
 ## 13. Files in this package
 
@@ -202,9 +202,9 @@ C1 is complete when:
 - both valid examples conform to the schema,
 - the invalid example is rejected,
 - detailed producer quality requirements are reviewable,
-- no production secret or personal data is present,
+- no production secret or prohibited personal data is present,
 - the package does not reference internal DB tables as external contract fields,
-- Issue #123 and the TDF management concept point to the contract package,
+- Issue #123, Issue #125 and the TDF management concept point to the contract package,
 - no existing sprint status is changed.
 
 ## 15. Open decisions
@@ -220,6 +220,7 @@ The following remain deliberately open until later stages:
 - final SharePoint field mapping,
 - exact leave definition for "next week",
 - exact Exchange counting rules,
+- PRTG special-state mapping,
 - final freshness SLOs,
 - persistence and conflict strategy,
 - retention and audit periods.
