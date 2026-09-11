@@ -4,7 +4,8 @@ Status: **DRAFT / CONTRACT PLANNING ONLY**
 Contract version: **0.1.0-draft**  
 Date: **2026-09-11**  
 Related: Issue #123, Issue #125, Draft PR #124  
-Management document: `TDF-Operatives-Management-Wallboard_0.7.0-draft.md`
+Management document: `TDF-Operatives-Management-Wallboard_0.7.1-draft.md`  
+Producer requirements document: `EXTERNAL-DATA-TEAM-REQUIREMENTS_0.1.1-draft.md`
 
 ## Purpose
 
@@ -20,7 +21,7 @@ The external team owns source acquisition, deterministic mapping, stable source 
 
 The Sysing Dashboard owns contract versioning, consumer-side schema/scope validation, later provider adapter/persistence/projection, RBAC/RLS, partial-failure handling and wallboard presentation.
 
-Detailed producer requirements: `EXTERNAL-DATA-TEAM-REQUIREMENTS.md`.
+Detailed producer requirements: `EXTERNAL-DATA-TEAM-REQUIREMENTS_0.1.1-draft.md`.
 
 ## Contract maturity
 
@@ -39,17 +40,18 @@ Projects, work packages, activities, aggregated absence/leave, aggregated PRTG i
 
 ## Versioning
 
-- Management TDF: `0.7.0-draft`
-- JSON contract + producer requirements: `0.1.0-draft`
+- Management TDF: `0.7.1-draft`
+- Producer requirements document: `0.1.1-draft`
+- JSON contract/schema package: `0.1.0-draft`
 
-The previous management version `0.6.0-draft` remains historical. Contract 1.0 remains gated by BSF-04/BSF-05.
+The management version `0.7.0-draft` and producer requirements `0.1.0-draft` remain historical predecessor states. The JSON schema is unchanged by the TDF/accessibility patch. Contract 1.0 remains gated by BSF-04/BSF-05.
 
 ## Package contents
 
 - `wallboard-management-data.schema.json`
 - `FIELD-CATALOG.md`
 - `VALIDATION.md`
-- `EXTERNAL-DATA-TEAM-REQUIREMENTS.md`
+- `EXTERNAL-DATA-TEAM-REQUIREMENTS_0.1.1-draft.md`
 - positive/negative JSON examples
 - `CHANGELOG.md`
 
