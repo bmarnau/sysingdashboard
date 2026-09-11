@@ -16,7 +16,7 @@ authorship: ChatGPT (OpenAI), fachlich gesteuert durch Bernd Marnau und GF-Rueck
 
 ![Konzeptvisualisierung des operativen Management-Wallboards mit getrennten SharePoint-Kacheln fuer Projekte, Arbeitspakete, Taetigkeiten und Urlaub, PRTG-Infrastrukturstatus sowie reinen Exchange-Online-Postfachzaehlwerten.](assets/management-wallboard-v0.5.0-draft.jpg)
 
-*Abbildung 1 - Management-Wallboard nach GF-Feedback. KI-generierte Konzeptvisualisierung mit ChatGPT/OpenAI; Werte sind illustrativ, keine Produktabbildung.*
+_Abbildung 1 - Management-Wallboard nach GF-Feedback. KI-generierte Konzeptvisualisierung mit ChatGPT/OpenAI; Werte sind illustrativ, keine Produktabbildung._
 
 **Status:** IDEA / CONCEPT ONLY - keine Implementierungsfreigabe.
 
@@ -43,14 +43,14 @@ Die Geschaeftsfuehrung wuenscht fuer einen grossen Monitor im Systemhaus eine da
 
 Die sechs gewuenschten Bereiche bleiben:
 
-| Bereich | Gewuenschte Darstellung | Fachliche Quelle |
-| --- | --- | --- |
-| Projekte | eigene Kachel; Anzahl und Ampelstatus | SharePoint |
-| Arbeitspakete | eigene Kachel; Anzahl und Ampelstatus | SharePoint |
-| Taetigkeiten | eigene Kachel; Anzahl und Ampelstatus | SharePoint |
-| Urlaub / Abwesenheit | aggregierte Anzahl diese / naechste Woche | SharePoint |
-| Infrastruktur | aggregierte Sensorlage OK/Warnung/Kritisch | PRTG |
-| Support-Postfach | Anzahl gesamt, heute, gestern, aelter | Exchange Online |
+| Bereich              | Gewuenschte Darstellung                    | Fachliche Quelle |
+| -------------------- | ------------------------------------------ | ---------------- |
+| Projekte             | eigene Kachel; Anzahl und Ampelstatus      | SharePoint       |
+| Arbeitspakete        | eigene Kachel; Anzahl und Ampelstatus      | SharePoint       |
+| Taetigkeiten         | eigene Kachel; Anzahl und Ampelstatus      | SharePoint       |
+| Urlaub / Abwesenheit | aggregierte Anzahl diese / naechste Woche  | SharePoint       |
+| Infrastruktur        | aggregierte Sensorlage OK/Warnung/Kritisch | PRTG             |
+| Support-Postfach     | Anzahl gesamt, heute, gestern, aelter      | Exchange Online  |
 
 Neu ist die Verantwortungsgrenze:
 
@@ -63,14 +63,14 @@ Damit entfallen fuer das Sysing Dashboard im ersten Schritt eigene SharePoint-/P
 
 ## 2. Praezisierung gegenueber 0.5.0-draft
 
-| Thema | 0.5.0-draft | 0.6.0-draft | Auswirkung |
-| --- | --- | --- | --- |
-| Datenbeschaffung | Collector/Provider im Sysing-Konzept | anderes Team liefert Daten | klare organisatorische Grenze |
-| Integrationsgrenze | quellsystemspezifisch je Provider | ein versionierter JSON-Vertrag | geringere Kopplung |
-| Sprintauswirkung | spaetere Integrationsarbeit | Contract-Draft darf parallel entstehen | BSF-03 bleibt unberuehrt |
-| Persistenz | spaeter zu entscheiden | weiterhin spaeter zu entscheiden | BSF-04 bleibt frei |
-| BSF-05 | Canonical Import Model geplant | INT-CONTRACT-01 bereitet externen Vertrag vor | keine Vorwegnahme der Runtime |
-| Wallboard | Management-UI | unveraendert | BSF-07 bleibt Zielpunkt |
+| Thema              | 0.5.0-draft                          | 0.6.0-draft                                   | Auswirkung                    |
+| ------------------ | ------------------------------------ | --------------------------------------------- | ----------------------------- |
+| Datenbeschaffung   | Collector/Provider im Sysing-Konzept | anderes Team liefert Daten                    | klare organisatorische Grenze |
+| Integrationsgrenze | quellsystemspezifisch je Provider    | ein versionierter JSON-Vertrag                | geringere Kopplung            |
+| Sprintauswirkung   | spaetere Integrationsarbeit          | Contract-Draft darf parallel entstehen        | BSF-03 bleibt unberuehrt      |
+| Persistenz         | spaeter zu entscheiden               | weiterhin spaeter zu entscheiden              | BSF-04 bleibt frei            |
+| BSF-05             | Canonical Import Model geplant       | INT-CONTRACT-01 bereitet externen Vertrag vor | keine Vorwegnahme der Runtime |
+| Wallboard          | Management-UI                        | unveraendert                                  | BSF-07 bleibt Zielpunkt       |
 
 **Architekturprinzip:** Das Datenformat ist frueh definierbar, die produktive Importtechnik bleibt spaeter entscheidbar.
 
@@ -121,23 +121,23 @@ flowchart LR
     PERS --> WALL
 ```
 
-*Abbildung 2 - Zielbild der neuen Verantwortungsgrenze. Quellsysteme und Beschaffung liegen ausserhalb der Sysing-UI; die Schnittstelle ist ein versionierter JSON-Vertrag.*
+_Abbildung 2 - Zielbild der neuen Verantwortungsgrenze. Quellsysteme und Beschaffung liegen ausserhalb der Sysing-UI; die Schnittstelle ist ein versionierter JSON-Vertrag._
 
 ### 4.1 Verantwortungsmatrix
 
-| Verantwortungsbereich | Externes Datenteam | Sysing Dashboard |
-| --- | :---: | :---: |
-| SharePoint auslesen | X | - |
-| PRTG auslesen | X | - |
-| Exchange-Zaehlwerte erzeugen | X | - |
-| Quellwerte in Contract-Felder mappen | X | review |
-| JSON-Syntax/Schema auf Producer-Seite pruefen | X | - |
-| JSON-Vertrag definieren/versionieren | review | X |
-| Consumer-Validierung | - | X |
-| Scope/RBAC/RLS | - | X |
-| Persistenz/Projektion | - | X |
-| Wallboard-UI | - | X |
-| Produktionsmonitoring | gemeinsam | X fuer Consumer |
+| Verantwortungsbereich                         | Externes Datenteam | Sysing Dashboard |
+| --------------------------------------------- | :----------------: | :--------------: |
+| SharePoint auslesen                           |         X          |        -         |
+| PRTG auslesen                                 |         X          |        -         |
+| Exchange-Zaehlwerte erzeugen                  |         X          |        -         |
+| Quellwerte in Contract-Felder mappen          |         X          |      review      |
+| JSON-Syntax/Schema auf Producer-Seite pruefen |         X          |        -         |
+| JSON-Vertrag definieren/versionieren          |       review       |        X         |
+| Consumer-Validierung                          |         -          |        X         |
+| Scope/RBAC/RLS                                |         -          |        X         |
+| Persistenz/Projektion                         |         -          |        X         |
+| Wallboard-UI                                  |         -          |        X         |
+| Produktionsmonitoring                         |     gemeinsam      | X fuer Consumer  |
 
 ---
 
@@ -162,7 +162,7 @@ flowchart LR
     C0 --> C1 --> C2 --> C3 --> C4 --> C5
 ```
 
-*Abbildung 3 - Reifeweg des Vertrags. Der Entwurf darf parallel entstehen; Runtime und Persistenz bleiben in der regulaeren Sprintfolge.*
+_Abbildung 3 - Reifeweg des Vertrags. Der Entwurf darf parallel entstehen; Runtime und Persistenz bleiben in der regulaeren Sprintfolge._
 
 ### 5.1 Nicht-Auswirkungsregel
 
@@ -199,14 +199,14 @@ Diese Artefakte sind maschinenlesbar und pruefbar. Damit kann das andere Team be
 
 ### 6.1 Zweck der Dateien
 
-| Datei | Zweck |
-| --- | --- |
-| README.md | fachlicher Vertrag, Verantwortungen, Regeln, offene Punkte |
-| JSON Schema | automatische Validierung der gelieferten JSON-Struktur |
-| valid-full-snapshot.json | positives Vollsnapshot-Beispiel |
-| valid-partial-source-error.json | Beispiel fuer Teilfehler ohne Gesamtausfall |
-| invalid-missing-schema-version.json | negativer Testfall |
-| CHANGELOG.md | nachvollziehbare Evolution des Vertrags |
+| Datei                               | Zweck                                                      |
+| ----------------------------------- | ---------------------------------------------------------- |
+| README.md                           | fachlicher Vertrag, Verantwortungen, Regeln, offene Punkte |
+| JSON Schema                         | automatische Validierung der gelieferten JSON-Struktur     |
+| valid-full-snapshot.json            | positives Vollsnapshot-Beispiel                            |
+| valid-partial-source-error.json     | Beispiel fuer Teilfehler ohne Gesamtausfall                |
+| invalid-missing-schema-version.json | negativer Testfall                                         |
+| CHANGELOG.md                        | nachvollziehbare Evolution des Vertrags                    |
 
 ---
 
@@ -417,12 +417,12 @@ Die bekannte offene Entscheidung bleibt bestehen: Ein dedizierter read-only Wall
 
 Geplanter Reifeweg:
 
-| Version | Bedeutung |
-| --- | --- |
-| 0.1.x | erster gemeinsamer Draft |
-| 0.2.x | Feedback des externen Teams |
-| 0.x | Kompatibilitaet, Validierung, Feldschaerfung |
-| 1.0.0 | erster verbindlicher Produktionsvertrag nach BSF-04/BSF-05 Review |
+| Version | Bedeutung                                                         |
+| ------- | ----------------------------------------------------------------- |
+| 0.1.x   | erster gemeinsamer Draft                                          |
+| 0.2.x   | Feedback des externen Teams                                       |
+| 0.x     | Kompatibilitaet, Validierung, Feldschaerfung                      |
+| 1.0.0   | erster verbindlicher Produktionsvertrag nach BSF-04/BSF-05 Review |
 
 Grundregeln:
 
@@ -436,18 +436,18 @@ Grundregeln:
 
 ## 14. Was bewusst offen bleibt
 
-| Thema | Warum noch offen |
-| --- | --- |
-| Transportmechanismus | Architektur-/Betriebsentscheidung noch nicht noetig |
-| Auth zwischen Teams | abhaengig von Deploy-/Netzwerkmodell |
-| Payload-Groesse/Batching | reale Datenmengen noch nicht vermessen |
-| Retry/Acknowledgement | Teil des spaeteren Runtime-Vertrags |
-| Delta-Import | erst nach Snapshot-Erfahrung und BSF-04 |
-| SharePoint-Feldmapping | muss mit realer Feldliste abgestimmt werden |
-| Urlaubsdefinition Folgewoche | fachliche GF-Entscheidung |
-| Exchange-Zaehlregel | Ordner/Zeitgrenzen noch zu bestaetigen |
-| Persistenz | BSF-04 |
-| produktiver Importer | BSF-05 |
+| Thema                        | Warum noch offen                                    |
+| ---------------------------- | --------------------------------------------------- |
+| Transportmechanismus         | Architektur-/Betriebsentscheidung noch nicht noetig |
+| Auth zwischen Teams          | abhaengig von Deploy-/Netzwerkmodell                |
+| Payload-Groesse/Batching     | reale Datenmengen noch nicht vermessen              |
+| Retry/Acknowledgement        | Teil des spaeteren Runtime-Vertrags                 |
+| Delta-Import                 | erst nach Snapshot-Erfahrung und BSF-04             |
+| SharePoint-Feldmapping       | muss mit realer Feldliste abgestimmt werden         |
+| Urlaubsdefinition Folgewoche | fachliche GF-Entscheidung                           |
+| Exchange-Zaehlregel          | Ordner/Zeitgrenzen noch zu bestaetigen              |
+| Persistenz                   | BSF-04                                              |
+| produktiver Importer         | BSF-05                                              |
 
 Diese offenen Punkte blockieren den Draft nicht.
 
@@ -483,13 +483,13 @@ Die urspruengliche Aufwandsschaetzung fuer den kompletten Wallboard-Pilot bleibt
 
 Fuer den vorgezogenen Contract-Track ist der Aufwand wesentlich kleiner:
 
-| Schritt | Ziel | Schaetzung |
-| --- | --- | ---: |
-| C0 | Vertragsrahmen / Verantwortungsgrenze | ca. 0,5 Prompt |
-| C1 | JSON Schema 0.1 + Beispiele + Doku | 1-2 Prompts |
-| C2 | Review nach externem Feedback | ca. 1 Prompt |
-| C3 | Compatibility / Evolution | ca. 1 Prompt |
-| C4 | 1.0-Abgleich in BSF-05 | ca. 1 Prompt |
+| Schritt | Ziel                                  |     Schaetzung |
+| ------- | ------------------------------------- | -------------: |
+| C0      | Vertragsrahmen / Verantwortungsgrenze | ca. 0,5 Prompt |
+| C1      | JSON Schema 0.1 + Beispiele + Doku    |    1-2 Prompts |
+| C2      | Review nach externem Feedback         |   ca. 1 Prompt |
+| C3      | Compatibility / Evolution             |   ca. 1 Prompt |
+| C4      | 1.0-Abgleich in BSF-05                |   ca. 1 Prompt |
 
 Diese Werte sind Planungswerte, keine Festpreise.
 
@@ -544,23 +544,23 @@ Das Wallboard bleibt fachlich unter BSF-07 verortet. Die produktive Import-/Inte
 
 ## 20. TDF-Abschlusscheck 0.6.0-draft
 
-| Pruefpunkt | Status | Nachweis / Bemerkung |
-| --- | --- | --- |
-| Zweck, Zielgruppe, Scope | PASS | Management-Wallboard und externe Datenlieferung klar abgegrenzt |
-| GF-Feedback | PASS | sechs Managementbereiche unveraendert |
-| neue Teamgrenze | PASS | externes Team = Datenbeschaffung; Sysing = Vertrag/Import/UI |
-| Ist / Plan / Idee | PASS | IDEA ONLY, kein produktiver Import freigegeben |
-| bestehende Sprintfolge | PASS | unveraendert; INT-CONTRACT-01 nur parallel als Doku/Vertrag |
-| Providerneutralitaet | PASS | keine Supabase-Tabellen im externen Vertrag |
-| BSF-04 Schutz | PASS | Persistenz-/Synchronisationsstrategie bleibt offen |
-| BSF-05 Schutz | PASS | Runtime-Importer nicht vorgezogen |
-| Security / Least Privilege | PASS mit OPEN | Runtime-Auth/Transport spaeter; keine Secrets im Payload |
-| Datenschutz | PASS mit OPEN | Mail nur Zaehler; Urlaub nur aggregiert |
-| Teilfehler/Freshness | PASS | sourceStatus + incomplete snapshot vorgesehen |
-| Versionierung | PASS | Contract-Reifeweg 0.x -> 1.0 dokumentiert |
-| Testbarkeit | PASS | JSON Schema + positive/negative Beispiele vorgesehen |
-| Visuelle Kommunikation | PASS | Management-Hero + Mermaid-Architektur + Reifeweg |
-| Dokumentation/Traceability | PASS | Issue #123, PR #124, INT-CONTRACT-01 |
+| Pruefpunkt                 | Status        | Nachweis / Bemerkung                                            |
+| -------------------------- | ------------- | --------------------------------------------------------------- |
+| Zweck, Zielgruppe, Scope   | PASS          | Management-Wallboard und externe Datenlieferung klar abgegrenzt |
+| GF-Feedback                | PASS          | sechs Managementbereiche unveraendert                           |
+| neue Teamgrenze            | PASS          | externes Team = Datenbeschaffung; Sysing = Vertrag/Import/UI    |
+| Ist / Plan / Idee          | PASS          | IDEA ONLY, kein produktiver Import freigegeben                  |
+| bestehende Sprintfolge     | PASS          | unveraendert; INT-CONTRACT-01 nur parallel als Doku/Vertrag     |
+| Providerneutralitaet       | PASS          | keine Supabase-Tabellen im externen Vertrag                     |
+| BSF-04 Schutz              | PASS          | Persistenz-/Synchronisationsstrategie bleibt offen              |
+| BSF-05 Schutz              | PASS          | Runtime-Importer nicht vorgezogen                               |
+| Security / Least Privilege | PASS mit OPEN | Runtime-Auth/Transport spaeter; keine Secrets im Payload        |
+| Datenschutz                | PASS mit OPEN | Mail nur Zaehler; Urlaub nur aggregiert                         |
+| Teilfehler/Freshness       | PASS          | sourceStatus + incomplete snapshot vorgesehen                   |
+| Versionierung              | PASS          | Contract-Reifeweg 0.x -> 1.0 dokumentiert                       |
+| Testbarkeit                | PASS          | JSON Schema + positive/negative Beispiele vorgesehen            |
+| Visuelle Kommunikation     | PASS          | Management-Hero + Mermaid-Architektur + Reifeweg                |
+| Dokumentation/Traceability | PASS          | Issue #123, PR #124, INT-CONTRACT-01                            |
 
 **TDF-Gesamtergebnis:** PASS MIT OFFENEN RUNTIME-/TRANSPORT-/SECURITY-ENTSCHEIDUNGEN. Der Contract-Draft kann parallel weiterentwickelt werden, ohne die aktive Produktentwicklung umzustellen.
 
@@ -568,25 +568,25 @@ Das Wallboard bleibt fachlich unter BSF-07 verortet. Die produktive Import-/Inte
 
 ## 21. Quellen und Traceability
 
-| Quelle | Verwendung |
-| --- | --- |
-| TDF Operatives Management-Wallboard 0.5.0-draft | Ausgangskonzept |
-| GF-Feedback 11.09.2026 | getrennte Projekte/AP/Taetigkeiten, Urlaub, reine Mail-Zaehler |
-| GitHub Issue #123 | Ideenspeicher / Scope |
-| Draft PR #124 | Dokumentationsbranch |
-| GESAMTPLAN-SYSING-DASHBOARD.md | strategische Sprintfolge |
-| SPRINT-PLAN-MVP-BSF.md | operative Sprintfolge / Nicht-Unterbrechungsregel |
-| INT-CONTRACT-01 v0.1-draft | externer JSON-Vertragsentwurf |
+| Quelle                                          | Verwendung                                                     |
+| ----------------------------------------------- | -------------------------------------------------------------- |
+| TDF Operatives Management-Wallboard 0.5.0-draft | Ausgangskonzept                                                |
+| GF-Feedback 11.09.2026                          | getrennte Projekte/AP/Taetigkeiten, Urlaub, reine Mail-Zaehler |
+| GitHub Issue #123                               | Ideenspeicher / Scope                                          |
+| Draft PR #124                                   | Dokumentationsbranch                                           |
+| GESAMTPLAN-SYSING-DASHBOARD.md                  | strategische Sprintfolge                                       |
+| SPRINT-PLAN-MVP-BSF.md                          | operative Sprintfolge / Nicht-Unterbrechungsregel              |
+| INT-CONTRACT-01 v0.1-draft                      | externer JSON-Vertragsentwurf                                  |
 
 ---
 
 ## 22. Versionshistorie
 
-| Version | Datum | Aenderung | AI-Unterstuetzung |
-| --- | --- | --- | --- |
-| 0.1 historisch | 11.09.2026 | erstes Wallboard-Konzept | Ja - ChatGPT/OpenAI |
-| 0.2 historisch | 11.09.2026 | TDF-Managementfassung, Betriebsart, Aufwand | Ja - ChatGPT/OpenAI |
-| 0.3 historisch | 11.09.2026 | GF-Feedback: getrennte Ebenen, Urlaub, reduzierte Mail-Sicht | Ja - ChatGPT/OpenAI |
-| 0.4 historisch | 11.09.2026 | Visualisierung und Simplicity-Test geschaerft | Ja - ChatGPT/OpenAI |
-| 0.5.0-draft | 11.09.2026 | TDF-SemVer, A11y-/Layout-Check, konsolidierte Managementfassung | Ja - ChatGPT/OpenAI |
+| Version         | Datum          | Aenderung                                                                                                                                                           | AI-Unterstuetzung                                              |
+| --------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 0.1 historisch  | 11.09.2026     | erstes Wallboard-Konzept                                                                                                                                            | Ja - ChatGPT/OpenAI                                            |
+| 0.2 historisch  | 11.09.2026     | TDF-Managementfassung, Betriebsart, Aufwand                                                                                                                         | Ja - ChatGPT/OpenAI                                            |
+| 0.3 historisch  | 11.09.2026     | GF-Feedback: getrennte Ebenen, Urlaub, reduzierte Mail-Sicht                                                                                                        | Ja - ChatGPT/OpenAI                                            |
+| 0.4 historisch  | 11.09.2026     | Visualisierung und Simplicity-Test geschaerft                                                                                                                       | Ja - ChatGPT/OpenAI                                            |
+| 0.5.0-draft     | 11.09.2026     | TDF-SemVer, A11y-/Layout-Check, konsolidierte Managementfassung                                                                                                     | Ja - ChatGPT/OpenAI                                            |
 | **0.6.0-draft** | **11.09.2026** | **externes Datenteam, providerneutraler JSON-Vertrag, INT-CONTRACT-01, Contract-Package, Snapshot-/Freshness-/Teilfehler-Semantik und Backlog-Einordnung ergaenzt** | **Ja - ChatGPT/OpenAI; fachlich durch Bernd Marnau gesteuert** |

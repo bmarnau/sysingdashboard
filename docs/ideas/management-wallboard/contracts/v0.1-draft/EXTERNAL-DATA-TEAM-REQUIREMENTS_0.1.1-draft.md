@@ -189,30 +189,30 @@ Zu dokumentieren sind Postfach, Ordner, Zeitzone der Tagesgrenzen, Umgang mit ge
 
 ## 8. Datenqualitaetsziele
 
-| Kriterium | Ziel 0.1-Draft |
-| --- | ---: |
-| JSON syntaktisch gueltig | 100 % |
-| Schema-valid bei lieferfaehigen Payloads | 100 % |
-| Pflichtfelder vorhanden | 100 % |
-| `deliveryId` formal gueltig/eindeutig | 100 % |
-| Source-IDs innerhalb einer Domaene eindeutig | 100 % |
+| Kriterium                                      |         Ziel 0.1-Draft |
+| ---------------------------------------------- | ---------------------: |
+| JSON syntaktisch gueltig                       |                  100 % |
+| Schema-valid bei lieferfaehigen Payloads       |                  100 % |
+| Pflichtfelder vorhanden                        |                  100 % |
+| `deliveryId` formal gueltig/eindeutig          |                  100 % |
+| Source-IDs innerhalb einer Domaene eindeutig   |                  100 % |
 | Projekt -> AP -> Taetigkeit Referenzen korrekt | 100 % bei Vollsnapshot |
-| Zeitstempel formal gueltig | 100 % |
-| negative Zaehler | 0 % |
-| verbotene Mail-/Abwesenheitsdetails | 0 % |
-| unmarkierte Teilfehler | 0 % |
-| erfundene/geschaetzte Werte | 0 % |
+| Zeitstempel formal gueltig                     |                  100 % |
+| negative Zaehler                               |                    0 % |
+| verbotene Mail-/Abwesenheitsdetails            |                    0 % |
+| unmarkierte Teilfehler                         |                    0 % |
+| erfundene/geschaetzte Werte                    |                    0 % |
 
 Diese Ziele bewerten die Lieferung, nicht die Qualitaet des urspruenglichen Fachsystems. Quellmaengel muessen transparent gekennzeichnet werden.
 
 ## 9. Freshness
 
-| Domaene | Ziel-Aktualisierung | Stale-Pruefung ab |
-| --- | ---: | ---: |
-| Projekte/AP/Taetigkeiten | <= 10 Minuten | > 30 Minuten |
-| Urlaub/Abwesenheit | <= 60 Minuten | > 4 Stunden |
-| PRTG | ca. 2 Minuten | > 6 Minuten |
-| Support-Postfach | <= 5 Minuten | > 15 Minuten |
+| Domaene                  | Ziel-Aktualisierung | Stale-Pruefung ab |
+| ------------------------ | ------------------: | ----------------: |
+| Projekte/AP/Taetigkeiten |       <= 10 Minuten |      > 30 Minuten |
+| Urlaub/Abwesenheit       |       <= 60 Minuten |       > 4 Stunden |
+| PRTG                     |       ca. 2 Minuten |       > 6 Minuten |
+| Support-Postfach         |        <= 5 Minuten |      > 15 Minuten |
 
 Diese Werte sind `0.1-draft`-Planungswerte und werden vor Contract 1.0 gemeinsam bestaetigt. Ein `ok`-Status ist unzulaessig, wenn der Datenstand bereits oberhalb der vereinbarten Stale-Schwelle liegt.
 
@@ -320,11 +320,11 @@ Das externe Team liefert fuer C1/C2:
 
 Das Contract-Paket `0.1.0-draft` wurde im TDF-Abschlusscheck real gegen das Schema geprueft:
 
-| Test | Ergebnis |
-| --- | --- |
-| Schema Draft 2020-12 strukturell | PASS |
-| `valid-full-snapshot.json` | PASS |
-| `valid-partial-source-error.json` | PASS |
+| Test                                  | Ergebnis               |
+| ------------------------------------- | ---------------------- |
+| Schema Draft 2020-12 strukturell      | PASS                   |
+| `valid-full-snapshot.json`            | PASS                   |
+| `valid-partial-source-error.json`     | PASS                   |
 | `invalid-missing-schema-version.json` | erwartungsgemaess FAIL |
 
 Damit ist die technische Grundtestbarkeit des Drafts nachgewiesen.
@@ -355,20 +355,20 @@ Die Lebenszyklen bleiben getrennt:
 
 ## 20. TDF-Abschlusscheck 0.1.1-draft
 
-| Pruefpunkt | Status |
-| --- | --- |
-| Zweck / Scope | PASS |
-| Verantwortungsgrenze | PASS |
-| Datenbereiche | PASS |
-| messbare Qualitaetsziele | PASS |
-| Datenschutzminimierung | PASS mit offenen Fachdefinitionen |
-| Security-Leitplanken | PASS mit spaeter Transportentscheidung |
-| Versionierung getrennt/nachvollziehbar | PASS |
-| BSF-03/04/05 nicht vorweggenommen | PASS |
-| Machine-readable Contract Validation | PASS |
-| DOCX Accessibility | PASS - 0 High / 0 Medium / 0 Low |
-| PDF/Layout | PASS - 10 Seiten, keine leeren Seiten/Clipping/Overlaps |
-| produktive Implementierung freigegeben | NEIN |
+| Pruefpunkt                             | Status                                                  |
+| -------------------------------------- | ------------------------------------------------------- |
+| Zweck / Scope                          | PASS                                                    |
+| Verantwortungsgrenze                   | PASS                                                    |
+| Datenbereiche                          | PASS                                                    |
+| messbare Qualitaetsziele               | PASS                                                    |
+| Datenschutzminimierung                 | PASS mit offenen Fachdefinitionen                       |
+| Security-Leitplanken                   | PASS mit spaeter Transportentscheidung                  |
+| Versionierung getrennt/nachvollziehbar | PASS                                                    |
+| BSF-03/04/05 nicht vorweggenommen      | PASS                                                    |
+| Machine-readable Contract Validation   | PASS                                                    |
+| DOCX Accessibility                     | PASS - 0 High / 0 Medium / 0 Low                        |
+| PDF/Layout                             | PASS - 10 Seiten, keine leeren Seiten/Clipping/Overlaps |
+| produktive Implementierung freigegeben | NEIN                                                    |
 
 **TDF-Gesamtergebnis:** PASS MIT BEWUSST OFFENEN C2-/TRANSPORTENTSCHEIDUNGEN.
 

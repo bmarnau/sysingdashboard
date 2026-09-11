@@ -116,26 +116,26 @@
         {
           "if": {
             "properties": {
-              "snapshotComplete": {"const": true}
+              "snapshotComplete": { "const": true }
             },
             "required": ["snapshotComplete"]
           },
           "then": {
             "properties": {
-              "missingDomains": {"maxItems": 0}
+              "missingDomains": { "maxItems": 0 }
             }
           }
         },
         {
           "if": {
             "properties": {
-              "snapshotComplete": {"const": false}
+              "snapshotComplete": { "const": false }
             },
             "required": ["snapshotComplete"]
           },
           "then": {
             "properties": {
-              "missingDomains": {"minItems": 1}
+              "missingDomains": { "minItems": 1 }
             }
           }
         }
@@ -207,7 +207,14 @@
     "workPackage": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["sourceId", "projectSourceId", "title", "status", "trafficLight", "lastChangedAt"],
+      "required": [
+        "sourceId",
+        "projectSourceId",
+        "title",
+        "status",
+        "trafficLight",
+        "lastChangedAt"
+      ],
       "properties": {
         "sourceId": {
           "type": "string",
@@ -239,7 +246,14 @@
     "activity": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["sourceId", "workPackageSourceId", "title", "status", "trafficLight", "lastChangedAt"],
+      "required": [
+        "sourceId",
+        "workPackageSourceId",
+        "title",
+        "status",
+        "trafficLight",
+        "lastChangedAt"
+      ],
       "properties": {
         "sourceId": {
           "type": "string",
@@ -292,11 +306,11 @@
       "additionalProperties": false,
       "required": ["ok", "warning", "critical", "total", "observedAt"],
       "properties": {
-        "ok": {"type": "integer", "minimum": 0},
-        "warning": {"type": "integer", "minimum": 0},
-        "critical": {"type": "integer", "minimum": 0},
-        "total": {"type": "integer", "minimum": 0},
-        "observedAt": {"type": "string", "format": "date-time"}
+        "ok": { "type": "integer", "minimum": 0 },
+        "warning": { "type": "integer", "minimum": 0 },
+        "critical": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 },
+        "observedAt": { "type": "string", "format": "date-time" }
       }
     },
     "supportMailbox": {
@@ -304,11 +318,11 @@
       "additionalProperties": false,
       "required": ["total", "today", "yesterday", "older", "observedAt"],
       "properties": {
-        "total": {"type": "integer", "minimum": 0},
-        "today": {"type": "integer", "minimum": 0},
-        "yesterday": {"type": "integer", "minimum": 0},
-        "older": {"type": "integer", "minimum": 0},
-        "observedAt": {"type": "string", "format": "date-time"}
+        "total": { "type": "integer", "minimum": 0 },
+        "today": { "type": "integer", "minimum": 0 },
+        "yesterday": { "type": "integer", "minimum": 0 },
+        "older": { "type": "integer", "minimum": 0 },
+        "observedAt": { "type": "string", "format": "date-time" }
       }
     },
     "data": {
@@ -317,19 +331,19 @@
       "properties": {
         "projects": {
           "type": "array",
-          "items": {"$ref": "#/$defs/project"}
+          "items": { "$ref": "#/$defs/project" }
         },
         "workPackages": {
           "type": "array",
-          "items": {"$ref": "#/$defs/workPackage"}
+          "items": { "$ref": "#/$defs/workPackage" }
         },
         "activities": {
           "type": "array",
-          "items": {"$ref": "#/$defs/activity"}
+          "items": { "$ref": "#/$defs/activity" }
         },
-        "absence": {"$ref": "#/$defs/absence"},
-        "infrastructure": {"$ref": "#/$defs/infrastructure"},
-        "supportMailbox": {"$ref": "#/$defs/supportMailbox"}
+        "absence": { "$ref": "#/$defs/absence" },
+        "infrastructure": { "$ref": "#/$defs/infrastructure" },
+        "supportMailbox": { "$ref": "#/$defs/supportMailbox" }
       }
     }
   }

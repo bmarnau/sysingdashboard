@@ -225,19 +225,19 @@ Fuer einen Vollsnapshot muessen die Altersklassen fachlich konsistent sein. Abwe
 
 ## 8. Datenqualitaetsziele
 
-| Kriterium | Ziel fuer 0.1-Draft |
-| --- | ---: |
-| JSON syntaktisch gueltig | 100 % |
-| Schema-valid bei als lieferfaehig markierten Payloads | 100 % |
-| Pflichtfelder vorhanden | 100 % |
-| `deliveryId` formal gueltig und eindeutig | 100 % |
-| Source-IDs innerhalb einer Domaene eindeutig | 100 % |
-| Referenzen Projekt -> AP -> Taetigkeit korrekt | 100 % bei Vollsnapshot |
-| Zeitstempel formal gueltig | 100 % |
-| negative Zaehler | 0 % zulassen |
-| verbotene Mail-/Abwesenheitsdetails | 0 % |
-| unmarkierte Teilfehler | 0 % |
-| erfundene/geschaetzte Werte | 0 % |
+| Kriterium                                             |    Ziel fuer 0.1-Draft |
+| ----------------------------------------------------- | ---------------------: |
+| JSON syntaktisch gueltig                              |                  100 % |
+| Schema-valid bei als lieferfaehig markierten Payloads |                  100 % |
+| Pflichtfelder vorhanden                               |                  100 % |
+| `deliveryId` formal gueltig und eindeutig             |                  100 % |
+| Source-IDs innerhalb einer Domaene eindeutig          |                  100 % |
+| Referenzen Projekt -> AP -> Taetigkeit korrekt        | 100 % bei Vollsnapshot |
+| Zeitstempel formal gueltig                            |                  100 % |
+| negative Zaehler                                      |           0 % zulassen |
+| verbotene Mail-/Abwesenheitsdetails                   |                    0 % |
+| unmarkierte Teilfehler                                |                    0 % |
+| erfundene/geschaetzte Werte                           |                    0 % |
 
 Diese Werte sind Contract-Qualitaetsziele, keine Aussage ueber die urspruengliche Fachsystemqualitaet. Wenn eine Quelle unvollstaendig oder fehlerhaft ist, muss dies transparent gekennzeichnet werden.
 
@@ -247,12 +247,12 @@ Jede Quelle liefert `observedAt` und `sourceStatus.state` aus `ok`, `delayed`, `
 
 Vorgeschlagene Pilot-SLOs zur Abstimmung:
 
-| Domaene | Ziel-Aktualisierung | Stale-Pruefung ab |
-| --- | ---: | ---: |
-| Projekte/AP/Taetigkeiten | <= 10 Minuten | > 30 Minuten |
-| Urlaub/Abwesenheit | <= 60 Minuten | > 4 Stunden |
-| PRTG | ca. 2 Minuten | > 6 Minuten |
-| Support-Postfach | <= 5 Minuten | > 15 Minuten |
+| Domaene                  | Ziel-Aktualisierung | Stale-Pruefung ab |
+| ------------------------ | ------------------: | ----------------: |
+| Projekte/AP/Taetigkeiten |       <= 10 Minuten |      > 30 Minuten |
+| Urlaub/Abwesenheit       |       <= 60 Minuten |       > 4 Stunden |
+| PRTG                     |       ca. 2 Minuten |       > 6 Minuten |
+| Support-Postfach         |        <= 5 Minuten |      > 15 Minuten |
 
 Diese Schwellen sind **0.1-Draft-Planungswerte**. Ein `ok`-Status ist unzulaessig, wenn der Datenstand bereits oberhalb der vereinbarten Stale-Schwelle liegt.
 
@@ -432,17 +432,17 @@ INT-CONTRACT-01 bleibt eine parallele Vertragsvorbereitung. Dieser Draft erzeugt
 
 ## 22. TDF-Abschlusscheck 0.1.0-draft
 
-| Pruefpunkt | Status |
-| --- | --- |
-| Zweck/Scope klar | PASS |
-| Verantwortungsgrenze klar | PASS |
-| Datenbereiche beschrieben | PASS |
-| Qualitaetsziele messbar | PASS |
-| Datenschutzminimierung | PASS mit offenen Fachdefinitionen |
-| Security-Leitplanken | PASS mit spaeterer Transportentscheidung |
-| Versionierung getrennt/nachvollziehbar | PASS |
-| BSF-03/04/05 nicht vorweggenommen | PASS |
-| Produktive Implementierung freigegeben | NEIN |
+| Pruefpunkt                             | Status                                   |
+| -------------------------------------- | ---------------------------------------- |
+| Zweck/Scope klar                       | PASS                                     |
+| Verantwortungsgrenze klar              | PASS                                     |
+| Datenbereiche beschrieben              | PASS                                     |
+| Qualitaetsziele messbar                | PASS                                     |
+| Datenschutzminimierung                 | PASS mit offenen Fachdefinitionen        |
+| Security-Leitplanken                   | PASS mit spaeterer Transportentscheidung |
+| Versionierung getrennt/nachvollziehbar | PASS                                     |
+| BSF-03/04/05 nicht vorweggenommen      | PASS                                     |
+| Produktive Implementierung freigegeben | NEIN                                     |
 
 **Empfohlener naechster Schritt:** Contract-Paket intern maschinenvalidieren und anschliessend dem externen Datenteam fuer C2/Feldreview uebergeben.
 

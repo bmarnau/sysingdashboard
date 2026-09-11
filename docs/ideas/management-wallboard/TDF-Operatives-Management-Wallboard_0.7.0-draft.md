@@ -33,14 +33,14 @@ Damit bleibt die aktive BSF-Sprintreihenfolge unveraendert. BSF-03 wird nicht un
 
 ## 2. Managementbereiche
 
-| Bereich | Managementanzeige | Datenquelle |
-| --- | --- | --- |
-| Projekte | Anzahl, Status, Ampellage | SharePoint |
-| Arbeitspakete | Anzahl, Status, Ampellage | SharePoint |
-| Taetigkeiten | offene/auffaellige Taetigkeiten und Status | SharePoint |
-| Urlaub / Abwesenheit | nur aggregierte Anzahl fuer diese und naechste Woche | SharePoint |
-| Infrastruktur | aggregierte Sensorlage OK / Warnung / Kritisch | PRTG |
-| Support-Postfach | nur Mengenwerte gesamt / heute / gestern / aelter | Exchange Online |
+| Bereich              | Managementanzeige                                    | Datenquelle     |
+| -------------------- | ---------------------------------------------------- | --------------- |
+| Projekte             | Anzahl, Status, Ampellage                            | SharePoint      |
+| Arbeitspakete        | Anzahl, Status, Ampellage                            | SharePoint      |
+| Taetigkeiten         | offene/auffaellige Taetigkeiten und Status           | SharePoint      |
+| Urlaub / Abwesenheit | nur aggregierte Anzahl fuer diese und naechste Woche | SharePoint      |
+| Infrastruktur        | aggregierte Sensorlage OK / Warnung / Kritisch       | PRTG            |
+| Support-Postfach     | nur Mengenwerte gesamt / heute / gestern / aelter    | Exchange Online |
 
 Nicht Bestandteil des Pilotvertrags sind Mailinhalte, Betreff, Absender, Empfaenger, Urlaubsgruende, Diagnosen oder personenbezogene Leistungsbewertungen.
 
@@ -128,13 +128,13 @@ Die detaillierten technischen Anforderungen stehen im separaten Contract-Dokumen
 
 Fuer das Management gelten insbesondere diese Steuerungsleitplanken:
 
-| Steuerungsdimension | Managementziel | Technischer Nachweis |
-| --- | --- | --- |
-| Vollstaendigkeit | entscheidungsrelevante Daten fehlen nicht stillschweigend | Schema + `snapshotComplete` / `missingDomains` |
-| Korrektheit | keine erfundenen oder kreativ interpretierten Werte | deterministische Mapping-Regeln + Producer-Tests |
-| Aktualitaet | jede Quelle ist zeitlich einordenbar | `observedAt` + Source-Status + Freshness-SLO |
-| Datenschutz | nur fuer das Wallboard erforderliche Informationen | keine Mailinhalte, Urlaub nur aggregiert, keine Secrets |
-| Betrieb | Teilfehler machen nicht das gesamte Managementbild unbrauchbar | per-source Fehlerstatus + Teilsnapshot-Semantik |
+| Steuerungsdimension | Managementziel                                                 | Technischer Nachweis                                    |
+| ------------------- | -------------------------------------------------------------- | ------------------------------------------------------- |
+| Vollstaendigkeit    | entscheidungsrelevante Daten fehlen nicht stillschweigend      | Schema + `snapshotComplete` / `missingDomains`          |
+| Korrektheit         | keine erfundenen oder kreativ interpretierten Werte            | deterministische Mapping-Regeln + Producer-Tests        |
+| Aktualitaet         | jede Quelle ist zeitlich einordenbar                           | `observedAt` + Source-Status + Freshness-SLO            |
+| Datenschutz         | nur fuer das Wallboard erforderliche Informationen             | keine Mailinhalte, Urlaub nur aggregiert, keine Secrets |
+| Betrieb             | Teilfehler machen nicht das gesamte Managementbild unbrauchbar | per-source Fehlerstatus + Teilsnapshot-Semantik         |
 
 Ziel fuer angenommene Lieferungen ist 100 % Schema-Gueltigkeit und 100 % Pflichtfeldabdeckung. Fuer verbotene sensible Inhalte, unmarkierte Teilfehler und erfundene/geschaetzte Werte gilt 0-%-Toleranz.
 
@@ -165,14 +165,14 @@ produktive Projektion ----------------> BSF-07 Management-Wallboard
 
 ## 10. Reifeweg
 
-| Stufe | Zeitpunkt | Ergebnis |
-| --- | --- | --- |
-| C0 | jetzt | Scope, Verantwortungsgrenze, Nicht-Auswirkungsregeln |
-| C1 | parallel zu BSF-03 | JSON Schema 0.1, Beispiele, Producer-Anforderungen |
-| C2 | nach Feedback des Datenteams | Feld-/Semantikreview, Contract 0.2 |
-| C3 | vor BSF-05 | Kompatibilitaet, Idempotenz, Evolution stabilisieren |
-| C4 | BSF-05 nach BSF-04 | verbindlicher Contract 1.0-Kandidat |
-| C5 | BSF-05/spaeter | produktiver Transport, Importer, Monitoring |
+| Stufe | Zeitpunkt                    | Ergebnis                                             |
+| ----- | ---------------------------- | ---------------------------------------------------- |
+| C0    | jetzt                        | Scope, Verantwortungsgrenze, Nicht-Auswirkungsregeln |
+| C1    | parallel zu BSF-03           | JSON Schema 0.1, Beispiele, Producer-Anforderungen   |
+| C2    | nach Feedback des Datenteams | Feld-/Semantikreview, Contract 0.2                   |
+| C3    | vor BSF-05                   | Kompatibilitaet, Idempotenz, Evolution stabilisieren |
+| C4    | BSF-05 nach BSF-04           | verbindlicher Contract 1.0-Kandidat                  |
+| C5    | BSF-05/spaeter               | produktiver Transport, Importer, Monitoring          |
 
 ## 11. Was bewusst offen bleibt
 
@@ -192,49 +192,49 @@ Diese Punkte werden bewusst nicht vor BSF-04/05 festgeschrieben.
 
 ## 12. Risiken und Gegenmassnahmen
 
-| Risiko | Wirkung | Gegenmassnahme |
-| --- | --- | --- |
-| Vertrag koppelt sich an Supabase | spaetere Migration wird schwer | externer Vertrag bleibt providerneutral |
-| Datenteam interpretiert Werte frei | Managementzahlen nicht belastbar | Mapping-Regeln, Provenienz und Producer-Tests |
-| Quelle faellt aus | Wallboard wirkt leer oder falsch | Source-Status, Freshness, Teilsnapshot |
-| sensible Daten gelangen ins Wallboard | Datenschutz-/IS-Risiko | strikte Datenminimierung und 0-%-Toleranz |
-| Contract-Track stoert BSF-03 | Prioritaetsverlust | keine Runtime-/DB-/RLS-Aenderungen in INT-CONTRACT-01 |
+| Risiko                                | Wirkung                          | Gegenmassnahme                                        |
+| ------------------------------------- | -------------------------------- | ----------------------------------------------------- |
+| Vertrag koppelt sich an Supabase      | spaetere Migration wird schwer   | externer Vertrag bleibt providerneutral               |
+| Datenteam interpretiert Werte frei    | Managementzahlen nicht belastbar | Mapping-Regeln, Provenienz und Producer-Tests         |
+| Quelle faellt aus                     | Wallboard wirkt leer oder falsch | Source-Status, Freshness, Teilsnapshot                |
+| sensible Daten gelangen ins Wallboard | Datenschutz-/IS-Risiko           | strikte Datenminimierung und 0-%-Toleranz             |
+| Contract-Track stoert BSF-03          | Prioritaetsverlust               | keine Runtime-/DB-/RLS-Aenderungen in INT-CONTRACT-01 |
 
 ## 13. TDF-Abschlusscheck 0.7.0-draft
 
-| Pruefpunkt | Status |
-| --- | --- |
-| Zweck, Zielgruppe, Scope | PASS |
-| Managementnutzen | PASS |
-| Verantwortungsgrenze | PASS |
-| Providerneutralitaet | PASS |
-| Nicht-Auswirkung auf BSF-03/04/05 | PASS |
-| Security-/Datenschutzleitplanken | PASS mit spaeteren Runtime-Entscheidungen |
-| Datenqualitaetsziele | PASS |
-| Versionierung getrennt/nachvollziehbar | PASS |
-| Testbarkeit | PASS geplant ueber Schema + Beispiele |
-| Produktive Implementierung freigegeben | NEIN |
+| Pruefpunkt                             | Status                                    |
+| -------------------------------------- | ----------------------------------------- |
+| Zweck, Zielgruppe, Scope               | PASS                                      |
+| Managementnutzen                       | PASS                                      |
+| Verantwortungsgrenze                   | PASS                                      |
+| Providerneutralitaet                   | PASS                                      |
+| Nicht-Auswirkung auf BSF-03/04/05      | PASS                                      |
+| Security-/Datenschutzleitplanken       | PASS mit spaeteren Runtime-Entscheidungen |
+| Datenqualitaetsziele                   | PASS                                      |
+| Versionierung getrennt/nachvollziehbar | PASS                                      |
+| Testbarkeit                            | PASS geplant ueber Schema + Beispiele     |
+| Produktive Implementierung freigegeben | NEIN                                      |
 
 **TDF-Gesamtergebnis:** PLANUNGS-/VERTRAGSDRAFT IST KONSISTENT. Keine Freigabe fuer produktive Integration.
 
 ## 14. Quellen und Traceability
 
-| Quelle | Verwendung |
-| --- | --- |
-| TDF Management-Wallboard `0.6.0-draft` | unmittelbare Vorversion |
-| GitHub Issue #123 | Wallboard-Idee / fachlicher Scope |
-| GitHub Issue #125 | INT-CONTRACT-01 / externe Datenlieferung |
-| Draft PR #124 | Dokumentations- und Contract-Branch |
-| `GESAMTPLAN-SYSING-DASHBOARD.md` | strategische Sprintfolge |
-| `SPRINT-PLAN-MVP-BSF.md` | operative Nicht-Unterbrechungsregel |
-| INT-CONTRACT-01 `0.1.0-draft` | technischer JSON- und Producer-Vertrag |
+| Quelle                                 | Verwendung                               |
+| -------------------------------------- | ---------------------------------------- |
+| TDF Management-Wallboard `0.6.0-draft` | unmittelbare Vorversion                  |
+| GitHub Issue #123                      | Wallboard-Idee / fachlicher Scope        |
+| GitHub Issue #125                      | INT-CONTRACT-01 / externe Datenlieferung |
+| Draft PR #124                          | Dokumentations- und Contract-Branch      |
+| `GESAMTPLAN-SYSING-DASHBOARD.md`       | strategische Sprintfolge                 |
+| `SPRINT-PLAN-MVP-BSF.md`               | operative Nicht-Unterbrechungsregel      |
+| INT-CONTRACT-01 `0.1.0-draft`          | technischer JSON- und Producer-Vertrag   |
 
 ## 15. Versionshistorie
 
-| Version | Datum | Aenderung |
-| --- | --- | --- |
-| 0.5.0-draft | 11.09.2026 | konsolidierte TDF-Managementfassung |
-| 0.6.0-draft | 11.09.2026 | externes Datenteam, JSON-Vertragsgrenze, Contract-Package, Snapshot/Freshness/Teilfehler |
+| Version         | Datum          | Aenderung                                                                                                                 |
+| --------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| 0.5.0-draft     | 11.09.2026     | konsolidierte TDF-Managementfassung                                                                                       |
+| 0.6.0-draft     | 11.09.2026     | externes Datenteam, JSON-Vertragsgrenze, Contract-Package, Snapshot/Freshness/Teilfehler                                  |
 | **0.7.0-draft** | **11.09.2026** | **separate technische Lieferanforderung 0.1.0-draft, messbare Datenqualitaetsziele und Management-Steuerungsleitplanken** |
 
 _AI-Transparenz: Inhalt, Struktur und Visualisierung wurden mit ChatGPT/OpenAI unter fachlicher Steuerung durch Bernd Marnau erstellt. KI-generierte Abbildungen sind Konzeptdarstellungen und keine Produktabbildungen._

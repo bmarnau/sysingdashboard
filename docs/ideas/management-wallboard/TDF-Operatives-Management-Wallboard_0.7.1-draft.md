@@ -31,14 +31,14 @@ Die aktive BSF-Sprintreihenfolge bleibt unveraendert. BSF-03 wird nicht unterbro
 
 ## 2. Managementbereiche
 
-| Bereich | Managementanzeige | Quelle |
-| --- | --- | --- |
-| Projekte | Anzahl, Status, Ampellage | SharePoint |
-| Arbeitspakete | Anzahl, Status, Ampellage | SharePoint |
-| Taetigkeiten | offene/auffaellige Taetigkeiten und Status | SharePoint |
-| Urlaub / Abwesenheit | nur aggregierte Anzahl fuer diese und naechste Woche | SharePoint |
-| Infrastruktur | aggregierte Sensorlage OK / Warnung / Kritisch | PRTG |
-| Support-Postfach | nur Mengenwerte gesamt / heute / gestern / aelter | Exchange Online |
+| Bereich              | Managementanzeige                                    | Quelle          |
+| -------------------- | ---------------------------------------------------- | --------------- |
+| Projekte             | Anzahl, Status, Ampellage                            | SharePoint      |
+| Arbeitspakete        | Anzahl, Status, Ampellage                            | SharePoint      |
+| Taetigkeiten         | offene/auffaellige Taetigkeiten und Status           | SharePoint      |
+| Urlaub / Abwesenheit | nur aggregierte Anzahl fuer diese und naechste Woche | SharePoint      |
+| Infrastruktur        | aggregierte Sensorlage OK / Warnung / Kritisch       | PRTG            |
+| Support-Postfach     | nur Mengenwerte gesamt / heute / gestern / aelter    | Exchange Online |
 
 Mailinhalte, Betreff, Absender, Empfaenger, Urlaubsgruende, Diagnosen und personenbezogene Leistungsbewertungen sind nicht Bestandteil des Wallboard-Vertrags.
 
@@ -82,13 +82,13 @@ Die externe Teamgrenze beschreibt **was** geliefert wird, nicht **wie** Sysing i
 
 ## 7. Lieferqualitaet - Managementsicht
 
-| Dimension | Ziel | Nachweis |
-| --- | --- | --- |
-| Vollstaendigkeit | keine still fehlenden Managementdaten | Schema + Completeness-Metadaten |
-| Korrektheit | keine erfundenen oder frei interpretierten Werte | Mapping + Producer-Tests |
-| Aktualitaet | Datenalter sichtbar und bewertbar | `observedAt` + Freshness-SLO |
-| Datenschutz | nur erforderliche Managementdaten | Mail nur Zaehler; Urlaub nur Aggregat; keine Secrets |
-| Betrieb | Teilfehler bleiben lokal sichtbar | per-source Status + Teilsnapshot |
+| Dimension        | Ziel                                             | Nachweis                                             |
+| ---------------- | ------------------------------------------------ | ---------------------------------------------------- |
+| Vollstaendigkeit | keine still fehlenden Managementdaten            | Schema + Completeness-Metadaten                      |
+| Korrektheit      | keine erfundenen oder frei interpretierten Werte | Mapping + Producer-Tests                             |
+| Aktualitaet      | Datenalter sichtbar und bewertbar                | `observedAt` + Freshness-SLO                         |
+| Datenschutz      | nur erforderliche Managementdaten                | Mail nur Zaehler; Urlaub nur Aggregat; keine Secrets |
+| Betrieb          | Teilfehler bleiben lokal sichtbar                | per-source Status + Teilsnapshot                     |
 
 Fuer angenommene Lieferungen gelten im Draft 100 % Schema-Gueltigkeit und Pflichtfeldabdeckung. Fuer verbotene sensible Inhalte, unmarkierte Teilfehler und erfundene/geschaetzte Werte gilt 0-%-Toleranz.
 
@@ -106,14 +106,14 @@ BSF-04 Datenstrategie --------/
 produktive Projektion ----------------> BSF-07 Management-Wallboard
 ```
 
-| Stufe | Zeitpunkt | Ergebnis |
-| --- | --- | --- |
-| C0 | jetzt | Scope, Verantwortungsgrenze, Nicht-Auswirkungsregeln |
-| C1 | parallel zu BSF-03 | Schema 0.1, Beispiele, Producer-Anforderungen |
-| C2 | nach externem Feedback | reales Feld-/Semantik-/Freshness-Review |
-| C3 | vor BSF-05 | Compatibility, Idempotenz, Evolution |
-| C4 | BSF-05 nach BSF-04 | Contract 1.0-Kandidat |
-| C5 | BSF-05/spaeter | produktiver Import/Transport/Monitoring |
+| Stufe | Zeitpunkt              | Ergebnis                                             |
+| ----- | ---------------------- | ---------------------------------------------------- |
+| C0    | jetzt                  | Scope, Verantwortungsgrenze, Nicht-Auswirkungsregeln |
+| C1    | parallel zu BSF-03     | Schema 0.1, Beispiele, Producer-Anforderungen        |
+| C2    | nach externem Feedback | reales Feld-/Semantik-/Freshness-Review              |
+| C3    | vor BSF-05             | Compatibility, Idempotenz, Evolution                 |
+| C4    | BSF-05 nach BSF-04     | Contract 1.0-Kandidat                                |
+| C5    | BSF-05/spaeter         | produktiver Import/Transport/Monitoring              |
 
 ## 10. Bewusst offene Entscheidungen
 
@@ -121,29 +121,29 @@ Transport, Authentisierung, Payload-Groesse/Batching, Acknowledgement/Retry, Del
 
 ## 11. TDF-Abschlusscheck 0.7.1-draft
 
-| Pruefpunkt | Status | Nachweis |
-| --- | --- | --- |
-| Zweck / Zielgruppe / Scope | PASS | Management-Wallboard und externe Lieferung klar abgegrenzt |
-| Verantwortungsgrenze | PASS | extern = Beschaffung; Sysing = Vertrag/Import/UI |
-| Providerneutralitaet | PASS | keine internen DB-Tabellen im externen Vertrag |
-| Nicht-Auswirkung BSF-03/04/05 | PASS | keine Runtime-/DB-/RLS-Aenderung |
-| Security / Datenschutz | PASS mit OPEN | Transport/Auth spaeter; Datenminimierung dokumentiert |
-| Freshness / Teilfehler | PASS | sourceStatus + incomplete snapshot |
-| Versionierung | PASS | Management 0.7.1, Producer-Doku 0.1.1, Schema 0.1.0 getrennt |
-| Testbarkeit | PASS | Schema + Vollsnapshot + Teilfehler PASS; Negativfall erwartungsgemaess FAIL |
-| Accessibility | PASS | DOCX-Audit 0 High / 0 Medium / 0 Low |
-| PDF/Layout | PASS | 15 Seiten, keine leeren Seiten, keine Clipping-/Overlap-Findings |
-| Traceability | PASS | #123, #125, Draft PR #124, separater TDF-Check |
+| Pruefpunkt                    | Status        | Nachweis                                                                    |
+| ----------------------------- | ------------- | --------------------------------------------------------------------------- |
+| Zweck / Zielgruppe / Scope    | PASS          | Management-Wallboard und externe Lieferung klar abgegrenzt                  |
+| Verantwortungsgrenze          | PASS          | extern = Beschaffung; Sysing = Vertrag/Import/UI                            |
+| Providerneutralitaet          | PASS          | keine internen DB-Tabellen im externen Vertrag                              |
+| Nicht-Auswirkung BSF-03/04/05 | PASS          | keine Runtime-/DB-/RLS-Aenderung                                            |
+| Security / Datenschutz        | PASS mit OPEN | Transport/Auth spaeter; Datenminimierung dokumentiert                       |
+| Freshness / Teilfehler        | PASS          | sourceStatus + incomplete snapshot                                          |
+| Versionierung                 | PASS          | Management 0.7.1, Producer-Doku 0.1.1, Schema 0.1.0 getrennt                |
+| Testbarkeit                   | PASS          | Schema + Vollsnapshot + Teilfehler PASS; Negativfall erwartungsgemaess FAIL |
+| Accessibility                 | PASS          | DOCX-Audit 0 High / 0 Medium / 0 Low                                        |
+| PDF/Layout                    | PASS          | 15 Seiten, keine leeren Seiten, keine Clipping-/Overlap-Findings            |
+| Traceability                  | PASS          | #123, #125, Draft PR #124, separater TDF-Check                              |
 
 **TDF-Gesamtergebnis:** PASS MIT BEWUSST OFFENEN RUNTIME-/TRANSPORT-/SECURITY-ENTSCHEIDUNGEN. Keine produktive Implementierungsfreigabe.
 
 ## 12. Versionshistorie
 
-| Version | Datum | Aenderung |
-| --- | --- | --- |
-| 0.5.0-draft | 11.09.2026 | konsolidierte TDF-Managementfassung |
-| 0.6.0-draft | 11.09.2026 | externes Datenteam, JSON-Vertragsgrenze, Snapshot/Freshness/Teilfehler |
-| 0.7.0-draft | 11.09.2026 | separate technische Lieferanforderung und messbare Datenqualitaetsziele |
+| Version         | Datum          | Aenderung                                                                                                                                                  |
+| --------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.5.0-draft     | 11.09.2026     | konsolidierte TDF-Managementfassung                                                                                                                        |
+| 0.6.0-draft     | 11.09.2026     | externes Datenteam, JSON-Vertragsgrenze, Snapshot/Freshness/Teilfehler                                                                                     |
+| 0.7.0-draft     | 11.09.2026     | separate technische Lieferanforderung und messbare Datenqualitaetsziele                                                                                    |
 | **0.7.1-draft** | **11.09.2026** | **TDF-Abschlusscheck: Accessibility-/Tabellenmetadaten korrigiert und reale Schema-/Beispielvalidierung nachgewiesen; keine fachliche Contract-Aenderung** |
 
 Detaillierter Nachweis: `TDF-CHECK-2026-09-11.md`.

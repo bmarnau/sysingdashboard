@@ -25,14 +25,14 @@ Detailed producer requirements: `EXTERNAL-DATA-TEAM-REQUIREMENTS_0.1.1-draft.md`
 
 ## Contract maturity
 
-| Stage | Meaning |
-| --- | --- |
-| C0 | scope and responsibility boundary |
-| C1 | schema 0.1 draft, examples and producer requirements |
-| C2 | external-team field/semantic/freshness review |
-| C3 | compatibility/evolution hardening |
-| C4 | contract 1.0 candidate in BSF-05 after BSF-04 |
-| C5 | productive importer/transport/monitoring |
+| Stage | Meaning                                              |
+| ----- | ---------------------------------------------------- |
+| C0    | scope and responsibility boundary                    |
+| C1    | schema 0.1 draft, examples and producer requirements |
+| C2    | external-team field/semantic/freshness review        |
+| C3    | compatibility/evolution hardening                    |
+| C4    | contract 1.0 candidate in BSF-05 after BSF-04        |
+| C5    | productive importer/transport/monitoring             |
 
 ## Management domains
 
