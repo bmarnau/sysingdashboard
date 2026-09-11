@@ -50,17 +50,7 @@ Detailed producer and quality requirements are defined in `EXTERNAL-DATA-TEAM-RE
 
 ### Sysing Dashboard team
 
-Responsible for:
-
-- contract ownership and versioning,
-- JSON Schema validation,
-- scope validation,
-- provider adapter / normalization boundary on the consumer side,
-- later persistence/projection decisions,
-- security/RBAC/RLS enforcement,
-- freshness and partial-failure handling,
-- Management-Wallboard presentation,
-- runtime monitoring and audit as defined in later implementation sprints.
+Responsible for contract ownership/versioning, JSON Schema and scope validation, the later provider adapter, later persistence/projection decisions, RBAC/RLS enforcement, freshness/partial-failure handling, Management-Wallboard presentation and later runtime monitoring/audit.
 
 ## 4. Architectural boundary
 
@@ -87,70 +77,27 @@ Source-specific acquisition stays outside the Sysing Dashboard UI. The JSON cont
 | C4 | BSF-05 after BSF-04 decisions | contract 1.0 candidate / binding interface |
 | C5 | BSF-05 or later | productive importer, monitoring and persistence |
 
-The strategic sprint order is not changed by this track.
-
 ## 6. Management domains in 0.1 draft
 
-The draft covers six domains:
-
-1. projects,
-2. work packages,
-3. activities,
-4. absence/leave aggregates,
-5. infrastructure/PRTG aggregates,
-6. support mailbox aggregates.
-
-Projects, work packages and activities remain separate domains. Leave is aggregated. Support mailbox data contains counts/age buckets only and no message content, subject, sender or recipient.
+The draft covers projects, work packages, activities, absence/leave aggregates, infrastructure/PRTG aggregates and support-mailbox aggregates. Leave is aggregated. Support-mailbox data contains counts/age buckets only and no message content, subject, sender or recipient.
 
 ## 7. Envelope rules
 
-Every delivery contains at least:
-
-- `schemaVersion`,
-- `deliveryId`,
-- `deliveryType`,
-- `generatedAt`,
-- `observedAt`,
-- `producer`,
-- `scope.systemhouseId`,
-- `completeness.snapshotComplete`,
-- `completeness.missingDomains`,
-- `sourceStatus`,
-- `data`.
+Every delivery contains at least `schemaVersion`, `deliveryId`, `deliveryType`, `generatedAt`, `observedAt`, `producer`, `scope.systemhouseId`, `completeness.snapshotComplete`, `completeness.missingDomains`, `sourceStatus` and `data`.
 
 All timestamps use RFC 3339 / ISO 8601 with timezone offset or `Z`.
 
-`deliveryId` is unique per delivered payload and is intended to support future idempotency controls.
-
 ## 8. Snapshot semantics
 
-Draft 0.1 starts with snapshot delivery as the primary model.
-
-- `deliveryType = "snapshot"`
-- `snapshotComplete = true` means all domains expected for that delivery are represented.
-- `snapshotComplete = false` means one or more domains are missing, stale or unavailable.
-- Missing data in an incomplete snapshot MUST NOT be interpreted as deletion.
-- `missingDomains` explicitly lists domains that are not complete.
-
-Delta delivery is deliberately reserved for later contract versions and must not be assumed by the producer.
+Draft 0.1 starts with snapshot delivery. Missing data in an incomplete snapshot MUST NOT be interpreted as deletion. Delta delivery is deliberately reserved for later contract versions.
 
 ## 9. Freshness and partial source failure
 
-Each source has a `sourceStatus` entry with source name, state (`ok`, `delayed`, `stale`, `error`), observation time and optional non-sensitive message/code.
-
-A source failure must not invalidate unrelated domains. The producer-side freshness targets and data-quality SLOs are documented in `EXTERNAL-DATA-TEAM-REQUIREMENTS.md` and remain draft values until joint review.
+Each source has a `sourceStatus` entry with source name, state (`ok`, `delayed`, `stale`, `error`), observation time and optional non-sensitive message/code. A source failure must not invalidate unrelated domains.
 
 ## 10. Identity rules
 
-For entity arrays, producer-side source IDs must be stable within the source system.
-
-Draft 0.1 uses:
-
-- `sourceId` for the delivered object,
-- relationship references such as `projectSourceId` and `workPackageSourceId`,
-- `scope.systemhouseId` as the provider-neutral systemhouse boundary.
-
-No external team must know internal database primary keys. Final identity/matching rules remain part of BSF-05 and must remain compatible with BSF-04 decisions.
+Producer-side source IDs must be stable within the source system. No external team must know internal database primary keys. Final identity/matching rules remain part of BSF-05 and must remain compatible with BSF-04 decisions.
 
 ## 11. Security and privacy rules
 
@@ -159,7 +106,6 @@ No external team must know internal database primary keys. Final identity/matchi
 - no names or reasons in wallboard absence aggregates,
 - no internal DB credentials or table names,
 - producer error messages must not leak secrets,
-- scope information is mandatory and later validated server-side,
 - JSON validation is not a replacement for RBAC/RLS.
 
 ## 12. Versioning
@@ -169,60 +115,19 @@ The two lifecycles are deliberately separate:
 - Management TDF: `0.7.0-draft`,
 - JSON contract + producer requirements: `0.1.0-draft`.
 
-The previous management version `0.6.0-draft` remains historical and is not silently overwritten.
-
-During contract development:
-
-- `0.1.x` - first shared field and producer-quality contract,
-- `0.2.x` - external-team feedback / field refinement,
-- `0.x` - compatibility hardening,
-- `1.0.0` - first binding production contract after BSF-04/BSF-05 review.
-
-Each published schema version is immutable. Changes create a new versioned schema/package.
+The previous management version `0.6.0-draft` remains historical and is not silently overwritten. Contract 1.0 remains gated by BSF-04/BSF-05.
 
 ## 13. Files in this package
 
-- `wallboard-management-data.schema.json` - machine-readable draft schema,
-- `EXTERNAL-DATA-TEAM-REQUIREMENTS.md` - detailed producer, agent/collector and quality requirements,
-- `FIELD-CATALOG.md` - field semantics and domain notes,
-- `VALIDATION.md` - validation approach and negative cases,
-- `examples/valid-full-snapshot.json` - complete synthetic delivery,
-- `examples/valid-partial-source-error.json` - partial delivery with one source unavailable,
-- `examples/invalid-missing-schema-version.json` - intentionally invalid negative example,
-- `CHANGELOG.md` - contract history.
+- `wallboard-management-data.schema.json`
+- `EXTERNAL-DATA-TEAM-REQUIREMENTS.md`
+- `FIELD-CATALOG.md`
+- `VALIDATION.md`
+- positive and negative JSON examples
+- `CHANGELOG.md`
 
 All examples are synthetic and contain no production data.
 
-## 14. Acceptance criteria for C1
+## 14. Open decisions
 
-C1 is complete when:
-
-- scope/non-impact rules are documented,
-- JSON Schema is syntactically valid,
-- both valid examples conform to the schema,
-- the invalid example is rejected,
-- detailed producer quality requirements are reviewable,
-- no production secret or prohibited personal data is present,
-- the package does not reference internal DB tables as external contract fields,
-- Issue #123, Issue #125 and the TDF management concept point to the contract package,
-- no existing sprint status is changed.
-
-## 15. Open decisions
-
-The following remain deliberately open until later stages:
-
-- transport: file, HTTP endpoint, object storage, queue or other mechanism,
-- authentication between producer and consumer,
-- maximum payload size and batching,
-- retry/acknowledgement protocol,
-- delta semantics,
-- final status/traffic-light mapping,
-- final SharePoint field mapping,
-- exact leave definition for "next week",
-- exact Exchange counting rules,
-- PRTG special-state mapping,
-- final freshness SLOs,
-- persistence and conflict strategy,
-- retention and audit periods.
-
-These are not blockers for C0/C1 contract drafting.
+Transport, producer authentication, payload size/batching, acknowledgement/retry transport, delta semantics, final source mappings, final freshness SLOs, persistence/conflict strategy and retention/audit remain deliberately open until their planned sprints.
