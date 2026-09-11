@@ -38,6 +38,8 @@ Scope, responsibility boundary, versioning principle, management domains and exp
 
 Real source fields, naming, status mappings, leave/mail counting definitions, PRTG mapping, practical polling/freshness limits and mapping/provenance evidence.
 
+C2 uses a documented decision log. Feedback is classified before any schema change is made. A new contract draft is created only when a reviewed decision actually changes or extends the machine-readable contract.
+
 ### C3 - Compatibility hardening
 
 Evolution rules, compatibility, idempotency, payload/batching planning and final quality/freshness rules for Contract 1.0.
@@ -52,23 +54,40 @@ Authenticated transport, validation, provider adapter, persistence/projection, m
 
 ## Deliverables in Draft PR #124
 
-- `TDF-Operatives-Management-Wallboard_0.7.0-draft.md`
+- `TDF-Operatives-Management-Wallboard_0.7.1-draft.md`
+- `TDF-CHECK-2026-09-11.md`
 - `contracts/v0.1-draft/README.md`
 - `contracts/v0.1-draft/wallboard-management-data.schema.json`
 - `contracts/v0.1-draft/FIELD-CATALOG.md`
 - `contracts/v0.1-draft/VALIDATION.md`
-- `contracts/v0.1-draft/EXTERNAL-DATA-TEAM-REQUIREMENTS.md`
+- `contracts/v0.1-draft/EXTERNAL-DATA-TEAM-REQUIREMENTS_0.1.1-draft.md`
 - `contracts/v0.1-draft/CHANGELOG.md`
 - positive/negative synthetic examples.
 
 ## Versioning boundary
 
-The two lifecycles are deliberately separate:
+The document and contract lifecycles are deliberately separate:
 
-- TDF Management-Wallboard document: `0.7.0-draft`,
-- JSON Contract and producer requirements: `0.1.0-draft`.
+- TDF Management-Wallboard document: `0.7.1-draft`,
+- producer requirements document: `0.1.1-draft`,
+- machine-readable JSON contract/schema package: `0.1.0-draft`.
 
-The previous management version `0.6.0-draft` remains history and is not silently overwritten. Contract 1.0 remains gated by BSF-04/BSF-05.
+The predecessor document versions remain history and are not silently overwritten. The JSON schema was not bumped by the TDF/accessibility patch because its machine-readable semantics did not change. Contract 1.0 remains gated by BSF-04/BSF-05.
+
+## C2 semantic review guardrail
+
+The current schema is intentionally not treated as proof of all business semantics. C2 must explicitly review at least:
+
+- completeness of all six domains for a full snapshot,
+- uniqueness and completeness of `sourceStatus`,
+- source-ID uniqueness and stability,
+- project -> work package -> activity reference integrity,
+- ownership/configuration of `scope.systemhouseId`,
+- timezone/calendar semantics for leave and mailbox buckets,
+- PRTG and Exchange aggregate invariants,
+- achievable freshness targets.
+
+These items are review decisions, not authorization to change runtime, persistence or security.
 
 ## Management relationship
 
