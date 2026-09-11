@@ -110,6 +110,7 @@ Normal BSF-05 / integration work:
 
 ## Deliverables prepared in Draft PR #124
 
+- `TDF-Operatives-Management-Wallboard_0.7.0-draft.md`
 - `contracts/README.md`
 - `contracts/v0.1-draft/README.md`
 - `contracts/v0.1-draft/wallboard-management-data.schema.json`
@@ -117,17 +118,16 @@ Normal BSF-05 / integration work:
 - `contracts/v0.1-draft/VALIDATION.md`
 - `contracts/v0.1-draft/EXTERNAL-DATA-TEAM-REQUIREMENTS.md`
 - `contracts/v0.1-draft/CHANGELOG.md`
-- positive/negative synthetic examples
-- TDF Management-Wallboard concept updated to `0.6.0-draft`
+- positive/negative synthetic examples.
 
 ## Versioning boundary
 
 The two version lifecycles are deliberately separate:
 
-- TDF Management-Wallboard document: `0.6.0-draft`,
+- TDF Management-Wallboard document: `0.7.0-draft`,
 - JSON Contract and producer requirements: `0.1.0-draft`.
 
-A new version is created when a published/reviewed contract changes. No released production contract may be silently overwritten. Contract 1.0 remains gated by BSF-04/BSF-05.
+The previous management version `0.6.0-draft` remains history and is not silently overwritten. A new contract version is created when a published/reviewed contract changes. Contract 1.0 remains gated by BSF-04/BSF-05.
 
 ## Management relationship
 
