@@ -3,7 +3,7 @@
 Status: **DRAFT / CONTRACT PLANNING ONLY**  
 Contract version: **0.1.0-draft**  
 Date: **2026-09-11**  
-Related: Issue #123, Draft PR #124  
+Related: Issue #123, Issue #125, Draft PR #124
 
 ## 1. Purpose
 
@@ -43,6 +43,8 @@ Responsible for:
 - data quality on the producer side,
 - test deliveries for contract acceptance.
 
+Detailed producer and quality requirements are defined in `EXTERNAL-DATA-TEAM-REQUIREMENTS.md`.
+
 ### Sysing Dashboard team
 
 Responsible for:
@@ -76,7 +78,7 @@ Source-specific acquisition stays outside the Sysing Dashboard UI. The JSON cont
 | Stage | Timing | Meaning |
 | --- | --- | --- |
 | C0 | now | scope, responsibility boundary, non-impact rules |
-| C1 | parallel to BSF-03 | JSON Schema 0.1 draft + examples |
+| C1 | parallel to BSF-03 | JSON Schema 0.1 draft + examples + producer quality profile |
 | C2 | after external-team feedback | field review and 0.2 draft |
 | C3 | before BSF-05 | compatibility, evolution and validation rules stabilized |
 | C4 | BSF-05 after BSF-04 decisions | contract 1.0 candidate / binding interface |
@@ -139,6 +141,8 @@ Each source has a `sourceStatus` entry with:
 
 A source failure must not invalidate unrelated domains. The consumer can therefore display healthy management areas while marking one source as unavailable/stale.
 
+The producer-side freshness targets and data-quality SLOs are documented in `EXTERNAL-DATA-TEAM-REQUIREMENTS.md` and remain draft values until joint review.
+
 ## 10. Identity rules
 
 For entity arrays, producer-side source IDs must be stable within the source system.
@@ -174,9 +178,14 @@ During draft development:
 
 Each published schema version is immutable. Changes create a new versioned schema file/package.
 
+The TDF Management document has its own document-version lifecycle and must not be confused with the JSON contract version.
+
 ## 13. Files in this package
 
 - `wallboard-management-data.schema.json` - machine-readable draft schema,
+- `EXTERNAL-DATA-TEAM-REQUIREMENTS.md` - detailed producer, agent/collector and quality requirements,
+- `FIELD-CATALOG.md` - field semantics and domain notes,
+- `VALIDATION.md` - validation approach and negative cases,
 - `examples/valid-full-snapshot.json` - complete synthetic delivery,
 - `examples/valid-partial-source-error.json` - partial delivery with one source unavailable,
 - `examples/invalid-missing-schema-version.json` - intentionally invalid negative example,
@@ -192,6 +201,7 @@ C1 is complete when:
 - JSON Schema is syntactically valid,
 - both valid examples conform to the schema,
 - the invalid example is rejected,
+- detailed producer quality requirements are reviewable,
 - no production secret or personal data is present,
 - the package does not reference internal DB tables as external contract fields,
 - Issue #123 and the TDF management concept point to the contract package,
@@ -210,6 +220,7 @@ The following remain deliberately open until later stages:
 - final SharePoint field mapping,
 - exact leave definition for "next week",
 - exact Exchange counting rules,
+- final freshness SLOs,
 - persistence and conflict strategy,
 - retention and audit periods.
 
