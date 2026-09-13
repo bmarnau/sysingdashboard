@@ -112,7 +112,9 @@ describe("WorkPackageCategoryDialog", () => {
     render(<WorkPackageCategoryDialog open onOpenChange={() => {}} />);
     fireEvent.change(screen.getByLabelText(/^Schlüssel/), { target: { value: "Cloud Services" } });
     fireEvent.change(screen.getByLabelText(/^Bezeichnung/), { target: { value: "Cloud" } });
-    fireEvent.click(screen.getByRole("button", { name: /Anlegen/ }));
+    const button = screen.getByRole("button", { name: /Anlegen/ }) as HTMLButtonElement;
+    await waitFor(() => expect(button.disabled).toBe(false));
+    fireEvent.click(button);
     await waitFor(() => expect(createValue).toHaveBeenCalled());
     const payload = createValue.mock.calls[0]?.[0] as Record<string, unknown>;
     expect(payload).toMatchObject({
