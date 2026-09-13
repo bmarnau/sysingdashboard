@@ -36,6 +36,7 @@ Browser (authenticated route)
         -> Shared Projection Read (bestehender BSF-02C-Pfad)
 ```
 
+<!-- prettier-ignore -->
 | Schicht | Datei | Rolle |
 | --- | --- | --- |
 | Fachlogik (providerneutral) | `src/lib/customer-data/my-customers.ts` | Typen, Port `MyCustomersRepository`, fail-closed Auswahl, wirksamer Zugriff, Projektionsbaum |
@@ -67,6 +68,7 @@ nicht erforderlich und würde eine eigene DB-/Security-Änderung darstellen.
 
 ## 3. Tests und Abnahmenachweis
 
+<!-- prettier-ignore -->
 | ID / Bereich | Nachweis | Datei / Lauf | Ergebnis |
 | --- | --- | --- | --- |
 | M01–M08 | fail-closed Auswahl, Deduplizierung, Zugriff, Projekt → AP → Tätigkeit | `src/__tests__/lib/my-customers.test.ts` | PASS |
