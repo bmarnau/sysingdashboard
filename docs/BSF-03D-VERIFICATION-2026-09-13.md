@@ -126,45 +126,45 @@ korrekt identifiziert: JA; keine Secrets in diesem Dokument).
 
 ## 7. Zusammenfassung
 
-| Punkt                          | Ergebnis                         |
-| ------------------------------ | -------------------------------- |
-| Fachvertrag #103 implementiert | JA                               |
-| SQL-Artefakt T01–T16           | 16/16 PASS, Rollback             |
-| Live-Schema-Vertrag            | PASS                             |
-| Security Advisor Delta BSF-03D | sauber (0 neue Findings)         |
-| DB dauerhaft geändert          | NEIN                             |
-| Vollständige Quality Gates     | PASS (Paket Q, Abschnitt 8)      |
-| Governance-Cleanup Broker      | PASS (Contract-Test 3/3)         |
-| Gesamtstatus                   | FINAL PASS                       |
+| Punkt                          | Ergebnis                    |
+| ------------------------------ | --------------------------- |
+| Fachvertrag #103 implementiert | JA                          |
+| SQL-Artefakt T01–T16           | 16/16 PASS, Rollback        |
+| Live-Schema-Vertrag            | PASS                        |
+| Security Advisor Delta BSF-03D | sauber (0 neue Findings)    |
+| DB dauerhaft geändert          | NEIN                        |
+| Vollständige Quality Gates     | PASS (Paket Q, Abschnitt 8) |
+| Governance-Cleanup Broker      | PASS (Contract-Test 3/3)    |
+| Gesamtstatus                   | FINAL PASS                  |
 
 ## 8. Paket Q — Gate-Matrix (2026-09-13, Workspace)
 
 Governance-Cleanup wurde **vor** dem Gate-Lauf ausgeführt; der allerletzte
 Check nach allen Builds/Tests/Doku-Schritten bestätigte den Zustand erneut.
 
-| #   | Gate                       | Kommando                                                    | Ergebnis                                      |
-| --- | -------------------------- | ----------------------------------------------------------- | --------------------------------------------- |
-| 0   | Auth-Client-Vertrag        | `vitest run src/__tests__/security/supabase-client-contract.test.ts` | 3/3 PASS                             |
-| 1   | Typecheck                  | `tsgo --noEmit`                                             | PASS                                          |
-| 2   | Lint                       | `bun run lint`                                              | PASS                                          |
-| 3   | Format                     | `prettier --check .`                                        | PASS                                          |
-| 4   | No-Console                 | `bun run lint:no-console`                                   | PASS                                          |
-| 5   | Vitest gesamt              | `bun run test`                                              | 101 Dateien / 765 PASS, 4 todo                |
-| 6   | A11y (Unit/axe)            | `bun run test:a11y`                                         | 2 Dateien / 4 PASS                            |
-| 7   | Security                   | `bun run test:security` (+ rbac:check, security:check)      | 15 Dateien / 112 PASS; CRIT 0 HIGH 0 MED 0     |
-| 8   | Technical Debt             | `bun run test:debt`                                         | PASS (Critical 0; 3 neu, nur Low/Info)         |
-| 9   | Docs                       | `bun run docs:check`                                        | PASS                                          |
-| 10  | Projektstatus              | `bun run project-status:check`                              | PASS                                          |
-| 11  | Bundle/Perf                | `bun run test:perf`                                         | PASS                                          |
-| 12  | CI-Gate-Tests              | `bun run test:ci-gate`                                      | 12/12 PASS                                    |
-| 13  | Production Build           | `bun run build`                                             | PASS                                          |
-| 14  | E2E Kategorie              | `playwright test e2e/specs/security/workpackage-category.spec.ts` | 4/4 PASS                                |
-| 15  | E2E gesamt (chromium)      | `playwright test --project=chromium`                        | 77/77 PASS (inkl. A11y-/Security-Specs)       |
-| 16  | Beispieldateien            | `bun run test:examples`                                     | PASS                                          |
-| 17  | API-Discovery-Gate         | `bun run api:gate`                                          | PASS                                          |
-| 18  | Security-Report-Gate       | `bun run security:gate`                                     | PASS                                          |
-| 19  | Technischer Prüfbericht    | `bun run report:technical`                                  | v15, passed-with-findings, 0 Blocker          |
-| 20  | Quality Gate               | `bun run ci:gate`                                           | OK — 0 Blocker                                |
+| #   | Gate                    | Kommando                                                             | Ergebnis                                   |
+| --- | ----------------------- | -------------------------------------------------------------------- | ------------------------------------------ |
+| 0   | Auth-Client-Vertrag     | `vitest run src/__tests__/security/supabase-client-contract.test.ts` | 3/3 PASS                                   |
+| 1   | Typecheck               | `tsgo --noEmit`                                                      | PASS                                       |
+| 2   | Lint                    | `bun run lint`                                                       | PASS                                       |
+| 3   | Format                  | `prettier --check .`                                                 | PASS                                       |
+| 4   | No-Console              | `bun run lint:no-console`                                            | PASS                                       |
+| 5   | Vitest gesamt           | `bun run test`                                                       | 101 Dateien / 765 PASS, 4 todo             |
+| 6   | A11y (Unit/axe)         | `bun run test:a11y`                                                  | 2 Dateien / 4 PASS                         |
+| 7   | Security                | `bun run test:security` (+ rbac:check, security:check)               | 15 Dateien / 112 PASS; CRIT 0 HIGH 0 MED 0 |
+| 8   | Technical Debt          | `bun run test:debt`                                                  | PASS (Critical 0; 3 neu, nur Low/Info)     |
+| 9   | Docs                    | `bun run docs:check`                                                 | PASS                                       |
+| 10  | Projektstatus           | `bun run project-status:check`                                       | PASS                                       |
+| 11  | Bundle/Perf             | `bun run test:perf`                                                  | PASS                                       |
+| 12  | CI-Gate-Tests           | `bun run test:ci-gate`                                               | 12/12 PASS                                 |
+| 13  | Production Build        | `bun run build`                                                      | PASS                                       |
+| 14  | E2E Kategorie           | `playwright test e2e/specs/security/workpackage-category.spec.ts`    | 4/4 PASS                                   |
+| 15  | E2E gesamt (chromium)   | `playwright test --project=chromium`                                 | 77/77 PASS (inkl. A11y-/Security-Specs)    |
+| 16  | Beispieldateien         | `bun run test:examples`                                              | PASS                                       |
+| 17  | API-Discovery-Gate      | `bun run api:gate`                                                   | PASS                                       |
+| 18  | Security-Report-Gate    | `bun run security:gate`                                              | PASS                                       |
+| 19  | Technischer Prüfbericht | `bun run report:technical`                                           | v15, passed-with-findings, 0 Blocker       |
+| 20  | Quality Gate            | `bun run ci:gate`                                                    | OK — 0 Blocker                             |
 
 E2E lief mit `E2E_CHROMIUM_PATH` (repo-seitig vorgesehener Override), da die
 Sandbox keine Playwright-Chromium-Binärdatei der Projektversion enthält.

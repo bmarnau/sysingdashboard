@@ -27,42 +27,42 @@ AVKK-Kataloge (unverändert global).
 
 ## 2. Ausgangsbasis und Verlauf
 
-| Schritt                                   | Referenz                                   |
-| ----------------------------------------- | ------------------------------------------ |
-| Basis GitHub `main`                       | `b90f93c`                                  |
-| Paket 1 (Migration, Vertrag, Resolver)    | `6484555`                                  |
-| Review-Fix 1 / 2                          | `f422a01` / `5e67fd0`                      |
-| Governance-Fix Broker (erste Entfernung)  | `b619596`                                  |
-| Plattform-Reinjection Broker              | `b23c50f` (in Paket Q final bereinigt)     |
-| Paket V (DB-Verifikation, read-only)      | `docs/BSF-03D-VERIFICATION-2026-09-13.md`  |
-| Paket D (Doku/Version 1.62.0)             | `15a7124`                                  |
-| Paket Q (Gates + Governance-Cleanup)      | finaler Workspace-Commit siehe Abschlussbericht im Chat / Git-Log |
+| Schritt                                  | Referenz                                                          |
+| ---------------------------------------- | ----------------------------------------------------------------- |
+| Basis GitHub `main`                      | `b90f93c`                                                         |
+| Paket 1 (Migration, Vertrag, Resolver)   | `6484555`                                                         |
+| Review-Fix 1 / 2                         | `f422a01` / `5e67fd0`                                             |
+| Governance-Fix Broker (erste Entfernung) | `b619596`                                                         |
+| Plattform-Reinjection Broker             | `b23c50f` (in Paket Q final bereinigt)                            |
+| Paket V (DB-Verifikation, read-only)     | `docs/BSF-03D-VERIFICATION-2026-09-13.md`                         |
+| Paket D (Doku/Version 1.62.0)            | `15a7124`                                                         |
+| Paket Q (Gates + Governance-Cleanup)     | finaler Workspace-Commit siehe Abschlussbericht im Chat / Git-Log |
 
 Der finale Commit-SHA ist die Workspace-Sicht (Lovable-Spiegel); der
 GitHub-Head ergibt sich erst durch den PR.
 
 ## 3. Testmatrix Paket Q (alle PASS)
 
-| Gate                       | Ergebnis                                       |
-| -------------------------- | ---------------------------------------------- |
-| Auth-Client-Contract-Test  | 3/3                                            |
-| Typecheck                  | PASS                                           |
-| ESLint / No-Console        | PASS                                           |
-| Prettier `--check .`       | PASS                                           |
-| Vitest gesamt              | 101 Dateien, 765 PASS, 4 todo                  |
-| A11y (Unit/axe)            | 4/4                                            |
-| Security-Suite + Checks    | 112/112; CRITICAL 0 / HIGH 0 / MEDIUM 0        |
-| Technical Debt             | Critical 0; neu nur Low/Info                   |
-| docs:check                 | PASS                                           |
-| project-status:check       | PASS                                           |
-| Bundle/Perf                | PASS                                           |
-| CI-Gate-Tests              | 12/12                                          |
-| Production Build           | PASS                                           |
-| E2E Kategorie-Spec         | 4/4                                            |
-| E2E gesamt (chromium)      | 77/77                                          |
-| Beispieldateien / API-Gate / Security-Gate | PASS                           |
-| Technischer Prüfbericht    | v15, passed-with-findings, 0 Blocker           |
-| Quality Gate (`ci:gate`)   | OK — 0 Blocker                                 |
+| Gate                                       | Ergebnis                                |
+| ------------------------------------------ | --------------------------------------- |
+| Auth-Client-Contract-Test                  | 3/3                                     |
+| Typecheck                                  | PASS                                    |
+| ESLint / No-Console                        | PASS                                    |
+| Prettier `--check .`                       | PASS                                    |
+| Vitest gesamt                              | 101 Dateien, 765 PASS, 4 todo           |
+| A11y (Unit/axe)                            | 4/4                                     |
+| Security-Suite + Checks                    | 112/112; CRITICAL 0 / HIGH 0 / MEDIUM 0 |
+| Technical Debt                             | Critical 0; neu nur Low/Info            |
+| docs:check                                 | PASS                                    |
+| project-status:check                       | PASS                                    |
+| Bundle/Perf                                | PASS                                    |
+| CI-Gate-Tests                              | 12/12                                   |
+| Production Build                           | PASS                                    |
+| E2E Kategorie-Spec                         | 4/4                                     |
+| E2E gesamt (chromium)                      | 77/77                                   |
+| Beispieldateien / API-Gate / Security-Gate | PASS                                    |
+| Technischer Prüfbericht                    | v15, passed-with-findings, 0 Blocker    |
+| Quality Gate (`ci:gate`)                   | OK — 0 Blocker                          |
 
 Detaillierte Kommandos: `docs/BSF-03D-VERIFICATION-2026-09-13.md`, Abschnitt 8.
 
@@ -72,10 +72,10 @@ Detaillierte Kommandos: `docs/BSF-03D-VERIFICATION-2026-09-13.md`, Abschnitt 8.
   Projekt-Datenbank in genau einer Transaktion `BEGIN … ROLLBACK`:
   **T01–T16 = 16/16 PASS**; synthetische Daten danach 0.
 - Live-Schema-Vertrag PASS: `reference_catalog.scope_type` DEFAULT `global`
-  + NOT NULL + CHECK; `reference_value.systemhouse_id` + FK ON DELETE RESTRICT;
-  partielle Unique-Indizes global/systemhouse; Scope-/History-Indizes;
-  Scope-Trigger; RLS auf `reference_value`/`reference_value_history`; keine
-  DELETE-Policy; History `systemhouse_id`.
+  - NOT NULL + CHECK; `reference_value.systemhouse_id` + FK ON DELETE RESTRICT;
+    partielle Unique-Indizes global/systemhouse; Scope-/History-Indizes;
+    Scope-Trigger; RLS auf `reference_value`/`reference_value_history`; keine
+    DELETE-Policy; History `systemhouse_id`.
 - DB dauerhaft geändert: **NEIN** (in Paket V und Paket Q).
 
 ## 5. Security Advisor
