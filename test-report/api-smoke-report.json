@@ -1,30 +1,57 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-08-13T04:48:06.366Z",
+  "generatedAt": "2026-09-13T22:28:05.391Z",
   "dashboardVersion": "1.58.0",
   "commit": "88cde9a",
   "counts": {
     "total": 3,
-    "tested": 2,
-    "passed": 2,
+    "tested": 3,
+    "passed": 3,
     "failed": 0,
-    "skipped": 1,
+    "skipped": 0,
     "notImplemented": 0,
     "notConfigured": 0,
     "unclassified": 0,
     "withoutAuthTest": 2,
     "withoutValidationTest": 2,
-    "withoutSchemaCheck": 1
+    "withoutSchemaCheck": 0
   },
   "results": [
     {
       "endpointId": "api-public-auth-config",
-      "path": "/api/public/auth-config",
       "method": "GET",
-      "classification": "public",
-      "status": "skipped",
-      "scenarios": [],
-      "reason": "no smoke test executed"
+      "status": "passed",
+      "scenarios": [
+        {
+          "name": "handler registered",
+          "category": "reachability",
+          "ok": true
+        },
+        {
+          "name": "response is not HTML error page",
+          "category": "schema",
+          "ok": true
+        },
+        {
+          "name": "no secrets in response body",
+          "category": "secret-scan",
+          "ok": true
+        },
+        {
+          "name": "correlation-id header present (if wrapper used)",
+          "category": "correlation",
+          "ok": true
+        },
+        {
+          "name": "unsupported method rejected",
+          "category": "method",
+          "ok": true,
+          "detail": "status=405"
+        }
+      ],
+      "duration": 535.7073970000001,
+      "path": "/api/public/auth-config",
+      "classification": "public"
     },
     {
       "endpointId": "status",
@@ -58,7 +85,7 @@
           "detail": "status=405"
         }
       ],
-      "duration": 1917.4170279999998,
+      "duration": 18.404865000000427,
       "path": "/api/status",
       "classification": "public"
     },
@@ -106,7 +133,7 @@
           "detail": "status=401"
         }
       ],
-      "duration": 444.21608899999956,
+      "duration": 216.8922789999997,
       "path": "/api/sync",
       "classification": "privileged"
     }
