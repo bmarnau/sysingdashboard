@@ -25,6 +25,8 @@ Dies umfasst insbesondere:
 - Probleme mit Commit-, Branch- oder PR-Konsistenz,
 - reproduzierbare Build- und Quality-Gate-Fehler.
 
+Ist Codex technisch nicht verfügbar, zum Beispiel wegen fehlender Credits, darf ohne Warte- oder Blockierzustand auf das **kleinstmögliche geeignete Fallback-Werkzeug** gewechselt werden. Je nach Fehlerart sind dies insbesondere GitHub, Lovable, GitHub Copilot/VS Code oder eine vorhandene lokale Toolchain. Die nachfolgenden Minimal-Fix-, Sicherheits- und Verifikationsregeln gelten unverändert.
+
 ## 3. Rollenverteilung
 
 ### Codex
@@ -61,7 +63,7 @@ Copilot und VS Code können für kleine interaktive Einzelkorrekturen genutzt we
 
 ## 4. Sicherheits- und Governance-Grenzen
 
-Auch bei Verwendung von Codex gelten unverändert alle Projektregeln:
+Auch bei Verwendung von Codex oder eines Fallback-Werkzeugs gelten unverändert alle Projektregeln:
 
 - keine reguläre direkte Änderung auf `main`,
 - jede schreibende Änderung auf einem eindeutig benannten Branch,
@@ -80,6 +82,60 @@ Für Git- und CI-Fehler gilt verbindlich:
 
 Automatische oder wiederholte „Try to fix“-Schleifen ohne bestätigte Ursache sind zu vermeiden.
 
+### 5.1 Verhältnismäßigkeits- und Minimal-Fix-Regel
+
+Eindeutig lokalisierte Formatter-, Prettier-, Lint-, Syntax-, Markdown-, Dokumentations- oder vergleichbare CI-Kleinfehler werden mit dem **geringstmöglichen technischen und organisatorischen Aufwand** behoben.
+
+Für solche Fehler gilt insbesondere:
+
+- zuerst die konkrete Fehlermeldung und die betroffene Datei bzw. den betroffenen Check isolieren,
+- nur die kleinste nachweislich erforderliche Änderung durchführen,
+- keine Architektur-, Security-, RBAC-, RLS-, Datenbank- oder Vollabnahme auslösen, wenn diese Bereiche von der Änderung nicht berührt werden,
+- Prüfungen nur auf tatsächlich betroffene Bereiche ausweiten oder wenn der Minimal-Fix den Fehler nicht beseitigt,
+- keine unrelated Refactorings, Bereinigungen oder Zusatzverbesserungen an einen Kleinfehler anhängen.
+
+Beispiel: Ein reiner Prettier-Fehler in einer Markdown-Datei wird als Formatierungsproblem behandelt: betroffene Datei formatieren, relevanten Check ausführen, Diff prüfen, committen, CI erneut laufen lassen.
+
+### 5.2 15–20-Minuten-Eskalationsregel
+
+Wird ein als Kleinfehler klassifizierter Fehler nicht innerhalb von ungefähr **15 bis 20 Minuten** gelöst oder eindeutig eingegrenzt, wird die laufende Vorgehensweise bewusst gestoppt.
+
+Vor weiterem Aufwand werden mindestens neu bewertet:
+
+- Fehlerklassifikation: Ist es wirklich noch ein Kleinfehler?
+- Werkzeugwahl: Ist Codex, GitHub, Lovable, Copilot/VS Code oder die lokale Toolchain geeigneter?
+- Entwicklungsumgebung: Wird gerade in der richtigen Umgebung gearbeitet?
+- Root Cause: Liegt eine bestätigte Ursache vor oder wird nur symptomatisch repariert?
+- Scope: Ist die Änderung noch minimal oder ist der Auftrag unbeabsichtigt gewachsen?
+
+Erst nach dieser Neubewertung wird weitergearbeitet. Ziel ist ausdrücklich, stundenlange Prozessschleifen bei mechanischen Fünf-Minuten-Fehlern zu vermeiden.
+
+### 5.3 Passende Entwicklungsumgebung zuerst bestimmen
+
+Vor operativen Reparaturbefehlen wird kurz geprüft, **wo das Projekt tatsächlich entwickelt und getestet wird**.
+
+Für Sysing Dashboard gilt derzeit insbesondere:
+
+- GitHub ist die maßgebliche Codebasis,
+- Lovable ist eine zentrale Entwicklungs- und Referenzumgebung,
+- eine lokale Installation oder ein lokaler Git-Clone darf genutzt werden, ist aber keine allgemeine Voraussetzung,
+- eine vorhandene lokale Bun-/Node-Toolchain darf für reproduzierbare Checks genutzt werden, wenn ein echter Repository-Checkout vorhanden ist,
+- das bloße Vorhandensein von Bun auf einem Endgerät macht dieses Gerät nicht automatisch zur maßgeblichen Entwicklungsumgebung.
+
+Vor Befehlen wie `bun`, `bunx`, `npm`, `npx` oder `git diff` ist daher sicherzustellen, dass die zugehörige Toolchain und – für Git-Kommandos – ein echter Repository-Working-Tree vorhanden sind.
+
+### 5.4 Aufwand muss zum Risiko passen
+
+Governance soll Sicherheit und Qualität erhöhen, nicht mechanische Kleinstfehler unnötig vergrößern.
+
+Daher gilt:
+
+- **niedriges Änderungsrisiko + klar lokalisierte Ursache → kleiner Reparatur- und Prüfpfad**,
+- **höheres Änderungsrisiko oder Security-/Daten-/Berechtigungsbezug → entsprechend tiefer Prüfpfad**,
+- die Tiefe der Prüfung richtet sich nach der tatsächlichen Auswirkung der Änderung, nicht nach einem pauschalen Maximalprozess.
+
+Diese Verhältnismäßigkeit hebt keine verbindlichen Release-, PR-, CI- oder Security-Gates auf; sie verhindert lediglich unnötige Prüfungen außerhalb des betroffenen Scopes.
+
 ## 6. Abschlussbericht
 
 Jeder Codex-Auftrag zu einem Git- oder CI-Fehler endet mit einem strukturierten Abschlussbericht mit mindestens:
@@ -95,9 +151,11 @@ Jeder Codex-Auftrag zu einem Git- oder CI-Fehler endet mit einem strukturierten 
 - `git diff --check`,
 - verbleibende Risiken oder offene Punkte.
 
+Bei einem Fallback ohne Codex wird derselbe Abschlussbericht sinngemäß erstellt, soweit die verwendete Umgebung die jeweiligen Nachweise unterstützt.
+
 ## 7. Freigaberegel
 
-Ein Git- oder CI-Fehler gilt nicht allein deshalb als behoben, weil Codex einen Fix erstellt oder lokale Tests bestanden haben.
+Ein Git- oder CI-Fehler gilt nicht allein deshalb als behoben, weil Codex oder ein anderes Werkzeug einen Fix erstellt oder lokale Tests bestanden haben.
 
 Vor einer endgültigen Freigabe werden der tatsächliche GitHub-Stand, der vollständige Diff, die relevanten CI-/Security-Gates, die Dokumentation und die Git-Hygiene unabhängig geprüft.
 
