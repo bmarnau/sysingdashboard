@@ -44,7 +44,9 @@ function WorkPackageCategoryManagementPage() {
       setState({ kind: "ready", payload });
     } catch (error: unknown) {
       const message = String((error as Error)?.message ?? error);
-      logger.warn("workpackage-category-management.list.failed", { message: message.slice(0, 200) });
+      logger.warn("workpackage-category-management.list.failed", {
+        message: message.slice(0, 200),
+      });
       setState({ kind: isDenial(message) ? "denied" : "error" });
     }
   }, []);

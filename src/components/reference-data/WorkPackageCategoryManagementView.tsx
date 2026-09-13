@@ -103,8 +103,8 @@ export function WorkPackageCategoryManagementView({
             Arbeitspaket-Kategorien
           </h1>
           <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-            Systemhausweite Hauptklassifikationen für Arbeitspakete. Kategorien werden
-            deaktiviert statt gelöscht; freie Tags bleiben davon unabhängig.
+            Systemhausweite Hauptklassifikationen für Arbeitspakete. Kategorien werden deaktiviert
+            statt gelöscht; freie Tags bleiben davon unabhängig.
           </p>
         </div>
         {canManage && selectedSystemhouseId && (
@@ -264,7 +264,8 @@ function CategoryEditDialog({
   const [sortOrder, setSortOrder] = useState(value?.sortOrder ?? 0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
-  const valid = label.trim().length > 0 && (edit.mode === "edit" || /^[a-z0-9][a-z0-9._-]*$/u.test(key));
+  const valid =
+    label.trim().length > 0 && (edit.mode === "edit" || /^[a-z0-9][a-z0-9._-]*$/u.test(key));
 
   const submit = async () => {
     if (!valid) return;
@@ -300,7 +301,9 @@ function CategoryEditDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{edit.mode === "create" ? "Neue Kategorie" : "Kategorie bearbeiten"}</DialogTitle>
+          <DialogTitle>
+            {edit.mode === "create" ? "Neue Kategorie" : "Kategorie bearbeiten"}
+          </DialogTitle>
           <DialogDescription>
             Der technische Key bleibt nach der Anlage unveränderlich.
           </DialogDescription>
@@ -342,10 +345,16 @@ function CategoryEditDialog({
               onChange={(event) => setSortOrder(Number(event.target.value))}
             />
           </label>
-          {error && <p role="alert" className="text-sm text-destructive">Speichern fehlgeschlagen.</p>}
+          {error && (
+            <p role="alert" className="text-sm text-destructive">
+              Speichern fehlgeschlagen.
+            </p>
+          )}
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose}>Abbrechen</Button>
+          <Button type="button" variant="outline" onClick={onClose}>
+            Abbrechen
+          </Button>
           <Button type="button" disabled={!valid || busy} onClick={() => void submit()}>
             Speichern
           </Button>

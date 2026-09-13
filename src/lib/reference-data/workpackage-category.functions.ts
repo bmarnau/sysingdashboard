@@ -41,9 +41,8 @@ const deactivateSchema = z.object({ systemhouseId: uuid, valueId: uuid });
 async function repositoryFor(
   supabase: UserSupabaseClient,
 ): Promise<WorkPackageCategoryManagementRepository> {
-  const { createSupabaseWorkPackageCategoryManagementRepository } = await import(
-    "@/integrations/supabase/workpackage-category-management-adapter"
-  );
+  const { createSupabaseWorkPackageCategoryManagementRepository } =
+    await import("@/integrations/supabase/workpackage-category-management-adapter");
   return createSupabaseWorkPackageCategoryManagementRepository(supabase);
 }
 
