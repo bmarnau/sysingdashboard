@@ -1113,6 +1113,29 @@ export type Database = {
         Args: { _systemhouse_id: string; _user_id: string }
         Returns: boolean
       }
+      customer_responsibility_management_candidates: {
+        Args: { _systemhouse_id: string }
+        Returns: {
+          display_name: string
+          user_id: string
+        }[]
+      }
+      customer_responsibility_management_overview: {
+        Args: { _systemhouse_id: string }
+        Returns: {
+          customer_id: string
+          customer_name: string
+          customer_status: string
+          responsibility_id: string
+          responsible_display_name: string
+          responsible_since: string
+          responsible_user_id: string
+        }[]
+      }
+      end_customer_responsibility: {
+        Args: { _customer_id: string; _systemhouse_id: string }
+        Returns: boolean
+      }
       has_active_systemhouse_membership: {
         Args: { _systemhouse_id: string; _user_id: string }
         Returns: boolean
@@ -1164,6 +1187,14 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      set_customer_responsibility: {
+        Args: {
+          _customer_id: string
+          _systemhouse_id: string
+          _target_user_id: string
+        }
+        Returns: string
       }
     }
     Enums: {
