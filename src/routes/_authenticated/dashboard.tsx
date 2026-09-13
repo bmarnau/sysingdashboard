@@ -154,11 +154,16 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 /* ---------------------------------- Component --------------------------------- */
 
 function Dashboard() {
-  type Updater<T> = T | ((prev: T) => T);
+  // Domain-State kommt aus dem zentralen dashboardStore (useSyncExternalStore).
+  // UI-State (Dialoge, Suche, Menüs) bleibt bewusst lokal.
   const projects = useProjects();
   const workPackages = useWorkPackages();
   const activities = useActivities();
   const engineerState = useEngineer();
+
+  // Wrapper mit der gewohnten setState-Signatur (Wert oder Updater-Fn).
+  // Ziel: alle bestehenden Call-Sites bleiben unverändert.
+  type Updater<T> = T | ((prev: T) => T);
   const applyUpdater = <T,>(u: Updater<T>, prev: T): T =>
     typeof u === "function" ? (u as (p: T) => T)(prev) : u;
   const setProjects = (u: Updater<Project[]>) =>
@@ -171,6 +176,7 @@ function Dashboard() {
     dashboardStore.setEngineer(applyUpdater(u, dashboardStore.getState().engineer));
 
   const [hydrated, setHydrated] = useState(false);
+
   const [tab, setTab] = useState<Tab>("projekte");
   const avkkTasks = useMemo(
     () => tasksFromLocalData({ projects, workPackages, activities }),
@@ -179,6 +185,8 @@ function Dashboard() {
   const [showNewMenu, setShowNewMenu] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+
+  // Dialog state
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editingWP, setEditingWP] = useState<WorkPackage | null>(null);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
@@ -205,6 +213,8 @@ function Dashboard() {
   const [showDemoData, setShowDemoData] = useState(false);
   const [showBackendAdmin, setShowBackendAdmin] = useState(false);
   const currentUser = useCurrentUser();
+  // F-18: Local-First-CRUD an die bestehende RBAC-Matrix binden (UI-Gating +
+  // defensive Prüfung direkt vor der Mutation). Keine neue Rechtelogik.
   const canEditProject = usePermission(CRUD_PERMISSION.project);
   const canEditWP = usePermission(CRUD_PERMISSION.workpackage);
   const canEditActivity = usePermission(CRUD_PERMISSION.activity);
@@ -213,6 +223,7 @@ function Dashboard() {
 
   const [now, setNow] = useState<Date | null>(null);
   const [viewMode, setViewMode] = useState<DashboardViewMode>("month");
+  /** Offset relativ zur aktuellen Periode (0 = aktuell, -1 = vorherige, +1 = nächste). */
   const [periodOffset, setPeriodOffset] = useState(0);
   const [isSwitching, startSwitch] = useTransition();
   const [showPerfReport, setShowPerfReport] = useState(() => {
@@ -227,7 +238,9 @@ function Dashboard() {
 
   useEffect(() => {
     UserManagementService.bootstrap();
+    // Store einmalig hydratisieren (liest user-scoped Blob, storage-Event, User-Wechsel).
     hydrateDashboardStore();
+    // Nach Hydration: Referenzielle Integrität sicherstellen und normalisiert zurückschreiben.
     const s = dashboardStore.getState();
     const projectIds = new Set<string>(s.projects.map((x) => x.id));
     const normWPs = s.workPackages.map((w) => normalizeWorkPackage(w, projectIds));
@@ -255,6 +268,7 @@ function Dashboard() {
     }
     setTargetTimeModels(EngineerTargetTimeService.loadTargetTimeModels());
     setHydrated(true);
+    // Tägliches automatisches Backup anstoßen (max. 1x pro Kalendertag).
     BackupService.scheduleDaily();
   }, []);
 
@@ -268,6 +282,8 @@ function Dashboard() {
       /* ignore */
     }
   }, [hydrated, viewMode, periodOffset, showPerfReport]);
+
+  // (Domain-Persistenz übernimmt initDashboardPersistence() — debounced, kein Full-Blob-Write pro Keystroke mehr.)
 
   useEffect(() => {
     if (!hydrated) return;
@@ -299,11 +315,15 @@ function Dashboard() {
     URL.revokeObjectURL(url);
   };
 
+  /* ---------- Derived ---------- */
+
+  /** Tages-Sollzeit-Quelle: bevorzugt aktive Arbeitszeitmodelle, sonst Legacy-Profil. */
   const targetSource = useMemo(
     () => EngineerTargetTimeService.buildDailyTargetFnFromEngineer(engineerState, targetTimeModels),
     [engineerState.monthlyTargetHours, engineerState.workloadPercent, targetTimeModels],
   );
 
+  /** Aktuell betrachteter Referenzzeitpunkt (heute + Offset im aktuellen Modus). */
   const periodRef = useMemo(() => {
     if (!now) return null;
     const d = new Date(now);
@@ -329,6 +349,7 @@ function Dashboard() {
   const periodDiff = metrics?.diff ?? 0;
   const periodUtilization = metrics?.utilization ?? 0;
 
+  /** Tätigkeiten im aktuellen Periodenfenster. */
   const periodActivities = useMemo(() => {
     if (!metrics) return activities;
     return activities.filter((a) => {
@@ -339,6 +360,7 @@ function Dashboard() {
     });
   }, [activities, metrics]);
 
+  /** WP- und Projekt-IDs mit mindestens einer Tätigkeit in der aktuellen Periode. */
   const activeInPeriod = useMemo(() => {
     const wpIds = new Set<string>();
     const projectIds = new Set<string>();
@@ -352,6 +374,7 @@ function Dashboard() {
     return { wpIds, projectIds };
   }, [periodActivities, workPackages]);
 
+  // Aufwand je Arbeitspaket aus Tätigkeiten
   const spentByWP = useMemo(() => {
     const m = new Map<string, number>();
     for (const a of activities) {
@@ -361,6 +384,7 @@ function Dashboard() {
     return m;
   }, [activities]);
 
+  // Aufwand je Projekt = Summe der Tätigkeiten der zugeordneten Arbeitspakete
   const spentByProject = useMemo(() => {
     const m = new Map<string, number>();
     const wpToProj = new Map(workPackages.map((wp) => [wp.id, wp.projectId ?? null] as const));
@@ -390,6 +414,8 @@ function Dashboard() {
 
   const openWPs = workPackages.filter((w) => w.status !== "erledigt").length;
   const activeProjects = projects.filter((p) => p.status !== "abgeschlossen").length;
+
+  /* ---------- CRUD ---------- */
 
   const saveProject = (p: Project) => {
     if (!canEditProject) return;
@@ -426,7 +452,10 @@ function Dashboard() {
   const saveActivity = (a: Activity) => {
     if (!canEditActivity) return;
     const errs = validateActivity(a);
-    if (Object.keys(errs).length > 0) return;
+    if (Object.keys(errs).length > 0) {
+      // Defensive: UI verhindert den Aufruf bereits, aber kein inkonsistenter State darf entstehen.
+      return;
+    }
     const wpIds = new Set(workPackages.map((w) => w.id));
     const normalized = normalizeActivity(a, wpIds);
     setActivities((arr) =>
@@ -442,11 +471,26 @@ function Dashboard() {
     setActivities((arr) => arr.filter((x) => x.id !== id));
   };
 
+  /* ---------- Render ---------- */
+
   const dateLine = (() => {
     if (!now || !metrics) return "…";
-    const rStart = metrics.range.start.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
-    const rEnd = new Date(metrics.range.end.getTime() - 86400000).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
-    const today = now.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const rStart = metrics.range.start.toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    const rEnd = new Date(metrics.range.end.getTime() - 86400000).toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    const today = now.toLocaleDateString("de-DE", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
     const suffix = periodOffset === 0 ? ` · ${today}` : "";
     let kwInfo = "";
     if (viewMode === "month") {
@@ -457,7 +501,11 @@ function Dashboard() {
     return `${metrics.range.label} · ${rStart} – ${rEnd}${kwInfo}${suffix}`;
   })();
 
-  const switchView = (next: DashboardViewMode) => startSwitch(() => { setViewMode(next); setPeriodOffset(0); });
+  const switchView = (next: DashboardViewMode) =>
+    startSwitch(() => {
+      setViewMode(next);
+      setPeriodOffset(0);
+    });
   const shiftPeriod = (delta: number) => startSwitch(() => setPeriodOffset((p) => p + delta));
   const resetPeriod = () => startSwitch(() => setPeriodOffset(0));
 
@@ -465,53 +513,630 @@ function Dashboard() {
     <div className="min-h-screen bg-background text-foreground" suppressHydrationWarning>
       <header className="app-header sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-xl no-print">
         <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 sm:px-6">
-          <div className="flex items-center gap-2"><div className="grid size-9 place-items-center rounded-lg" style={{ background: "var(--gradient-primary)" }}><Server className="size-5 text-primary-foreground" /></div><div className="leading-tight"><p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">{engineerState.company}</p><p className="text-sm font-semibold">Engineer Console</p></div></div>
-          <GlobalSearch projects={projects} workPackages={workPackages} activities={activities} setTab={setTab} setEditingProject={setEditingProject} setEditingWP={setEditingWP} setEditingActivity={setEditingActivity} canEditProject={canEditProject} canEditWP={canEditWP} canEditActivity={canEditActivity} openManualTopic={openManualTopic} />
-          <div className="ml-auto flex items-center gap-2 sm:gap-3"><HelpMenu openManualTopic={openManualTopic} /><ServiceMenu showPerfReport={showPerfReport} setShowPerfReport={setShowPerfReport} resetData={resetData} setShowEngineer={setShowEngineer} setShowWorkingTimeDialog={setShowWorkingTimeDialog} setShowUserDialog={setShowUserDialog} setShowManual={setShowManual} setShowBackupDialog={setShowBackupDialog} setShowSystemStatus={setShowSystemStatus} setShowTechnicalReport={setShowTechnicalReport} setShowDownloads={setShowDownloads} setShowImportExport={setShowImportExport} setShowAzureData={setShowAzureData} setShowLogViewer={setShowLogViewer} setShowExportDialog={setShowExportDialog} setShowDevDiary={setShowDevDiary} setShowReports={setShowReports} setShowDemoData={setShowDemoData} setShowBackendAdmin={setShowBackendAdmin} /><button type="button" onClick={() => setShowUserDialog(true)} title="Benutzer & Profile" aria-label="Benutzer & Profile öffnen" suppressHydrationWarning className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3 transition hover:bg-secondary">{currentUser?.profileImage ? <img src={currentUser.profileImage} alt="" className="size-8 rounded-md object-cover" /> : <div className="grid size-8 place-items-center rounded-md font-mono text-sm font-bold text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>{currentUser ? initialsOf(currentUser) : engineerState.initials}</div>}<div className="hidden text-left leading-tight sm:block"><p className="text-sm font-semibold">{currentUser?.displayName ?? engineerState.name}</p><p className="text-xs text-muted-foreground">{currentUser ? ROLE_LABEL[currentUser.role] : engineerState.role}</p></div></button><RefreshButton /><LogoutButton /></div>
+          <div className="flex items-center gap-2">
+            <div
+              className="grid size-9 place-items-center rounded-lg"
+              style={{ background: "var(--gradient-primary)" }}
+            >
+              <Server className="size-5 text-primary-foreground" />
+            </div>
+            <div className="leading-tight">
+              <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                {engineerState.company}
+              </p>
+              <p className="text-sm font-semibold">Engineer Console</p>
+            </div>
+          </div>
+
+          {/* Global Search */}
+          <GlobalSearch
+            projects={projects}
+            workPackages={workPackages}
+            activities={activities}
+            setTab={setTab}
+            setEditingProject={setEditingProject}
+            setEditingWP={setEditingWP}
+            setEditingActivity={setEditingActivity}
+            canEditProject={canEditProject}
+            canEditWP={canEditWP}
+            canEditActivity={canEditActivity}
+            openManualTopic={openManualTopic}
+          />
+
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
+            <HelpMenu openManualTopic={openManualTopic} />
+            <ServiceMenu
+              showPerfReport={showPerfReport}
+              setShowPerfReport={setShowPerfReport}
+              resetData={resetData}
+              setShowEngineer={setShowEngineer}
+              setShowWorkingTimeDialog={setShowWorkingTimeDialog}
+              setShowUserDialog={setShowUserDialog}
+              setShowManual={setShowManual}
+              setShowBackupDialog={setShowBackupDialog}
+              setShowSystemStatus={setShowSystemStatus}
+              setShowTechnicalReport={setShowTechnicalReport}
+              setShowDownloads={setShowDownloads}
+              setShowImportExport={setShowImportExport}
+              setShowAzureData={setShowAzureData}
+              setShowLogViewer={setShowLogViewer}
+              setShowExportDialog={setShowExportDialog}
+              setShowDevDiary={setShowDevDiary}
+              setShowReports={setShowReports}
+              setShowDemoData={setShowDemoData}
+              setShowBackendAdmin={setShowBackendAdmin}
+            />
+            <button
+              type="button"
+              onClick={() => setShowUserDialog(true)}
+              title="Benutzer & Profile"
+              aria-label="Benutzer & Profile öffnen"
+              suppressHydrationWarning
+              className="flex items-center gap-3 rounded-lg border border-border bg-secondary/40 py-1.5 pl-1.5 pr-3 transition hover:bg-secondary"
+            >
+              {currentUser?.profileImage ? (
+                <img
+                  src={currentUser.profileImage}
+                  alt=""
+                  className="size-8 rounded-md object-cover"
+                />
+              ) : (
+                <div
+                  className="grid size-8 place-items-center rounded-md font-mono text-sm font-bold text-primary-foreground"
+                  style={{ background: "var(--gradient-primary)" }}
+                >
+                  {currentUser ? initialsOf(currentUser) : engineerState.initials}
+                </div>
+              )}
+              <div className="hidden text-left leading-tight sm:block">
+                <p className="text-sm font-semibold">
+                  {currentUser?.displayName ?? engineerState.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {currentUser ? ROLE_LABEL[currentUser.role] : engineerState.role}
+                </p>
+              </div>
+            </button>
+            <RefreshButton />
+            <LogoutButton />
+          </div>
         </div>
       </header>
+
       <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 sm:py-8">
-        <section className="mb-8 flex flex-wrap items-end justify-between gap-4"><div><p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">{dateLine}</p><h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">Guten Tag, {currentUser ? greetingFirstNameOf({ firstName: currentUser.firstName, displayName: currentUser.displayName, email: currentUser.email, metadata: null }) : greetingFirstNameOf({ displayName: engineerState.name })}.</h1><p className="mt-1 text-sm text-muted-foreground">{activeProjects} aktive Projekte · {openWPs} offene Arbeitspakete · {activities.length} Tätigkeiten</p></div><div className="flex items-center gap-2 no-print"><div role="tablist" aria-label="Zeitraum" className="inline-flex rounded-lg border border-border bg-secondary/40 p-1 text-sm"><button role="tab" aria-selected={viewMode === "week"} onClick={() => switchView("week")} className={`rounded-md px-3 py-1.5 font-medium transition ${viewMode === "week" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>Woche</button><button role="tab" aria-selected={viewMode === "month"} onClick={() => switchView("month")} className={`rounded-md px-3 py-1.5 font-medium transition ${viewMode === "month" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>Monat</button></div><div className="inline-flex items-center gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-sm"><button onClick={() => shiftPeriod(-1)} className="grid size-7 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary hover:text-foreground" aria-label={viewMode === "month" ? "Vorheriger Monat" : "Vorherige Woche"}>◀</button><button onClick={resetPeriod} disabled={periodOffset === 0} className="rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground disabled:opacity-50">Heute</button><button onClick={() => shiftPeriod(1)} className="grid size-7 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary hover:text-foreground" aria-label={viewMode === "month" ? "Nächster Monat" : "Nächste Woche"}>▶</button></div>{isSwitching && <span role="status" aria-label="Lädt" className="inline-block size-3 animate-pulse rounded-full bg-primary" />}{canCreateAnything && <div className="relative no-print"><button onClick={() => setShowNewMenu((v) => !v)} className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90" style={{ background: "var(--gradient-primary)" }}><Plus className="size-4" /> Neu<ChevronDown className="size-4 opacity-80" /></button>{showNewMenu && <><button aria-label="Menü schließen" className="fixed inset-0 z-30 cursor-default" onClick={() => setShowNewMenu(false)} /><div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">{canEditActivity && <button onClick={() => { setShowNewMenu(false); setEditingActivity(emptyActivity()); }} className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"><Clock className="size-4 opacity-70" /> Neue Tätigkeit</button>}{canEditWP && <button onClick={() => { setShowNewMenu(false); setEditingWP(emptyWP()); }} className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"><CheckCircle2 className="size-4 opacity-70" /> Neues Arbeitspaket</button>}{canEditProject && <button onClick={() => { setShowNewMenu(false); setEditingProject(emptyProject()); }} className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"><FolderKanban className="size-4 opacity-70" /> Neues Projekt</button>}</div></>}</div>}</div></section>
-        <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"><KpiCard icon={<Clock className="size-5" />} label={viewMode === "month" ? "Aufwand diesen Monat" : "Aufwand diese Woche"} value={`${periodActual.toFixed(1)} h`} sub={`Soll ${periodTarget.toFixed(1)} h · ${periodDiff >= 0 ? "+" : ""}${periodDiff.toFixed(1)} h`} progress={periodUtilization} /><KpiCard icon={<TrendingUp className="size-5" />} label={viewMode === "month" ? "Verrechenbar (Monat)" : "Verrechenbar (KW)"} value={`${periodBillable.toFixed(1)} h`} sub={`${periodActual > 0 ? Math.round((periodBillable / periodActual) * 100) : 0}% Billable · Auslastung ${periodUtilization.toFixed(1)}%`} tone="success" /><KpiCard icon={<Euro className="size-5" />} label="Umsatz gesamt" value={fmtEuro(totalRevenue)} sub={`${fmtEuro(openRevenue)} noch offen`} tone="info" /><KpiCard icon={<AlertTriangle className="size-5" />} label="Offene Arbeitspakete" value={String(openWPs)} sub={`${workPackages.filter((w) => w.priority === "kritisch" && w.status !== "erledigt").length} kritisch`} tone="warning" /></section>
-        {showPerfReport && now && <Suspense fallback={null}><PerformanceReport activities={activities} workPackages={workPackages} projects={projects} engineer={engineerState} reference={now} targetTimeModels={targetTimeModels} /></Suspense>}
+        {/* Hero */}
+        <section className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">{dateLine}</p>
+            <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
+              Guten Tag,{" "}
+              {currentUser
+                ? greetingFirstNameOf({
+                    firstName: currentUser.firstName,
+                    displayName: currentUser.displayName,
+                    email: currentUser.email,
+                    metadata: null,
+                  })
+                : greetingFirstNameOf({ displayName: engineerState.name })}
+              .
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {activeProjects} aktive Projekte · {openWPs} offene Arbeitspakete ·{" "}
+              {activities.length} Tätigkeiten
+            </p>
+          </div>
+          <div className="flex items-center gap-2 no-print">
+            <div
+              role="tablist"
+              aria-label="Zeitraum"
+              className="inline-flex rounded-lg border border-border bg-secondary/40 p-1 text-sm"
+            >
+              <button
+                role="tab"
+                aria-selected={viewMode === "week"}
+                onClick={() => switchView("week")}
+                className={`rounded-md px-3 py-1.5 font-medium transition ${
+                  viewMode === "week"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Woche
+              </button>
+              <button
+                role="tab"
+                aria-selected={viewMode === "month"}
+                onClick={() => switchView("month")}
+                className={`rounded-md px-3 py-1.5 font-medium transition ${
+                  viewMode === "month"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Monat
+              </button>
+            </div>
+            <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-sm">
+              <button
+                onClick={() => shiftPeriod(-1)}
+                className="grid size-7 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+                aria-label={viewMode === "month" ? "Vorheriger Monat" : "Vorherige Woche"}
+              >
+                ◀
+              </button>
+              <button
+                onClick={resetPeriod}
+                disabled={periodOffset === 0}
+                className="rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition hover:bg-secondary hover:text-foreground disabled:opacity-50"
+              >
+                Heute
+              </button>
+              <button
+                onClick={() => shiftPeriod(1)}
+                className="grid size-7 place-items-center rounded-md text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+                aria-label={viewMode === "month" ? "Nächster Monat" : "Nächste Woche"}
+              >
+                ▶
+              </button>
+            </div>
+            {isSwitching && (
+              <span
+                role="status"
+                aria-label="Lädt"
+                className="inline-block size-3 animate-pulse rounded-full bg-primary"
+              />
+            )}
+            {canCreateAnything && (
+              <div className="relative no-print">
+                <button
+                  onClick={() => setShowNewMenu((v) => !v)}
+                  className="inline-flex h-10 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
+                  style={{ background: "var(--gradient-primary)" }}
+                >
+                  <Plus className="size-4" /> Neu
+                  <ChevronDown className="size-4 opacity-80" />
+                </button>
+                {showNewMenu && (
+                  <>
+                    <button
+                      aria-label="Menü schließen"
+                      className="fixed inset-0 z-30 cursor-default"
+                      onClick={() => setShowNewMenu(false)}
+                    />
+                    <div className="absolute right-0 z-40 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-background shadow-[var(--shadow-elevated)]">
+                      {canEditActivity && (
+                        <button
+                          onClick={() => {
+                            setShowNewMenu(false);
+                            setEditingActivity(emptyActivity());
+                          }}
+                          className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                        >
+                          <Clock className="size-4 opacity-70" /> Neue Tätigkeit
+                        </button>
+                      )}
+                      {canEditWP && (
+                        <button
+                          onClick={() => {
+                            setShowNewMenu(false);
+                            setEditingWP(emptyWP());
+                          }}
+                          className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                        >
+                          <CheckCircle2 className="size-4 opacity-70" /> Neues Arbeitspaket
+                        </button>
+                      )}
+                      {canEditProject && (
+                        <button
+                          onClick={() => {
+                            setShowNewMenu(false);
+                            setEditingProject(emptyProject());
+                          }}
+                          className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+                        >
+                          <FolderKanban className="size-4 opacity-70" /> Neues Projekt
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* KPIs */}
+        <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <KpiCard
+            icon={<Clock className="size-5" />}
+            label={viewMode === "month" ? "Aufwand diesen Monat" : "Aufwand diese Woche"}
+            value={`${periodActual.toFixed(1)} h`}
+            sub={`Soll ${periodTarget.toFixed(1)} h · ${periodDiff >= 0 ? "+" : ""}${periodDiff.toFixed(1)} h`}
+            progress={periodUtilization}
+          />
+          <KpiCard
+            icon={<TrendingUp className="size-5" />}
+            label={viewMode === "month" ? "Verrechenbar (Monat)" : "Verrechenbar (KW)"}
+            value={`${periodBillable.toFixed(1)} h`}
+            sub={`${periodActual > 0 ? Math.round((periodBillable / periodActual) * 100) : 0}% Billable · Auslastung ${periodUtilization.toFixed(1)}%`}
+            tone="success"
+          />
+
+          <KpiCard
+            icon={<Euro className="size-5" />}
+            label="Umsatz gesamt"
+            value={fmtEuro(totalRevenue)}
+            sub={`${fmtEuro(openRevenue)} noch offen`}
+            tone="info"
+          />
+          <KpiCard
+            icon={<AlertTriangle className="size-5" />}
+            label="Offene Arbeitspakete"
+            value={String(openWPs)}
+            sub={`${workPackages.filter((w) => w.priority === "kritisch" && w.status !== "erledigt").length} kritisch`}
+            tone="warning"
+          />
+        </section>
+
+        {/* Persönlicher Leistungsreport (lazy — recharts-Chunk lädt on-demand) */}
+        {showPerfReport && now && (
+          <Suspense fallback={null}>
+            <PerformanceReport
+              activities={activities}
+              workPackages={workPackages}
+              projects={projects}
+              engineer={engineerState}
+              reference={now}
+              targetTimeModels={targetTimeModels}
+            />
+          </Suspense>
+        )}
+
+        {/* Tabs */}
         <div className="mb-4 flex flex-wrap gap-1 rounded-lg border border-border bg-secondary/40 p-1 text-sm no-print">
-          <TabButton active={tab === "projekte"} onClick={() => setTab("projekte")} icon={<FolderKanban className="size-4" />}>Projekte ({projects.length})</TabButton>
-          <TabButton active={tab === "arbeitspakete"} onClick={() => setTab("arbeitspakete")} icon={<Layers className="size-4" />}>Arbeitspakete ({workPackages.length})</TabButton>
-          <TabButton active={tab === "taetigkeiten"} onClick={() => setTab("taetigkeiten")} icon={<Clock className="size-4" />}>Tätigkeiten ({periodActivities.length}/{activities.length})</TabButton>
-          <TabButton active={tab === "abrechnung"} onClick={() => setTab("abrechnung")} icon={<Euro className="size-4" />}>Abrechnung</TabButton>
-          <PermissionGate permission="avkk.view"><TabButton active={tab === "avkk"} onClick={() => setTab("avkk")} icon={<ShieldCheck className="size-4" />}>Mein AVKK</TabButton></PermissionGate>
-          <PermissionGate permission="avkk.management.view"><TabButton active={tab === "avkk-management"} onClick={() => setTab("avkk-management")} icon={<Gauge className="size-4" />}>AVKK Management</TabButton></PermissionGate>
-          <PermissionGate permission="dashboard.view"><Link to="/meine-kunden" className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Building2 className="size-4" />Meine Kunden</Link></PermissionGate>
-          <PermissionGate permission="customer.responsibility.manage"><Link to="/kundenverantwortung" className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Users className="size-4" />Kundenverantwortung</Link></PermissionGate>
+          <TabButton
+            active={tab === "projekte"}
+            onClick={() => setTab("projekte")}
+            icon={<FolderKanban className="size-4" />}
+          >
+            Projekte ({projects.length})
+          </TabButton>
+          <TabButton
+            active={tab === "arbeitspakete"}
+            onClick={() => setTab("arbeitspakete")}
+            icon={<Layers className="size-4" />}
+          >
+            Arbeitspakete ({workPackages.length})
+          </TabButton>
+          <TabButton
+            active={tab === "taetigkeiten"}
+            onClick={() => setTab("taetigkeiten")}
+            icon={<Clock className="size-4" />}
+          >
+            Tätigkeiten ({periodActivities.length}/{activities.length})
+          </TabButton>
+          <TabButton
+            active={tab === "abrechnung"}
+            onClick={() => setTab("abrechnung")}
+            icon={<Euro className="size-4" />}
+          >
+            Abrechnung
+          </TabButton>
+          <PermissionGate permission="avkk.view">
+            <TabButton
+              active={tab === "avkk"}
+              onClick={() => setTab("avkk")}
+              icon={<ShieldCheck className="size-4" />}
+            >
+              Mein AVKK
+            </TabButton>
+          </PermissionGate>
+          <PermissionGate permission="avkk.management.view">
+            <TabButton
+              active={tab === "avkk-management"}
+              onClick={() => setTab("avkk-management")}
+              icon={<Gauge className="size-4" />}
+            >
+              AVKK Management
+            </TabButton>
+          </PermissionGate>
+          {/* BSF-03: eigene Route, damit (systemhouseId, customerId) in der URL erhalten bleibt. */}
+          <PermissionGate permission="dashboard.view">
+            <Link
+              to="/meine-kunden"
+              className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Building2 className="size-4" />
+              Meine Kunden
+            </Link>
+          </PermissionGate>
+          <PermissionGate permission="customer.responsibility.manage">
+            <Link
+              to="/kundenverantwortung"
+              className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Users className="size-4" />
+              Kundenverantwortung
+            </Link>
+          </PermissionGate>
         </div>
-        {tab === "projekte" && <ProjectsView projects={projects} spentByProject={spentByProject} workPackages={workPackages} periodProjectIds={activeInPeriod.projectIds} periodLabel={metrics?.range.label ?? ""} onNew={() => setEditingProject(emptyProject())} onEdit={setEditingProject} onDelete={deleteProject} canEdit={canEditProject} />}
-        {tab === "arbeitspakete" && <WorkPackagesView workPackages={workPackages} projects={projects} spentByWP={spentByWP} periodWpIds={activeInPeriod.wpIds} periodLabel={metrics?.range.label ?? ""} onNew={() => setEditingWP(emptyWP())} onEdit={setEditingWP} onDelete={deleteWP} canEdit={canEditWP} />}
-        {tab === "taetigkeiten" && <ActivitiesView activities={activities} periodActivities={periodActivities} periodLabel={metrics?.range.label ?? ""} workPackages={workPackages} projects={projects} onNew={() => setEditingActivity(emptyActivity())} onEdit={setEditingActivity} onDelete={deleteActivity} canEdit={canEditActivity} />}
-        {tab === "abrechnung" && <BillingView activities={activities} workPackages={workPackages} projects={projects} buckets={chartBuckets} chartMax={chartMax} viewMode={viewMode} onEdit={setEditingActivity} canEdit={canEditActivity} />}
-        {tab === "avkk" && <PermissionGate permission="avkk.view" fallback={<p className="text-sm text-muted-foreground">Für den AVKK-Arbeitsplatz fehlt die Berechtigung.</p>}><AvkkWorkspaceView tasks={avkkTasks} onOpenManual={() => openManualTopic("avkk-modell")} /></PermissionGate>}
-        {tab === "avkk-management" && <PermissionGate permission="avkk.management.view" fallback={<p className="text-sm text-muted-foreground">Für die AVKK-Führungssicht fehlt die Berechtigung.</p>}><AvkkManagementView tasks={avkkTasks} onOpenManual={() => openManualTopic("avkk-management")} /></PermissionGate>}
-        <footer className="mt-10 flex items-center justify-between border-t border-border pt-6 text-xs text-muted-foreground"><div className="flex items-center gap-2"><ActivityIcon className="size-3.5 text-success" /><span>Alle Systeme operativ</span></div><p className="font-mono">{engineerState.company}</p></footer>
+
+        {tab === "projekte" && (
+          <ProjectsView
+            projects={projects}
+            spentByProject={spentByProject}
+            workPackages={workPackages}
+            periodProjectIds={activeInPeriod.projectIds}
+            periodLabel={metrics?.range.label ?? ""}
+            onNew={() => setEditingProject(emptyProject())}
+            onEdit={setEditingProject}
+            onDelete={deleteProject}
+            canEdit={canEditProject}
+          />
+        )}
+        {tab === "arbeitspakete" && (
+          <WorkPackagesView
+            workPackages={workPackages}
+            projects={projects}
+            spentByWP={spentByWP}
+            periodWpIds={activeInPeriod.wpIds}
+            periodLabel={metrics?.range.label ?? ""}
+            onNew={() => setEditingWP(emptyWP())}
+            onEdit={setEditingWP}
+            onDelete={deleteWP}
+            canEdit={canEditWP}
+          />
+        )}
+        {tab === "taetigkeiten" && (
+          <ActivitiesView
+            activities={activities}
+            periodActivities={periodActivities}
+            periodLabel={metrics?.range.label ?? ""}
+            workPackages={workPackages}
+            projects={projects}
+            onNew={() => setEditingActivity(emptyActivity())}
+            onEdit={setEditingActivity}
+            onDelete={deleteActivity}
+            canEdit={canEditActivity}
+          />
+        )}
+        {tab === "abrechnung" && (
+          <BillingView
+            activities={activities}
+            workPackages={workPackages}
+            projects={projects}
+            buckets={chartBuckets}
+            chartMax={chartMax}
+            viewMode={viewMode}
+            onEdit={setEditingActivity}
+            canEdit={canEditActivity}
+          />
+        )}
+
+        {tab === "avkk" && (
+          <PermissionGate
+            permission="avkk.view"
+            fallback={
+              <p className="text-sm text-muted-foreground">
+                Für den AVKK-Arbeitsplatz fehlt die Berechtigung.
+              </p>
+            }
+          >
+            <AvkkWorkspaceView
+              tasks={avkkTasks}
+              onOpenManual={() => openManualTopic("avkk-modell")}
+            />
+          </PermissionGate>
+        )}
+
+        {tab === "avkk-management" && (
+          <PermissionGate
+            permission="avkk.management.view"
+            fallback={
+              <p className="text-sm text-muted-foreground">
+                Für die AVKK-Führungssicht fehlt die Berechtigung.
+              </p>
+            }
+          >
+            <AvkkManagementView
+              tasks={avkkTasks}
+              onOpenManual={() => openManualTopic("avkk-management")}
+            />
+          </PermissionGate>
+        )}
+
+        <footer className="mt-10 flex items-center justify-between border-t border-border pt-6 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <ActivityIcon className="size-3.5 text-success" />
+            <span>Alle Systeme operativ</span>
+          </div>
+          <p className="font-mono">{engineerState.company}</p>
+        </footer>
       </main>
-      {editingProject && canEditProject && <ProjectDialog project={editingProject} onClose={() => setEditingProject(null)} onSave={(p) => { saveProject(p); setEditingProject(null); }} />}
-      {editingWP && canEditWP && <WorkPackageDialog wp={editingWP} projects={projects} onClose={() => setEditingWP(null)} onSave={(w) => { saveWP(w); setEditingWP(null); }} />}
-      {editingActivity && canEditActivity && <ActivityDialog activity={editingActivity} workPackages={workPackages} projects={projects} onClose={() => setEditingActivity(null)} onSave={(a) => { saveActivity(a); setEditingActivity(null); }} />}
-      {showEngineer && <EngineerDialog engineerState={engineerState} currentUser={currentUser} targetTimeModels={targetTimeModels} onOpenWorkingTime={() => { setShowEngineer(false); setShowWorkingTimeDialog(true); }} onClose={() => setShowEngineer(false)} onSave={(e, userPatch) => { setEngineer(e); if (currentUser && userPatch) UserManagementService.updateUser(currentUser.id, userPatch); setShowEngineer(false); }} />}
-      {showWorkingTimeDialog && <Suspense fallback={null}><WorkingTimeModelsDialog models={targetTimeModels} onChange={setTargetTimeModels} onClose={() => setShowWorkingTimeDialog(false)} /></Suspense>}
-      {showUserDialog && currentUser && <Suspense fallback={null}><UserManagementDialog open={showUserDialog} onClose={() => setShowUserDialog(false)} currentUser={currentUser} onProfileSwitch={() => window.location.reload()} /></Suspense>}
-      {showManual && <Suspense fallback={null}><UserManualDialog open={showManual} onClose={() => { setShowManual(false); setManualTopicId(undefined); setManualQuery(undefined); }} initialRoute="/" initialTopicId={manualTopicId} initialQuery={manualQuery} /></Suspense>}
-      {showBackupDialog && <Suspense fallback={null}><BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} /></Suspense>}
-      {showSystemStatus && <Suspense fallback={null}><SystemStatusDialog open={showSystemStatus} onOpenChange={setShowSystemStatus} /></Suspense>}
-      {showTechnicalReport && <Suspense fallback={null}><TechnicalReportDialog open={showTechnicalReport} onOpenChange={setShowTechnicalReport} /></Suspense>}
-      {showExportDialog && <Suspense fallback={null}><ExportDialog open={showExportDialog} onOpenChange={setShowExportDialog} projects={projects} workPackages={workPackages} activities={activities} engineer={engineerState} onJsonBackup={exportData} /></Suspense>}
-      {showArchiveDialog && <Suspense fallback={null}><LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} /></Suspense>}
-      {showReports && <Suspense fallback={null}><ReportDialog open={showReports} onOpenChange={setShowReports} tasks={avkkTasks} projects={projects} workPackages={workPackages} /></Suspense>}
-      {showDownloads && <Suspense fallback={null}><DownloadCenterDialog open={showDownloads} onOpenChange={setShowDownloads} /></Suspense>}
-      {showImportExport && <Suspense fallback={null}><ImportExportDialog open={showImportExport} onOpenChange={setShowImportExport} onOpenBackup={() => { setShowImportExport(false); setShowBackupDialog(true); }} /></Suspense>}
-      {showAzureData && <Suspense fallback={null}><AzureDataDialog open={showAzureData} onOpenChange={setShowAzureData} /></Suspense>}
-      {showLogViewer && <Suspense fallback={null}><LogViewerDialog open={showLogViewer} onOpenChange={setShowLogViewer} /></Suspense>}
-      {showDevDiary && <Suspense fallback={null}><DevDiaryDialog open={showDevDiary} onOpenChange={setShowDevDiary} /></Suspense>}
-      {showDemoData && <Suspense fallback={null}><DemoDataDialog open={showDemoData} onOpenChange={setShowDemoData} /></Suspense>}
-      {showBackendAdmin && <Suspense fallback={null}><BackendAdminDialog open={showBackendAdmin} onOpenChange={setShowBackendAdmin} /></Suspense>}
+
+      {editingProject && canEditProject && (
+        <ProjectDialog
+          project={editingProject}
+          onClose={() => setEditingProject(null)}
+          onSave={(p) => {
+            saveProject(p);
+            setEditingProject(null);
+          }}
+        />
+      )}
+      {editingWP && canEditWP && (
+        <WorkPackageDialog
+          wp={editingWP}
+          projects={projects}
+          onClose={() => setEditingWP(null)}
+          onSave={(w) => {
+            saveWP(w);
+            setEditingWP(null);
+          }}
+        />
+      )}
+      {editingActivity && canEditActivity && (
+        <ActivityDialog
+          activity={editingActivity}
+          workPackages={workPackages}
+          projects={projects}
+          onClose={() => setEditingActivity(null)}
+          onSave={(a) => {
+            saveActivity(a);
+            setEditingActivity(null);
+          }}
+        />
+      )}
+      {showEngineer && (
+        <EngineerDialog
+          engineerState={engineerState}
+          currentUser={currentUser}
+          targetTimeModels={targetTimeModels}
+          onOpenWorkingTime={() => {
+            setShowEngineer(false);
+            setShowWorkingTimeDialog(true);
+          }}
+          onClose={() => setShowEngineer(false)}
+          onSave={(e, userPatch) => {
+            setEngineer(e);
+            if (currentUser && userPatch) {
+              UserManagementService.updateUser(currentUser.id, userPatch);
+            }
+            setShowEngineer(false);
+          }}
+        />
+      )}
+      {showWorkingTimeDialog && (
+        <Suspense fallback={null}>
+          <WorkingTimeModelsDialog
+            models={targetTimeModels}
+            onChange={setTargetTimeModels}
+            onClose={() => setShowWorkingTimeDialog(false)}
+          />
+        </Suspense>
+      )}
+      {showUserDialog && currentUser && (
+        <Suspense fallback={null}>
+          <UserManagementDialog
+            open={showUserDialog}
+            onClose={() => setShowUserDialog(false)}
+            currentUser={currentUser}
+            onProfileSwitch={() => {
+              // Datenscope ist per-User; sicherster Weg: vollständiger Reload.
+              window.location.reload();
+            }}
+          />
+        </Suspense>
+      )}
+
+      {/* Alle folgenden Dialoge sind gegen ihren open-State gegated, damit der
+          Lazy-Chunk erst beim ersten Öffnen geladen wird (nicht bei Route-Mount). */}
+      {showManual && (
+        <Suspense fallback={null}>
+          <UserManualDialog
+            open={showManual}
+            onClose={() => {
+              setShowManual(false);
+              setManualTopicId(undefined);
+              setManualQuery(undefined);
+            }}
+            initialRoute="/"
+            initialTopicId={manualTopicId}
+            initialQuery={manualQuery}
+          />
+        </Suspense>
+      )}
+
+      {showBackupDialog && (
+        <Suspense fallback={null}>
+          <BackupDialog open={showBackupDialog} onOpenChange={setShowBackupDialog} />
+        </Suspense>
+      )}
+
+      {showSystemStatus && (
+        <Suspense fallback={null}>
+          <SystemStatusDialog open={showSystemStatus} onOpenChange={setShowSystemStatus} />
+        </Suspense>
+      )}
+
+      {showTechnicalReport && (
+        <Suspense fallback={null}>
+          <TechnicalReportDialog open={showTechnicalReport} onOpenChange={setShowTechnicalReport} />
+        </Suspense>
+      )}
+
+      {showExportDialog && (
+        <Suspense fallback={null}>
+          <ExportDialog
+            open={showExportDialog}
+            onOpenChange={setShowExportDialog}
+            projects={projects}
+            workPackages={workPackages}
+            activities={activities}
+            engineer={engineerState}
+            onJsonBackup={exportData}
+          />
+        </Suspense>
+      )}
+
+      {showArchiveDialog && (
+        <Suspense fallback={null}>
+          <LocalArchiveDialog open={showArchiveDialog} onOpenChange={setShowArchiveDialog} />
+        </Suspense>
+      )}
+      {showReports && (
+        <Suspense fallback={null}>
+          <ReportDialog
+            open={showReports}
+            onOpenChange={setShowReports}
+            tasks={avkkTasks}
+            projects={projects}
+            workPackages={workPackages}
+          />
+        </Suspense>
+      )}
+      {showDownloads && (
+        <Suspense fallback={null}>
+          <DownloadCenterDialog open={showDownloads} onOpenChange={setShowDownloads} />
+        </Suspense>
+      )}
+      {showImportExport && (
+        <Suspense fallback={null}>
+          <ImportExportDialog
+            open={showImportExport}
+            onOpenChange={setShowImportExport}
+            onOpenBackup={() => {
+              setShowImportExport(false);
+              setShowBackupDialog(true);
+            }}
+          />
+        </Suspense>
+      )}
+      {showAzureData && (
+        <Suspense fallback={null}>
+          <AzureDataDialog open={showAzureData} onOpenChange={setShowAzureData} />
+        </Suspense>
+      )}
+      {showLogViewer && (
+        <Suspense fallback={null}>
+          <LogViewerDialog open={showLogViewer} onOpenChange={setShowLogViewer} />
+        </Suspense>
+      )}
+      {showDevDiary && (
+        <Suspense fallback={null}>
+          <DevDiaryDialog open={showDevDiary} onOpenChange={setShowDevDiary} />
+        </Suspense>
+      )}
+      {showDemoData && (
+        <Suspense fallback={null}>
+          <DemoDataDialog open={showDemoData} onOpenChange={setShowDemoData} />
+        </Suspense>
+      )}
+      {showBackendAdmin && (
+        <Suspense fallback={null}>
+          <BackendAdminDialog open={showBackendAdmin} onOpenChange={setShowBackendAdmin} />
+        </Suspense>
+      )}
     </div>
   );
 }
