@@ -30,7 +30,10 @@ describe("BSF-03D Migration — Vertrag (statisch)", () => {
     const m = FLAT.match(
       /conname = 'reference_value_systemhouse_fk'[^)]*conrelid = 'public\.reference_value'::regclass/,
     );
-    expect(m, "FK-Check muss mit conrelid = 'public.reference_value'::regclass qualifiziert sein").not.toBeNull();
+    expect(
+      m,
+      "FK-Check muss mit conrelid = 'public.reference_value'::regclass qualifiziert sein",
+    ).not.toBeNull();
   });
 
   it("should_detectLegacyUniqueStructurally_when_replacingCatalogKeyUnique", () => {
@@ -44,7 +47,9 @@ describe("BSF-03D Migration — Vertrag (statisch)", () => {
     expect(FLAT).toMatch(/'catalog_id'/);
     expect(FLAT).toMatch(/'key'/);
     // Der Drop erfolgt dynamisch über den ermittelten Namen.
-    expect(FLAT).toMatch(/EXECUTE format\('ALTER TABLE public\.reference_value DROP CONSTRAINT %I'/);
+    expect(FLAT).toMatch(
+      /EXECUTE format\('ALTER TABLE public\.reference_value DROP CONSTRAINT %I'/,
+    );
     // Begründung ist dokumentiert.
     expect(SQL).toMatch(/verschiedenen Systemh(ä|ae)usern/);
   });
@@ -76,7 +81,9 @@ describe("BSF-03D Migration — Vertrag (statisch)", () => {
 
   it("should_beIdempotent_when_creatingObjects", () => {
     expect(FLAT).toMatch(/CREATE UNIQUE INDEX IF NOT EXISTS reference_value_global_key_unique/);
-    expect(FLAT).toMatch(/CREATE UNIQUE INDEX IF NOT EXISTS reference_value_systemhouse_key_unique/);
+    expect(FLAT).toMatch(
+      /CREATE UNIQUE INDEX IF NOT EXISTS reference_value_systemhouse_key_unique/,
+    );
     expect(FLAT).toMatch(/DROP TRIGGER IF EXISTS reference_value_validate_scope/);
     expect(FLAT).toMatch(/ON CONFLICT \(key\) DO NOTHING/);
     // Kein CREATE POLICY ohne vorheriges DROP POLICY IF EXISTS.
