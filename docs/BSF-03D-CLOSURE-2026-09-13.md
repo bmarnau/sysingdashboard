@@ -33,7 +33,7 @@ AVKK-Kataloge (unverändert global).
 | Paket 1 (Migration, Vertrag, Resolver)   | `6484555`                                                         |
 | Review-Fix 1 / 2                         | `f422a01` / `5e67fd0`                                             |
 | Governance-Fix Broker (erste Entfernung) | `b619596`                                                         |
-| Plattform-Reinjection Broker             | `b23c50f` (in Paket Q final bereinigt)                            |
+| Plattform-Reinjection Broker             | `b23c50f`, erneut `2f19b6d` (jeweils im Paket-Q-Turn bereinigt)   |
 | Paket V (DB-Verifikation, read-only)     | `docs/BSF-03D-VERIFICATION-2026-09-13.md`                         |
 | Paket D (Doku/Version 1.62.0)            | `15a7124`                                                         |
 | Paket Q (Gates + Governance-Cleanup)     | finaler Workspace-Commit siehe Abschlussbericht im Chat / Git-Log |
