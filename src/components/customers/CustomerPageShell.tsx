@@ -7,7 +7,13 @@ import { Link } from "@tanstack/react-router";
 import { LayoutDashboard, Server } from "lucide-react";
 import { LogoutButton } from "@/components/dashboard/header/LogoutButton";
 
-export function CustomerPageShell({ children }: { children: ReactNode }) {
+export function CustomerPageShell({
+  children,
+  sectionTitle = "Meine Kunden",
+}: {
+  children: ReactNode;
+  sectionTitle?: string;
+}) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="app-header sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-xl no-print">
@@ -27,7 +33,7 @@ export function CustomerPageShell({ children }: { children: ReactNode }) {
               <span className="block font-mono text-xs uppercase tracking-widest text-muted-foreground">
                 Engineer Console
               </span>
-              <span className="block text-sm font-semibold">Meine Kunden</span>
+              <span className="block text-sm font-semibold">{sectionTitle}</span>
             </span>
           </Link>
           <nav aria-label="Bereiche" className="ml-auto flex items-center gap-2">
