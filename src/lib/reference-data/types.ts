@@ -1,4 +1,15 @@
-/** Domänentypen des Reference-Data-Plattformdienstes (Sprint 07B). */
+/** Domänentypen des Reference-Data-Plattformdienstes. */
+
+export type ReferenceScopeType = "global" | "systemhouse";
+
+/**
+ * Sicherheitsrelevanter Cache-Kontext. Er enthält nur technische IDs, keine
+ * Tokens oder Profildaten. Die IDs werden vor Persistenz stabil sortiert.
+ */
+export interface ReferenceDataAccessContext {
+  principalId: string;
+  systemhouseIds: string[];
+}
 
 export interface ReferenceCatalog {
   id: string;
@@ -9,6 +20,7 @@ export interface ReferenceCatalog {
   isSystem: boolean;
   isHierarchical: boolean;
   version: number;
+  scopeType: ReferenceScopeType;
 }
 
 export interface ReferenceValue {
@@ -25,11 +37,14 @@ export interface ReferenceValue {
   attributes: Record<string, unknown>;
   validFrom: string;
   validTo: string | null;
+  /** NULL bei globalen Katalogwerten, sonst Tenant-Scope. */
+  systemhouseId: string | null;
 }
 
 /** Was im Read-Through-Cache liegt. Enthält bewusst keine Tokens. */
 export interface ReferenceDataSnapshot {
-  cacheVersion: 1;
+  cacheVersion: 2;
+  accessContext: ReferenceDataAccessContext;
   fetchedAt: string;
   catalogs: ReferenceCatalog[];
   values: ReferenceValue[];
@@ -42,7 +57,7 @@ export interface ReferenceDataState {
   source: "network" | "cache";
 }
 
-/** Katalogschlüssel der AVKK-Erstkataloge (nur Schlüssel, keine Werte!). */
+/** Stabiler Katalogschlüsselbestand. Nur Schlüssel, keine fachlichen Werte. */
 export const CATALOG_KEYS = {
   responsibilityType: "avkk.responsibility_type",
   responsibilityRole: "avkk.responsibility_role",
@@ -51,6 +66,7 @@ export const CATALOG_KEYS = {
   consequenceArea: "avkk.consequence_area",
   consequenceSeverity: "avkk.consequence_severity",
   scheduleImpact: "avkk.schedule_impact",
+  workpackageCategory: "workpackage.category",
 } as const;
 
 export type CatalogKey = (typeof CATALOG_KEYS)[keyof typeof CATALOG_KEYS];
