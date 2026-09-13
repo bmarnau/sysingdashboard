@@ -13,3 +13,8 @@
 - [ ] E2E AP-Kategorie + Viewer-DENY
 - [ ] Gates: typecheck, lint, prettier, vitest, a11y, security, debt, docs, build, e2e
 - [ ] Doku: REFERENCE-DATA, DATA-SCHEMA, RBAC, Help, CHANGELOG 1.62.0, CURRENT-STATUS, Nachweis
+
+## BSF-03D Review-Fix Runde 1 (HIGH-2, MEDIUM-1, MEDIUM-2, LOW-1)
+- [x] Migration: strukturelle Alt-Unique-Ablösung, FK-Check tabellenqualifiziert, scope_type Zielvertrag idempotent
+- [x] Cache: readCache normalisiert Legacy-Snapshots (scopeType/systemhouseId)
+- [x] Statische Migrationsvertragstests + Cache-Tests (RED→GREEN)
