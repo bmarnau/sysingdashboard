@@ -63,9 +63,12 @@ export function normalizeActivity(a: Activity, validWpIds: Set<string>): Activit
 }
 
 export function normalizeWorkPackage(w: WorkPackage, validProjectIds: Set<string>): WorkPackage {
+  const categoryKey = w.categoryKey?.trim() || null;
   return {
     ...w,
     projectId: w.projectId && validProjectIds.has(w.projectId) ? w.projectId : null,
+    categoryKey,
+    categoryLabel: categoryKey ? (w.categoryLabel?.trim() || null) : null,
   };
 }
 
@@ -89,6 +92,8 @@ export function emptyWP(): WorkPackage {
     projectId: null,
     status: "offen",
     priority: "mittel",
+    categoryKey: null,
+    categoryLabel: null,
     estimated: 4,
     tags: [],
   };
