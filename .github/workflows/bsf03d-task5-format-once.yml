@@ -1,0 +1,28 @@
+name: BSF03D Task5 Format Once
+on:
+  push:
+    branches:
+      - feat/bsf03d-workpackage-categories
+permissions:
+  contents: write
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf03d-workpackage-categories
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: |
+          bunx prettier --write \
+            src/components/reference-data/WorkPackageCategoryManagementView.tsx \
+            src/lib/reference-data/workpackage-category.functions.ts \
+            src/routes/_authenticated/arbeitspaket-kategorien/index.tsx
+      - run: |
+          rm .github/workflows/bsf03d-task5-format-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "style(bsf03d): format category management" || exit 0
+          git push origin HEAD:feat/bsf03d-workpackage-categories
