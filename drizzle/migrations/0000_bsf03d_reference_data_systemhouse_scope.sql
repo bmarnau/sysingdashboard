@@ -20,6 +20,13 @@
 ALTER TABLE public.reference_catalog
   ADD COLUMN IF NOT EXISTS scope_type text NOT NULL DEFAULT 'global';
 
+-- Zielvertrag auch herstellen, wenn die Spalte bereits (z. B. ohne DEFAULT/NOT NULL)
+-- vorhanden war. Reihenfolge: NULLs normalisieren -> DEFAULT -> NOT NULL.
+-- Bestehende gueltige Werte bleiben unveraendert (Review-Fix LOW-1).
+UPDATE public.reference_catalog SET scope_type = 'global' WHERE scope_type IS NULL;
+ALTER TABLE public.reference_catalog ALTER COLUMN scope_type SET DEFAULT 'global';
+ALTER TABLE public.reference_catalog ALTER COLUMN scope_type SET NOT NULL;
+
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -33,14 +40,16 @@ BEGIN
   END IF;
 END $$;
 
--- 2) Wert-Scope
+-- 2) Wert-Scope (rein additiv, keine Datenaenderung)
 ALTER TABLE public.reference_value
   ADD COLUMN IF NOT EXISTS systemhouse_id uuid;
 
 DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'reference_value_systemhouse_fk'
+    SELECT 1 FROM pg_constraint
+     WHERE conname = 'reference_value_systemhouse_fk'
+       AND conrelid = 'public.reference_value'::regclass
   ) THEN
     ALTER TABLE public.reference_value
       ADD CONSTRAINT reference_value_systemhouse_fk
@@ -48,8 +57,34 @@ BEGIN
   END IF;
 END $$;
 
-ALTER TABLE public.reference_value
-  DROP CONSTRAINT IF EXISTS reference_value_catalog_id_key_key;
+-- Abloesung des alten globalen Unique-Vertrags (catalog_id, key).
+-- Erforderlich: solange dieser Vertrag besteht, kann derselbe Kategorie-Key
+-- (z. B. 'netzwerk') nicht in verschiedenen Systemhaeusern angelegt werden,
+-- obwohl er fachlich nur je Systemhaus eindeutig sein soll. Ersetzt wird er
+-- durch zwei partielle Unique-Indizes (global bzw. je Systemhaus).
+-- Der Altvertrag wird strukturell ermittelt (UNIQUE-Constraint auf
+-- public.reference_value mit exakt der Spaltenmenge {catalog_id, key}) und
+-- nicht ueber einen festen Namen (Review-Fix HIGH-2). Kein Tabellen-/Daten-Drop;
+-- bei erneutem Lauf findet die Schleife nichts mehr und tut nichts.
+DO $$
+DECLARE
+  v_conname text;
+BEGIN
+  FOR v_conname IN
+    SELECT c.conname
+      FROM pg_constraint c
+     WHERE c.conrelid = 'public.reference_value'::regclass
+       AND c.contype = 'u'
+       AND (
+         SELECT array_agg(a.attname::text ORDER BY a.attname)
+           FROM pg_attribute a
+          WHERE a.attrelid = c.conrelid
+            AND a.attnum = ANY (c.conkey)
+       ) = ARRAY['catalog_id', 'key']::text[]
+  LOOP
+    EXECUTE format('ALTER TABLE public.reference_value DROP CONSTRAINT %I', v_conname);
+  END LOOP;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS reference_value_global_key_unique
   ON public.reference_value (catalog_id, key)
