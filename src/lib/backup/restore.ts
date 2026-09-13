@@ -14,6 +14,7 @@ import { writeRestoreLog } from "./audit";
 import { EXPECTED_MANIFEST_MAJOR, PROJECT_NAME, looksSensitive } from "./constants";
 import { checkAvkkArchive, validateManifestEntries } from "./integrity";
 import { loadManifest, type LoadedManifest } from "./manifest";
+import { checkWorkPackageCategories } from "./category-check";
 import { applyRestoreEntries, collectTouchedKeys, type DesiredEntry } from "./merge";
 import { listCurrentAppKeys, registerSnapshot, rollbackSnapshot, takeSnapshotOf } from "./rollback";
 import type { AvkkRestoreReport, RestoreOptions, RestoreResult } from "./types";
