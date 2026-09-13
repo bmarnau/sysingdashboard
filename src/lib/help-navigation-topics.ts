@@ -41,7 +41,12 @@ Im Projektdetail öffnet **Projektbericht** die Berichtsausgabe mit dem aktuell 
 
 ## Hilfe und Services
 Das **Fragezeichen** öffnet die Hilfe und das Benutzerhandbuch. Das **Zahnrad** öffnet Einstellungen und Services. Welche Aktionen sichtbar sind, hängt von der Rolle und ihren Berechtigungen ab.`,
-    relatedTopics: ["projects", "customer-responsibility-management", "avkk-arbeitsplatz", "berichte"],
+    relatedTopics: [
+      "projects",
+      "customer-responsibility-management",
+      "avkk-arbeitsplatz",
+      "berichte",
+    ],
   },
   {
     id: "projects",

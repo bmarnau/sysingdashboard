@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-13 · Dashboard-Version 1.60.0
+Stand: 2026-09-13 · Dashboard-Version 1.61.0
 
 ## Vision
 
@@ -40,7 +40,7 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis August 2026                                                                                                                                |
-| Aktueller Stand     | Version 1.60.0; MVP-Baseline CLOSED/PASS; BSF-03 P3/P4 „Meine Kunden“ read-only umgesetzt; P5 Verantwortungsverwaltung offen.                       |
+| Aktueller Stand     | Version 1.61.0; MVP-Baseline CLOSED/PASS; BSF-03 Kundenverantwortung und Kundensicht P1–P5 abgeschlossen; BSF-03D folgt.                       |
 | Größte Hürden       | Der operative Fachbestand ist noch teilweise user-scoped lokal; echte Kunden-/Mehrbenutzersichten benötigen einen kontrollierten gemeinsamen Read-Pfad. |
 | Nächster Nutzen     | Kundenmodell → Kundenverantwortung/„Meine Kunden“ → Projektmanager-Leistungssicht → Teamlead-Leistungsnachweis.                                         |
 
@@ -887,3 +887,14 @@ Sicherheitsgrenze. Eine gebündelte Auswertung von `is_my_customer` bleibt ein
 optionaler Performance-Folgepunkt und ist kein P3/P4-Blocker.
 
 Dokumentation: `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md`.
+
+## 2026-09-13 — Version 1.61.0 — BSF-03 P5 / Kundensicht abgeschlossen
+
+- Separate Managementsicht **Kundenverantwortung** für Systemadministrator, Administrator und Teamlead.
+- Systemhausweite Responsibility-Verwaltung ohne impliziten operativen Customer Access.
+- Kandidaten auf ID + Anzeigename minimiert; bestehende Personen-RLS nicht verbreitert.
+- Wechsel atomar/historisiert; ungültige Ziele rollen vollständig zurück.
+- Migration, Grants und RLS live read-only geprüft; R19–R31 sowie Unit-/Security-/E2E-Schutz ergänzt.
+- UI-Shell-Titel nach unabhängigem Review test-first korrigiert.
+- Abschlussnachweis: `docs/BSF-03-CLOSURE-2026-09-13.md`.
+- Nächster Sprint nach finalem Merge: **BSF-03D — Arbeitspaket-Kategorien**.
