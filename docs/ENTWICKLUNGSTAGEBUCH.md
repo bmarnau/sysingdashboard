@@ -899,7 +899,7 @@ Dokumentation: `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md`.
 - Abschlussnachweis: `docs/BSF-03-CLOSURE-2026-09-13.md`.
 - Nächster Sprint nach finalem Merge: **BSF-03D — Arbeitspaket-Kategorien**.
 
-## 2026-09-13 — Version 1.62.0 — BSF-03D Arbeitspaket-Kategorien (implemented, verification package pending)
+## 2026-09-13 — Version 1.62.0 — BSF-03D Arbeitspaket-Kategorien (final verifiziert, Paket Q)
 
 - Arbeitspaket-Kategorien als editierbare, systemhausweite Referenzdaten (`workpackage.category`, Scope `systemhouse`, keine Seed-Werte, Key unveränderlich, deaktivieren statt löschen).
 - `WorkPackage.categoryKey?: string | null`; Default keine Kategorie, maximal eine; Tags unabhängig; keine Ableitung von billable/priority/status.
@@ -908,3 +908,7 @@ Dokumentation: `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md`.
 - Paket V: SQL-Artefakt T01–T16 16/16 PASS (eine Transaktion, Rollback, DB dauerhaft unverändert), Live-Schema PASS, Security Advisor ERROR 0 / CRITICAL 0 / WARN 2 (nur SEC-01-Baseline).
 - Review-Fix-Runden: strukturelle Unique-Ablösung, conrelid-qualifizierte FK-Prüfung, Cache-Normalisierung alter Snapshots, gehärtete statische Migrationsverträge.
 - Offen: vollständiger Gate-Lauf (Paket Q) und finaler Governance-Cleanup des erneut eingespielten Preview-Auth-Brokers. Nachweis: `docs/BSF-03D-VERIFICATION-2026-09-13.md`.
+
+### Nachtrag Paket Q (2026-09-13)
+
+Governance-Cleanup: Preview-Auth-Broker entfernt, `client.ts` bytegleich zu `425fbed`, Contract-Test 3/3. Gate-Lauf komplett grün: Typecheck, Lint, Prettier, No-Console, Vitest 101/765, A11y 4/4, Security 112/112 (CRIT/HIGH/MED 0), Technical Debt 0 Critical, Docs, Projektstatus, Bundle, CI-Gate-Tests 12/12, Build, E2E 77/77 (Kategorie 4/4), Beispieldateien, API-Gate, Security-Gate, Technical Report v15, Quality Gate 0 Blocker. DB/Auth-Semantik unverändert, kein Merge/Deploy. Abschluss: `docs/BSF-03D-CLOSURE-2026-09-13.md`.

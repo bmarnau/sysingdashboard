@@ -12,9 +12,10 @@
 - [x] Kategorien-Verwaltungsdialog (referencedata.manage), Systemhaus-Scope
 - [x] SQL-Testartefakt T01–T16 (Rollback, live 16/16 PASS) + Advisor (0 neue BSF-03D-Findings)
 - [x] E2E AP-Kategorie + Viewer-DENY (UI-Gating per Route-Mock; echte RLS-Durchsetzung durch Live-SQL-Artefakt belegt)
-- [ ] Gates: typecheck, lint, prettier, vitest, a11y, security, debt, docs, build, e2e (Paket Q, vollständiger Lauf offen)
+- [x] Gates: typecheck, lint, prettier, vitest, a11y, security, debt, docs, build, e2e (Paket Q 2026-09-13, alle grün; E2E 77/77, Kategorie 4/4)
 - [x] Doku: REFERENCE-DATA, DATA-SCHEMA, RBAC, Help, CHANGELOG 1.62.0, CURRENT-STATUS, Nachweis
-- [ ] Governance: finaler Cleanup des erneut eingespielten Preview-Auth-Brokers (nach allen Lovable-Turns)
+- [x] Governance: finaler Cleanup des erneut eingespielten Preview-Auth-Brokers (Contract-Test 3/3)
+- [ ] GitHub: Branch + PR, Security-Workflow, CI, Merge mit Expected-Head-SHA (außerhalb Lovable)
 
 ## BSF-03D Review-Fix Runde 1 (HIGH-2, MEDIUM-1, MEDIUM-2, LOW-1)
 

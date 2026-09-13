@@ -20,7 +20,7 @@ Format pro Eintrag:
 - **Import/Export/Backup**: JSON-Schema 1.2.0 mit optionalem `categoryKey`; ältere Dateien ohne Kategorie bleiben kompatibel. Unbekannte oder deaktivierte Kategorien werden beim Import und beim Restore fail-safe gemeldet, nicht still umgedeutet. Der Export erhält `categoryKey`.
 - **UI und Verwaltung**: Kategorie-Auswahl im Arbeitspaket-Dialog (nur aktive Kategorien des eigenen Systemhauses, Altbestand mit deaktivierter Kategorie nachvollziehbar und editierbar), Verwaltungsdialog nur mit „Referenzdaten verwalten“; Viewer erhalten keine neuen Schreibrechte.
 - **Security-/DB-Nachweis**: Live-SQL-Artefakt T01–T16 16/16 PASS in einer Transaktion mit Rollback, Live-Schema-Vertrag PASS, Security Advisor ohne neue BSF-03D-Findings (`docs/BSF-03D-VERIFICATION-2026-09-13.md`). Der Lesecache normalisiert ältere Snapshots fail-safe.
-- **Status**: implemented, verification package pending — der vollständige Gate-Lauf (Paket Q) und der finale Governance-Cleanup stehen noch aus.
+- **Status**: final verifiziert (Paket Q, 2026-09-13) — alle Quality Gates grün (Typecheck, Lint, Prettier, Vitest 765, A11y, Security 112, Technical Debt, Docs, Build, E2E 77 inkl. Kategorie-Spec 4/4, Quality Gate 0 Blocker); Preview-Auth-Broker gemäß Vertrag 425fbed entfernt. Abnahme: `docs/BSF-03D-CLOSURE-2026-09-13.md`. GitHub-PR/Merge ausstehend.
 
 ## 1.61.0 - 2026-09-13
 

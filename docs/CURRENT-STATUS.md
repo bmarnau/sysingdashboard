@@ -72,7 +72,7 @@ P5-Evidenz: Migration `20260913150000_bsf03_p5_responsibility_management`, SQL-V
 
 Nach finalem PR-#132-Merge ist **BSF-03D — Arbeitspaket-Kategorien (#103)** der nächste Entwicklungsschritt.
 
-### BSF-03D — IMPLEMENTED, VERIFICATION PACKAGE PENDING / Issue #103
+### BSF-03D — FINAL PASS (technisch verifiziert, PR/Merge ausstehend) / Issue #103
 
 Arbeitspaket-Kategorien sind fachlich implementiert (Version 1.62.0): systemhausweit editierbarer Katalog `workpackage.category` (Scope `systemhouse`, keine Seed-Werte, Key unveränderlich, deaktivieren statt löschen), `WorkPackage.categoryKey?: string | null` mit Default „keine Kategorie“, Tags unabhängig, keine Ableitung von billable/priority/status, JSON-Schema 1.2.0 mit rückwärtskompatiblem Import/Export/Backup/Restore, Kategorie-Auswahl im Arbeitspaket-Dialog und Verwaltungsdialog nur mit `referencedata.manage`.
 
@@ -83,7 +83,7 @@ Verifikationsstand:
 - Security Advisor: ERROR 0 / CRITICAL 0 / WARN 2 — ausschließlich bekannte SEC-01-Baseline, **kein neues BSF-03D-Finding**,
 - E2E prüft UI-Gating per Route-Mocking; echte Viewer-/Cross-Systemhouse-Durchsetzung ist durch das SQL-Artefakt belegt.
 
-Noch offen (kein FINAL PASS): vollständiger Quality-Gate-Lauf (Paket Q) und finaler Governance-Cleanup des durch einen Plattform-Commit erneut eingespielten Preview-Auth-Brokers. Nachweis: `docs/BSF-03D-VERIFICATION-2026-09-13.md`.
+Paket Q (2026-09-13): vollständiger Gate-Lauf grün — Typecheck, Lint, Prettier, Vitest 765/765, A11y, Security 112/112, Technical Debt (0 Critical), Docs, Projektstatus, Build, E2E 77/77 (Kategorie-Spec 4/4), Quality Gate 0 Blocker. Preview-Auth-Broker final entfernt, Contract-Test 3/3. Offen bleibt ausschließlich die GitHub-Integration (Branch + PR, Security-Workflow, CI, Merge mit Expected-Head-SHA); Issue #103 wird erst danach geschlossen. Nachweise: `docs/BSF-03D-VERIFICATION-2026-09-13.md`, `docs/BSF-03D-CLOSURE-2026-09-13.md`.
 
 ## F-11
 
