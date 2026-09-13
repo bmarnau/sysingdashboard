@@ -31,24 +31,11 @@ import {
   listCatalogs,
   updateValue,
 } from "@/lib/reference-data";
+import { toCategoryKey } from "@/lib/workpackage-category";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-/** Stabiler, URL-/JSON-sicherer Key aus einer Bezeichnung. */
-export function toCategoryKey(input: string): string {
-  return input
-    .trim()
-    .toLowerCase()
-    .replace(/ä/g, "ae")
-    .replace(/ö/g, "oe")
-    .replace(/ü/g, "ue")
-    .replace(/ß/g, "ss")
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "")
-    .slice(0, 64);
 }
 
 export function WorkPackageCategoryDialog({ open, onOpenChange }: Props) {

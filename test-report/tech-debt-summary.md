@@ -1,16 +1,16 @@
 # Management-Zusammenfassung — Technical Debt
 
-**Version 1.58.0** · 2026-08-13
+**Version 1.61.0** · 2026-09-13
 
 | Kategorie | Wert |
 | --------- | ---- |
-| Findings gesamt | 58 |
+| Findings gesamt | 59 |
 | Critical | 0 |
-| High | 1 |
+| High | 2 |
 | Medium | 6 |
 | Low + Info | 51 |
-| Neu seit Vorlauf | 0 |
-| Behoben seit Vorlauf | 1 |
+| Neu seit Vorlauf | 4 |
+| Behoben seit Vorlauf | 4 |
 
 ## Top-10 nach Priorität
 
@@ -19,11 +19,11 @@
 3. **[Low]** MSW-Handler decken nur wenige Azure-Endpunkte — `src/__tests__/mocks/handlers/azure.ts` (`td-manual-msw-coverage-gap`)
 4. **[Low]** API-Endpoint ohne strukturierte Fehlerantwort — `src/routes/api/status.ts` (`td-endpoint-err-cdae73c5`)
 5. **[Low]** API-Endpoint ohne strukturierte Fehlerantwort — `src/routes/api/sync.ts` (`td-endpoint-err-ce5fa0be`)
-6. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry) — `src/start.ts:13` (`td-console-08e8609a`)
-7. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase) — `src/integrations/supabase/auth-middleware.ts:45` (`td-console-2c49302b`)
-8. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase) — `src/integrations/supabase/client.ts:54` (`td-console-43084e7a`)
-9. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry) — `src/server.ts:68` (`td-console-6c701bbd`)
-10. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry) — `src/server.ts:79` (`td-console-74bd3646`)
+6. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase) — `src/integrations/supabase/auth-middleware.ts:45` (`td-console-2c49302b`)
+7. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase) — `src/integrations/supabase/client.ts:55` (`td-console-334c4c38`)
+8. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry) — `src/server.ts:68` (`td-console-6c701bbd`)
+9. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry) — `src/server.ts:79` (`td-console-74bd3646`)
+10. **[Informational]** Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase) — `src/integrations/supabase/client.server.ts:45` (`td-console-8c42fa14`)
 
 ## Interpretation
 

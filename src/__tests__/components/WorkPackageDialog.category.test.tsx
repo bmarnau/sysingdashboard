@@ -136,7 +136,12 @@ describe("WorkPackageDialog — Kategorie", () => {
 
   it("should_stillRenderWithoutCategoryContext_backwardsCompatible", () => {
     render(
-      <WorkPackageDialog wp={makeWorkPackage()} projects={[]} onClose={() => {}} onSave={() => {}} />,
+      <WorkPackageDialog
+        wp={makeWorkPackage()}
+        projects={[]}
+        onClose={() => {}}
+        onSave={() => {}}
+      />,
     );
     expect(screen.queryByLabelText(/^Kategorie/)).toBeNull();
   });

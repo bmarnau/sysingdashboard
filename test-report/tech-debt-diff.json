@@ -1,9 +1,17 @@
 {
-  "new": [],
-  "resolved": [
-    "td-cycle-4f7048fd"
+  "new": [
+    "td-console-334c4c38",
+    "td-console-f0ee2580",
+    "td-oversize-8b6cc24d",
+    "td-orphan-1705d9c5"
   ],
-  "persistent": 58,
+  "resolved": [
+    "td-console-08e8609a",
+    "td-console-43084e7a",
+    "td-cycle-4f7048fd",
+    "td-orphan-bd7563ab"
+  ],
+  "persistent": 55,
   "previousVersion": "1.58.0",
-  "currentVersion": "1.58.0"
+  "currentVersion": "1.61.0"
 }
