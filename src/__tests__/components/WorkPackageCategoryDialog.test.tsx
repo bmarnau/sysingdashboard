@@ -16,9 +16,9 @@ vi.mock("@/hooks/useCurrentUser", () => ({
   useCurrentUser: () => ({ id: "u-1", displayName: "Admin", role: "administrator" }),
 }));
 
-const createValue = vi.fn(async () => {});
-const deactivateValue = vi.fn(async () => {});
-const updateValue = vi.fn(async () => {});
+const createValue = vi.fn(async (..._args: unknown[]) => {});
+const deactivateValue = vi.fn(async (..._args: unknown[]) => {});
+const updateValue = vi.fn(async (..._args: unknown[]) => {});
 vi.mock("@/lib/reference-data", async (orig) => {
   const actual = await orig<typeof import("@/lib/reference-data")>();
   return {
@@ -36,13 +36,18 @@ vi.mock("@/lib/reference-data", async (orig) => {
         scopeType: "systemhouse",
       },
     ],
-    createValue: (...a: unknown[]) => createValue(...(a as [])),
-    deactivateValue: (...a: unknown[]) => deactivateValue(...(a as [])),
-    updateValue: (...a: unknown[]) => updateValue(...(a as [])),
+    createValue: (...a: unknown[]) => createValue(...a),
+    deactivateValue: (...a: unknown[]) => deactivateValue(...a),
+    updateValue: (...a: unknown[]) => updateValue(...a),
   };
 });
 
-const ctxState: { status: string; values: ReferenceValue[]; systemhouses: { id: string; name: string }[]; selectedSystemhouseId: string | null } = {
+const ctxState: {
+  status: string;
+  values: ReferenceValue[];
+  systemhouses: { id: string; name: string }[];
+  selectedSystemhouseId: string | null;
+} = {
   status: "ready",
   values: [],
   systemhouses: [{ id: "sh-1", name: "Systemhaus A" }],
