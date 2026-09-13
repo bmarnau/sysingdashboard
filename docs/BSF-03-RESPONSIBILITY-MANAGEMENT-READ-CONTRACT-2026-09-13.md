@@ -12,13 +12,13 @@ Migration, RLS-Policy, Grants oder SECURITY-DEFINER-RPC.
 
 ## 2. Befund (Live-Zustand, read-only geprüft)
 
-| Bedarf der UI | Vorhandener Read-Vertrag im User-Kontext | Ausreichend |
-| --- | --- | --- |
-| Name des aktuellen Verantwortlichen | `profiles`: `profiles_self_select` (nur eigene Zeile) + `profiles_admins_select_all` (nur systemadministrator/administrator). Teamlead sieht fremde Namen nicht. | NEIN für teamlead |
-| Kandidatenliste (Rolle ∈ SA/Admin/Teamlead/PM/Engineer, aktiv) | `user_roles`: `user_roles_read_own` + `user_roles_read_admins`. `is_eligible_responsibility_holder()` ist SECURITY INVOKER und liefert für fremde Personen unter Teamlead-RLS stets `false`. | NEIN für teamlead |
-| Kandidaten nur aus demselben Systemhouse | `systemhouse_membership`: ausschließlich `membership_select_own`. Keine Rolle kann fremde Memberships lesen; `has_active_systemhouse_membership()` ist SECURITY INVOKER. | NEIN für alle Rollen |
-| Aktuelle Responsibility je Kunde | `customer_responsibility`: `managers read scoped responsibility` (`can_manage_customer_responsibility`) + `own responsibility readable`. | JA (nur `user_id`, kein Name) |
-| Zuweisen / Beenden | INSERT-/UPDATE-Policies + `customer_responsibility_target_guard` (SECURITY DEFINER, DB-Autorität). | JA |
+| Bedarf der UI                                                  | Vorhandener Read-Vertrag im User-Kontext                                                                                                                                                     | Ausreichend                   |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| Name des aktuellen Verantwortlichen                            | `profiles`: `profiles_self_select` (nur eigene Zeile) + `profiles_admins_select_all` (nur systemadministrator/administrator). Teamlead sieht fremde Namen nicht.                             | NEIN für teamlead             |
+| Kandidatenliste (Rolle ∈ SA/Admin/Teamlead/PM/Engineer, aktiv) | `user_roles`: `user_roles_read_own` + `user_roles_read_admins`. `is_eligible_responsibility_holder()` ist SECURITY INVOKER und liefert für fremde Personen unter Teamlead-RLS stets `false`. | NEIN für teamlead             |
+| Kandidaten nur aus demselben Systemhouse                       | `systemhouse_membership`: ausschließlich `membership_select_own`. Keine Rolle kann fremde Memberships lesen; `has_active_systemhouse_membership()` ist SECURITY INVOKER.                     | NEIN für alle Rollen          |
+| Aktuelle Responsibility je Kunde                               | `customer_responsibility`: `managers read scoped responsibility` (`can_manage_customer_responsibility`) + `own responsibility readable`.                                                     | JA (nur `user_id`, kein Name) |
+| Zuweisen / Beenden                                             | INSERT-/UPDATE-Policies + `customer_responsibility_target_guard` (SECURITY DEFINER, DB-Autorität).                                                                                           | JA                            |
 
 Einzig `public.avkk_people_directory()` (SECURITY DEFINER) liefert fremde Namen/Rollen
 für Inhaber von `avkk.responsibility.assign`. Sie ist fachlich an AVKK gebunden, filtert
