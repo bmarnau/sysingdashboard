@@ -7,47 +7,84 @@ import { logger } from "@/lib/logger";
 import { ReferenceDataError } from "@/lib/errors";
 import { isOnline } from "@/lib/online-status";
 import * as adapter from "./adapter";
-import { isStale, readCache, writeCache } from "./cache";
+import {
+  CACHE_VERSION,
+  isStale,
+  readCache,
+  readLatestCacheForPrincipal,
+  writeCache,
+} from "./cache";
 import type { ReferenceDataSnapshot, ReferenceDataState } from "./types";
 
+function stateFromCache(snapshot: ReferenceDataSnapshot, stale = isStale(snapshot)): ReferenceDataState {
+  return { snapshot, stale, source: "cache" };
+}
+
+async function requirePrincipalId(): Promise<string> {
+  const principalId = await adapter.getPrincipalId();
+  if (!principalId) {
+    throw new ReferenceDataError("REFDATA_AUTH_REQUIRED", "Anmeldung für Katalogzugriff erforderlich.");
+  }
+  return principalId;
+}
+
 /**
- * Read-Through: Cache lesen → falls online neu laden → Cache atomar ersetzen.
- * Bei Netzfehler bleibt der letzte gültige Stand nutzbar (gekennzeichnet).
+ * Read-Through V2:
+ * - Offline: nur letzter Cache desselben Principals.
+ * - Online: aktuellen Membership-Kontext bestimmen, dann exakt passenden Cache
+ *   nutzen oder RLS-gefiltert neu laden.
+ * - Bei temporärem Netzfehler ist nur ein Cache desselben Principals zulässig.
  */
 export async function load(options: { forceRefresh?: boolean } = {}): Promise<ReferenceDataState> {
-  const cached = readCache();
+  const principalId = await requirePrincipalId();
 
   if (!isOnline()) {
+    const cached = readLatestCacheForPrincipal(principalId);
     if (!cached) {
       throw new ReferenceDataError(
         "REFDATA_UNAVAILABLE_OFFLINE",
-        "Keine Verbindung und kein lokaler Katalogstand vorhanden.",
+        "Keine Verbindung und kein lokaler Katalogstand für diesen Benutzer vorhanden.",
       );
     }
-    return { snapshot: cached, stale: isStale(cached), source: "cache" };
+    return stateFromCache(cached);
   }
 
+  let context;
+  try {
+    context = await adapter.getAccessContext();
+  } catch (error) {
+    const fallback = readLatestCacheForPrincipal(principalId);
+    if (fallback) {
+      logger.warn("Reference-Data-Scope konnte nicht aktualisiert werden — verwende Cache", {
+        error: String(error),
+      });
+      return stateFromCache(fallback, true);
+    }
+    throw error;
+  }
+
+  const cached = readCache(context);
   if (cached && !options.forceRefresh && !isStale(cached)) {
-    // Frischer Cache: sofort nutzbar, kein Netzwerkzugriff nötig.
-    return { snapshot: cached, stale: false, source: "cache" };
+    return stateFromCache(cached, false);
   }
 
   try {
-    const { catalogs, values } = await adapter.fetchAll();
+    const { catalogs, values } = await adapter.fetchAll(context);
     const snapshot: ReferenceDataSnapshot = {
-      cacheVersion: 1,
+      cacheVersion: CACHE_VERSION,
+      accessContext: context,
       fetchedAt: new Date().toISOString(),
       catalogs,
       values,
     };
-    writeCache(snapshot);
+    writeCache(context, snapshot);
     return { snapshot, stale: false, source: "network" };
   } catch (error) {
     if (cached) {
       logger.warn("Reference Data konnte nicht geladen werden — verwende Cache", {
         error: String(error),
       });
-      return { snapshot: cached, stale: true, source: "cache" };
+      return stateFromCache(cached, true);
     }
     throw error;
   }
