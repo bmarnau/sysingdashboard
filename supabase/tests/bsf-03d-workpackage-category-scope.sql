@@ -207,13 +207,18 @@ SELECT pg_temp.assert_denied(
 );
 SELECT pg_temp.act_reset();
 
--- D12: Leser ohne referencedata.manage darf nicht schreiben.
+-- D12: UPDATE-RLS filtert den Datensatz aus; korrekt ist 0 Rows Changed.
 SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000e302');
-SELECT pg_temp.assert_denied(
-  $$UPDATE public.reference_value
-      SET label='Nicht erlaubt', updated_by='00000000-0000-0000-0000-00000000e302'
-    WHERE id='00000000-0000-0000-0000-0000000ce301'$$,
-  '42501','D12 reader update denied'
+UPDATE public.reference_value
+   SET label='Nicht erlaubt', updated_by='00000000-0000-0000-0000-00000000e302'
+ WHERE id='00000000-0000-0000-0000-0000000ce301';
+SELECT pg_temp.assert(
+  NOT EXISTS (
+    SELECT 1 FROM public.reference_value
+     WHERE id='00000000-0000-0000-0000-0000000ce301'
+       AND label='Nicht erlaubt'
+  ),
+  'D12 reader update denied by RLS zero-row filter'
 );
 SELECT pg_temp.act_reset();
 
