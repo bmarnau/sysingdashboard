@@ -191,10 +191,10 @@ ausschließlich Architektur, Regeln und Katalogliste.
 
 Seit BSF-03D unterscheidet Reference Data zwei Geltungsbereiche je Katalog:
 
-| Scope         | Bedeutung                                                                     | Beispiele                                               |
-| ------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `global`      | Ein gemeinsamer Wertebestand für alle Systemhäuser; `systemhouse_id` ist NULL | alle `avkk.*`-Kataloge, `project.status`, …             |
-| `systemhouse` | Jedes Systemhaus pflegt seinen eigenen Wertebestand; `systemhouse_id` gesetzt | `workpackage.category`                                  |
+| Scope         | Bedeutung                                                                     | Beispiele                                   |
+| ------------- | ----------------------------------------------------------------------------- | ------------------------------------------- |
+| `global`      | Ein gemeinsamer Wertebestand für alle Systemhäuser; `systemhouse_id` ist NULL | alle `avkk.*`-Kataloge, `project.status`, … |
+| `systemhouse` | Jedes Systemhaus pflegt seinen eigenen Wertebestand; `systemhouse_id` gesetzt | `workpackage.category`                      |
 
 Der Scope ist eine Eigenschaft des **Katalogs**, nicht des einzelnen Wertes.
 Kunden haben keinen eigenen Scope: systemhausbezogene Werte gelten für **alle

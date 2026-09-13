@@ -29,3 +29,13 @@ describe("Help: Arbeitspaket-Kategorien (BSF-03D)", () => {
     expect(ref?.relatedTopics).toContain("workpackage-categories");
   });
 });
+
+describe("Help: Arbeitspaket-Kategorien verwalten (Admin-Dialog)", () => {
+  it("dokumentiert den Verwaltungsdialog ohne technische Tiefe", () => {
+    const topic = HelpDocumentationService.getTopicById("workpackage-categories-manage");
+    expect(topic?.component).toBe("WorkPackageCategoryDialog");
+    expect(topic?.content).toContain("Referenzdaten verwalten");
+    expect(topic?.content).toContain("Deaktivieren");
+    expect(topic?.content).not.toMatch(/RLS|Policy|Trigger/);
+  });
+});

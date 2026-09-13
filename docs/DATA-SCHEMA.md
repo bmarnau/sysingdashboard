@@ -259,23 +259,22 @@ ALTER TABLE public.<table> ENABLE ROW LEVEL SECURITY;
 `anon` erhält durch **keine** Policy Zugriff auf AVKK- oder
 Reference-Data-Tabellen.
 
-| Tabelle                    | SELECT               | INSERT / UPDATE                                         | DELETE   |
-| -------------------------- | -------------------- | ------------------------------------------------------- | -------- |
-| `reference_catalog`        | `referencedata.view` | `referencedata.manage`                                  | verboten |
-| `reference_value`          | `referencedata.view` (¹) | `referencedata.manage` (¹)                          | verboten |
-| `reference_value_history`  | `referencedata.view` (¹) | nur Trigger                                         | verboten |
-| `avkk_subject`             | `avkk.view`          | `avkk.edit` (+ `created_by = auth.uid()` beim Einfügen) | verboten |
-| `avkk_responsibility`      | `avkk.view`          | `avkk.responsibility.assign`                            | erlaubt  |
-| `avkk_responsibility_type` | `avkk.view`          | `avkk.responsibility.assign`                            | erlaubt  |
-| `avkk_competence`          | `avkk.view`          | `avkk_can_write(avkk_subject_id)`                       | verboten |
-| `avkk_consequence`         | `avkk.view`          | `avkk_can_write(avkk_subject_id)`                       | verboten |
+| Tabelle                    | SELECT                   | INSERT / UPDATE                                         | DELETE   |
+| -------------------------- | ------------------------ | ------------------------------------------------------- | -------- |
+| `reference_catalog`        | `referencedata.view`     | `referencedata.manage`                                  | verboten |
+| `reference_value`          | `referencedata.view` (¹) | `referencedata.manage` (¹)                              | verboten |
+| `reference_value_history`  | `referencedata.view` (¹) | nur Trigger                                             | verboten |
+| `avkk_subject`             | `avkk.view`              | `avkk.edit` (+ `created_by = auth.uid()` beim Einfügen) | verboten |
+| `avkk_responsibility`      | `avkk.view`              | `avkk.responsibility.assign`                            | erlaubt  |
+| `avkk_responsibility_type` | `avkk.view`              | `avkk.responsibility.assign`                            | erlaubt  |
+| `avkk_competence`          | `avkk.view`              | `avkk_can_write(avkk_subject_id)`                       | verboten |
+| `avkk_consequence`         | `avkk.view`              | `avkk_can_write(avkk_subject_id)`                       | verboten |
 
 (¹) BSF-03D: Für Werte mit `systemhouse_id IS NOT NULL` verlangen die Policies
 zusätzlich eine **aktive Systemhaus-Membership** des Benutzers für genau dieses
 Systemhaus (Cross-Systemhouse DENY für SELECT und INSERT/UPDATE). Globale Werte
 (`systemhouse_id IS NULL`) bleiben wie bisher zugänglich. Es existiert weiterhin
 keine DELETE-Policy.
-
 
 ## 5. Datenbankfunktionen
 

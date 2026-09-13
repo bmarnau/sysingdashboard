@@ -561,9 +561,15 @@ verändert.`,
   {
     id: "workpackage-categories-manage",
     title: "Arbeitspaket-Kategorien verwalten",
-    category: "Verwaltung",
+    category: "Service",
     component: "WorkPackageCategoryDialog",
-    keywords: ["Kategorie", "Kategorien verwalten", "Stammdaten", "Systemhaus", "Referenzdaten verwalten"],
+    keywords: [
+      "Kategorie",
+      "Kategorien verwalten",
+      "Stammdaten",
+      "Systemhaus",
+      "Referenzdaten verwalten",
+    ],
     lastUpdated: "2026-09-13",
     content: `## Aufruf
 Service-Menü → **Arbeitspaket-Kategorien**. Der Eintrag erscheint nur für

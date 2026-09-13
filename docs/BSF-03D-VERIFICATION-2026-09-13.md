@@ -29,14 +29,14 @@ BSF-02C-RPC, BSF-03 P5.
 
 ## 2. Basis und Commits (Workspace-Sicht)
 
-| Bezug                                  | SHA       |
-| -------------------------------------- | --------- |
-| Abgenommener GitHub-`main` (Basis)     | `b90f93c` |
-| BSF-03D Paket 1 / Fachimplementierung  | `6484555` |
-| Review-Fix Runde 1 (Migration, Cache)  | `f422a01` |
-| Review-Fix Runde 2 (Test-Hardening)    | `5e67fd0` |
-| Preview-Auth-Broker entfernt           | `b619596` / `0729911` |
-| Plattform-Commit mit Broker-Re-Injection | `b23c50f` |
+| Bezug                                    | SHA                   |
+| ---------------------------------------- | --------------------- |
+| Abgenommener GitHub-`main` (Basis)       | `b90f93c`             |
+| BSF-03D Paket 1 / Fachimplementierung    | `6484555`             |
+| Review-Fix Runde 1 (Migration, Cache)    | `f422a01`             |
+| Review-Fix Runde 2 (Test-Hardening)      | `5e67fd0`             |
+| Preview-Auth-Broker entfernt             | `b619596` / `0729911` |
+| Plattform-Commit mit Broker-Re-Injection | `b23c50f`             |
 
 Die Integration erfolgt ausschließlich über GitHub-Branch + Pull Request nach
 separatem Security-Workflow und vollständiger CI.
@@ -122,13 +122,13 @@ korrekt identifiziert: JA; keine Secrets in diesem Dokument).
 
 ## 7. Zusammenfassung
 
-| Punkt                           | Ergebnis                              |
-| ------------------------------- | ------------------------------------- |
-| Fachvertrag #103 implementiert  | JA                                    |
-| SQL-Artefakt T01–T16            | 16/16 PASS, Rollback                  |
-| Live-Schema-Vertrag             | PASS                                  |
-| Security Advisor Delta BSF-03D  | sauber (0 neue Findings)              |
-| DB dauerhaft geändert           | NEIN                                  |
-| Vollständige Quality Gates      | OFFEN (Paket Q)                       |
-| Governance-Cleanup Broker       | OFFEN                                 |
-| Gesamtstatus                    | implemented, verification package pending |
+| Punkt                          | Ergebnis                                  |
+| ------------------------------ | ----------------------------------------- |
+| Fachvertrag #103 implementiert | JA                                        |
+| SQL-Artefakt T01–T16           | 16/16 PASS, Rollback                      |
+| Live-Schema-Vertrag            | PASS                                      |
+| Security Advisor Delta BSF-03D | sauber (0 neue Findings)                  |
+| DB dauerhaft geändert          | NEIN                                      |
+| Vollständige Quality Gates     | OFFEN (Paket Q)                           |
+| Governance-Cleanup Broker      | OFFEN                                     |
+| Gesamtstatus                   | implemented, verification package pending |

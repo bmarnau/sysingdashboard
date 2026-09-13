@@ -73,10 +73,10 @@ Invarianten aus `scripts/check-rbac.mjs`:
 Kategorien sind systemhausweite Referenzdaten im Katalog `workpackage.category`
 (Scope `systemhouse`). Es gelten zwei getrennte Handlungen:
 
-| Handlung                                          | erforderliche Berechtigung                           | Rollen (v1)                                              |
-| ------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------- |
-| Kategorie am Arbeitspaket **auswählen**/entfernen | `workpackage.edit` + `referencedata.view` (Liste)    | sysadmin, admin, teamlead, projmgr, engineer (eigene AP) |
-| Kategorienkatalog **verwalten** (anlegen, Label ändern, deaktivieren/reaktivieren) | `referencedata.manage` | sysadmin, admin                                          |
+| Handlung                                                                           | erforderliche Berechtigung                        | Rollen (v1)                                              |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------- |
+| Kategorie am Arbeitspaket **auswählen**/entfernen                                  | `workpackage.edit` + `referencedata.view` (Liste) | sysadmin, admin, teamlead, projmgr, engineer (eigene AP) |
+| Kategorienkatalog **verwalten** (anlegen, Label ändern, deaktivieren/reaktivieren) | `referencedata.manage`                            | sysadmin, admin                                          |
 
 Zusätzliche Regeln:
 
@@ -91,7 +91,6 @@ Zusätzliche Regeln:
   **keine Sicherheitsgrenze**. Durchgesetzt werden diese Regeln serverseitig
   durch RLS-Policies und Trigger (Live-Nachweis:
   `docs/BSF-03D-VERIFICATION-2026-09-13.md`).
-
 
 ## Ressourcentypen (v2)
 
