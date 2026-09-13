@@ -8,6 +8,12 @@ import { JSON_SCHEMA_VERSION, WorkPackageSchema, DashboardJsonExportSchema } fro
 import { JsonSchemaValidationService } from "@/lib/json-schema-validation-service";
 
 const base = { id: "wp-1", title: "AP", status: "offen", priority: "mittel" };
+const envelope = {
+  exportType: "full",
+  exportedBy: "test",
+  dashboardVersion: "0.0.0-test",
+  exportedAt: new Date().toISOString(),
+};
 
 describe("JSON-Schema — categoryKey", () => {
   it("should_beVersion_1_2_0", () => {
@@ -30,8 +36,8 @@ describe("JSON-Schema — categoryKey", () => {
 
   it("should_stillAcceptOlderSchemaVersions_withWarningOnly", () => {
     const doc = DashboardJsonExportSchema.parse({
+      ...envelope,
       schemaVersion: "1.1.0",
-      exportedAt: new Date().toISOString(),
       workPackages: [base],
     });
     const result = JsonSchemaValidationService.validate(doc);
@@ -47,8 +53,8 @@ describe("Import — Kategorie fail-safe", () => {
   it("should_warnButKeepValue_when_categoryUnknownOrInactive", async () => {
     const { JsonImportService } = await import("@/lib/json-import-service");
     const doc = DashboardJsonExportSchema.parse({
+      ...envelope,
       schemaVersion: JSON_SCHEMA_VERSION,
-      exportedAt: new Date().toISOString(),
       workPackages: [
         { ...base, id: "wp-known", categoryKey: "netzwerk" },
         { ...base, id: "wp-ghost", categoryKey: "ghost" },
@@ -87,8 +93,8 @@ describe("Import — Kategorie fail-safe", () => {
   it("should_notWarn_when_noCatalogProvided", async () => {
     const { JsonImportService } = await import("@/lib/json-import-service");
     const doc = DashboardJsonExportSchema.parse({
+      ...envelope,
       schemaVersion: JSON_SCHEMA_VERSION,
-      exportedAt: new Date().toISOString(),
       workPackages: [{ ...base, categoryKey: "ghost" }],
     });
     const plan = JsonImportService.buildPlan(doc);
