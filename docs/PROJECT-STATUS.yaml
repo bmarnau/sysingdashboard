@@ -354,14 +354,9 @@ roadmap:
     title: "Arbeitspaket-Kategorien"
     status: "in-progress"
     priority: "high"
-    goal: "Systemhausweite editierbare AP-Kategorien als optionale stabile Auswertungsdimension bereitstellen."
+    goal: "Systemhausweite editierbare AP-Kategorien als optionale stabile Auswertungsdimension bereitstellen. Stand 1.62.0: implementiert; DB-Verifikation T01-T16 16/16 PASS (Rollback), Live-Schema PASS, Advisor ohne neue BSF-03D-Findings; offen: Quality-Gate-Lauf Paket Q und Governance-Cleanup Preview-Auth-Broker (docs/BSF-03D-VERIFICATION-2026-09-13.md)."
     dependencies:
       - "BSF-03"
-    note: >-
-      Fachlich implementiert (1.62.0). DB-Verifikation T01-T16 16/16 PASS mit Rollback,
-      Live-Schema PASS, Security Advisor ohne neue BSF-03D-Findings. Offen: vollständiger
-      Quality-Gate-Lauf (Paket Q) und finaler Governance-Cleanup Preview-Auth-Broker.
-      Nachweis docs/BSF-03D-VERIFICATION-2026-09-13.md.
     exitCriteria:
       - "Kategorie sicher pflegbar und filterbar"
       - "Viewer ohne Write"
