@@ -78,6 +78,8 @@ export const WorkPackageSchema = z.object({
   client: z.string().max(SHORT_STR).optional(),
   status: z.string().max(SHORT_STR),
   priority: z.string().max(SHORT_STR),
+  categoryKey: z.string().max(SHORT_STR).nullable().optional(),
+  categoryLabel: z.string().max(SHORT_STR).nullable().optional(),
   due: z.string().max(64).optional(),
   estimated: z.number().optional(),
   assignee: z.string().max(SHORT_STR).optional(),
@@ -205,6 +207,7 @@ export const ReferenceValueExportSchema = z.object({
   isDefault: z.boolean(),
   validFrom: z.string().max(64),
   validTo: z.string().max(64).nullable(),
+  systemhouseId: z.string().max(SHORT_ID).nullable().optional(),
 });
 
 export const AvkkExportSchema = z.object({

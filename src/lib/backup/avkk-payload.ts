@@ -87,6 +87,7 @@ export interface ReferenceDataset {
     domain: string;
     version: number;
     isSystem: boolean;
+    scopeType: "global" | "systemhouse";
   }>;
   values: Array<{
     id: string;
@@ -98,6 +99,7 @@ export interface ReferenceDataset {
     isDefault: boolean;
     validFrom: string;
     validTo: string | null;
+    systemhouseId: string | null;
   }>;
 }
 
@@ -135,6 +137,7 @@ export async function collectAvkkPayload(): Promise<CollectResult> {
         domain: c.domain,
         version: c.version,
         isSystem: c.isSystem,
+        scopeType: c.scopeType,
       })),
       values: state.snapshot.values.map((v) => ({
         id: v.id,
@@ -146,6 +149,7 @@ export async function collectAvkkPayload(): Promise<CollectResult> {
         isDefault: v.isDefault,
         validFrom: v.validFrom,
         validTo: v.validTo,
+        systemhouseId: v.systemhouseId,
       })),
     };
   } catch (err) {

@@ -45,6 +45,7 @@ import {
   type EngineerTargetTimeModel,
 } from "@/lib/engineer-target-time";
 import { dashboardData, type Activity, type Project, type WorkPackage } from "@/lib/dashboard-data";
+import type { ReferenceValue } from "@/lib/reference-data";
 import { isSensitiveFieldName } from "@/lib/json-schema";
 import { logger } from "@/lib/logger";
 
@@ -62,6 +63,11 @@ export interface ImportOptions {
   actor?: string;
   /** Filtert Scopes auf eine Whitelist (z. B. nur "projects"). */
   scopeWhitelist?: ReadonlyArray<keyof DashboardJsonExport>;
+  /** Ziel-Scope zur fail-safe Validierung optionaler AP-Kategorien. */
+  workPackageCategoryContext?: {
+    systemhouseId: string;
+    values: readonly ReferenceValue[];
+  };
 }
 
 export interface EntityDiff<T> {
@@ -105,6 +111,12 @@ export interface ImportPlan {
     field: string;
     activityValue: unknown;
     timeEntryValue: unknown;
+  }>;
+  /** Kategorien werden nie still umgedeutet; problematische Keys bleiben Snapshot + Warnung. */
+  categoryWarnings: Array<{
+    workPackageId: string;
+    categoryKey: string;
+    reason: "unknown" | "inactive" | "foreign" | "unvalidated";
   }>;
 }
 
@@ -446,6 +458,8 @@ export const JsonImportService = {
       client: applyCustomerMapping(w.client, options.customerMapping),
       status: w.status as WorkPackage["status"],
       priority: w.priority as WorkPackage["priority"],
+      categoryKey: w.categoryKey ?? null,
+      categoryLabel: w.categoryKey ? (w.categoryLabel ?? w.categoryKey) : null,
       due: w.due,
       estimated: w.estimated,
       assignee: w.assignee,
@@ -473,6 +487,45 @@ export const JsonImportService = {
         description: te?.description ?? a.description,
       };
     });
+
+    const categoryWarnings: ImportPlan["categoryWarnings"] = [];
+    const categoryContext = options.workPackageCategoryContext;
+    for (const workPackage of wpsIn) {
+      const categoryKey = workPackage.categoryKey?.trim();
+      if (!categoryKey) continue;
+      if (!categoryContext) {
+        categoryWarnings.push({
+          workPackageId: workPackage.id,
+          categoryKey,
+          reason: "unvalidated",
+        });
+        continue;
+      }
+      const matchingTarget = categoryContext.values.find(
+        (value) =>
+          value.catalogKey === "workpackage.category" &&
+          value.key === categoryKey &&
+          value.systemhouseId === categoryContext.systemhouseId,
+      );
+      if (matchingTarget) {
+        if (!matchingTarget.isActive) {
+          categoryWarnings.push({ workPackageId: workPackage.id, categoryKey, reason: "inactive" });
+        }
+        continue;
+      }
+      const sameKeyForeignScope = categoryContext.values.some(
+        (value) =>
+          value.catalogKey === "workpackage.category" &&
+          value.key === categoryKey &&
+          value.systemhouseId !== null &&
+          value.systemhouseId !== categoryContext.systemhouseId,
+      );
+      categoryWarnings.push({
+        workPackageId: workPackage.id,
+        categoryKey,
+        reason: sameKeyForeignScope ? "foreign" : "unknown",
+      });
+    }
 
     const targetsIn: EngineerTargetTimeModel[] = (doc.targetTimeModels ?? []).map((t) => ({
       id: t.id,
@@ -519,6 +572,7 @@ export const JsonImportService = {
       engineerIdsInDoc,
       singleEngineerMode,
       timeEntryConflicts,
+      categoryWarnings,
     };
   },
 
@@ -615,6 +669,11 @@ export const JsonImportService = {
       if (plan.customerSuggestions.length > 0 && !options.customerMapping) {
         warnings.push(
           `${plan.customerSuggestions.length} mögliche Kunden-Duplikate wurden nicht gemappt — verbleiben als eigenständige Kunden.`,
+        );
+      }
+      for (const categoryWarning of plan.categoryWarnings) {
+        warnings.push(
+          `Arbeitspaket ${categoryWarning.workPackageId}: Kategorie ${categoryWarning.categoryKey} wurde als ${categoryWarning.reason} erkannt und nicht still umgedeutet.`,
         );
       }
 
