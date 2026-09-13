@@ -68,7 +68,7 @@ export function normalizeWorkPackage(w: WorkPackage, validProjectIds: Set<string
     ...w,
     projectId: w.projectId && validProjectIds.has(w.projectId) ? w.projectId : null,
     categoryKey,
-    categoryLabel: categoryKey ? (w.categoryLabel?.trim() || null) : null,
+    categoryLabel: categoryKey ? w.categoryLabel?.trim() || null : null,
   };
 }
 

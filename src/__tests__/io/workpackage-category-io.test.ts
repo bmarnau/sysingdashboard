@@ -76,10 +76,13 @@ describe("WorkPackage category JSON contract", () => {
   });
 
   it("accepts an active category from the target systemhouse without warning", () => {
-    const plan = JsonImportService.buildPlan(doc({ categoryKey: "incident", categoryLabel: "Störung" }), {
-      strategy: "merge",
-      workPackageCategoryContext: { systemhouseId: "sh-a", values: [category()] },
-    });
+    const plan = JsonImportService.buildPlan(
+      doc({ categoryKey: "incident", categoryLabel: "Störung" }),
+      {
+        strategy: "merge",
+        workPackageCategoryContext: { systemhouseId: "sh-a", values: [category()] },
+      },
+    );
     expect(plan.categoryWarnings).toEqual([]);
     expect(plan.diffs.workPackages[0].incoming).toMatchObject({
       categoryKey: "incident",
@@ -105,28 +108,38 @@ describe("WorkPackage category JSON contract", () => {
   });
 
   it("preserves an inactive historic category but reports it as non-selectable", () => {
-    const plan = JsonImportService.buildPlan(doc({ categoryKey: "legacy", categoryLabel: "Training" }), {
-      strategy: "merge",
-      workPackageCategoryContext: {
-        systemhouseId: "sh-a",
-        values: [category({ key: "legacy", label: "Training", isActive: false })],
+    const plan = JsonImportService.buildPlan(
+      doc({ categoryKey: "legacy", categoryLabel: "Training" }),
+      {
+        strategy: "merge",
+        workPackageCategoryContext: {
+          systemhouseId: "sh-a",
+          values: [category({ key: "legacy", label: "Training", isActive: false })],
+        },
       },
-    });
+    );
     expect(plan.categoryWarnings).toEqual([
       expect.objectContaining({ workPackageId: "wp-1", categoryKey: "legacy", reason: "inactive" }),
     ]);
   });
 
   it("does not accept a value from another systemhouse as a valid target category", () => {
-    const plan = JsonImportService.buildPlan(doc({ categoryKey: "incident", categoryLabel: "Störung" }), {
-      strategy: "merge",
-      workPackageCategoryContext: {
-        systemhouseId: "sh-a",
-        values: [category({ systemhouseId: "sh-b" })],
+    const plan = JsonImportService.buildPlan(
+      doc({ categoryKey: "incident", categoryLabel: "Störung" }),
+      {
+        strategy: "merge",
+        workPackageCategoryContext: {
+          systemhouseId: "sh-a",
+          values: [category({ systemhouseId: "sh-b" })],
+        },
       },
-    });
+    );
     expect(plan.categoryWarnings).toEqual([
-      expect.objectContaining({ workPackageId: "wp-1", categoryKey: "incident", reason: "foreign" }),
+      expect.objectContaining({
+        workPackageId: "wp-1",
+        categoryKey: "incident",
+        reason: "foreign",
+      }),
     ]);
   });
 });

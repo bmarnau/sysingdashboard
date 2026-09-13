@@ -33,28 +33,25 @@ describe("WorkPackage category contract", () => {
 
   it("resolves an active category to its current label and marks it selectable", () => {
     expect(
-      resolveWorkPackageCategory(
-        { categoryKey: "incident", categoryLabel: "Alter Anzeigename" },
-        [category()],
-      ),
+      resolveWorkPackageCategory({ categoryKey: "incident", categoryLabel: "Alter Anzeigename" }, [
+        category(),
+      ]),
     ).toEqual({ categoryKey: "incident", categoryLabel: "Störung", selectable: true });
   });
 
   it("keeps the historic snapshot of an inactive category but does not make it selectable", () => {
     expect(
-      resolveWorkPackageCategory(
-        { categoryKey: "legacy", categoryLabel: "Training" },
-        [category({ key: "legacy", label: "Training neu", isActive: false })],
-      ),
+      resolveWorkPackageCategory({ categoryKey: "legacy", categoryLabel: "Training" }, [
+        category({ key: "legacy", label: "Training neu", isActive: false }),
+      ]),
     ).toEqual({ categoryKey: "legacy", categoryLabel: "Training", selectable: false });
   });
 
   it("keeps an unknown historic key fail-safe without silently remapping it", () => {
     expect(
-      resolveWorkPackageCategory(
-        { categoryKey: "foreign", categoryLabel: "Fremde Kategorie" },
-        [category()],
-      ),
+      resolveWorkPackageCategory({ categoryKey: "foreign", categoryLabel: "Fremde Kategorie" }, [
+        category(),
+      ]),
     ).toEqual({ categoryKey: "foreign", categoryLabel: "Fremde Kategorie", selectable: false });
   });
 

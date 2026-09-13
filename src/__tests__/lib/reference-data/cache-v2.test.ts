@@ -7,10 +7,7 @@ import {
   readLatestCacheForPrincipal,
   writeCache,
 } from "@/lib/reference-data/cache";
-import type {
-  ReferenceDataAccessContext,
-  ReferenceDataSnapshot,
-} from "@/lib/reference-data/types";
+import type { ReferenceDataAccessContext, ReferenceDataSnapshot } from "@/lib/reference-data/types";
 
 const contextA: ReferenceDataAccessContext = {
   principalId: "user-a",
@@ -70,7 +67,12 @@ describe("Reference Data cache v2", () => {
   it("ignores legacy v1 cache for tenant-scoped reads", () => {
     window.localStorage.setItem(
       LEGACY_CACHE_KEY,
-      JSON.stringify({ cacheVersion: 1, fetchedAt: new Date().toISOString(), catalogs: [], values: [] }),
+      JSON.stringify({
+        cacheVersion: 1,
+        fetchedAt: new Date().toISOString(),
+        catalogs: [],
+        values: [],
+      }),
     );
     expect(readLatestCacheForPrincipal("user-a")).toBeNull();
   });

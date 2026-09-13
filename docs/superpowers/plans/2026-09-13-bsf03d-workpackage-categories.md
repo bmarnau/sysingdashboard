@@ -93,10 +93,12 @@
 ### Task 1: RED – Tenant-Scope-Datenbankvertrag
 
 **Files:**
+
 - Create via CLI migration command: `bunx supabase migration new bsf03d_reference_data_systemhouse_scope`
 - Create: `supabase/tests/bsf-03d-workpackage-category-scope.sql`
 
 **Interfaces:**
+
 - Consumes: `public.reference_catalog`, `public.reference_value`, `public.reference_value_history`, `public.has_permission(uuid,text)`, `public.has_active_systemhouse_membership(uuid,uuid)`.
 - Produces: `scope_type`, `systemhouse_id`, RLS-Vertrag für systemhausbezogene Werte und Katalog `workpackage.category`.
 
@@ -224,6 +226,7 @@ git commit -m "feat(bsf03d): Reference Data nach Systemhaus scopen"
 ### Task 2: RED/GREEN – Reference-Data-Domäne und principal-sicherer Cache V2
 
 **Files:**
+
 - Modify: `src/lib/reference-data/types.ts`
 - Modify: `src/lib/reference-data/adapter.ts`
 - Modify: `src/lib/reference-data/repository.ts`
@@ -235,6 +238,7 @@ git commit -m "feat(bsf03d): Reference Data nach Systemhaus scopen"
 - Create: `src/__tests__/lib/reference-data/cache-v2.test.ts`
 
 **Interfaces:**
+
 - Produces:
 
 ```ts
@@ -345,6 +349,7 @@ git commit -m "feat(bsf03d): Reference-Data-Cache tenant-sicher machen"
 ### Task 3: RED/GREEN – WorkPackage-Kategorie und Validierungslogik
 
 **Files:**
+
 - Modify: `src/lib/dashboard-data.ts`
 - Modify: `src/components/dashboard/domain.ts`
 - Create: `src/lib/reference-data/workpackage-category.ts`
@@ -409,6 +414,7 @@ git commit -m "feat(bsf03d): Kategorie am Arbeitspaket modellieren"
 ### Task 4: RED/GREEN – JSON Import/Export und Backup-Scope
 
 **Files:**
+
 - Modify: `src/lib/json-schema.ts`
 - Modify: `src/lib/json-import-service.ts`
 - Modify actual export mapper used by `ImportExportDialog`
@@ -477,6 +483,7 @@ git commit -m "feat(bsf03d): Kategorien in Import Export und Backup aufnehmen"
 ### Task 5: RED/GREEN – Sichere Kategorieverwaltung
 
 **Files:**
+
 - Create: `src/lib/reference-data/workpackage-category.functions.ts`
 - Create: `src/components/reference-data/WorkPackageCategoryManagementView.tsx`
 - Create: `src/routes/_authenticated/arbeitspaket-kategorien/index.tsx`
@@ -559,6 +566,7 @@ git commit -m "feat(bsf03d): Arbeitspaket-Kategorien verwaltbar machen"
 ### Task 6: RED/GREEN – Kategorieauswahl im WorkPackageDialog
 
 **Files:**
+
 - Modify: `src/components/dashboard/dialogs/WorkPackageDialog.tsx`
 - Modify: `src/routes/_authenticated/dashboard.tsx`
 - Add/modify focused component test for `WorkPackageDialog`
@@ -615,10 +623,12 @@ git commit -m "feat(bsf03d): Kategorie im Arbeitspaket auswählen"
 ### Task 7: E2E, Accessibility und Cross-Systemhouse-Negativpfade
 
 **Files:**
+
 - Create: `e2e/fixtures/workpackage-categories-e2e.ts`
 - Create: `e2e/specs/security/workpackage-categories.spec.ts`
 
 **Interfaces:**
+
 - Consumes final server-function/UI contracts from Tasks 5–6.
 
 - [ ] **Step 1: E2E fixture implementieren**
@@ -675,9 +685,11 @@ git commit -m "test(bsf03d): Kategorien E2E und Tenant-Grenzen absichern"
 ### Task 8: Dokumentation, Version 1.62.0 und finale Verifikation
 
 **Files:**
+
 - Modify docs/version files listed in File Structure.
 
 **Interfaces:**
+
 - Produces authoritative project state: BSF-03D DONE, BSF-03A next.
 
 - [ ] **Step 1: Dokumentation aktualisieren**

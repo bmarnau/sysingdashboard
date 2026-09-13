@@ -96,7 +96,10 @@ export async function getPrincipalId(): Promise<string | null> {
 export async function getAccessContext(): Promise<ReferenceDataAccessContext> {
   const principalId = await getPrincipalId();
   if (!principalId) {
-    throw new ReferenceDataError("REFDATA_AUTH_REQUIRED", "Anmeldung für Katalogzugriff erforderlich.");
+    throw new ReferenceDataError(
+      "REFDATA_AUTH_REQUIRED",
+      "Anmeldung für Katalogzugriff erforderlich.",
+    );
   }
 
   const { data, error } = await supabase
@@ -123,9 +126,7 @@ export async function getAccessContext(): Promise<ReferenceDataAccessContext> {
   return { principalId, systemhouseIds };
 }
 
-export async function fetchAll(
-  suppliedContext?: ReferenceDataAccessContext,
-): Promise<{
+export async function fetchAll(suppliedContext?: ReferenceDataAccessContext): Promise<{
   context: ReferenceDataAccessContext;
   catalogs: ReferenceCatalog[];
   values: ReferenceValue[];

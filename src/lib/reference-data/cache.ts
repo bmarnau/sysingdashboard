@@ -49,7 +49,10 @@ function sameContext(a: ReferenceDataAccessContext, b: ReferenceDataAccessContex
   );
 }
 
-function parseSnapshot(raw: string, expected?: ReferenceDataAccessContext): ReferenceDataSnapshot | null {
+function parseSnapshot(
+  raw: string,
+  expected?: ReferenceDataAccessContext,
+): ReferenceDataSnapshot | null {
   try {
     const parsed = JSON.parse(raw) as ReferenceDataSnapshot;
     if (

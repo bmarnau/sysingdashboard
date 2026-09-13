@@ -16,14 +16,20 @@ import {
 } from "./cache";
 import type { ReferenceDataSnapshot, ReferenceDataState } from "./types";
 
-function stateFromCache(snapshot: ReferenceDataSnapshot, stale = isStale(snapshot)): ReferenceDataState {
+function stateFromCache(
+  snapshot: ReferenceDataSnapshot,
+  stale = isStale(snapshot),
+): ReferenceDataState {
   return { snapshot, stale, source: "cache" };
 }
 
 async function requirePrincipalId(): Promise<string> {
   const principalId = await adapter.getPrincipalId();
   if (!principalId) {
-    throw new ReferenceDataError("REFDATA_AUTH_REQUIRED", "Anmeldung für Katalogzugriff erforderlich.");
+    throw new ReferenceDataError(
+      "REFDATA_AUTH_REQUIRED",
+      "Anmeldung für Katalogzugriff erforderlich.",
+    );
   }
   return principalId;
 }
