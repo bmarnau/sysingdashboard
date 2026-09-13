@@ -46,6 +46,21 @@ function ids(raw: string): string[] {
   );
 }
 
+function serverFnExport(rawUrl: string): string {
+  try {
+    const url = new URL(rawUrl);
+    const encodedDescriptor = url.pathname.split("/_serverFn/")[1]?.split("/")[0];
+    if (!encodedDescriptor) return "";
+
+    const descriptor = JSON.parse(
+      Buffer.from(encodedDescriptor, "base64url").toString("utf8"),
+    ) as { export?: unknown };
+    return typeof descriptor.export === "string" ? descriptor.export : "";
+  } catch {
+    return "";
+  }
+}
+
 export async function installResponsibilityManagementMock(
   page: Page,
   behaviour: P5Behaviour = {},
@@ -84,7 +99,13 @@ export async function installResponsibilityManagementMock(
     async (route) => {
       const url = route.request().url();
       const raw = route.request().postData() ?? "";
-      if (!/responsibility|customerresponsibility|kundenverantwortung/i.test(url)) {
+      const exportName = serverFnExport(url);
+      const isList = /listResponsibilityManagementFn/i.test(exportName);
+      const isCandidates = /listResponsibilityCandidatesFn/i.test(exportName);
+      const isSet = /setCustomerResponsibilityFn/i.test(exportName);
+      const isEnd = /endCustomerResponsibilityFn/i.test(exportName);
+
+      if (!isList && !isCandidates && !isSet && !isEnd) {
         await route.fallback();
         return;
       }
@@ -93,11 +114,11 @@ export async function installResponsibilityManagementMock(
         return;
       }
 
-      if (/candidates/i.test(url)) {
+      if (isCandidates) {
         await ok(route, candidates);
         return;
       }
-      if (/setcustomerresponsibility/i.test(url)) {
+      if (isSet) {
         const found = ids(raw);
         const customerId = found.find((id) => id === P5_CUSTOMER_A || id === P5_CUSTOMER_B);
         const targetUserId = found.find((id) => id === P5_USER_A || id === P5_USER_B);
@@ -116,7 +137,7 @@ export async function installResponsibilityManagementMock(
         await ok(route, { responsibilityId: customer.responsibility.id });
         return;
       }
-      if (/endcustomerresponsibility/i.test(url)) {
+      if (isEnd) {
         const customerId = ids(raw).find((id) => id === P5_CUSTOMER_A || id === P5_CUSTOMER_B);
         const customer = customers.find((entry) => entry.customerId === customerId);
         if (!customer) {
@@ -127,7 +148,7 @@ export async function installResponsibilityManagementMock(
         await ok(route, { ended: true });
         return;
       }
-      if (/listresponsibilitymanagement/i.test(url)) {
+      if (isList) {
         await ok(route, {
           systemhouses,
           selectedSystemhouseId: systemhouses[0]?.systemhouseId ?? null,
