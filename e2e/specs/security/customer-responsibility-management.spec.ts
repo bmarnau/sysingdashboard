@@ -11,11 +11,15 @@ const URL = "/kundenverantwortung";
 test.describe("BSF-03 P5 Kundenverantwortung", () => {
   test.use({ role: "teamlead" });
 
-  test("Manager sieht systemhausweite Kundenverwaltung einschließlich unzugeordnetem Kunden", async ({ page }) => {
+  test("Manager sieht systemhausweite Kundenverwaltung einschließlich unzugeordnetem Kunden", async ({
+    page,
+  }) => {
     await installResponsibilityManagementMock(page);
     await page.goto(URL);
 
-    await expect(page.getByRole("heading", { name: "Kundenverantwortung", level: 1 })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Kundenverantwortung", level: 1 }),
+    ).toBeVisible();
     await expect(page.getByText("Alpha GmbH")).toBeVisible();
     await expect(page.getByText("Anna Admin")).toBeVisible();
     await expect(page.getByText("Beta AG")).toBeVisible();
@@ -23,7 +27,9 @@ test.describe("BSF-03 P5 Kundenverantwortung", () => {
     await expect(page.getByText(/Projekte|Arbeitspakete|Tätigkeiten/)).toHaveCount(0);
   });
 
-  test("Zuweisen und Wechseln verwendet nur die datensparsame Kandidatenliste", async ({ page }) => {
+  test("Zuweisen und Wechseln verwendet nur die datensparsame Kandidatenliste", async ({
+    page,
+  }) => {
     await installResponsibilityManagementMock(page);
     await page.goto(URL);
 

@@ -32,7 +32,12 @@ const deny = (route: Route) =>
   route.fulfill({
     status: 200,
     contentType: "application/json",
-    body: JSON.stringify({ error: { name: "Error", message: "Kundenverantwortung ist für diesen Scope nicht verfügbar." } }),
+    body: JSON.stringify({
+      error: {
+        name: "Error",
+        message: "Kundenverantwortung ist für diesen Scope nicht verfügbar.",
+      },
+    }),
   });
 
 function ids(raw: string): string[] {
@@ -45,7 +50,9 @@ export async function installResponsibilityManagementMock(
   page: Page,
   behaviour: P5Behaviour = {},
 ): Promise<void> {
-  const systemhouses = behaviour.systemhouses ?? [{ systemhouseId: P5_SH, name: "Systemhaus Nord" }];
+  const systemhouses = behaviour.systemhouses ?? [
+    { systemhouseId: P5_SH, name: "Systemhaus Nord" },
+  ];
   const customers: P5Customer[] = behaviour.customers ?? [
     {
       systemhouseId: P5_SH,

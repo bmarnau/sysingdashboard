@@ -60,11 +60,13 @@
 ### Task 1: Datenbankvertrag zuerst rot testen
 
 **Files:**
+
 - Create: `supabase/tests/bsf-03-p5-responsibility-management.sql`
 - Read: `supabase/tests/bsf-03-customer-responsibility-rls.sql`
 - Read: aktuelle BSF-03-Migrationen
 
 **Interfaces:**
+
 - Consumes: bestehende `customer_responsibility`, `can_manage_customer_responsibility`, `customer_responsibility_target_guard` und `customer.responsibility.manage`.
 - Produces: R19–R31 als ausführbarer Vertrag für alle späteren DB-Änderungen.
 
@@ -108,11 +110,13 @@ git commit -m "test(bsf03): P5 Responsibility-Management-Vertrag festlegen"
 ### Task 2: Minimalen DB-Read- und Mutationsvertrag implementieren
 
 **Files:**
+
 - Create: tatsächliche, vom Supabase-Migrationswerkzeug erzeugte Migration für `bsf03_p5_responsibility_management`
 - Modify/generated later: `src/integrations/supabase/types.ts`
 - Test: `supabase/tests/bsf-03-p5-responsibility-management.sql`
 
 **Interfaces:**
+
 - Produces RPCs:
   - `customer_responsibility_management_overview(_systemhouse_id uuid)`
   - `customer_responsibility_management_candidates(_systemhouse_id uuid)`
@@ -202,6 +206,7 @@ git commit -m "feat(bsf03): sicheren P5 Responsibility-Management-Vertrag ergän
 ### Task 3: Providerneutrale Fachlogik und Supabase-Adapter TDD
 
 **Files:**
+
 - Create: `src/lib/customer-data/customer-responsibility-management.ts`
 - Create: `src/integrations/supabase/customer-responsibility-management-adapter.ts`
 - Create: `src/__tests__/lib/customer-responsibility-management.test.ts`
@@ -236,8 +241,12 @@ export interface CustomerResponsibilityManagementRepository {
   listManageableSystemhouses(userId: string): Promise<ManageableSystemhouse[]>;
   listCustomers(systemhouseId: string): Promise<ResponsibilityManagementCustomer[]>;
   listCandidates(systemhouseId: string): Promise<ResponsibilityCandidate[]>;
-  setResponsibility(input: {systemhouseId: string; customerId: string; targetUserId: string}): Promise<string>;
-  endResponsibility(input: {systemhouseId: string; customerId: string}): Promise<boolean>;
+  setResponsibility(input: {
+    systemhouseId: string;
+    customerId: string;
+    targetUserId: string;
+  }): Promise<string>;
+  endResponsibility(input: { systemhouseId: string; customerId: string }): Promise<boolean>;
 }
 ```
 
@@ -284,10 +293,12 @@ git commit -m "feat(bsf03): providerneutralen Responsibility-Management-Service 
 ### Task 4: Serverfunktionsgrenze TDD und Spoofing-Schutz
 
 **Files:**
+
 - Create: `src/lib/customer-data-runtime/customer-responsibility-management.functions.ts`
 - Create: `src/__tests__/security/customer-responsibility-management-functions.test.ts`
 
 **Interfaces:**
+
 - `listResponsibilityManagementFn`
 - `listResponsibilityCandidatesFn`
 - `setCustomerResponsibilityFn`
@@ -335,6 +346,7 @@ git commit -m "feat(bsf03): P5 Serverfunktionsgrenze absichern"
 ### Task 5: Getrennte Management-UI TDD/E2E
 
 **Files:**
+
 - Create: `src/components/customers/CustomerResponsibilityManagementView.tsx`
 - Create: `src/routes/_authenticated/kundenverantwortung/index.tsx`
 - Modify: `src/routes/_authenticated/dashboard.tsx`
@@ -343,6 +355,7 @@ git commit -m "feat(bsf03): P5 Serverfunktionsgrenze absichern"
 - Create: `e2e/specs/security/customer-responsibility-management.spec.ts`
 
 **Interfaces:**
+
 - UI erhält nur `ManageableSystemhouse[]`, `ResponsibilityManagementCustomer[]`, `ResponsibilityCandidate[]` und Action-Callbacks.
 - Keine operative Shared Projection in dieser Route.
 
@@ -419,6 +432,7 @@ git commit -m "feat(bsf03): Kundenverantwortung verwaltbar machen"
 ### Task 6: Vertrags- und Produktdokumentation synchronisieren
 
 **Files:**
+
 - Modify: `docs/BSF-03-RESPONSIBILITY-MANAGEMENT-READ-CONTRACT-2026-09-13.md`
 - Modify: `docs/BSF-03-CUSTOMER-RESPONSIBILITY-DESIGN.md`
 - Modify: `docs/ENTWICKLUNGSTAGEBUCH.md`

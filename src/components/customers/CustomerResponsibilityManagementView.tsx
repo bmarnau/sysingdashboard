@@ -64,7 +64,10 @@ export function CustomerResponsibilityManagementView({
   if (state.kind === "loading") {
     return (
       <section aria-labelledby="responsibility-management-heading">
-        <h1 id="responsibility-management-heading" className="text-2xl font-semibold tracking-tight">
+        <h1
+          id="responsibility-management-heading"
+          className="text-2xl font-semibold tracking-tight"
+        >
           Kundenverantwortung
         </h1>
         <div role="status" aria-live="polite" aria-busy="true" className="mt-6 grid gap-3">
@@ -80,7 +83,10 @@ export function CustomerResponsibilityManagementView({
     const denied = state.kind === "denied";
     return (
       <section aria-labelledby="responsibility-management-heading">
-        <h1 id="responsibility-management-heading" className="text-2xl font-semibold tracking-tight">
+        <h1
+          id="responsibility-management-heading"
+          className="text-2xl font-semibold tracking-tight"
+        >
           Kundenverantwortung
         </h1>
         <div
@@ -106,7 +112,10 @@ export function CustomerResponsibilityManagementView({
   if (!payload.selectedSystemhouseId || payload.systemhouses.length === 0) {
     return (
       <section aria-labelledby="responsibility-management-heading">
-        <h1 id="responsibility-management-heading" className="text-2xl font-semibold tracking-tight">
+        <h1
+          id="responsibility-management-heading"
+          className="text-2xl font-semibold tracking-tight"
+        >
           Kundenverantwortung
         </h1>
         <Card>
@@ -175,17 +184,23 @@ export function CustomerResponsibilityManagementView({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">BSF-03</p>
-          <h1 id="responsibility-management-heading" className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+          <h1
+            id="responsibility-management-heading"
+            className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl"
+          >
             Kundenverantwortung
           </h1>
           <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-            Primäre Kundenverantwortung verwalten. Diese Ansicht gewährt keinen Zugriff auf Projekte,
-            Arbeitspakete oder Tätigkeiten eines Kunden.
+            Primäre Kundenverantwortung verwalten. Diese Ansicht gewährt keinen Zugriff auf
+            Projekte, Arbeitspakete oder Tätigkeiten eines Kunden.
           </p>
         </div>
         {payload.systemhouses.length > 1 && (
           <div className="grid gap-1.5">
-            <label htmlFor="responsibility-systemhouse" className="text-xs font-medium text-muted-foreground">
+            <label
+              htmlFor="responsibility-systemhouse"
+              className="text-xs font-medium text-muted-foreground"
+            >
               Systemhaus
             </label>
             <select
@@ -223,9 +238,14 @@ export function CustomerResponsibilityManagementView({
               </thead>
               <tbody className="divide-y divide-border">
                 {payload.customers.map((customer) => (
-                  <tr key={customer.customerId} data-testid={`responsibility-row-${customer.customerId}`}>
+                  <tr
+                    key={customer.customerId}
+                    data-testid={`responsibility-row-${customer.customerId}`}
+                  >
                     <td className="px-5 py-4 font-medium">{customer.name}</td>
-                    <td className="px-5 py-4 text-muted-foreground">{statusText(customer.status)}</td>
+                    <td className="px-5 py-4 text-muted-foreground">
+                      {statusText(customer.status)}
+                    </td>
                     <td className="px-5 py-4">
                       {customer.responsibility?.displayName ?? (
                         <span className="text-muted-foreground">Nicht zugeordnet</span>
@@ -307,7 +327,9 @@ export function CustomerResponsibilityManagementView({
                 </option>
               ))}
             </select>
-            {candidateLoading && <p className="text-xs text-muted-foreground">Kandidaten werden geladen …</p>}
+            {candidateLoading && (
+              <p className="text-xs text-muted-foreground">Kandidaten werden geladen …</p>
+            )}
             {actionError && (
               <p role="alert" className="text-sm text-destructive">
                 Die Aktion konnte nicht ausgeführt werden. Bitte versuchen Sie es erneut.
@@ -318,8 +340,15 @@ export function CustomerResponsibilityManagementView({
             <Button variant="outline" disabled={busy} onClick={() => setDialog(null)}>
               Abbrechen
             </Button>
-            <Button disabled={!selectedUserId || candidateLoading || busy} onClick={() => void submitAssignment()}>
-              {busy ? "Speichern …" : dialog?.kind === "assign" && dialog.customer.responsibility ? "Ändern" : "Zuweisen"}
+            <Button
+              disabled={!selectedUserId || candidateLoading || busy}
+              onClick={() => void submitAssignment()}
+            >
+              {busy
+                ? "Speichern …"
+                : dialog?.kind === "assign" && dialog.customer.responsibility
+                  ? "Ändern"
+                  : "Zuweisen"}
             </Button>
           </DialogFooter>
         </DialogContent>

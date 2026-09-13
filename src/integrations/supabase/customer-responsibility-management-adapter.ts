@@ -74,7 +74,8 @@ export function createSupabaseCustomerResponsibilityManagementRepository(
         }
       }
       return result.sort(
-        (a, b) => a.name.localeCompare(b.name, "de") || a.systemhouseId.localeCompare(b.systemhouseId),
+        (a, b) =>
+          a.name.localeCompare(b.name, "de") || a.systemhouseId.localeCompare(b.systemhouseId),
       );
     },
 

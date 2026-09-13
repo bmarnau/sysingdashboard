@@ -55,8 +55,7 @@ function CustomerResponsibilityManagementPage() {
     void load();
   }, [load]);
 
-  const selectedSystemhouseId =
-    state.kind === "ready" ? state.payload.selectedSystemhouseId : null;
+  const selectedSystemhouseId = state.kind === "ready" ? state.payload.selectedSystemhouseId : null;
 
   return (
     <CustomerPageShell>
