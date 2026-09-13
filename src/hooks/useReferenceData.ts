@@ -25,15 +25,26 @@ export interface ReferenceDataResult {
   reload: () => void;
 }
 
-export function useReferenceData(catalogKeys: readonly string[]): ReferenceDataResult {
+export interface UseReferenceDataOptions {
+  /**
+   * Nur für systemhausbezogene Kataloge relevant. Globale Kataloge ignorieren
+   * den Wert. Ohne Scope liefert ein systemhausbezogener Katalog keine Werte.
+   */
+  systemhouseId?: string;
+}
+
+export function useReferenceData(
+  catalogKeys: readonly string[],
+  options: UseReferenceDataOptions = {},
+): ReferenceDataResult {
   const keys = useMemo(() => catalogKeys.slice().sort(), [catalogKeys]);
   const signature = keys.join("|");
+  const systemhouseId = options.systemhouseId;
 
   const [values, setValues] = useState<Record<string, ReferenceValue[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
-  // Der Koordinator hat den Cache bereits neu befüllt — hier nur neu lesen.
   const refreshGeneration = useRefreshSignal();
   const [meta, setMeta] = useState<{
     stale: boolean;
@@ -50,7 +61,16 @@ export function useReferenceData(catalogKeys: readonly string[]): ReferenceDataR
 
     (async () => {
       const entries = await Promise.all(
-        list.map(async (key) => [key, await listValues(key, { includeInactive: true })] as const),
+        list.map(
+          async (key) =>
+            [
+              key,
+              await listValues(key, {
+                includeInactive: true,
+                systemhouseId,
+              }),
+            ] as const,
+        ),
       );
       if (cancelled) return;
       setValues(Object.fromEntries(entries));
@@ -61,8 +81,10 @@ export function useReferenceData(catalogKeys: readonly string[]): ReferenceDataR
         source: state?.source ?? null,
       });
     })()
-      .catch((e: unknown) => {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Kataloge nicht verfügbar.");
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setError(error instanceof Error ? error.message : "Kataloge nicht verfügbar.");
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -71,12 +93,12 @@ export function useReferenceData(catalogKeys: readonly string[]): ReferenceDataR
     return () => {
       cancelled = true;
     };
-  }, [signature, tick, refreshGeneration]);
+  }, [signature, systemhouseId, tick, refreshGeneration]);
 
   const reload = useCallback(() => {
     void refreshCatalogs()
       .catch(() => undefined)
-      .finally(() => setTick((n) => n + 1));
+      .finally(() => setTick((count) => count + 1));
   }, []);
 
   return { values, loading, error, reload, ...meta };
@@ -87,15 +109,15 @@ export function selectableValues(
   all: readonly ReferenceValue[] | undefined,
   usedKeys: readonly string[] = [],
 ): ReferenceValue[] {
-  return (all ?? []).filter((v) => v.isActive || usedKeys.includes(v.key));
+  return (all ?? []).filter((value) => value.isActive || usedKeys.includes(value.key));
 }
 
 /** Rangfolge aus `attributes.rank` (z. B. Schweregrade). */
 export function ranksOf(all: readonly ReferenceValue[] | undefined): Record<string, number> {
   const out: Record<string, number> = {};
-  for (const v of all ?? []) {
-    const rank = v.attributes?.["rank"];
-    if (typeof rank === "number") out[v.key] = rank;
+  for (const value of all ?? []) {
+    const rank = value.attributes?.["rank"];
+    if (typeof rank === "number") out[value.key] = rank;
   }
   return out;
 }

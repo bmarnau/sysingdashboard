@@ -2,10 +2,11 @@
  * ReferenceDataService — fachlicher Servicevertrag aus docs/REFERENCE-DATA.md.
  *
  * Regeln:
- * - Lesen läuft über den Read-Through-Cache (offline nutzbar).
- * - Pflege ist offline gesperrt (`REFDATA_OFFLINE_READONLY`), es wird nichts
- *   lokal vorgemerkt — es gibt keine Synchronisationsarchitektur für Stammdaten.
+ * - Lesen läuft über den principal-/tenant-sicheren Read-Through-Cache.
+ * - Pflege ist offline gesperrt (`REFDATA_OFFLINE_READONLY`).
  * - Werte werden nie gelöscht, nur deaktiviert.
+ * - Systemhouse-Kataloge werden niemals ohne expliziten Systemhouse-Scope
+ *   als gemischte Werteliste ausgeliefert.
  */
 
 import { ReferenceDataError } from "@/lib/errors";
@@ -17,8 +18,13 @@ import type { ReferenceCatalog, ReferenceDataState, ReferenceValue } from "./typ
 
 let state: ReferenceDataState | null = null;
 
+/**
+ * Repository.load() prüft bei jedem Zugriff den aktuellen Principal/Scope.
+ * Dadurch kann ein Benutzerwechsel nie den In-Memory-State des Vorgängers
+ * wiederverwenden; ein frischer Cache verhindert trotzdem unnötige Value-Reads.
+ */
 async function ensure(force = false): Promise<ReferenceDataState> {
-  if (!state || force) state = await repository.load({ forceRefresh: force });
+  state = await repository.load({ forceRefresh: force });
   return state;
 }
 
@@ -33,37 +39,60 @@ export function currentState(): ReferenceDataState | null {
 export async function listCatalogs(domain?: string): Promise<ReferenceCatalog[]> {
   const { snapshot } = await ensure();
   const list = domain
-    ? snapshot.catalogs.filter((c) => c.domain === domain)
+    ? snapshot.catalogs.filter((catalog) => catalog.domain === domain)
     : snapshot.catalogs.slice();
   return list.sort((a, b) => a.key.localeCompare(b.key));
 }
 
+export interface ListValuesOptions {
+  includeInactive?: boolean;
+  systemhouseId?: string;
+}
+
 export async function listValues(
   catalogKey: string,
-  options: { includeInactive?: boolean } = {},
+  options: ListValuesOptions = {},
 ): Promise<ReferenceValue[]> {
   const { snapshot } = await ensure();
+  const catalog = snapshot.catalogs.find((entry) => entry.key === catalogKey);
+  if (!catalog) return [];
+
+  if (catalog.scopeType === "systemhouse") {
+    if (!options.systemhouseId) return [];
+    if (!snapshot.accessContext.systemhouseIds.includes(options.systemhouseId)) return [];
+  }
+
   return snapshot.values
-    .filter((v) => v.catalogKey === catalogKey)
-    .filter((v) => options.includeInactive || v.isActive)
+    .filter((value) => value.catalogKey === catalogKey)
+    .filter((value) =>
+      catalog.scopeType === "systemhouse"
+        ? value.systemhouseId === options.systemhouseId
+        : value.systemhouseId === null,
+    )
+    .filter((value) => options.includeInactive || value.isActive)
     .sort((a, b) => a.sortOrder - b.sortOrder || a.label.localeCompare(b.label));
 }
 
 export async function getValue(
   catalogKey: string,
   valueKey: string,
+  options: Pick<ListValuesOptions, "systemhouseId"> = {},
 ): Promise<ReferenceValue | null> {
-  const values = await listValues(catalogKey, { includeInactive: true });
-  return values.find((v) => v.key === valueKey) ?? null;
+  const values = await listValues(catalogKey, { ...options, includeInactive: true });
+  return values.find((value) => value.key === valueKey) ?? null;
 }
 
-export async function requireValue(catalogKey: string, valueKey: string): Promise<ReferenceValue> {
-  const value = await getValue(catalogKey, valueKey);
+export async function requireValue(
+  catalogKey: string,
+  valueKey: string,
+  options: Pick<ListValuesOptions, "systemhouseId"> = {},
+): Promise<ReferenceValue> {
+  const value = await getValue(catalogKey, valueKey, options);
   if (!value) {
     throw new ReferenceDataError(
       "REFDATA_VALUE_UNKNOWN",
-      `Katalogwert ${catalogKey}/${valueKey} existiert nicht.`,
-      { context: { catalogKey, valueKey } },
+      `Katalogwert ${catalogKey}/${valueKey} existiert im angeforderten Scope nicht.`,
+      { context: { catalogKey, valueKey, systemhouseId: options.systemhouseId } },
     );
   }
   return value;
@@ -71,7 +100,7 @@ export async function requireValue(catalogKey: string, valueKey: string): Promis
 
 export async function getCatalogVersion(catalogKey: string): Promise<number | null> {
   const { snapshot } = await ensure();
-  return snapshot.catalogs.find((c) => c.key === catalogKey)?.version ?? null;
+  return snapshot.catalogs.find((catalog) => catalog.key === catalogKey)?.version ?? null;
 }
 
 function assertOnlineForWrite(): void {
@@ -83,11 +112,24 @@ function assertOnlineForWrite(): void {
   }
 }
 
+async function assertWriteScope(systemhouseId?: string | null): Promise<void> {
+  if (!systemhouseId) return;
+  const { snapshot } = await ensure();
+  if (!snapshot.accessContext.systemhouseIds.includes(systemhouseId)) {
+    throw new ReferenceDataError(
+      "REFDATA_SCOPE_DENIED",
+      "Der angeforderte Systemhaus-Kontext gehört nicht zum aktiven Benutzer.",
+      { context: { systemhouseId } },
+    );
+  }
+}
+
 export async function createValue(
   payload: Parameters<typeof repository.write.insertValue>[0],
   actorId: string,
 ): Promise<void> {
   assertOnlineForWrite();
+  await assertWriteScope(payload.systemhouseId);
   await repository.write.insertValue(payload, actorId);
   await refresh();
 }
@@ -115,8 +157,7 @@ export async function deactivateValue(id: string, actorId: string): Promise<void
 
 /**
  * Reconnect-Verhalten: Kataloge neu laden, Cache ersetzen, Deaktivierungen
- * übernehmen. Fehler werden protokolliert, aber nicht geworfen — ein
- * fehlgeschlagener Reconnect darf die App nicht beenden.
+ * übernehmen. Fehler werden protokolliert, aber nicht geworfen.
  */
 export function registerReconnectRefresh(): () => void {
   return onReconnect(() => {
@@ -126,7 +167,7 @@ export function registerReconnectRefresh(): () => void {
   });
 }
 
-/** Nur für Tests und Abmeldung: In-Memory-Zustand und Cache verwerfen. */
+/** Nur für Tests/Abmeldung: In-Memory-Zustand und Reference-Data-Caches verwerfen. */
 export function resetForTests(): void {
   state = null;
   clearCache();

@@ -20,10 +20,13 @@ export {
   resetForTests,
 } from "./service";
 export { CATALOG_KEYS } from "./types";
+export type { ListValuesOptions } from "./service";
 export type {
   CatalogKey,
   ReferenceCatalog,
+  ReferenceDataAccessContext,
   ReferenceDataSnapshot,
   ReferenceDataState,
+  ReferenceScopeType,
   ReferenceValue,
 } from "./types";

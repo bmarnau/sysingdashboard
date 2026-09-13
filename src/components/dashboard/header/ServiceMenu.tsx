@@ -20,6 +20,7 @@ import {
   Server,
   Settings,
   ShieldCheck,
+  Tags,
   Timer,
   LogOut,
   Trash2,
@@ -151,6 +152,17 @@ export function ServiceMenu({
             >
               <Server className="size-4 opacity-70" /> Engineer-Stammdaten…
             </button>
+            {can(currentUser, "referencedata.manage") && (
+              <button
+                onClick={() => {
+                  setShowServiceMenu(false);
+                  void navigate({ to: "/arbeitspaket-kategorien" });
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+              >
+                <Tags className="size-4 opacity-70" /> Arbeitspaket-Kategorien…
+              </button>
+            )}
             <button
               onClick={() => {
                 setShowServiceMenu(false);
