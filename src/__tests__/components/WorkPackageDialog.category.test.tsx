@@ -130,7 +130,7 @@ describe("WorkPackageDialog — Kategorie", () => {
         })}
       />,
     );
-    expect(screen.getByLabelText(/Systemhaus/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Systemhaus$/)).toBeInTheDocument();
     expect((screen.getByLabelText(/^Kategorie/) as HTMLSelectElement).disabled).toBe(true);
   });
 
