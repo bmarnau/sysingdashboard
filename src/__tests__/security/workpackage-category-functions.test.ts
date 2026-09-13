@@ -46,6 +46,13 @@ describe("BSF-03D Server-/Provider-Sicherheitsvertrag", () => {
     expect(adapter).not.toMatch(/\.update\([^)]*\{[^}]*systemhouse_id\s*:/s);
   });
 
+  it("Update und Deaktivierung bestaetigen genau einen getroffenen Datensatz", () => {
+    expect(adapter.match(/\.select\("id"\)/g)?.length ?? 0).toBeGreaterThanOrEqual(2);
+    expect(adapter.match(/\.maybeSingle\(\)/g)?.length ?? 0).toBeGreaterThanOrEqual(2);
+    expect(adapter).toMatch(/if \(error \|\| !data\) fail\("Kategorie aktualisieren"\)/);
+    expect(adapter).toMatch(/if \(error \|\| !data\) fail\("Kategorie deaktivieren"\)/);
+  });
+
   it("Deaktivierung nutzt Update-Semantik und niemals DELETE", () => {
     expect(adapter).toContain("is_active: false");
     expect(adapter).toContain("valid_to");
