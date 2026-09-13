@@ -1,0 +1,42 @@
+name: BSF03D Prettier Once
+
+on:
+  push:
+    branches:
+      - feat/bsf03d-workpackage-categories
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf03d-workpackage-categories
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Format exact BSF-03D files
+        run: |
+          bunx prettier --write \
+            docs/superpowers/plans/2026-09-13-bsf03d-workpackage-categories.md \
+            src/__tests__/io/workpackage-category-io.test.ts \
+            src/__tests__/lib/reference-data/cache-v2.test.ts \
+            src/__tests__/lib/reference-data/workpackage-category.test.ts \
+            src/components/dashboard/domain.ts \
+            src/lib/reference-data/adapter.ts \
+            src/lib/reference-data/cache.ts \
+            src/lib/reference-data/repository.ts
+      - name: Remove one-time workflow and commit formatter result
+        run: |
+          rm .github/workflows/bsf03d-prettier-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "style(bsf03d): format intermediate category changes"
+          git push origin HEAD:feat/bsf03d-workpackage-categories
