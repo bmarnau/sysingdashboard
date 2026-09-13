@@ -47,6 +47,8 @@ import {
 import { dashboardData, type Activity, type Project, type WorkPackage } from "@/lib/dashboard-data";
 import { isSensitiveFieldName } from "@/lib/json-schema";
 import { logger } from "@/lib/logger";
+import type { ReferenceValue } from "@/lib/reference-data/types";
+import { validateCategoryKeys, type CategoryValidationReport } from "@/lib/workpackage-category";
 
 /* ------------------------------ Typen ------------------------------ */
 
@@ -62,6 +64,12 @@ export interface ImportOptions {
   actor?: string;
   /** Filtert Scopes auf eine Whitelist (z. B. nur "projects"). */
   scopeWhitelist?: ReadonlyArray<keyof DashboardJsonExport>;
+  /**
+   * BSF-03D: bekannter Kategoriebestand (`workpackage.category`) zur
+   * fail-safe-Prüfung eingehender `categoryKey`s. `null`/fehlend = keine Prüfung.
+   * Unbekannte/deaktivierte Kategorien erzeugen nur Warnungen; Werte bleiben.
+   */
+  categoryValues?: readonly ReferenceValue[] | null;
 }
 
 export interface EntityDiff<T> {
@@ -96,6 +104,8 @@ export interface ImportPlan {
   customerSuggestions: CustomerSuggestion[];
   engineerIdsInDoc: string[];
   singleEngineerMode: boolean;
+  /** BSF-03D: unbekannte/deaktivierte Kategorien im Dokument (nur Hinweis). */
+  categoryReport: CategoryValidationReport;
   /**
    * Konflikte zwischen `activities[*]` und `timeEntries[*]` mit gleicher
    * `activityId` — `timeEntries` gewinnt, Differenz wird protokolliert.
@@ -451,6 +461,8 @@ export const JsonImportService = {
       assignee: w.assignee,
       tags: w.tags,
       description: w.description,
+      // BSF-03D: Kategorie unverändert übernehmen (fehlend/null = keine Kategorie).
+      categoryKey: w.categoryKey ?? null,
     }));
 
     // timeEntries kanonisch: Datum/Dauer aus timeEntries gewinnen.
@@ -518,6 +530,7 @@ export const JsonImportService = {
       customerSuggestions,
       engineerIdsInDoc,
       singleEngineerMode,
+      categoryReport: validateCategoryKeys(wpsIn, options.categoryValues ?? null),
       timeEntryConflicts,
     };
   },
@@ -612,6 +625,7 @@ export const JsonImportService = {
           `timeEntries gewann gegenüber activities in ${plan.timeEntryConflicts.length} Feldern (Datum/Dauer) — siehe Protokoll-Detail.`,
         );
       }
+      for (const w of plan.categoryReport?.warnings ?? []) warnings.push(w);
       if (plan.customerSuggestions.length > 0 && !options.customerMapping) {
         warnings.push(
           `${plan.customerSuggestions.length} mögliche Kunden-Duplikate wurden nicht gemappt — verbleiben als eigenständige Kunden.`,

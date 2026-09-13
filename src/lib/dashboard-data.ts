@@ -36,6 +36,12 @@ export interface WorkPackage {
   assignee?: string;
   tags?: string[];
   description?: string;
+  /**
+   * BSF-03D: optionale primäre Kategorie (max. eine) als stabiler Schlüssel des
+   * systemhausweiten Reference-Data-Katalogs `workpackage.category`.
+   * `undefined`/`null` = keine Kategorie. Keine Semantik für billable/Priorität/Status.
+   */
+  categoryKey?: string | null;
 }
 
 export interface Activity {

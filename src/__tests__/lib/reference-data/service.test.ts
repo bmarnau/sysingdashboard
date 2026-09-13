@@ -36,6 +36,7 @@ function catalog(overrides: Partial<ReferenceCatalog> = {}): ReferenceCatalog {
     isSystem: true,
     isHierarchical: false,
     version: 3,
+    scopeType: "global",
     ...overrides,
   };
 }
@@ -55,6 +56,7 @@ function value(overrides: Partial<ReferenceValue> = {}): ReferenceValue {
     attributes: {},
     validFrom: "2026-08-01T00:00:00.000Z",
     validTo: null,
+    systemhouseId: null,
     ...overrides,
   };
 }

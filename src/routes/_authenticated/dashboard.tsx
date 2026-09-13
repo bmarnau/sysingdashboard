@@ -47,6 +47,11 @@ const WorkingTimeModelsDialog = lazy(() =>
 const UserManagementDialog = lazy(() =>
   import("@/components/UserManagementDialog").then((m) => ({ default: m.UserManagementDialog })),
 );
+const WorkPackageCategoryDialog = lazy(() =>
+  import("@/components/admin/WorkPackageCategoryDialog").then((m) => ({
+    default: m.WorkPackageCategoryDialog,
+  })),
+);
 const BackendAdminDialog = lazy(() =>
   import("@/components/BackendAdminDialog").then((m) => ({ default: m.BackendAdminDialog })),
 );
@@ -134,6 +139,7 @@ import { CRUD_PERMISSION } from "@/lib/rbac/crud-guards";
 import { tasksFromLocalData } from "@/lib/avkk/workspace";
 import { ProjectDialog } from "@/components/dashboard/dialogs/ProjectDialog";
 import { WorkPackageDialog } from "@/components/dashboard/dialogs/WorkPackageDialog";
+import { useWorkPackageCategories } from "@/hooks/useWorkPackageCategories";
 import { ActivityDialog } from "@/components/dashboard/dialogs/ActivityDialog";
 import { EngineerDialog } from "@/components/dashboard/dialogs/EngineerDialog";
 
@@ -212,6 +218,9 @@ function Dashboard() {
   const [showDevDiary, setShowDevDiary] = useState(false);
   const [showDemoData, setShowDemoData] = useState(false);
   const [showBackendAdmin, setShowBackendAdmin] = useState(false);
+  const [showWpCategories, setShowWpCategories] = useState(false);
+  // BSF-03D: systemhausbezogener Kategoriekontext für den Arbeitspaket-Dialog
+  const wpCategories = useWorkPackageCategories();
   const currentUser = useCurrentUser();
   // F-18: Local-First-CRUD an die bestehende RBAC-Matrix binden (UI-Gating +
   // defensive Prüfung direkt vor der Mutation). Keine neue Rechtelogik.
@@ -565,6 +574,7 @@ function Dashboard() {
               setShowReports={setShowReports}
               setShowDemoData={setShowDemoData}
               setShowBackendAdmin={setShowBackendAdmin}
+              setShowWpCategories={setShowWpCategories}
             />
             <button
               type="button"
@@ -968,6 +978,7 @@ function Dashboard() {
         <WorkPackageDialog
           wp={editingWP}
           projects={projects}
+          categories={wpCategories}
           onClose={() => setEditingWP(null)}
           onSave={(w) => {
             saveWP(w);
@@ -1130,6 +1141,11 @@ function Dashboard() {
       {showDemoData && (
         <Suspense fallback={null}>
           <DemoDataDialog open={showDemoData} onOpenChange={setShowDemoData} />
+        </Suspense>
+      )}
+      {showWpCategories && (
+        <Suspense fallback={null}>
+          <WorkPackageCategoryDialog open={showWpCategories} onOpenChange={setShowWpCategories} />
         </Suspense>
       )}
       {showBackendAdmin && (
