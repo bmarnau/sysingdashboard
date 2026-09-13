@@ -5,6 +5,8 @@ import { describe, expect, it } from "vitest";
 const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8");
 const fns = read("src/lib/customer-data-runtime/customer-responsibility-management.functions.ts");
 const adapter = read("src/integrations/supabase/customer-responsibility-management-adapter.ts");
+const shell = read("src/components/customers/CustomerPageShell.tsx");
+const managementRoute = read("src/routes/_authenticated/kundenverantwortung/index.tsx");
 
 describe("BSF-03 P5 Server-/Provider-Sicherheitsvertrag", () => {
   it("alle vier Serverfunktionen erzwingen Supabase-Authentifizierung", () => {
@@ -37,5 +39,11 @@ describe("BSF-03 P5 Server-/Provider-Sicherheitsvertrag", () => {
     expect(adapter).not.toContain('.from("customer")');
     expect(adapter).toContain('.from("systemhouse_membership")');
     expect(adapter).toContain('.eq("user_id", userId)');
+  });
+
+  it("Managementroute benennt den Bereich korrekt, während Meine Kunden der Shell-Standard bleibt", () => {
+    expect(shell).toContain('sectionTitle = "Meine Kunden"');
+    expect(shell).toContain("{sectionTitle}");
+    expect(managementRoute).toContain('<CustomerPageShell sectionTitle="Kundenverantwortung">');
   });
 });
