@@ -58,7 +58,7 @@ function CustomerResponsibilityManagementPage() {
   const selectedSystemhouseId = state.kind === "ready" ? state.payload.selectedSystemhouseId : null;
 
   return (
-    <CustomerPageShell>
+    <CustomerPageShell sectionTitle="Kundenverantwortung">
       <CustomerResponsibilityManagementView
         state={state}
         onSystemhouseChange={(systemhouseId) => void load(systemhouseId)}
