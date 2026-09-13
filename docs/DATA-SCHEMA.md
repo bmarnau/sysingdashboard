@@ -157,8 +157,9 @@ vermerkt.
 ### `reference_catalog`
 
 `key` (unique), `name`, `description`, `domain`, `is_system`,
-`is_hierarchical`, `version` (Integer, durch Trigger erhöht), `created_at`,
-`updated_at`.
+`is_hierarchical`, `version` (Integer, durch Trigger erhöht),
+`scope_type` (BSF-03D: `'global' | 'systemhouse'`, DEFAULT `'global'`,
+NOT NULL, CHECK), `created_at`, `updated_at`.
 
 ### `reference_value`
 
@@ -166,21 +167,40 @@ vermerkt.
 `sort_order`, `is_active`, `is_default`, `parent_value_id` →
 `reference_value.id` (Selbstreferenz für hierarchische Kataloge),
 `attributes jsonb`, `valid_from`, `valid_to`, `created_by`/`updated_by` →
-`auth.users.id`.
+`auth.users.id`, `systemhouse_id` (BSF-03D: nullable, FK
+`reference_value_systemhouse_fk` → `systemhouse.id`, `ON DELETE RESTRICT`).
 
-- `UNIQUE (catalog_id, key)`
-- Index `(catalog_id, sort_order)`
+- Eindeutigkeit (BSF-03D, ersetzt den alten globalen `UNIQUE (catalog_id, key)`):
+  - partieller Unique-Index `reference_value_global_key_unique`
+    `(catalog_id, key) WHERE systemhouse_id IS NULL`
+  - partieller Unique-Index `reference_value_systemhouse_key_unique`
+    `(catalog_id, systemhouse_id, key) WHERE systemhouse_id IS NOT NULL`
+- Index `(catalog_id, sort_order)`; zusätzlicher Index auf `systemhouse_id`.
 - Kein DELETE: Werte werden über `is_active = false` und `valid_to` beendet.
 
 ### `reference_value_history`
 
 `value_id`, `catalog_id`, `operation` (`insert` | `update`), `snapshot jsonb`,
-`changed_by`, `changed_at`. Append-only, kein UPDATE/DELETE. Index
-`(value_id, changed_at DESC)`.
+`changed_by`, `changed_at`, `systemhouse_id` (BSF-03D, nullable, Scope des
+Wertes zum Änderungszeitpunkt). Append-only, kein UPDATE/DELETE. Index
+`(value_id, changed_at DESC)` sowie Index auf `systemhouse_id`.
 
 **Trigger**: `reference_value_track_change` (AFTER INSERT/UPDATE) schreibt die
 Historie, erhöht `reference_catalog.version` und protokolliert in `audit_log`.
-`set_updated_at` auf beiden Tabellen.
+`set_updated_at` auf beiden Tabellen. BSF-03D ergänzt
+`reference_value_validate_scope` (BEFORE INSERT/UPDATE): globale Kataloge
+verlangen `systemhouse_id IS NULL`, systemhausbezogene Kataloge verlangen
+`systemhouse_id IS NOT NULL`; für `workpackage.category` ist `key` nach dem
+Anlegen unveränderlich.
+
+### Katalog `workpackage.category` (BSF-03D)
+
+`scope_type = 'systemhouse'`, ohne Seed-Werte. Jedes Systemhaus pflegt seinen
+eigenen aktiven Bestand; alle Kunden desselben Systemhauses verwenden ihn
+gemeinsam. Arbeitspakete referenzieren über `categoryKey` (siehe Schema 1.2.0
+oben). Live-Nachweis (16/16 PASS, Rollback) in
+`docs/BSF-03D-VERIFICATION-2026-09-13.md`. Repo-Migration (idempotent):
+`drizzle/migrations/0000_bsf03d_reference_data_systemhouse_scope.sql`.
 
 ## 3. AVKK
 
