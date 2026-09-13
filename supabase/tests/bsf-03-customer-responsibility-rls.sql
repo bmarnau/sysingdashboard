@@ -195,13 +195,13 @@ INSERT INTO public.customer_access (systemhouse_id, customer_id, user_id, access
 -- Hinweis: `valid_from` wird fuer die beendete Zeile explizit gesetzt, weil der
 -- Period-Check `valid_to > valid_from` sonst gegen den Default `now()` prueft.
 INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id, status, valid_from, valid_to) VALUES
-  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc301','00000000-0000-0000-0000-00000000c301','active', now(), NULL),
-  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc302','00000000-0000-0000-0000-00000000c302','active', now(), NULL),
-  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc304','00000000-0000-0000-0000-00000000c303','active', now(), NULL),
-  ('00000000-0000-0000-0000-0000000ac302','00000000-0000-0000-0000-0000000bc303','00000000-0000-0000-0000-00000000c305','active', now(), NULL),
-  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc305','00000000-0000-0000-0000-00000000c306','active', now(), NULL),
+  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc301','00000000-0000-0000-0000-00000000c301','active', now() - interval '1 day', NULL),
+  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc302','00000000-0000-0000-0000-00000000c302','active', now() - interval '1 day', NULL),
+  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc304','00000000-0000-0000-0000-00000000c303','active', now() - interval '1 day', NULL),
+  ('00000000-0000-0000-0000-0000000ac302','00000000-0000-0000-0000-0000000bc303','00000000-0000-0000-0000-00000000c305','active', now() - interval '1 day', NULL),
+  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc305','00000000-0000-0000-0000-00000000c306','active', now() - interval '1 day', NULL),
   ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc306','00000000-0000-0000-0000-00000000c30b','ended', now() - interval '2 days', now() - interval '1 hour'),
-  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc307','00000000-0000-0000-0000-00000000c30c','active', now(), NULL);
+  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc307','00000000-0000-0000-0000-00000000c30c','active', now() - interval '1 day', NULL);
 
 -- U_INACTIVE (c306): Membership erst NACH Anlage der Verantwortung deaktivieren.
 -- Der P1-Target-Guard verhindert die Neuanlage fuer Ziele ohne aktive Membership;
@@ -430,7 +430,7 @@ DO $$
 DECLARE affected int;
 BEGIN
   UPDATE public.customer_responsibility
-     SET status = 'ended', valid_to = now()
+     SET status = 'ended', valid_to = clock_timestamp()
    WHERE customer_id = '00000000-0000-0000-0000-0000000bc301';
   GET DIAGNOSTICS affected = ROW_COUNT;
   IF affected <> 0 THEN
@@ -446,7 +446,7 @@ DO $$
 DECLARE affected int;
 BEGIN
   UPDATE public.customer_responsibility
-     SET status = 'ended', valid_to = now()
+     SET status = 'ended', valid_to = clock_timestamp()
    WHERE customer_id = '00000000-0000-0000-0000-0000000bc304';
   GET DIAGNOSTICS affected = ROW_COUNT;
   IF affected <> 1 THEN
@@ -546,7 +546,7 @@ SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c307');
 DO $$
 DECLARE affected int;
 BEGIN
-  UPDATE public.customer_responsibility SET status = 'ended', valid_to = now()
+  UPDATE public.customer_responsibility SET status = 'ended', valid_to = clock_timestamp()
    WHERE customer_id = '00000000-0000-0000-0000-0000000bc308';
   GET DIAGNOSTICS affected = ROW_COUNT;
   IF affected <> 1 THEN RAISE EXCEPTION 'FAIL T8 (rows=%)', affected; END IF;
@@ -560,7 +560,7 @@ SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c307');
 DO $$
 DECLARE affected int;
 BEGIN
-  UPDATE public.customer_responsibility SET status = 'ended', valid_to = now()
+  UPDATE public.customer_responsibility SET status = 'ended', valid_to = clock_timestamp()
    WHERE customer_id = '00000000-0000-0000-0000-0000000bc301';
   GET DIAGNOSTICS affected = ROW_COUNT;
   IF affected <> 1 THEN RAISE EXCEPTION 'FAIL T9 (rows=%)', affected; END IF;
@@ -575,7 +575,7 @@ SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c307');
 DO $$
 DECLARE affected int;
 BEGIN
-  UPDATE public.customer_responsibility SET status = 'ended', valid_to = now()
+  UPDATE public.customer_responsibility SET status = 'ended', valid_to = clock_timestamp()
    WHERE customer_id = '00000000-0000-0000-0000-0000000bc302';
   GET DIAGNOSTICS affected = ROW_COUNT;
   IF affected <> 1 THEN RAISE EXCEPTION 'FAIL T10 (rows=%)', affected; END IF;
