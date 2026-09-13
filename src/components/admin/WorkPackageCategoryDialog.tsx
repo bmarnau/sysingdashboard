@@ -109,9 +109,8 @@ export function WorkPackageCategoryDialog({ open, onOpenChange }: Props) {
         <DialogHeader>
           <DialogTitle>Arbeitspaket-Kategorien</DialogTitle>
           <DialogDescription>
-            Systemhausweite Stammdaten. Alle Kunden desselben Systemhauses nutzen denselben
-            aktiven Bestand. Kategorien werden deaktiviert, nie gelöscht; der Schlüssel bleibt
-            stabil.
+            Systemhausweite Stammdaten. Alle Kunden desselben Systemhauses nutzen denselben aktiven
+            Bestand. Kategorien werden deaktiviert, nie gelöscht; der Schlüssel bleibt stabil.
           </DialogDescription>
         </DialogHeader>
 

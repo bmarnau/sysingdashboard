@@ -81,7 +81,10 @@ export function useWorkPackageCategories(
     status,
     values: allValues,
     allValues,
-    systemhouses: (memberships ?? []).map((m) => ({ id: m.systemhouseId, name: m.systemhouseName })),
+    systemhouses: (memberships ?? []).map((m) => ({
+      id: m.systemhouseId,
+      name: m.systemhouseName,
+    })),
     selectedSystemhouseId: systemhouseId,
     onSelectSystemhouse: setExplicitId,
     error: membershipError ?? ref.error,
