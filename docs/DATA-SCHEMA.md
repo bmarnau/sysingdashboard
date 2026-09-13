@@ -262,8 +262,8 @@ Reference-Data-Tabellen.
 | Tabelle                    | SELECT               | INSERT / UPDATE                                         | DELETE   |
 | -------------------------- | -------------------- | ------------------------------------------------------- | -------- |
 | `reference_catalog`        | `referencedata.view` | `referencedata.manage`                                  | verboten |
-| `reference_value`          | `referencedata.view` | `referencedata.manage`                                  | verboten |
-| `reference_value_history`  | `referencedata.view` | nur Trigger                                             | verboten |
+| `reference_value`          | `referencedata.view` (¹) | `referencedata.manage` (¹)                          | verboten |
+| `reference_value_history`  | `referencedata.view` (¹) | nur Trigger                                         | verboten |
 | `avkk_subject`             | `avkk.view`          | `avkk.edit` (+ `created_by = auth.uid()` beim Einfügen) | verboten |
 | `avkk_responsibility`      | `avkk.view`          | `avkk.responsibility.assign`                            | erlaubt  |
 | `avkk_responsibility_type` | `avkk.view`          | `avkk.responsibility.assign`                            | erlaubt  |
