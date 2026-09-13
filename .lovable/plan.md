@@ -1,69 +1,68 @@
-# BSF-03D (#103) — Arbeitspaket-Kategorien als systemhausweite Stammdaten
+# BSF-03D Paket 1 — Review 6484555 gegen b90f93c (nur Prüfung, keine Umsetzung)
 
-## Befund (Repo-Stand `f943fae`, verifiziert)
+## Verdicts
 
-- **WorkPackage** (`src/lib/dashboard-data.ts:27`) hat kein Kategoriefeld; Persistenz ist local-first (Zustand-Store + localStorage, `src/lib/store/*`). APs liegen **nicht** in der Cloud-DB — Kategoriezuordnung ist damit rein client-/exportseitig, nur der **Katalog** liegt in Reference Data.
-- **CRUD-Gating**: `canEditWP = usePermission("workpackage.edit")` in `dashboard.tsx:219`; `viewer`/`customer` haben es nicht. Kategorie-Auswahl im Dialog erbt dieses Gating automatisch.
-- **Reference-Data-Vertrag**: Adapter/Service/Typen (`src/lib/reference-data/*`) kennen **kein** `systemhouseId`/`scopeType`; `insertValue` sendet kein `systemhouse_id`. `CATALOG_KEYS` enthält nur AVKK-Kataloge. Es gibt **keine UI** für `createValue/updateValue/deactivateValue` (nirgends aufgerufen).
-- **DB-Drift (wichtig)**: Die Live-DB enthält bereits die Migration `bsf03d_reference_data_systemhouse_scope` (`reference_catalog.scope_type` global|systemhouse, `reference_value.systemhouse_id`, Trigger `reference_value_validate_scope` inkl. Key-Immutabilität für `workpackage.category`, partielle Unique-Indizes, systemhouse-membership-gebundene RLS auf `reference_value`, Katalogzeile `workpackage.category` scope `systemhouse`, 0 Werte). **Im Repo fehlt diese SQL-Datei** (`supabase/migrations/` endet bei P5). RLS-Prüfung: `reference_value_*` = `has_permission(referencedata.view|manage) AND (systemhouse_id IS NULL OR has_active_systemhouse_membership(...))` → **systemhouse-scoped, keine Cross-Systemhouse-Sichtbarkeit**; Katalog-Metadaten (`reference_catalog`) bleiben global lesbar (unkritisch, keine Werte).
-- **Export/Import**: `WorkPackageSchema` (`src/lib/json-schema.ts:74`) und Import-Mapping (`json-import-service.ts:442`) ohne Kategorie. **Backup** sichert bereits **alle** Kataloge/Werte aus dem Snapshot (`avkk-payload.ts`, `zip.ts` → `reference-data.json`); `workpackage.category` wird damit automatisch mitgesichert. Restore validiert Katalogreferenzen nur für AVKK.
-- **Shared Projection** (`shared_work_package_projection`) hat nur title/status/priority — Kategorie ist nicht Teil des BSF-02C-Vertrags; bleibt außen vor (kein RPC-Change).
+- **SPEC COMPLIANCE: FINDINGS** (massiver Scope-Creep über Paket 1 hinaus; RED-Nachweis aus der Historie nicht belegbar)
+- **CODE QUALITY / SECURITY: FINDINGS** (1 Blocker: nicht beauftragte Änderung am generierten Auth-Client / Preview-Broker-Storage; dazu Migrations- und Cache-Befunde)
 
-## Konservative Entscheidungen
+## Findings priorisiert
 
-1. **Migration**: Die im Repo fehlende Scope-Migration wird als idempotente Datei `supabase/migrations/20260913170000_bsf03d_reference_data_systemhouse_scope.sql` rekonstruiert (`ADD COLUMN IF NOT EXISTS`, `CREATE OR REPLACE`, `ON CONFLICT DO NOTHING`). Vorab per GitHub prüfen, ob `main` sie schon enthält — dann entfällt Schritt 1 (Repo = Source of Truth). Keine neuen Tabellen, keine Policy-Änderung, keine Service-Role.
-2. **Vertrag**: `categoryKey?: string | null` am WorkPackage; `categoryLabel` **nicht** persistiert (Anzeige wird aus Katalog aufgelöst; bei unbekanntem Key Anzeige „Unbekannte Kategorie (key)“). Snapshots/Reports können das Label später ableiten (#106).
-3. **Systemhaus-Kontext**: Die UI schreibt nur in das Systemhaus, für das eine aktive Membership besteht; bei >1 Membership Auswahl im Verwaltungsdialog; Lesen filtert RLS.
-4. **Editierbarkeit**: Minimaler Verwaltungsdialog nur für `workpackage.category` (anlegen, Label/Sortierung ändern, deaktivieren; Key unveränderlich, kein Delete), gated `referencedata.manage` im Backend-Admin-Bereich. Kein generischer Katalog-Editor.
+### BLOCKER-1 — Preview-/Broker-Auth-Storage als unbeauftragte Nebenänderung
+`src/integrations/supabase/client.ts` (Zeile 63: `storage: brokeredPreviewStorage()`) und neue Datei `src/integrations/supabase/previewAuthStorage.ts` (88 Zeilen, postMessage-Brokering der Session an die Editor-Origin).
+Beides liegt außerhalb von Paket 1 und verletzt die Projektregel „keine Preview-/Broker-Auth-Storage-Logik als unbeauftragte Nebenänderung“ sowie „Auth nur im ausdrücklichen Auftrag ändern“. Sicherheitsrelevant: Session-Token verlässt den Tab per postMessage.
+Minimale Korrektur: beide Änderungen aus dem Paket-1-Branch entfernen; falls plattformseitig erzwungen, als eigener, ausdrücklich beauftragter Vorgang mit separatem Security-Review führen.
 
-## Umsetzungsschritte (TDD: erst RED)
+### BLOCKER-2 — Scope-Creep weit über Paket 1
+Nicht beauftragt in diesem Paket, aber im Diff enthalten:
+- UI: `src/components/admin/WorkPackageCategoryDialog.tsx`, `src/components/dashboard/dialogs/WorkPackageDialog.tsx`, `src/components/dashboard/header/ServiceMenu.tsx`, `src/routes/_authenticated/dashboard.tsx`, `src/hooks/useWorkPackageCategories.ts`
+- Import/Export: `src/lib/json-schema.ts` (Version 1.1.0 → 1.2.0), `src/lib/json-import-service.ts`
+- Backup/Restore: `src/lib/backup/category-check.ts`, `src/lib/backup/restore.ts`
+- Membership-Runtime: `src/lib/systemhouse/membership.ts`, `src/integrations/supabase/systemhouse-membership-adapter.ts`
+- DB-Testartefakt/E2E-Vorgriff: `supabase/tests/bsf03d-workpackage-category.sql`
+- Regenerierte Reports: `test-report/*`, `security-report/*`, `roadmap.md`
+Minimale Korrektur: Paket 1 auf Migration + `types.ts` (generiert) + `reference-data/{types,adapter}.ts` + `dashboard-data.ts` (`categoryKey`) + `workpackage-category.ts` + zugehörige Unit-Tests reduzieren; der Rest wird Paket 2/3. Regenerierte Report-Artefakte gehören nicht in einen fachlichen Paket-1-Diff.
 
-### Schritt 0 — Tests schreiben (müssen zuerst fehlschlagen)
-- `src/__tests__/lib/reference-data/scope.test.ts`: `ReferenceValue.systemhouseId`, `ReferenceCatalog.scopeType`; `insertValue` sendet `systemhouse_id` bei Systemhaus-Katalog; `CATALOG_KEYS.workPackageCategory === "workpackage.category"`.
-- `src/__tests__/lib/workpackage-category.test.ts`: `resolveCategory(wp, values)` → `none | active | inactive | unknown`; keine Ableitung von billable/priority/status.
-- `src/__tests__/io/json-schema-category.test.ts`: Schema akzeptiert fehlend/null/String (max 100), lehnt Nicht-String ab; Roundtrip Export→Import erhält `categoryKey`; Import ohne Feld → `null`.
-- `src/__tests__/integration/import-category-failsafe.test.ts`: unbekannte/deaktivierte Kategorie → Import-Warnung, Wert wird **unverändert** übernommen (keine stille Umdeutung), Vorschau zeigt Warnung.
-- `src/__tests__/backup/reference-data-category.test.ts`: Backup enthält Katalog `workpackage.category` mit Werten; Restore mit AP-`categoryKey` ohne passenden Katalogwert → Warnung, kein Abbruch.
-- `src/__tests__/components/WorkPackageDialog-category.test.tsx`: Select mit Default „— Keine Kategorie —“, nur aktive Werte + bereits gesetzter inaktiver Wert (`selectableValues`), axe-Check.
-- `src/__tests__/components/crud-view-gating`-Erweiterung: viewer sieht Kategorie read-only, kein Verwaltungsbutton; `referencedata.manage`-los → kein Editor.
-- `supabase/tests/bsf-03d-workpackage-category-rls.sql` (BEGIN…ROLLBACK): D01 Manager legt Wert in eigenem Systemhaus an PASS; D02 fremdes Systemhaus DENY; D03 Mitglied ohne `manage` DENY; D04 viewer liest nur eigenes Systemhaus; D05 global-Katalog + `systemhouse_id` → Trigger-Fehler; D06 Key-Änderung → Fehler; D07 doppelter Key pro Systemhaus → Unique-Fehler; D08 anon DENY.
-- E2E `e2e/specs/dashboard-category.spec.ts`: AP anlegen mit Kategorie, Anzeige in Liste, viewer ohne Schreibpfad.
+### HIGH-1 — RED-Nachweis nicht verifizierbar
+`b90f93c..6484555` enthält nur Sammelcommits („Changes“, „Work in progress“, abschließend „TDD BSF-03D/#103 umgesetzt“). Es gibt keinen Commit, in dem Tests ohne Produktionscode rot sind. Der RED-Status ist damit nur behauptet, nicht belegt.
+Minimale Korrektur: Paket-1-Branch in zwei Commits neu aufsetzen — (1) nur Tests (rot, Lauf-Log im Bericht), (2) Implementierung (grün).
 
-### Schritt 1 — Migration ins Repo (nur falls auf GitHub-main fehlend)
-Datei s.o.; danach `supabase--get_types` prüfen (Types enthalten `scope_type`/`systemhouse_id` bereits).
+### HIGH-2 — Migration enthält einen DROP CONSTRAINT und ist nicht kollisionsfrei bei abweichendem Namen
+`drizzle/migrations/0000_bsf03d_reference_data_systemhouse_scope.sql`:
+`ALTER TABLE public.reference_value DROP CONSTRAINT IF EXISTS reference_value_catalog_id_key_key;`
+Das ist entgegen „keine destruktiven DROP-Aktionen“ ein Schemaeingriff; er ist funktional nötig (Ablösung durch zwei partielle Unique-Indizes), aber (a) im Auftrag nicht vorgesehen und (b) namensabhängig: heißt der Constraint in einer älteren DB anders, bleibt er stehen und blockiert später systemhausbezogene Duplikate über Systemhäuser hinweg.
+Minimale Korrektur: Ablösung über `pg_constraint`-Lookup nach Spaltenmenge statt Namen und expliziten Hinweis im Migrationskopf, dass ein Unique-Constraint durch zwei partielle Indizes ersetzt wird.
 
-### Schritt 2 — Reference-Data-Vertrag erweitern
-- `types.ts`: `scopeType: "global" | "systemhouse"` am Katalog, `systemhouseId: string | null` am Wert, `CATALOG_KEYS.workPackageCategory`.
-- `adapter.ts`: Mapping beider Felder; `ValueWritePayload.systemhouseId?: string | null`; Insert setzt `systemhouse_id`.
-- `service.ts`: `listValues(key, { systemhouseId? })` optionaler Filter; Cache-Version bleibt 1 (additive Felder, alte Caches werden durch fehlende Felder als `null` gelesen — Test dafür).
-- `docs/REFERENCE-DATA.md` fortschreiben.
+### MEDIUM-1 — FK-Idempotenzprüfung nicht tabellenqualifiziert
+Gleiche Datei, Block 2: `IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'reference_value_systemhouse_fk')` — ohne `conrelid`/`connamespace`. `conname` ist nicht global eindeutig; ein gleichnamiger Constraint an einer anderen Tabelle unterdrückt das Anlegen still.
+Minimale Korrektur: `AND conrelid = 'public.reference_value'::regclass` ergänzen, analog zum Scope-Check-Block.
 
-### Schritt 3 — Domänenmodell + Export/Import/Backup
-- `WorkPackage.categoryKey?: string | null`; `WorkPackageSchema.categoryKey: z.string().max(100).nullable().optional()`; `JSON_SCHEMA_VERSION` additiv 1.1.0 → 1.2.0 (Import akzeptiert weiterhin 1.0/1.1); Export/Import-Mapping; Beispieldateien (`example-file-service.ts`) um ein AP mit Kategorie ergänzen; Import-Vorschau: Warnung „Kategorie X unbekannt/deaktiviert“ (fail-safe, Wert bleibt).
-- Restore-Validierung (`avkk-payload.ts`/`integrity.ts`): AP-`categoryKey` gegen `reference-data.json` prüfen → nur Warnung.
-- Neues Modul `src/lib/workpackage-category.ts` (reine Fachlogik, providerneutral): `resolveCategory`, `categoryDisplayLabel`, Controlling-Helfer `groupByCategoryKey(workPackages)` als Vorbereitung für #106.
+### MEDIUM-2 — Alte Cache-Snapshots sind nicht wirklich rückwärtssicher
+`src/lib/reference-data/cache.ts`: `CACHE_KEY` bleibt `...v1`, `cacheVersion` bleibt `1`, und `readCache()` gibt den geparsten Snapshot ungemappt zurück. Ein vor dem Sprint geschriebener Cache liefert daher Objekte mit `scopeType: undefined` und `systemhouseId: undefined`, obwohl beide Felder im Typ verpflichtend sind. `adapter.toCatalog/toValue` greifen nur auf dem Netzwerkpfad. Jede spätere Filterung nach `systemhouseId` arbeitet auf stale Caches falsch (bis zu 24 h).
+Minimale Korrektur: `cacheVersion` auf `2` heben (alter Cache wird verworfen) **oder** in `readCache()` normalisieren (`scopeType ?? "global"`, `systemhouseId ?? null`) — plus ein Test genau dafür. Der vorhandene Test `should_defaultToGlobalScope_when_legacyRowsLackScopeColumns` prüft nur den Adapter, nicht den Cache.
 
-### Schritt 4 — UI
-- `WorkPackageDialog.tsx`: Feld „Kategorie“ (Select) via `useReferenceData([CATALOG_KEYS.workPackageCategory])`, Default „— Keine Kategorie —“, Ladefehler → Feld deaktiviert mit Hinweis, gesetzter Wert bleibt erhalten. Tags unverändert.
-- AP-Liste/Detail: Kategorie-Badge (nur Anzeige).
-- `WorkPackageCategoryAdminDialog.tsx` im Backend-Admin (lazy), `<PermissionGate permission="referencedata.manage">`; Systemhauswahl aus aktiver Membership (bestehender Membership-Read wie in `customer-responsibility-management-adapter.ts:51`, ohne neue RLS).
+### MEDIUM-3 — Globale Werte bleiben für jeden Manager schreibbar
+Migration Block 6: `reference_value_insert/update` erlauben Schreiben auf globale Werte (`systemhouse_id IS NULL`) für jeden mit `referencedata.manage`, unabhängig von Systemhaus. Cross-Systemhouse-DENY ist für systemhausbezogene Werte korrekt umgesetzt; die AVKK-Systemkataloge sind aber weiterhin nicht gegen Änderung durch nicht-systemadministrative Manager geschützt. Vorbestand, keine Regression — aber in einem Scope-Sprint zu dokumentieren.
+Minimale Korrektur: als bekanntes Risiko in `docs` notieren; optional später `is_system`-Kataloge auf Systemadministrator einschränken (eigener Auftrag).
 
-### Schritt 5 — Doku/Abnahme
-- HelpTopic (Arbeitspakete + Kataloge, `lastUpdated`), `CHANGELOG.md` **1.62.0**, `docs/DATA-SCHEMA.md`, `docs/RBAC-MATRIX.md` (keine neuen Permissions — nur Vermerk), `docs/CURRENT-STATUS.md`, Sprintnachweis `docs/BSF-03D-…md` nur mit realen Ergebnissen.
-- Gates: `typecheck`, `lint`, `prettier --check`, `test` (Vitest gesamt), `test:a11y`, `test:security` (inkl. `rbac:check`, `security:check`), `test:debt`, `docs:check`, `project-status` check, `build`, E2E Chromium-Suite, SQL-Artefakt D01–D08 mit Rollback, Security Advisor read-only (nur SEC-01-Baseline erlaubt).
+### LOW-1 — `ADD COLUMN IF NOT EXISTS` maskiert abweichenden Ist-Zustand
+Wenn `scope_type` in der Live-DB bereits existiert, aber ohne `NOT NULL`/`DEFAULT 'global'`, wird der Unterschied stillschweigend übernommen.
+Minimale Korrektur: nachgelagert `ALTER COLUMN SET DEFAULT` / `SET NOT NULL` idempotent absichern, oder im DB-Testartefakt explizit prüfen.
 
-## Risiken / Regressionspunkte
-- **DB-Drift** zwischen Live-DB und Repo: Migration muss idempotent sein und darf gegen die Live-DB keinen Fehler werfen; Journal-Name kollidiert nicht (neuer Dateiname).
-- Cache-Kompatibilität: alte localStorage-Snapshots ohne `systemhouseId` → Felder defaulten auf `null`/`"global"`.
-- AVKK-Kataloge sind global und bleiben unberührt; Regression `service.test.ts` und AVKK-Suites müssen grün bleiben.
-- Mehrfach-Membership: Katalogwerte mehrerer Systemhäuser könnten gemischt erscheinen → Filter nach Systemhaus im Select, Fallback „alle sichtbaren“ bei genau einer Membership.
-- Kein Schreibpfad für viewer/customer entsteht: nur bestehende Policies (`referencedata.manage` ∧ Membership), keine Service-Role, keine neuen RPCs.
-- Nicht berührt: Shared-Projection-RPC, `customer_responsibility`, P5, AVKK-Definer-Funktionen.
+### LOW-2 — Key-Immutabilität nur für einen Katalog
+`reference_value_validate_scope()` sperrt Key-Renames nur für `workpackage.category`. Für alle anderen Kataloge bleibt ein Key-Rename möglich, obwohl Snapshot-Spalten anderswo auf Key-Identität bauen. Kein Hard-Delete-Loch (DELETE ist per RLS verwehrt, Deaktivierung erfolgt über `is_active`/`valid_to`).
+Minimale Korrektur: bewusste Entscheidung dokumentieren oder Key-Immutabilität generell auf `is_system`-Kataloge ausweiten.
 
-## Abnahmekriterien
-- Alle RED-Tests aus Schritt 0 GREEN; bestehende 696+ Vitest, E2E-Suite, SQL-Regression BSF-03 unverändert grün.
-- AP ohne Kategorie bleibt gültig (Export/Import/Backup alt = neu).
-- Unbekannte/deaktivierte Kategorie: sichtbar als Warnung, nie stillschweigend geändert/gelöscht.
-- Cross-Systemhouse: kein Lesen/Schreiben fremder Werte (D02/D04 PASS).
-- Advisor ohne neue Warnung; keine neue Permission, kein neues Recht für viewer.
-- Abschlussbericht mit Dateien, Migration, Tests, Security/RBAC/RLS, Import/Export/Backup, Docs, Restpunkten (u. a. #106 Aggregation, #102 Template-Vorschlag).
+## Was geprüft und in Ordnung ist
+
+- Keine Änderung an Shared Projection, BSF-02C-Publish-RPC oder BSF-03-P5-Artefakten im Diff (Frage 7: PASS).
+- Keine Secrets, kein Service-Role-Key, keine `supabase_admin`-Nutzung in Migration oder Code.
+- RLS bindet systemhausbezogene Werte an `has_active_systemhouse_membership`; Lesen und Schreiben fremder Systemhäuser ist damit DENY. Globale AVKK-Werte bleiben lesbar wie zuvor (Frage 3: im Wesentlichen PASS, siehe MEDIUM-3).
+- Trigger erzwingt Scope-Konsistenz sowie Immutabilität von `catalog_id` und `systemhouse_id`; `SET search_path TO ''`, `REVOKE ALL ... FROM PUBLIC, anon` vorhanden.
+- Partielle Unique-Indizes bilden „global eindeutig“ vs. „je Systemhaus eindeutig“ fachlich korrekt ab; zusätzlicher Lookup-Index vorhanden.
+- `workpackage.category` wird ohne Seed-Werte angelegt (`ON CONFLICT (key) DO NOTHING`) — Default „keine Kategorie“ bleibt gewahrt.
+- `src/lib/workpackage-category.ts` ist providerneutral, deckt none/active/inactive/unknown und Gruppierung ab und leitet nachweislich kein billable/priority/status ab.
+- `WorkPackage.categoryKey?: string | null` und die Adapter-Erweiterungen sind additiv und minimal.
+
+## Empfohlener nächster Schritt (nicht ausgeführt)
+
+Paket-1-Branch auf den vertraglichen Umfang zurückschneiden (BLOCKER-1/2), RED-Commit nachziehen (HIGH-1), danach Migration um HIGH-2 und MEDIUM-1 sowie den Cache um MEDIUM-2 korrigieren — erst dann Paket 2 (UI/Import/Backup/E2E).
