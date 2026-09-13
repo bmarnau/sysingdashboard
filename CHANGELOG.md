@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.60.0 - 2026-09-13
+
+- **Neuer Bereich „Meine Kunden“ (BSF-03, Issue #105)**: Über die Bereichsleiste des Dashboards erreichbar. Zeigt ausschließlich Kunden mit aktiver eigener Kundenverantwortung, aktiver Systemhaus-Zugehörigkeit, mindestens lesendem Kundenzugriff und Basisberechtigung `dashboard.view`.
+- **Kundendetail nur lesend**: Kundenkopf sowie freigegebene Projekte → Arbeitspakete → Tätigkeiten aus der gemeinsamen Serverdatenbasis; nicht auflösbare Zuordnungen erscheinen sichtbar unter „ohne Zuordnung“. Keine Bearbeitungs-, Lösch- oder Zuweisungsfunktionen.
+- **Verantwortungs- und Zugriffsindikator**: Liste und Detail zeigen den eigenen Verantwortungsstatus, den verantwortlichen Systemingenieur (eigenes Profil) und den Read-/Write-Indikator aus dem eigenen Kundenzugriff („Nur Lesen“ / „Schreibzugriff“). Der Indikator ist reine Anzeige; Schreibaktionen bleiben an Fachberechtigungen gebunden.
+- **Fail-closed**: Fremde, beendete oder unbekannte Kunden liefern einheitlich „Kunde nicht verfügbar“; Berechtigung und Datenzugriff werden serverseitig im Kontext des angemeldeten Benutzers geprüft. Verantwortung erzeugt keine Rolle und kein Schreibrecht.
+- **Nachweis**: Neue Unit-, Komponenten- (inkl. Barrierefreiheit) und Sicherheitsverträge für Fachlogik, Darstellung und Serverfunktionen.
+
 ## 1.59.7 - 2026-08-25
 
 - **Systemeinstellungen nur noch gezielt lesbar (SEC-01)**: Angemeldete Benutzer sehen ausschließlich die freigegebenen Einstellungen „Abmeldezeit bei Inaktivität" und „AVKK-Schwellwert". Alle weiteren — auch künftig ergänzte — Einstellungen sind nur mit Benutzerverwaltungs-Recht sichtbar.
