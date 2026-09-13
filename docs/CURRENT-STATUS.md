@@ -24,7 +24,8 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 3. `docs/BSF-01-ARCHITECTURE-BASELINE.md` — Architektur-Baseline,
 4. `docs/ADR/0029-systemhouse-customer-scope.md` — kanonischer Systemhaus-/Customer-Scope,
 5. `docs/BSF-CONCEPT-REGISTER.md` — gesicherte fachliche Entscheidungen,
-6. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze (Issue #86, ADR-0031).
+6. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze (Issue #86, ADR-0031),
+7. `docs/BSF-03-P1-TARGET-VALIDATION-2026-09-13.md` — Customer-Responsibility-Datenbasis mit serverseitiger Target-Validation (Issue #105, DB-/Security-Fundament ohne UI).
 
 Historische Dokumente wie `docs/ROLE-ACCEPTANCE-09C.md`, `docs/MVP-ACCEPTANCE-REPORT.md`, `docs/MVP-CLOSURE-STATUS-2026-08-21.md` und ältere `.lovable/plan/*` werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und sind durch die oben genannten Abschlussnachweise fortgeschrieben.
 
