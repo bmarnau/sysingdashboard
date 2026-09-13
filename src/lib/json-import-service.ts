@@ -451,6 +451,8 @@ export const JsonImportService = {
       assignee: w.assignee,
       tags: w.tags,
       description: w.description,
+      // BSF-03D: Kategorie unverändert übernehmen (fehlend/null = keine Kategorie).
+      categoryKey: w.categoryKey ?? null,
     }));
 
     // timeEntries kanonisch: Datum/Dauer aus timeEntries gewinnen.

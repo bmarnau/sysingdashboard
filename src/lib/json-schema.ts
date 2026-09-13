@@ -1,5 +1,10 @@
 /**
- * JSON-Schnittstellen-Schema v1.1.0
+ * JSON-Schnittstellen-Schema v1.2.0
+ *
+ * 1.2.0 ergänzt am Arbeitspaket das optionale Feld `categoryKey` (BSF-03D):
+ * stabiler Schlüssel des systemhausweiten Katalogs `workpackage.category`.
+ * Fehlend/null = keine Kategorie. Ältere Dokumente (1.0.0/1.1.0) bleiben
+ * importierbar; die Abweichung wird nur als Hinweis gemeldet.
  *
  * 1.1.0 ergänzt den optionalen Block `avkk` (AVKK-Führungsdaten und
  * Katalogstand). Der Block ist additiv — Dokumente ohne ihn bleiben gültig.
@@ -17,7 +22,7 @@
 
 import { z } from "zod";
 
-export const JSON_SCHEMA_VERSION = "1.1.0";
+export const JSON_SCHEMA_VERSION = "1.2.0";
 
 /* ----------------------------- Primitive Schemas ---------------------------- */
 
@@ -83,6 +88,8 @@ export const WorkPackageSchema = z.object({
   assignee: z.string().max(SHORT_STR).optional(),
   tags: z.array(z.string().max(SHORT_STR)).max(100).optional(),
   description: z.string().max(LONG_STR).optional(),
+  /** BSF-03D: optionale primäre Kategorie (stabiler Katalog-Key), null/fehlend = keine. */
+  categoryKey: z.string().max(SHORT_ID).nullable().optional(),
 });
 export type WorkPackageExport = z.infer<typeof WorkPackageSchema>;
 
