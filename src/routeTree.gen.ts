@@ -16,7 +16,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSyncRouteImport } from './routes/api/sync'
 import { Route as ApiStatusRouteImport } from './routes/api/status'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedMeineKundenIndexRouteImport } from './routes/_authenticated/meine-kunden/index'
 import { Route as ApiPublicAuthConfigRouteImport } from './routes/api/public/auth-config'
+import { Route as AuthenticatedMeineKundenSystemhouseIdCustomerIdRouteImport } from './routes/_authenticated/meine-kunden/$systemhouseId.$customerId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -52,11 +54,23 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMeineKundenIndexRoute =
+  AuthenticatedMeineKundenIndexRouteImport.update({
+    id: '/meine-kunden/',
+    path: '/meine-kunden/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicAuthConfigRoute = ApiPublicAuthConfigRouteImport.update({
   id: '/api/public/auth-config',
   path: '/api/public/auth-config',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute =
+  AuthenticatedMeineKundenSystemhouseIdCustomerIdRouteImport.update({
+    id: '/meine-kunden/$systemhouseId/$customerId',
+    path: '/meine-kunden/$systemhouseId/$customerId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +80,8 @@ export interface FileRoutesByFullPath {
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
+  '/meine-kunden/': typeof AuthenticatedMeineKundenIndexRoute
+  '/meine-kunden/$systemhouseId/$customerId': typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +91,8 @@ export interface FileRoutesByTo {
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
+  '/meine-kunden': typeof AuthenticatedMeineKundenIndexRoute
+  '/meine-kunden/$systemhouseId/$customerId': typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +104,8 @@ export interface FileRoutesById {
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
+  '/_authenticated/meine-kunden/': typeof AuthenticatedMeineKundenIndexRoute
+  '/_authenticated/meine-kunden/$systemhouseId/$customerId': typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +117,8 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
+    | '/meine-kunden/'
+    | '/meine-kunden/$systemhouseId/$customerId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +128,8 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
+    | '/meine-kunden'
+    | '/meine-kunden/$systemhouseId/$customerId'
   id:
     | '__root__'
     | '/'
@@ -116,6 +140,8 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
+    | '/_authenticated/meine-kunden/'
+    | '/_authenticated/meine-kunden/$systemhouseId/$customerId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -179,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/meine-kunden/': {
+      id: '/_authenticated/meine-kunden/'
+      path: '/meine-kunden'
+      fullPath: '/meine-kunden/'
+      preLoaderRoute: typeof AuthenticatedMeineKundenIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/auth-config': {
       id: '/api/public/auth-config'
       path: '/api/public/auth-config'
@@ -186,15 +219,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAuthConfigRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/meine-kunden/$systemhouseId/$customerId': {
+      id: '/_authenticated/meine-kunden/$systemhouseId/$customerId'
+      path: '/meine-kunden/$systemhouseId/$customerId'
+      fullPath: '/meine-kunden/$systemhouseId/$customerId'
+      preLoaderRoute: typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedMeineKundenIndexRoute: typeof AuthenticatedMeineKundenIndexRoute
+  AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute: typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedMeineKundenIndexRoute: AuthenticatedMeineKundenIndexRoute,
+  AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute:
+    AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

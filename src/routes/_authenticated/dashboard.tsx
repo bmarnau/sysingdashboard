@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useState, useTransition } from "react";
 import {
   Activity as ActivityIcon,
   AlertTriangle,
+  Building2,
   CheckCircle2,
   ChevronDown,
   Clock,
@@ -837,6 +838,16 @@ function Dashboard() {
             >
               AVKK Management
             </TabButton>
+          </PermissionGate>
+          {/* BSF-03: eigene Route, damit (systemhouseId, customerId) in der URL erhalten bleibt. */}
+          <PermissionGate permission="dashboard.view">
+            <Link
+              to="/meine-kunden"
+              className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Building2 className="size-4" />
+              Meine Kunden
+            </Link>
           </PermissionGate>
         </div>
 
