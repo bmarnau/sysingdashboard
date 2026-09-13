@@ -1,0 +1,65 @@
+name: BSF03D Task5 Integration Once
+on:
+  push:
+    branches:
+      - feat/bsf03d-workpackage-categories
+permissions:
+  contents: write
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf03d-workpackage-categories
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Align management component and test DTO
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          component = Path('src/components/reference-data/WorkPackageCategoryManagementView.tsx')
+          text = component.read_text()
+          text = text.replace('import type { ReferenceValue } from "@/lib/reference-data/types";\n', '')
+          text = text.replace('  WorkPackageCategoryManagementPayload,\n', '  WorkPackageCategoryManagementPayload,\n  WorkPackageCategoryManagementValue,\n')
+          text = text.replace('type EditState = { mode: "create" } | { mode: "edit"; value: ReferenceValue } | null;', 'type EditState =\n  | { mode: "create" }\n  | { mode: "edit"; value: WorkPackageCategoryManagementValue }\n  | null;')
+          component.write_text(text)
+
+          test = Path('src/__tests__/components/WorkPackageCategoryManagementView.test.tsx')
+          text = test.read_text()
+          for line in [
+              '        catalogId: "44444444-4444-4444-8444-444444444444",\n',
+              '        catalogKey: "workpackage.category",\n',
+              '        isDefault: false,\n',
+              '        parentValueId: null,\n',
+              '        attributes: {},\n',
+              '        validFrom: "2026-09-13T00:00:00.000Z",\n',
+          ]:
+              text = text.replace(line, '')
+          test.write_text(text)
+          PY
+      - name: Regenerate TanStack route tree
+        run: bun run build
+      - name: Format touched sources
+        run: |
+          bunx prettier --write \
+            src/components/reference-data/WorkPackageCategoryManagementView.tsx \
+            src/__tests__/components/WorkPackageCategoryManagementView.test.tsx \
+            src/lib/reference-data/workpackage-category-management.ts \
+            src/integrations/supabase/workpackage-category-management-adapter.ts \
+            src/routeTree.gen.ts
+      - name: Remove helper and commit exact integration outputs
+        run: |
+          rm .github/workflows/bsf03d-task5-integration-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/components/reference-data/WorkPackageCategoryManagementView.tsx \
+            src/__tests__/components/WorkPackageCategoryManagementView.test.tsx \
+            src/lib/reference-data/workpackage-category-management.ts \
+            src/integrations/supabase/workpackage-category-management-adapter.ts \
+            src/routeTree.gen.ts \
+            .github/workflows/bsf03d-task5-integration-once.yml
+          git commit -m "fix(bsf03d): align management DTO and generated route tree"
+          git push origin HEAD:feat/bsf03d-workpackage-categories
