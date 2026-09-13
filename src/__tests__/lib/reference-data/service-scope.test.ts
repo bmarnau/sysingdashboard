@@ -82,7 +82,13 @@ beforeEach(() => {
     catalogs: [globalCatalog, categoryCatalog],
     values: [
       value({ id: "a1", key: "incident", systemhouseId: "sh-a" }),
-      value({ id: "a2", key: "change", label: "Änderung", systemhouseId: "sh-a" }),
+      value({
+        id: "a2",
+        key: "change",
+        label: "Änderung",
+        sortOrder: 20,
+        systemhouseId: "sh-a",
+      }),
       value({ id: "b1", key: "maintenance", label: "Wartung", systemhouseId: "sh-b" }),
       value({
         id: "g1",
