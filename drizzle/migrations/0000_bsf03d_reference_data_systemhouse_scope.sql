@@ -27,6 +27,9 @@ UPDATE public.reference_catalog SET scope_type = 'global' WHERE scope_type IS NU
 ALTER TABLE public.reference_catalog ALTER COLUMN scope_type SET DEFAULT 'global';
 ALTER TABLE public.reference_catalog ALTER COLUMN scope_type SET NOT NULL;
 
+-- Bereits vorhandene Werte ausserhalb {global, systemhouse} werden bewusst NICHT
+-- still umgeschrieben: der CHECK-Constraint soll dann laut fehlschlagen, damit
+-- Datenfehler sichtbar bleiben (Review-Fix Runde 2, LOW-1).
 DO $$
 BEGIN
   IF NOT EXISTS (

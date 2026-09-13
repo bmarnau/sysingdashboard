@@ -18,3 +18,7 @@
 - [x] Migration: strukturelle Alt-Unique-Ablösung, FK-Check tabellenqualifiziert, scope_type Zielvertrag idempotent
 - [x] Cache: readCache normalisiert Legacy-Snapshots (scopeType/systemhouseId)
 - [x] Statische Migrationsvertragstests + Cache-Tests (RED→GREEN)
+
+## BSF-03D Review-Fix Runde 2 (MEDIUM-1, LOW-1 aus Re-Review)
+- [x] Test härten: Unique-Erkennung im isolierten SQL-Block, exakter Spaltenmengen-Ausdruck
+- [x] SQL-Kommentar: CHECK-Constraint fail-loud bei ungültigen Altwerten
