@@ -18,6 +18,7 @@ import { Route as ApiStatusRouteImport } from './routes/api/status'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMeineKundenIndexRouteImport } from './routes/_authenticated/meine-kunden/index'
 import { Route as AuthenticatedKundenverantwortungIndexRouteImport } from './routes/_authenticated/kundenverantwortung/index'
+import { Route as AuthenticatedArbeitspaketKategorienIndexRouteImport } from './routes/_authenticated/arbeitspaket-kategorien/index'
 import { Route as ApiPublicAuthConfigRouteImport } from './routes/api/public/auth-config'
 import { Route as AuthenticatedMeineKundenSystemhouseIdCustomerIdRouteImport } from './routes/_authenticated/meine-kunden/$systemhouseId.$customerId'
 
@@ -67,6 +68,12 @@ const AuthenticatedKundenverantwortungIndexRoute =
     path: '/kundenverantwortung/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedArbeitspaketKategorienIndexRoute =
+  AuthenticatedArbeitspaketKategorienIndexRouteImport.update({
+    id: '/arbeitspaket-kategorien/',
+    path: '/arbeitspaket-kategorien/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicAuthConfigRoute = ApiPublicAuthConfigRouteImport.update({
   id: '/api/public/auth-config',
   path: '/api/public/auth-config',
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
+  '/arbeitspaket-kategorien/': typeof AuthenticatedArbeitspaketKategorienIndexRoute
   '/kundenverantwortung/': typeof AuthenticatedKundenverantwortungIndexRoute
   '/meine-kunden/': typeof AuthenticatedMeineKundenIndexRoute
   '/meine-kunden/$systemhouseId/$customerId': typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
@@ -99,6 +107,7 @@ export interface FileRoutesByTo {
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
+  '/arbeitspaket-kategorien': typeof AuthenticatedArbeitspaketKategorienIndexRoute
   '/kundenverantwortung': typeof AuthenticatedKundenverantwortungIndexRoute
   '/meine-kunden': typeof AuthenticatedMeineKundenIndexRoute
   '/meine-kunden/$systemhouseId/$customerId': typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
@@ -113,6 +122,7 @@ export interface FileRoutesById {
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
+  '/_authenticated/arbeitspaket-kategorien/': typeof AuthenticatedArbeitspaketKategorienIndexRoute
   '/_authenticated/kundenverantwortung/': typeof AuthenticatedKundenverantwortungIndexRoute
   '/_authenticated/meine-kunden/': typeof AuthenticatedMeineKundenIndexRoute
   '/_authenticated/meine-kunden/$systemhouseId/$customerId': typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
+    | '/arbeitspaket-kategorien/'
     | '/kundenverantwortung/'
     | '/meine-kunden/'
     | '/meine-kunden/$systemhouseId/$customerId'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
+    | '/arbeitspaket-kategorien'
     | '/kundenverantwortung'
     | '/meine-kunden'
     | '/meine-kunden/$systemhouseId/$customerId'
@@ -152,6 +164,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
+    | '/_authenticated/arbeitspaket-kategorien/'
     | '/_authenticated/kundenverantwortung/'
     | '/_authenticated/meine-kunden/'
     | '/_authenticated/meine-kunden/$systemhouseId/$customerId'
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedKundenverantwortungIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/arbeitspaket-kategorien/': {
+      id: '/_authenticated/arbeitspaket-kategorien/'
+      path: '/arbeitspaket-kategorien'
+      fullPath: '/arbeitspaket-kategorien/'
+      preLoaderRoute: typeof AuthenticatedArbeitspaketKategorienIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/auth-config': {
       id: '/api/public/auth-config'
       path: '/api/public/auth-config'
@@ -251,6 +271,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedArbeitspaketKategorienIndexRoute: typeof AuthenticatedArbeitspaketKategorienIndexRoute
   AuthenticatedKundenverantwortungIndexRoute: typeof AuthenticatedKundenverantwortungIndexRoute
   AuthenticatedMeineKundenIndexRoute: typeof AuthenticatedMeineKundenIndexRoute
   AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute: typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
@@ -258,6 +279,8 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedArbeitspaketKategorienIndexRoute:
+    AuthenticatedArbeitspaketKategorienIndexRoute,
   AuthenticatedKundenverantwortungIndexRoute:
     AuthenticatedKundenverantwortungIndexRoute,
   AuthenticatedMeineKundenIndexRoute: AuthenticatedMeineKundenIndexRoute,

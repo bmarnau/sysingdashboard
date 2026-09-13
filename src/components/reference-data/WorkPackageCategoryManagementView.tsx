@@ -11,11 +11,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { ReferenceValue } from "@/lib/reference-data/types";
 import type {
   CreateWorkPackageCategoryInput,
   UpdateWorkPackageCategoryInput,
   WorkPackageCategoryManagementPayload,
+  WorkPackageCategoryManagementValue,
 } from "@/lib/reference-data/workpackage-category-management";
 
 export type WorkPackageCategoryManagementViewState =
@@ -33,7 +33,10 @@ interface Props {
   onDeactivate: (input: { systemhouseId: string; valueId: string }) => Promise<void> | void;
 }
 
-type EditState = { mode: "create" } | { mode: "edit"; value: ReferenceValue } | null;
+type EditState =
+  | { mode: "create" }
+  | { mode: "edit"; value: WorkPackageCategoryManagementValue }
+  | null;
 
 export function WorkPackageCategoryManagementView({
   state,
