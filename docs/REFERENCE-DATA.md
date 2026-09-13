@@ -1,6 +1,6 @@
 # Reference Data — allgemeiner Plattformdienst
 
-- **Status**: Architektur definiert (Sprint 07A, v1.51.0), Implementierung ab Sprint 07B
+- **Status**: Architektur definiert (Sprint 07A, v1.51.0), Implementierung ab Sprint 07B; Scope-Modell `global`/`systemhouse` seit BSF-03D (v1.62.0, Abschnitt 9)
 - **Architekturentscheidung**: [ADR-0024](./ADR/0024-avkk-und-reference-data.md)
 
 Reference Data ist ein **allgemeiner Plattformdienst** für alle Katalog- und
