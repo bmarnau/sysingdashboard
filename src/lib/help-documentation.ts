@@ -93,6 +93,59 @@ export const DASHBOARD_VERSION_HINT = `Engineer Console ${DASHBOARD_VERSION}`;
 
 const builtInTopics: HelpTopic[] = [
   {
+    id: "meine-kunden",
+    title: "Meine Kunden — Kundenverantwortung",
+    category: "Erfassung",
+    route: "/meine-kunden",
+    component: "MyCustomersView",
+    keywords: [
+      "Meine Kunden",
+      "Kunde",
+      "Kundenverantwortung",
+      "Verantwortlich",
+      "Systemhaus",
+      "Projekte",
+      "Arbeitspakete",
+      "Tätigkeiten",
+      "BSF-03",
+    ],
+    lastUpdated: "2026-09-13",
+    content: `## Wo finde ich „Meine Kunden“?
+Im Dashboard über die Schaltfläche **Meine Kunden** in der Bereichsleiste (Berechtigung
+\`dashboard.view\`). Die Seite listet ausschließlich Kunden, für die Sie fachlich
+verantwortlich sind **und** auf deren Datenraum Sie mindestens lesend zugreifen dürfen.
+
+## Wann erscheint ein Kunde?
+Nur wenn alle Bedingungen gleichzeitig erfüllt sind: aktives Konto, aktive
+Systemhaus-Zugehörigkeit, aktive Kundenverantwortung, Kundenzugriff (lesen oder
+schreiben) und die Basisberechtigung \`dashboard.view\`. Fehlt eine Bedingung, bleibt
+der Kunde unsichtbar — auch wenn eine Verantwortung eingetragen ist.
+
+## Was zeigt die Liste?
+Je Kunde sehen Sie den Kundenstatus, Ihren Verantwortungsstatus („Verantwortlich“) und
+den **Zugriffsindikator** aus Ihrem eigenen Kundenzugriff: **Nur Lesen** oder
+**Schreibzugriff**. Der Indikator ist eine Anzeige, keine Freischaltung.
+
+## Kundendetail
+Über einen Eintrag öffnen Sie den Kunden: Kopfzeile mit Name und Status, darunter ein
+Block mit **verantwortlichem Systemingenieur** (Sie selbst), Beginn Ihrer Verantwortung
+und Zugriffsindikator, anschließend die freigegebenen
+**Projekte → Arbeitspakete → Tätigkeiten** aus der gemeinsamen Serverdatenbasis.
+Elemente ohne auflösbare Zuordnung erscheinen sichtbar unter „ohne Zuordnung“. Die
+Ansicht ist **nur lesend**; Bearbeiten, Löschen oder Zuweisen gibt es hier bewusst nicht.
+
+## Verantwortung ist kein Schreibrecht
+Die Kundenverantwortung ist eine fachliche Beziehung und erweitert weder Rollen noch
+Schreibrechte. Auch bei angezeigtem „Schreibzugriff“ setzen Änderungen an Projekten,
+Arbeitspaketen oder Tätigkeiten weiterhin die jeweilige Fachberechtigung voraus.
+
+## Hinweise
+- „Kunde nicht verfügbar“ erscheint gleichermaßen für fremde, beendete oder unbekannte
+  Kunden; die Anwendung verrät nicht, ob eine ID existiert.
+- Die Vergabe und Beendigung von Kundenverantwortungen ist noch nicht Teil der
+  Oberfläche und erfolgt administrativ.`,
+  },
+  {
     id: "avkk-arbeitsplatz",
     title: "Mein AVKK — persönlicher Arbeitsplatz",
     category: "Fachmodell",
