@@ -42,3 +42,56 @@ describe("JSON-Schema — categoryKey", () => {
     expect(result.issues.some((i) => i.severity === "error")).toBe(false);
   });
 });
+
+describe("Import — Kategorie fail-safe", () => {
+  it("should_warnButKeepValue_when_categoryUnknownOrInactive", async () => {
+    const { JsonImportService } = await import("@/lib/json-import-service");
+    const doc = DashboardJsonExportSchema.parse({
+      schemaVersion: JSON_SCHEMA_VERSION,
+      exportedAt: new Date().toISOString(),
+      workPackages: [
+        { ...base, id: "wp-known", categoryKey: "netzwerk" },
+        { ...base, id: "wp-ghost", categoryKey: "ghost" },
+        { ...base, id: "wp-old", categoryKey: "legacy" },
+        { ...base, id: "wp-none" },
+      ],
+    });
+    const mk = (key: string, isActive: boolean) => ({
+      id: key,
+      catalogId: "c",
+      catalogKey: "workpackage.category",
+      key,
+      label: key,
+      description: "",
+      sortOrder: 0,
+      isActive,
+      isDefault: false,
+      parentValueId: null,
+      attributes: {},
+      validFrom: "2026-01-01",
+      validTo: null,
+      systemhouseId: "sh",
+    });
+    const plan = JsonImportService.buildPlan(doc, {
+      strategy: "merge",
+      categoryValues: [mk("netzwerk", true), mk("legacy", false)],
+    });
+    expect(plan.categoryReport.unknown).toEqual([{ workPackageId: "wp-ghost", key: "ghost" }]);
+    expect(plan.categoryReport.inactive).toEqual([{ workPackageId: "wp-old", key: "legacy" }]);
+    const ghost = plan.diffs.workPackages.find((d) => d.id === "wp-ghost");
+    expect(ghost?.incoming.categoryKey).toBe("ghost");
+    const none = plan.diffs.workPackages.find((d) => d.id === "wp-none");
+    expect(none?.incoming.categoryKey).toBeNull();
+  });
+
+  it("should_notWarn_when_noCatalogProvided", async () => {
+    const { JsonImportService } = await import("@/lib/json-import-service");
+    const doc = DashboardJsonExportSchema.parse({
+      schemaVersion: JSON_SCHEMA_VERSION,
+      exportedAt: new Date().toISOString(),
+      workPackages: [{ ...base, categoryKey: "ghost" }],
+    });
+    const plan = JsonImportService.buildPlan(doc);
+    expect(plan.categoryReport.warnings).toEqual([]);
+  });
+});
