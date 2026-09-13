@@ -68,6 +68,31 @@ Invarianten aus `scripts/check-rbac.mjs`:
 - `engineer` ohne `avkk.responsibility.assign`
 - `teamlead` und `projectmanager` mit `avkk.responsibility.assign`
 
+### Arbeitspaket-Kategorien (BSF-03D, Issue #103)
+
+Kategorien sind systemhausweite Referenzdaten im Katalog `workpackage.category`
+(Scope `systemhouse`). Es gelten zwei getrennte Handlungen:
+
+| Handlung                                          | erforderliche Berechtigung                           | Rollen (v1)                                              |
+| ------------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------- |
+| Kategorie am Arbeitspaket **auswählen**/entfernen | `workpackage.edit` + `referencedata.view` (Liste)    | sysadmin, admin, teamlead, projmgr, engineer (eigene AP) |
+| Kategorienkatalog **verwalten** (anlegen, Label ändern, deaktivieren/reaktivieren) | `referencedata.manage` | sysadmin, admin                                          |
+
+Zusätzliche Regeln:
+
+- Für systemhausbezogene Werte ist neben der Permission eine **aktive
+  Systemhaus-Membership** des Benutzers für genau dieses Systemhaus notwendig
+  (Lesen und Schreiben). Werte anderer Systemhäuser: **Cross-Systemhouse DENY**.
+- `viewer` und `customer` erhalten **keine** neuen Schreibrechte (Write DENY);
+  sie sehen Kategorien nur lesend im Rahmen von `referencedata.view`.
+- Kein Hard Delete und kein Rename des Keys: Kategorien werden deaktiviert; die
+  Key-Identität bleibt stabil.
+- Ausgeblendete Schaltflächen und Dialoge (UI-Gating) sind Benutzerführung,
+  **keine Sicherheitsgrenze**. Durchgesetzt werden diese Regeln serverseitig
+  durch RLS-Policies und Trigger (Live-Nachweis:
+  `docs/BSF-03D-VERIFICATION-2026-09-13.md`).
+
+
 ## Ressourcentypen (v2)
 
 | Typ                   | Zweck                                        | Beispiel-Scope                                          |
