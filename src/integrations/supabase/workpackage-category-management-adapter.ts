@@ -5,9 +5,9 @@ import type {
   DeactivateWorkPackageCategoryInput,
   UpdateWorkPackageCategoryInput,
   WorkPackageCategoryManagementRepository,
+  WorkPackageCategoryManagementValue,
   WorkPackageCategoryScope,
 } from "@/lib/reference-data/workpackage-category-management";
-import type { ReferenceValue } from "@/lib/reference-data/types";
 
 type UserSupabaseClient = SupabaseClient<Database>;
 
@@ -23,16 +23,11 @@ interface CatalogRow {
 
 interface ValueRow {
   id: string;
-  catalog_id: string;
   key: string;
   label: string;
   description: string;
   sort_order: number;
   is_active: boolean;
-  is_default: boolean;
-  parent_value_id: string | null;
-  attributes: unknown;
-  valid_from: string;
   valid_to: string | null;
   systemhouse_id: string | null;
 }
@@ -41,20 +36,15 @@ function fail(operation: string): never {
   throw new Error(`Arbeitspaket-Kategorien: ${operation} fehlgeschlagen.`);
 }
 
-function toValue(row: ValueRow): ReferenceValue {
+function toValue(row: ValueRow): WorkPackageCategoryManagementValue {
+  if (!row.systemhouse_id) fail("Tenant-Scope lesen");
   return {
     id: row.id,
-    catalogId: row.catalog_id,
-    catalogKey: "workpackage.category",
     key: row.key,
     label: row.label,
     description: row.description ?? "",
     sortOrder: row.sort_order,
     isActive: row.is_active,
-    isDefault: row.is_default,
-    parentValueId: row.parent_value_id,
-    attributes: (row.attributes as Record<string, unknown>) ?? {},
-    validFrom: row.valid_from,
     validTo: row.valid_to,
     systemhouseId: row.systemhouse_id,
   };
@@ -114,7 +104,7 @@ export function createSupabaseWorkPackageCategoryManagementRepository(
       const catalogRow = await catalog();
       const { data, error } = await supabase
         .from("reference_value")
-        .select("*")
+        .select("id,key,label,description,sort_order,is_active,valid_to,systemhouse_id")
         .eq("catalog_id", catalogRow.id)
         .eq("systemhouse_id", systemhouseId)
         .order("sort_order", { ascending: true })
