@@ -559,6 +559,37 @@ verändert.`,
     relatedTopics: ["projects", "reference-data", "import-export", "backup"],
   },
   {
+    id: "workpackage-categories-manage",
+    title: "Arbeitspaket-Kategorien verwalten",
+    category: "Verwaltung",
+    component: "WorkPackageCategoryDialog",
+    keywords: ["Kategorie", "Kategorien verwalten", "Stammdaten", "Systemhaus", "Referenzdaten verwalten"],
+    lastUpdated: "2026-09-13",
+    content: `## Aufruf
+Service-Menü → **Arbeitspaket-Kategorien**. Der Eintrag erscheint nur für
+Benutzer mit dem Recht „Referenzdaten verwalten" (Administration,
+Systemadministration).
+
+## Was Sie hier tun können
+- **Neue Kategorie anlegen**: Kennung und Anzeigename vergeben. Die Kennung
+  ist nach dem Anlegen fest; nur der Anzeigename kann später geändert werden.
+- **Anzeigename ändern**: Auswertungen bleiben stabil, weil die Kennung gleich
+  bleibt.
+- **Deaktivieren / Reaktivieren**: Deaktivierte Kategorien stehen in neuen
+  Arbeitspaketen nicht mehr zur Auswahl, bleiben aber an bestehenden
+  Arbeitspaketen sichtbar. Ein Löschen ist nicht vorgesehen.
+
+## Geltungsbereich
+Die Liste gilt für Ihr gesamtes Systemhaus, also für alle Kunden und Projekte
+gemeinsam. Kategorien anderer Systemhäuser sind nicht sichtbar. Neue
+Systemhäuser starten mit einer leeren Liste.
+
+## Hinweis
+Das Ausblenden des Menüeintrags dient der Übersicht; die eigentliche
+Berechtigungsprüfung erfolgt serverseitig.`,
+    relatedTopics: ["workpackage-categories", "reference-data", "rbac-rollen-berechtigungen"],
+  },
+  {
     id: "backend-admin",
     title: "Backend- und Auth-Administration",
     category: "Sicherheit",
