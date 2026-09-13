@@ -27,3 +27,9 @@
 - [x] Statischer Regressionstest (RED)
 - [x] previewAuthStorage.ts entfernen, client.ts Import/storage zurücksetzen
 - [x] Gates: targeted, Auth/Security-Tests, Typecheck, Lint/Prettier, Build
+
+## BSF-03D Paket V — DB-Verifikation (read-only, kein Commit/Deploy)
+- [x] Vorcheck Tabellen/Katalog/synthetische IDs
+- [x] SQL-Testartefakt T01–T16 in einer Transaktion mit ROLLBACK ausführen
+- [x] Live-Schema-Vertrag der Repo-Migration strukturell prüfen (keine DDL)
+- [x] Offizieller Security Advisor, BSF-03D-Delta gegen SEC-01-Baseline
