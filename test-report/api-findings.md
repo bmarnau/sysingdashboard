@@ -1,13 +1,13 @@
 # API Discovery — Findings
 
-Generated: 2026-08-13T04:48:06.367Z
+Generated: 2026-09-13T22:28:05.392Z
 Dashboard: 1.58.0 · Commit: 88cde9a
 
 ## Zusammenfassung
 
 - Endpoints: **3**
 - Unklassifiziert: **0**
-- Smoke passed / failed / skipped: **2** / **0** / **1**
+- Smoke passed / failed / skipped: **3** / **0** / **0**
 - Functional coverage complete / partial / missing: **0** / **2** / **1**
 
 ## MEDIUM (4)

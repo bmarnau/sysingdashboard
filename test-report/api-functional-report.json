@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-08-13T04:48:06.366Z",
+  "generatedAt": "2026-09-13T22:28:05.391Z",
   "dashboardVersion": "1.58.0",
   "commit": "88cde9a",
   "counts": {
@@ -14,12 +14,22 @@
   "results": [
     {
       "endpointId": "api-public-auth-config",
-      "path": "/api/public/auth-config",
-      "purpose": null,
+      "purpose": "(nicht dokumentiert)",
       "coverage": "missing",
+      "positive": false,
+      "negative": false,
+      "auth": false,
+      "authorization": false,
+      "scope": false,
+      "validation": false,
+      "errorHandling": false,
+      "sideEffects": false,
+      "idempotency": false,
+      "audit": false,
       "gaps": [
-        "no functional test executed"
-      ]
+        "Keine dokumentierte Functional-Coverage."
+      ],
+      "path": "/api/public/auth-config"
     },
     {
       "endpointId": "status",

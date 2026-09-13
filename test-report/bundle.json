@@ -1,8 +1,12 @@
 {
-  "generatedAt": "2026-08-13T04:47:20.049Z",
-  "totalSize": 11276269,
+  "generatedAt": "2026-09-13T22:25:29.140Z",
+  "totalSize": 11748046,
   "top": [
     {
+      "path": "client/assets/dashboard-wEfjl-8M.js",
+      "size": 1312594
+    },
+    {
       "path": "client/assets/pdf.worker.min-qwK7q_zL.mjs",
       "size": 1046214
     },
@@ -11,40 +15,28 @@
       "size": 777366
     },
     {
-      "path": "client/assets/index-CHkUw3H5.js",
-      "size": 665400
+      "path": "server/_ssr/dashboard-BwGRaC-B.mjs",
+      "size": 748459
+    },
+    {
+      "path": "client/assets/index-BPdrabOu.js",
+      "size": 667574
     },
     {
       "path": "server/_libs/docx.mjs",
       "size": 663422
     },
     {
-      "path": "server/_ssr/dashboard-ftenry-e.mjs",
-      "size": 611000
-    },
-    {
       "path": "server/_libs/react-dom.mjs",
       "size": 499250
-    },
-    {
-      "path": "client/assets/dashboard-CIaXziPg.js",
-      "size": 481316
     },
     {
       "path": "server/_libs/jspdf.mjs",
       "size": 476351
     },
     {
-      "path": "client/assets/PdfCanvasViewer-2t6efsQs.js",
-      "size": 426415
-    },
-    {
-      "path": "client/assets/jspdf.plugin.autotable-BQD1ZLIs.js",
-      "size": 410120
-    },
-    {
-      "path": "client/assets/ReportDialog-oGh9qlUn.js",
-      "size": 379857
+      "path": "client/assets/PdfCanvasViewer-dmWZ_B5R.js",
+      "size": 426743
     },
     {
       "path": "server/_libs/html2canvas.mjs",
@@ -55,74 +47,12 @@
       "size": 303226
     },
     {
-      "path": "server/_ssr/TechnicalReportDialog-QigRgn3k.mjs",
-      "size": 286670
+      "path": "server/_ssr/TechnicalReportDialog-D20t6kGr.mjs",
+      "size": 282719
     },
     {
-      "path": "client/assets/TechnicalReportDialog-DgOi84ft.js",
-      "size": 251091
-    }
-  ],
-  "all": [
-    {
-      "path": "client/assets/pdf.worker.min-qwK7q_zL.mjs",
-      "size": 1046214
-    },
-    {
-      "path": "server/_libs/pdfjs-dist.mjs",
-      "size": 777366
-    },
-    {
-      "path": "client/assets/index-CHkUw3H5.js",
-      "size": 665400
-    },
-    {
-      "path": "server/_libs/docx.mjs",
-      "size": 663422
-    },
-    {
-      "path": "server/_ssr/dashboard-ftenry-e.mjs",
-      "size": 611000
-    },
-    {
-      "path": "server/_libs/react-dom.mjs",
-      "size": 499250
-    },
-    {
-      "path": "client/assets/dashboard-CIaXziPg.js",
-      "size": 481316
-    },
-    {
-      "path": "server/_libs/jspdf.mjs",
-      "size": 476351
-    },
-    {
-      "path": "client/assets/PdfCanvasViewer-2t6efsQs.js",
-      "size": 426415
-    },
-    {
-      "path": "client/assets/jspdf.plugin.autotable-BQD1ZLIs.js",
-      "size": 410120
-    },
-    {
-      "path": "client/assets/ReportDialog-oGh9qlUn.js",
-      "size": 379857
-    },
-    {
-      "path": "server/_libs/html2canvas.mjs",
-      "size": 349462
-    },
-    {
-      "path": "server/_libs/supabase__auth-js.mjs",
-      "size": 303226
-    },
-    {
-      "path": "server/_ssr/TechnicalReportDialog-QigRgn3k.mjs",
-      "size": 286670
-    },
-    {
-      "path": "client/assets/TechnicalReportDialog-DgOi84ft.js",
-      "size": 251091
+      "path": "client/assets/TechnicalReportDialog-X71_3exQ.js",
+      "size": 248475
     },
     {
       "path": "client/assets/html2canvas.esm-DXEQVQnt.js",
@@ -130,15 +60,77 @@
     },
     {
       "path": "server/_libs/tanstack__router-core.mjs",
-      "size": 171406
+      "size": 171557
+    }
+  ],
+  "all": [
+    {
+      "path": "client/assets/dashboard-wEfjl-8M.js",
+      "size": 1312594
+    },
+    {
+      "path": "client/assets/pdf.worker.min-qwK7q_zL.mjs",
+      "size": 1046214
+    },
+    {
+      "path": "server/_libs/pdfjs-dist.mjs",
+      "size": 777366
+    },
+    {
+      "path": "server/_ssr/dashboard-BwGRaC-B.mjs",
+      "size": 748459
+    },
+    {
+      "path": "client/assets/index-BPdrabOu.js",
+      "size": 667574
+    },
+    {
+      "path": "server/_libs/docx.mjs",
+      "size": 663422
+    },
+    {
+      "path": "server/_libs/react-dom.mjs",
+      "size": 499250
+    },
+    {
+      "path": "server/_libs/jspdf.mjs",
+      "size": 476351
+    },
+    {
+      "path": "client/assets/PdfCanvasViewer-dmWZ_B5R.js",
+      "size": 426743
+    },
+    {
+      "path": "server/_libs/html2canvas.mjs",
+      "size": 349462
+    },
+    {
+      "path": "server/_libs/supabase__auth-js.mjs",
+      "size": 303226
+    },
+    {
+      "path": "server/_ssr/TechnicalReportDialog-D20t6kGr.mjs",
+      "size": 282719
+    },
+    {
+      "path": "client/assets/TechnicalReportDialog-X71_3exQ.js",
+      "size": 248475
+    },
+    {
+      "path": "client/assets/html2canvas.esm-DXEQVQnt.js",
+      "size": 201041
+    },
+    {
+      "path": "server/_libs/tanstack__router-core.mjs",
+      "size": 171557
     },
     {
       "path": "server/_libs/canvg.mjs",
       "size": 160855
     },
     {
-      "path": "client/assets/index.es-D-sjQNQA.js",
-      "size": 159029
+      "path": "client/assets/index.es-CRK_Jp5A.js",
+      "size": 159222
     },
     {
       "path": "server/_libs/core-js.mjs",
@@ -153,40 +145,48 @@
       "size": 106075
     },
     {
-      "path": "server/_libs/supabase__storage-js.mjs",
-      "size": 102336
+      "path": "client/assets/styles-AucyTvqE.css",
+      "size": 102953
     },
     {
-      "path": "client/assets/styles-S17H9Aie.css",
-      "size": 101843
+      "path": "server/_libs/supabase__storage-js.mjs",
+      "size": 102336
     },
     {
       "path": "server/_libs/tailwind-merge.mjs",
       "size": 99205
     },
     {
-      "path": "server/_ssr/ImportExportDialog-BFs5Z-Fq.mjs",
-      "size": 80135
+      "path": "server/_ssr/ImportExportDialog-BSiowUwJ.mjs",
+      "size": 80805
     },
     {
       "path": "server/_libs/supabase__realtime-js.mjs",
       "size": 78463
     },
     {
+      "path": "server/_ssr/DevDiaryDialog-BbJG3783.mjs",
+      "size": 68452
+    },
+    {
+      "path": "server/_ssr/server-C9Ff3AE5.mjs",
+      "size": 67679
+    },
+    {
+      "path": "server/_libs/dompurify.mjs",
+      "size": 66814
+    },
+    {
       "path": "server/_libs/jspdf-autotable.mjs",
       "size": 66290
     },
     {
-      "path": "server/_libs/dompurify.mjs",
-      "size": 63289
+      "path": "client/assets/DevDiaryDialog-DpIvtNSc.js",
+      "size": 62734
     },
     {
       "path": "server/_libs/pako.mjs",
       "size": 59512
-    },
-    {
-      "path": "server/_ssr/server-By8S6ptd.mjs",
-      "size": 57988
     },
     {
       "path": "server/_libs/sonner.mjs",
@@ -205,28 +205,24 @@
       "size": 52285
     },
     {
-      "path": "server/_ssr/ExportDialog-D1Z27q27.mjs",
-      "size": 50336
+      "path": "server/_ssr/ExportDialog-DGZDApUC.mjs",
+      "size": 50683
     },
     {
-      "path": "server/_ssr/ReportDialog-BVznSB7e.mjs",
-      "size": 50271
+      "path": "client/assets/ImportExportDialog-4Hw1O0cd.js",
+      "size": 49927
     },
     {
-      "path": "client/assets/ImportExportDialog-Caf6ywmM.js",
-      "size": 49619
-    },
-    {
-      "path": "client/assets/select-wqtpCtpS.js",
-      "size": 49171
+      "path": "client/assets/select-oBjUsq7m.js",
+      "size": 49232
     },
     {
       "path": "server/_libs/seroval.mjs",
       "size": 48446
     },
     {
-      "path": "server/_ssr/router-CeNW-h88.mjs",
-      "size": 45783
+      "path": "server/_ssr/router-BEz28B-b.mjs",
+      "size": 48321
     },
     {
       "path": "server/_libs/react-pdf.mjs",
@@ -237,48 +233,52 @@
       "size": 42541
     },
     {
-      "path": "server/_ssr/DevDiaryDialog-DNv6clw9.mjs",
-      "size": 39165
+      "path": "server/_ssr/AzureDataDialog-9QS6aRWE.mjs",
+      "size": 39208
     },
     {
-      "path": "server/_ssr/AzureDataDialog-C2X0lBhX.mjs",
-      "size": 38594
-    },
-    {
-      "path": "client/assets/DevDiaryDialog-DQ6aqRr-.js",
-      "size": 33589
+      "path": "server/_ssr/DemoDataDialog-BNI34rMV.mjs",
+      "size": 36770
     },
     {
       "path": "server/_libs/supabase__supabase-js.mjs",
       "size": 33291
     },
     {
-      "path": "client/assets/button-KHZEZIOH.js",
-      "size": 31743
+      "path": "server/_ssr/UserManualDialog-BdG_pgyD.mjs",
+      "size": 30791
     },
     {
-      "path": "server/_ssr/UserManualDialog-CoL-r6TF.mjs",
-      "size": 30397
-    },
-    {
-      "path": "server/_ssr/PerformanceReport-D1Alxi8K.mjs",
-      "size": 29573
-    },
-    {
-      "path": "server/_ssr/DemoDataDialog-bBNEmLHD.mjs",
-      "size": 29220
-    },
-    {
-      "path": "client/assets/purify.es-Ddytg4bZ.js",
-      "size": 27883
+      "path": "server/_ssr/PerformanceReport-BhAlL2CZ.mjs",
+      "size": 29977
     },
     {
       "path": "server/_libs/lucide-react.mjs",
-      "size": 26617
+      "size": 29559
     },
     {
-      "path": "client/assets/ExportDialog-BDt1KAau.js",
-      "size": 26401
+      "path": "client/assets/purify.es-Cz4mVeUR.js",
+      "size": 28978
+    },
+    {
+      "path": "server/index.mjs",
+      "size": 28513
+    },
+    {
+      "path": "server/_ssr/SystemStatusDialog-DzxzpKur.mjs",
+      "size": 27684
+    },
+    {
+      "path": "client/assets/utils-DCADjnpI.js",
+      "size": 27547
+    },
+    {
+      "path": "client/assets/dialog-8hwCifvm.js",
+      "size": 27428
+    },
+    {
+      "path": "client/assets/ExportDialog-B1iKZn1u.js",
+      "size": 26631
     },
     {
       "path": "server/_libs/fflate.mjs",
@@ -289,32 +289,32 @@
       "size": 25981
     },
     {
-      "path": "server/_ssr/LogViewerDialog-C2r1z_GJ.mjs",
-      "size": 25609
+      "path": "server/_ssr/LogViewerDialog-BziGPhP0.mjs",
+      "size": 25538
     },
     {
       "path": "server/_libs/fast-png.mjs",
       "size": 25111
     },
     {
-      "path": "server/_ssr/SystemStatusDialog-BUfkbdba.mjs",
-      "size": 25051
-    },
-    {
-      "path": "server/index.mjs",
-      "size": 24746
-    },
-    {
       "path": "server/_libs/floating-ui__core.mjs",
       "size": 24058
     },
     {
-      "path": "server/_ssr/UserManagementDialog-HYBI6NR7.mjs",
-      "size": 23506
+      "path": "server/_ssr/UserManagementDialog-BAGti26T.mjs",
+      "size": 23902
     },
     {
-      "path": "server/_ssr/WorkingTimeModelsDialog-DMaP67BH.mjs",
-      "size": 22636
+      "path": "server/_ssr/WorkingTimeModelsDialog-B5UWTq1H.mjs",
+      "size": 23032
+    },
+    {
+      "path": "client/assets/DemoDataDialog-BXSoffH5.js",
+      "size": 22596
+    },
+    {
+      "path": "server/_ssr/index-CiGf5cYF.mjs",
+      "size": 21356
     },
     {
       "path": "server/_libs/floating-ui__dom.mjs",
@@ -325,52 +325,60 @@
       "size": 20243
     },
     {
-      "path": "client/assets/AzureDataDialog-Jsz7vpEr.js",
-      "size": 19740
+      "path": "client/assets/AzureDataDialog-BjBJWKO3.js",
+      "size": 20042
     },
     {
-      "path": "client/assets/DemoDataDialog-DXLs2nEf.js",
-      "size": 18158
+      "path": "server/_ssr/BackendAdminDialog-DKS5wTt3.mjs",
+      "size": 17744
     },
     {
       "path": "server/_libs/iobuffer.mjs",
       "size": 17215
     },
     {
-      "path": "server/_ssr/DownloadCenterDialog-BGoq-CPW.mjs",
-      "size": 16757
+      "path": "server/_ssr/DownloadCenterDialog-CXAqictS.mjs",
+      "size": 17104
+    },
+    {
+      "path": "server/_systemhouseId._customerId-BKxtULdd.mjs",
+      "size": 16041
+    },
+    {
+      "path": "client/assets/UserManualDialog-9Xr35XWw.js",
+      "size": 15823
     },
     {
       "path": "server/_libs/iceberg-js.mjs",
       "size": 15696
     },
     {
-      "path": "client/assets/UserManualDialog-BNCvFwLu.js",
-      "size": 15576
+      "path": "client/assets/PerformanceReport-EpjTe2m_.js",
+      "size": 15248
     },
     {
-      "path": "server/_ssr/pdf-export-CPAevH9A.mjs",
-      "size": 15393
+      "path": "server/_ssr/BackupDialog-DzymI_qm.mjs",
+      "size": 14761
     },
     {
-      "path": "client/assets/PerformanceReport-BMO5lulD.js",
-      "size": 15001
-    },
-    {
-      "path": "server/_ssr/BackupDialog-Br3kFhPi.mjs",
-      "size": 14354
-    },
-    {
-      "path": "server/_ssr/SaveTargetDialog-DGhkqtUy.mjs",
-      "size": 14347
+      "path": "server/_ssr/SaveTargetDialog-Cc4bz-6L.mjs",
+      "size": 14745
     },
     {
       "path": "server/_libs/h3.mjs",
       "size": 14337
     },
     {
-      "path": "server/_ssr/auth-CzTMGmyb.mjs",
-      "size": 13803
+      "path": "server/_ssr/auth-CAbXwWjs.mjs",
+      "size": 13834
+    },
+    {
+      "path": "server/_ssr/WorkPackageCategoryDialog-RJcooyI5.mjs",
+      "size": 13681
+    },
+    {
+      "path": "client/assets/SystemStatusDialog-Dbte8Hta.js",
+      "size": 13575
     },
     {
       "path": "server/_libs/radix-ui__react-radio-group.mjs",
@@ -385,20 +393,20 @@
       "size": 13344
     },
     {
-      "path": "client/assets/UserManagementDialog-D3H7J-4R.js",
-      "size": 13008
+      "path": "client/assets/UserManagementDialog-BbMarcCS.js",
+      "size": 13110
+    },
+    {
+      "path": "server/_ssr/pdf-export-qy-vQCqS.mjs",
+      "size": 13031
     },
     {
       "path": "server/_libs/@radix-ui/react-dismissable-layer+[...].mjs",
       "size": 12990
     },
     {
-      "path": "client/assets/SystemStatusDialog-Bl-SvsJz.js",
-      "size": 12838
-    },
-    {
-      "path": "client/assets/LogViewerDialog-Cp14n8Pb.js",
-      "size": 12401
+      "path": "client/assets/LogViewerDialog-DJuSD3R8.js",
+      "size": 12641
     },
     {
       "path": "server/_libs/supabase__functions-js.mjs",
@@ -409,16 +417,28 @@
       "size": 11474
     },
     {
-      "path": "server/_ssr/route-BN5XkHG3.mjs",
-      "size": 10714
+      "path": "client/assets/WorkingTimeModelsDialog-D_mwYyWS.js",
+      "size": 10952
     },
     {
-      "path": "client/assets/WorkingTimeModelsDialog-_yfzxZJ5.js",
-      "size": 10705
+      "path": "server/_ssr/route-XB3KtHhc.mjs",
+      "size": 10745
+    },
+    {
+      "path": "server/_ssr/auth-accounts.functions-Bl18OG2g.mjs",
+      "size": 10406
+    },
+    {
+      "path": "server/_ssr/formatters-D9cRkf5g.mjs",
+      "size": 10391
     },
     {
       "path": "server/_libs/h3-v2.mjs",
       "size": 10001
+    },
+    {
+      "path": "client/assets/index-IHyJnpWf.js",
+      "size": 9796
     },
     {
       "path": "server/_libs/stackblur-canvas.mjs",
@@ -433,143 +453,215 @@
       "size": 9466
     },
     {
+      "path": "client/assets/_systemhouseId._customerId-Dujw6vFL.js",
+      "size": 9399
+    },
+    {
       "path": "client/assets/PdfCanvasViewer-Bmh-SCti.css",
       "size": 9068
+    },
+    {
+      "path": "server/_ssr/PdfPreviewDialog-BCWD9WFQ.mjs",
+      "size": 8966
+    },
+    {
+      "path": "client/assets/DownloadCenterDialog-6F_1ePPI.js",
+      "size": 8794
     },
     {
       "path": "server/_libs/radix-ui__react-checkbox.mjs",
       "size": 8650
     },
     {
-      "path": "server/_ssr/PdfPreviewDialog-YR4j6qen.mjs",
-      "size": 8569
-    },
-    {
       "path": "server/_libs/rgbcolor.mjs",
       "size": 8530
-    },
-    {
-      "path": "client/assets/DownloadCenterDialog-BE7DTumy.js",
-      "size": 8450
     },
     {
       "path": "server/_libs/floating-ui__react-dom.mjs",
       "size": 8421
     },
     {
-      "path": "client/assets/pdf-export-BK-fOjG5.js",
-      "size": 8083
+      "path": "client/assets/pdf-export-Ccqr-oAD.js",
+      "size": 8281
+    },
+    {
+      "path": "client/assets/BackendAdminDialog-Ct240mFy.js",
+      "size": 8203
+    },
+    {
+      "path": "server/_ssr/index-DdoIoxT1.mjs",
+      "size": 8127
     },
     {
       "path": "server/_libs/radix-ui__react-focus-scope.mjs",
       "size": 8072
     },
     {
+      "path": "server/_ssr/shared-projection-adapter-DoWOEkVr.mjs",
+      "size": 7894
+    },
+    {
+      "path": "server/_ssr/primitives-DI0y8yqa.mjs",
+      "size": 7340
+    },
+    {
       "path": "server/_libs/radix-ui__react-switch.mjs",
       "size": 7210
     },
     {
-      "path": "client/assets/BackupDialog-BX_k5Dsa.js",
-      "size": 6915
+      "path": "client/assets/BackupDialog-CgFTbtym.js",
+      "size": 7116
+    },
+    {
+      "path": "server/_ssr/TextPreviewDialog-1xpzkvB7.mjs",
+      "size": 6990
     },
     {
       "path": "server/_libs/unenv.mjs",
       "size": 6913
     },
     {
-      "path": "client/assets/tabs-CbPZw7X2.js",
-      "size": 6702
+      "path": "client/assets/tabs-mZHsv1C0.js",
+      "size": 6735
     },
     {
-      "path": "server/_ssr/TextPreviewDialog-DcLEeocV.mjs",
-      "size": 6643
-    },
-    {
-      "path": "client/assets/auth-Dhz-QvIu.js",
-      "size": 6556
+      "path": "client/assets/auth-kvaY1BM6.js",
+      "size": 6612
     },
     {
       "path": "server/_libs/radix-ui__react-tabs.mjs",
       "size": 6488
     },
     {
-      "path": "client/assets/SaveTargetDialog-CY-PsDlp.js",
-      "size": 6452
+      "path": "server/_ssr/auth-accounts.server-7b3VzJ0n.mjs",
+      "size": 6466
     },
     {
-      "path": "server/_ssr/PdfCanvasViewer-CP1tpyXP.mjs",
-      "size": 6405
+      "path": "server/_ssr/PdfCanvasViewer-ChIIocbk.mjs",
+      "size": 6436
     },
     {
-      "path": "server/_ssr/export-download-service-CHppR-AT.mjs",
-      "size": 6277
+      "path": "client/assets/SaveTargetDialog-AifBvra5.js",
+      "size": 6417
+    },
+    {
+      "path": "server/_ssr/customer-responsibility-management.functions-BaSYO49Q.mjs",
+      "size": 6065
     },
     {
       "path": "server/_libs/tanstack__history.mjs",
       "size": 5991
     },
     {
+      "path": "client/assets/WorkPackageCategoryDialog-A4HiN5ep.js",
+      "size": 5927
+    },
+    {
       "path": "server/_libs/radix-ui__react-presence.mjs",
       "size": 5711
     },
     {
-      "path": "server/_ssr/select-BMxB0edH.mjs",
-      "size": 5493
+      "path": "client/assets/formatters-D4s0JOrq.js",
+      "size": 5594
+    },
+    {
+      "path": "server/_ssr/select-B91GfZkm.mjs",
+      "size": 5492
     },
     {
       "path": "server/_libs/radix-ui__react-slot.mjs",
       "size": 5334
     },
     {
-      "path": "server/_ssr/index-BtPaRzAC.mjs",
-      "size": 4815
+      "path": "client/assets/primitives-B2bDu19q.js",
+      "size": 5258
     },
     {
-      "path": "client/assets/index-DCdncTrO.js",
+      "path": "server/_ssr/my-customers.functions-ByYUM5Mq.mjs",
+      "size": 5003
+    },
+    {
+      "path": "server/_ssr/index-wE2zBDYu.mjs",
+      "size": 4846
+    },
+    {
+      "path": "client/assets/index-1D9NGarB.js",
       "size": 4752
     },
     {
-      "path": "client/assets/route-Cx6_ugSu.js",
-      "size": 4724
+      "path": "client/assets/route-CMsIdjRJ.js",
+      "size": 4752
     },
     {
-      "path": "server/_ssr/env-check-D130ZkEd.mjs",
+      "path": "client/assets/PdfPreviewDialog-CxSzN30_.js",
+      "size": 4567
+    },
+    {
+      "path": "client/assets/auth-middleware-D5LO0-sK.js",
+      "size": 4410
+    },
+    {
+      "path": "server/_ssr/env-check-Bim6NOvW.mjs",
       "size": 4221
+    },
+    {
+      "path": "client/assets/button-CX3Pnqtg.js",
+      "size": 4190
+    },
+    {
+      "path": "server/_ssr/my-customers-adapter-zp9LlhTi.mjs",
+      "size": 4189
+    },
+    {
+      "path": "client/assets/index-C6XRND1c.js",
+      "size": 4156
     },
     {
       "path": "server/_libs/aria-hidden.mjs",
       "size": 4059
     },
     {
-      "path": "client/assets/PdfPreviewDialog-CeYIrnGl.js",
-      "size": 4029
+      "path": "server/_ssr/logout-service-CaUvkbXR.mjs",
+      "size": 4006
     },
     {
-      "path": "server/_ssr/logout-service-f0tBFmoz.mjs",
-      "size": 4006
+      "path": "server/_ssr/customer-responsibility-management-adapter-B1iD--1j.mjs",
+      "size": 3994
     },
     {
       "path": "server/_ssr/index.mjs",
       "size": 3988
     },
     {
+      "path": "client/assets/checkbox-BqK4gYZL.js",
+      "size": 3983
+    },
+    {
       "path": "server/_libs/react-remove-scroll-bar.mjs",
       "size": 3956
     },
     {
-      "path": "client/assets/checkbox-BmvAbawL.js",
-      "size": 3950
+      "path": "server/_ssr/my-customers-T5gJPeUV.mjs",
+      "size": 3920
     },
     {
       "path": "server/_ssr/client-B83F2o-4.mjs",
       "size": 3900
     },
     {
-      "path": "server/_ssr/idle-config-BJfJwIfb.mjs",
+      "path": "server/_ssr/idle-config-BvuVYMQZ.mjs",
       "size": 3735
     },
     {
-      "path": "client/assets/triangle-alert-B4NwBwmy.js",
+      "path": "server/_ssr/dialog-DAFZrS93.mjs",
+      "size": 3656
+    },
+    {
+      "path": "server/_tanstack-start-manifest_v-CHwoJy3m.mjs",
+      "size": 3432
+    },
+    {
+      "path": "client/assets/triangle-alert-Li3Urm8m.js",
       "size": 3431
     },
     {
@@ -581,16 +673,28 @@
       "size": 3222
     },
     {
-      "path": "client/assets/export-download-service-3RFNHbst.js",
-      "size": 3201
+      "path": "server/_ssr/reset-password-D5xsuo4Q.mjs",
+      "size": 3207
     },
     {
-      "path": "server/_ssr/reset-password-DvgG0S7X.mjs",
-      "size": 3176
+      "path": "server/_ssr/CustomerPageShell-CTNNx1vi.mjs",
+      "size": 3147
     },
     {
-      "path": "server/_ssr/start-DjaYmio1.mjs",
-      "size": 2689
+      "path": "server/_ssr/auth-accounts.functions-jtVXFJk5.mjs",
+      "size": 3051
+    },
+    {
+      "path": "server/_ssr/auth-middleware-BrYIvD_F.mjs",
+      "size": 2960
+    },
+    {
+      "path": "server/_ssr/customer-badges-DPotVBQp.mjs",
+      "size": 2856
+    },
+    {
+      "path": "server/_ssr/start-CTBtQEXZ.mjs",
+      "size": 2832
     },
     {
       "path": "server/_libs/use-sidecar.mjs",
@@ -613,8 +717,16 @@
       "size": 2442
     },
     {
-      "path": "client/assets/env-check-C-GuIBYJ.js",
+      "path": "client/assets/env-check-764cijrf.js",
       "size": 2435
+    },
+    {
+      "path": "client/assets/CustomerPageShell-BxVEjB4a.js",
+      "size": 2365
+    },
+    {
+      "path": "client/assets/TextPreviewDialog-Bx_MuhFB.js",
+      "size": 2332
     },
     {
       "path": "server/_libs/@radix-ui/react-use-controllable-state+[...].mjs",
@@ -625,12 +737,8 @@
       "size": 2247
     },
     {
-      "path": "client/assets/index-DDUwcHFh.js",
-      "size": 2166
-    },
-    {
-      "path": "client/assets/TextPreviewDialog-C3RmomEu.js",
-      "size": 2141
+      "path": "client/assets/index-DFxNVRxS.js",
+      "size": 2199
     },
     {
       "path": "server/_libs/class-variance-authority.mjs",
@@ -645,16 +753,20 @@
       "size": 2078
     },
     {
-      "path": "client/assets/idle-config-BQ7qZmI0.js",
+      "path": "client/assets/constants-C2eEdR0L.js",
+      "size": 2057
+    },
+    {
+      "path": "client/assets/idle-config-C2f21B0i.js",
       "size": 1969
     },
     {
-      "path": "server/_ssr/button-Cz8PAkJh.mjs",
-      "size": 1875
+      "path": "client/assets/customer-badges-DGa69J99.js",
+      "size": 1781
     },
     {
-      "path": "server/_ssr/card-DHzT6xna.mjs",
-      "size": 1781
+      "path": "server/_ssr/card-DCDRzI6q.mjs",
+      "size": 1780
     },
     {
       "path": "server/_ssr/logger.indexeddb-B_YKqPea.mjs",
@@ -665,24 +777,24 @@
       "size": 1749
     },
     {
-      "path": "server/_ssr/tabs-Cdo7TSxH.mjs",
-      "size": 1702
+      "path": "server/_ssr/button-TjZkfKyC.mjs",
+      "size": 1746
+    },
+    {
+      "path": "server/_ssr/tabs-fMRf3trd.mjs",
+      "size": 1701
     },
     {
       "path": "server/_libs/react-style-singleton.mjs",
       "size": 1672
     },
     {
-      "path": "server/_tanstack-start-manifest_v-DlTKNafQ.mjs",
-      "size": 1579
+      "path": "server/_ssr/constants-CAcAtDzG.mjs",
+      "size": 1632
     },
     {
       "path": "server/_libs/performance-now.mjs",
       "size": 1536
-    },
-    {
-      "path": "client/assets/label-DJxrDn3O.js",
-      "size": 1490
     },
     {
       "path": "server/_libs/seroval-plugins.mjs",
@@ -693,28 +805,32 @@
       "size": 1456
     },
     {
-      "path": "client/assets/useSystemStatusHealth-D8N5aaiE.js",
+      "path": "client/assets/useSystemStatusHealth-D7H0ud55.js",
       "size": 1379
     },
     {
-      "path": "client/assets/index-Ba3OJZmn.js",
+      "path": "client/assets/index-COkgNpcP.js",
       "size": 1329
     },
     {
-      "path": "server/_ssr/label-B3OpQAUx.mjs",
-      "size": 1319
+      "path": "server/_ssr/label-4pBKAOFV.mjs",
+      "size": 1318
     },
     {
       "path": "server/_libs/radix-ui__react-use-size.mjs",
       "size": 1264
     },
     {
+      "path": "client/assets/reset-password-ChCR2YAf.js",
+      "size": 1217
+    },
+    {
       "path": "server/_libs/hookable.mjs",
       "size": 1177
     },
     {
-      "path": "client/assets/reset-password-Beta0fNL.js",
-      "size": 1161
+      "path": "client/assets/label-CdQMG2Ay.js",
+      "size": 1123
     },
     {
       "path": "server/_libs/radix-ui__react-primitive.mjs",
@@ -725,16 +841,20 @@
       "size": 1075
     },
     {
-      "path": "server/_ssr/checkbox-DcDI1Sw7.mjs",
-      "size": 1070
+      "path": "server/_ssr/checkbox-Bd1q64ph.mjs",
+      "size": 1069
     },
     {
-      "path": "server/_ssr/badge-B5fVHV-F.mjs",
-      "size": 1042
+      "path": "server/_ssr/badge-DyfXZgLs.mjs",
+      "size": 1041
     },
     {
-      "path": "client/assets/card-BL5jfhoG.js",
-      "size": 1019
+      "path": "client/assets/card-B6CzQXNK.js",
+      "size": 1018
+    },
+    {
+      "path": "client/assets/auth-accounts.functions-DoYZ5OPo.js",
+      "size": 973
     },
     {
       "path": "server/_libs/radix-ui__react-compose-refs.mjs",
@@ -753,11 +873,11 @@
       "size": 848
     },
     {
-      "path": "client/assets/badge-CW3Q1d6b.js",
-      "size": 755
+      "path": "client/assets/badge-CFOL2UVc.js",
+      "size": 788
     },
     {
-      "path": "client/assets/index-DrppVWsw.js",
+      "path": "client/assets/index-UQLr8N3u.js",
       "size": 727
     },
     {
@@ -777,8 +897,16 @@
       "size": 667
     },
     {
+      "path": "client/assets/users-DZTTf8Nf.js",
+      "size": 651
+    },
+    {
       "path": "server/_ssr/locale-nYp7ZH4v.mjs",
       "size": 533
+    },
+    {
+      "path": "client/assets/index-CPTtP7eb.js",
+      "size": 530
     },
     {
       "path": "server/_chunks/ssr-renderer.mjs",
@@ -797,8 +925,16 @@
       "size": 463
     },
     {
+      "path": "server/_ssr/createSsrRpc-B0O9djO1.mjs",
+      "size": 435
+    },
+    {
       "path": "server/_libs/warning.mjs",
       "size": 417
+    },
+    {
+      "path": "client/assets/shield-off-BK1-nSnv.js",
+      "size": 410
     },
     {
       "path": "server/_libs/radix-ui__react-use-previous.mjs",
@@ -809,7 +945,7 @@
       "size": 381
     },
     {
-      "path": "client/assets/shield-alert-DvLDNMBj.js",
+      "path": "client/assets/shield-alert-C9Cv9ADK.js",
       "size": 363
     },
     {
@@ -821,11 +957,11 @@
       "size": 338
     },
     {
-      "path": "client/assets/users-D7QBN-G_.js",
-      "size": 316
+      "path": "server/_ssr/createServerRpc-BehHcRm4.mjs",
+      "size": 313
     },
     {
-      "path": "client/assets/locale-BQIpv-2i.js",
+      "path": "client/assets/locale-14aQhQ6V.js",
       "size": 309
     },
     {
@@ -833,28 +969,40 @@
       "size": 280
     },
     {
-      "path": "client/assets/archive-DlWKglIW.js",
+      "path": "client/assets/archive-CRhh6lz6.js",
       "size": 263
     },
     {
-      "path": "client/assets/external-link-Cbp-TmY9.js",
+      "path": "client/assets/external-link-S7acZF70.js",
       "size": 261
     },
     {
-      "path": "client/assets/minimize-2-566IZZLt.js",
+      "path": "client/assets/eye-D8Ar71GX.js",
+      "size": 261
+    },
+    {
+      "path": "client/assets/minimize-2-Hbvazvye.js",
       "size": 250
     },
     {
-      "path": "client/assets/maximize-2-r_B-_ZPm.js",
+      "path": "client/assets/maximize-2-DDQrArVW.js",
       "size": 248
     },
     {
-      "path": "client/assets/copy-BpXCE-S7.js",
+      "path": "client/assets/copy-adpI3YAa.js",
       "size": 241
     },
     {
-      "path": "client/assets/circle-x-BflQzT8A.js",
+      "path": "client/assets/circle-x-D_t2-7qc.js",
       "size": 212
+    },
+    {
+      "path": "client/assets/lock-DKqYOB_T.js",
+      "size": 211
+    },
+    {
+      "path": "client/assets/rotate-ccw-DOpcVFY0.js",
+      "size": 210
     },
     {
       "path": "server/_libs/rou3.mjs",
@@ -865,6 +1013,10 @@
       "size": 204
     },
     {
+      "path": "server/_ssr/utils-H80jjgLf.mjs",
+      "size": 188
+    },
+    {
       "path": "server/_libs/tiny-invariant.mjs",
       "size": 177
     },
@@ -873,7 +1025,7 @@
       "size": 174
     },
     {
-      "path": "client/assets/cloud-fsPLEJ-Q.js",
+      "path": "client/assets/cloud-DGdC29F6.js",
       "size": 170
     },
     {
@@ -881,15 +1033,11 @@
       "size": 160
     },
     {
-      "path": "client/assets/loader-circle-DVNOSbSp.js",
-      "size": 149
-    },
-    {
-      "path": "client/assets/chevron-right-DpVxB1tS.js",
+      "path": "client/assets/chevron-right-BX1WbXyV.js",
       "size": 140
     },
     {
-      "path": "client/assets/chevron-up-BHZQhXtn.js",
+      "path": "client/assets/chevron-up-CT3TLNsd.js",
       "size": 138
     },
     {
@@ -897,7 +1045,7 @@
       "size": 132
     },
     {
-      "path": "client/assets/check-1aB6OThz.js",
+      "path": "client/assets/check-BhPwh-R9.js",
       "size": 129
     },
     {
