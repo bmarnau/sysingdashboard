@@ -1,0 +1,15 @@
+# Roadmap
+
+## BSF-03D (#103) Arbeitspaket-Kategorien
+- [ ] Basis gegen GitHub main b90f93c prüfen
+- [ ] Idempotente Repo-Migration für Reference-Data-Systemhouse-Scope (DB-Drift schließen)
+- [ ] Reference-Data-Vertrag: scopeType/systemhouseId, CATALOG_KEYS.workPackageCategory (TDD)
+- [ ] WorkPackage.categoryKey + Resolver-Modul (TDD)
+- [ ] JSON-Schema 1.2.0 / Import-Fail-Safe / Export (TDD)
+- [ ] Backup/Restore Kategorie-Referenz fail-safe (TDD)
+- [ ] WorkPackageDialog Kategorie-Select + A11y-Test
+- [ ] Kategorien-Verwaltungsdialog (referencedata.manage), Systemhaus-Scope
+- [ ] SQL-Testartefakt D01–D08 (Rollback) + Advisor
+- [ ] E2E AP-Kategorie + Viewer-DENY
+- [ ] Gates: typecheck, lint, prettier, vitest, a11y, security, debt, docs, build, e2e
+- [ ] Doku: REFERENCE-DATA, DATA-SCHEMA, RBAC, Help, CHANGELOG 1.62.0, CURRENT-STATUS, Nachweis
