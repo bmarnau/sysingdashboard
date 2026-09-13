@@ -1,14 +1,14 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-08-25
+Stand: 2026-09-13
 
 ## Zweck
 
-Dieses Dokument benennt die aktuell maßgeblichen Status- und Abnahmequellen. Ältere Sprint-, Planungs- und Release-Candidate-Dokumente bleiben als historische Evidenz erhalten, sind aber für Aussagen zum heutigen F-11-/MVP-Abnahmestand nachrangig.
+Dieses Dokument benennt die aktuell maßgeblichen Status- und Abnahmequellen. Ältere Sprint-, Planungs- und Release-Candidate-Dokumente bleiben als historische Evidenz erhalten, sind aber für Aussagen zum aktuellen BSF-Stand nachrangig.
 
 ## Aktuelle Referenzen
 
-Für den F-11-/MVP-Abschluss gelten in dieser Reihenfolge:
+Für den F-11-/MVP-Abschluss gelten weiterhin in dieser Reihenfolge:
 
 1. `docs/F11-MVP-CONSOLIDATION-2026-08-24.md`
 2. `docs/ROLE-ACCEPTANCE-09C-FINAL-2026-08-24.md`
@@ -19,29 +19,77 @@ Für den F-11-/MVP-Abschluss gelten in dieser Reihenfolge:
 
 Für den laufenden BSF-Ausbau gelten zusätzlich:
 
-1. `docs/BSF-CURRENT-PRIORITIES.md` — operative Reihenfolge und Lovable-Einsatz,
+1. `docs/BSF-CURRENT-PRIORITIES.md` — operative Reihenfolge und aktueller Wiederanlaufpunkt,
 2. `docs/SPRINT-PLAN-MVP-BSF.md` — operative Sprintfolge,
-3. `docs/BSF-01-ARCHITECTURE-BASELINE.md` — Architektur-Baseline,
-4. `docs/ADR/0029-systemhouse-customer-scope.md` — kanonischer Systemhaus-/Customer-Scope,
-5. `docs/BSF-CONCEPT-REGISTER.md` — gesicherte fachliche Entscheidungen,
-6. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze (Issue #86, ADR-0031),
-7. `docs/BSF-03-P1-TARGET-VALIDATION-2026-09-13.md` — Customer-Responsibility-Datenbasis mit serverseitiger Target-Validation (Issue #105, DB-/Security-Fundament ohne UI),
-8. `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md` — Runtime/UI „Meine Kunden“ inkl. Kundendetail (Issue #105, nur lesend; Verantwortungsverwaltung offen).
+3. Issue #105 — laufende BSF-03-Steuerung,
+4. `docs/BSF-01-ARCHITECTURE-BASELINE.md` — Architektur-Baseline,
+5. `docs/ADR/0029-systemhouse-customer-scope.md` — kanonischer Systemhaus-/Customer-Scope,
+6. `docs/BSF-CONCEPT-REGISTER.md` — gesicherte fachliche Entscheidungen,
+7. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
+8. `docs/BSF-03-P1-TARGET-VALIDATION-2026-09-13.md` — Customer-Responsibility-Datenbasis und serverseitige Target-Validation,
+9. `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md` — Runtime/UI „Meine Kunden“ inkl. Kundendetail,
+10. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
 
-Historische Dokumente wie `docs/ROLE-ACCEPTANCE-09C.md`, `docs/MVP-ACCEPTANCE-REPORT.md`, `docs/MVP-CLOSURE-STATUS-2026-08-21.md` und ältere `.lovable/plan/*` werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und sind durch die oben genannten Abschlussnachweise fortgeschrieben.
+Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und werden durch die oben genannten laufenden Quellen fortgeschrieben.
 
 ## Produkt- und Plattformstatus
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.59.6`
-- Produktiver MVP-Daten-/Auth-Provider: Supabase
-- Authentifizierung, RBAC und RLS: technisch und durch reale Rollen-/Negativtests nachgewiesen
-- Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen MVP
+- Dashboard-Version: `1.60.0`
+- Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
+- Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
+- Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
 - Lovable: veröffentlichte Referenzumgebung und gezieltes Implementierungs-/Preview-Werkzeug, keine fachlich unersetzbare Laufzeitlogik und keine Merge-/Release-Instanz
-- Fachlogik, Authentifizierung, Datenzugriff und provider-spezifische Implementierungen bleiben als getrennte Verantwortungsbereiche zu behandeln
-- Docker-/Container-Portabilität sowie Azure-/Entra-Migrationsfähigkeit bleiben verbindliche Architekturziele für den weiteren Ausbau
-- MVP bleibt **100 % / BASELINE READY**; der aktive Entwicklungshorizont ist jetzt **BSF — Betriebsfähiges Systemhaus-Fundament**.
+- Lokale Toolchain: optional; Bun/Node können bei vorhandenem Repository-Checkout genutzt werden, ein lokaler Clone ist keine allgemeine Projektvoraussetzung
+- Fachlogik, Authentifizierung, Datenzugriff und provider-spezifische Implementierungen bleiben getrennte Verantwortungsbereiche
+- Docker-/Container-Portabilität sowie Azure-/Entra-Migrationsfähigkeit bleiben verbindliche Architekturziele
+- MVP bleibt **100 % / BASELINE READY**; der aktive Entwicklungshorizont ist **BSF — Betriebsfähiges Systemhaus-Fundament**.
+
+## Aktueller BSF-Stand
+
+### BSF-02 / BSF-02C — DONE
+
+Die minimale gemeinsame Mehrbenutzer-Daten-/Read-Basis einschließlich Shared Projection, transaktionaler Publish-RPC und Runtime-Publish-/Read-Pfad ist abgeschlossen. T01–T30 und T31–T51 einschließlich Atomic Rollback, Security Advisor sowie vollständige CI-/Security-/E2E-/Accessibility-/Technical-Debt-/Quality-Gates sind PASS.
+
+### BSF-03 — IN ARBEIT / Issue #105
+
+Bereits integriert:
+
+- Fach-/Security-Vertrag: PR #118,
+- P1/P2 Customer-Responsibility-Datenbank-/Security-Fundament und Target-Validation: PR #127,
+- P3/P4 Runtime/UI `Meine Kunden` und read-only Kundendetail: PR #128.
+
+Finale P3/P4-Evidenz von PR #128:
+
+- finaler Head: `0a42689be252629a2f6e46885836f18989a5959c`,
+- Merge-Commit: `a9f40cb56aed7bdfd7d0baef2d9023755923967c`,
+- Security #592: PASS,
+- CI #599: PASS,
+- 88 Testdateien, 696 Tests PASS, 4 TODO,
+- Static / Unit & Components / Backend / API / RBAC & Security: PASS,
+- Import/Export / Backup/Restore / Production Build: PASS,
+- Playwright E2E / Accessibility / Technical Debt: PASS,
+- `14 · Technical Report & Quality Gate`: PASS,
+- kein Deploy durch PR #128.
+
+Umgesetzt ist damit die fail-closed Sicht `Meine Kunden` aus aktiver Responsibility, aktiver Membership, Customer Access >= read und `dashboard.view`; Responsibility erzeugt keine zusätzlichen Schreibrechte. Cross-Systemhouse, Cross-Customer und IDOR/BOLA bleiben DENY.
+
+### Nächster Schritt: BSF-03 P5 — Kundenverantwortung verwalten
+
+P5 ist der noch offene fachliche Schritt innerhalb BSF-03. Verbindlich sind:
+
+- enger datensparsamer Manager-Read-Vertrag für zulässige Responsibility-Kandidaten,
+- keine Verbreiterung der Self-only-Regeln auf `profiles`, `user_roles`, `systemhouse_membership`,
+- Anzeige sowie autorisiertes Zuweisen/Ändern/Beenden der Responsibility im Kundendetail,
+- Verwaltung ausschließlich durch `systemadministrator`, `administrator`, `teamlead`,
+- zulässige Zielrollen `systemadministrator`, `administrator`, `teamlead`, `projectmanager`, `engineer`,
+- `viewer` und `customer` als Ziel ausgeschlossen,
+- Cross-Systemhouse-, IDOR/BOLA-, Membership-, Rollen-Spoofing- und Unauthorized-Negativtests,
+- Auditierbarkeit und zeitliche Responsibility-Semantik,
+- vollständige Exact-Head-Security-/CI-/E2E-/Accessibility-/Quality-Gates und Dokumentationsabschluss.
+
+**BSF-03 ist erst nach P5 und Abschlusskonsolidierung DONE. BSF-03D beginnt vorher nicht.**
 
 ## F-11
 
@@ -58,7 +106,7 @@ Nachgewiesen sind unter anderem:
 - produktiver Systemstatus-Retest mit SYSSTAT-01 bis SYSSTAT-04 PASS,
 - serverseitige Berechtigungsgrenzen und RLS-Negativpfade.
 
-`Role Preview` ist für den aktuellen MVP **N/A — kein Produktbestandteil**. Es wird kein künstliches Impersonation-/Preview-Feature nur zur Erfüllung eines historischen Prüfpunkts gebaut.
+`Role Preview` ist für den MVP **N/A — kein Produktbestandteil**. Es wird kein künstliches Impersonation-/Preview-Feature nur zur Erfüllung eines historischen Prüfpunkts gebaut.
 
 ## MVP-Abschluss und wirksame Baseline
 
@@ -161,9 +209,26 @@ Der vollständige Dateibaum dieses Recovery-Referenzstands ist gegenüber `ea287
 - CI #425: PASS einschließlich Docs-Sync, E2E, Accessibility, Technical Debt und `14 · Technical Report & Quality Gate`,
 - Issue #71 als `completed` geschlossen.
 
+### PR #128 — BSF-03 P3/P4 „Meine Kunden“
+
+- nach Synchronisierung mit aktuellem `main` vollständig gegatet und gemergt,
+- Security #592: PASS,
+- CI #599: PASS,
+- 696 Tests PASS / 4 TODO,
+- vollständige E2E-/Accessibility-/Technical-Debt-/Technical-Report-Gates PASS,
+- Merge-Commit `a9f40cb56aed7bdfd7d0baef2d9023755923967c`,
+- kein Deploy.
+
+### PR #129 / #130 — Git-/CI-Governance
+
+- #129 schreibt Codex als bevorzugtes Werkzeug für Git-/CI-Fehler fest,
+- #130 ergänzt Verhältnismäßigkeit/Minimal-Fix, 15–20-Minuten-Eskalation, Umgebungsprüfung und Fallback-Regel,
+- #130 Exact Head: Security #594 PASS, CI #601 PASS,
+- keine Produkt-, DB-, RLS-, RBAC-, Auth- oder Runtime-Änderung.
+
 ## Branch Protection aktiv — Issue #53 abgeschlossen
 
-Issue #53 ist seit 25.08.2026 **CLOSED / COMPLETED**. GitHub schützt den Default-Branch `main` jetzt technisch mit dem Repository-Ruleset `main-release-governance`.
+Issue #53 ist seit 25.08.2026 **CLOSED / COMPLETED**. GitHub schützt den Default-Branch `main` technisch mit dem Repository-Ruleset `main-release-governance`.
 
 Verifizierter Ruleset-Stand:
 
@@ -181,61 +246,42 @@ Verifizierter Ruleset-Stand:
 - Required Check: `Secrets, Headers, Azure-Strings`,
 - `strict_required_status_checks_policy: true` — der PR-Branch muss vor Merge mit dem aktuellen `main` abgeglichen sein.
 
-Damit ist die frühere organisatorische PR-/CI-Regel nun durch GitHub selbst technisch erzwungen. Die klassische Branch-Protection-Unterstruktur kann dabei weiterhin `protection.enabled: false` melden; maßgeblich für den aktuellen Schutz sind `protected: true` und das aktive Ruleset.
+Damit ist die organisatorische PR-/CI-Regel durch GitHub selbst technisch erzwungen. Die klassische Branch-Protection-Unterstruktur kann weiterhin `protection.enabled: false` melden; maßgeblich sind `protected: true` und das aktive Ruleset.
 
-### Lovable-Arbeitsregel unter aktivem Branch-Schutz
+### Lovable-/Werkzeugregel unter aktivem Branch-Schutz
 
 Branch Protection ist eine letzte technische Sicherheitsgrenze und ersetzt nicht den kontrollierten Entwicklungsprozess.
 
 - GitHub bleibt Source of Truth.
-- Änderungen werden weiterhin über benannte Branches bzw. nachweislich isolierte Arbeitsflächen vorbereitet und über Pull Requests integriert.
-- Lovable wird bevorzugt auf einer **nachweislich isolierten Project Variant / Nicht-main-Arbeitsfläche** mit festem freigegebenem `base_sha` eingesetzt.
-- Der Lovable-Main-Agent ist **nicht die reguläre Implementierungsarbeitsfläche**; der Planmodus-Vorfall bleibt Referenz dafür, dass ein als Analyse deklarierter Lauf Schreibwirkung haben kann.
+- Änderungen werden über benannte Branches bzw. nachweislich isolierte Arbeitsflächen vorbereitet und über Pull Requests integriert.
+- Lovable wird bevorzugt auf einer nachweislich isolierten Nicht-main-Arbeitsfläche eingesetzt.
 - Ein Variant = ein Auftrag = ein Scope.
-- ChatGPT koordiniert Scope, GitHub-Diff, Security/CI und Abnahme; kopierfertige Lovable-Prompts können nach verifizierter Isolation manuell übergeben werden.
+- ChatGPT koordiniert Scope, GitHub-Diff, Security/CI und Abnahme.
 - Zusatzbefunde werden nur vorgeschlagen, nicht ungefragt umgesetzt.
 - Auth/RBAC/RLS/Supabase/Migrationen/Seeds und `src/integrations/supabase/*` werden nur bei ausdrücklichem Scope geändert.
-- Merge erfolgt erst nach den durch das Ruleset erzwungenen Required Checks; Expected-Head-SHA bleibt zusätzliches Integritätssignal, soweit das Merge-Werkzeug dies unterstützt.
+- Git-/CI-Fehler: Codex bevorzugt, sofern verfügbar; andernfalls kleinstmögliches geeignetes Fallback-Werkzeug.
+- Klar lokalisierte mechanische Kleinfehler werden proportional behandelt; nach etwa 15–20 Minuten ohne Lösung wird Werkzeug/Umgebung/Root Cause/Scope neu bewertet.
+- Merge erfolgt erst nach den durch das Ruleset erzwungenen Required Checks; Expected-Head-SHA bleibt zusätzliches Integritätssignal.
 
-Der frühere Governance-Befund ist damit geschlossen und **kein Rückfall des fachlichen MVP-Status**.
+## BSF aktiv — aktueller roter Faden
 
-## BSF aktiv — BSF-01 Planungs-/Architekturbaseline
+Die operative Reihenfolge ist in `docs/BSF-CURRENT-PRIORITIES.md` und `docs/SPRINT-PLAN-MVP-BSF.md` festgeschrieben:
 
-Mit Abschluss des MVP ist BSF der aktive Entwicklungshorizont. Die operative Reihenfolge ist in `docs/BSF-CURRENT-PRIORITIES.md` festgeschrieben.
+`BSF-03/P5 → BSF-03-Abschluss → BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → Dokumentationsblock → BSF-04 → BSF-04A → BSF-05 → BSF-06 → BSF-07 → BSF-09 → BSF-10 → BSF-FINAL → INTEGRATION-READINESS`
 
-BSF-01 legt ohne Produktcode die verbindliche Architekturgrundlage für Kundenmodell, Kundenverantwortung und Leistungssichten fest:
-
-- kanonische Kundenidentität: `(systemhouseId, customerId)`,
-- `systemhouseId` ist providerneutral und nicht gleich Microsoft Entra Tenant ID,
-- ältere `tenant`-Terminologie aus ADR-0007/0008 bleibt historische Pre-BSF-Evidenz,
-- neue BSF-Scopes verwenden fachlich Systemhaus-Semantik,
-- Kundenverantwortung ist Scope/Beziehung, keine globale Rolle,
-- Projektmanager-Leistungssicht ist read-only,
-- Teamlead-Leistungsnachweis besitzt einen getrennten Write-/Finalisierungs-/Audit-Scope,
-- weil Projekte, Arbeitspakete und Tätigkeiten im MVP user-scoped lokal liegen, muss BSF-02 neben der Customer-Entität die **minimal notwendige gemeinsame/synchronisierte Daten-/Read-Basis** für echte Kunden- und Leistungssichten schaffen,
-- der vollständige Datenhaltungsumbau bleibt BSF-04.
-
-Maßgebliche Nachweise:
-
-- `docs/ADR/0029-systemhouse-customer-scope.md`,
-- `docs/BSF-01-ARCHITECTURE-BASELINE.md`,
-- aktualisiertes `docs/BSF-CONCEPT-REGISTER.md`,
-- aktualisiertes `docs/ENTWICKLUNGSTAGEBUCH.md`.
-
-Lovable-Einsatz in BSF-01: **0 Credits**. Architektur-, Datenmodell- und Sicherheitsgrenzen werden nicht an Lovable delegiert.
-
-Nach vollständiger Security-/CI-Abnahme und Merge des BSF-01-PRs gilt BSF-01 als **DONE**. Unmittelbar nächster Punkt ist **BSF-02 — Kundenmodell + minimale gemeinsame Daten-/Read-Basis**, mit geplantem Lovable-Einsatz **0–1 Credit** für gezielte UI-/Kundenkontext-Visualisierung nach festgelegter Architektur.
+Die kanonische Kundenidentität bleibt `(systemhouseId, customerId)`; `systemhouseId` ist providerneutral und nicht gleich Microsoft Entra Tenant ID. Kundenverantwortung bleibt Scope/Beziehung, keine globale Rolle. Der vollständige Datenhaltungsumbau bleibt BSF-04.
 
 ## Dokumentationszustand
 
-- `docs/ENTWICKLUNGSTAGEBUCH.md` ist auf MVP-Baseline, Branch Protection und BSF-01 fortgeschrieben.
-- `SYSING-001` existiert bereits als Living Document `docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md` mit gemeinsamer Markdown-Quelle für PDF/Word.
+- `docs/ENTWICKLUNGSTAGEBUCH.md` enthält die laufenden BSF-03-Nachweise.
+- `docs/PROJECT-STATUS.yaml`, `docs/BSF-CURRENT-PRIORITIES.md`, `docs/SPRINT-PLAN-MVP-BSF.md` und dieses Dokument werden gemeinsam auf den P5-Wiederanlaufpunkt synchronisiert.
+- `SYSING-001` existiert als Living Document `docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md` mit gemeinsamer Markdown-Quelle für PDF/Word.
 - SYSING-001 wird in BSF-DOC-02 kontrolliert aktualisiert und TDF-konform abgenommen; es wird keine zweite Dokumentquelle erzeugt.
 - BSF-DOC-03 macht die freigegebene SYSING-001-Fassung read-only aus dem Board erreichbar.
 - Kontext-sensitive Hilfe und Benutzerhandbuch werden ab BSF als Teil der Definition of Done jedes betroffenen Fachsprints synchron gehalten; BSF-DOC-01 bleibt zusätzlicher Konsolidierungsblock.
 
 ## Bewusst zurückgestellter Zukunftsscope
 
-Issue #63 dokumentiert die BSF-Vertretungs- und Personensicht für Verantwortlichkeiten. Dieser Punkt ist **Post-MVP / BSF-Ausbau** und kein F-11- oder MVP-Restfehler.
+Issue #63 dokumentiert die BSF-Vertretungs- und Personensicht für Verantwortlichkeiten. Dieser Punkt ist **BSF-Ausbau nach den priorisierten Kernfunktionen** und kein F-11- oder MVP-Restfehler.
 
-Neue Fachfunktionen werden daraus erst nach bewusster Priorisierung umgesetzt; RBAC, RLS, Auditierbarkeit, Datenschutz, Provider-Trennung und Containerfähigkeit bleiben dabei verbindliche Abnahmekriterien.
+Neue Fachfunktionen werden daraus erst nach bewusster Priorisierung umgesetzt; RBAC, RLS, Auditierbarkeit, Datenschutz, Provider-Trennung und Containerfähigkeit bleiben verbindliche Abnahmekriterien.
