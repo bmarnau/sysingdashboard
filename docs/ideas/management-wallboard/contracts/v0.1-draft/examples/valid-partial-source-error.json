@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "0.1.0-draft",
+  "deliveryId": "c7f4d90f-4d4a-4af0-8e63-49d15115a1f8",
+  "deliveryType": "snapshot",
+  "generatedAt": "2026-09-11T14:05:00Z",
+  "observedAt": "2026-09-11T14:04:30Z",
+  "producer": {
+    "system": "external-management-data",
+    "instance": "systemhouse-demo"
+  },
+  "scope": {
+    "systemhouseId": "sh-demo-001"
+  },
+  "completeness": {
+    "snapshotComplete": false,
+    "missingDomains": ["infrastructure"]
+  },
+  "sourceStatus": [
+    {
+      "source": "sharepoint",
+      "state": "ok",
+      "observedAt": "2026-09-11T14:04:00Z"
+    },
+    {
+      "source": "prtg",
+      "state": "error",
+      "observedAt": "2026-09-11T14:03:50Z",
+      "code": "SOURCE_UNAVAILABLE",
+      "message": "PRTG source temporarily unavailable; no credentials or endpoint details included."
+    },
+    {
+      "source": "exchange-online",
+      "state": "ok",
+      "observedAt": "2026-09-11T14:04:20Z"
+    }
+  ],
+  "data": {
+    "projects": [
+      {
+        "sourceId": "project-1001",
+        "title": "M365 Modernisierung",
+        "status": "active",
+        "trafficLight": "green",
+        "lastChangedAt": "2026-09-11T10:15:00Z"
+      }
+    ],
+    "workPackages": [
+      {
+        "sourceId": "wp-2001",
+        "projectSourceId": "project-1001",
+        "title": "Tenant-Vorbereitung",
+        "status": "active",
+        "trafficLight": "green",
+        "lastChangedAt": "2026-09-11T09:45:00Z"
+      }
+    ],
+    "activities": [
+      {
+        "sourceId": "activity-3001",
+        "workPackageSourceId": "wp-2001",
+        "title": "Testmigration vorbereiten",
+        "status": "open",
+        "trafficLight": "green",
+        "lastChangedAt": "2026-09-11T11:20:00Z"
+      }
+    ],
+    "absence": {
+      "employeesOnLeaveThisWeek": 3,
+      "employeesStartingLeaveNextWeek": 5,
+      "observedAt": "2026-09-11T14:03:30Z"
+    },
+    "supportMailbox": {
+      "total": 87,
+      "today": 12,
+      "yesterday": 18,
+      "older": 57,
+      "observedAt": "2026-09-11T14:04:20Z"
+    }
+  }
+}
