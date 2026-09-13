@@ -5,39 +5,41 @@ import {
   WorkPackageCategoryManagementView,
   type WorkPackageCategoryManagementViewState,
 } from "@/components/reference-data/WorkPackageCategoryManagementView";
+import type { WorkPackageCategoryManagementPayload } from "@/lib/reference-data/workpackage-category-management";
 
 const SH_A = "11111111-1111-4111-8111-111111111111";
 const SH_B = "22222222-2222-4222-8222-222222222222";
 
+const readyPayload: WorkPackageCategoryManagementPayload = {
+  scopes: [{ systemhouseId: SH_A, systemhouseName: "Systemhaus A" }],
+  selectedSystemhouseId: SH_A,
+  values: [
+    {
+      id: "33333333-3333-4333-8333-333333333333",
+      key: "incident",
+      label: "Störung",
+      description: "Operative Störung",
+      sortOrder: 10,
+      isActive: true,
+      validTo: null,
+      systemhouseId: SH_A,
+    },
+    {
+      id: "55555555-5555-4555-8555-555555555555",
+      key: "legacy",
+      label: "Training",
+      description: "Historischer Wert",
+      sortOrder: 20,
+      isActive: false,
+      validTo: "2026-09-01T00:00:00.000Z",
+      systemhouseId: SH_A,
+    },
+  ],
+};
+
 const readyState: WorkPackageCategoryManagementViewState = {
   kind: "ready",
-  payload: {
-    scopes: [{ systemhouseId: SH_A, systemhouseName: "Systemhaus A" }],
-    selectedSystemhouseId: SH_A,
-    values: [
-      {
-        id: "33333333-3333-4333-8333-333333333333",
-        key: "incident",
-        label: "Störung",
-        description: "Operative Störung",
-        sortOrder: 10,
-        isActive: true,
-        validTo: null,
-        systemhouseId: SH_A,
-      },
-      {
-        id: "55555555-5555-4555-8555-555555555555",
-        key: "legacy",
-        label: "Training",
-        description: "Historischer Wert",
-        sortOrder: 20,
-        isActive: false,
-        validFrom: "2026-01-01T00:00:00.000Z",
-        validTo: "2026-09-01T00:00:00.000Z",
-        systemhouseId: SH_A,
-      },
-    ],
-  },
+  payload: readyPayload,
 };
 
 describe("WorkPackageCategoryManagementView", () => {
@@ -78,7 +80,7 @@ describe("WorkPackageCategoryManagementView", () => {
     const state: WorkPackageCategoryManagementViewState = {
       kind: "ready",
       payload: {
-        ...readyState.payload,
+        ...readyPayload,
         scopes: [
           { systemhouseId: SH_A, systemhouseName: "Systemhaus A" },
           { systemhouseId: SH_B, systemhouseName: "Systemhaus B" },
