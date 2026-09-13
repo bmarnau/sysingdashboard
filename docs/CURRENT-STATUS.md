@@ -28,7 +28,8 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 7. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
 8. `docs/BSF-03-P1-TARGET-VALIDATION-2026-09-13.md` — Customer-Responsibility-Datenbasis und serverseitige Target-Validation,
 9. `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md` — Runtime/UI „Meine Kunden“ inkl. Kundendetail,
-10. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
+10. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel,
+11. `docs/BSF-03D-VERIFICATION-2026-09-13.md` — Arbeitspaket-Kategorien: DB-/Security-Nachweis und offene Restpunkte.
 
 Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und werden durch die oben genannten laufenden Quellen fortgeschrieben.
 
@@ -36,7 +37,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.61.0`
+- Dashboard-Version: `1.62.0`
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
@@ -70,6 +71,19 @@ Verbindlicher Endzustand:
 P5-Evidenz: Migration `20260913150000_bsf03_p5_responsibility_management`, SQL-Vertrag R19–R31, Live-Read-only-Prüfung von Funktionsmodus/Grants/RLS sowie 90 Unit-/Component-Testdateien mit 704 PASS / 4 TODO auf dem geprüften Funktions-Head. Abschlussnachweis: `docs/BSF-03-CLOSURE-2026-09-13.md`.
 
 Nach finalem PR-#132-Merge ist **BSF-03D — Arbeitspaket-Kategorien (#103)** der nächste Entwicklungsschritt.
+
+### BSF-03D — IMPLEMENTED, VERIFICATION PACKAGE PENDING / Issue #103
+
+Arbeitspaket-Kategorien sind fachlich implementiert (Version 1.62.0): systemhausweit editierbarer Katalog `workpackage.category` (Scope `systemhouse`, keine Seed-Werte, Key unveränderlich, deaktivieren statt löschen), `WorkPackage.categoryKey?: string | null` mit Default „keine Kategorie“, Tags unabhängig, keine Ableitung von billable/priority/status, JSON-Schema 1.2.0 mit rückwärtskompatiblem Import/Export/Backup/Restore, Kategorie-Auswahl im Arbeitspaket-Dialog und Verwaltungsdialog nur mit `referencedata.manage`.
+
+Verifikationsstand:
+
+- Live-SQL-Artefakt `supabase/tests/bsf03d-workpackage-category.sql`: **T01–T16 16/16 PASS**, eine Transaktion mit Rollback, DB dauerhaft unverändert,
+- Live-Schema-Vertrag PASS (Scope-Spalte, FK, partielle Unique-Indizes, Scope-Trigger, RLS ohne DELETE-Policy, History-Scope),
+- Security Advisor: ERROR 0 / CRITICAL 0 / WARN 2 — ausschließlich bekannte SEC-01-Baseline, **kein neues BSF-03D-Finding**,
+- E2E prüft UI-Gating per Route-Mocking; echte Viewer-/Cross-Systemhouse-Durchsetzung ist durch das SQL-Artefakt belegt.
+
+Noch offen (kein FINAL PASS): vollständiger Quality-Gate-Lauf (Paket Q) und finaler Governance-Cleanup des durch einen Plattform-Commit erneut eingespielten Preview-Auth-Brokers. Nachweis: `docs/BSF-03D-VERIFICATION-2026-09-13.md`.
 
 ## F-11
 
