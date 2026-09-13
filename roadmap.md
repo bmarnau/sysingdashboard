@@ -22,3 +22,8 @@
 ## BSF-03D Review-Fix Runde 2 (MEDIUM-1, LOW-1 aus Re-Review)
 - [x] Test härten: Unique-Erkennung im isolierten SQL-Block, exakter Spaltenmengen-Ausdruck
 - [x] SQL-Kommentar: CHECK-Constraint fail-loud bei ungültigen Altwerten
+
+## Governance-Fix: Preview-Auth-Broker entfernen (Wiederherstellung 425fbed)
+- [x] Statischer Regressionstest (RED)
+- [x] previewAuthStorage.ts entfernen, client.ts Import/storage zurücksetzen
+- [x] Gates: targeted, Auth/Security-Tests, Typecheck, Lint/Prettier, Build
