@@ -17,7 +17,7 @@ export const dashboardNavigationHelpTopics: HelpTopic[] = [
       "AVKK",
       "Hilfe",
     ],
-    lastUpdated: "2026-08-22",
+    lastUpdated: "2026-09-13",
     content: `## Hauptnavigation
 Die fachlichen Ansichten werden über die Tab-Leiste direkt unter dem Kopfbereich geöffnet:
 - **Projekte** — Projektübersicht und Einstieg in das Projektdetail.
@@ -26,6 +26,10 @@ Die fachlichen Ansichten werden über die Tab-Leiste direkt unter dem Kopfbereic
 - **Abrechnung** — abrechnungsbezogene Übersicht.
 - **Mein AVKK** — persönlicher AVKK-Arbeitsplatz.
 - **AVKK Management** — Führungssicht; sichtbar nur mit passender Berechtigung.
+
+Zusätzlich stehen im Kopfbereich kundenbezogene Einstiege zur Verfügung:
+- **Meine Kunden** — persönliche, fail-closed Kundensicht für eigene aktive Verantwortungen mit eigenem Kundenzugriff.
+- **Kundenverantwortung** — getrennte Verwaltungsansicht; nur sichtbar mit \`customer.responsibility.manage\`.
 
 ## Projektdetail öffnen
 Im Tab **Projekte** auf den **Projektnamen** der gewünschten Projektkarte klicken. Das Projektdetail zeigt Projektkopf, Kennzahlen, Arbeitspakete, Tätigkeiten und bei Berechtigung AVKK im Projektkontext. **Zurück zu Projekte** führt wieder in die Übersicht.
@@ -37,7 +41,12 @@ Im Projektdetail öffnet **Projektbericht** die Berichtsausgabe mit dem aktuell 
 
 ## Hilfe und Services
 Das **Fragezeichen** öffnet die Hilfe und das Benutzerhandbuch. Das **Zahnrad** öffnet Einstellungen und Services. Welche Aktionen sichtbar sind, hängt von der Rolle und ihren Berechtigungen ab.`,
-    relatedTopics: ["projects", "avkk-arbeitsplatz", "berichte"],
+    relatedTopics: [
+      "projects",
+      "customer-responsibility-management",
+      "avkk-arbeitsplatz",
+      "berichte",
+    ],
   },
   {
     id: "projects",
@@ -68,6 +77,44 @@ Der **Stift** öffnet ausschließlich **Projekt bearbeiten**. Im Projektdetail s
 ## Berechtigungen
 Bearbeitungsaktionen erscheinen nur mit den vorhandenen Rechten für Projekt, Arbeitspaket oder Tätigkeit. Lesende Rollen bleiben read-only.`,
     relatedTopics: ["navigation-ansichten", "time-entries", "berichte"],
+  },
+  {
+    id: "customer-responsibility-management",
+    title: "Kundenverantwortung verwalten",
+    category: "Kunden",
+    route: "/kundenverantwortung",
+    component: "CustomerResponsibilityManagementView",
+    keywords: [
+      "Kundenverantwortung",
+      "Meine Kunden",
+      "Verantwortlicher",
+      "Teamlead",
+      "Zuweisen",
+      "Wechseln",
+      "Beenden",
+    ],
+    lastUpdated: "2026-09-13",
+    content: `## Zwei bewusst getrennte Kundensichten
+**Meine Kunden** ist die persönliche Kundensicht. Dort erscheinen ausschließlich Kunden, für die gleichzeitig eine eigene aktive Verantwortung, eine aktive Systemhaus-Zugehörigkeit und mindestens lesender eigener Kundenzugriff vorliegen.
+
+**Kundenverantwortung** ist dagegen die Verwaltungsansicht. Sie ist nur für Benutzer mit \`customer.responsibility.manage\` sichtbar: Systemadministrator, Administrator und Teamlead.
+
+## Was darf verwaltet werden?
+Ein berechtigter Manager darf die primäre Verantwortung für Kunden des eigenen Systemhauses **zuweisen**, **wechseln** oder **beenden**. Dafür ist kein eigener operativer Kundenzugriff erforderlich.
+
+Die Verwaltungsberechtigung gibt jedoch **keinen** Zugriff auf Projekte, Arbeitspakete oder Tätigkeiten des Kunden. Operative Kundendaten bleiben weiterhin durch \`customer_access\` und RLS geschützt.
+
+## Wer kann verantwortlich sein?
+Als Ziel sind aktive Mitglieder desselben Systemhauses mit den Rollen Systemadministrator, Administrator, Teamlead, Projektmanager oder Systemingenieur zulässig. Viewer und Customer sind ausgeschlossen.
+
+Die Auswahlliste ist datenminimiert und enthält nur technische Benutzer-ID und Anzeigename. E-Mail, Telefon, MFA-Informationen oder weitere Profildaten werden nicht bereitgestellt.
+
+## Wechsel und Historie
+Beim Wechsel wird die bisherige Responsibility historisch beendet und die neue Responsibility in derselben Datenbanktransaktion angelegt. Schlägt die neue Zuweisung fehl, bleibt die bisherige Verantwortung unverändert. Es gibt keinen Hard Delete der Historie.
+
+## Sicherheitsgrenzen
+Cross-Systemhouse-Zugriffe bleiben verweigert. Browser-Rollen oder manipulierte Client-Daten begründen keine Berechtigung; maßgeblich sind die serverseitigen Auth-, RBAC- und RLS-Prüfungen.`,
+    relatedTopics: ["navigation-ansichten", "rbac-rollen-berechtigungen", "security-principles"],
   },
   {
     id: "system-status",

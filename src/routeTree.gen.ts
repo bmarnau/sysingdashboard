@@ -17,6 +17,7 @@ import { Route as ApiSyncRouteImport } from './routes/api/sync'
 import { Route as ApiStatusRouteImport } from './routes/api/status'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMeineKundenIndexRouteImport } from './routes/_authenticated/meine-kunden/index'
+import { Route as AuthenticatedKundenverantwortungIndexRouteImport } from './routes/_authenticated/kundenverantwortung/index'
 import { Route as ApiPublicAuthConfigRouteImport } from './routes/api/public/auth-config'
 import { Route as AuthenticatedMeineKundenSystemhouseIdCustomerIdRouteImport } from './routes/_authenticated/meine-kunden/$systemhouseId.$customerId'
 
@@ -60,6 +61,12 @@ const AuthenticatedMeineKundenIndexRoute =
     path: '/meine-kunden/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedKundenverantwortungIndexRoute =
+  AuthenticatedKundenverantwortungIndexRouteImport.update({
+    id: '/kundenverantwortung/',
+    path: '/kundenverantwortung/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicAuthConfigRoute = ApiPublicAuthConfigRouteImport.update({
   id: '/api/public/auth-config',
   path: '/api/public/auth-config',
@@ -80,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
+  '/kundenverantwortung/': typeof AuthenticatedKundenverantwortungIndexRoute
   '/meine-kunden/': typeof AuthenticatedMeineKundenIndexRoute
   '/meine-kunden/$systemhouseId/$customerId': typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
 }
@@ -91,6 +99,7 @@ export interface FileRoutesByTo {
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
+  '/kundenverantwortung': typeof AuthenticatedKundenverantwortungIndexRoute
   '/meine-kunden': typeof AuthenticatedMeineKundenIndexRoute
   '/meine-kunden/$systemhouseId/$customerId': typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
 }
@@ -104,6 +113,7 @@ export interface FileRoutesById {
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
+  '/_authenticated/kundenverantwortung/': typeof AuthenticatedKundenverantwortungIndexRoute
   '/_authenticated/meine-kunden/': typeof AuthenticatedMeineKundenIndexRoute
   '/_authenticated/meine-kunden/$systemhouseId/$customerId': typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
 }
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
+    | '/kundenverantwortung/'
     | '/meine-kunden/'
     | '/meine-kunden/$systemhouseId/$customerId'
   fileRoutesByTo: FileRoutesByTo
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
+    | '/kundenverantwortung'
     | '/meine-kunden'
     | '/meine-kunden/$systemhouseId/$customerId'
   id:
@@ -140,6 +152,7 @@ export interface FileRouteTypes {
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
+    | '/_authenticated/kundenverantwortung/'
     | '/_authenticated/meine-kunden/'
     | '/_authenticated/meine-kunden/$systemhouseId/$customerId'
   fileRoutesById: FileRoutesById
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMeineKundenIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kundenverantwortung/': {
+      id: '/_authenticated/kundenverantwortung/'
+      path: '/kundenverantwortung'
+      fullPath: '/kundenverantwortung/'
+      preLoaderRoute: typeof AuthenticatedKundenverantwortungIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/auth-config': {
       id: '/api/public/auth-config'
       path: '/api/public/auth-config'
@@ -231,12 +251,15 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedKundenverantwortungIndexRoute: typeof AuthenticatedKundenverantwortungIndexRoute
   AuthenticatedMeineKundenIndexRoute: typeof AuthenticatedMeineKundenIndexRoute
   AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute: typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedKundenverantwortungIndexRoute:
+    AuthenticatedKundenverantwortungIndexRoute,
   AuthenticatedMeineKundenIndexRoute: AuthenticatedMeineKundenIndexRoute,
   AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute:
     AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute,

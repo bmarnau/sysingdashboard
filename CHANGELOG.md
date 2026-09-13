@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.61.0 - 2026-09-13
+
+- **Kundenverantwortung verwalten (BSF-03 P5, Issue #105)**: Neuer, von „Meine Kunden“ getrennter Bereich für Systemadministrator, Administrator und Teamlead. Verantwortungen können systemhausweit zugewiesen, gewechselt und beendet werden, auch ohne eigenen operativen Kundenzugriff.
+- **Least-Privilege-Managementsicht**: Die Verwaltung zeigt ausschließlich Kundenkopf, aktuelle primäre Verantwortung und eine datenminimierte Kandidatenliste. Sie erzeugt keinen Zugriff auf Projekte, Arbeitspakete oder Tätigkeiten.
+- **RLS bleibt eng**: Self-only-Regeln auf Profilen, Rollen und Systemhaus-Zugehörigkeiten sowie der Customer-Access-Scope wurden nicht verbreitert. Öffentliche P5-RPCs laufen als SECURITY INVOKER; der notwendige Fremdleseanteil ist auf private Helper mit leerem search_path begrenzt.
+- **Atomarer Lifecycle**: Ein Wechsel beendet die alte und erzeugt die neue Responsibility in derselben Transaktion; ungültige Zielpersonen rollen den gesamten Wechsel zurück. Historie bleibt erhalten, Hard Delete findet nicht statt.
+- **Sicherheit und Tests**: R19–R31, Unit-/Security-Verträge und E2E decken Datenminimierung, Cross-Systemhouse, IDOR/BOLA, Viewer/Customer-Ausschluss, Zuweisen, Wechseln, Beenden und Rollback ab.
+- **UI-Konsistenz**: Der gemeinsame Kundenseitenrahmen behält für die persönliche Sicht „Meine Kunden“ und zeigt in der Managementroute ausdrücklich „Kundenverantwortung“.
+
 ## 1.60.0 - 2026-09-13
 
 - **Neuer Bereich „Meine Kunden“ (BSF-03, Issue #105)**: Über die Bereichsleiste des Dashboards erreichbar. Zeigt ausschließlich Kunden mit aktiver eigener Kundenverantwortung, aktiver Systemhaus-Zugehörigkeit, mindestens lesendem Kundenzugriff und Basisberechtigung `dashboard.view`.

@@ -29,51 +29,14 @@ GitHub ist Source of Truth. Lovable wird gezielt für UI, Preview, plattformspez
 ### 2.1 Aktueller Fokus 13.09.2026
 
 1. **BSF-02 / BSF-02C — DONE**
-   - Shared Projection für Project/WorkPackage/Activity,
-   - Least-Privilege-Grants,
-   - Customer-/Systemhouse-RLS,
-   - T01–T30 und T31–T51 einschließlich Atomic Rollback PASS,
-   - transaktionale `SECURITY INVOKER`-RPC integriert,
-   - Runtime Publish-/Read-Pfad integriert,
-   - offizieller Security Advisor ohne neue BSF-02C-Warnung,
-   - vollständige Exact-Head-CI inkl. E2E, Accessibility, Technical Debt und Quality Gate PASS,
-   - #88 und Parent #76 geschlossen.
-
-2. **BSF-03 P1/P2 — DONE / auf `main`**
-   - Fach-/Security-Vertrag über PR #118,
-   - Customer-Responsibility-Datenbasis und Target-Validation über PR #127,
-   - RLS-/RBAC-/Least-Privilege-Grenzen nachgewiesen,
-   - R01–R18/T0–T12, Security Advisor, Null-Residuen und BSF-02C-Regression PASS.
-
-3. **BSF-03 P3/P4 — DONE / auf `main`**
-   - Runtime/UI `Meine Kunden` und Kundendetail integriert,
-   - PR #128 finaler Head `0a42689be252629a2f6e46885836f18989a5959c`,
-   - Merge-Commit `a9f40cb56aed7bdfd7d0baef2d9023755923967c`,
-   - Security #592 PASS,
-   - CI #599 PASS,
-   - 88 Testdateien / 696 PASS / 4 TODO,
-   - Playwright E2E, Accessibility, Technical Debt und Technical Report & Quality Gate PASS,
-   - kein Deploy durch PR #128.
-
-4. **BSF-03 P5 — NÄCHSTER AUSFÜHRUNGSSCHRITT**
-   - Kundenverantwortung im Kundendetail verwalten,
-   - enger datensparsamer Manager-Read-Vertrag für zulässige Kandidaten,
-   - keine Verbreiterung der Self-only-Regeln auf `profiles`, `user_roles`, `systemhouse_membership`,
-   - Zuweisen/Ändern/Beenden nur für `systemadministrator`, `administrator`, `teamlead`,
-   - Zielrollen nur `systemadministrator`, `administrator`, `teamlead`, `projectmanager`, `engineer`,
-   - `viewer` und `customer` ausgeschlossen,
-   - Cross-Systemhouse/IDOR/BOLA/Membership-/Spoofing-Negativtests,
-   - Auditierbarkeit und zeitliche Responsibility-Semantik erhalten.
-
-5. **BSF-03-Abschluss — DANACH**
-   - vollständige Exact-Head-CI/Security/E2E/Accessibility/Quality-Gates,
-   - Dokumentation und `PROJECT-STATUS.yaml` synchron,
-   - Abschlussbericht,
-   - erst danach BSF-03D freigeben.
+2. **BSF-03 P1/P2 — DONE**
+3. **BSF-03 P3/P4 — DONE**
+4. **BSF-03 P5 — ABSCHLUSSKANDIDAT in PR #132**: Managementsicht, Datenminimierung, atomarer Lifecycle, R19–R31, Version 1.61.0.
+5. **BSF-03D — NÄCHSTER SPRINT nach finaler PR-#132-/Main-Verifikation**
 
 ### 2.2 Verbindliche operative Reihenfolge
 
-`BSF-03/P5 → BSF-03-Abschluss → BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → BSF-DOC-01 → BSF-DOC-02 → BSF-DOC-03 → BSF-04 → BSF-04A → BSF-05 → BSF-06 → BSF-07 → BSF-09 → BSF-10 → BSF-FINAL → INTEGRATION-READINESS`
+`BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → BSF-DOC-01 → BSF-DOC-02 → BSF-DOC-03 → BSF-04 → BSF-04A → BSF-05 → BSF-06 → BSF-07 → BSF-09 → BSF-10 → BSF-FINAL → INTEGRATION-READINESS`
 
 Diese Reihenfolge synchronisiert die operative Planung mit `docs/GESAMTPLAN-SYSING-DASHBOARD.md` und den aktuellen Issues #63, #98, #102, #103, #105, #106, #107 und #108.
 
@@ -127,16 +90,13 @@ Diese Reihenfolge synchronisiert die operative Planung mit `docs/GESAMTPLAN-SYSI
 
 ### BSF-03 — Kundenverantwortung und „Meine Kunden“ (#105)
 
-- Schwerpunkt: `Meine Kunden`, mehrere Kunden je Systemingenieur, Sicht- und Schreibscope getrennt.
-- Kundenverantwortung ist eine fachliche Beziehung/Scope, keine neue globale Rolle.
-- Systemingenieur kann für mehrere Kunden verantwortlich sein; ein Kunde kann in V1 höchstens eine aktuelle aktive primäre Responsibility haben.
-- Customer-Sicht benötigt serverseitigen Scope; Cross-Customer bleibt DENY.
-- Fach-/Security-Vertrag über PR #118 integriert.
-- P1/P2 Datenbank-/Security-Fundament über PR #127 integriert.
-- P3/P4 Runtime/UI `Meine Kunden` über PR #128 integriert und vollständig gegatet.
-- **P5 ist der nächste und noch offene fachliche Schritt:** Responsibility im Kundendetail verwalten mit engem Manager-Read-Vertrag und ohne breiten Fremdpersonen-Read.
-- Gate: P5 RBAC/RLS/Datenminimierung + vollständige Regression + Dokumentationsabschluss PASS.
-- Status: **IN ARBEIT**.
+- P1/P2 Datenbank-/Security-Fundament: **DONE**.
+- P3/P4 persönliche fail-closed Sicht `Meine Kunden` + read-only Kundendetail: **DONE**.
+- P5 getrennte Managementsicht `Kundenverantwortung`: **DONE / PR #132 Abschlusskandidat**.
+- Management erzeugt keinen operativen Customer Access; Read-Vertrag ist datenminimiert und die Self-only-RLS bleibt eng.
+- Responsibility-Wechsel ist atomar und historisiert; Cross-Systemhouse/IDOR/BOLA bleiben DENY.
+- Abschlussdokument: `docs/BSF-03-CLOSURE-2026-09-13.md`.
+- Status: **ABSCHLUSSKANDIDAT** bis finaler Exact-Head-/Merge-/Main-Nachweis.
 
 ### BSF-03D — Arbeitspaket-Kategorien (#103)
 

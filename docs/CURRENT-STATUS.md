@@ -36,7 +36,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.60.0`
+- Dashboard-Version: `1.61.0`
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
@@ -52,44 +52,24 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 Die minimale gemeinsame Mehrbenutzer-Daten-/Read-Basis einschließlich Shared Projection, transaktionaler Publish-RPC und Runtime-Publish-/Read-Pfad ist abgeschlossen. T01–T30 und T31–T51 einschließlich Atomic Rollback, Security Advisor sowie vollständige CI-/Security-/E2E-/Accessibility-/Technical-Debt-/Quality-Gates sind PASS.
 
-### BSF-03 — IN ARBEIT / Issue #105
+### BSF-03 — DONE / Issue #105
 
-Bereits integriert:
+BSF-03 „Kundenverantwortung und Kundensicht“ ist mit P1–P5 fachlich abgeschlossen. P1/P2 lieferten das Datenbank-/Security-Fundament, P3/P4 die persönliche fail-closed Sicht **Meine Kunden** und das read-only Kundendetail, P5 ergänzt die getrennte Managementsicht **Kundenverantwortung**.
 
-- Fach-/Security-Vertrag: PR #118,
-- P1/P2 Customer-Responsibility-Datenbank-/Security-Fundament und Target-Validation: PR #127,
-- P3/P4 Runtime/UI `Meine Kunden` und read-only Kundendetail: PR #128.
+Verbindlicher Endzustand:
 
-Finale P3/P4-Evidenz von PR #128:
+- Responsibility ist Beziehung/Scope und keine globale Rolle,
+- Responsibility allein erzeugt weder `customer_access` noch Schreibrechte,
+- `Meine Kunden` bleibt die Schnittmenge aus aktiver Membership, eigener aktiver Responsibility, Customer Access >= read und `dashboard.view`,
+- `Kundenverantwortung` ist getrennt und nur mit `customer.responsibility.manage` nutzbar,
+- Systemadministrator, Administrator und Teamlead verwalten Responsibility im eigenen Systemhaus auch ohne eigenen operativen Customer Access,
+- Kandidaten werden nur als ID + Anzeigename geliefert; die Self-only-RLS wurde nicht verbreitert,
+- Wechsel erfolgt atomar und historisiert,
+- Cross-Systemhouse, IDOR/BOLA, Viewer/Customer-Ziele und manipulierte Browserrollen bleiben DENY.
 
-- finaler Head: `0a42689be252629a2f6e46885836f18989a5959c`,
-- Merge-Commit: `a9f40cb56aed7bdfd7d0baef2d9023755923967c`,
-- Security #592: PASS,
-- CI #599: PASS,
-- 88 Testdateien, 696 Tests PASS, 4 TODO,
-- Static / Unit & Components / Backend / API / RBAC & Security: PASS,
-- Import/Export / Backup/Restore / Production Build: PASS,
-- Playwright E2E / Accessibility / Technical Debt: PASS,
-- `14 · Technical Report & Quality Gate`: PASS,
-- kein Deploy durch PR #128.
+P5-Evidenz: Migration `20260913150000_bsf03_p5_responsibility_management`, SQL-Vertrag R19–R31, Live-Read-only-Prüfung von Funktionsmodus/Grants/RLS sowie 90 Unit-/Component-Testdateien mit 704 PASS / 4 TODO auf dem geprüften Funktions-Head. Abschlussnachweis: `docs/BSF-03-CLOSURE-2026-09-13.md`.
 
-Umgesetzt ist damit die fail-closed Sicht `Meine Kunden` aus aktiver Responsibility, aktiver Membership, Customer Access >= read und `dashboard.view`; Responsibility erzeugt keine zusätzlichen Schreibrechte. Cross-Systemhouse, Cross-Customer und IDOR/BOLA bleiben DENY.
-
-### Nächster Schritt: BSF-03 P5 — Kundenverantwortung verwalten
-
-P5 ist der noch offene fachliche Schritt innerhalb BSF-03. Verbindlich sind:
-
-- enger datensparsamer Manager-Read-Vertrag für zulässige Responsibility-Kandidaten,
-- keine Verbreiterung der Self-only-Regeln auf `profiles`, `user_roles`, `systemhouse_membership`,
-- Anzeige sowie autorisiertes Zuweisen/Ändern/Beenden der Responsibility im Kundendetail,
-- Verwaltung ausschließlich durch `systemadministrator`, `administrator`, `teamlead`,
-- zulässige Zielrollen `systemadministrator`, `administrator`, `teamlead`, `projectmanager`, `engineer`,
-- `viewer` und `customer` als Ziel ausgeschlossen,
-- Cross-Systemhouse-, IDOR/BOLA-, Membership-, Rollen-Spoofing- und Unauthorized-Negativtests,
-- Auditierbarkeit und zeitliche Responsibility-Semantik,
-- vollständige Exact-Head-Security-/CI-/E2E-/Accessibility-/Quality-Gates und Dokumentationsabschluss.
-
-**BSF-03 ist erst nach P5 und Abschlusskonsolidierung DONE. BSF-03D beginnt vorher nicht.**
+Nach finalem PR-#132-Merge ist **BSF-03D — Arbeitspaket-Kategorien (#103)** der nächste Entwicklungsschritt.
 
 ## F-11
 

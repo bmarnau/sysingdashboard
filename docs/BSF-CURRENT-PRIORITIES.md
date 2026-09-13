@@ -32,52 +32,15 @@ Der gemeinsame fachliche Pfad lautet:
 
 `Customer → Project → WorkPackage → Activity → Leistungserbringer`
 
-### BSF-03 — Kundenverantwortung / „Meine Kunden“ (#105) — IN ARBEIT
+### BSF-03 — Kundenverantwortung / Kundensicht (#105) — DONE
 
-Der Fach-/Security-Vertrag ist über PR #118 auf `main` integriert. Das Datenbank-/Security-Fundament P1/P2 ist über PR #127 integriert. Runtime/UI P3/P4 „Meine Kunden“ wurde über PR #128 nach vollständiger Exact-Head-Abnahme integriert.
+P1–P5 sind umgesetzt. `Meine Kunden` bleibt persönliche fail-closed Sicht; `Kundenverantwortung` ist die getrennte systemhausweite Managementsicht ohne zusätzlichen operativen Customer Access.
 
-Aktueller Nachweis P3/P4:
+Nachweise: PR #118, #127, #128 und P5-PR #132; R19–R31; Unit-/Security-/E2E-Verträge; Live-Schema-Prüfung; `docs/BSF-03-CLOSURE-2026-09-13.md`.
 
-- finaler PR-Head: `0a42689be252629a2f6e46885836f18989a5959c`,
-- Merge-Commit: `a9f40cb56aed7bdfd7d0baef2d9023755923967c`,
-- Security #592: PASS,
-- CI #599: PASS,
-- 88 Testdateien, 696 Tests PASS, 4 TODO,
-- Playwright E2E, Accessibility, Technical Debt und `14 · Technical Report & Quality Gate`: PASS,
-- kein Deploy durch den Merge.
+### Nächster Schritt: BSF-03D — Arbeitspaket-Kategorien (#103)
 
-Verbindlich:
-
-- Customer Responsibility ist fachliche Beziehung/Scope, keine globale Rolle,
-- `systemhouse_membership`, `customer_access` und `customer_responsibility` bleiben getrennt,
-- Responsibility allein eröffnet weder Customer-Daten noch Schreibrechte,
-- `Meine Kunden` ist fail-closed die Schnittmenge aus aktivem Konto, aktiver Membership, aktueller Responsibility, Customer Access >= read und `dashboard.view`,
-- Customer Identity bleibt `(systemhouseId, customerId)`,
-- Cross-Systemhouse, Cross-Customer und IDOR/BOLA bleiben DENY,
-- `customer.responsibility.manage` nur für `systemadministrator`, `administrator`, `teamlead`,
-- zulässige Responsibility-Ziele: `systemadministrator`, `administrator`, `teamlead`, `projectmanager`, `engineer`,
-- `viewer` und `customer` sind als Ziel ausgeschlossen,
-- keine Service Role im normalen User-Pfad.
-
-### Nächster kontrollierter Schritt: BSF-03 P5 — Kundenverantwortung verwalten
-
-P5 ist der letzte fachliche Ausbaupunkt innerhalb BSF-03 vor der Abschlusskonsolidierung.
-
-Verbindlicher Scope:
-
-1. aktuellen Responsibility-/Read-Vertrag und `main` analysieren,
-2. einen **engen, datensparsamen Manager-Read-Vertrag** für zulässige Kandidaten bereitstellen,
-3. Self-only-Regeln auf `profiles`, `user_roles` und `systemhouse_membership` **nicht verbreitern**,
-4. verantwortlichen Sysing im Kundendetail anzeigen,
-5. autorisiertes Zuweisen, Ändern und Beenden der Responsibility ermöglichen,
-6. Verwaltung nur für `systemadministrator`, `administrator`, `teamlead`,
-7. Zielrollen nur `systemadministrator`, `administrator`, `teamlead`, `projectmanager`, `engineer`,
-8. `viewer` und `customer` als Ziel strikt ausschließen,
-9. Cross-Systemhouse, IDOR/BOLA, ungültige/beendete Membership, Rollen-Spoofing und unautorisierte Verwaltung negativ testen,
-10. Auditierbarkeit und zeitliche Responsibility-Semantik erhalten,
-11. vollständige Security-/CI-/E2E-/Accessibility-/Quality-Gates sowie Dokumentationssync durchführen.
-
-**BSF-03D wird erst nach P5 und der vollständigen BSF-03-Abschlusskonsolidierung freigegeben.**
+BSF-03D ist der nächste fachliche Sprint: systemhausweite editierbare Kategorien als optionale stabile Auswertungsdimension, ohne implizite Billable-/Prioritäts-/Status-Semantik.
 
 ## Lovable-/Werkzeugsteuerung
 
@@ -94,8 +57,8 @@ Für den aktuellen Betrieb gilt:
 ## Verbindliche operative Reihenfolge
 
 1. **BSF-02 / BSF-02C — DONE**
-2. **BSF-03 — IN ARBEIT; P5 NÄCHSTER SCHRITT**
-3. **BSF-03D — GEPLANT / bis BSF-03-Abschluss gesperrt**
+2. **BSF-03 — DONE**
+3. **BSF-03D — NÄCHSTER SCHRITT / FREIGEGEBEN**
 4. **BSF-03A — GEPLANT**
 5. **BSF-03B — GEPLANT**
 6. **BSF-03E — GEPLANT**

@@ -15,6 +15,7 @@ import {
   Plus,
   Server,
   TrendingUp,
+  Users,
 } from "lucide-react";
 import {
   dashboardData,
@@ -847,6 +848,15 @@ function Dashboard() {
             >
               <Building2 className="size-4" />
               Meine Kunden
+            </Link>
+          </PermissionGate>
+          <PermissionGate permission="customer.responsibility.manage">
+            <Link
+              to="/kundenverantwortung"
+              className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Users className="size-4" />
+              Kundenverantwortung
             </Link>
           </PermissionGate>
         </div>
