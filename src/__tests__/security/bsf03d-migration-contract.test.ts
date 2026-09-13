@@ -39,17 +39,38 @@ describe("BSF-03D Migration — Vertrag (statisch)", () => {
   it("should_detectLegacyUniqueStructurally_when_replacingCatalogKeyUnique", () => {
     // Kein reiner Namens-Drop mehr.
     expect(FLAT).not.toMatch(/DROP CONSTRAINT IF EXISTS reference_value_catalog_id_key_key/i);
-    // Strukturelle Ermittlung: contype 'u' auf public.reference_value über die Spaltenmenge.
-    expect(FLAT).toMatch(/pg_constraint/);
-    expect(FLAT).toMatch(/pg_attribute/);
-    expect(FLAT).toMatch(/contype = 'u'/);
-    expect(FLAT).toMatch(/conrelid = 'public\.reference_value'::regclass/);
-    expect(FLAT).toMatch(/'catalog_id'/);
-    expect(FLAT).toMatch(/'key'/);
-    // Der Drop erfolgt dynamisch über den ermittelten Namen.
-    expect(FLAT).toMatch(
-      /EXECUTE format\('ALTER TABLE public\.reference_value DROP CONSTRAINT %I'/,
+
+    // Review-Fix Runde 2 (MEDIUM-1): Nur der isolierte Ablöse-Block wird geprüft,
+    // damit Tokens aus anderen Abschnitten (FK-Check, Audit-JSON 'key') den Test
+    // nicht fälschlich grün machen.
+    const start = FLAT.indexOf("Abloesung des alten globalen Unique-Vertrags");
+    const end = FLAT.indexOf("CREATE UNIQUE INDEX IF NOT EXISTS reference_value_global_key_unique");
+    expect(start, "Ablöse-Kommentar fehlt").toBeGreaterThan(-1);
+    expect(end, "Partieller Global-Index fehlt").toBeGreaterThan(start);
+    const BLOCK = FLAT.slice(start, end);
+
+    // Strukturelle Ermittlung innerhalb des Blocks.
+    expect(BLOCK).toMatch(/FROM pg_constraint c/);
+    expect(BLOCK).toMatch(/FROM pg_attribute a/);
+    expect(BLOCK).toMatch(/c\.conrelid = 'public\.reference_value'::regclass/);
+    expect(BLOCK).toMatch(/c\.contype = 'u'/);
+    expect(BLOCK).toMatch(/a\.attrelid = c\.conrelid/);
+    expect(BLOCK).toMatch(/a\.attnum = ANY \(c\.conkey\)/);
+
+    // EXAKTER Spaltenmengen-Vergleich: sortiertes array_agg, Gleichheit (kein @>/<@),
+    // genau die beiden Spalten catalog_id und key.
+    const setCompare =
+      /\( SELECT array_agg\(a\.attname::text ORDER BY a\.attname\) FROM pg_attribute a WHERE a\.attrelid = c\.conrelid AND a\.attnum = ANY \(c\.conkey\) \) = ARRAY\['catalog_id', 'key'\]::text\[\]/;
+    expect(BLOCK, "Exakter Mengenvergleich (catalog_id,key) fehlt").toMatch(setCompare);
+    expect(BLOCK).not.toMatch(/@>|<@/);
+    const arrays = [...BLOCK.matchAll(/ARRAY\[([^\]]*)\]/g)].map((m) => m[1]);
+    expect(arrays).toEqual(["'catalog_id', 'key'"]);
+
+    // Der Drop erfolgt dynamisch über den ermittelten Namen und nur per Loop.
+    expect(BLOCK).toMatch(
+      /EXECUTE format\('ALTER TABLE public\.reference_value DROP CONSTRAINT %I', v_conname\)/,
     );
+    expect(BLOCK).not.toMatch(/DROP CONSTRAINT IF EXISTS/i);
     // Begründung ist dokumentiert.
     expect(SQL).toMatch(/verschiedenen Systemh(ä|ae)usern/);
   });
