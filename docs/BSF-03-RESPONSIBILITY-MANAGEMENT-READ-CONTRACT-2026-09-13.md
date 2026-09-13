@@ -1,54 +1,87 @@
-# BSF-03 – Verantwortungsverwaltung: fehlender Runtime-Read-Vertrag
+# BSF-03 – Verantwortungsverwaltung: Runtime-Read-Vertrag
 
-Stand: 2026-09-13\
-Issue: #105\
-Status: **BLOCKED_RUNTIME_READ_CONTRACT** (Analyse, keine Implementierung)
+Stand: 2026-09-13  
+Issue: #105  
+Status: **IMPLEMENTED / VERIFIED IN LIVE SCHEMA**
 
-## 1. Auftrag
+## 1. Ausgangslage
 
-UI „Kunde öffnen → Karte Verantwortung“ mit Anzeige des aktuellen Verantwortlichen,
-Zuweisen/Ändern/Beenden für Inhaber von `customer.responsibility.manage`, ohne neue
-Migration, RLS-Policy, Grants oder SECURITY-DEFINER-RPC.
+Die bestehende RLS war absichtlich zu eng, um einem Teamlead fremde Profile, Rollen oder Memberships direkt lesbar zu machen. Für P5 wurde diese Grenze **nicht** verbreitert.
 
-## 2. Befund (Live-Zustand, read-only geprüft)
+Vor P5 waren deshalb Name des aktuellen Verantwortlichen und eine systemhausgebundene Kandidatenliste für Teamleads nicht sicher verfügbar.
 
-| Bedarf der UI                                                  | Vorhandener Read-Vertrag im User-Kontext                                                                                                                                                     | Ausreichend                   |
-| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| Name des aktuellen Verantwortlichen                            | `profiles`: `profiles_self_select` (nur eigene Zeile) + `profiles_admins_select_all` (nur systemadministrator/administrator). Teamlead sieht fremde Namen nicht.                             | NEIN für teamlead             |
-| Kandidatenliste (Rolle ∈ SA/Admin/Teamlead/PM/Engineer, aktiv) | `user_roles`: `user_roles_read_own` + `user_roles_read_admins`. `is_eligible_responsibility_holder()` ist SECURITY INVOKER und liefert für fremde Personen unter Teamlead-RLS stets `false`. | NEIN für teamlead             |
-| Kandidaten nur aus demselben Systemhouse                       | `systemhouse_membership`: ausschließlich `membership_select_own`. Keine Rolle kann fremde Memberships lesen; `has_active_systemhouse_membership()` ist SECURITY INVOKER.                     | NEIN für alle Rollen          |
-| Aktuelle Responsibility je Kunde                               | `customer_responsibility`: `managers read scoped responsibility` (`can_manage_customer_responsibility`) + `own responsibility readable`.                                                     | JA (nur `user_id`, kein Name) |
-| Zuweisen / Beenden                                             | INSERT-/UPDATE-Policies + `customer_responsibility_target_guard` (SECURITY DEFINER, DB-Autorität).                                                                                           | JA                            |
+## 2. Umgesetzter Vertrag
 
-Einzig `public.avkk_people_directory()` (SECURITY DEFINER) liefert fremde Namen/Rollen
-für Inhaber von `avkk.responsibility.assign`. Sie ist fachlich an AVKK gebunden, filtert
-nicht nach Systemhouse und darf laut Design §9 nicht für die Kundenverantwortung
-zweckentfremdet werden.
+Die Managementsicht verwendet vier öffentliche P5-RPCs:
 
-## 3. Konsequenz
+- `customer_responsibility_management_overview(_systemhouse_id uuid)`,
+- `customer_responsibility_management_candidates(_systemhouse_id uuid)`,
+- `set_customer_responsibility(_systemhouse_id uuid, _customer_id uuid, _user_id uuid)`,
+- `end_customer_responsibility(_systemhouse_id uuid, _customer_id uuid)`.
 
-- Eine sichere Kandidatenliste ohne Cross-Systemhouse-Angebote ist mit heutigen Rechten
-  für **keine** Rolle möglich (Membership fremder Personen nicht lesbar).
-- Teamleads könnten weder den aktuellen Verantwortlichen namentlich anzeigen noch
-  Kandidaten auswählen; nur UUID-Eingabe wäre möglich – UX-seitig unzulässig.
-- Mutationen (Zuweisen/Beenden) wären technisch möglich, aber ohne sichere Auswahl nicht
-  produktreif. Kein Workaround über Service Role oder improvisierte DEFINER-RPC.
+Die öffentlichen RPCs laufen als `SECURITY INVOKER` und werden ausschließlich im Kontext des angemeldeten Benutzers aufgerufen.
 
-## 4. Vorschlag für den fehlenden Vertrag (separater DB-/Security-Auftrag)
+Der notwendige Fremdleseanteil für Kundenkopf, aktuellen Verantwortlichen und Kandidaten liegt in eng begrenzten Funktionen im nicht exponierten Schema `private`. Diese Helper laufen als `SECURITY DEFINER` mit leerem `search_path` und prüfen den Management-Scope explizit.
 
-Eine eng begrenzte, datensparsame Funktion
-`customer_responsibility_candidates(_systemhouse_id uuid)`:
+## 3. Datenminimierung
 
-- SECURITY DEFINER, `search_path = ''`, EXECUTE nur `authenticated`;
-- Ausführung nur bei `can_manage_customer_responsibility(auth.uid(), _systemhouse_id)`;
-- Rückgabe nur `id, display_name, role, status` für Personen mit aktiver Membership im
-  angefragten Systemhouse und `is_eligible_responsibility_holder(id)`;
-- Ergänzend `customer_responsibility_holder_name(_systemhouse_id, _customer_id)` oder
-  Erweiterung obiger Funktion um `include_current`, damit der aktuelle Verantwortliche
-  namentlich lesbar ist.
-- Negativtests R19–R24: fremdes Systemhouse leer, viewer/customer nie enthalten,
-  ohne Manage-Recht leer, keine E-Mail-/Telefon-/MFA-Daten.
+Die Kandidatenschnittstelle liefert ausschließlich:
 
-Alternativ (weniger empfohlen): zusätzliche, eng gefasste SELECT-Policies auf
-`systemhouse_membership`/`profiles` für Manager desselben Systemhouses – erweitert
-Fremdleserechte breiter als nötig.
+- `userId`,
+- `displayName`.
+
+Nicht geliefert werden insbesondere:
+
+- E-Mail,
+- Telefon,
+- MFA-Informationen,
+- Profilbild,
+- sonstige Benutzerstammdaten.
+
+`viewer` und `customer` sind als Ziel ausgeschlossen. Zulässig sind nur `systemadministrator`, `administrator`, `teamlead`, `projectmanager` und `engineer` mit aktiver Membership im betreffenden Systemhaus.
+
+## 4. Bestehende RLS bleibt erhalten
+
+Keine breite Manager-SELECT-Policy wurde ergänzt auf:
+
+- `profiles`,
+- `user_roles`,
+- `systemhouse_membership`,
+- `customer`.
+
+Damit bleibt die bisherige Self-only-/Customer-Access-Grenze unverändert. Die Verwaltungsberechtigung erzeugt **keinen operativen Kundenzugriff**.
+
+## 5. Management-Scope
+
+`customer.responsibility.manage` bleibt auf folgende Rollen beschränkt:
+
+- `systemadministrator`,
+- `administrator`,
+- `teamlead`.
+
+Diese Rollen dürfen Kundenverantwortung für alle Kunden des eigenen Systemhauses verwalten, auch wenn sie selbst keinen `customer_access` für den Kunden besitzen. Projekte, Arbeitspakete und Tätigkeiten bleiben dadurch weiterhin unsichtbar, solange der operative Customer-Scope fehlt.
+
+Cross-Systemhouse bleibt DENY.
+
+## 6. Lifecycle
+
+- Zuweisen legt die aktive Responsibility an.
+- Wechseln beendet die bisherige Responsibility und legt die neue Responsibility atomar in derselben Transaktion an.
+- Ein ungültiges Ziel rollt den gesamten Wechsel zurück.
+- Beenden verwendet Lifecycle-Historisierung statt DELETE.
+- Gleiches Ziel erneut setzen ist idempotent.
+- Bereits beendete Responsibility erneut beenden ist idempotent.
+- Der bestehende Unique-Index verhindert zwei gleichzeitig aktive primäre Verantwortliche je Kunde.
+
+## 7. Nachweise
+
+- Migration: `20260913150000_bsf03_p5_responsibility_management`
+- SQL-Vertrag: `supabase/tests/bsf-03-p5-responsibility-management.sql` (R19–R31)
+- Providerneutraler Fachvertrag: `src/lib/customer-data/customer-responsibility-management.ts`
+- Supabase-Adapter: `src/integrations/supabase/customer-responsibility-management-adapter.ts`
+- Serverfunktionen: `src/lib/customer-data-runtime/customer-responsibility-management.functions.ts`
+- UI: `/kundenverantwortung`
+- E2E: `e2e/specs/security/customer-responsibility-management.spec.ts`
+- Abschluss: `docs/BSF-03-CLOSURE-2026-09-13.md`
+
+Read-only gegen die Lovable/Supabase-Umgebung verifiziert: öffentliche P5-RPCs sind INVOKER; private Helper sind DEFINER mit leerem `search_path`; `authenticated` besitzt die vorgesehenen Execute-Rechte, `anon`/`PUBLIC` nicht.
