@@ -1,6 +1,6 @@
 # Security-Scan-Report
 
-- **Generiert:** 2026-09-13T22:25:28.426Z
+- **Generiert:** 2026-09-13T22:32:57.678Z
 - **Dateien geprüft:** 486
 - **Regeln:** 22
 - **CRITICAL:** 0 · **HIGH:** 0 · **MEDIUM:** 0
