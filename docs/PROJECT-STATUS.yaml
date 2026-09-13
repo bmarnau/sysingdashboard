@@ -59,14 +59,14 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "BSF-02"
-  currentSprintTitle: "Kundenmodell und minimale gemeinsame Daten-/Read-Basis"
-  currentSprintStatus: "next"
-  nextSprint: "BSF-03"
-  previousSprint: "BSF-01"
+  currentSprint: "BSF-03"
+  currentSprintTitle: "Kundenverantwortung und Kundensicht"
+  currentSprintStatus: "in-progress"
+  nextSprint: "BSF-03D"
+  previousSprint: "BSF-02"
   previousSprintStatus: "completed"
   releaseReadiness: "passed"
-  testsPassing: 622
+  testsPassing: 696
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
@@ -100,8 +100,8 @@ platforms:
       role: "Maßgebliche Quelle für Code und Dokumentation"
       required: true
     localWorkspace:
-      role: "Lokale Entwicklung mit Codex und VS Code"
-      required: true
+      role: "Optionale lokale Entwicklung mit Codex, VS Code und Bun bei vorhandenem Repository-Checkout"
+      required: false
   runtime:
     current:
       - "Lovable App"
@@ -172,6 +172,9 @@ phases:
       für spätere Integrationen schaffen.
     outcomes:
       - "BSF-01 Planungs- und Architekturbaseline mit ADR-0029"
+      - "BSF-02/02C minimale gemeinsame Mehrbenutzer-Daten-/Read-Basis vollständig integriert"
+      - "BSF-03 P1/P2 Customer-Responsibility-Datenbank-/Security-Fundament integriert"
+      - "BSF-03 P3/P4 Runtime/UI Meine Kunden und Kundendetail integriert und vollständig gegatet"
 
 completedSprints:
   - id: "BSF-01"
@@ -271,7 +274,7 @@ completedSprints:
       der Persistenz sowie Finalisierung: Architekturdokument, Dialog-Dokumentation,
       Validator-Tests und neu erzeugter Prüfbericht (v1.50.0).
   - id: "07A"
-    title: "AVKK-Führungsmodell und Reference-Data-Architektur"
+    title: "AVKK-Führungsmodell und Reference Data als Plattformdienst"
     version: "1.51.0"
     status: "completed"
     summary: >-
@@ -321,7 +324,7 @@ completedSprints:
 roadmap:
   - id: "BSF-02"
     title: "Kundenmodell und minimale gemeinsame Daten-/Read-Basis"
-    status: "next"
+    status: "completed"
     priority: "high"
     goal: >-
       Kunde als stabile Fachentität mit systemhausgebundener Identität einführen
@@ -337,22 +340,35 @@ roadmap:
       - "Cross-Systemhaus- und Cross-Customer-Negativtests vorhanden"
   - id: "BSF-03"
     title: "Kundenverantwortung und Kundensicht"
-    status: "planned"
+    status: "in-progress"
     priority: "high"
-    goal: "Meine Kunden und kundenbezogene Sichtbarkeit als serverseitig erzwungenen Scope umsetzen."
+    goal: "Meine Kunden und kundenbezogene Sichtbarkeit als serverseitig erzwungenen Scope umsetzen und Responsibility kontrolliert verwaltbar machen."
     dependencies:
       - "BSF-02"
     exitCriteria:
       - "Kundenverantwortung als Beziehung/Scope umgesetzt"
+      - "Meine Kunden und Kundendetail fail-closed umgesetzt"
       - "Sicht- und Schreibrechte getrennt"
-      - "RBAC/RLS-Kundenscope mit Negativtests PASS"
+      - "P5 Responsibility-Management mit engem datensparsamen Manager-Read-Vertrag umgesetzt"
+      - "RBAC/RLS-Kundenscope und Cross-Systemhouse/IDOR-Negativtests PASS"
+      - "Vollständige Exact-Head-Gates und Dokumentationsabschluss PASS"
+  - id: "BSF-03D"
+    title: "Arbeitspaket-Kategorien"
+    status: "planned"
+    priority: "high"
+    goal: "Systemhausweite editierbare AP-Kategorien als optionale stabile Auswertungsdimension bereitstellen."
+    dependencies:
+      - "BSF-03"
+    exitCriteria:
+      - "Kategorie sicher pflegbar und filterbar"
+      - "Viewer ohne Write"
   - id: "BSF-03A"
     title: "Projektmanager-Leistungssicht und Controlling"
     status: "planned"
     priority: "high"
     goal: "Read-only-Leistungssicht nach Zeitraum, Kunde, Projekt und Tätigkeiten bereitstellen."
     dependencies:
-      - "BSF-03"
+      - "BSF-03D"
     exitCriteria:
       - "Summen und Drill-down im zulässigen Projekt-/Verantwortungsscope"
       - "Keine Teamlead-Finalisierungsrechte"
@@ -368,13 +384,33 @@ roadmap:
       - "Finaler unveränderbarer Snapshot"
       - "Doppelabrechnungsschutz und Audit serverseitig"
       - "Kundenausgabe ohne Namen des Leistungserbringers"
+  - id: "BSF-03E"
+    title: "Vertretungs- und Personensicht"
+    status: "planned"
+    priority: "medium"
+    goal: "Customer Responsibility, Project Responsibility und Vertretung auditierbar getrennt und kombinierbar abbilden."
+    dependencies:
+      - "BSF-03B"
+    exitCriteria:
+      - "Keine neue globale Rolle oder implizite Write-Rechte"
+      - "Keine Gesundheitsdaten"
+  - id: "BSF-03C"
+    title: "Kunden-PDF und optionales Kundenpaket"
+    status: "planned"
+    priority: "medium"
+    goal: "Datenminimierte reproduzierbare Kundensicht als PDF bereitstellen."
+    dependencies:
+      - "BSF-03E"
+    exitCriteria:
+      - "Customer-Scope nachgewiesen"
+      - "Keine internen Sicherheitsdetails oder automatische Nennung des Leistungserbringers"
   - id: "BSF-DOC-01"
     title: "Dokumentationskonsolidierung"
     status: "planned"
     priority: "high"
     goal: "Kontextsensitive Hilfe, Benutzerhandbuch, technische Dokumentation und Entwicklungstagebuch vollständig synchronisieren."
     dependencies:
-      - "BSF-03B"
+      - "BSF-03C"
     exitCriteria:
       - "Keine bekannte relevante Dokumentationsdrift"
       - "Kontextsensitive Hilfe entspricht dem realen Funktionsstand"
@@ -408,13 +444,23 @@ roadmap:
     exitCriteria:
       - "Zentrale/synchronisierte Datenstrategie fachlich und technisch bestätigt"
       - "Migration und Providergrenzen dokumentiert"
+  - id: "BSF-04A"
+    title: "Vorlagen und wiederkehrende Arbeitspakete/Tätigkeiten"
+    status: "planned"
+    priority: "medium"
+    goal: "Editierbare Templates und idempotente Serien providerneutral auf der bestätigten Datenstrategie aufbauen."
+    dependencies:
+      - "BSF-04"
+    exitCriteria:
+      - "Vorschlag, Vorschau und Instanziierung getrennt"
+      - "Serienerzeugung idempotent"
   - id: "BSF-05"
     title: "Canonical Import Model und SharePoint-Contract"
     status: "planned"
     priority: "medium"
     goal: "Partielle Quelldaten, Provenienz, Idempotenz und READ/SYNC providerneutral absichern."
     dependencies:
-      - "BSF-04"
+      - "BSF-04A"
     exitCriteria:
       - "Importvertrag PASS"
       - "Kein Cross-Systemhaus-Matching"
@@ -607,7 +653,7 @@ adrs:
 
 quality:
   tests:
-    passing: 622
+    passing: 696
     failing: 0
     skipped: 4
     coverage: "recorded-in-ci-artifact"
@@ -645,9 +691,12 @@ releaseManagement:
     - "docs/ARCHITECTURE.md"
     - "docs/BSF-CURRENT-PRIORITIES.md"
     - "docs/BSF-01-ARCHITECTURE-BASELINE.md"
+    - "docs/BSF-03-P1-TARGET-VALIDATION-2026-09-13.md"
+    - "docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md"
+    - "docs/CODEX-GIT-CI-RULE.md"
     - "docs/ADR/0029-systemhouse-customer-scope.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
-  nextReleaseTarget: "BSF-02 Kundenmodell und minimale gemeinsame Daten-/Read-Basis"
+  nextReleaseTarget: "BSF-03 P5 Kundenverantwortung verwalten"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"
@@ -682,13 +731,13 @@ risks:
     probability: "medium"
     impact: "medium"
     status: "open"
-    mitigation: "Manifest-, Doku- und Tech-Debt-Prüfungen laufen als CI-Gate; ab BSF ist Dokumentationssynchronität Teil der Definition of Done."
+    mitigation: "Manifest-, Doku- und Tech-Debt-Prüfungen laufen als CI-Gate; laufende Status- und Planungsdateien werden nach jedem BSF-Meilenstein synchronisiert."
   - id: "RISK-LOCAL-MULTIUSER"
     category: "architecture"
     probability: "high"
     impact: "high"
     status: "open"
-    mitigation: "BSF-02 schafft die minimal notwendige gemeinsame Daten-/Read-Basis; die vollständige Datenhaltungsstrategie bleibt BSF-04."
+    mitigation: "BSF-02/02C hat die minimal notwendige gemeinsame Daten-/Read-Basis geliefert; die vollständige zentrale/synchronisierte Datenhaltungsstrategie und Local-First-Ablösung bleiben BSF-04."
 
 mcpAndAgents:
   status: "planned"

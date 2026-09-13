@@ -1,11 +1,11 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-09-09  
+Stand: 2026-09-13  
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Operative Detailplanung: `docs/SPRINT-PLAN-MVP-BSF.md`  
 Dauerhafter Wiederanlaufpunkt: Issue #35  
-Historische Lovable-Planbasis: `docs/LOVABLE-PROMPT-PLAN-2026-09-06.md`
+BSF-03-Steuerung: Issue #105
 
 ## Zweck
 
@@ -34,7 +34,17 @@ Der gemeinsame fachliche Pfad lautet:
 
 ### BSF-03 — Kundenverantwortung / „Meine Kunden“ (#105) — IN ARBEIT
 
-Der Fach-/Security-Vertrag ist über PR #118 auf `main` integriert.
+Der Fach-/Security-Vertrag ist über PR #118 auf `main` integriert. Das Datenbank-/Security-Fundament P1/P2 ist über PR #127 integriert. Runtime/UI P3/P4 „Meine Kunden“ wurde über PR #128 nach vollständiger Exact-Head-Abnahme integriert.
+
+Aktueller Nachweis P3/P4:
+
+- finaler PR-Head: `0a42689be252629a2f6e46885836f18989a5959c`,
+- Merge-Commit: `a9f40cb56aed7bdfd7d0baef2d9023755923967c`,
+- Security #592: PASS,
+- CI #599: PASS,
+- 88 Testdateien, 696 Tests PASS, 4 TODO,
+- Playwright E2E, Accessibility, Technical Debt und `14 · Technical Report & Quality Gate`: PASS,
+- kein Deploy durch den Merge.
 
 Verbindlich:
 
@@ -49,39 +59,43 @@ Verbindlich:
 - `viewer` und `customer` sind als Ziel ausgeschlossen,
 - keine Service Role im normalen User-Pfad.
 
-Noch offen:
+### Nächster kontrollierter Schritt: BSF-03 P5 — Kundenverantwortung verwalten
 
-1. **BSF-03 1A** — Schema / RBAC / RLS / Grants / Generated Types / technische Doku.
-2. **BSF-03 1B** — R01–R18 / offizieller Security Advisor / Null-Residuen / BSF-02C-Regression.
-3. Danach Runtime/UI `Meine Kunden` und Kundendetail über den vorhandenen Shared-Projection-Read-Pfad.
-4. Vollständige Exact-Head-CI, Accessibility, Rollen-Preview, Import/Export-/Backup-Auswirkungen und Abschlussdokumentation.
+P5 ist der letzte fachliche Ausbaupunkt innerhalb BSF-03 vor der Abschlusskonsolidierung.
 
-## Tägliche Lovable-Prompt-Steuerung
+Verbindlicher Scope:
 
-Der unveränderliche Ausgangsplan steht in `docs/LOVABLE-PROMPT-PLAN-2026-09-06.md`. Die operative Bilanz berücksichtigt tatsächlich gestartete Läufe, auch wenn ein Lauf nach einem Precheck ohne Implementierung endet.
+1. aktuellen Responsibility-/Read-Vertrag und `main` analysieren,
+2. einen **engen, datensparsamen Manager-Read-Vertrag** für zulässige Kandidaten bereitstellen,
+3. Self-only-Regeln auf `profiles`, `user_roles` und `systemhouse_membership` **nicht verbreitern**,
+4. verantwortlichen Sysing im Kundendetail anzeigen,
+5. autorisiertes Zuweisen, Ändern und Beenden der Responsibility ermöglichen,
+6. Verwaltung nur für `systemadministrator`, `administrator`, `teamlead`,
+7. Zielrollen nur `systemadministrator`, `administrator`, `teamlead`, `projectmanager`, `engineer`,
+8. `viewer` und `customer` als Ziel strikt ausschließen,
+9. Cross-Systemhouse, IDOR/BOLA, ungültige/beendete Membership, Rollen-Spoofing und unautorisierte Verwaltung negativ testen,
+10. Auditierbarkeit und zeitliche Responsibility-Semantik erhalten,
+11. vollständige Security-/CI-/E2E-/Accessibility-/Quality-Gates sowie Dokumentationssync durchführen.
 
-<!-- prettier-ignore -->
-| Sprint | Plan laut Snapshot | Verbraucht | Noch erwartet | Status / Lovable-Grund |
-|---|---:|---:|---:|---|
-| BSF-02C Abschluss | 0–1 | **1** | **0** | DONE; offizieller B2-Advisor-/Abnahmelauf |
-| BSF-03 | 1–2 | **1** | **2–3** | IN ARBEIT; erster Lauf endete nach Precheck ohne Implementierung; 1A + 1B + ggf. UI/Preview offen |
-| BSF-03D | 1–2 | 0 | 1–2 | Stammdaten-/UI-Preview; DB nur nach Governance |
-| BSF-03A | 2–3 | 0 | 2–3 | Filter, Tabellen, Summen, Rollen-Preview |
-| BSF-03B | 2–3 | 0 | 2–3 | Prüfsicht, Finalisierung, Export-Preview |
-| BSF-03E | 1–2 | 0 | 1–2 | Personensicht / Vertretungs-Preview |
-| BSF-03C | 1–2 | 0 | 1–2 | Kunden-PDF / Preview |
-| BSF-DOC-01 | 0 | 0 | 0 | Dokumentationskonsolidierung außerhalb Lovable |
-| BSF-DOC-02 | 0 | 0 | 0 | SYSING-001/TDF außerhalb Lovable |
-| BSF-DOC-03 | 1–2 | 0 | 1–2 | Navigation / Board-Preview |
-| BSF-04 | 2–3 | 0 | 2–3 | Persistenz-/Providergrenzen; DB-Arbeit nur nach Governance |
-| BSF-04A | 2–3 | 0 | 2–3 | Template-/Serien-Preview und ggf. kontrollierte Persistenz |
-| **GESAMT bis einschließlich BSF-04A** | **13–23** | **2** | **13–23** | Restschätzung erhöht, weil der erste BSF-03-Lauf nur Precheck war |
+**BSF-03D wird erst nach P5 und der vollständigen BSF-03-Abschlusskonsolidierung freigegeben.**
+
+## Lovable-/Werkzeugsteuerung
+
+Der historische Ausgangsplan bleibt in `docs/LOVABLE-PROMPT-PLAN-2026-09-06.md` erhalten. Eine neuere Promptplanung bis BSF-07 liegt in PR #126 als Draft und ist noch nicht in `main` integriert.
+
+Für den aktuellen Betrieb gilt:
+
+- Credits werden nicht künstlich verbraucht,
+- Lovable nur für geeignete UI-/Preview-/plattformnahe Aufgaben und kontrollierte DB-Ausführung gemäß Governance,
+- Git-/CI-Fehler bevorzugt mit Codex; wenn Codex nicht verfügbar ist, kleinstmögliches geeignetes Fallback-Werkzeug,
+- mechanische Kleinfehler nach `docs/CODEX-GIT-CI-RULE.md` proportional behandeln,
+- keine rückwirkende Schätzung bereits verbrauchter Lovable-Prompts; die Promptbilanz wird nach Abschluss von BSF-03 neu konsolidiert.
 
 ## Verbindliche operative Reihenfolge
 
 1. **BSF-02 / BSF-02C — DONE**
-2. **BSF-03 — IN ARBEIT**
-3. **BSF-03D — GEPLANT**
+2. **BSF-03 — IN ARBEIT; P5 NÄCHSTER SCHRITT**
+3. **BSF-03D — GEPLANT / bis BSF-03-Abschluss gesperrt**
 4. **BSF-03A — GEPLANT**
 5. **BSF-03B — GEPLANT**
 6. **BSF-03E — GEPLANT**
@@ -165,6 +179,7 @@ Ein Fachpunkt ist erst DONE, wenn neben Code und Tests alle betroffenen Evidenz-
 - kontextsensitive Hilfe / Benutzerhandbuch, sofern UI oder Bedienung betroffen ist,
 - Entwicklungstagebuch bzw. Abschlussnachweis,
 - `docs/CURRENT-STATUS.md`, soweit betroffen,
+- `docs/PROJECT-STATUS.yaml`, soweit betroffen,
 - technischer Prüfbericht / CI-Quality-Gate-Evidenz,
 - Security-/RBAC-/RLS-Nachweise,
 - SYSING-001 ab seiner BSF-Fortschreibung,
@@ -180,4 +195,4 @@ Die fachliche Customer-Identität bleibt:
 
 ## Fachlicher roter Faden
 
-`BSF-03 → BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → Dokumentationsblock → BSF-04 → BSF-04A → BSF-05 → BSF-06 → BSF-07 → BSF-09 → BSF-10 → BSF-FINAL → INTEGRATION-READINESS`
+`BSF-03/P5 → BSF-03-Abschluss → BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → Dokumentationsblock → BSF-04 → BSF-04A → BSF-05 → BSF-06 → BSF-07 → BSF-09 → BSF-10 → BSF-FINAL → INTEGRATION-READINESS`
