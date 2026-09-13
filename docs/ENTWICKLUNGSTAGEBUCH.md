@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-13 · Dashboard-Version 1.61.0
+Stand: 2026-09-13 · Dashboard-Version 1.62.0
 
 ## Vision
 
@@ -898,3 +898,13 @@ Dokumentation: `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md`.
 - UI-Shell-Titel nach unabhängigem Review test-first korrigiert.
 - Abschlussnachweis: `docs/BSF-03-CLOSURE-2026-09-13.md`.
 - Nächster Sprint nach finalem Merge: **BSF-03D — Arbeitspaket-Kategorien**.
+
+## 2026-09-13 — Version 1.62.0 — BSF-03D Arbeitspaket-Kategorien (implemented, verification package pending)
+
+- Arbeitspaket-Kategorien als editierbare, systemhausweite Referenzdaten (`workpackage.category`, Scope `systemhouse`, keine Seed-Werte, Key unveränderlich, deaktivieren statt löschen).
+- `WorkPackage.categoryKey?: string | null`; Default keine Kategorie, maximal eine; Tags unabhängig; keine Ableitung von billable/priority/status.
+- Reference Data um `scope_type`/`systemhouse_id`, partielle Unique-Indizes, Scope-Trigger und History-Scope erweitert; AVKK-Kataloge bleiben global.
+- JSON-Schema 1.2.0, Import/Export/Backup rückwärtskompatibel und fail-safe bei unbekannter/deaktivierter Kategorie.
+- Paket V: SQL-Artefakt T01–T16 16/16 PASS (eine Transaktion, Rollback, DB dauerhaft unverändert), Live-Schema PASS, Security Advisor ERROR 0 / CRITICAL 0 / WARN 2 (nur SEC-01-Baseline).
+- Review-Fix-Runden: strukturelle Unique-Ablösung, conrelid-qualifizierte FK-Prüfung, Cache-Normalisierung alter Snapshots, gehärtete statische Migrationsverträge.
+- Offen: vollständiger Gate-Lauf (Paket Q) und finaler Governance-Cleanup des erneut eingespielten Preview-Auth-Brokers. Nachweis: `docs/BSF-03D-VERIFICATION-2026-09-13.md`.
