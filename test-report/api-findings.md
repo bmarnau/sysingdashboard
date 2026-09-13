@@ -1,6 +1,6 @@
 # API Discovery — Findings
 
-Generated: 2026-09-13T22:28:05.392Z
+Generated: 2026-09-13T22:34:55.282Z
 Dashboard: 1.58.0 · Commit: 88cde9a
 
 ## Zusammenfassung

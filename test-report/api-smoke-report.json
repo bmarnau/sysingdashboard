@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-09-13T22:28:05.391Z",
+  "generatedAt": "2026-09-13T22:34:55.282Z",
   "dashboardVersion": "1.58.0",
   "commit": "88cde9a",
   "counts": {
@@ -49,7 +49,7 @@
           "detail": "status=405"
         }
       ],
-      "duration": 535.7073970000001,
+      "duration": 611.2171149999995,
       "path": "/api/public/auth-config",
       "classification": "public"
     },
@@ -85,7 +85,7 @@
           "detail": "status=405"
         }
       ],
-      "duration": 18.404865000000427,
+      "duration": 37.044222000000445,
       "path": "/api/status",
       "classification": "public"
     },
@@ -133,7 +133,7 @@
           "detail": "status=401"
         }
       ],
-      "duration": 216.8922789999997,
+      "duration": 238.74526499999956,
       "path": "/api/sync",
       "classification": "privileged"
     }

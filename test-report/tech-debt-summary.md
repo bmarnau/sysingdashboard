@@ -9,8 +9,8 @@
 | High | 2 |
 | Medium | 6 |
 | Low + Info | 51 |
-| Neu seit Vorlauf | 3 |
-| Behoben seit Vorlauf | 2 |
+| Neu seit Vorlauf | 1 |
+| Behoben seit Vorlauf | 1 |
 
 ## Top-10 nach Priorität
 

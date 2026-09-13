@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T22:25:29.140Z",
-  "totalSize": 11748046,
+  "generatedAt": "2026-09-13T22:32:58.356Z",
+  "totalSize": 11762052,
   "top": [
     {
-      "path": "client/assets/dashboard-wEfjl-8M.js",
-      "size": 1312594
+      "path": "client/assets/dashboard-CcNHH5-N.js",
+      "size": 1318225
     },
     {
       "path": "client/assets/pdf.worker.min-qwK7q_zL.mjs",
@@ -15,11 +15,11 @@
       "size": 777366
     },
     {
-      "path": "server/_ssr/dashboard-BwGRaC-B.mjs",
-      "size": 748459
+      "path": "server/_ssr/dashboard-B3w26MPI.mjs",
+      "size": 754305
     },
     {
-      "path": "client/assets/index-BPdrabOu.js",
+      "path": "client/assets/index-BaFIPyw2.js",
       "size": 667574
     },
     {
@@ -35,7 +35,7 @@
       "size": 476351
     },
     {
-      "path": "client/assets/PdfCanvasViewer-dmWZ_B5R.js",
+      "path": "client/assets/PdfCanvasViewer-DxeYU7M1.js",
       "size": 426743
     },
     {
@@ -51,7 +51,7 @@
       "size": 282719
     },
     {
-      "path": "client/assets/TechnicalReportDialog-X71_3exQ.js",
+      "path": "client/assets/TechnicalReportDialog-aT8GwsP2.js",
       "size": 248475
     },
     {
@@ -65,8 +65,8 @@
   ],
   "all": [
     {
-      "path": "client/assets/dashboard-wEfjl-8M.js",
-      "size": 1312594
+      "path": "client/assets/dashboard-CcNHH5-N.js",
+      "size": 1318225
     },
     {
       "path": "client/assets/pdf.worker.min-qwK7q_zL.mjs",
@@ -77,11 +77,11 @@
       "size": 777366
     },
     {
-      "path": "server/_ssr/dashboard-BwGRaC-B.mjs",
-      "size": 748459
+      "path": "server/_ssr/dashboard-B3w26MPI.mjs",
+      "size": 754305
     },
     {
-      "path": "client/assets/index-BPdrabOu.js",
+      "path": "client/assets/index-BaFIPyw2.js",
       "size": 667574
     },
     {
@@ -97,7 +97,7 @@
       "size": 476351
     },
     {
-      "path": "client/assets/PdfCanvasViewer-dmWZ_B5R.js",
+      "path": "client/assets/PdfCanvasViewer-DxeYU7M1.js",
       "size": 426743
     },
     {
@@ -113,7 +113,7 @@
       "size": 282719
     },
     {
-      "path": "client/assets/TechnicalReportDialog-X71_3exQ.js",
+      "path": "client/assets/TechnicalReportDialog-aT8GwsP2.js",
       "size": 248475
     },
     {
@@ -129,7 +129,7 @@
       "size": 160855
     },
     {
-      "path": "client/assets/index.es-CRK_Jp5A.js",
+      "path": "client/assets/index.es-B3jZsmZv.js",
       "size": 159222
     },
     {
@@ -157,7 +157,7 @@
       "size": 99205
     },
     {
-      "path": "server/_ssr/ImportExportDialog-BSiowUwJ.mjs",
+      "path": "server/_ssr/ImportExportDialog-UXNDmNYQ.mjs",
       "size": 80805
     },
     {
@@ -165,11 +165,11 @@
       "size": 78463
     },
     {
-      "path": "server/_ssr/DevDiaryDialog-BbJG3783.mjs",
-      "size": 68452
+      "path": "server/_ssr/DevDiaryDialog-CF4W1lWB.mjs",
+      "size": 69715
     },
     {
-      "path": "server/_ssr/server-C9Ff3AE5.mjs",
+      "path": "server/_ssr/server-Ba0yR0tZ.mjs",
       "size": 67679
     },
     {
@@ -181,8 +181,8 @@
       "size": 66290
     },
     {
-      "path": "client/assets/DevDiaryDialog-DpIvtNSc.js",
-      "size": 62734
+      "path": "client/assets/DevDiaryDialog-DKrLofz3.js",
+      "size": 63999
     },
     {
       "path": "server/_libs/pako.mjs",
@@ -205,15 +205,15 @@
       "size": 52285
     },
     {
-      "path": "server/_ssr/ExportDialog-DGZDApUC.mjs",
+      "path": "server/_ssr/ExportDialog-C09nz9dG.mjs",
       "size": 50683
     },
     {
-      "path": "client/assets/ImportExportDialog-4Hw1O0cd.js",
+      "path": "client/assets/ImportExportDialog-BDnETHkt.js",
       "size": 49927
     },
     {
-      "path": "client/assets/select-oBjUsq7m.js",
+      "path": "client/assets/select-BapA59II.js",
       "size": 49232
     },
     {
@@ -221,7 +221,7 @@
       "size": 48446
     },
     {
-      "path": "server/_ssr/router-BEz28B-b.mjs",
+      "path": "server/_ssr/router-BE08Mgs0.mjs",
       "size": 48321
     },
     {
@@ -233,11 +233,11 @@
       "size": 42541
     },
     {
-      "path": "server/_ssr/AzureDataDialog-9QS6aRWE.mjs",
+      "path": "server/_ssr/AzureDataDialog-D94XKLnR.mjs",
       "size": 39208
     },
     {
-      "path": "server/_ssr/DemoDataDialog-BNI34rMV.mjs",
+      "path": "server/_ssr/DemoDataDialog-9WhD6wRx.mjs",
       "size": 36770
     },
     {
@@ -245,11 +245,11 @@
       "size": 33291
     },
     {
-      "path": "server/_ssr/UserManualDialog-BdG_pgyD.mjs",
+      "path": "server/_ssr/UserManualDialog-pNFiWh02.mjs",
       "size": 30791
     },
     {
-      "path": "server/_ssr/PerformanceReport-BhAlL2CZ.mjs",
+      "path": "server/_ssr/PerformanceReport-DQwwuor9.mjs",
       "size": 29977
     },
     {
@@ -265,19 +265,19 @@
       "size": 28513
     },
     {
-      "path": "server/_ssr/SystemStatusDialog-DzxzpKur.mjs",
-      "size": 27684
+      "path": "server/_ssr/SystemStatusDialog-Cx4h65QG.mjs",
+      "size": 27685
     },
     {
       "path": "client/assets/utils-DCADjnpI.js",
       "size": 27547
     },
     {
-      "path": "client/assets/dialog-8hwCifvm.js",
+      "path": "client/assets/dialog-BDcWJAzp.js",
       "size": 27428
     },
     {
-      "path": "client/assets/ExportDialog-B1iKZn1u.js",
+      "path": "client/assets/ExportDialog-BzkSM8vv.js",
       "size": 26631
     },
     {
@@ -289,7 +289,7 @@
       "size": 25981
     },
     {
-      "path": "server/_ssr/LogViewerDialog-BziGPhP0.mjs",
+      "path": "server/_ssr/LogViewerDialog-DuYj1KIy.mjs",
       "size": 25538
     },
     {
@@ -301,19 +301,19 @@
       "size": 24058
     },
     {
-      "path": "server/_ssr/UserManagementDialog-BAGti26T.mjs",
+      "path": "server/_ssr/UserManagementDialog-Uu6p0Dw8.mjs",
       "size": 23902
     },
     {
-      "path": "server/_ssr/WorkingTimeModelsDialog-B5UWTq1H.mjs",
+      "path": "server/_ssr/WorkingTimeModelsDialog-BXh_czjy.mjs",
       "size": 23032
     },
     {
-      "path": "client/assets/DemoDataDialog-BXSoffH5.js",
+      "path": "client/assets/DemoDataDialog-DWMe52qJ.js",
       "size": 22596
     },
     {
-      "path": "server/_ssr/index-CiGf5cYF.mjs",
+      "path": "server/_ssr/index-gO25CVgU.mjs",
       "size": 21356
     },
     {
@@ -325,11 +325,11 @@
       "size": 20243
     },
     {
-      "path": "client/assets/AzureDataDialog-BjBJWKO3.js",
+      "path": "client/assets/AzureDataDialog-CZlSwH3F.js",
       "size": 20042
     },
     {
-      "path": "server/_ssr/BackendAdminDialog-DKS5wTt3.mjs",
+      "path": "server/_ssr/BackendAdminDialog-C_6ENw6V.mjs",
       "size": 17744
     },
     {
@@ -337,15 +337,15 @@
       "size": 17215
     },
     {
-      "path": "server/_ssr/DownloadCenterDialog-CXAqictS.mjs",
+      "path": "server/_ssr/DownloadCenterDialog-jPAqX6zh.mjs",
       "size": 17104
     },
     {
-      "path": "server/_systemhouseId._customerId-BKxtULdd.mjs",
+      "path": "server/_systemhouseId._customerId-QsyxDCj9.mjs",
       "size": 16041
     },
     {
-      "path": "client/assets/UserManualDialog-9Xr35XWw.js",
+      "path": "client/assets/UserManualDialog-D8PjFzNl.js",
       "size": 15823
     },
     {
@@ -353,15 +353,15 @@
       "size": 15696
     },
     {
-      "path": "client/assets/PerformanceReport-EpjTe2m_.js",
+      "path": "client/assets/PerformanceReport-KZ7Gm0st.js",
       "size": 15248
     },
     {
-      "path": "server/_ssr/BackupDialog-DzymI_qm.mjs",
+      "path": "server/_ssr/BackupDialog-Cp6cnqsj.mjs",
       "size": 14761
     },
     {
-      "path": "server/_ssr/SaveTargetDialog-Cc4bz-6L.mjs",
+      "path": "server/_ssr/SaveTargetDialog-BunkNoTK.mjs",
       "size": 14745
     },
     {
@@ -369,15 +369,15 @@
       "size": 14337
     },
     {
-      "path": "server/_ssr/auth-CAbXwWjs.mjs",
+      "path": "server/_ssr/auth-DFKynn8u.mjs",
       "size": 13834
     },
     {
-      "path": "server/_ssr/WorkPackageCategoryDialog-RJcooyI5.mjs",
+      "path": "server/_ssr/WorkPackageCategoryDialog-DRXXeoGK.mjs",
       "size": 13681
     },
     {
-      "path": "client/assets/SystemStatusDialog-Dbte8Hta.js",
+      "path": "client/assets/SystemStatusDialog-BSsUBoeL.js",
       "size": 13575
     },
     {
@@ -393,7 +393,7 @@
       "size": 13344
     },
     {
-      "path": "client/assets/UserManagementDialog-BbMarcCS.js",
+      "path": "client/assets/UserManagementDialog-CVFpfkxH.js",
       "size": 13110
     },
     {
@@ -405,7 +405,7 @@
       "size": 12990
     },
     {
-      "path": "client/assets/LogViewerDialog-DJuSD3R8.js",
+      "path": "client/assets/LogViewerDialog-gc8wSC8F.js",
       "size": 12641
     },
     {
@@ -417,15 +417,15 @@
       "size": 11474
     },
     {
-      "path": "client/assets/WorkingTimeModelsDialog-D_mwYyWS.js",
+      "path": "client/assets/WorkingTimeModelsDialog-CoaEAseY.js",
       "size": 10952
     },
     {
-      "path": "server/_ssr/route-XB3KtHhc.mjs",
+      "path": "server/_ssr/route-Wjo6WUnt.mjs",
       "size": 10745
     },
     {
-      "path": "server/_ssr/auth-accounts.functions-Bl18OG2g.mjs",
+      "path": "server/_ssr/auth-accounts.functions-CeV3oFi0.mjs",
       "size": 10406
     },
     {
@@ -437,7 +437,7 @@
       "size": 10001
     },
     {
-      "path": "client/assets/index-IHyJnpWf.js",
+      "path": "client/assets/index-Druj0uBN.js",
       "size": 9796
     },
     {
@@ -453,7 +453,7 @@
       "size": 9466
     },
     {
-      "path": "client/assets/_systemhouseId._customerId-Dujw6vFL.js",
+      "path": "client/assets/_systemhouseId._customerId-6wfkPVNd.js",
       "size": 9399
     },
     {
@@ -461,11 +461,11 @@
       "size": 9068
     },
     {
-      "path": "server/_ssr/PdfPreviewDialog-BCWD9WFQ.mjs",
+      "path": "server/_ssr/PdfPreviewDialog-BKpPOn2W.mjs",
       "size": 8966
     },
     {
-      "path": "client/assets/DownloadCenterDialog-6F_1ePPI.js",
+      "path": "client/assets/DownloadCenterDialog-Dh73jaqb.js",
       "size": 8794
     },
     {
@@ -481,15 +481,15 @@
       "size": 8421
     },
     {
-      "path": "client/assets/pdf-export-Ccqr-oAD.js",
+      "path": "client/assets/pdf-export-DJvd3koZ.js",
       "size": 8281
     },
     {
-      "path": "client/assets/BackendAdminDialog-Ct240mFy.js",
+      "path": "client/assets/BackendAdminDialog-UFIv0LAb.js",
       "size": 8203
     },
     {
-      "path": "server/_ssr/index-DdoIoxT1.mjs",
+      "path": "server/_ssr/index-Bmz-eg-X.mjs",
       "size": 8127
     },
     {
@@ -501,7 +501,7 @@
       "size": 7894
     },
     {
-      "path": "server/_ssr/primitives-DI0y8yqa.mjs",
+      "path": "server/_ssr/primitives-CL6iL3f-.mjs",
       "size": 7340
     },
     {
@@ -509,11 +509,11 @@
       "size": 7210
     },
     {
-      "path": "client/assets/BackupDialog-CgFTbtym.js",
+      "path": "client/assets/BackupDialog-DTiY-N4I.js",
       "size": 7116
     },
     {
-      "path": "server/_ssr/TextPreviewDialog-1xpzkvB7.mjs",
+      "path": "server/_ssr/TextPreviewDialog-Ix06ltx9.mjs",
       "size": 6990
     },
     {
@@ -521,11 +521,11 @@
       "size": 6913
     },
     {
-      "path": "client/assets/tabs-mZHsv1C0.js",
+      "path": "client/assets/tabs-BVcEbToi.js",
       "size": 6735
     },
     {
-      "path": "client/assets/auth-kvaY1BM6.js",
+      "path": "client/assets/auth-Db7Is8h9.js",
       "size": 6612
     },
     {
@@ -533,7 +533,7 @@
       "size": 6488
     },
     {
-      "path": "server/_ssr/auth-accounts.server-7b3VzJ0n.mjs",
+      "path": "server/_ssr/auth-accounts.server-BGIliyVs.mjs",
       "size": 6466
     },
     {
@@ -541,11 +541,11 @@
       "size": 6436
     },
     {
-      "path": "client/assets/SaveTargetDialog-AifBvra5.js",
+      "path": "client/assets/SaveTargetDialog-BGfuDyxo.js",
       "size": 6417
     },
     {
-      "path": "server/_ssr/customer-responsibility-management.functions-BaSYO49Q.mjs",
+      "path": "server/_ssr/customer-responsibility-management.functions-B2svzWB9.mjs",
       "size": 6065
     },
     {
@@ -553,7 +553,7 @@
       "size": 5991
     },
     {
-      "path": "client/assets/WorkPackageCategoryDialog-A4HiN5ep.js",
+      "path": "client/assets/WorkPackageCategoryDialog-DGdfNygb.js",
       "size": 5927
     },
     {
@@ -573,39 +573,39 @@
       "size": 5334
     },
     {
-      "path": "client/assets/primitives-B2bDu19q.js",
+      "path": "client/assets/primitives-yrJmgVI6.js",
       "size": 5258
     },
     {
-      "path": "server/_ssr/my-customers.functions-ByYUM5Mq.mjs",
+      "path": "server/_ssr/my-customers.functions-CvsQ7Qyl.mjs",
       "size": 5003
     },
     {
-      "path": "server/_ssr/index-wE2zBDYu.mjs",
+      "path": "server/_ssr/index-q7bpYGGD.mjs",
       "size": 4846
     },
     {
-      "path": "client/assets/index-1D9NGarB.js",
+      "path": "client/assets/index-BAN3gDqU.js",
       "size": 4752
     },
     {
-      "path": "client/assets/route-CMsIdjRJ.js",
+      "path": "client/assets/route-CT8rrYKC.js",
       "size": 4752
     },
     {
-      "path": "client/assets/PdfPreviewDialog-CxSzN30_.js",
+      "path": "client/assets/PdfPreviewDialog-DG75mLmy.js",
       "size": 4567
     },
     {
-      "path": "client/assets/auth-middleware-D5LO0-sK.js",
+      "path": "client/assets/auth-middleware-B28a5Hvp.js",
       "size": 4410
     },
     {
-      "path": "server/_ssr/env-check-Bim6NOvW.mjs",
+      "path": "server/_ssr/env-check-CBekqzKi.mjs",
       "size": 4221
     },
     {
-      "path": "client/assets/button-CX3Pnqtg.js",
+      "path": "client/assets/button-phifk-YA.js",
       "size": 4190
     },
     {
@@ -613,7 +613,7 @@
       "size": 4189
     },
     {
-      "path": "client/assets/index-C6XRND1c.js",
+      "path": "client/assets/index-DwPei6ve.js",
       "size": 4156
     },
     {
@@ -621,7 +621,7 @@
       "size": 4059
     },
     {
-      "path": "server/_ssr/logout-service-CaUvkbXR.mjs",
+      "path": "server/_ssr/logout-service-24V3AYlR.mjs",
       "size": 4006
     },
     {
@@ -633,7 +633,7 @@
       "size": 3988
     },
     {
-      "path": "client/assets/checkbox-BqK4gYZL.js",
+      "path": "client/assets/checkbox-MqMreH16.js",
       "size": 3983
     },
     {
@@ -649,7 +649,7 @@
       "size": 3900
     },
     {
-      "path": "server/_ssr/idle-config-BvuVYMQZ.mjs",
+      "path": "server/_ssr/idle-config-D_bmhGcB.mjs",
       "size": 3735
     },
     {
@@ -657,11 +657,11 @@
       "size": 3656
     },
     {
-      "path": "server/_tanstack-start-manifest_v-CHwoJy3m.mjs",
+      "path": "server/_tanstack-start-manifest_v-Timr7myO.mjs",
       "size": 3432
     },
     {
-      "path": "client/assets/triangle-alert-Li3Urm8m.js",
+      "path": "client/assets/triangle-alert-dQpIgJDl.js",
       "size": 3431
     },
     {
@@ -677,23 +677,23 @@
       "size": 3207
     },
     {
-      "path": "server/_ssr/CustomerPageShell-CTNNx1vi.mjs",
+      "path": "server/_ssr/CustomerPageShell-Bxwgtwp_.mjs",
       "size": 3147
     },
     {
-      "path": "server/_ssr/auth-accounts.functions-jtVXFJk5.mjs",
+      "path": "server/_ssr/auth-accounts.functions-Db-9CpDq.mjs",
       "size": 3051
     },
     {
-      "path": "server/_ssr/auth-middleware-BrYIvD_F.mjs",
+      "path": "server/_ssr/auth-middleware-3RSsGgoc.mjs",
       "size": 2960
     },
     {
-      "path": "server/_ssr/customer-badges-DPotVBQp.mjs",
+      "path": "server/_ssr/customer-badges--ZYpfUgY.mjs",
       "size": 2856
     },
     {
-      "path": "server/_ssr/start-CTBtQEXZ.mjs",
+      "path": "server/_ssr/start-1tQ9Vj6H.mjs",
       "size": 2832
     },
     {
@@ -717,15 +717,15 @@
       "size": 2442
     },
     {
-      "path": "client/assets/env-check-764cijrf.js",
+      "path": "client/assets/env-check-And0KsJM.js",
       "size": 2435
     },
     {
-      "path": "client/assets/CustomerPageShell-BxVEjB4a.js",
+      "path": "client/assets/CustomerPageShell-Q-Et9FMN.js",
       "size": 2365
     },
     {
-      "path": "client/assets/TextPreviewDialog-Bx_MuhFB.js",
+      "path": "client/assets/TextPreviewDialog-rN7hlblq.js",
       "size": 2332
     },
     {
@@ -737,7 +737,7 @@
       "size": 2247
     },
     {
-      "path": "client/assets/index-DFxNVRxS.js",
+      "path": "client/assets/index-vHo6Kf9v.js",
       "size": 2199
     },
     {
@@ -753,15 +753,15 @@
       "size": 2078
     },
     {
-      "path": "client/assets/constants-C2eEdR0L.js",
+      "path": "client/assets/constants-CJjVY0si.js",
       "size": 2057
     },
     {
-      "path": "client/assets/idle-config-C2f21B0i.js",
+      "path": "client/assets/idle-config-BToEW75N.js",
       "size": 1969
     },
     {
-      "path": "client/assets/customer-badges-DGa69J99.js",
+      "path": "client/assets/customer-badges-BHXCJ9Qj.js",
       "size": 1781
     },
     {
@@ -805,11 +805,11 @@
       "size": 1456
     },
     {
-      "path": "client/assets/useSystemStatusHealth-D7H0ud55.js",
+      "path": "client/assets/useSystemStatusHealth-cqzeHofR.js",
       "size": 1379
     },
     {
-      "path": "client/assets/index-COkgNpcP.js",
+      "path": "client/assets/index-D28KhD_-.js",
       "size": 1329
     },
     {
@@ -821,7 +821,7 @@
       "size": 1264
     },
     {
-      "path": "client/assets/reset-password-ChCR2YAf.js",
+      "path": "client/assets/reset-password-1785M05w.js",
       "size": 1217
     },
     {
@@ -829,7 +829,7 @@
       "size": 1177
     },
     {
-      "path": "client/assets/label-CdQMG2Ay.js",
+      "path": "client/assets/label-COawG_u1.js",
       "size": 1123
     },
     {
@@ -849,11 +849,11 @@
       "size": 1041
     },
     {
-      "path": "client/assets/card-B6CzQXNK.js",
+      "path": "client/assets/card-BKIlpz0P.js",
       "size": 1018
     },
     {
-      "path": "client/assets/auth-accounts.functions-DoYZ5OPo.js",
+      "path": "client/assets/auth-accounts.functions-BeUnzkwh.js",
       "size": 973
     },
     {
@@ -873,11 +873,11 @@
       "size": 848
     },
     {
-      "path": "client/assets/badge-CFOL2UVc.js",
+      "path": "client/assets/badge-DI7UnTW9.js",
       "size": 788
     },
     {
-      "path": "client/assets/index-UQLr8N3u.js",
+      "path": "client/assets/index-D1xGkRry.js",
       "size": 727
     },
     {
@@ -897,7 +897,7 @@
       "size": 667
     },
     {
-      "path": "client/assets/users-DZTTf8Nf.js",
+      "path": "client/assets/users-COqJxk8Q.js",
       "size": 651
     },
     {
@@ -905,7 +905,7 @@
       "size": 533
     },
     {
-      "path": "client/assets/index-CPTtP7eb.js",
+      "path": "client/assets/index-BGdW0LUI.js",
       "size": 530
     },
     {
@@ -925,7 +925,7 @@
       "size": 463
     },
     {
-      "path": "server/_ssr/createSsrRpc-B0O9djO1.mjs",
+      "path": "server/_ssr/createSsrRpc-Cgy3pSVH.mjs",
       "size": 435
     },
     {
@@ -933,7 +933,7 @@
       "size": 417
     },
     {
-      "path": "client/assets/shield-off-BK1-nSnv.js",
+      "path": "client/assets/shield-off-BzbacKV5.js",
       "size": 410
     },
     {
@@ -945,7 +945,7 @@
       "size": 381
     },
     {
-      "path": "client/assets/shield-alert-C9Cv9ADK.js",
+      "path": "client/assets/shield-alert-CJ2NdRQ_.js",
       "size": 363
     },
     {
@@ -957,11 +957,11 @@
       "size": 338
     },
     {
-      "path": "server/_ssr/createServerRpc-BehHcRm4.mjs",
+      "path": "server/_ssr/createServerRpc-CMf4_jnQ.mjs",
       "size": 313
     },
     {
-      "path": "client/assets/locale-14aQhQ6V.js",
+      "path": "client/assets/locale-Do2_fKJr.js",
       "size": 309
     },
     {
@@ -969,39 +969,39 @@
       "size": 280
     },
     {
-      "path": "client/assets/archive-CRhh6lz6.js",
+      "path": "client/assets/archive-ZlxfXvet.js",
       "size": 263
     },
     {
-      "path": "client/assets/external-link-S7acZF70.js",
+      "path": "client/assets/external-link-nmnJPd6y.js",
       "size": 261
     },
     {
-      "path": "client/assets/eye-D8Ar71GX.js",
+      "path": "client/assets/eye-h4nLCnIk.js",
       "size": 261
     },
     {
-      "path": "client/assets/minimize-2-Hbvazvye.js",
+      "path": "client/assets/minimize-2-i7DrEcHx.js",
       "size": 250
     },
     {
-      "path": "client/assets/maximize-2-DDQrArVW.js",
+      "path": "client/assets/maximize-2-DS4xSvdj.js",
       "size": 248
     },
     {
-      "path": "client/assets/copy-adpI3YAa.js",
+      "path": "client/assets/copy-B5CCw-o0.js",
       "size": 241
     },
     {
-      "path": "client/assets/circle-x-D_t2-7qc.js",
+      "path": "client/assets/circle-x-CCJxFbTy.js",
       "size": 212
     },
     {
-      "path": "client/assets/lock-DKqYOB_T.js",
+      "path": "client/assets/lock-DGqS0_xN.js",
       "size": 211
     },
     {
-      "path": "client/assets/rotate-ccw-DOpcVFY0.js",
+      "path": "client/assets/rotate-ccw-P4cZ-v16.js",
       "size": 210
     },
     {
@@ -1025,7 +1025,7 @@
       "size": 174
     },
     {
-      "path": "client/assets/cloud-DGdC29F6.js",
+      "path": "client/assets/cloud-BegamWuG.js",
       "size": 170
     },
     {
@@ -1033,11 +1033,11 @@
       "size": 160
     },
     {
-      "path": "client/assets/chevron-right-BX1WbXyV.js",
+      "path": "client/assets/chevron-right-BhIKX6lG.js",
       "size": 140
     },
     {
-      "path": "client/assets/chevron-up-CT3TLNsd.js",
+      "path": "client/assets/chevron-up-DnDtxl9U.js",
       "size": 138
     },
     {
@@ -1045,7 +1045,7 @@
       "size": 132
     },
     {
-      "path": "client/assets/check-BhPwh-R9.js",
+      "path": "client/assets/check-CDjIUhL3.js",
       "size": 129
     },
     {

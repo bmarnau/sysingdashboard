@@ -1,21 +1,21 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `b535d9c9-f01c-4844-b3f7-8051b179f6dd` · Version 15 · Generiert: 2026-09-13T22:28:05.621Z_
+_Report ID: `65dac303-23b7-4260-a6e3-81f186984e24` · Version 16 · Generiert: 2026-09-13T22:34:55.486Z_
 
 ## 1. Prüfidentität
-- Report-ID: `b535d9c9-f01c-4844-b3f7-8051b179f6dd`
-- Reportversion: **15**
-- Vorgängerbericht: `dfa68dbb-328c-472c-be00-66e49b3757fe`
+- Report-ID: `65dac303-23b7-4260-a6e3-81f186984e24`
+- Reportversion: **16**
+- Vorgängerbericht: `b535d9c9-f01c-4844-b3f7-8051b179f6dd`
 - Schema: `2.0.0`
 - Dashboard-Version: **1.62.0**
-- Commit: `2311627`
+- Commit: `fc6791e`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: 2026-08-13T04:35:01.150Z
-- Testzeit: 2026-09-13T22:28:05.531Z
+- Testzeit: 2026-09-13T22:34:55.409Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:11c452acf72ea28e1b34815184608213f6a406445e933471c4ff5f49e41fce01`
+- Integrität: `sha256:1bb374d37ae13c487e1afff93c1352d878ea738f42b174ffbd1bc525abaf4ba6`
 
 ## 2. Freigabestufe
 - Vorschlag: **internal-test**
@@ -921,12 +921,12 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 9. Vergleich zum Vorgängerbericht
-- Neu: 4
-- Behoben: 2
-- Verschlechtert: 1
-- Unverändert: 65
+- Neu: 0
+- Behoben: 0
+- Verschlechtert: 0
+- Unverändert: 70
 - Wieder aufgetreten: 0
-- Schweregrad geändert: 1
+- Schweregrad geändert: 0
 - Gate-Relevanz geändert: 0
 - Status geändert: 0
 

@@ -36,7 +36,7 @@ BSF-02C-RPC, BSF-03 P5.
 | Review-Fix Runde 1 (Migration, Cache)    | `f422a01`             |
 | Review-Fix Runde 2 (Test-Hardening)      | `5e67fd0`             |
 | Preview-Auth-Broker entfernt             | `b619596` / `0729911` |
-| Plattform-Commit mit Broker-Re-Injection | `b23c50f`             |
+| Plattform-Commit mit Broker-Re-Injection | `b23c50f`, `2f19b6d`  |
 
 Die Integration erfolgt ausschließlich über GitHub-Branch + Pull Request nach
 separatem Security-Workflow und vollständiger CI.
