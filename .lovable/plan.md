@@ -39,7 +39,7 @@ Datei s.o.; danach `supabase--get_types` prüfen (Types enthalten `scope_type`/`
 - `docs/REFERENCE-DATA.md` fortschreiben.
 
 ### Schritt 3 — Domänenmodell + Export/Import/Backup
-- `WorkPackage.categoryKey?: string | null`; `WorkPackageSchema.categoryKey: z.string().max(100).nullable().optional()`; Export/Import-Mapping; Beispieldateien (`example-file-service.ts`) um ein AP mit Kategorie ergänzen; Import-Vorschau: Warnung „Kategorie X unbekannt/deaktiviert“ (fail-safe, Wert bleibt).
+- `WorkPackage.categoryKey?: string | null`; `WorkPackageSchema.categoryKey: z.string().max(100).nullable().optional()`; `JSON_SCHEMA_VERSION` additiv 1.1.0 → 1.2.0 (Import akzeptiert weiterhin 1.0/1.1); Export/Import-Mapping; Beispieldateien (`example-file-service.ts`) um ein AP mit Kategorie ergänzen; Import-Vorschau: Warnung „Kategorie X unbekannt/deaktiviert“ (fail-safe, Wert bleibt).
 - Restore-Validierung (`avkk-payload.ts`/`integrity.ts`): AP-`categoryKey` gegen `reference-data.json` prüfen → nur Warnung.
 - Neues Modul `src/lib/workpackage-category.ts` (reine Fachlogik, providerneutral): `resolveCategory`, `categoryDisplayLabel`, Controlling-Helfer `groupByCategoryKey(workPackages)` als Vorbereitung für #106.
 
