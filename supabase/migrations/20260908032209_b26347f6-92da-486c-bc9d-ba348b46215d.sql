@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.customer_responsibility_audit() FROM PUBLIC, anon, authenticated;

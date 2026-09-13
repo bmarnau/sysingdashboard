@@ -1,4 +1,4 @@
--- BSF-03 Prompt 1 — Customer Responsibility: Schema-, Grant- und RLS-Vertrag (R01–R18)
+-- BSF-03 Prompt 1 + P1 — Customer Responsibility: Schema-, Grant- und RLS-Vertrag (R01–R18, T0–T12)
 -- Issue #105, Design: docs/BSF-03-CUSTOMER-RESPONSIBILITY-DESIGN.md
 --
 -- Eigenschaften dieses Artefakts:
@@ -175,7 +175,7 @@ INSERT INTO public.systemhouse_membership (systemhouse_id, user_id, status) VALU
   ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-00000000c303','active'),
   ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-00000000c304','active'),
   ('00000000-0000-0000-0000-0000000ac302','00000000-0000-0000-0000-00000000c305','active'),
-  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-00000000c306','inactive'),
+  ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-00000000c306','active'),
   ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-00000000c307','active'),
   ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-00000000c308','active'),
   ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-00000000c309','active'),
@@ -202,6 +202,14 @@ INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id
   ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc305','00000000-0000-0000-0000-00000000c306','active', now(), NULL),
   ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc306','00000000-0000-0000-0000-00000000c30b','ended', now() - interval '2 days', now() - interval '1 hour'),
   ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc307','00000000-0000-0000-0000-00000000c30c','active', now(), NULL);
+
+-- U_INACTIVE (c306): Membership erst NACH Anlage der Verantwortung deaktivieren.
+-- Der P1-Target-Guard verhindert die Neuanlage fuer Ziele ohne aktive Membership;
+-- der Fall "Verantwortung vorhanden, Membership spaeter erloschen" (R08) wird so
+-- realistisch als nachtraeglicher Zustandswechsel abgebildet.
+UPDATE public.systemhouse_membership SET status = 'inactive'
+ WHERE user_id = '00000000-0000-0000-0000-00000000c306'
+   AND systemhouse_id = '00000000-0000-0000-0000-0000000ac301';
 
 -- Rollen-/JWT-Simulation.
 CREATE OR REPLACE FUNCTION pg_temp.act_as(uid uuid)
@@ -366,12 +374,24 @@ SELECT pg_temp.assert_denied(
   '42501', 'R12 customer role cannot become responsible');
 
 -- R16 zweiter gleichzeitig aktiver Verantwortlicher -> DENY (Unique-Index).
+-- Manager-Pfad: RLS (Manager-Scope) und Target-Guard passieren, der partielle
+-- Unique-Index muss den Konflikt melden (23505, nicht 42501).
 SELECT pg_temp.assert_denied(
   $$INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id)
     VALUES ('00000000-0000-0000-0000-0000000ac301',
             '00000000-0000-0000-0000-0000000bc301',
             '00000000-0000-0000-0000-00000000c30a')$$,
   '23505', 'R16 second active responsibility per customer denied');
+SELECT pg_temp.act_reset();
+-- R16b isoliert (Test-Harness, privilegiert innerhalb des aeusseren ROLLBACK):
+-- beweist den Unique-Index unabhaengig von RLS/Target-Guard.
+SELECT pg_temp.assert_denied(
+  $$INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id)
+    VALUES ('00000000-0000-0000-0000-0000000ac301',
+            '00000000-0000-0000-0000-0000000bc307',
+            '00000000-0000-0000-0000-00000000c30a')$$,
+  '23505', 'R16b unique active responsibility index enforced (privileged harness)');
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c307');
 
 -- R17 historisch beendete Responsibility bleibt fuer Verwaltung/Audit lesbar.
 SELECT pg_temp.assert((
@@ -453,8 +473,145 @@ SELECT pg_temp.assert_denied(
 SELECT pg_temp.act_reset();
 
 -- ---------------------------------------------------------------------------
+-- P1 T1–T12: serverseitige Target-Validation (Trigger) + Lifecycle
+-- Kontext: Target-Eligibility liegt nicht mehr in den RLS-Policies, sondern im
+-- nicht exponierten BEFORE-Trigger customer_responsibility_target_guard().
+-- ---------------------------------------------------------------------------
+
+-- Zusatzfixtures: C8 (positiver Fall), C9 (nur DENY-Faelle), C10 in SH2.
+INSERT INTO public.customer (id, systemhouse_id, name, status) VALUES
+  ('00000000-0000-0000-0000-0000000bc308','00000000-0000-0000-0000-0000000ac301','BSF03 C8','active'),
+  ('00000000-0000-0000-0000-0000000bc309','00000000-0000-0000-0000-0000000ac301','BSF03 C9','active'),
+  ('00000000-0000-0000-0000-0000000bc30a','00000000-0000-0000-0000-0000000ac302','BSF03 C10','active');
+
+-- T0 Guard ist nicht fuer anon/authenticated ausfuehrbar (kein neuer Angriffspfad).
+SELECT pg_temp.assert(
+  NOT has_function_privilege('authenticated','public.customer_responsibility_target_guard()','EXECUTE')
+  AND NOT has_function_privilege('anon','public.customer_responsibility_target_guard()','EXECUTE'),
+  'T0 target guard not executable by anon/authenticated');
+
+-- T1 Teamlead legt gueltige aktive Responsibility fuer fremden Engineer an (Root Cause behoben).
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c307');
+INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id)
+VALUES ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc308','00000000-0000-0000-0000-00000000c30a');
+SELECT pg_temp.assert((
+  SELECT count(*) = 1 FROM public.customer_responsibility
+  WHERE customer_id = '00000000-0000-0000-0000-0000000bc308' AND status = 'active'
+), 'T1 teamlead creates valid active responsibility for foreign engineer');
+
+-- T2 viewer als Ziel -> DENY.
+SELECT pg_temp.assert_denied(
+  $$INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id)
+    VALUES ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc309','00000000-0000-0000-0000-00000000c308')$$,
+  '42501', 'T2 viewer target denied');
+
+-- T3 customer als Ziel -> DENY.
+SELECT pg_temp.assert_denied(
+  $$INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id)
+    VALUES ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc309','00000000-0000-0000-0000-00000000c309')$$,
+  '42501', 'T3 customer target denied');
+SELECT pg_temp.act_reset();
+
+-- T4 inaktive Zielperson -> DENY.
+UPDATE public.profiles SET status = 'inactive' WHERE id = '00000000-0000-0000-0000-00000000c30b';
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c307');
+SELECT pg_temp.assert_denied(
+  $$INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id)
+    VALUES ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc309','00000000-0000-0000-0000-00000000c30b')$$,
+  '42501', 'T4 inactive target denied');
+
+-- T5 Ziel ohne aktive Membership im Systemhouse -> DENY.
+SELECT pg_temp.assert_denied(
+  $$INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id)
+    VALUES ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc309','00000000-0000-0000-0000-00000000c306')$$,
+  '42501', 'T5 target without active membership denied');
+
+-- T6 Cross-Systemhouse (Manager ohne Membership in SH2) -> DENY.
+SELECT pg_temp.assert_denied(
+  $$INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id)
+    VALUES ('00000000-0000-0000-0000-0000000ac302','00000000-0000-0000-0000-0000000bc30a','00000000-0000-0000-0000-00000000c305')$$,
+  '42501', 'T6 cross systemhouse denied');
+SELECT pg_temp.act_reset();
+
+-- T7 Benutzer ohne customer.responsibility.manage -> DENY.
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c30a');
+SELECT pg_temp.assert_denied(
+  $$INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id)
+    VALUES ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc309','00000000-0000-0000-0000-00000000c301')$$,
+  '42501', 'T7 user without manage permission denied');
+SELECT pg_temp.act_reset();
+
+-- T8 active -> ended durch berechtigten Manager.
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c307');
+DO $$
+DECLARE affected int;
+BEGIN
+  UPDATE public.customer_responsibility SET status = 'ended', valid_to = now()
+   WHERE customer_id = '00000000-0000-0000-0000-0000000bc308';
+  GET DIAGNOSTICS affected = ROW_COUNT;
+  IF affected <> 1 THEN RAISE EXCEPTION 'FAIL T8 (rows=%)', affected; END IF;
+  RAISE NOTICE 'PASS T8 manager ends responsibility';
+END; $$;
+SELECT pg_temp.act_reset();
+
+-- T9 active -> ended bleibt moeglich, obwohl Zielperson inzwischen inaktiv ist.
+UPDATE public.profiles SET status = 'inactive' WHERE id = '00000000-0000-0000-0000-00000000c301';
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c307');
+DO $$
+DECLARE affected int;
+BEGIN
+  UPDATE public.customer_responsibility SET status = 'ended', valid_to = now()
+   WHERE customer_id = '00000000-0000-0000-0000-0000000bc301';
+  GET DIAGNOSTICS affected = ROW_COUNT;
+  IF affected <> 1 THEN RAISE EXCEPTION 'FAIL T9 (rows=%)', affected; END IF;
+  RAISE NOTICE 'PASS T9 ending works after target deactivated';
+END; $$;
+SELECT pg_temp.act_reset();
+
+-- T10 active -> ended bleibt moeglich, obwohl Ziel-Membership inzwischen inaktiv ist.
+UPDATE public.systemhouse_membership SET status = 'inactive'
+ WHERE user_id = '00000000-0000-0000-0000-00000000c302';
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c307');
+DO $$
+DECLARE affected int;
+BEGIN
+  UPDATE public.customer_responsibility SET status = 'ended', valid_to = now()
+   WHERE customer_id = '00000000-0000-0000-0000-0000000bc302';
+  GET DIAGNOSTICS affected = ROW_COUNT;
+  IF affected <> 1 THEN RAISE EXCEPTION 'FAIL T10 (rows=%)', affected; END IF;
+  RAISE NOTICE 'PASS T10 ending works after target membership inactive';
+END; $$;
+
+-- T11 Identitaet unveraenderlich; Statuswechsel zurueck auf active bleibt gesperrt.
+SELECT pg_temp.assert_denied(
+  $$UPDATE public.customer_responsibility SET user_id = '00000000-0000-0000-0000-00000000c30a'
+     WHERE customer_id = '00000000-0000-0000-0000-0000000bc305'$$,
+  'P0001', 'T11a user_id immutable');
+SELECT pg_temp.assert_denied(
+  $$UPDATE public.customer_responsibility SET customer_id = '00000000-0000-0000-0000-0000000bc309'
+     WHERE customer_id = '00000000-0000-0000-0000-0000000bc305'$$,
+  'P0001', 'T11b customer_id immutable');
+SELECT pg_temp.assert_denied(
+  $$UPDATE public.customer_responsibility SET status = 'active', valid_to = NULL
+     WHERE customer_id = '00000000-0000-0000-0000-0000000bc308'$$,
+  'P0001', 'T11c ended responsibility cannot be reactivated');
+SELECT pg_temp.act_reset();
+
+-- T12 Manager kann nach Beendigung eine neue aktive Verantwortung fuer den Kunden vergeben.
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c307');
+INSERT INTO public.customer_responsibility (systemhouse_id, customer_id, user_id)
+VALUES ('00000000-0000-0000-0000-0000000ac301','00000000-0000-0000-0000-0000000bc308','00000000-0000-0000-0000-00000000c30a');
+SELECT pg_temp.assert((
+  SELECT count(*) FILTER (WHERE status = 'active') = 1
+     AND count(*) FILTER (WHERE status = 'ended') = 1
+  FROM public.customer_responsibility
+  WHERE customer_id = '00000000-0000-0000-0000-0000000bc308'
+), 'T12 new active responsibility after ended history');
+SELECT pg_temp.act_reset();
+
+-- ---------------------------------------------------------------------------
 -- Abschluss: alle synthetischen Testdaten verwerfen.
 -- ---------------------------------------------------------------------------
 
-\echo 'PASS BSF-03 R01-R18 completed; rolling back synthetic test data.'
+\echo 'PASS BSF-03 R01-R18 + P1 T0-T12 completed; rolling back synthetic test data.'
 ROLLBACK;
