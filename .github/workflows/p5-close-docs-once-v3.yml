@@ -1,0 +1,34 @@
+name: P5 Close Docs Once V3
+
+on:
+  push:
+    branches:
+      - feat/bsf03-p5-responsibility-management
+    paths:
+      - .github/workflows/p5-close-docs-once-v3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  close-docs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf03-p5-responsibility-management
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: python3 .github/scripts/p5_close_docs_v2.py
+      - run: bunx prettier --write CHANGELOG.md docs/PROJECT-STATUS.yaml docs/CURRENT-STATUS.md docs/BSF-CURRENT-PRIORITIES.md docs/SPRINT-PLAN-MVP-BSF.md docs/ENTWICKLUNGSTAGEBUCH.md src/lib/help-navigation-topics.ts docs/BSF-03-CLOSURE-2026-09-13.md docs/BSF-03-RESPONSIBILITY-MANAGEMENT-READ-CONTRACT-2026-09-13.md
+      - run: bun run docs:check
+      - run: bun run project-status:check
+      - run: bun run typecheck
+      - name: Commit closure sync
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md docs/PROJECT-STATUS.yaml docs/CURRENT-STATUS.md docs/BSF-CURRENT-PRIORITIES.md docs/SPRINT-PLAN-MVP-BSF.md docs/ENTWICKLUNGSTAGEBUCH.md src/lib/help-navigation-topics.ts docs/BSF-03-CLOSURE-2026-09-13.md docs/BSF-03-RESPONSIBILITY-MANAGEMENT-READ-CONTRACT-2026-09-13.md
+          git diff --cached --check
+          git commit -m "docs(bsf03): Kundensicht auf 1.61.0 abschließen"
+          git push origin HEAD:feat/bsf03-p5-responsibility-management
