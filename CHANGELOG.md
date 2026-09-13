@@ -20,6 +20,7 @@ Format pro Eintrag:
 - **Verantwortungs- und Zugriffsindikator**: Liste und Detail zeigen den eigenen Verantwortungsstatus, den verantwortlichen Systemingenieur (eigenes Profil) und den Read-/Write-Indikator aus dem eigenen Kundenzugriff („Nur Lesen“ / „Schreibzugriff“). Der Indikator ist reine Anzeige; Schreibaktionen bleiben an Fachberechtigungen gebunden.
 - **Fail-closed**: Fremde, beendete oder unbekannte Kunden liefern einheitlich „Kunde nicht verfügbar“; Berechtigung und Datenzugriff werden serverseitig im Kontext des angemeldeten Benutzers geprüft. Verantwortung erzeugt keine Rolle und kein Schreibrecht.
 - **Nachweis**: Neue Unit-, Komponenten- (inkl. Barrierefreiheit) und Sicherheitsverträge für Fachlogik, Darstellung und Serverfunktionen.
+- **Durchgängiger Oberflächentest**: Reproduzierbare End-to-End-Abdeckung für Lese- und Schreibzugriff, fehlende Verantwortung, fehlenden Kundenzugriff, fremde Kundenadressen, systemhausfremde Zugriffe, beendete Verantwortung, ungültige Zugehörigkeit, Viewer, vorgetäuschte Rollen im Browser, leere Liste und Fehlerfall.
 
 ## 1.59.7 - 2026-08-25
 
