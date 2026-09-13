@@ -50,6 +50,7 @@ interface ServiceMenuProps {
   setShowReports: (v: boolean) => void;
   setShowDemoData: (v: boolean) => void;
   setShowBackendAdmin: (v: boolean) => void;
+  setShowWpCategories: (v: boolean) => void;
 }
 
 export function ServiceMenu({
@@ -72,6 +73,7 @@ export function ServiceMenu({
   setShowReports,
   setShowDemoData,
   setShowBackendAdmin,
+  setShowWpCategories,
 }: ServiceMenuProps) {
   const currentUser = useCurrentUser();
   const navigate = useNavigate();
@@ -271,6 +273,17 @@ export function ServiceMenu({
                 className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
               >
                 <Database className="size-4 opacity-70" /> Demo-Datensatz…
+              </button>
+            )}
+            {can(currentUser, "referencedata.manage") && (
+              <button
+                onClick={() => {
+                  setShowServiceMenu(false);
+                  setShowWpCategories(true);
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm hover:bg-secondary/60"
+              >
+                <Database className="size-4 opacity-70" /> Arbeitspaket-Kategorien…
               </button>
             )}
             {can(currentUser, "users.manage") && (
