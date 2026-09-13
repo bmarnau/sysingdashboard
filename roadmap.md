@@ -24,6 +24,6 @@
 - [x] SQL-Kommentar: CHECK-Constraint fail-loud bei ungültigen Altwerten
 
 ## Governance-Fix: Preview-Auth-Broker entfernen (Wiederherstellung 425fbed)
-- [ ] Statischer Regressionstest (RED)
-- [ ] previewAuthStorage.ts entfernen, client.ts Import/storage zurücksetzen
-- [ ] Gates: targeted, Auth/Security-Tests, Typecheck, Lint/Prettier, Build
+- [x] Statischer Regressionstest (RED)
+- [x] previewAuthStorage.ts entfernen, client.ts Import/storage zurücksetzen
+- [x] Gates: targeted, Auth/Security-Tests, Typecheck, Lint/Prettier, Build
