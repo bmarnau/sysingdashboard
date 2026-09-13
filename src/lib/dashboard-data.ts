@@ -31,6 +31,10 @@ export interface WorkPackage {
   client?: string;
   status: WorkPackageStatus;
   priority: Priority;
+  /** Stabiler technischer Key der optionalen systemhausweiten Hauptkategorie. */
+  categoryKey?: string | null;
+  /** Anzeigename-Snapshot zur historischen Lesbarkeit; keine fachliche Identität. */
+  categoryLabel?: string | null;
   due?: string;
   estimated?: number;
   assignee?: string;
