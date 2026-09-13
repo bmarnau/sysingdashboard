@@ -59,6 +59,27 @@ Jede neue Migration:
 2. Testcase in `src/__tests__/integration/import.test.ts`.
 3. Handbuch-Kapitel `changelog` mit Import-Kompatibilitätsnotiz.
 
+## Schema 1.2.0 — `WorkPackage.categoryKey` (BSF-03D)
+
+Schema 1.2.0 ergänzt am Arbeitspaket das optionale Feld
+`categoryKey?: string | null` (MINOR-Bump, abwärtskompatibel):
+
+- Fehlend oder `null` bedeutet **keine Kategorie** (Default, auch für
+  Legacy-Dateien ≤ 1.1.x). Es gibt maximal eine primäre Kategorie.
+- `categoryKey` referenziert den stabilen `key` eines Wertes im
+  systemhausbezogenen Katalog `workpackage.category`; das Label wird nicht
+  exportiert, eine Umdeutung über Label findet nicht statt.
+- Export erhält `categoryKey` unverändert. Import übernimmt den Key und meldet
+  unbekannte oder deaktivierte Kategorien fail-safe als Hinweis; es wird weder
+  still auf `null` gesetzt noch auf eine andere Kategorie umgeschrieben.
+- Backup/Restore (Manifest 2.0) prüft Kategorie-Referenzen ebenfalls fail-safe
+  und bleibt für Archive ohne `categoryKey` rückwärtskompatibel.
+- `tags` bleiben unabhängig; aus `categoryKey` wird nichts für `billable`,
+  `priority` oder `status` abgeleitet.
+
+Der Fachvertrag ist providerneutral: er gilt unverändert für Supabase wie für
+eine spätere Azure-SQL-Ablage; nur Trigger/Policies sind Implementierungsdetail.
+
 ## Grenzen
 
 - **Keine binären Anhänge** im JSON-Export (Profilbilder werden separat als
