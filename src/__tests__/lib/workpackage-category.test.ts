@@ -129,3 +129,12 @@ describe("groupByCategoryKey (Controlling-Vorbereitung #106)", () => {
     expect(groups.get(null)?.map((w) => w.id)).toEqual(["3"]);
   });
 });
+
+describe("toCategoryKey", () => {
+  it("bildet stabile, JSON-sichere Keys aus Bezeichnungen (Umlaute, Sonderzeichen)", async () => {
+    const { toCategoryKey } = await import("@/lib/workpackage-category");
+    expect(toCategoryKey("  Wartung & Pflege ")).toBe("wartung_pflege");
+    expect(toCategoryKey("Störungsbehebung")).toBe("stoerungsbehebung");
+    expect(toCategoryKey("A".repeat(80)).length).toBe(64);
+  });
+});

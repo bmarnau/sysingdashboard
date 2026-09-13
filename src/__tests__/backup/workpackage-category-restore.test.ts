@@ -7,7 +7,9 @@ import { describe, expect, it } from "vitest";
 import { checkWorkPackageCategories } from "@/lib/backup/category-check";
 import type { BackupManifestV2 } from "@/lib/backup/types";
 
-function manifest(entries: Array<{ logicalName: string; path: string; storageKey: string | null }>) {
+function manifest(
+  entries: Array<{ logicalName: string; path: string; storageKey: string | null }>,
+) {
   return {
     entries: entries.map((e) => ({ ...e, checksum: "", sizeBytes: 0, contentType: "json" })),
   } as unknown as BackupManifestV2;
@@ -33,7 +35,11 @@ const dashboard = {
 describe("checkWorkPackageCategories", () => {
   it("should_warnForUnknownAndInactive_butNeverFail", () => {
     const m = manifest([
-      { logicalName: "dashboard", path: "data/dashboard.json", storageKey: "northbit-dashboard-v2" },
+      {
+        logicalName: "dashboard",
+        path: "data/dashboard.json",
+        storageKey: "northbit-dashboard-v2",
+      },
       { logicalName: "reference-data", path: "reference-data.json", storageKey: null },
     ]);
     const zip = {
@@ -49,7 +55,11 @@ describe("checkWorkPackageCategories", () => {
 
   it("should_skipCheck_when_referenceDataMissing", () => {
     const m = manifest([
-      { logicalName: "dashboard", path: "data/dashboard.json", storageKey: "northbit-dashboard-v2" },
+      {
+        logicalName: "dashboard",
+        path: "data/dashboard.json",
+        storageKey: "northbit-dashboard-v2",
+      },
     ]);
     const zip = { "data/dashboard.json": strToU8(JSON.stringify(dashboard)) };
     const result = checkWorkPackageCategories(m, zip);
@@ -59,12 +69,18 @@ describe("checkWorkPackageCategories", () => {
 
   it("should_beSilent_when_workPackagesHaveNoCategory", () => {
     const m = manifest([
-      { logicalName: "dashboard", path: "data/dashboard.json", storageKey: "northbit-dashboard-v2" },
+      {
+        logicalName: "dashboard",
+        path: "data/dashboard.json",
+        storageKey: "northbit-dashboard-v2",
+      },
       { logicalName: "reference-data", path: "reference-data.json", storageKey: null },
     ]);
     const zip = {
       "data/dashboard.json": strToU8(
-        JSON.stringify({ workPackages: [{ id: "x", title: "X", status: "offen", priority: "mittel" }] }),
+        JSON.stringify({
+          workPackages: [{ id: "x", title: "X", status: "offen", priority: "mittel" }],
+        }),
       ),
       "reference-data.json": strToU8(JSON.stringify(refData)),
     };
@@ -75,7 +91,11 @@ describe("checkWorkPackageCategories", () => {
 
   it("should_notThrow_when_dataUnparsable", () => {
     const m = manifest([
-      { logicalName: "dashboard", path: "data/dashboard.json", storageKey: "northbit-dashboard-v2" },
+      {
+        logicalName: "dashboard",
+        path: "data/dashboard.json",
+        storageKey: "northbit-dashboard-v2",
+      },
       { logicalName: "reference-data", path: "reference-data.json", storageKey: null },
     ]);
     const zip = {

@@ -128,3 +128,17 @@ export function groupByCategoryKey<T extends Pick<WorkPackage, "categoryKey">>(
   }
   return groups;
 }
+
+/** Stabiler, URL-/JSON-sicherer Key aus einer Bezeichnung. */
+export function toCategoryKey(input: string): string {
+  return input
+    .trim()
+    .toLowerCase()
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 64);
+}

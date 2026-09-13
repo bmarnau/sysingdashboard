@@ -4,7 +4,11 @@
  * bleiben importierbar (nur Hinweis, kein Fehler).
  */
 import { describe, expect, it } from "vitest";
-import { JSON_SCHEMA_VERSION, WorkPackageSchema, DashboardJsonExportSchema } from "@/lib/json-schema";
+import {
+  JSON_SCHEMA_VERSION,
+  WorkPackageSchema,
+  DashboardJsonExportSchema,
+} from "@/lib/json-schema";
 import { JsonSchemaValidationService } from "@/lib/json-schema-validation-service";
 
 const base = { id: "wp-1", title: "AP", status: "offen", priority: "mittel" };
