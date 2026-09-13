@@ -10,9 +10,6 @@ import {
 } from "@/lib/customer-data/customer-responsibility-management";
 
 type UserSupabaseClient = SupabaseClient<Database>;
-type RpcError = { message?: string } | null;
-type RpcResult = { data: unknown; error: RpcError };
-type P5Rpc = (name: string, args: Record<string, string>) => Promise<RpcResult>;
 
 interface MembershipRow {
   systemhouse_id: string;
@@ -48,8 +45,6 @@ function fail(operation: string): never {
 export function createSupabaseCustomerResponsibilityManagementRepository(
   supabase: UserSupabaseClient,
 ): CustomerResponsibilityManagementRepository {
-  const rpc = supabase.rpc.bind(supabase) as unknown as P5Rpc;
-
   return {
     async listManageableSystemhouses(userId) {
       const nowIso = new Date().toISOString();
@@ -84,7 +79,7 @@ export function createSupabaseCustomerResponsibilityManagementRepository(
     },
 
     async listCustomers(systemhouseId) {
-      const { data, error } = await rpc("customer_responsibility_management_overview", {
+      const { data, error } = await supabase.rpc("customer_responsibility_management_overview", {
         _systemhouse_id: systemhouseId,
       });
       if (error) fail("Kundenübersicht lesen");
@@ -112,7 +107,7 @@ export function createSupabaseCustomerResponsibilityManagementRepository(
     },
 
     async listCandidates(systemhouseId) {
-      const { data, error } = await rpc("customer_responsibility_management_candidates", {
+      const { data, error } = await supabase.rpc("customer_responsibility_management_candidates", {
         _systemhouse_id: systemhouseId,
       });
       if (error) fail("Kandidaten lesen");
@@ -127,7 +122,7 @@ export function createSupabaseCustomerResponsibilityManagementRepository(
     },
 
     async setResponsibility({ systemhouseId, customerId, targetUserId }) {
-      const { data, error } = await rpc("set_customer_responsibility", {
+      const { data, error } = await supabase.rpc("set_customer_responsibility", {
         _systemhouse_id: systemhouseId,
         _customer_id: customerId,
         _target_user_id: targetUserId,
@@ -137,7 +132,7 @@ export function createSupabaseCustomerResponsibilityManagementRepository(
     },
 
     async endResponsibility({ systemhouseId, customerId }) {
-      const { data, error } = await rpc("end_customer_responsibility", {
+      const { data, error } = await supabase.rpc("end_customer_responsibility", {
         _systemhouse_id: systemhouseId,
         _customer_id: customerId,
       });
