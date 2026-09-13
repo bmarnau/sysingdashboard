@@ -1,22 +1,28 @@
 /**
- * Vertragstests des Reference-Data-Plattformdienstes (Sprint 07B).
+ * Vertragstests des Reference-Data-Plattformdienstes.
  *
- * Getestet wird der Servicevertrag aus `docs/REFERENCE-DATA.md`:
- * Sortierung, Aktiv-/Inaktiv-Filter, Katalogversion, Read-Through-Cache,
- * Offline-Verhalten und die Sperre für Schreiboperationen ohne Verbindung.
- * Der Supabase-Adapter ist gemockt — es gibt keinen Netzwerkzugriff.
+ * Sortierung, Aktiv-/Inaktiv-Filter, Katalogversion, tenant-sicherer
+ * Read-Through-Cache, Offline-Verhalten und Schreibsperre ohne Verbindung.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ReferenceDataError } from "@/lib/errors";
-import { CACHE_KEY, MAX_CACHE_AGE_MS } from "@/lib/reference-data/cache";
-import type { ReferenceCatalog, ReferenceValue } from "@/lib/reference-data/types";
+import { cacheKey, MAX_CACHE_AGE_MS } from "@/lib/reference-data/cache";
+import type {
+  ReferenceCatalog,
+  ReferenceDataAccessContext,
+  ReferenceValue,
+} from "@/lib/reference-data/types";
 
+const getPrincipalId = vi.fn();
+const getAccessContext = vi.fn();
 const fetchAll = vi.fn();
 const insertValue = vi.fn();
 const updateValueRow = vi.fn();
 
 vi.mock("@/lib/reference-data/adapter", () => ({
+  getPrincipalId: (...args: unknown[]) => getPrincipalId(...args),
+  getAccessContext: (...args: unknown[]) => getAccessContext(...args),
   fetchAll: (...args: unknown[]) => fetchAll(...args),
   insertValue: (...args: unknown[]) => insertValue(...args),
   updateValueRow: (...args: unknown[]) => updateValueRow(...args),
@@ -25,6 +31,10 @@ vi.mock("@/lib/reference-data/adapter", () => ({
 import * as service from "@/lib/reference-data";
 
 const CATALOG_ID = "11111111-1111-1111-1111-111111111111";
+const CONTEXT: ReferenceDataAccessContext = {
+  principalId: "actor-1",
+  systemhouseIds: ["systemhouse-a"],
+};
 
 function catalog(overrides: Partial<ReferenceCatalog> = {}): ReferenceCatalog {
   return {
@@ -36,6 +46,7 @@ function catalog(overrides: Partial<ReferenceCatalog> = {}): ReferenceCatalog {
     isSystem: true,
     isHierarchical: false,
     version: 3,
+    scopeType: "global",
     ...overrides,
   };
 }
@@ -55,12 +66,23 @@ function value(overrides: Partial<ReferenceValue> = {}): ReferenceValue {
     attributes: {},
     validFrom: "2026-08-01T00:00:00.000Z",
     validTo: null,
+    systemhouseId: null,
     ...overrides,
   };
 }
 
 function setOnline(online: boolean): void {
   Object.defineProperty(window.navigator, "onLine", { configurable: true, value: online });
+}
+
+function cachedSnapshot(fetchedAt = new Date().toISOString()) {
+  return {
+    cacheVersion: 2 as const,
+    accessContext: CONTEXT,
+    fetchedAt,
+    catalogs: [catalog()],
+    values: DEFAULT_VALUES,
+  };
 }
 
 const DEFAULT_VALUES = [
@@ -74,7 +96,9 @@ beforeEach(() => {
   setOnline(true);
   window.localStorage.clear();
   service.resetForTests();
-  fetchAll.mockResolvedValue({ catalogs: [catalog()], values: DEFAULT_VALUES });
+  getPrincipalId.mockResolvedValue(CONTEXT.principalId);
+  getAccessContext.mockResolvedValue(CONTEXT);
+  fetchAll.mockResolvedValue({ context: CONTEXT, catalogs: [catalog()], values: DEFAULT_VALUES });
 });
 
 afterEach(() => {
@@ -84,17 +108,17 @@ afterEach(() => {
 describe("ReferenceDataService — Lesen", () => {
   it("should_returnOnlyActiveValues_when_listValuesCalledWithoutOptions", async () => {
     const values = await service.listValues("avkk.competence_rating");
-    expect(values.map((v) => v.key)).toEqual(["full", "partial"]);
+    expect(values.map((entry) => entry.key)).toEqual(["full", "partial"]);
   });
 
   it("should_includeDeactivatedValues_when_includeInactiveRequested", async () => {
     const values = await service.listValues("avkk.competence_rating", { includeInactive: true });
-    expect(values.map((v) => v.key)).toEqual(["legacy", "full", "partial"]);
+    expect(values.map((entry) => entry.key)).toEqual(["legacy", "full", "partial"]);
   });
 
   it("should_sortBySortOrder_when_listValuesCalled", async () => {
     const values = await service.listValues("avkk.competence_rating", { includeInactive: true });
-    expect(values.map((v) => v.sortOrder)).toEqual([5, 10, 20]);
+    expect(values.map((entry) => entry.sortOrder)).toEqual([5, 10, 20]);
   });
 
   it("should_returnEmptyList_when_catalogKeyUnknown", async () => {
@@ -108,11 +132,12 @@ describe("ReferenceDataService — Lesen", () => {
 
   it("should_filterCatalogsByDomain_when_domainGiven", async () => {
     fetchAll.mockResolvedValue({
+      context: CONTEXT,
       catalogs: [catalog(), catalog({ id: "c2", key: "core.unit", domain: "core" })],
       values: [],
     });
     const avkk = await service.listCatalogs("avkk");
-    expect(avkk.map((c) => c.key)).toEqual(["avkk.competence_rating"]);
+    expect(avkk.map((entry) => entry.key)).toEqual(["avkk.competence_rating"]);
     await expect(service.listCatalogs()).resolves.toHaveLength(2);
   });
 
@@ -127,43 +152,31 @@ describe("ReferenceDataService — Lesen", () => {
   });
 
   it("should_resolveDeactivatedValue_when_requireValueUsedForHistoricKey", async () => {
-    // Snapshot-Schreibpfade müssen auch auf deaktivierte Werte verweisen können.
     const legacy = await service.requireValue("avkk.competence_rating", "legacy");
     expect(legacy.isActive).toBe(false);
   });
 });
 
 describe("ReferenceDataService — Cache und Offline", () => {
-  it("should_hitAdapterOnce_when_multipleReadsShareState", async () => {
+  it("should_hitAdapterOnce_when_multipleReadsShareFreshCache", async () => {
     await service.listValues("avkk.competence_rating");
     await service.listCatalogs();
     expect(fetchAll).toHaveBeenCalledTimes(1);
   });
 
-  it("should_persistSnapshotToCache_when_loadedFromNetwork", async () => {
+  it("should_persistSnapshotToPrincipalCache_when_loadedFromNetwork", async () => {
     await service.listCatalogs();
-    const raw = window.localStorage.getItem(CACHE_KEY);
+    const raw = window.localStorage.getItem(cacheKey(CONTEXT));
     expect(raw).toBeTruthy();
-    expect(JSON.parse(raw as string)).toMatchObject({ cacheVersion: 1 });
+    expect(JSON.parse(raw as string)).toMatchObject({
+      cacheVersion: 2,
+      accessContext: CONTEXT,
+    });
   });
 
-  it("should_serveFromCacheWithoutNetwork_when_offlineAndCacheFresh", async () => {
-    await service.listCatalogs();
-    service.resetForTests();
-    // resetForTests leert den Cache — Cache erneut aufbauen und dann offline gehen.
-    await service.listCatalogs();
-    fetchAll.mockClear();
+  it("should_serveFromSamePrincipalCache_when_offline", async () => {
+    window.localStorage.setItem(cacheKey(CONTEXT), JSON.stringify(cachedSnapshot()));
     setOnline(false);
-    service.resetForTests();
-    window.localStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({
-        cacheVersion: 1,
-        fetchedAt: new Date().toISOString(),
-        catalogs: [catalog()],
-        values: DEFAULT_VALUES,
-      }),
-    );
     const values = await service.listValues("avkk.competence_rating");
     expect(values).toHaveLength(2);
     expect(fetchAll).not.toHaveBeenCalled();
@@ -172,13 +185,8 @@ describe("ReferenceDataService — Cache und Offline", () => {
 
   it("should_markStale_when_cacheOlderThanMaxAgeAndOffline", async () => {
     window.localStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({
-        cacheVersion: 1,
-        fetchedAt: new Date(Date.now() - MAX_CACHE_AGE_MS - 1000).toISOString(),
-        catalogs: [catalog()],
-        values: DEFAULT_VALUES,
-      }),
+      cacheKey(CONTEXT),
+      JSON.stringify(cachedSnapshot(new Date(Date.now() - MAX_CACHE_AGE_MS - 1000).toISOString())),
     );
     setOnline(false);
     await service.listCatalogs();
@@ -193,11 +201,8 @@ describe("ReferenceDataService — Cache und Offline", () => {
     });
   });
 
-  it("should_fallBackToCache_when_networkFetchFails", async () => {
-    await service.listCatalogs();
-    const snapshot = window.localStorage.getItem(CACHE_KEY) as string;
-    service.resetForTests();
-    window.localStorage.setItem(CACHE_KEY, snapshot);
+  it("should_fallBackToExactCache_when_networkFetchFails", async () => {
+    window.localStorage.setItem(cacheKey(CONTEXT), JSON.stringify(cachedSnapshot()));
     fetchAll.mockRejectedValue(new Error("network down"));
     await service.refresh();
     expect(service.currentState()?.source).toBe("cache");
@@ -214,7 +219,7 @@ describe("ReferenceDataService — Cache und Offline", () => {
   });
 
   it("should_ignoreCorruptCache_when_contentUnparsable", async () => {
-    window.localStorage.setItem(CACHE_KEY, "{ kaputt");
+    window.localStorage.setItem(cacheKey(CONTEXT), "{ kaputt");
     await expect(service.listCatalogs()).resolves.toHaveLength(1);
     expect(fetchAll).toHaveBeenCalledTimes(1);
   });
