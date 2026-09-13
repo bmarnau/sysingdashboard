@@ -20,5 +20,5 @@
 - [x] Statische Migrationsvertragstests + Cache-Tests (RED→GREEN)
 
 ## BSF-03D Review-Fix Runde 2 (MEDIUM-1, LOW-1 aus Re-Review)
-- [ ] Test härten: Unique-Erkennung im isolierten SQL-Block, exakter Spaltenmengen-Ausdruck
-- [ ] SQL-Kommentar: CHECK-Constraint fail-loud bei ungültigen Altwerten
+- [x] Test härten: Unique-Erkennung im isolierten SQL-Block, exakter Spaltenmengen-Ausdruck
+- [x] SQL-Kommentar: CHECK-Constraint fail-loud bei ungültigen Altwerten
