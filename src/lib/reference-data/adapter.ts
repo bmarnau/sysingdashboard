@@ -138,7 +138,11 @@ export async function insertValue(payload: ValueWritePayload, actorId: string): 
 
 export async function updateValueRow(
   id: string,
-  patch: Partial<Omit<ValueWritePayload, "catalogId">> & { isActive?: boolean; validTo?: string },
+  patch: Partial<Omit<ValueWritePayload, "catalogId" | "systemhouseId">> & {
+    isActive?: boolean;
+    /** `null` hebt eine Deaktivierung wieder auf (Reaktivierung). */
+    validTo?: string | null;
+  },
   actorId: string,
 ): Promise<void> {
   const row: TablesUpdate<"reference_value"> = { updated_by: actorId };
