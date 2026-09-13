@@ -495,8 +495,68 @@ offline gesperrt.
 **Einschränkungen in 1.52.0**: Es gibt noch keine Pflegeoberfläche für
 Kataloge; genutzt werden sie zunächst nur durch AVKK. Die bestehenden
 Auswahlwerte des Dashboards (Projektstatus, Priorität, Kategorie,
-Abrechnungsstatus) sind noch nicht auf Kataloge umgestellt.`,
-    relatedTopics: ["avkk-modell"],
+Abrechnungsstatus) sind noch nicht auf Kataloge umgestellt.
+
+**Seit 1.62.0**: Der erste systemhausweit pflegbare Katalog sind die
+Arbeitspaket-Kategorien (siehe Kapitel „Arbeitspaket-Kategorien").`,
+    relatedTopics: ["avkk-modell", "workpackage-categories"],
+  },
+  {
+    id: "workpackage-categories",
+    title: "Arbeitspaket-Kategorien",
+    category: "Erfassung",
+    component: "WorkPackageDialog",
+    keywords: [
+      "Kategorie",
+      "Arbeitspaket",
+      "Arbeitspaket-Kategorie",
+      "Stammdaten",
+      "Systemhaus",
+      "Tags",
+      "deaktiviert",
+      "Referenzdaten",
+    ],
+    lastUpdated: "2026-09-13",
+    content: `## Zweck
+Arbeitspakete können einer **Kategorie** zugeordnet werden, um sie später
+einheitlich auszuwerten und zu gruppieren. Kategorien sind gemeinsame
+Stammdaten Ihres Systemhauses: Alle Kunden und Projekte desselben Systemhauses
+verwenden dieselbe Kategorienliste.
+
+## Standard: keine Kategorie
+Neue Arbeitspakete haben zunächst **keine Kategorie**. Die Zuordnung ist
+freiwillig, und ein Arbeitspaket kann höchstens **eine** Kategorie tragen. Die
+Auswahl erfolgt im Arbeitspaket-Dialog im Feld „Kategorie"; dort erscheinen nur
+die derzeit aktiven Kategorien Ihres Systemhauses.
+
+## Kategorie oder Tag?
+- **Kategorie**: genau eine, aus einer gepflegten Liste, für einheitliche
+  Auswertungen.
+- **Tags**: beliebig viele freie Stichworte für die eigene Arbeitsorganisation.
+
+Beides ist unabhängig voneinander. Eine Kategorie verändert weder Status,
+Priorität noch Abrechenbarkeit eines Arbeitspakets.
+
+## Deaktivierte Kategorien bei Altbestand
+Kategorien werden nicht gelöscht, sondern **deaktiviert**. Arbeitspakete, die
+eine inzwischen deaktivierte Kategorie tragen, zeigen diese weiterhin an – mit
+Hinweis „deaktiviert" – und bleiben normal bearbeitbar. Nichts wird
+automatisch umgeschrieben; Sie entscheiden selbst, ob Sie eine andere Kategorie
+wählen oder die Zuordnung entfernen.
+
+## Pflege der Kategorienliste
+Anlegen, Umbenennen (Anzeigename) und Deaktivieren sind nur Benutzern mit dem
+Recht „Referenzdaten verwalten" möglich (Administration und
+Systemadministration). Die Verwaltung erfolgt zentral für das Systemhaus; die
+technische Kennung einer Kategorie bleibt nach dem Anlegen unverändert, damit
+Auswertungen stabil bleiben.
+
+## Import, Export und Backup
+Die Kategorie wird in Export- und Backup-Dateien mitgeführt. Beim Import älterer
+Dateien ohne Kategorie gilt „keine Kategorie". Verweist eine Datei auf eine
+unbekannte oder deaktivierte Kategorie, wird das gemeldet und nicht still
+verändert.`,
+    relatedTopics: ["projects", "reference-data", "import-export", "backup"],
   },
   {
     id: "backend-admin",
