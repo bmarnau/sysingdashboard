@@ -33,3 +33,11 @@
 - [x] SQL-Testartefakt T01–T16 in einer Transaktion mit ROLLBACK ausführen
 - [x] Live-Schema-Vertrag der Repo-Migration strukturell prüfen (keine DDL)
 - [x] Offizieller Security Advisor, BSF-03D-Delta gegen SEC-01-Baseline
+
+## BSF-03D Paket D — Dokumentation / Version / Nachweis
+- [ ] REFERENCE-DATA, DATA-SCHEMA, RBAC-MATRIX ergänzen
+- [ ] Help-Topic Arbeitspaket-Kategorien + Help-Tests
+- [ ] Version 1.62.0 + CHANGELOG-Eintrag
+- [ ] CURRENT-STATUS / PROJECT-STATUS.yaml
+- [ ] docs/BSF-03D-VERIFICATION-2026-09-13.md
+- [ ] Roadmap Ist-Stand, Gates (docs:check, prettier, eslint, typecheck, Help-Tests)
