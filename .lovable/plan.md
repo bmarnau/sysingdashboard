@@ -1,68 +1,40 @@
-# BSF-03D Paket 1 — Review 6484555 gegen b90f93c (nur Prüfung, keine Umsetzung)
+# SCOPED RE-REVIEW — BSF-03D Review-Fix Runde 1 (6484555..0fb1caf)
+
+Geprüfter Diff: 6 Dateien — Migration `0000_bsf03d_reference_data_systemhouse_scope.sql`, `src/lib/reference-data/cache.ts`, zwei neue Testdateien, `roadmap.md`, `.lovable/plan.md`. Keine Code-/DB-Änderung in diesem Turn.
 
 ## Verdicts
 
-- **SPEC COMPLIANCE: FINDINGS** (massiver Scope-Creep über Paket 1 hinaus; RED-Nachweis aus der Historie nicht belegbar)
-- **CODE QUALITY / SECURITY: FINDINGS** (1 Blocker: nicht beauftragte Änderung am generierten Auth-Client / Preview-Broker-Storage; dazu Migrations- und Cache-Befunde)
+- **SPEC COMPLIANCE: PASS**
+- **CODE QUALITY / SECURITY: FINDINGS** (1 MEDIUM, 1 LOW — beide betreffen Teststärke bzw. Fehlerverhalten bei Altdaten, nicht die Migrationslogik selbst)
 
-## Findings priorisiert
+## Prüfergebnis je Punkt
 
-### BLOCKER-1 — Preview-/Broker-Auth-Storage als unbeauftragte Nebenänderung
-`src/integrations/supabase/client.ts` (Zeile 63: `storage: brokeredPreviewStorage()`) und neue Datei `src/integrations/supabase/previewAuthStorage.ts` (88 Zeilen, postMessage-Brokering der Session an die Editor-Origin).
-Beides liegt außerhalb von Paket 1 und verletzt die Projektregel „keine Preview-/Broker-Auth-Storage-Logik als unbeauftragte Nebenänderung“ sowie „Auth nur im ausdrücklichen Auftrag ändern“. Sicherheitsrelevant: Session-Token verlässt den Tab per postMessage.
-Minimale Korrektur: beide Änderungen aus dem Paket-1-Branch entfernen; falls plattformseitig erzwungen, als eigener, ausdrücklich beauftragter Vorgang mit separatem Security-Review führen.
+1. **Strukturelle Unique-Erkennung — OK.** `pg_constraint` mit `conrelid = 'public.reference_value'::regclass`, `contype = 'u'`, Spaltenmenge über `array_agg(attname ORDER BY attname) = ARRAY['catalog_id','key']` — exakte Mengengleichheit, PK (`contype = 'p'`) und andere Unique-Constraints werden nicht getroffen. Dynamischer `DROP CONSTRAINT %I` nur für Treffer. Begründung im Kommentar vorhanden.
+2. **FK-Check — OK.** `conname` + `conrelid`-Qualifizierung vorhanden.
+3. **scope_type-Zielvertrag — OK.** Reihenfolge `ADD COLUMN IF NOT EXISTS ... NOT NULL DEFAULT 'global'` -> `UPDATE ... WHERE scope_type IS NULL` -> `SET DEFAULT` -> `SET NOT NULL` -> CHECK-Constraint (nur bei Nichtexistenz). Gültige Werte bleiben unverändert; die UPDATE-DML ist ein zulässiger Backfill der additiven Änderung.
+4. **Idempotenz — OK.** Zweiter Lauf: Loop findet keinen Constraint mehr (partielle Unique-Indizes sind Indizes, nicht in `pg_constraint`); `CREATE UNIQUE INDEX IF NOT EXISTS` lässt sie unverändert; Policies/Trigger per `DROP IF EXISTS` + `CREATE`, Funktionen `CREATE OR REPLACE`, alle ALTERs wiederholbar.
+5. **Cache — OK.** Legacy -> `scopeType: "global"`, `systemhouseId: null`; vorhandene gültige Werte bleiben erhalten; unbekannter `scopeType`/nicht-string `systemhouseId` werden auf sichere Defaults gezogen; kaputtes JSON, falsche `cacheVersion`, nicht-Array `values`/`catalogs`, `null`-Einträge -> `null`. **Keine UUID-Prüfung nötig:** Der Cache ist ein rein clientlokaler Lese-Cache; er wird nie zurück in die DB geschrieben, RLS/Server-Trigger bleiben Sicherheitsgrenze. Manipulation betrifft nur die eigene Anzeige. Kein Finding.
+6. **Tests — Finding (MEDIUM), s. u.** Import-/DOM-Annahmen stimmen: `../env/test-instance` existiert (gleiche Konvention wie `source-scan.test.ts`), Vitest läuft mit `environment: "jsdom"`, `window.localStorage` ist verfügbar.
+7. **Kein Auth/Preview/UI/Import/Backup-Touch — OK.** `git diff --stat` zeigt ausschließlich die sechs genannten Dateien.
+8. **`roadmap.md` / `.lovable/plan.md` — Doku-Metadaten**, kein Scope-Creep.
 
-### BLOCKER-2 — Scope-Creep weit über Paket 1
-Nicht beauftragt in diesem Paket, aber im Diff enthalten:
-- UI: `src/components/admin/WorkPackageCategoryDialog.tsx`, `src/components/dashboard/dialogs/WorkPackageDialog.tsx`, `src/components/dashboard/header/ServiceMenu.tsx`, `src/routes/_authenticated/dashboard.tsx`, `src/hooks/useWorkPackageCategories.ts`
-- Import/Export: `src/lib/json-schema.ts` (Version 1.1.0 → 1.2.0), `src/lib/json-import-service.ts`
-- Backup/Restore: `src/lib/backup/category-check.ts`, `src/lib/backup/restore.ts`
-- Membership-Runtime: `src/lib/systemhouse/membership.ts`, `src/integrations/supabase/systemhouse-membership-adapter.ts`
-- DB-Testartefakt/E2E-Vorgriff: `supabase/tests/bsf03d-workpackage-category.sql`
-- Regenerierte Reports: `test-report/*`, `security-report/*`, `roadmap.md`
-Minimale Korrektur: Paket 1 auf Migration + `types.ts` (generiert) + `reference-data/{types,adapter}.ts` + `dashboard-data.ts` (`categoryKey`) + `workpackage-category.ts` + zugehörige Unit-Tests reduzieren; der Rest wird Paket 2/3. Regenerierte Report-Artefakte gehören nicht in einen fachlichen Paket-1-Diff.
+## Findings
 
-### HIGH-1 — RED-Nachweis nicht verifizierbar
-`b90f93c..6484555` enthält nur Sammelcommits („Changes“, „Work in progress“, abschließend „TDD BSF-03D/#103 umgesetzt“). Es gibt keinen Commit, in dem Tests ohne Produktionscode rot sind. Der RED-Status ist damit nur behauptet, nicht belegt.
-Minimale Korrektur: Paket-1-Branch in zwei Commits neu aufsetzen — (1) nur Tests (rot, Lauf-Log im Bericht), (2) Implementierung (grün).
+### MEDIUM-1 — Statischer Unique-Test kann mit falschem SQL grün werden
+Datei: `src/__tests__/security/bsf03d-migration-contract.test.ts`, Test `should_detectLegacyUniqueStructurally_when_replacingCatalogKeyUnique` (Z. 43–49).
+Die Assertions prüfen nur das isolierte Vorkommen einzelner Tokens irgendwo in der Datei: `pg_constraint`, `pg_attribute`, `contype = 'u'`, `'catalog_id'`, `'key'`. `'key'` kommt bereits zweimal an anderer Stelle vor (Audit-JSON `jsonb_build_object('key', ...)`), `pg_constraint` und `conrelid = ...::regclass` auch im FK-Check. Ein SQL, das z. B. `array_agg(...) @> ARRAY['catalog_id']` (Teilmenge statt exakter Menge) oder gar keinen Spaltenvergleich enthält, würde den Test bestehen.
+Minimaler Fix: eine Assertion auf den Vergleichsausdruck selbst, z. B.
+`expect(FLAT).toMatch(/array_agg\(a\.attname::text ORDER BY a\.attname\)[\s\S]{0,120}= ARRAY\['catalog_id', 'key'\]::text\[\]/)`
+und den DO-Block isolieren (Substring zwischen `-- Abloesung des alten globalen Unique-Vertrags` und `CREATE UNIQUE INDEX IF NOT EXISTS reference_value_global_key_unique`) und `contype = 'u'`/`pg_attribute` nur innerhalb dieses Blocks prüfen.
 
-### HIGH-2 — Migration enthält einen DROP CONSTRAINT und ist nicht kollisionsfrei bei abweichendem Namen
-`drizzle/migrations/0000_bsf03d_reference_data_systemhouse_scope.sql`:
-`ALTER TABLE public.reference_value DROP CONSTRAINT IF EXISTS reference_value_catalog_id_key_key;`
-Das ist entgegen „keine destruktiven DROP-Aktionen“ ein Schemaeingriff; er ist funktional nötig (Ablösung durch zwei partielle Unique-Indizes), aber (a) im Auftrag nicht vorgesehen und (b) namensabhängig: heißt der Constraint in einer älteren DB anders, bleibt er stehen und blockiert später systemhausbezogene Duplikate über Systemhäuser hinweg.
-Minimale Korrektur: Ablösung über `pg_constraint`-Lookup nach Spaltenmenge statt Namen und expliziten Hinweis im Migrationskopf, dass ein Unique-Constraint durch zwei partielle Indizes ersetzt wird.
+### LOW-1 — Ungültige Altwerte in vorhandenem `scope_type` brechen die Migration laut
+Datei: Migration, Abschnitt 1.
+Existiert `scope_type` bereits mit einem Wert außerhalb `('global','systemhouse')`, schlägt das nachfolgende `ADD CONSTRAINT ... CHECK` fehl und die Migration rollt zurück. Das ist fachlich richtig (kein stilles Umschreiben gültiger/ungültiger Werte, Spec verlangt "keine gültigen Werte verändern"), sollte aber im SQL-Kommentar als bewusstes Fail-loud-Verhalten dokumentiert werden. Kein Codefix nötig; optional ein Kommentar von einer Zeile.
 
-### MEDIUM-1 — FK-Idempotenzprüfung nicht tabellenqualifiziert
-Gleiche Datei, Block 2: `IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'reference_value_systemhouse_fk')` — ohne `conrelid`/`connamespace`. `conname` ist nicht global eindeutig; ein gleichnamiger Constraint an einer anderen Tabelle unterdrückt das Anlegen still.
-Minimale Korrektur: `AND conrelid = 'public.reference_value'::regclass` ergänzen, analog zum Scope-Check-Block.
+## Positiv festgehalten
+- Keine DROP TABLE/COLUMN, TRUNCATE, DELETE, RESET, service_role in der Migration.
+- Cache-Normalisierung verändert keine vorhandenen Felder und bricht den Cache-Key nicht (Begründung für Normalisierung statt Versionsbump nachvollziehbar).
+- Testkonventionen (`should_..._when_...`, Vitest, `test-instance`-Import) eingehalten.
 
-### MEDIUM-2 — Alte Cache-Snapshots sind nicht wirklich rückwärtssicher
-`src/lib/reference-data/cache.ts`: `CACHE_KEY` bleibt `...v1`, `cacheVersion` bleibt `1`, und `readCache()` gibt den geparsten Snapshot ungemappt zurück. Ein vor dem Sprint geschriebener Cache liefert daher Objekte mit `scopeType: undefined` und `systemhouseId: undefined`, obwohl beide Felder im Typ verpflichtend sind. `adapter.toCatalog/toValue` greifen nur auf dem Netzwerkpfad. Jede spätere Filterung nach `systemhouseId` arbeitet auf stale Caches falsch (bis zu 24 h).
-Minimale Korrektur: `cacheVersion` auf `2` heben (alter Cache wird verworfen) **oder** in `readCache()` normalisieren (`scopeType ?? "global"`, `systemhouseId ?? null`) — plus ein Test genau dafür. Der vorhandene Test `should_defaultToGlobalScope_when_legacyRowsLackScopeColumns` prüft nur den Adapter, nicht den Cache.
-
-### MEDIUM-3 — Globale Werte bleiben für jeden Manager schreibbar
-Migration Block 6: `reference_value_insert/update` erlauben Schreiben auf globale Werte (`systemhouse_id IS NULL`) für jeden mit `referencedata.manage`, unabhängig von Systemhaus. Cross-Systemhouse-DENY ist für systemhausbezogene Werte korrekt umgesetzt; die AVKK-Systemkataloge sind aber weiterhin nicht gegen Änderung durch nicht-systemadministrative Manager geschützt. Vorbestand, keine Regression — aber in einem Scope-Sprint zu dokumentieren.
-Minimale Korrektur: als bekanntes Risiko in `docs` notieren; optional später `is_system`-Kataloge auf Systemadministrator einschränken (eigener Auftrag).
-
-### LOW-1 — `ADD COLUMN IF NOT EXISTS` maskiert abweichenden Ist-Zustand
-Wenn `scope_type` in der Live-DB bereits existiert, aber ohne `NOT NULL`/`DEFAULT 'global'`, wird der Unterschied stillschweigend übernommen.
-Minimale Korrektur: nachgelagert `ALTER COLUMN SET DEFAULT` / `SET NOT NULL` idempotent absichern, oder im DB-Testartefakt explizit prüfen.
-
-### LOW-2 — Key-Immutabilität nur für einen Katalog
-`reference_value_validate_scope()` sperrt Key-Renames nur für `workpackage.category`. Für alle anderen Kataloge bleibt ein Key-Rename möglich, obwohl Snapshot-Spalten anderswo auf Key-Identität bauen. Kein Hard-Delete-Loch (DELETE ist per RLS verwehrt, Deaktivierung erfolgt über `is_active`/`valid_to`).
-Minimale Korrektur: bewusste Entscheidung dokumentieren oder Key-Immutabilität generell auf `is_system`-Kataloge ausweiten.
-
-## Was geprüft und in Ordnung ist
-
-- Keine Änderung an Shared Projection, BSF-02C-Publish-RPC oder BSF-03-P5-Artefakten im Diff (Frage 7: PASS).
-- Keine Secrets, kein Service-Role-Key, keine `supabase_admin`-Nutzung in Migration oder Code.
-- RLS bindet systemhausbezogene Werte an `has_active_systemhouse_membership`; Lesen und Schreiben fremder Systemhäuser ist damit DENY. Globale AVKK-Werte bleiben lesbar wie zuvor (Frage 3: im Wesentlichen PASS, siehe MEDIUM-3).
-- Trigger erzwingt Scope-Konsistenz sowie Immutabilität von `catalog_id` und `systemhouse_id`; `SET search_path TO ''`, `REVOKE ALL ... FROM PUBLIC, anon` vorhanden.
-- Partielle Unique-Indizes bilden „global eindeutig“ vs. „je Systemhaus eindeutig“ fachlich korrekt ab; zusätzlicher Lookup-Index vorhanden.
-- `workpackage.category` wird ohne Seed-Werte angelegt (`ON CONFLICT (key) DO NOTHING`) — Default „keine Kategorie“ bleibt gewahrt.
-- `src/lib/workpackage-category.ts` ist providerneutral, deckt none/active/inactive/unknown und Gruppierung ab und leitet nachweislich kein billable/priority/status ab.
-- `WorkPackage.categoryKey?: string | null` und die Adapter-Erweiterungen sind additiv und minimal.
-
-## Empfohlener nächster Schritt (nicht ausgeführt)
-
-Paket-1-Branch auf den vertraglichen Umfang zurückschneiden (BLOCKER-1/2), RED-Commit nachziehen (HIGH-1), danach Migration um HIGH-2 und MEDIUM-1 sowie den Cache um MEDIUM-2 korrigieren — erst dann Paket 2 (UI/Import/Backup/E2E).
+## Empfehlung
+Kein Blocker. Nächster Schritt: MEDIUM-1 als Ein-Datei-Testhärtung in einer Mini-Runde nachziehen (nur Testdatei), danach PR-Pfad wie gewohnt. MERGE/DEPLOY: NEIN in diesem Turn; DB geändert: NEIN.
