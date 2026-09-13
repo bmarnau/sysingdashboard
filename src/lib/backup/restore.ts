@@ -158,6 +158,10 @@ export async function restoreFromZip(
     }
   }
 
+  // 4c. BSF-03D: Arbeitspaket-Kategorien fail-safe gegen den Katalog im Archiv
+  //     prüfen — nur Warnungen, kein Abbruch, keine Umdeutung.
+  warnings.push(...checkWorkPackageCategories(manifest, entries).warnings);
+
   // 5. Restoreplan ausschließlich aus dem Manifest bilden
   const restorable = manifest.entries.filter((e) => e.storageKey !== null);
   if (restorable.length === 0) {
