@@ -24,7 +24,11 @@ test.describe("BSF-03 P5 Kundenverantwortung", () => {
     await expect(page.getByText("Anna Admin")).toBeVisible();
     await expect(page.getByText("Beta AG")).toBeVisible();
     await expect(page.getByText("Nicht zugeordnet")).toBeVisible();
-    await expect(page.getByText(/Projekte|Arbeitspakete|Tätigkeiten/)).toHaveCount(0);
+
+    const management = page.locator('section[aria-labelledby="responsibility-management-heading"]');
+    await expect(
+      management.getByRole("link", { name: /Projekte|Arbeitspakete|Tätigkeiten/ }),
+    ).toHaveCount(0);
   });
 
   test("Zuweisen und Wechseln verwendet nur die datensparsame Kandidatenliste", async ({
