@@ -47,6 +47,8 @@ import {
 import { dashboardData, type Activity, type Project, type WorkPackage } from "@/lib/dashboard-data";
 import { isSensitiveFieldName } from "@/lib/json-schema";
 import { logger } from "@/lib/logger";
+import type { ReferenceValue } from "@/lib/reference-data/types";
+import { validateCategoryKeys, type CategoryValidationReport } from "@/lib/workpackage-category";
 
 /* ------------------------------ Typen ------------------------------ */
 
