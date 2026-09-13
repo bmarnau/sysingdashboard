@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-08-25 · Dashboard-Version 1.59.7
+Stand: 2026-09-13 · Dashboard-Version 1.60.0
 
 ## Vision
 
@@ -40,7 +40,7 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis August 2026                                                                                                                                |
-| Aktueller Stand     | Version 1.59.7; F-18 und F-11 CLOSED/PASS; MVP 100 % / BASELINE READY; `main` technisch durch GitHub-Ruleset geschützt; BSF-01 läuft.                   |
+| Aktueller Stand     | Version 1.60.0; MVP-Baseline CLOSED/PASS; BSF-03 P3/P4 „Meine Kunden“ read-only umgesetzt; P5 Verantwortungsverwaltung offen.                       |
 | Größte Hürden       | Der operative Fachbestand ist noch teilweise user-scoped lokal; echte Kunden-/Mehrbenutzersichten benötigen einen kontrollierten gemeinsamen Read-Pfad. |
 | Nächster Nutzen     | Kundenmodell → Kundenverantwortung/„Meine Kunden“ → Projektmanager-Leistungssicht → Teamlead-Leistungsnachweis.                                         |
 
@@ -114,6 +114,7 @@ Betreiberhoheit und spätere Integrationen.
 | 1.59.2        | 2026-08-18           | Passwortadministration    | Administratives Passwortsetzen serverseitig kontrolliert und auditiert  |
 | 1.59.3–1.59.4 | 2026-08-18 bis 08-21 | Viewer-/CRUD-Härtung      | Local-First-Schreibpfade und Dialoggrenzen fail-closed                  |
 | 1.59.5–1.59.6 | 2026-08-21 bis 08-24 | F-11 / MVP-Abschluss      | Rollen-/Negativtests abgeschlossen; MVP 100 % / BASELINE READY          |
+| 1.60.0        | 2026-09-13           | BSF-03 „Meine Kunden“     | Read-only Liste/Detail, E2E-/Security-/A11y-Abdeckung; P5 offen         |
 
 ## Schwierigkeiten und ihre Lösung
 
@@ -856,3 +857,33 @@ Leistungssichten und spätere Hilfe-/Dokumentationsnavigation eingesetzt.
 
 Dokumentation: `docs/BSF-01-ARCHITECTURE-BASELINE.md`, ADR-0029,
 `docs/BSF-CURRENT-PRIORITIES.md` und `docs/BSF-CONCEPT-REGISTER.md`.
+
+## BSF-03 — „Meine Kunden“ Runtime/UI (v1.60.0, 2026-09-13)
+
+Auf dem in P1/P2 abgenommenen Datenbank-/Sicherheitsfundament (Issue #105) ist
+der erste kundenbezogene Arbeitspfad im Produkt:
+
+`Meine Kunden -> Kunde öffnen -> Projekte -> Arbeitspakete -> Tätigkeiten`
+
+Umsetzung ohne Datenbank-, RLS- oder Grant-Änderung: providerneutrale Fachlogik,
+Supabase-Adapter im Benutzerkontext, zwei authentifizierte Serverfunktionen,
+eigene Routen mit beiden Scope-IDs in der URL und eine rein lesende Oberfläche.
+Ein Kunde erscheint nur, wenn aktives Konto, Systemhaus-Zugehörigkeit, aktive
+Verantwortung, Kundenzugriff und `dashboard.view` gleichzeitig gegeben sind; die
+Datenbank bestätigt das je Kunde (`is_my_customer`). Fremde oder unbekannte
+Kunden liefern einheitlich „Kunde nicht verfügbar“.
+
+Der Read-/Write-Indikator ist umgesetzt und dient ausschließlich der Anzeige;
+eine Responsibility erzeugt weder Schreibberechtigung noch zusätzliche
+Datenrechte. P4 ergänzt 15 BSF-03-E2E-Fälle für Sichtbarkeit, Negativpfade,
+Security und Barrierefreiheit. Der lokale P4-Nachweis umfasst die vollständige
+Chromium-Suite mit 69/69 bestandenen Tests sowie 696 bestandene und 4 als `todo`
+markierte Vitest-Tests. Diese lokalen Ergebnisse sind keine Aussage zum
+abschließenden Status der GitHub-CI für PR #128.
+
+Bewusst offen bleibt P5, die Verantwortungsverwaltung. Sie benötigt den separat
+definierten, engen Manager-Read-Vertrag und erweitert keine bestehende
+Sicherheitsgrenze. Eine gebündelte Auswertung von `is_my_customer` bleibt ein
+optionaler Performance-Folgepunkt und ist kein P3/P4-Blocker.
+
+Dokumentation: `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md`.
