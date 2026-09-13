@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-13 · Dashboard-Version 1.60.0
+Stand: 2026-08-25 · Dashboard-Version 1.59.7
 
 ## Vision
 
@@ -856,23 +856,3 @@ Leistungssichten und spätere Hilfe-/Dokumentationsnavigation eingesetzt.
 
 Dokumentation: `docs/BSF-01-ARCHITECTURE-BASELINE.md`, ADR-0029,
 `docs/BSF-CURRENT-PRIORITIES.md` und `docs/BSF-CONCEPT-REGISTER.md`.
-
-## BSF-03 — „Meine Kunden“ Runtime/UI (v1.60.0, 2026-09-13)
-
-Auf dem in P1/P2 abgenommenen Datenbank-/Sicherheitsfundament (Issue #105) ist
-der erste kundenbezogene Arbeitspfad im Produkt:
-
-`Meine Kunden -> Kunde öffnen -> Projekte -> Arbeitspakete -> Tätigkeiten`
-
-Umsetzung ohne Datenbank-, RLS- oder Grant-Änderung: providerneutrale Fachlogik,
-Supabase-Adapter im Benutzerkontext, zwei authentifizierte Serverfunktionen,
-eigene Routen mit beiden Scope-IDs in der URL und eine rein lesende Oberfläche.
-Ein Kunde erscheint nur, wenn aktives Konto, Systemhaus-Zugehörigkeit, aktive
-Verantwortung, Kundenzugriff und `dashboard.view` gleichzeitig gegeben sind; die
-Datenbank bestätigt das je Kunde (`is_my_customer`). Fremde oder unbekannte
-Kunden liefern einheitlich „Kunde nicht verfügbar“.
-
-Bewusst offen: Verantwortungsverwaltung, Read-/Write-Indikator, gebündelte
-Schnittmengenfunktion in der Datenbank, E2E gegen Serverfunktionen.
-
-Dokumentation: `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md`.
