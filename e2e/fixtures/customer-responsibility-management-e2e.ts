@@ -52,9 +52,9 @@ function serverFnExport(rawUrl: string): string {
     const encodedDescriptor = url.pathname.split("/_serverFn/")[1]?.split("/")[0];
     if (!encodedDescriptor) return "";
 
-    const descriptor = JSON.parse(
-      Buffer.from(encodedDescriptor, "base64url").toString("utf8"),
-    ) as { export?: unknown };
+    const descriptor = JSON.parse(Buffer.from(encodedDescriptor, "base64url").toString("utf8")) as {
+      export?: unknown;
+    };
     return typeof descriptor.export === "string" ? descriptor.export : "";
   } catch {
     return "";
