@@ -352,9 +352,9 @@ roadmap:
       - "Cross-Systemhaus- und Cross-Customer-Negativtests vorhanden"
   - id: "BSF-03D"
     title: "Arbeitspaket-Kategorien"
-    status: "in-progress"
+    status: "completed"
     priority: "high"
-    goal: "Systemhausweite editierbare AP-Kategorien als optionale stabile Auswertungsdimension bereitstellen. Stand 1.62.0: implementiert; DB-Verifikation T01-T16 16/16 PASS (Rollback), Live-Schema PASS, Advisor ohne neue BSF-03D-Findings; offen: Quality-Gate-Lauf Paket Q und Governance-Cleanup Preview-Auth-Broker (docs/BSF-03D-VERIFICATION-2026-09-13.md)."
+    goal: "Systemhausweite editierbare AP-Kategorien als optionale stabile Auswertungsdimension bereitstellen. Stand 1.62.0: implementiert; DB-Verifikation T01-T16 16/16 PASS (Rollback), Live-Schema PASS, Advisor ohne neue BSF-03D-Findings; Paket Q 2026-09-13: alle Quality Gates grün, E2E 77/77, Governance-Cleanup Preview-Auth-Broker abgeschlossen (docs/BSF-03D-CLOSURE-2026-09-13.md); GitHub-PR/Merge ausstehend."
     dependencies:
       - "BSF-03"
     exitCriteria:
@@ -695,10 +695,11 @@ releaseManagement:
     - "docs/BSF-03-RESPONSIBILITY-MANAGEMENT-READ-CONTRACT-2026-09-13.md"
     - "docs/BSF-03-CLOSURE-2026-09-13.md"
     - "docs/BSF-03D-VERIFICATION-2026-09-13.md"
+    - "docs/BSF-03D-CLOSURE-2026-09-13.md"
     - "docs/CODEX-GIT-CI-RULE.md"
     - "docs/ADR/0029-systemhouse-customer-scope.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
-  nextReleaseTarget: "BSF-03D Abschluss (Paket Q) und BSF-03A"
+  nextReleaseTarget: "BSF-03D PR/Merge und BSF-03A"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"
