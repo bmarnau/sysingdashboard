@@ -65,13 +65,7 @@ function renderDialog(
   } as Record<string, unknown>;
 
   render(
-    <WorkPackageDialog
-      wp={wp}
-      projects={[]}
-      onClose={vi.fn()}
-      onSave={onSave}
-      {...extraProps}
-    />,
+    <WorkPackageDialog wp={wp} projects={[]} onClose={vi.fn()} onSave={onSave} {...extraProps} />,
   );
   return { onSave };
 }
