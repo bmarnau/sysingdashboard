@@ -15,6 +15,6 @@
 - [ ] Doku: REFERENCE-DATA, DATA-SCHEMA, RBAC, Help, CHANGELOG 1.62.0, CURRENT-STATUS, Nachweis
 
 ## BSF-03D Review-Fix Runde 1 (HIGH-2, MEDIUM-1, MEDIUM-2, LOW-1)
-- [ ] Migration: strukturelle Alt-Unique-Ablösung, FK-Check tabellenqualifiziert, scope_type Zielvertrag idempotent
-- [ ] Cache: readCache normalisiert Legacy-Snapshots (scopeType/systemhouseId)
-- [ ] Statische Migrationsvertragstests + Cache-Tests (RED→GREEN)
+- [x] Migration: strukturelle Alt-Unique-Ablösung, FK-Check tabellenqualifiziert, scope_type Zielvertrag idempotent
+- [x] Cache: readCache normalisiert Legacy-Snapshots (scopeType/systemhouseId)
+- [x] Statische Migrationsvertragstests + Cache-Tests (RED→GREEN)
