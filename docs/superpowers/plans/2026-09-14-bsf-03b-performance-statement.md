@@ -245,7 +245,9 @@ git commit -m "feat(bsf03b): providerneutralen Leistungsnachweis-Vertrag definie
 
 ```ts
 export function canonicalizePerformanceReviewRows(rows: PerformanceStatementReviewRow[]): string;
-export async function createPerformanceReviewFingerprint(rows: PerformanceStatementReviewRow[]): Promise<string>;
+export async function createPerformanceReviewFingerprint(
+  rows: PerformanceStatementReviewRow[],
+): Promise<string>;
 ```
 
 Kanonische Zeile:
