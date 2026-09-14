@@ -145,7 +145,9 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
       await load();
     } catch (err) {
       const message =
-        err instanceof Error && err.message ? err.message : "Kiosk-Konto konnte nicht angelegt werden.";
+        err instanceof Error && err.message
+          ? err.message
+          : "Kiosk-Konto konnte nicht angelegt werden.";
       setKioskError(message);
       toast.error(message);
     } finally {
@@ -232,7 +234,10 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
           </div>
 
           {kioskFormOpen && (
-            <form className="mt-4 grid gap-3" onSubmit={(event) => void handleCreateKioskAccount(event)}>
+            <form
+              className="mt-4 grid gap-3"
+              onSubmit={(event) => void handleCreateKioskAccount(event)}
+            >
               <div>
                 <Label htmlFor="kiosk-display-name">Anzeigename</Label>
                 <Input
