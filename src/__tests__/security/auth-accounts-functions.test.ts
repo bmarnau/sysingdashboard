@@ -58,7 +58,7 @@ describe("Admin-Serverfunktionen für Auth-Konten", () => {
       expect(fnBlock(name), `${name} ohne Berechtigungsprüfung`).toContain("assertUserManage");
     }
     expect(HELPERS).toContain('assertPermission(context, "users.manage")');
-    expect(HELPERS).toContain('_perm: permission');
+    expect(HELPERS).toContain("_perm: permission");
     expect(HELPERS).toContain("context.supabase.rpc");
   });
 
@@ -66,7 +66,7 @@ describe("Admin-Serverfunktionen für Auth-Konten", () => {
     const block = fnBlock("createKioskAuthAccount");
     expect(block).toContain("assertRolesManage");
     expect(HELPERS).toContain('assertPermission(context, "roles.manage")');
-    expect(HELPERS).toContain('_perm: permission');
+    expect(HELPERS).toContain("_perm: permission");
   });
 
   it("should_provisionExclusiveKioskRole_and_compensatePartialFailure", () => {
