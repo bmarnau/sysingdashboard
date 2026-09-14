@@ -1,0 +1,15 @@
+name: Diagnose Kiosk Demo RED
+
+on:
+  push:
+    branches:
+      - diag/kiosk-demo-red
+
+jobs:
+  targeted-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/__tests__/lib/kiosk-demo-repository.test.ts src/__tests__/lib/kiosk-demo-service.test.ts
