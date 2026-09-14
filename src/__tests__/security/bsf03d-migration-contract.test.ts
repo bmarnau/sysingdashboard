@@ -1,6 +1,7 @@
 /**
- * BSF-03D Review-Fix Runde 1 — statischer Vertragstest der Repo-Migration
- * `0000_bsf03d_reference_data_systemhouse_scope.sql`.
+ * BSF-03D Review-Fix Runde 1 — statischer Vertragstest der kanonischen
+ * Supabase-Repo-Migration
+ * `20260913213000_bsf03d_workpackage_category_reference_data.sql`.
  *
  * Geprüft wird ausschließlich der SQL-Text (keine DB-Verbindung):
  *  - HIGH-2: Alt-Unique-Vertrag (catalog_id,key) wird strukturell über
@@ -18,9 +19,9 @@ import { join } from "node:path";
 
 const FILE = join(
   process.cwd(),
-  "drizzle",
+  "supabase",
   "migrations",
-  "0000_bsf03d_reference_data_systemhouse_scope.sql",
+  "20260913213000_bsf03d_workpackage_category_reference_data.sql",
 );
 const SQL = readFileSync(FILE, "utf8");
 const FLAT = SQL.replace(/\s+/g, " ");
@@ -37,19 +38,14 @@ describe("BSF-03D Migration — Vertrag (statisch)", () => {
   });
 
   it("should_detectLegacyUniqueStructurally_when_replacingCatalogKeyUnique", () => {
-    // Kein reiner Namens-Drop mehr.
     expect(FLAT).not.toMatch(/DROP CONSTRAINT IF EXISTS reference_value_catalog_id_key_key/i);
 
-    // Review-Fix Runde 2 (MEDIUM-1): Nur der isolierte Ablöse-Block wird geprüft,
-    // damit Tokens aus anderen Abschnitten (FK-Check, Audit-JSON 'key') den Test
-    // nicht fälschlich grün machen.
     const start = FLAT.indexOf("Abloesung des alten globalen Unique-Vertrags");
     const end = FLAT.indexOf("CREATE UNIQUE INDEX IF NOT EXISTS reference_value_global_key_unique");
     expect(start, "Ablöse-Kommentar fehlt").toBeGreaterThan(-1);
     expect(end, "Partieller Global-Index fehlt").toBeGreaterThan(start);
     const BLOCK = FLAT.slice(start, end);
 
-    // Strukturelle Ermittlung innerhalb des Blocks.
     expect(BLOCK).toMatch(/FROM pg_constraint c/);
     expect(BLOCK).toMatch(/FROM pg_attribute a/);
     expect(BLOCK).toMatch(/c\.conrelid = 'public\.reference_value'::regclass/);
@@ -57,8 +53,6 @@ describe("BSF-03D Migration — Vertrag (statisch)", () => {
     expect(BLOCK).toMatch(/a\.attrelid = c\.conrelid/);
     expect(BLOCK).toMatch(/a\.attnum = ANY \(c\.conkey\)/);
 
-    // EXAKTER Spaltenmengen-Vergleich: sortiertes array_agg, Gleichheit (kein @>/<@),
-    // genau die beiden Spalten catalog_id und key.
     const setCompare =
       /\( SELECT array_agg\(a\.attname::text ORDER BY a\.attname\) FROM pg_attribute a WHERE a\.attrelid = c\.conrelid AND a\.attnum = ANY \(c\.conkey\) \) = ARRAY\['catalog_id', 'key'\]::text\[\]/;
     expect(BLOCK, "Exakter Mengenvergleich (catalog_id,key) fehlt").toMatch(setCompare);
@@ -66,12 +60,10 @@ describe("BSF-03D Migration — Vertrag (statisch)", () => {
     const arrays = [...BLOCK.matchAll(/ARRAY\[([^\]]*)\]/g)].map((m) => m[1]);
     expect(arrays).toEqual(["'catalog_id', 'key'"]);
 
-    // Der Drop erfolgt dynamisch über den ermittelten Namen und nur per Loop.
     expect(BLOCK).toMatch(
       /EXECUTE format\('ALTER TABLE public\.reference_value DROP CONSTRAINT %I', v_conname\)/,
     );
     expect(BLOCK).not.toMatch(/DROP CONSTRAINT IF EXISTS/i);
-    // Begründung ist dokumentiert.
     expect(SQL).toMatch(/verschiedenen Systemh(ä|ae)usern/);
   });
 
@@ -96,7 +88,6 @@ describe("BSF-03D Migration — Vertrag (statisch)", () => {
     expect(FLAT).not.toMatch(/\bRESET\b/i);
     expect(FLAT).not.toMatch(/service_role/i);
     expect(FLAT).not.toMatch(/supabase_admin/i);
-    // Nur additive Spalten.
     expect(FLAT).toMatch(/ADD COLUMN IF NOT EXISTS systemhouse_id uuid/);
   });
 
@@ -107,7 +98,6 @@ describe("BSF-03D Migration — Vertrag (statisch)", () => {
     );
     expect(FLAT).toMatch(/DROP TRIGGER IF EXISTS reference_value_validate_scope/);
     expect(FLAT).toMatch(/ON CONFLICT \(key\) DO NOTHING/);
-    // Kein CREATE POLICY ohne vorheriges DROP POLICY IF EXISTS.
     const policies = [...FLAT.matchAll(/CREATE POLICY (\w+)/g)].map((m) => m[1]);
     for (const p of policies) {
       expect(FLAT, `DROP POLICY IF EXISTS ${p} fehlt`).toMatch(
