@@ -444,22 +444,22 @@ Die vorhandene externe Wallboard-/Contract-Spur in Issue #123 / #125 und Draft-P
 
 ## 21. Lovable-Steuerung
 
-| Bereich | Lovable-Einsatz |
-|---|---|
-| KIOSK-01 | hoch |
-| BSF-03A | mittel/gezielt |
-| KIOSK-02 | mittel |
-| BSF-03B | mittel |
-| BSF-03E | gezielt |
-| BSF-07 | hoch |
-| KIOSK-03 | hoch |
-| BSF-03C | gezielt |
-| DOC-02 | 0 |
-| BSF-04 | gering |
-| BSF-04A | mittel |
-| BSF-05A | gering |
-| BSF-06 | gering |
-| BSF-09 | gezielt |
+| Bereich  | Lovable-Einsatz |
+| -------- | --------------- |
+| KIOSK-01 | hoch            |
+| BSF-03A  | mittel/gezielt  |
+| KIOSK-02 | mittel          |
+| BSF-03B  | mittel          |
+| BSF-03E  | gezielt         |
+| BSF-07   | hoch            |
+| KIOSK-03 | hoch            |
+| BSF-03C  | gezielt         |
+| DOC-02   | 0               |
+| BSF-04   | gering          |
+| BSF-04A  | mittel          |
+| BSF-05A  | gering          |
+| BSF-06   | gering          |
+| BSF-09   | gezielt         |
 
 Lovable ist Werkzeug für UI, Preview und kontrollierte plattformnahe Arbeit, nicht Quelle der Fach-/Security-/Architekturentscheidung.
 
