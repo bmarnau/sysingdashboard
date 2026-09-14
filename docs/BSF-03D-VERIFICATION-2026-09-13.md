@@ -36,16 +36,16 @@ Auth-/Preview-Änderungen sind ausdrücklich nicht Teil von BSF-03D.
 
 ## 2. Nachvollziehbare Basis und zentrale Commits
 
-| Bezug | SHA |
-| --- | --- |
-| GitHub-`main`-Basis des BSF-03D-Whole-Branch-Reviews | `b90f93c41dd42f0cd58f68bbef39b103419d4df6` |
-| Vor ARCH-DRIZZLE-01 geprüfter Arbeitsstand | `833f61f5ec3e22c84617e3c0bc4698bab12eb2e0` |
-| Drizzle-Einführung | `8a75038b9025c5abc47a7221e320b1e8744d021b` |
-| Unmittelbarer Vor-Drizzle-Paketgraph | `9135a672346a4e310abaaf1e90a488dd89127d8c` |
-| ARCH-DRIZZLE-01 RED-Vertragstest | `c95fe9ae4cbee1623b69295bb15a70272c1a962c` |
-| ARCH-DRIZZLE-01 Architekturfix | `1090897aa8edd024829e9ff904ea7175aae41f34` |
+| Bezug                                                          | SHA                                        |
+| -------------------------------------------------------------- | ------------------------------------------ |
+| GitHub-`main`-Basis des BSF-03D-Whole-Branch-Reviews           | `b90f93c41dd42f0cd58f68bbef39b103419d4df6` |
+| Vor ARCH-DRIZZLE-01 geprüfter Arbeitsstand                     | `833f61f5ec3e22c84617e3c0bc4698bab12eb2e0` |
+| Drizzle-Einführung                                             | `8a75038b9025c5abc47a7221e320b1e8744d021b` |
+| Unmittelbarer Vor-Drizzle-Paketgraph                           | `9135a672346a4e310abaaf1e90a488dd89127d8c` |
+| ARCH-DRIZZLE-01 RED-Vertragstest                               | `c95fe9ae4cbee1623b69295bb15a70272c1a962c` |
+| ARCH-DRIZZLE-01 Architekturfix                                 | `1090897aa8edd024829e9ff904ea7175aae41f34` |
 | Erster nachvollziehbarer Preview-Broker-Cleanup dieser Session | `072991129822835f6f5551db766132413523f67d` |
-| Historisch abgenommener Auth-Client-Vertrag | `425fbed6cecbf5900a0eda17c735f90221d31d8d` |
+| Historisch abgenommener Auth-Client-Vertrag                    | `425fbed6cecbf5900a0eda17c735f90221d31d8d` |
 
 `b619596` wird nicht als definitive erste Broker-Entfernung verwendet; der
 nachvollziehbare Cleanup dieser Session ist `0729911…`.
@@ -156,18 +156,18 @@ deshalb ist dieser Contract ein verpflichtendes Release-Gate.
 
 ## 8. Aktueller Abnahmestatus
 
-| Punkt | Status |
-| --- | --- |
-| Fachvertrag #103 implementiert | PASS |
-| Live-SQL T01–T16 | 16/16 PASS, ROLLBACK |
-| Live-Schema | PASS |
-| Security-Advisor-Delta | PASS, 0 neue BSF-03D-Findings |
-| ARCH-DRIZZLE-01 Codekorrektur | PASS, statisch verifiziert |
-| Kanonischer Supabase-Migrationspfad | PASS |
-| Drizzle-Artefakte/Pakete | 0 im korrigierten Branch |
-| GitHub-CI nach Architekturkorrektur | **AUSSTEHEND** |
-| Merge / Deploy | NEIN |
-| Gesamtstatus | **PARTIAL — CI-AUSSTEHEND** |
+| Punkt                               | Status                        |
+| ----------------------------------- | ----------------------------- |
+| Fachvertrag #103 implementiert      | PASS                          |
+| Live-SQL T01–T16                    | 16/16 PASS, ROLLBACK          |
+| Live-Schema                         | PASS                          |
+| Security-Advisor-Delta              | PASS, 0 neue BSF-03D-Findings |
+| ARCH-DRIZZLE-01 Codekorrektur       | PASS, statisch verifiziert    |
+| Kanonischer Supabase-Migrationspfad | PASS                          |
+| Drizzle-Artefakte/Pakete            | 0 im korrigierten Branch      |
+| GitHub-CI nach Architekturkorrektur | **AUSSTEHEND**                |
+| Merge / Deploy                      | NEIN                          |
+| Gesamtstatus                        | **PARTIAL — CI-AUSSTEHEND**   |
 
 FINAL PASS wird erst nach erfolgreichem PR-CI-/Security-Lauf auf dem exakten
 Head-SHA wieder vergeben.
