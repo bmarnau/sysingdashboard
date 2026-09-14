@@ -29,9 +29,15 @@ Kundenverantwortung, `Meine Kunden` und die getrennte Managementsicht sind abges
 
 Issue #103 ist geschlossen. Arbeitspaket-Kategorien sind als optionale systemhausweite Stammdaten umgesetzt. Der Merge liegt auf `main`; Post-Merge Security, vollständige CI, E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate sind PASS.
 
+### BSF-KIOSK-01 / #135 — IMPLEMENTIERT / FINALABNAHME AUSSTEHEND
+
+Der Info-Kiosk-Demo-Pilot ist auf Draft-PR #141 implementiert. Der geprüfte Implementierungs-Head `8a672ef9260a1a467be1884724e82813b4e98c1b` hat Security #760 und CI #766 einschließlich Playwright E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate vollständig PASS.
+
+Offen vor FINAL PASS/DONE bleiben der offizielle read-only Supabase-Security-Advisor-Vergleich gegen die bekannte SEC-01-Baseline und gegebenenfalls ein gezielter Runtime-/Preview-Retest in der Lovable-Referenzumgebung. Kein Merge oder Deploy ist erfolgt. Abschlussnachweis: `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md`.
+
 ### BSF-03A / #106 — READY / NEXT-FACHSCOPE
 
-Die Projektmanager-Leistungssicht bleibt der nächste fachliche Datensprint. Vor der Produktumsetzung wird jedoch ein kleiner, architektursauberer Info-Kiosk-Demo-Pilot eingeschoben.
+Die Projektmanager-Leistungssicht ist nach formaler KIOSK-01-Endabnahme der nächste fachliche Datensprint.
 
 ## Neue Kiosk-first-Regel
 
@@ -58,7 +64,7 @@ Kiosk-Grundregeln:
 1. **BSF-02 / BSF-02C — DONE**
 2. **BSF-03 — DONE**
 3. **BSF-03D / #103 — DONE**
-4. **BSF-KIOSK-01 — NÄCHSTER UMSETZUNGSSCHRITT**
+4. **BSF-KIOSK-01 / #135 — IMPLEMENTIERT / FINALABNAHME AUSSTEHEND**
 5. **BSF-03A / #106 — READY / NEXT-FACHSCOPE**
 6. **BSF-KIOSK-02 — GEPLANT**
 7. **BSF-03B / #107 — GEPLANT**
@@ -196,4 +202,4 @@ Die fachliche Customer-Identität bleibt:
 
 ## Fachlicher roter Faden
 
-`BSF-03D DONE → KIOSK-01 → BSF-03A → KIOSK-02 → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
+`BSF-03D DONE → KIOSK-01 FINALABNAHME → BSF-03A → KIOSK-02 → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
