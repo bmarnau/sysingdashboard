@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ALL_PERMISSIONS, ROLE_PERMISSIONS, permissionsOf } from "@/lib/rbac/permissions";
 import type { UserRole } from "@/lib/user-management";
 
-// TDD RED verified on CI #681 before kiosk role/permission implementation.
+// TDD RED verified on CI #681; subsequent type-exhaustiveness fixes do not change this contract.
 const EXISTING_ROLES = [
   "systemadministrator",
   "administrator",
