@@ -1,6 +1,36 @@
 # Roadmap
 
-## BSF-03D (#103) Arbeitspaket-Kategorien
+## BSF-KIOSK-01 (#135) Info-Kiosk Demo-Pilot
+
+- [x] Kiosk-first-Roadmap als verbindliche interne Reihenfolge übernommen
+- [x] Providerneutraler `KioskDataProvider` und lokaler Demo-Provider
+- [x] Großbild-Kioskansicht mit dauerhaftem Hinweis `DEMO-DATEN — KEINE LIVE-DATEN`
+- [x] Zustände `default`, `empty`, `unknown`, `error`, `not_loaded` und Last-good-Verhalten
+- [x] Technische Rolle `kiosk` + atomare Permission `kiosk.view`
+- [x] Kiosk-Konto auf `/kiosk` beschränkt; keine normalen Dashboard-/Schreib-/Adminrechte
+- [x] Idle-Logout-Ausnahme nur für exklusiven Kiosk-Betrieb; Auth-/Sperr-/Logout-Prüfungen bleiben aktiv
+- [x] Versionierter lokaler Kiosk-Demodatensatz, idempotent ladbar und vollständig entfernbar
+- [x] Demo-JSON-Vertrag `sysing.kiosk.demo.v1` mit 256-KiB-Limit und fail-closed Validierung
+- [x] Versionierter Referenzdatensatz `docs/examples/kiosk-demo-dataset-v1.json`
+- [x] JSON-Demoimport atomar in das bestehende lokale Kiosk-Demo-Repository; Last-good bleibt bei Fehler erhalten
+- [x] Kiosk-Demo-Steuerung im bestehenden Service-/Demo-Dialog: laden, JSON importieren, entfernen
+- [x] TDD-Nachweise für Parser, Repository, Service, Provider und UI-Wiring
+- [ ] Exact-Head-Gates: Prettier, ESLint, TypeScript, RBAC, Unit/Components, Security, Build, E2E, A11y, Technical Debt, Quality Gate
+- [ ] Dokumentation/Version 1.63.0 vollständig synchronisieren
+- [ ] PR #141 Review-Status und Abschlussnachweis aktualisieren
+- [ ] Merge/Deploy nur nach separater Freigabe
+
+### Abgrenzung
+
+KIOSK-01 enthält ausschließlich synthetische, lokale Demo-Daten. Der allgemeine providerneutrale Import mit realen/partiellen Quelldaten, Provenienz, Freshness und Customer-/Systemhouse-Scope bleibt BSF-05A vorbehalten.
+
+### Nächster interner Schritt nach KIOSK-01
+
+`BSF-03A (#106) → KIOSK-02 (#136)`
+
+---
+
+## BSF-03D (#103) Arbeitspaket-Kategorien — DONE
 
 - [x] Basis gegen GitHub main b90f93c prüfen
 - [x] Idempotente Repo-Migration für Reference-Data-Systemhouse-Scope (DB-Drift schließen)
@@ -15,7 +45,7 @@
 - [x] Gates: typecheck, lint, prettier, vitest, a11y, security, debt, docs, build, e2e (Paket Q 2026-09-13, alle grün; E2E 77/77, Kategorie 4/4)
 - [x] Doku: REFERENCE-DATA, DATA-SCHEMA, RBAC, Help, CHANGELOG 1.62.0, CURRENT-STATUS, Nachweis
 - [x] Governance: finaler Cleanup des erneut eingespielten Preview-Auth-Brokers (Contract-Test 3/3)
-- [ ] GitHub: Branch + PR, Security-Workflow, CI, Merge mit Expected-Head-SHA (außerhalb Lovable)
+- [x] GitHub: Branch + PR #134, Security/CI PASS und Merge auf `main`
 
 ## BSF-03D Review-Fix Runde 1 (HIGH-2, MEDIUM-1, MEDIUM-2, LOW-1)
 
