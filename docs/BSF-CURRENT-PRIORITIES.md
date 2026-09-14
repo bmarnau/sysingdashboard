@@ -1,15 +1,15 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-09-13  
+Stand: 2026-09-14  
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
+Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
 Operative Detailplanung: `docs/SPRINT-PLAN-MVP-BSF.md`  
-Dauerhafter Wiederanlaufpunkt: Issue #35  
-BSF-03-Steuerung: Issue #105
+Dauerhafter Wiederanlaufpunkt: Issue #35
 
 ## Zweck
 
-Diese Datei ist die kompakte operative Source of Truth für den laufenden BSF-Ausbau. Historische, datierte Abschlussdokumente werden nicht rückwirkend umgeschrieben; Statusdrift wird hier und in den laufenden Planungsdokumenten fortgeschrieben.
+Diese Datei ist die kompakte operative Source of Truth für den laufenden BSF-Ausbau. Historische, datierte Abschlussdokumente werden nicht rückwirkend umgeschrieben. Die interne Kiosk-first-Roadmap konkretisiert und ersetzt nach Merge die ältere Reihenfolge für die noch offenen internen Aufgaben.
 
 ## Aktueller Stand
 
@@ -17,122 +17,160 @@ Diese Datei ist die kompakte operative Source of Truth für den laufenden BSF-Au
 
 Der minimale gemeinsame Mehrbenutzer-Daten-/Read-Pfad ist vollständig abgeschlossen.
 
-Nachweise:
-
-- Phase A Shared Projection / Grants / RLS: PR #110 — DONE,
-- B2 transaktionale `SECURITY INVOKER`-Publish-RPC: PR #116 — DONE,
-- Runtime Publish-/Read-Pfad auf akzeptierter RPC: PR #111 — DONE,
-- T01–T30 und T31–T51 einschließlich Atomic Rollback: PASS,
-- offizieller Supabase Security Advisor: PASS; keine neue BSF-02C-Warnung,
-- #88 und Parent #76: CLOSED / COMPLETED,
-- kein Service-Role-Normalpfad,
-- vollständige Security-/CI-/E2E-/Accessibility-/Technical-Debt-/Quality-Gates: PASS.
-
-Der gemeinsame fachliche Pfad lautet:
+Verbindlicher fachlicher Pfad:
 
 `Customer → Project → WorkPackage → Activity → Leistungserbringer`
 
-### BSF-03 — Kundenverantwortung / Kundensicht (#105) — DONE
+### BSF-03 — DONE
 
-P1–P5 sind umgesetzt. `Meine Kunden` bleibt persönliche fail-closed Sicht; `Kundenverantwortung` ist die getrennte systemhausweite Managementsicht ohne zusätzlichen operativen Customer Access.
+Kundenverantwortung, `Meine Kunden` und die getrennte Managementsicht sind abgeschlossen. Customer Responsibility bleibt fachliche Beziehung/Scope und keine globale Rolle.
 
-Nachweise: PR #118, #127, #128 und P5-PR #132; R19–R31; Unit-/Security-/E2E-Verträge; Live-Schema-Prüfung; `docs/BSF-03-CLOSURE-2026-09-13.md`.
+### BSF-03D — DONE
 
-### Nächster Schritt: BSF-03D — Arbeitspaket-Kategorien (#103)
+Issue #103 ist geschlossen. Arbeitspaket-Kategorien sind als optionale systemhausweite Stammdaten umgesetzt. Der Merge liegt auf `main`; Post-Merge Security, vollständige CI, E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate sind PASS.
 
-BSF-03D ist der nächste fachliche Sprint: systemhausweite editierbare Kategorien als optionale stabile Auswertungsdimension, ohne implizite Billable-/Prioritäts-/Status-Semantik.
+### BSF-03A / #106 — READY / NEXT-FACHSCOPE
 
-## Lovable-/Werkzeugsteuerung
+Die Projektmanager-Leistungssicht bleibt der nächste fachliche Datensprint. Vor der Produktumsetzung wird jedoch ein kleiner, architektursauberer Info-Kiosk-Demo-Pilot eingeschoben.
 
-Der historische Ausgangsplan bleibt in `docs/LOVABLE-PROMPT-PLAN-2026-09-06.md` erhalten. Eine neuere Promptplanung bis BSF-07 liegt in PR #126 als Draft und ist noch nicht in `main` integriert.
+## Neue Kiosk-first-Regel
 
-Für den aktuellen Betrieb gilt:
+Der Info-Kiosk soll so früh wie möglich sichtbar funktionieren, ohne spätere Architektur vorwegzunehmen.
 
-- Credits werden nicht künstlich verbraucht,
-- Lovable nur für geeignete UI-/Preview-/plattformnahe Aufgaben und kontrollierte DB-Ausführung gemäß Governance,
-- Git-/CI-Fehler bevorzugt mit Codex; wenn Codex nicht verfügbar ist, kleinstmögliches geeignetes Fallback-Werkzeug,
-- mechanische Kleinfehler nach `docs/CODEX-GIT-CI-RULE.md` proportional behandeln,
-- keine rückwirkende Schätzung bereits verbrauchter Lovable-Prompts; die Promptbilanz wird nach Abschluss von BSF-03 neu konsolidiert.
+Früher Pfad:
+
+`BSF-KIOSK-01 Demo → BSF-03A → BSF-KIOSK-02 interner Read-Provider → BSF-03B → BSF-03E → BSF-07 → BSF-KIOSK-03`
+
+Kiosk-Grundregeln:
+
+- read-only,
+- Demo-/Mock-Daten zuerst,
+- Demo klar gekennzeichnet,
+- eigene Providergrenze (`KioskDataProvider`),
+- keine eigene Kiosk-Datenbank,
+- kein zweites Fachmodell,
+- keine Auth-/RBAC-/RLS-Umgehung,
+- keine produktive Graph-/SharePoint-/Exchange-/PRTG-/MCP-/Agenten-Abhängigkeit,
+- spätere interne Echt-Daten über bestehende Read-/Projection-Verträge.
 
 ## Verbindliche operative Reihenfolge
 
 1. **BSF-02 / BSF-02C — DONE**
 2. **BSF-03 — DONE**
-3. **BSF-03D — NÄCHSTER SCHRITT / FREIGEGEBEN**
-4. **BSF-03A — GEPLANT**
-5. **BSF-03B — GEPLANT**
-6. **BSF-03E — GEPLANT**
-7. **BSF-03C — GEPLANT**
-8. **BSF-DOC-01 — GEPLANT**
-9. **BSF-DOC-02 — GEPLANT**
-10. **BSF-DOC-03 — GEPLANT**
-11. **BSF-04 — GEPLANT**
-12. **BSF-04A — GEPLANT**
-13. **BSF-05 — GEPLANT**
-14. **BSF-06 — GEPLANT**
-15. **BSF-07 — GEPLANT**
-16. **BSF-09 — GEPLANT**
-17. **BSF-10 — GEPLANT**
-18. **BSF-FINAL — GEPLANT**
-19. **INTEGRATION-READINESS — GEPLANT**
+3. **BSF-03D / #103 — DONE**
+4. **BSF-KIOSK-01 — NÄCHSTER UMSETZUNGSSCHRITT**
+5. **BSF-03A / #106 — READY / NEXT-FACHSCOPE**
+6. **BSF-KIOSK-02 — GEPLANT**
+7. **BSF-03B / #107 — GEPLANT**
+8. **BSF-03E / #63 — GEPLANT**
+9. **BSF-07 — VORGEZOGEN / GEPLANT**
+10. **BSF-KIOSK-03 — GEPLANT**
+11. **BSF-03C / #98 — GEPLANT**
+12. **BSF-DOC-01 — GEPLANT**
+13. **BSF-DOC-02 — GEPLANT**
+14. **BSF-DOC-03 — GEPLANT**
+15. **BSF-04 / #108 — GEPLANT**
+16. **BSF-04A / #102 — GEPLANT**
+17. **BSF-05A — Canonical Import Model intern — GEPLANT**
+18. **BSF-06 — Betreiberhoheit/Docker/Installierbarkeit — GEPLANT**
+19. **BSF-09 — Reporting 2 — GEPLANT**
+20. **BSF-FINAL-INTERNAL — GEPLANT**
+21. **INTEGRATION-READINESS — GEPLANT**
+22. **danach externe Integrationen/MCP/Agenten/NAVIS**
 
-## Kurzverträge der nächsten Sprints
+BSF-10 KI-/Agenten-Labor ist nicht mehr zwingender Bestandteil des internen Hauptpfads vor `BSF-FINAL-INTERNAL`.
 
-### BSF-03D — Arbeitspaket-Kategorien (#103)
+## Kurzverträge der nächsten Schritte
 
-- systemhausweite editierbare Stammdaten,
-- Default keine Kategorie,
-- optional maximal eine Hauptkategorie je Arbeitspaket,
-- freie Tags bleiben separat,
-- stabile Key-/ID-Identität,
-- Kategorie erzwingt weder Billable noch Priorität noch Status.
+### BSF-KIOSK-01 — Info-Kiosk Demo-Pilot
+
+- Kiosk-/Wallboard-Route,
+- Großmonitor-/Vollbildlayout,
+- Demo-/Mock-Daten,
+- Bereiche Projekte, Arbeitspakete, Tätigkeiten, Infrastruktur, Support-Postfach und datensparsame Abwesenheit/Verfügbarkeit,
+- Datenstand/Refresh,
+- Empty/Error/Unknown-Zustände,
+- keine produktive externe Schnittstelle,
+- `KioskDataProvider` als austauschbare Grenze.
 
 ### BSF-03A — Projektmanager-Leistungssicht (#106)
 
 - read-only,
-- Filter nach Zeitraum, Kunde, Projekt, Arbeitspaket, AP-Kategorie und Billable,
+- Zeitraum, Kunde, Projekt, Arbeitspaket, AP-Kategorie, billable/non-billable,
 - Summen und Drill-down,
-- kein Teamlead-Finalisierungsrecht,
-- serverseitiger Customer-/Projekt-Scope.
+- vorhandenen Shared-Projection-Pfad erweitern,
+- serverseitiger Customer-/Project-Scope,
+- keine Teamlead-Finalisierung.
 
-### BSF-03B — Leistungsnachweis Teamlead V1 (#107)
+### BSF-KIOSK-02 — internes Read-Modell
+
+- erster interner Read-Provider hinter derselben Kiosk-Schnittstelle,
+- Shared Projection/Customer Scope wiederverwenden,
+- `categoryKey` als reguläre Dimension,
+- Demo-Provider bleibt für Tests und Schulung,
+- fehlende interne Quellen bleiben Demo oder `unknown` statt erfundener Echtwerte.
+
+### BSF-03B — Leistungsnachweis Teamlead V1
 
 - Leistungsnachweis, keine Rechnung,
-- Kunde + fester Zeitraum,
-- billable/non-billable gemeinsam in Prüfsicht,
-- Teamlead darf Billable vor Finalisierung ändern,
+- Kunde + Zeitraum,
+- billable/non-billable gemeinsam sichtbar,
+- Teamlead darf vor Finalisierung ändern,
 - unveränderbarer finaler Snapshot,
 - Doppelverwendung verhindern,
 - Audit/Korrekturpfad,
 - Kundenausgabe ohne automatische Nennung des Leistungserbringers.
 
-### BSF-03E — Vertretungs- und Personensicht (#63)
+### BSF-03E — Vertretungs- und Personensicht
 
-- Customer Responsibility, Project Responsibility und Vertretung bleiben getrennte Beziehungen,
+- Customer Responsibility, Project Responsibility und Vertretung getrennt halten,
 - auditierbare Änderungen,
-- keine Krankheitsgründe, Diagnosen oder Gesundheitsdaten,
-- bestehende Responsibility-Logik wiederverwenden.
+- keine Gesundheitsdaten,
+- vorhandene Responsibility-Logik wiederverwenden.
 
-### BSF-03C — Kunden-PDF / Kundenpaket (#98)
+### BSF-07 — Managementcockpit 2, vorgezogen
 
-- operative Kundensicht als PDF,
-- Datenminimierung,
-- reproduzierbarer Snapshot,
-- keine internen IDs/Notizen/Sicherheitsdetails,
-- keine automatische Nennung des Leistungserbringers.
+- fachliche Führungs-/Arbeitssichten definieren,
+- Systemingenieur, Kundenverantwortlicher, Projektmanager, Teamlead, Administration/Führung,
+- Customer-/Projekt-/Leistung-/AVKK-Kontext,
+- read/write serverseitig getrennt.
 
-### BSF-DOC-01 bis DOC-03
+### BSF-KIOSK-03 — Management-Kiosk
 
-- Dokumentationsflächen konsolidieren,
-- SYSING-001 als Living Document im TDF-Format auf realen Stand fortschreiben,
-- freigegebene SYSING-001-Version read-only aus dem Board erreichbar machen,
-- keine zweite divergierende Dokumentquelle.
+- passive read-only Präsentationsschicht für freigegebene Managementdaten,
+- Managementcockpit definiert Semantik, nicht die Kiosk-UI,
+- Datenminimierung für Großbildbetrieb,
+- keine neue Berechtigungslogik.
 
-### BSF-04 / BSF-04A
+### BSF-05A — Canonical Import Model intern
 
-BSF-04 entscheidet die dauerhafte zentrale/synchronisierte Datenstrategie einschließlich Source of Truth, Konflikt-/Staleness-/Offline-Regeln, Provideradapter, Backup/Restore, Docker/On-Premises und späterer Azure-/Entra-Fähigkeit.
+- providerneutrale Schema-/Importverträge,
+- partielle Daten, Provenienz, Freshness, Matching, Unknown-Semantik,
+- lokale Beispiele und Tests,
+- keine produktive externe Verbindung.
 
-BSF-04A folgt danach mit Templates und wiederkehrenden Serien; Templates sind Vorschläge, Instanzen erhalten eigene IDs, Serien müssen idempotent und providerneutral planbar sein.
+## Externe Themen bewusst später
+
+Nicht Teil des zwingenden internen Hauptpfads bis `BSF-FINAL-INTERNAL`:
+
+- produktiver Microsoft Graph,
+- produktiver SharePoint-/Exchange-/PRTG-Zugriff,
+- MCP,
+- NAVIS/Agenten,
+- autonome KI-Aktionen,
+- externer Producer als Laufzeitabhängigkeit.
+
+Issue #123 und Draft-PR #124 bleiben als externe Wallboard-/Contract-Vorarbeit erhalten, bestimmen aber nicht die Reihenfolge des internen Kiosk-Piloten.
+
+## Lovable-/Werkzeugsteuerung
+
+Lovable gezielt für sichtbare UI-/Preview-Aufgaben:
+
+- **hoch:** BSF-KIOSK-01, BSF-07, BSF-KIOSK-03,
+- **mittel/gezielt:** BSF-03A, KIOSK-02, BSF-03B, BSF-03E, BSF-03C, BSF-09,
+- **0 bzw. gering:** BSF-DOC-02, BSF-04, BSF-05A, BSF-06.
+
+Credits werden nicht künstlich verbraucht. Architektur, Security, Git und CI bleiben bei den dafür geeigneten Werkzeugen.
 
 ## Definition of Done ab BSF
 
@@ -158,4 +196,4 @@ Die fachliche Customer-Identität bleibt:
 
 ## Fachlicher roter Faden
 
-`BSF-03/P5 → BSF-03-Abschluss → BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → Dokumentationsblock → BSF-04 → BSF-04A → BSF-05 → BSF-06 → BSF-07 → BSF-09 → BSF-10 → BSF-FINAL → INTEGRATION-READINESS`
+`BSF-03D DONE → KIOSK-01 → BSF-03A → KIOSK-02 → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
