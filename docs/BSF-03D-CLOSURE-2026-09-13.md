@@ -67,13 +67,13 @@ diese Repo-Korrektur nicht verändert.
 
 ## 3. TDD / Commitfolge der Architekturkorrektur
 
-| Schritt | Referenz |
-| --- | --- |
-| Vor-Drizzle-Paketgraph | `9135a672346a4e310abaaf1e90a488dd89127d8c` |
-| Drizzle-Einführung | `8a75038b9025c5abc47a7221e320b1e8744d021b` |
-| Vor ARCH-DRIZZLE-01 | `833f61f5ec3e22c84617e3c0bc4698bab12eb2e0` |
+| Schritt                            | Referenz                                   |
+| ---------------------------------- | ------------------------------------------ |
+| Vor-Drizzle-Paketgraph             | `9135a672346a4e310abaaf1e90a488dd89127d8c` |
+| Drizzle-Einführung                 | `8a75038b9025c5abc47a7221e320b1e8744d021b` |
+| Vor ARCH-DRIZZLE-01                | `833f61f5ec3e22c84617e3c0bc4698bab12eb2e0` |
 | Separater Architektur-Vertragstest | `c95fe9ae4cbee1623b69295bb15a70272c1a962c` |
-| Architekturfix | `1090897aa8edd024829e9ff904ea7175aae41f34` |
+| Architekturfix                     | `1090897aa8edd024829e9ff904ea7175aae41f34` |
 
 Der Testcommit wurde vor dem Fix angelegt. Auf seinem Ausgangsstand waren die
 Vertragsbedingungen objektiv verletzt: Drizzle-Dateien und -Pakete existierten,
@@ -141,18 +141,18 @@ belegt. UI-Gating ist UX, nicht Sicherheitsgrenze.
 
 ## 9. Freigabestatus
 
-| Nachweis | Ergebnis |
-| --- | --- |
-| Fachfunktion BSF-03D | PASS |
-| Live-DB T01–T16 | 16/16 PASS, ROLLBACK |
-| Security Advisor Delta | PASS |
-| ARCH-DRIZZLE-01 statischer Zielstand | PASS |
-| Drizzle im korrigierten Branch | 0 |
-| Kanonische Supabase-Migration | PASS |
-| GitHub-CI / Security auf korrigiertem Head | **AUSSTEHEND** |
-| Merge | NEIN |
-| Deploy | NEIN |
-| Gesamtstatus | **PARTIAL** |
+| Nachweis                                   | Ergebnis             |
+| ------------------------------------------ | -------------------- |
+| Fachfunktion BSF-03D                       | PASS                 |
+| Live-DB T01–T16                            | 16/16 PASS, ROLLBACK |
+| Security Advisor Delta                     | PASS                 |
+| ARCH-DRIZZLE-01 statischer Zielstand       | PASS                 |
+| Drizzle im korrigierten Branch             | 0                    |
+| Kanonische Supabase-Migration              | PASS                 |
+| GitHub-CI / Security auf korrigiertem Head | **AUSSTEHEND**       |
+| Merge                                      | NEIN                 |
+| Deploy                                     | NEIN                 |
+| Gesamtstatus                               | **PARTIAL**          |
 
 Issue #103 bleibt offen. Merge oder Deployment sind nicht Bestandteil dieses
 Zwischenabschlusses.
