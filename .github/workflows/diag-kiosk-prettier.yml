@@ -1,0 +1,19 @@
+name: Diagnose Kiosk Prettier
+
+on:
+  push:
+    branches:
+      - diag/kiosk-prettier
+
+jobs:
+  prettier-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Apply repository Prettier
+        run: bunx prettier --write src/lib/admin/auth-accounts.server.ts src/__tests__/security/auth-accounts-functions.test.ts
+      - name: Show exact diff
+        run: git diff -- src/lib/admin/auth-accounts.server.ts src/__tests__/security/auth-accounts-functions.test.ts
