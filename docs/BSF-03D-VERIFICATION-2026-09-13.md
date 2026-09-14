@@ -1,8 +1,15 @@
 # BSF-03D — Technischer Nachweis Arbeitspaket-Kategorien (Issue #103)
 
-Stand: 2026-09-13
+Stand: 2026-09-14
 Version: 1.62.0
-Status: **FINAL PASS — verifiziert** (Paket Q 2026-09-13, siehe Abschnitt 8)
+Status: **ARCHITEKTURKORREKTUR UMGESETZT — GITHUB-CI AUSSTEHEND**
+
+Der frühere Paket-Q-Status „FINAL PASS“ wurde am 14.09.2026 durch den
+Whole-Branch-Review wieder geöffnet: BSF-03D hatte unbeabsichtigt Drizzle als
+zweites Migrationssystem eingeführt. Das widerspricht der verbindlichen
+Projektarchitektur, nach der Supabase/Postgres führend ist und Repo-Migrationen
+unter `supabase/migrations/` liegen. ARCH-DRIZZLE-01 korrigiert diesen Drift;
+ein erneuter FINAL PASS wird erst nach den GitHub-Gates vergeben.
 
 ## 1. Scope
 
@@ -24,151 +31,143 @@ Referenzdaten:
 - JSON-Schema 1.2.0, Import/Export/Backup/Restore rückwärtskompatibel und
   fail-safe bei unbekannter/deaktivierter Kategorie.
 
-Nicht Teil dieses Nachweises: Auth-/Preview-Änderungen, Shared Projection,
-BSF-02C-RPC, BSF-03 P5.
+Nicht Teil des Fachscopes: Shared Projection, BSF-02C-RPC und BSF-03 P5.
+Auth-/Preview-Änderungen sind ausdrücklich nicht Teil von BSF-03D.
 
-## 2. Basis und Commits (Workspace-Sicht)
+## 2. Nachvollziehbare Basis und zentrale Commits
 
-| Bezug                                    | SHA                   |
-| ---------------------------------------- | --------------------- |
-| Abgenommener GitHub-`main` (Basis)       | `b90f93c`             |
-| BSF-03D Paket 1 / Fachimplementierung    | `6484555`             |
-| Review-Fix Runde 1 (Migration, Cache)    | `f422a01`             |
-| Review-Fix Runde 2 (Test-Hardening)      | `5e67fd0`             |
-| Preview-Auth-Broker entfernt             | `b619596` / `0729911` |
-| Plattform-Commit mit Broker-Re-Injection | `b23c50f`, `2f19b6d`  |
+| Bezug | SHA |
+| --- | --- |
+| GitHub-`main`-Basis des BSF-03D-Whole-Branch-Reviews | `b90f93c41dd42f0cd58f68bbef39b103419d4df6` |
+| Vor ARCH-DRIZZLE-01 geprüfter Arbeitsstand | `833f61f5ec3e22c84617e3c0bc4698bab12eb2e0` |
+| Drizzle-Einführung | `8a75038b9025c5abc47a7221e320b1e8744d021b` |
+| Unmittelbarer Vor-Drizzle-Paketgraph | `9135a672346a4e310abaaf1e90a488dd89127d8c` |
+| ARCH-DRIZZLE-01 RED-Vertragstest | `c95fe9ae4cbee1623b69295bb15a70272c1a962c` |
+| ARCH-DRIZZLE-01 Architekturfix | `1090897aa8edd024829e9ff904ea7175aae41f34` |
+| Erster nachvollziehbarer Preview-Broker-Cleanup dieser Session | `072991129822835f6f5551db766132413523f67d` |
+| Historisch abgenommener Auth-Client-Vertrag | `425fbed6cecbf5900a0eda17c735f90221d31d8d` |
 
-Die Integration erfolgt ausschließlich über GitHub-Branch + Pull Request nach
-separatem Security-Workflow und vollständiger CI.
+`b619596` wird nicht als definitive erste Broker-Entfernung verwendet; der
+nachvollziehbare Cleanup dieser Session ist `0729911…`.
 
-## 3. TDD-Hinweis
+## 3. ARCH-DRIZZLE-01 — Architekturkorrektur
 
-- Review-Fix-Runden 1 und 2 wurden test-first mit dokumentiertem RED/GREEN
-  ausgeführt (`src/__tests__/security/bsf03d-migration-contract.test.ts`,
-  `src/__tests__/lib/reference-data/cache.test.ts`; Runde 2 als
-  `TEST-HARDENING: immediate GREEN against already-correct implementation`).
-- Für das frühe Paket 1 existiert **kein separater historischer RED-Commit**;
-  der RED-Nachweis wurde im Turn dokumentiert, ist aber in der Git-Historie
-  nicht als eigener Commit belegbar. Dies bleibt als bekannter Restpunkt
-  stehen.
+### Befund
 
-## 4. Paket V — DB-Verifikation (2026-09-13)
+Der Whole-Branch-Review fand im BSF-03D-Zweig:
 
-Ausgeführt gegen die mit diesem Projekt verbundene Datenbank (Projekt/DB
-korrekt identifiziert: JA; keine Secrets in diesem Dokument).
+- `drizzle.config.ts` mit `LOVABLE_DB_MIGRATION_URL`,
+- `drizzle/schema.ts`,
+- `drizzle/migrations/*`,
+- `drizzle-kit` und `drizzle-orm` im Paketgraph.
 
-### 4.1 Vorcheck (read-only)
+Das war ein Architekturdrift und kein beabsichtigter Technologieentscheid.
 
-- Tabellen `systemhouse`, `reference_catalog`, `reference_value`,
-  `reference_value_history`, `systemhouse_membership`: vorhanden.
-- Katalog `workpackage.category` mit `scope_type = 'systemhouse'`: vorhanden.
-- AVKK-Kataloge: `scope_type = 'global'`, unverändert.
-- Synthetische Test-IDs (`aaaaaaa1-*`, `bbbbbbb1-*`, `ccccccc1-*`) vor dem
-  Lauf: 0.
+### Korrektur
 
-### 4.2 SQL-Artefakt
+- Kanonische Repo-Migration:
+  `supabase/migrations/20260913213000_bsf03d_workpackage_category_reference_data.sql`.
+- Der SQL-Inhalt wurde beim Verschieben **nicht verändert**: alter und neuer
+  Pfad besitzen denselben Git-Blob `c5dad976ee5cd9e94b29f2eb94c1026fdf3c3693`.
+- `drizzle.config.ts` und das komplette `drizzle/` wurden entfernt.
+- `drizzle-kit` und `drizzle-orm` wurden entfernt.
+- `package.json` und `bun.lock` wurden exakt auf die geprüften Blobs des
+  unmittelbaren Vor-Drizzle-Stands zurückgesetzt:
+  - `package.json`: `47f90eb3affd4742515edb7cfd3474842e6000b1`
+  - `bun.lock`: `633927ca78cbf1c4b6f3e95ad1c9033fad2035a0`
+- Es wurde kein alternatives zweites Migrationsframework eingeführt.
+- Die Live-Datenbank wurde durch ARCH-DRIZZLE-01 **nicht** verändert.
 
-- Artefakt: `supabase/tests/bsf03d-workpackage-category.sql`, unverändert bis
-  auf das Entfernen der Tool-inkompatiblen Metazeile `\set ON_ERROR_STOP on`.
-- Ausführung in genau **einer Transaktion `BEGIN … ROLLBACK`**, fail-fast.
-- Ergebnis: **T01–T16: 16/16 PASS**.
-- Nachlauf (read-only): synthetische IDs/Daten = 0.
-- **DB dauerhaft geändert: NEIN.**
+### TDD-Nachweis
 
-### 4.3 Live-Schema-Vertrag — PASS
+Der Architekturvertrag liegt separat in
+`src/__tests__/security/bsf03d-migration-location-contract.test.ts` und wurde
+vor dem Fix in Commit `c95fe9a…` eingecheckt. Gegen diesen Ausgangsstand sind
+seine Voraussetzungen nachweislich verletzt (Drizzle-Dateien und -Pakete
+vorhanden, kanonische Supabase-Migration noch nicht vorhanden). Der echte
+Runtime-GREEN-Nachweis folgt über die GitHub-CI des Pull Requests.
 
-- `reference_catalog.scope_type`: DEFAULT `'global'`, NOT NULL, CHECK.
-- `reference_value.systemhouse_id` mit FK `ON DELETE RESTRICT`.
-- Partielle Unique-Indizes global (`catalog_id, key`) und systemhouse
-  (`catalog_id, systemhouse_id, key`).
-- Indizes auf `systemhouse_id` (Wert und History).
-- Scope-Trigger `reference_value_validate_scope` aktiv.
-- RLS auf `reference_value` und `reference_value_history` aktiv; **keine
-  DELETE-Policy**.
-- `reference_value_history.systemhouse_id` vorhanden.
-- Die Repo-Migration wurde **nicht** erneut live angewendet (kein DDL);
-  Idempotenz strukturell gegen das Live-Schema und durch statische
-  Vertragstests belegt.
+## 4. Paket V — Live-DB-Verifikation vom 13.09.2026
 
-### 4.4 Offizieller Security Advisor
+Ausgeführt gegen die mit dem Lovable-Projekt verbundene Supabase-Datenbank,
+ohne Secrets im Nachweis:
 
-- ERROR: 0 · CRITICAL: 0 · WARN: 2 (Typ 0029).
-- Betroffen ausschließlich bekannte SEC-01-Baseline: `avkk_can_write`,
-  `avkk_people_directory` — **nicht BSF-03D**.
-- Neue BSF-03D-Findings (`reference_value_validate_scope`,
-  `reference_value_track_change`, `workpackage.category`, neue Policies/Indizes):
-  **NEIN**.
+- `supabase/tests/bsf03d-workpackage-category.sql`
+- genau eine Transaktion `BEGIN … ROLLBACK`, fail-fast
+- **T01–T16: 16/16 PASS**
+- synthetische Testdaten vor und nach dem Lauf: 0
+- **DB dauerhaft geändert: NEIN**
+
+Live-Schema-Vertrag: PASS für `scope_type`, `systemhouse_id` + FK
+`ON DELETE RESTRICT`, partielle Unique-Indizes, Scope-Trigger, History-Scope,
+RLS und fehlende DELETE-Policy.
+
+Offizieller Supabase Security Advisor:
+
+- ERROR 0
+- CRITICAL 0
+- WARN 2, ausschließlich bekannte SEC-01-Baseline
+  (`avkk_can_write`, `avkk_people_directory`)
+- neue BSF-03D-Findings: **0**
+
+Die Repo-Migration wurde bei dieser Verifikation nicht erneut live angewendet.
 
 ## 5. E2E-Realität
 
-- `e2e/specs/*/workpackage-category.spec.ts` prüft das UI-Gating
-  (Auswahl, Default keine Kategorie, Verwaltung nur für Berechtigte) mit
-  **Data-API-Route-Mocking**.
-- Die tatsächliche Durchsetzung von Viewer Write DENY und Cross-Systemhouse
-  DENY ist **nicht** durch E2E, sondern durch das Live-SQL-Artefakt
-  (T01–T16) nachgewiesen.
+`e2e/specs/security/workpackage-category.spec.ts` prüft UI-Gating und
+Kategorienutzung mit Data-API-Route-Mocking. Die echte Durchsetzung von Viewer
+Write DENY und Cross-Systemhouse DENY ist durch das Live-SQL-Artefakt T01–T16
+nachgewiesen. UI-Gating ist keine Sicherheitsgrenze.
 
-## 6. Restpunkte nach Paket Q
+## 6. Paket Q — bereits bestandene Workspace-Gates vor ARCH-DRIZZLE-01
 
-1. **Preview-Auth-Broker Re-Injection** (Plattform-Commit `b23c50f`): in
-   Paket Q final entfernt — `previewAuthStorage.ts` gelöscht, `client.ts`
-   bytegleich zum abgenommenen Vertrag `425fbed`;
-   `supabase-client-contract.test.ts` 3/3 PASS. Restrisiko: Die Plattform
-   kann die Datei bei künftigen Lovable-Turns erneut erzeugen; der
-   Regressionstest macht dies in CI sichtbar.
-2. **Historisch kein separater RED-Commit** für das frühe Paket 1 (siehe 3);
-   spätere Pakete (Review-Fix 1/2, Governance-Fix, Help-Tests) haben
-   dokumentierte RED→GREEN-Läufe.
-3. Technical Debt: 2 High / 6 Medium bestehend (kein Blocker, Trendmetrik);
-   neu in diesem Branch nur Low/Info (`ProjectDetailView.tsx` 423 Zeilen,
-   heuristischer Orphan-Hinweis `shared-projection.functions.ts`,
-   dokumentierte Konsolen-Ausnahme).
+Vor dem Whole-Branch-Architekturreview waren u. a. bestanden:
 
-## 7. Zusammenfassung
+- Auth-Client-Contract 3/3
+- Typecheck, Lint, No-Console, Format
+- Vitest: 101 Dateien / 765 PASS / 4 todo
+- A11y: 4/4
+- Security: 112/112; CRITICAL/HIGH/MEDIUM 0
+- Technical Debt Gate, docs:check, project-status:check, Bundle/Perf
+- CI-Gate-Tests 12/12
+- Production Build
+- Kategorie-E2E 4/4
+- Chromium-E2E 77/77
+- Beispiele, API-Gate, Security-Gate
+- Technischer Prüfbericht v15, 0 Blocker
+- `ci:gate`: OK
 
-| Punkt                          | Ergebnis                    |
-| ------------------------------ | --------------------------- |
-| Fachvertrag #103 implementiert | JA                          |
-| SQL-Artefakt T01–T16           | 16/16 PASS, Rollback        |
-| Live-Schema-Vertrag            | PASS                        |
-| Security Advisor Delta BSF-03D | sauber (0 neue Findings)    |
-| DB dauerhaft geändert          | NEIN                        |
-| Vollständige Quality Gates     | PASS (Paket Q, Abschnitt 8) |
-| Governance-Cleanup Broker      | PASS (Contract-Test 3/3)    |
-| Gesamtstatus                   | FINAL PASS                  |
+Diese Ergebnisse bleiben als Vorbefund dokumentiert, ersetzen nach Änderung
+von Paketgraph und Migrationspfad aber **nicht** den erneuten GitHub-CI-Lauf.
 
-## 8. Paket Q — Gate-Matrix (2026-09-13, Workspace)
+## 7. Governance Auth-Broker
 
-Governance-Cleanup wurde **vor** dem Gate-Lauf ausgeführt; der allerletzte
-Check nach allen Builds/Tests/Doku-Schritten bestätigte den Zustand erneut.
+Der finale Zielvertrag bleibt:
 
-| #   | Gate                    | Kommando                                                             | Ergebnis                                   |
-| --- | ----------------------- | -------------------------------------------------------------------- | ------------------------------------------ |
-| 0   | Auth-Client-Vertrag     | `vitest run src/__tests__/security/supabase-client-contract.test.ts` | 3/3 PASS                                   |
-| 1   | Typecheck               | `tsgo --noEmit`                                                      | PASS                                       |
-| 2   | Lint                    | `bun run lint`                                                       | PASS                                       |
-| 3   | Format                  | `prettier --check .`                                                 | PASS                                       |
-| 4   | No-Console              | `bun run lint:no-console`                                            | PASS                                       |
-| 5   | Vitest gesamt           | `bun run test`                                                       | 101 Dateien / 765 PASS, 4 todo             |
-| 6   | A11y (Unit/axe)         | `bun run test:a11y`                                                  | 2 Dateien / 4 PASS                         |
-| 7   | Security                | `bun run test:security` (+ rbac:check, security:check)               | 15 Dateien / 112 PASS; CRIT 0 HIGH 0 MED 0 |
-| 8   | Technical Debt          | `bun run test:debt`                                                  | PASS (Critical 0; 3 neu, nur Low/Info)     |
-| 9   | Docs                    | `bun run docs:check`                                                 | PASS                                       |
-| 10  | Projektstatus           | `bun run project-status:check`                                       | PASS                                       |
-| 11  | Bundle/Perf             | `bun run test:perf`                                                  | PASS                                       |
-| 12  | CI-Gate-Tests           | `bun run test:ci-gate`                                               | 12/12 PASS                                 |
-| 13  | Production Build        | `bun run build`                                                      | PASS                                       |
-| 14  | E2E Kategorie           | `playwright test e2e/specs/security/workpackage-category.spec.ts`    | 4/4 PASS                                   |
-| 15  | E2E gesamt (chromium)   | `playwright test --project=chromium`                                 | 77/77 PASS (inkl. A11y-/Security-Specs)    |
-| 16  | Beispieldateien         | `bun run test:examples`                                              | PASS                                       |
-| 17  | API-Discovery-Gate      | `bun run api:gate`                                                   | PASS                                       |
-| 18  | Security-Report-Gate    | `bun run security:gate`                                              | PASS                                       |
-| 19  | Technischer Prüfbericht | `bun run report:technical`                                           | v15, passed-with-findings, 0 Blocker       |
-| 20  | Quality Gate            | `bun run ci:gate`                                                    | OK — 0 Blocker                             |
+- `src/integrations/supabase/previewAuthStorage.ts` existiert nicht,
+- `client.ts` enthält weder `previewAuthStorage` noch
+  `brokeredPreviewStorage`,
+- Auth-Storage:
+  `typeof window !== "undefined" ? localStorage : undefined`,
+- Regressionstest `supabase-client-contract.test.ts` muss 3/3 PASS liefern.
 
-E2E lief mit `E2E_CHROMIUM_PATH` (repo-seitig vorgesehener Override), da die
-Sandbox keine Playwright-Chromium-Binärdatei der Projektversion enthält.
+Lovable hatte den Broker in dieser Session mehrfach unbeauftragt reinjiziert;
+deshalb ist dieser Contract ein verpflichtendes Release-Gate.
 
-Finaler Auth-Broker-Status: `src/integrations/supabase/previewAuthStorage.ts`
-existiert nicht; `client.ts` ohne `previewAuthStorage`/`brokeredPreviewStorage`,
-Storage-Zeile `typeof window !== "undefined" ? localStorage : undefined`.
+## 8. Aktueller Abnahmestatus
+
+| Punkt | Status |
+| --- | --- |
+| Fachvertrag #103 implementiert | PASS |
+| Live-SQL T01–T16 | 16/16 PASS, ROLLBACK |
+| Live-Schema | PASS |
+| Security-Advisor-Delta | PASS, 0 neue BSF-03D-Findings |
+| ARCH-DRIZZLE-01 Codekorrektur | PASS, statisch verifiziert |
+| Kanonischer Supabase-Migrationspfad | PASS |
+| Drizzle-Artefakte/Pakete | 0 im korrigierten Branch |
+| GitHub-CI nach Architekturkorrektur | **AUSSTEHEND** |
+| Merge / Deploy | NEIN |
+| Gesamtstatus | **PARTIAL — CI-AUSSTEHEND** |
+
+FINAL PASS wird erst nach erfolgreichem PR-CI-/Security-Lauf auf dem exakten
+Head-SHA wieder vergeben.
