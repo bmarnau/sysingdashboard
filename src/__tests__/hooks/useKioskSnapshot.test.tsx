@@ -27,13 +27,14 @@ describe("useKioskSnapshot", () => {
     expect(getSnapshot).toHaveBeenCalledTimes(1);
     expect(result.current.status).toBe("ready");
 
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(59_999);
+    act(() => {
+      vi.advanceTimersByTime(59_999);
     });
     expect(getSnapshot).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(1);
+      vi.advanceTimersByTime(1);
+      await Promise.resolve();
     });
     expect(getSnapshot).toHaveBeenCalledTimes(2);
     unmount();
