@@ -34,7 +34,8 @@ describe("Administrative Passwortsetzung", () => {
   it("should_requireAuthenticatedSessionAndUsersManage", () => {
     expect(BLOCK).toContain(".middleware([requireSupabaseAuth])");
     expect(BLOCK).toContain("assertUserManage");
-    expect(HELPERS).toContain('_perm: "users.manage"');
+    expect(HELPERS).toContain('await assertPermission(context, "users.manage")');
+    expect(HELPERS).toContain("_perm: permission");
   });
 
   it("should_protectOwnAccount", () => {
