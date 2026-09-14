@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
 
+# Rerun after minimal policy implementation.
 jobs:
   red:
     runs-on: ubuntu-latest
