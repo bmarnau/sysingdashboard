@@ -43,7 +43,8 @@ export type Permission =
   | "avkk.management.view"
   | "referencedata.view"
   | "referencedata.manage"
-  | "customer.responsibility.manage";
+  | "customer.responsibility.manage"
+  | "kiosk.view";
 
 export const ALL_PERMISSIONS: readonly Permission[] = [
   "dashboard.view",
@@ -67,6 +68,7 @@ export const ALL_PERMISSIONS: readonly Permission[] = [
   "referencedata.view",
   "referencedata.manage",
   "customer.responsibility.manage",
+  "kiosk.view",
 ] as const;
 
 export const PERMISSION_LABEL: Record<Permission, string> = {
@@ -91,6 +93,7 @@ export const PERMISSION_LABEL: Record<Permission, string> = {
   "referencedata.view": "Kataloge lesen",
   "referencedata.manage": "Kataloge pflegen",
   "customer.responsibility.manage": "Kundenverantwortung verwalten",
+  "kiosk.view": "Info-Kiosk ansehen",
 };
 
 /**
@@ -187,6 +190,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
   ],
   customer: ["dashboard.view", "documentation.view", "referencedata.view"],
   viewer: ["dashboard.view", "documentation.view", "avkk.view", "referencedata.view"],
+  kiosk: ["kiosk.view"],
 };
 
 /** Privileg-Rangordnung (hoch → niedrig). Für Entra-Mapping bei Mehrfachgruppen. */
@@ -198,6 +202,7 @@ export const ROLE_PRIORITY: readonly UserRole[] = [
   "engineer",
   "customer",
   "viewer",
+  "kiosk",
 ];
 
 /** Hauptcheck. `null` (nicht angemeldet) → `false`. */

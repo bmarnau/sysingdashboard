@@ -1230,6 +1230,7 @@ export type Database = {
         | "engineer"
         | "customer"
         | "viewer"
+        | "kiosk"
       user_status: "active" | "inactive" | "locked" | "archived"
     }
     CompositeTypes: {
@@ -1366,6 +1367,7 @@ export const Constants = {
         "engineer",
         "customer",
         "viewer",
+        "kiosk",
       ],
       user_status: ["active", "inactive", "locked", "archived"],
     },
