@@ -560,14 +560,14 @@ git commit -m "feat(bsf03b): Leistungsnachweis Server Functions absichern"
 **Definition:**
 
 ```ts
-reportId: "performance-statement"
-title: "Leistungsnachweis"
-version: "1.0.0"
-dataSource: "customer_performance_statement.snapshot"
-permission: "performance.statement.manage"
-formats: ["pdf", "csv", "json"]
-documentId: "SYSING-104"
-fileNamePattern: "{docId}_{slug}_{period}_{version}_{timestamp}"
+reportId: "performance-statement";
+title: "Leistungsnachweis";
+version: "1.0.0";
+dataSource: "customer_performance_statement.snapshot";
+permission: "performance.statement.manage";
+formats: ["pdf", "csv", "json"];
+documentId: "SYSING-104";
+fileNamePattern: "{docId}_{slug}_{period}_{version}_{timestamp}";
 ```
 
 - [ ] **Step 1: Roten Report-Test schreiben**
