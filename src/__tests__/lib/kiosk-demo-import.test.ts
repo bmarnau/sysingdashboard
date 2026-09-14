@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { UserProfile } from "@/lib/user-management";
-import { readKioskDemoDataset, loadKioskDemoDataset } from "@/lib/kiosk/kiosk-demo-repository";
+import {
+  loadKioskDemoDataset,
+  readKioskDemoDataset,
+} from "@/lib/kiosk/kiosk-demo-repository";
 import { importKioskDemoJsonForActor } from "@/lib/kiosk/kiosk-demo-service";
 
 function actor(role: UserProfile["role"]): UserProfile {
@@ -69,7 +72,9 @@ describe("kiosk demo JSON import", () => {
   it("rejects an unknown root field", () => {
     const parsed = JSON.parse(validJson()) as Record<string, unknown>;
     parsed.extra = "not allowed";
-    expect(() => importKioskDemoJsonForActor(actor("administrator"), JSON.stringify(parsed))).toThrow();
+    expect(() =>
+      importKioskDemoJsonForActor(actor("administrator"), JSON.stringify(parsed)),
+    ).toThrow();
   });
 
   it("rejects oversized input before replacing the dataset", () => {
