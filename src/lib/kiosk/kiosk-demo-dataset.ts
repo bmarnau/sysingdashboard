@@ -14,48 +14,60 @@ const BASELINE_DOMAINS: readonly KioskDomainSnapshot[] = [
     title: "Projekte",
     level: "warning",
     metrics: [
-      { label: "Aktiv", value: 12, level: "ok" },
-      { label: "Auffällig", value: 2, level: "warning" },
+      { label: "Aktive Projekte", value: 8, level: "ok" },
+      { label: "Mit Terminrisiko", value: 1, level: "warning" },
     ],
+    note: "Synthetischer Demo-Stand",
   },
   {
     id: "workPackages",
     title: "Arbeitspakete",
     level: "warning",
     metrics: [
-      { label: "Offen", value: 34, level: "ok" },
-      { label: "Überfällig", value: 4, level: "warning" },
+      { label: "Offene Arbeitspakete", value: 24, level: "ok" },
+      { label: "Ueberfaellig", value: 3, level: "warning" },
     ],
+    note: "Synthetischer Demo-Stand",
   },
   {
     id: "activities",
-    title: "Tätigkeiten",
+    title: "Taetigkeiten",
     level: "ok",
-    metrics: [{ label: "Heute offen", value: 18, level: "ok" }],
+    metrics: [
+      { label: "Stunden im Demo-Zeitraum", value: 126.5, level: "ok" },
+      { label: "Billable-Anteil in Prozent", value: 82, level: "ok" },
+    ],
+    note: "Nur aggregierte synthetische Werte",
   },
   {
     id: "availability",
-    title: "Verfügbarkeit",
-    level: "ok",
-    metrics: [{ label: "Abwesend heute", value: 2, level: "ok" }],
+    title: "Verfuegbarkeit",
+    level: "warning",
+    metrics: [
+      { label: "Verfuegbar", value: 9, level: "ok" },
+      { label: "Nicht verfuegbar", value: 2, level: "warning" },
+    ],
+    note: "Keine Gruende oder Gesundheitsdaten",
   },
   {
     id: "infrastructure",
     title: "Infrastruktur",
     level: "critical",
     metrics: [
-      { label: "Warnung", value: 3, level: "warning" },
-      { label: "Kritisch", value: 1, level: "critical" },
+      { label: "Ueberwachte Systeme", value: 42, level: "ok" },
+      { label: "Kritische Meldungen", value: 1, level: "critical" },
     ],
+    note: "Keine produktiven Hostnamen oder IP-Adressen",
   },
   {
     id: "support",
     title: "Support-Postfach",
     level: "warning",
     metrics: [
-      { label: "Heute", value: 11, level: "ok" },
-      { label: "Älter", value: 5, level: "warning" },
+      { label: "Offene Nachrichten", value: 17, level: "warning" },
+      { label: "Aelter als 24 Stunden", value: 4, level: "warning" },
     ],
+    note: "Nur Mengen und Alter, keine Mailinhalte",
   },
 ];
 
