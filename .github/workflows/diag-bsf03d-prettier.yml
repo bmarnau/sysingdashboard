@@ -6,7 +6,7 @@ on:
       - diag/bsf03d-prettier-output
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   prettier-diff:
@@ -17,16 +17,16 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
-      - name: Generate exact Prettier diff
+      - name: Materialize exact DATA-SCHEMA Prettier result
         shell: bash
         run: |
-          bunx prettier --write \
-            docs/BSF-03D-CLOSURE-2026-09-13.md \
-            docs/BSF-03D-VERIFICATION-2026-09-13.md \
-            docs/DATA-SCHEMA.md \
-            src/__tests__/security/bsf03d-migration-location-contract.test.ts
-          git --no-pager diff -- \
-            docs/BSF-03D-CLOSURE-2026-09-13.md \
-            docs/BSF-03D-VERIFICATION-2026-09-13.md \
-            docs/DATA-SCHEMA.md \
-            src/__tests__/security/bsf03d-migration-location-contract.test.ts
+          bunx prettier --write docs/DATA-SCHEMA.md
+          if git diff --quiet -- docs/DATA-SCHEMA.md; then
+            echo "DATA-SCHEMA already formatted"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/DATA-SCHEMA.md
+          git commit -m "chore(diag): materialize DATA-SCHEMA prettier output"
+          git push
