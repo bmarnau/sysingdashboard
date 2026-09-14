@@ -42,16 +42,25 @@ describe("useKioskSnapshot", () => {
 
   it("retains the last good snapshot when a later refresh fails", async () => {
     vi.useFakeTimers();
+    let rejectRefresh!: (reason?: unknown) => void;
+    const failedRefresh = new Promise<KioskSnapshot>((_resolve, reject) => {
+      rejectRefresh = reject;
+    });
     const getSnapshot = vi
       .fn<() => Promise<KioskSnapshot>>()
       .mockResolvedValueOnce(SNAPSHOT)
-      .mockRejectedValueOnce(new Error("network"));
+      .mockReturnValueOnce(failedRefresh);
     const { result, unmount } = renderHook(() => useKioskSnapshot({ getSnapshot }));
     await act(async () => Promise.resolve());
     expect(result.current.snapshot).toEqual(SNAPSHOT);
 
-    await act(async () => {
+    act(() => {
       vi.advanceTimersByTime(60_000);
+    });
+    expect(getSnapshot).toHaveBeenCalledTimes(2);
+
+    await act(async () => {
+      rejectRefresh(new Error("network"));
       await Promise.resolve();
     });
     expect(result.current.snapshot).toEqual(SNAPSHOT);
