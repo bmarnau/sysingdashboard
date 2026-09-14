@@ -1,0 +1,15 @@
+name: Diagnose Kiosk View RED
+
+on:
+  push:
+    branches:
+      - diag/kiosk-view-red
+
+jobs:
+  targeted-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/__tests__/components/KioskView.test.tsx
