@@ -1,0 +1,22 @@
+name: diag-kiosk01-task4-red
+
+on:
+  push:
+    branches:
+      - diag/kiosk01-task4-red
+
+permissions:
+  contents: read
+
+jobs:
+  red:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf-kiosk-01-demo-pilot
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/__tests__/security/auth-accounts-functions.test.ts
