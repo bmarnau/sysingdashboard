@@ -1,0 +1,48 @@
+name: diag-kiosk01-task2-typefix
+
+on:
+  push:
+    branches:
+      - diag/kiosk01-task2-typefix
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf-kiosk-01-demo-pilot
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply exact type/UI edits
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          function edit(path, pairs) {
+            let s = fs.readFileSync(path, 'utf8');
+            for (const [from, to] of pairs) {
+              const n = s.split(from).length - 1;
+              if (n !== 1) throw new Error(`${path}: expected 1 occurrence, got ${n}`);
+              s = s.replace(from, to);
+            }
+            fs.writeFileSync(path, s);
+          }
+          edit('src/components/UserManagementDialog.tsx', [
+            ['    case "viewer":\n      return "bg-secondary text-muted-foreground border-border";\n  }', '    case "viewer":\n      return "bg-secondary text-muted-foreground border-border";\n    case "kiosk":\n      return "bg-accent text-accent-foreground border-border";\n  }'],
+            ['                          {ALL_ROLES.map((r) => (', '                          {ALL_ROLES.filter((r) => r !== "kiosk").map((r) => ('],
+          ]);
+          NODE
+      - run: npx prettier --write src/components/UserManagementDialog.tsx backend/services/rbac.d.mts
+      - name: Commit to feature branch
+        run: |
+          git config user.name "kiosk-task2-typefix"
+          git config user.email "noreply@example.invalid"
+          git add src/components/UserManagementDialog.tsx backend/services/rbac.d.mts
+          git diff --cached --check
+          git commit -m "fix(kiosk): close role exhaustiveness gaps"
+          git push origin HEAD:feat/bsf-kiosk-01-demo-pilot
