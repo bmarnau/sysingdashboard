@@ -1,9 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { UserProfile } from "@/lib/user-management";
-import {
-  loadKioskDemoDataset,
-  readKioskDemoDataset,
-} from "@/lib/kiosk/kiosk-demo-repository";
+import { loadKioskDemoDataset, readKioskDemoDataset } from "@/lib/kiosk/kiosk-demo-repository";
 import { importKioskDemoJsonForActor } from "@/lib/kiosk/kiosk-demo-service";
 
 function actor(role: UserProfile["role"]): UserProfile {
@@ -60,18 +57,14 @@ describe("kiosk demo JSON import", () => {
   });
 
   it("fails closed and preserves last-good data on invalid input", () => {
-    const lastGood = loadKioskDemoDataset(
-      () => new Date("2026-09-14T07:00:00Z"),
-    );
+    const lastGood = loadKioskDemoDataset(() => new Date("2026-09-14T07:00:00Z"));
     const invalid = JSON.stringify({
       schemaVersion: "sysing.kiosk.demo.v1",
       synthetic: false,
       snapshot: { mode: "demo", datasetVersion: "1.0.0", domains: [] },
     });
 
-    expect(() =>
-      importKioskDemoJsonForActor(actor("administrator"), invalid),
-    ).toThrow();
+    expect(() => importKioskDemoJsonForActor(actor("administrator"), invalid)).toThrow();
     expect(readKioskDemoDataset()).toEqual(lastGood);
   });
 
@@ -79,28 +72,23 @@ describe("kiosk demo JSON import", () => {
     const parsed = JSON.parse(validJson()) as Record<string, unknown>;
     parsed.extra = "not allowed";
     expect(() =>
-      importKioskDemoJsonForActor(
-        actor("administrator"),
-        JSON.stringify(parsed),
-      ),
+      importKioskDemoJsonForActor(actor("administrator"), JSON.stringify(parsed)),
     ).toThrow();
   });
 
   it("rejects oversized input before replacing the dataset", () => {
     const lastGood = loadKioskDemoDataset();
     const oversized = `${validJson()}${" ".repeat(256 * 1024)}`;
-    expect(() =>
-      importKioskDemoJsonForActor(actor("administrator"), oversized),
-    ).toThrow();
+    expect(() => importKioskDemoJsonForActor(actor("administrator"), oversized)).toThrow();
     expect(readKioskDemoDataset()).toEqual(lastGood);
   });
 
   it("denies kiosk and viewer actors", () => {
-    expect(() =>
-      importKioskDemoJsonForActor(actor("kiosk"), validJson()),
-    ).toThrow("Permission denied: users.manage");
-    expect(() =>
-      importKioskDemoJsonForActor(actor("viewer"), validJson()),
-    ).toThrow("Permission denied: users.manage");
+    expect(() => importKioskDemoJsonForActor(actor("kiosk"), validJson())).toThrow(
+      "Permission denied: users.manage",
+    );
+    expect(() => importKioskDemoJsonForActor(actor("viewer"), validJson())).toThrow(
+      "Permission denied: users.manage",
+    );
   });
 });
