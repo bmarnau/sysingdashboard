@@ -1,9 +1,11 @@
 {
-  "new": [],
+  "new": [
+    "td-console-43084e7a"
+  ],
   "resolved": [
-    "td-cycle-4f7048fd"
+    "td-console-334c4c38"
   ],
   "persistent": 58,
-  "previousVersion": "1.58.0",
-  "currentVersion": "1.58.0"
+  "previousVersion": "1.61.0",
+  "currentVersion": "1.62.0"
 }

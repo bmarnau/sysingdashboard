@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.62.0 - 2026-09-13
+
+- **Arbeitspaket-Kategorien (BSF-03D, Issue #103)**: Arbeitspakete tragen optional genau eine Kategorie (`categoryKey`, Default „keine Kategorie“). Kategorien sind editierbare, systemhausweite Stammdaten; alle Kunden desselben Systemhauses nutzen denselben aktiven Bestand. Tags bleiben unabhängig; Status, Priorität und Abrechenbarkeit werden nicht abgeleitet.
+- **Systemhausweite Referenzdaten**: Reference Data unterscheidet nun Kataloge mit Scope `global` und `systemhouse` (`reference_catalog.scope_type`, `reference_value.systemhouse_id`, scope-gerechte partielle Unique-Indizes, Scope-Trigger, History-Scope). AVKK-Kataloge bleiben global. Der Katalog `workpackage.category` startet ohne Seed-Werte; Keys sind stabil und unveränderlich, Kategorien werden deaktiviert statt gelöscht.
+- **Import/Export/Backup**: JSON-Schema 1.2.0 mit optionalem `categoryKey`; ältere Dateien ohne Kategorie bleiben kompatibel. Unbekannte oder deaktivierte Kategorien werden beim Import und beim Restore fail-safe gemeldet, nicht still umgedeutet. Der Export erhält `categoryKey`.
+- **UI und Verwaltung**: Kategorie-Auswahl im Arbeitspaket-Dialog (nur aktive Kategorien des eigenen Systemhauses, Altbestand mit deaktivierter Kategorie nachvollziehbar und editierbar), Verwaltungsdialog nur mit „Referenzdaten verwalten“; Viewer erhalten keine neuen Schreibrechte.
+- **Security-/DB-Nachweis**: Live-SQL-Artefakt T01–T16 16/16 PASS in einer Transaktion mit Rollback, Live-Schema-Vertrag PASS, Security Advisor ohne neue BSF-03D-Findings (`docs/BSF-03D-VERIFICATION-2026-09-13.md`). Der Lesecache normalisiert ältere Snapshots fail-safe.
+- **Status**: final verifiziert (Paket Q, 2026-09-13) — alle Quality Gates grün (Typecheck, Lint, Prettier, Vitest 765, A11y, Security 112, Technical Debt, Docs, Build, E2E 77 inkl. Kategorie-Spec 4/4, Quality Gate 0 Blocker); Preview-Auth-Broker gemäß Vertrag 425fbed entfernt. Abnahme: `docs/BSF-03D-CLOSURE-2026-09-13.md`. GitHub-PR/Merge ausstehend.
+
 ## 1.61.0 - 2026-09-13
 
 - **Kundenverantwortung verwalten (BSF-03 P5, Issue #105)**: Neuer, von „Meine Kunden“ getrennter Bereich für Systemadministrator, Administrator und Teamlead. Verantwortungen können systemhausweit zugewiesen, gewechselt und beendet werden, auch ohne eigenen operativen Kundenzugriff.

@@ -1,5 +1,13 @@
 /** Domänentypen des Reference-Data-Plattformdienstes (Sprint 07B). */
 
+/**
+ * Geltungsbereich eines Katalogs (BSF-03D):
+ * - `global`: ein Wertebestand für alle (AVKK-Kataloge).
+ * - `systemhouse`: Werte gehören genau einem Systemhaus; Lesen/Schreiben ist
+ *   serverseitig (RLS) an eine aktive Membership gebunden.
+ */
+export type ReferenceScopeType = "global" | "systemhouse";
+
 export interface ReferenceCatalog {
   id: string;
   key: string;
@@ -9,6 +17,7 @@ export interface ReferenceCatalog {
   isSystem: boolean;
   isHierarchical: boolean;
   version: number;
+  scopeType: ReferenceScopeType;
 }
 
 export interface ReferenceValue {
@@ -25,6 +34,8 @@ export interface ReferenceValue {
   attributes: Record<string, unknown>;
   validFrom: string;
   validTo: string | null;
+  /** null bei globalen Katalogen, sonst das besitzende Systemhaus. */
+  systemhouseId: string | null;
 }
 
 /** Was im Read-Through-Cache liegt. Enthält bewusst keine Tokens. */
@@ -51,6 +62,8 @@ export const CATALOG_KEYS = {
   consequenceArea: "avkk.consequence_area",
   consequenceSeverity: "avkk.consequence_severity",
   scheduleImpact: "avkk.schedule_impact",
+  /** BSF-03D: systemhausweite Arbeitspaket-Kategorien (scope `systemhouse`). */
+  workPackageCategory: "workpackage.category",
 } as const;
 
 export type CatalogKey = (typeof CATALOG_KEYS)[keyof typeof CATALOG_KEYS];

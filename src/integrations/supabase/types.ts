@@ -591,6 +591,7 @@ export type Database = {
           is_system: boolean
           key: string
           name: string
+          scope_type: string
           updated_at: string
           version: number
         }
@@ -603,6 +604,7 @@ export type Database = {
           is_system?: boolean
           key: string
           name: string
+          scope_type?: string
           updated_at?: string
           version?: number
         }
@@ -615,6 +617,7 @@ export type Database = {
           is_system?: boolean
           key?: string
           name?: string
+          scope_type?: string
           updated_at?: string
           version?: number
         }
@@ -634,6 +637,7 @@ export type Database = {
           label: string
           parent_value_id: string | null
           sort_order: number
+          systemhouse_id: string | null
           updated_at: string
           updated_by: string | null
           valid_from: string
@@ -652,6 +656,7 @@ export type Database = {
           label: string
           parent_value_id?: string | null
           sort_order?: number
+          systemhouse_id?: string | null
           updated_at?: string
           updated_by?: string | null
           valid_from?: string
@@ -670,6 +675,7 @@ export type Database = {
           label?: string
           parent_value_id?: string | null
           sort_order?: number
+          systemhouse_id?: string | null
           updated_at?: string
           updated_by?: string | null
           valid_from?: string
@@ -690,6 +696,13 @@ export type Database = {
             referencedRelation: "reference_value"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "reference_value_systemhouse_fk"
+            columns: ["systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "systemhouse"
+            referencedColumns: ["id"]
+          },
         ]
       }
       reference_value_history: {
@@ -700,6 +713,7 @@ export type Database = {
           id: string
           operation: string
           snapshot: Json
+          systemhouse_id: string | null
           value_id: string
         }
         Insert: {
@@ -709,6 +723,7 @@ export type Database = {
           id?: string
           operation: string
           snapshot: Json
+          systemhouse_id?: string | null
           value_id: string
         }
         Update: {
@@ -718,9 +733,18 @@ export type Database = {
           id?: string
           operation?: string
           snapshot?: Json
+          systemhouse_id?: string | null
           value_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "reference_value_history_systemhouse_fk"
+            columns: ["systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "systemhouse"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shared_activity_projection: {
         Row: {

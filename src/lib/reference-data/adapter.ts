@@ -8,7 +8,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Json, TablesUpdate } from "@/integrations/supabase/types";
 import { ReferenceDataError } from "@/lib/errors";
-import type { ReferenceCatalog, ReferenceValue } from "./types";
+import type { ReferenceCatalog, ReferenceScopeType, ReferenceValue } from "./types";
 
 interface CatalogRow {
   id: string;
@@ -19,6 +19,8 @@ interface CatalogRow {
   is_system: boolean;
   is_hierarchical: boolean;
   version: number;
+  /** Optional, damit ältere Zeilen/Caches ohne Scope-Spalte weiter lesbar sind. */
+  scope_type?: string | null;
 }
 
 interface ValueRow {
@@ -34,6 +36,11 @@ interface ValueRow {
   attributes: unknown;
   valid_from: string;
   valid_to: string | null;
+  systemhouse_id?: string | null;
+}
+
+function toScopeType(raw: string | null | undefined): ReferenceScopeType {
+  return raw === "systemhouse" ? "systemhouse" : "global";
 }
 
 function toCatalog(row: CatalogRow): ReferenceCatalog {
@@ -46,6 +53,7 @@ function toCatalog(row: CatalogRow): ReferenceCatalog {
     isSystem: row.is_system,
     isHierarchical: row.is_hierarchical,
     version: row.version,
+    scopeType: toScopeType(row.scope_type),
   };
 }
 
@@ -64,6 +72,7 @@ function toValue(row: ValueRow, catalogKey: string): ReferenceValue {
     attributes: (row.attributes as Record<string, unknown>) ?? {},
     validFrom: row.valid_from,
     validTo: row.valid_to,
+    systemhouseId: row.systemhouse_id ?? null,
   };
 }
 
@@ -102,6 +111,11 @@ export interface ValueWritePayload {
   sortOrder?: number;
   isDefault?: boolean;
   attributes?: Record<string, unknown>;
+  /**
+   * Pflicht bei Katalogen mit `scopeType === "systemhouse"`, sonst weglassen.
+   * Der DB-Trigger `reference_value_validate_scope` erzwingt die Konsistenz.
+   */
+  systemhouseId?: string | null;
 }
 
 export async function insertValue(payload: ValueWritePayload, actorId: string): Promise<void> {
@@ -113,6 +127,7 @@ export async function insertValue(payload: ValueWritePayload, actorId: string): 
     sort_order: payload.sortOrder ?? 0,
     is_default: payload.isDefault ?? false,
     attributes: (payload.attributes ?? {}) as Json,
+    systemhouse_id: payload.systemhouseId ?? null,
     created_by: actorId,
     updated_by: actorId,
   });
@@ -123,7 +138,11 @@ export async function insertValue(payload: ValueWritePayload, actorId: string): 
 
 export async function updateValueRow(
   id: string,
-  patch: Partial<Omit<ValueWritePayload, "catalogId">> & { isActive?: boolean; validTo?: string },
+  patch: Partial<Omit<ValueWritePayload, "catalogId" | "systemhouseId">> & {
+    isActive?: boolean;
+    /** `null` hebt eine Deaktivierung wieder auf (Reaktivierung). */
+    validTo?: string | null;
+  },
   actorId: string,
 ): Promise<void> {
   const row: TablesUpdate<"reference_value"> = { updated_by: actorId };

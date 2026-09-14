@@ -1,33 +1,33 @@
 # Technischer Prüfbericht 2.0
 
-_Report ID: `dfa68dbb-328c-472c-be00-66e49b3757fe` · Version 14 · Generiert: 2026-08-13T04:52:37.488Z_
+_Report ID: `65dac303-23b7-4260-a6e3-81f186984e24` · Version 16 · Generiert: 2026-09-13T22:34:55.486Z_
 
 ## 1. Prüfidentität
-- Report-ID: `dfa68dbb-328c-472c-be00-66e49b3757fe`
-- Reportversion: **14**
-- Vorgängerbericht: `ab11fd34-6704-4cd9-a19a-f600e77e0967`
+- Report-ID: `65dac303-23b7-4260-a6e3-81f186984e24`
+- Reportversion: **16**
+- Vorgängerbericht: `b535d9c9-f01c-4844-b3f7-8051b179f6dd`
 - Schema: `2.0.0`
-- Dashboard-Version: **1.58.1**
-- Commit: `78d2834`
+- Dashboard-Version: **1.62.0**
+- Commit: `fc6791e`
 - Build-Tag: —
 - DB-Migration: —
 - Ersteller: root
 - Build-Zeit: 2026-08-13T04:35:01.150Z
-- Testzeit: 2026-08-13T04:52:37.381Z
+- Testzeit: 2026-09-13T22:34:55.409Z
 - Umgebung: Node v22.22.0 · linux · CI=false
-- Integrität: `sha256:5342a2b5d16c81627195ed9a7889c4c95690eebe5550f906413f3490717a39eb`
+- Integrität: `sha256:1bb374d37ae13c487e1afff93c1352d878ea738f42b174ffbd1bc525abaf4ba6`
 
 ## 2. Freigabestufe
-- Vorschlag: **production**
-- Effektiv: **production**
-- Begründung: Alle Pflichtnachweise grün, keine Blocker offen.
+- Vorschlag: **internal-test**
+- Effektiv: **internal-test**
+- Begründung: 1 offene HIGH-Findings.
 
 ## 3. Gesamtstatus
 **bestanden mit Findings**
 
 ## 4. Executive Summary
-- Findings gesamt: 68 (CRITICAL 0 · HIGH 0 · MEDIUM 7 · LOW 44 · akzeptiert 10).
-- Freigabeempfehlung (Legacy): **Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
+- Findings gesamt: 70 (CRITICAL 0 · HIGH 1 · MEDIUM 7 · LOW 44 · akzeptiert 11).
+- Freigabeempfehlung (Legacy): **für Pilot geeignet** — 1 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
 
 ## 5. Prüfbereiche (deklarativ)
 | Bereich | Status | Nachweis |
@@ -67,7 +67,7 @@ _Report ID: `dfa68dbb-328c-472c-be00-66e49b3757fe` · Version 14 · Generiert: 2
 | Accessibility | bestanden | 0 | 0 |
 | Performance | bestanden | 0 | 0 |
 | Dokumentation | bestanden | 0 | 0 |
-| Technische Schulden | bestanden mit Findings | 0 | 0 |
+| Technische Schulden | bestanden mit Findings | 0 | 1 |
 
 ## 7. Findings
 
@@ -119,11 +119,11 @@ _Report ID: `dfa68dbb-328c-472c-be00-66e49b3757fe` · Version 14 · Generiert: 2
 - **Empfehlung**: Redaction um String-Wert-Regex erweitern: `/(Server=|AccountKey=|SharedAccessSignature=)/`. Test: logging.test.ts › SEC-HIGH-LOG-001 kippt bei Fix auf `[REDACTED]`.
 - **Aufwand**: M · **Reihenfolge**: high-security · **Status**: accepted
 
-### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (1075 Zeilen)
+### td:td-oversize-7e9a0b20 · HIGH · Modul überschreitet Größenschwelle (1159 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Klassifikation**: accepted-debt · **Gate-relevant**: nein
 - **Quelle**: auto (akzeptiert)
-- **Beschreibung**: Die Datei hat 1075 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 1159 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/routes/_authenticated/dashboard.tsx
@@ -132,6 +132,18 @@ _Report ID: `dfa68dbb-328c-472c-be00-66e49b3757fe` · Version 14 · Generiert: 2
 
 Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf 979 Zeilen reduziert worden (Extraktion nach src/components/dashboard/), liegt aber weiter über der 500-Zeilen-Schwelle. Der verbleibende Split in Sub-Routen erfordert Route-Umbau (ADR-0019) und folgt im UI-Sprint. Sicherheits- oder Funktionsrisiko: keines – reine Wartbarkeit. (Ticket SPRINT-04-DASHBOARD-SPLIT, gültig bis 2026-12-31).
 - **Aufwand**: M · **Reihenfolge**: high-functional · **Status**: accepted
+
+### td:td-oversize-92249691 · HIGH · Modul überschreitet Größenschwelle (1374 Zeilen)
+- **Kategorie**: Architektur / Architektur
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Die Datei hat 1374 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
+- **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
+- **Komponenten**: src/integrations/supabase/types.ts
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
+- **Aufwand**: M · **Reihenfolge**: high-functional · **Status**: open
 
 ### sec:SEC-HIGH-AUTH-001 · HIGH · Historisch: Keine Session-, Token- oder Provider-Infrastruktur
 - **Kategorie**: security / auth
@@ -301,11 +313,11 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-oversize-392d9209 · LOW · Modul überschreitet Größenschwelle (702 Zeilen)
+### td:td-oversize-392d9209 · LOW · Modul überschreitet Größenschwelle (716 Zeilen)
 - **Kategorie**: Architektur / Architektur
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
 - **Quelle**: auto
-- **Beschreibung**: Die Datei hat 702 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 716 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/lib/json-import-service.ts
@@ -325,14 +337,14 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-oversize-92249691 · LOW · Modul überschreitet Größenschwelle (776 Zeilen)
-- **Kategorie**: Architektur / Architektur
+### td:td-oversize-8b6cc24d · LOW · Modul überschreitet Größenschwelle (423 Zeilen)
+- **Kategorie**: Frontend / Frontend
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
 - **Quelle**: auto
-- **Beschreibung**: Die Datei hat 776 Zeilen (Schwelle 600). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 423 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
-- **Komponenten**: src/integrations/supabase/types.ts
+- **Komponenten**: src/components/dashboard/views/ProjectDetailView.tsx
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
@@ -349,11 +361,11 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Verantwortlichkeiten identifizieren und in Sub-Module aufteilen (Hooks/Services extrahieren).
 - **Aufwand**: M · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-oversize-af210d92 · LOW · Modul überschreitet Größenschwelle (481 Zeilen)
+### td:td-oversize-af210d92 · LOW · Modul überschreitet Größenschwelle (569 Zeilen)
 - **Kategorie**: Frontend / Frontend
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
 - **Quelle**: auto
-- **Beschreibung**: Die Datei hat 481 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
+- **Beschreibung**: Die Datei hat 569 Zeilen (Schwelle 400). Wahrscheinlich mehrere Verantwortlichkeiten.
 - **Ursache**: Fehlende Modul-Aufteilung; organisch gewachsen ohne Refactor.
 - **Auswirkung**: Reduziert Lesbarkeit, erhöht Regressionsrisiko, erschwert Code-Reviews und Testabdeckung.
 - **Komponenten**: src/components/SystemStatusDialog.tsx
@@ -405,6 +417,18 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Ursache**: Modul wurde ersetzt/verschoben, aber die Datei ist geblieben.
 - **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
 - **Komponenten**: src/components/ui/collapsible.tsx
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
+
+### td:td-orphan-1705d9c5 · LOW · Möglicherweise verwaistes Modul
+- **Kategorie**: Architektur / Architektur
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Kein Import unter `src/**` referenziert dieses Modul (heuristisch via Basisname).
+- **Ursache**: Modul wurde ersetzt/verschoben, aber die Datei ist geblieben.
+- **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
+- **Komponenten**: src/lib/customer-data-runtime/shared-projection.functions.ts
 - **Nachweis**: test-report/tech-debt.md
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
@@ -649,18 +673,6 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
 
-### td:td-orphan-bd7563ab · LOW · Möglicherweise verwaistes Modul
-- **Kategorie**: Architektur / Architektur
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Kein Import unter `src/**` referenziert dieses Modul (heuristisch via Basisname).
-- **Ursache**: Modul wurde ersetzt/verschoben, aber die Datei ist geblieben.
-- **Auswirkung**: Toter Code erhöht Bundle-Size, Wartungslast und Verwirrung bei Neu-Entwicklung.
-- **Komponenten**: src/integrations/supabase/auth-middleware.ts
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Datei löschen oder ins `archive/` verschieben, falls historisch relevant.
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: open
-
 ### td:td-orphan-d5b25a61 · LOW · Möglicherweise verwaistes Modul
 - **Kategorie**: Architektur / Architektur
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
@@ -766,7 +778,20 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Auswirkung**: Ein angemeldeter Nutzer kann für eine geratene Subject-UUID die boolesche Antwort „darf ich schreiben“ erfragen. Die Funktion liefert ausschließlich true/false, keine Tabelleninhalte, keine Fremddaten und keine Existenzaussage über konkrete Sachdaten.
 - **Komponenten**: public.avkk_can_write, RLS AVKK
 - **Nachweis**: supabase linter: function_execute_grant
-- **Empfehlung**: Beibehalten. EXECUTE bleibt auf authenticated und service_role beschränkt (kein anon). Funktion bleibt SECURITY DEFINER, STABLE, mit search_path = public und boolescher Rückgabe. Abgesichert durch src/__tests__/security/avkk-rls.test.ts.
+- **Empfehlung**: Beibehalten. EXECUTE bleibt auf authenticated und service_role beschränkt (kein PUBLIC, kein anon). Funktion bleibt SECURITY DEFINER (SECURITY INVOKER erzeugt RLS-Rekursion über avkk_subject_update), STABLE, seit SEC-01 (Issue #89) mit search_path = '' und vollständig schemaqualifizierten Referenzen. Abgesichert durch src/__tests__/security/avkk-rls.test.ts und supabase/tests/sec01-settings-and-avkk-definer.sql.
+- **ADR**: ADR-0025
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: accepted
+
+### man:avkk-people-directory-definer · LOW · avkk_people_directory ist als SECURITY DEFINER für authenticated ausführbar
+- **Kategorie**: RBAC / RBAC
+- **Klassifikation**: accepted-debt · **Gate-relevant**: nein
+- **Quelle**: manual (akzeptiert)
+- **Beschreibung**: Der Datenbank-Linter meldet, dass public.avkk_people_directory() von der Rolle authenticated ausgeführt werden darf. Das ist der Zweck des Vertrags: profiles gibt Nicht-Administratoren per RLS nur die eigene Zeile frei, die AVKK-Delegation benötigt jedoch die Namensauflösung fremder Personen. Bewertung: docs/F11-DELEGATION-DIRECTORY.md und docs/DATA-SCHEMA.md, Abschnitt 5.
+- **Ursache**: Bewusste Kapselung eines minimalen Personenvertrags statt Aufweichung der profiles-RLS.
+- **Auswirkung**: Angemeldete Benutzer mit avkk.view erhalten ID, Anzeigename, Rolle und Kontostatus sichtbarer Personen. Keine E-Mail, Telefonnummer, MFA-Information, Profilbilder oder Zeitstempel. Ohne avkk.view liefert die Funktion keine Zeilen; PUBLIC und anon besitzen kein EXECUTE.
+- **Komponenten**: public.avkk_people_directory, RLS AVKK
+- **Nachweis**: supabase linter: 0029_authenticated_security_definer_function_executable
+- **Empfehlung**: Beibehalten. Alternative (breitere SELECT-Policy auf profiles für Teamlead/Projektmanager) offenbart deutlich mehr Daten. Vertrag ist gehärtet: search_path = '', vollständige Schemaqualifikation, auth.uid()- und has_permission-Prüfung im Rumpf, vier Rückgabespalten. Spaltenvertrag durch supabase/tests/sec01-settings-and-avkk-definer.sql abgesichert.
 - **ADR**: ADR-0025
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: accepted
 
@@ -805,18 +830,6 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Nachweis**: test-report/security-report.md#SEC-LOW-DOCS-001
 - **Empfehlung**: Kapitel "Sicherheits- und RBAC-Tests" gepflegt halten, damit keine Zertifizierungs-Fehlannahmen entstehen.
 - **Aufwand**: M · **Reihenfolge**: documentation · **Status**: accepted
-
-### td:td-console-08e8609a · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
-- **Kategorie**: Frontend / Frontend
-- **Klassifikation**: confirmed · **Gate-relevant**: nein
-- **Quelle**: auto
-- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.
-- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
-- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
-- **Komponenten**: src/start.ts:13
-- **Nachweis**: test-report/tech-debt.md
-- **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
-- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
 
 ### td:td-console-2c49302b · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-generated-supabase)
 - **Kategorie**: Frontend / Frontend
@@ -878,6 +891,18 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Empfehlung**: Ausnahme bleibt gültig bis dauerhaft (solange generiert) (docs/LOGGING.md#ausnahmen).
 - **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
 
+### td:td-console-f0ee2580 · INFO · Dokumentierte Konsolen-Ausnahme (console-exc-worker-entry)
+- **Kategorie**: Frontend / Frontend
+- **Klassifikation**: confirmed · **Gate-relevant**: nein
+- **Quelle**: auto
+- **Beschreibung**: Aufruf: console.error(…) — begründete Ausnahme: Worker-/SSR-Einstiegspunkt. Der Frontend-Logger schreibt in PROD nach IndexedDB; im Cloudflare-Worker existiert kein IndexedDB, die Meldung ginge verloren. Nur gekürzte Fehlermeldungen (<=256 Zeichen), keine Objekte, keine Secrets.
+- **Ursache**: Zentraler Logger an dieser Stelle technisch nicht nutzbar (siehe Begründung).
+- **Auswirkung**: Begrenzt: Ausgaben sind gekürzt und secret-frei; kein zentraler Sink.
+- **Komponenten**: src/start.ts:17
+- **Nachweis**: test-report/tech-debt.md
+- **Empfehlung**: Ausnahme bleibt gültig bis 2026-12-31 (docs/LOGGING.md#ausnahmen).
+- **Aufwand**: S · **Reihenfolge**: architecture · **Status**: akzeptiert
+
 ### td:td-coverage-027fe478 · INFO · Kein Coverage-Report vorhanden
 - **Kategorie**: Tests / Tests
 - **Klassifikation**: confirmed · **Gate-relevant**: nein
@@ -891,21 +916,22 @@ Akzeptanz: src/routes/_authenticated/dashboard.tsx ist in Sprint 05 von 3281 auf
 - **Aufwand**: S · **Reihenfolge**: test-gap · **Status**: open
 
 ## 8. Sortierte Maßnahmenliste
-- **architecture** (54): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-layer-b432b1b9, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-92249691, td:td-oversize-92e5643a, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-bd7563ab, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a, td:td-console-08e8609a, td:td-console-2c49302b, td:td-console-43084e7a, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-8c42fa14
+- **high-functional** (1): td:td-oversize-92249691
+- **architecture** (54): sec:SEC-MED-CLAIMS-001, td:td-endpoint-zod-34111d3b, td:td-layer-b432b1b9, td:td-layer-e4fb0e64, td:td-oversize-242b307c, td:td-oversize-f3843ebe, td:td-endpoint-err-cdae73c5, td:td-endpoint-err-ce5fa0be, td:td-oversize-32eb5e8c, td:td-oversize-38954b26, td:td-oversize-392d9209, td:td-oversize-564261af, td:td-oversize-8b6cc24d, td:td-oversize-92e5643a, td:td-oversize-af210d92, td:td-oversize-d5f3942b, td:td-oversize-ebfd4b54, td:td-oversize-feb81a2f, td:td-orphan-1634f273, td:td-orphan-1705d9c5, td:td-orphan-19eefab7, td:td-orphan-242b307c, td:td-orphan-2452737a, td:td-orphan-2900775b, td:td-orphan-2c46e416, td:td-orphan-432c9ba1, td:td-orphan-47d5b07c, td:td-orphan-4c5ab6a6, td:td-orphan-4fae0654, td:td-orphan-539cbbad, td:td-orphan-60027755, td:td-orphan-7ed7cbb9, td:td-orphan-8152e2df, td:td-orphan-8b8d7a5b, td:td-orphan-906e6010, td:td-orphan-98f7d819, td:td-orphan-9b5a9f9b, td:td-orphan-adda4e46, td:td-orphan-af1ee499, td:td-orphan-b0c0d351, td:td-orphan-d5b25a61, td:td-orphan-da11a267, td:td-orphan-deb46595, td:td-orphan-ded2d8d0, td:td-orphan-e4656c7f, td:td-orphan-e89d394d, td:td-orphan-f35c0af6, td:td-orphan-fee5a79a, td:td-console-2c49302b, td:td-console-43084e7a, td:td-console-6c701bbd, td:td-console-74bd3646, td:td-console-8c42fa14, td:td-console-f0ee2580
 - **test-gap** (4): td:td-manual-playwright-smoke-only, td:td-manual-msw-coverage-gap, td:td-manual-ci-playwright-cache, td:td-coverage-027fe478
 
 ## 9. Vergleich zum Vorgängerbericht
 - Neu: 0
 - Behoben: 0
 - Verschlechtert: 0
-- Unverändert: 68
+- Unverändert: 70
 - Wieder aufgetreten: 0
 - Schweregrad geändert: 0
 - Gate-Relevanz geändert: 0
 - Status geändert: 0
 
 ## 10. Freigabeempfehlung (Legacy)
-**Entwicklung fortsetzen** — Weiterentwicklung empfohlen.
+**für Pilot geeignet** — 1 HIGH-Findings — für Pilot geeignet, für Produktion nicht.
 
 ## 11. Quality-Gate-Blocker (Prompt 2A.10)
 _Keine — CI-Gate ist grün._

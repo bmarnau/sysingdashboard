@@ -18,6 +18,7 @@ const role: ReferenceValue = {
   attributes: {},
   validFrom: "2026-08-01T00:00:00Z",
   validTo: null,
+  systemhouseId: null,
 };
 
 const type: ReferenceValue = {

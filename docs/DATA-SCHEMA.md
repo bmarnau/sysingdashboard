@@ -59,6 +59,27 @@ Jede neue Migration:
 2. Testcase in `src/__tests__/integration/import.test.ts`.
 3. Handbuch-Kapitel `changelog` mit Import-Kompatibilitätsnotiz.
 
+## Schema 1.2.0 — `WorkPackage.categoryKey` (BSF-03D)
+
+Schema 1.2.0 ergänzt am Arbeitspaket das optionale Feld
+`categoryKey?: string | null` (MINOR-Bump, abwärtskompatibel):
+
+- Fehlend oder `null` bedeutet **keine Kategorie** (Default, auch für
+  Legacy-Dateien ≤ 1.1.x). Es gibt maximal eine primäre Kategorie.
+- `categoryKey` referenziert den stabilen `key` eines Wertes im
+  systemhausbezogenen Katalog `workpackage.category`; das Label wird nicht
+  exportiert, eine Umdeutung über Label findet nicht statt.
+- Export erhält `categoryKey` unverändert. Import übernimmt den Key und meldet
+  unbekannte oder deaktivierte Kategorien fail-safe als Hinweis; es wird weder
+  still auf `null` gesetzt noch auf eine andere Kategorie umgeschrieben.
+- Backup/Restore (Manifest 2.0) prüft Kategorie-Referenzen ebenfalls fail-safe
+  und bleibt für Archive ohne `categoryKey` rückwärtskompatibel.
+- `tags` bleiben unabhängig; aus `categoryKey` wird nichts für `billable`,
+  `priority` oder `status` abgeleitet.
+
+Der Fachvertrag ist providerneutral: er gilt unverändert für Supabase wie für
+eine spätere Azure-SQL-Ablage; nur Trigger/Policies sind Implementierungsdetail.
+
 ## Grenzen
 
 - **Keine binären Anhänge** im JSON-Export (Profilbilder werden separat als
@@ -136,8 +157,9 @@ vermerkt.
 ### `reference_catalog`
 
 `key` (unique), `name`, `description`, `domain`, `is_system`,
-`is_hierarchical`, `version` (Integer, durch Trigger erhöht), `created_at`,
-`updated_at`.
+`is_hierarchical`, `version` (Integer, durch Trigger erhöht),
+`scope_type` (BSF-03D: `'global' | 'systemhouse'`, DEFAULT `'global'`,
+NOT NULL, CHECK), `created_at`, `updated_at`.
 
 ### `reference_value`
 
@@ -145,21 +167,42 @@ vermerkt.
 `sort_order`, `is_active`, `is_default`, `parent_value_id` →
 `reference_value.id` (Selbstreferenz für hierarchische Kataloge),
 `attributes jsonb`, `valid_from`, `valid_to`, `created_by`/`updated_by` →
-`auth.users.id`.
+`auth.users.id`, `systemhouse_id` (BSF-03D: nullable, FK
+`reference_value_systemhouse_fk` → `systemhouse.id`, `ON DELETE RESTRICT`).
 
-- `UNIQUE (catalog_id, key)`
-- Index `(catalog_id, sort_order)`
+- Eindeutigkeit (BSF-03D, ersetzt den alten globalen `UNIQUE (catalog_id, key)`):
+  - partieller Unique-Index `reference_value_global_key_unique`
+    `(catalog_id, key) WHERE systemhouse_id IS NULL`
+  - partieller Unique-Index `reference_value_systemhouse_key_unique`
+    `(catalog_id, systemhouse_id, key) WHERE systemhouse_id IS NOT NULL`
+- Index `(catalog_id, sort_order)`; zusätzlicher Index auf `systemhouse_id`.
 - Kein DELETE: Werte werden über `is_active = false` und `valid_to` beendet.
 
 ### `reference_value_history`
 
 `value_id`, `catalog_id`, `operation` (`insert` | `update`), `snapshot jsonb`,
-`changed_by`, `changed_at`. Append-only, kein UPDATE/DELETE. Index
-`(value_id, changed_at DESC)`.
+`changed_by`, `changed_at`, `systemhouse_id` (BSF-03D, nullable, Scope des
+Wertes zum Änderungszeitpunkt). Append-only, kein UPDATE/DELETE. Index
+`(value_id, changed_at DESC)` sowie Index auf `systemhouse_id`.
 
 **Trigger**: `reference_value_track_change` (AFTER INSERT/UPDATE) schreibt die
 Historie, erhöht `reference_catalog.version` und protokolliert in `audit_log`.
-`set_updated_at` auf beiden Tabellen.
+`set_updated_at` auf beiden Tabellen. BSF-03D ergänzt
+`reference_value_validate_scope` (BEFORE INSERT/UPDATE): globale Kataloge
+verlangen `systemhouse_id IS NULL`, systemhausbezogene Kataloge verlangen
+`systemhouse_id IS NOT NULL`; für `workpackage.category` ist `key` nach dem
+Anlegen unveränderlich.
+
+### Katalog `workpackage.category` (BSF-03D)
+
+`scope_type = 'systemhouse'`, ohne Seed-Werte. Jedes Systemhaus pflegt seinen
+eigenen aktiven Bestand; alle Kunden desselben Systemhauses verwenden ihn
+gemeinsam. Arbeitspakete referenzieren über `categoryKey` (siehe Schema 1.2.0
+oben). Live-Nachweis (16/16 PASS, Rollback) in
+`docs/BSF-03D-VERIFICATION-2026-09-13.md`. Repo-Migration (idempotent):
+`supabase/migrations/20260913213000_bsf03d_workpackage_category_reference_data.sql`.
+Supabase-Migrationen sind der kanonische Repo-Vertrag; Drizzle wird im
+Zielstand nicht als zweites Migrationsframework verwendet.
 
 ## 3. AVKK
 
@@ -218,16 +261,22 @@ ALTER TABLE public.<table> ENABLE ROW LEVEL SECURITY;
 `anon` erhält durch **keine** Policy Zugriff auf AVKK- oder
 Reference-Data-Tabellen.
 
-| Tabelle                    | SELECT               | INSERT / UPDATE                                         | DELETE   |
-| -------------------------- | -------------------- | ------------------------------------------------------- | -------- |
-| `reference_catalog`        | `referencedata.view` | `referencedata.manage`                                  | verboten |
-| `reference_value`          | `referencedata.view` | `referencedata.manage`                                  | verboten |
-| `reference_value_history`  | `referencedata.view` | nur Trigger                                             | verboten |
-| `avkk_subject`             | `avkk.view`          | `avkk.edit` (+ `created_by = auth.uid()` beim Einfügen) | verboten |
-| `avkk_responsibility`      | `avkk.view`          | `avkk.responsibility.assign`                            | erlaubt  |
-| `avkk_responsibility_type` | `avkk.view`          | `avkk.responsibility.assign`                            | erlaubt  |
-| `avkk_competence`          | `avkk.view`          | `avkk_can_write(avkk_subject_id)`                       | verboten |
-| `avkk_consequence`         | `avkk.view`          | `avkk_can_write(avkk_subject_id)`                       | verboten |
+| Tabelle                    | SELECT                   | INSERT / UPDATE                                         | DELETE   |
+| -------------------------- | ------------------------ | ------------------------------------------------------- | -------- |
+| `reference_catalog`        | `referencedata.view`     | `referencedata.manage`                                  | verboten |
+| `reference_value`          | `referencedata.view` (¹) | `referencedata.manage` (¹)                              | verboten |
+| `reference_value_history`  | `referencedata.view` (¹) | nur Trigger                                             | verboten |
+| `avkk_subject`             | `avkk.view`              | `avkk.edit` (+ `created_by = auth.uid()` beim Einfügen) | verboten |
+| `avkk_responsibility`      | `avkk.view`              | `avkk.responsibility.assign`                            | erlaubt  |
+| `avkk_responsibility_type` | `avkk.view`              | `avkk.responsibility.assign`                            | erlaubt  |
+| `avkk_competence`          | `avkk.view`              | `avkk_can_write(avkk_subject_id)`                       | verboten |
+| `avkk_consequence`         | `avkk.view`              | `avkk_can_write(avkk_subject_id)`                       | verboten |
+
+(¹) BSF-03D: Für Werte mit `systemhouse_id IS NOT NULL` verlangen die Policies
+zusätzlich eine **aktive Systemhaus-Membership** des Benutzers für genau dieses
+Systemhaus (Cross-Systemhouse DENY für SELECT und INSERT/UPDATE). Globale Werte
+(`systemhouse_id IS NULL`) bleiben wie bisher zugänglich. Es existiert weiterhin
+keine DELETE-Policy.
 
 ## 5. Datenbankfunktionen
 

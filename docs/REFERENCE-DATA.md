@@ -1,6 +1,6 @@
 # Reference Data — allgemeiner Plattformdienst
 
-- **Status**: Architektur definiert (Sprint 07A, v1.51.0), Implementierung ab Sprint 07B
+- **Status**: Architektur definiert (Sprint 07A, v1.51.0), Implementierung ab Sprint 07B; Scope-Modell `global`/`systemhouse` seit BSF-03D (v1.62.0, Abschnitt 9)
 - **Architekturentscheidung**: [ADR-0024](./ADR/0024-avkk-und-reference-data.md)
 
 Reference Data ist ein **allgemeiner Plattformdienst** für alle Katalog- und
@@ -184,3 +184,71 @@ funktionieren.
 
 Keine Migration, keine Tabellen, kein Service-Code, keine UI. Sprint 07A liefert
 ausschließlich Architektur, Regeln und Katalogliste.
+
+---
+
+## 9. Scope-Modell `global` vs. `systemhouse` (BSF-03D, Issue #103)
+
+Seit BSF-03D unterscheidet Reference Data zwei Geltungsbereiche je Katalog:
+
+| Scope         | Bedeutung                                                                     | Beispiele                                   |
+| ------------- | ----------------------------------------------------------------------------- | ------------------------------------------- |
+| `global`      | Ein gemeinsamer Wertebestand für alle Systemhäuser; `systemhouse_id` ist NULL | alle `avkk.*`-Kataloge, `project.status`, … |
+| `systemhouse` | Jedes Systemhaus pflegt seinen eigenen Wertebestand; `systemhouse_id` gesetzt | `workpackage.category`                      |
+
+Der Scope ist eine Eigenschaft des **Katalogs**, nicht des einzelnen Wertes.
+Kunden haben keinen eigenen Scope: systemhausbezogene Werte gelten für **alle
+Kunden desselben Systemhauses** gleichermaßen.
+
+### 9.1 Datenvertrag
+
+- `reference_catalog.scope_type` (`'global' | 'systemhouse'`, DEFAULT `'global'`,
+  NOT NULL, CHECK). Bestehende Kataloge bleiben `global`.
+- `reference_value.systemhouse_id` (nullable, FK → `systemhouse`,
+  `ON DELETE RESTRICT`). Ein Trigger erzwingt die Scope-Konsistenz: globale
+  Kataloge verlangen `systemhouse_id IS NULL`, systemhausbezogene Kataloge
+  verlangen `systemhouse_id IS NOT NULL`.
+- Eindeutigkeit des Keys wird scope-gerecht über zwei partielle Unique-Indizes
+  gesichert: `(catalog_id, key)` für globale Werte und
+  `(catalog_id, systemhouse_id, key)` für systemhausbezogene Werte. Derselbe
+  Key darf damit in verschiedenen Systemhäusern existieren; innerhalb eines
+  Systemhauses bleibt er eindeutig.
+- `reference_value_history.systemhouse_id` führt den Scope in der Historie mit.
+
+### 9.2 Zugriff und Governance
+
+- Lesen erfordert `referencedata.view`, Pflege `referencedata.manage`.
+- Für systemhausbezogene Werte kommt **zusätzlich** eine aktive
+  Systemhaus-Membership hinzu: Werte anderer Systemhäuser sind weder lesbar noch
+  schreibbar (Cross-Systemhouse DENY), unabhängig von der Rolle.
+- Es gibt keine DELETE-Policy; Werte werden ausschließlich deaktiviert.
+- Die RLS-Regeln sind die Sicherheitsgrenze; UI-Gating ist reine
+  Benutzerführung.
+- Der fachliche Vertrag (Scope, Key-Identität, Deaktivierung) ist
+  providerneutral formuliert; nur die technische Durchsetzung (Trigger, Policies)
+  ist Teil der jeweiligen Datenbankimplementierung.
+
+### 9.3 Katalog `workpackage.category`
+
+- Scope `systemhouse`, editierbar durch `referencedata.manage`.
+- **Keine Seed-Werte**: jedes Systemhaus startet mit leerem Katalog.
+- Arbeitspakete referenzieren die Kategorie über `categoryKey` (optional/null).
+  Fehlend/null bedeutet „keine Kategorie“; es gibt maximal eine primäre
+  Kategorie. Tags bleiben davon unabhängig; es gibt keine automatische
+  Ableitung von `billable`, `priority` oder `status`.
+- **Key-Identität**: Der `key` ist die stabile Identität, das `label` darf
+  geändert werden. Für `workpackage.category` ist der Key nach dem Anlegen
+  **unveränderlich** (Trigger); eine Umdeutung über Label oder Rename-Key ist
+  ausgeschlossen.
+- **Kein Hard Delete**: Kategorien werden deaktiviert. Arbeitspakete mit
+  deaktivierter Kategorie bleiben nachvollziehbar (Auflösung `inactive`), werden
+  nicht still umgeschrieben und sind weiterhin editierbar; unbekannte Keys
+  werden als `unknown` gekennzeichnet.
+- Auswahl in Formularen zeigt ausschließlich **aktive** Kategorien des eigenen
+  Systemhauses.
+
+### 9.4 AVKK-Kataloge bleiben global
+
+Alle `avkk.*`-Kataloge behalten `scope_type = 'global'` und `systemhouse_id =
+NULL`. Ihr Verhalten, ihre Grants und ihre RLS wurden durch BSF-03D nicht
+verändert (Live-Nachweis siehe `docs/BSF-03D-VERIFICATION-2026-09-13.md`).

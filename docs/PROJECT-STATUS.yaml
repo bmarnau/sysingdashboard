@@ -49,7 +49,7 @@ architecturePrinciples:
     rule: "Kundenidentität und Kundenscope sind providerneutral an das Systemhaus gebunden und nicht an einen Microsoft-Tenant oder anderen Provider."
 
 versions:
-  dashboard: "1.61.0"
+  dashboard: "1.62.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -61,7 +61,7 @@ versions:
 currentState:
   currentSprint: "BSF-03D"
   currentSprintTitle: "Arbeitspaket-Kategorien"
-  currentSprintStatus: "planned"
+  currentSprintStatus: "in-progress"
   nextSprint: "BSF-03A"
   previousSprint: "BSF-03"
   previousSprintStatus: "completed"
@@ -352,14 +352,15 @@ roadmap:
       - "Cross-Systemhaus- und Cross-Customer-Negativtests vorhanden"
   - id: "BSF-03D"
     title: "Arbeitspaket-Kategorien"
-    status: "planned"
+    status: "completed"
     priority: "high"
-    goal: "Systemhausweite editierbare AP-Kategorien als optionale stabile Auswertungsdimension bereitstellen."
+    goal: "Systemhausweite editierbare AP-Kategorien als optionale stabile Auswertungsdimension bereitstellen. Stand 1.62.0: implementiert; DB-Verifikation T01-T16 16/16 PASS (Rollback), Live-Schema PASS, Advisor ohne neue BSF-03D-Findings; Paket Q 2026-09-13: alle Quality Gates grün, E2E 77/77, Governance-Cleanup Preview-Auth-Broker abgeschlossen (docs/BSF-03D-CLOSURE-2026-09-13.md); GitHub-PR/Merge ausstehend."
     dependencies:
       - "BSF-03"
     exitCriteria:
       - "Kategorie sicher pflegbar und filterbar"
       - "Viewer ohne Write"
+      - "Vollständige Quality Gates und Governance-Cleanup abgeschlossen"
   - id: "BSF-03A"
     title: "Projektmanager-Leistungssicht und Controlling"
     status: "planned"
@@ -675,7 +676,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release; volatile report details remain CI artifacts."
 
 releaseManagement:
-  currentRelease: "1.61.0"
+  currentRelease: "1.62.0"
   stage: "production"
   status: "passed"
   releaseEvidence:
@@ -693,10 +694,12 @@ releaseManagement:
     - "docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md"
     - "docs/BSF-03-RESPONSIBILITY-MANAGEMENT-READ-CONTRACT-2026-09-13.md"
     - "docs/BSF-03-CLOSURE-2026-09-13.md"
+    - "docs/BSF-03D-VERIFICATION-2026-09-13.md"
+    - "docs/BSF-03D-CLOSURE-2026-09-13.md"
     - "docs/CODEX-GIT-CI-RULE.md"
     - "docs/ADR/0029-systemhouse-customer-scope.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
-  nextReleaseTarget: "BSF-03D Arbeitspaket-Kategorien"
+  nextReleaseTarget: "BSF-03D PR/Merge und BSF-03A"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"
