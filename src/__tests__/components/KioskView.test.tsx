@@ -5,12 +5,42 @@ import type { KioskSnapshot, KioskDomainSnapshot } from "@/lib/kiosk/kiosk-contr
 import type { KioskSnapshotState } from "@/hooks/useKioskSnapshot";
 
 const DOMAINS: KioskDomainSnapshot[] = [
-  { id: "projects", title: "Projekte", level: "ok", metrics: [{ label: "Aktiv", value: 12, level: "ok" }] },
-  { id: "workPackages", title: "Arbeitspakete", level: "warning", metrics: [{ label: "Offen", value: 34, level: "warning" }] },
-  { id: "activities", title: "Tätigkeiten", level: "ok", metrics: [{ label: "Heute", value: 18, level: "ok" }] },
-  { id: "availability", title: "Verfügbarkeit", level: "ok", metrics: [{ label: "Abwesend", value: 2, level: "ok" }] },
-  { id: "infrastructure", title: "Infrastruktur", level: "critical", metrics: [{ label: "Kritisch", value: 1, level: "critical" }] },
-  { id: "support", title: "Support-Postfach", level: "warning", metrics: [{ label: "Heute", value: 11, level: "warning" }] },
+  {
+    id: "projects",
+    title: "Projekte",
+    level: "ok",
+    metrics: [{ label: "Aktiv", value: 12, level: "ok" }],
+  },
+  {
+    id: "workPackages",
+    title: "Arbeitspakete",
+    level: "warning",
+    metrics: [{ label: "Offen", value: 34, level: "warning" }],
+  },
+  {
+    id: "activities",
+    title: "Tätigkeiten",
+    level: "ok",
+    metrics: [{ label: "Heute", value: 18, level: "ok" }],
+  },
+  {
+    id: "availability",
+    title: "Verfügbarkeit",
+    level: "ok",
+    metrics: [{ label: "Abwesend", value: 2, level: "ok" }],
+  },
+  {
+    id: "infrastructure",
+    title: "Infrastruktur",
+    level: "critical",
+    metrics: [{ label: "Kritisch", value: 1, level: "critical" }],
+  },
+  {
+    id: "support",
+    title: "Support-Postfach",
+    level: "warning",
+    metrics: [{ label: "Heute", value: 11, level: "warning" }],
+  },
 ];
 
 function snapshot(domains = DOMAINS): KioskSnapshot {
@@ -38,7 +68,14 @@ describe("KioskView", () => {
     const onLogout = vi.fn();
     render(<KioskView state={ready()} securityStatus="valid" onLogout={onLogout} />);
     expect(screen.getByText("DEMO-DATEN — KEINE LIVE-DATEN")).toBeVisible();
-    for (const title of ["Projekte", "Arbeitspakete", "Tätigkeiten", "Verfügbarkeit", "Infrastruktur", "Support-Postfach"]) {
+    for (const title of [
+      "Projekte",
+      "Arbeitspakete",
+      "Tätigkeiten",
+      "Verfügbarkeit",
+      "Infrastruktur",
+      "Support-Postfach",
+    ]) {
       expect(screen.getByRole("heading", { name: title })).toBeVisible();
     }
     fireEvent.click(screen.getByRole("button", { name: "Abmelden" }));
@@ -55,10 +92,20 @@ describe("KioskView", () => {
   it("renders unknown as unknown rather than zero or ok", () => {
     const domains = DOMAINS.map((domain) =>
       domain.id === "infrastructure"
-        ? { ...domain, level: "unknown" as const, metrics: [{ label: "Datenstand", value: null, level: "unknown" as const }] }
+        ? {
+            ...domain,
+            level: "unknown" as const,
+            metrics: [{ label: "Datenstand", value: null, level: "unknown" as const }],
+          }
         : domain,
     );
-    render(<KioskView state={ready(snapshot(domains))} securityStatus="valid" onLogout={() => undefined} />);
+    render(
+      <KioskView
+        state={ready(snapshot(domains))}
+        securityStatus="valid"
+        onLogout={() => undefined}
+      />,
+    );
     expect(screen.getByText("UNBEKANNT")).toBeVisible();
   });
 
@@ -74,7 +121,12 @@ describe("KioskView", () => {
 
     rerender(
       <KioskView
-        state={{ status: "error", snapshot: null, refreshError: "Aktualisierung fehlgeschlagen", lastRefreshedAt: null }}
+        state={{
+          status: "error",
+          snapshot: null,
+          refreshError: "Aktualisierung fehlgeschlagen",
+          lastRefreshedAt: null,
+        }}
         securityStatus="valid"
         onLogout={() => undefined}
       />,
@@ -82,7 +134,11 @@ describe("KioskView", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Kiosk-Daten konnten nicht geladen werden");
 
     rerender(
-      <KioskView state={ready(snapshot(), "Aktualisierung fehlgeschlagen")} securityStatus="valid" onLogout={() => undefined} />,
+      <KioskView
+        state={ready(snapshot(), "Aktualisierung fehlgeschlagen")}
+        securityStatus="valid"
+        onLogout={() => undefined}
+      />,
     );
     expect(screen.getByText("Aktualisierung fehlgeschlagen")).toBeVisible();
     expect(screen.getByRole("heading", { name: "Projekte" })).toBeVisible();
@@ -90,7 +146,9 @@ describe("KioskView", () => {
 
   it("blocks domain data while continuous security validation is unavailable", () => {
     render(<KioskView state={ready()} securityStatus="unavailable" onLogout={() => undefined} />);
-    expect(screen.getByRole("alert")).toHaveTextContent("Sicherheitsprüfung derzeit nicht verfügbar");
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Sicherheitsprüfung derzeit nicht verfügbar",
+    );
     expect(screen.queryByRole("heading", { name: "Projekte" })).not.toBeInTheDocument();
   });
 });
