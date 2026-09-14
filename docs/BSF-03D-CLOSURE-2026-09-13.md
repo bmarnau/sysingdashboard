@@ -1,119 +1,158 @@
 # BSF-03D — Abschlussbericht Arbeitspaket-Kategorien (Issue #103)
 
-Stand: 2026-09-13
+Stand: 2026-09-14
 Version: 1.62.0
-Ergebnis: **FINAL PASS (technisch verifiziert)** — GitHub-Integration (Branch, PR,
-Security-Workflow, CI, Merge mit Expected-Head-SHA) ist ausdrücklich **nicht**
-Teil dieses Berichts; Issue #103 bleibt bis dahin offen.
+Ergebnis: **PARTIAL — ARCHITEKTURKORREKTUR ABGESCHLOSSEN, GITHUB-CI AUSSTEHEND**
 
-## 1. Scope
+Der am 13.09.2026 dokumentierte technische FINAL PASS wurde durch den
+Whole-Branch-Review am 14.09.2026 wieder geöffnet. Ursache war nicht die
+Fachfunktion, sondern ein Architekturdrift: Mit BSF-03D war Drizzle als zweites
+Migrationssystem in den Branch gelangt. ARCH-DRIZZLE-01 entfernt diesen Drift
+und stellt die verbindliche Supabase-Migrationsarchitektur wieder her. Ein
+neuer FINAL PASS wird erst nach erfolgreicher GitHub-CI auf dem exakten
+korrigierten Head-SHA erteilt.
+
+## 1. Fachscope
 
 Arbeitspaket-Kategorien als editierbare, systemhausweite Stammdaten:
 
-- Katalog `workpackage.category` mit Scope `systemhouse`, ohne Seed-Werte.
-- `WorkPackage.categoryKey?: string | null`; Default und Legacy = keine Kategorie;
-  maximal eine Kategorie.
-- Stabile Key-Identität (Key nach Anlage unveränderlich), Deaktivieren statt
-  Hard Delete; deaktivierte/unbekannte Kategorien an Altbeständen bleiben
-  nachvollziehbar und werden nicht still umgeschrieben.
-- Tags unabhängig; keine Ableitung von billable/priority/status.
-- Auswahl durch AP-berechtigte Nutzer; Verwaltung nur `referencedata.manage`
-  plus aktive Systemhaus-Membership; Viewer Write DENY; Cross-Systemhouse DENY.
-- JSON-Schema 1.2.0 (categoryKey optional/null, unknown/inactive fail-safe),
-  Backup/Restore mit Kategorie-Referenzprüfung.
+- `workpackage.category`, Scope `systemhouse`, keine Seed-Werte.
+- `WorkPackage.categoryKey?: string | null`; Default/Legacy = keine Kategorie;
+  maximal eine primäre Kategorie.
+- Stabile Key-Identität; Deaktivieren statt Hard Delete.
+- Tags unabhängig; keine Ableitung von `billable`, `priority` oder `status`.
+- Auswahl durch AP-berechtigte Nutzer; Verwaltung nur mit
+  `referencedata.manage` plus aktiver Systemhaus-Membership.
+- Viewer Write DENY und Cross-Systemhouse DENY durch serverseitigen Vertrag.
+- JSON-Schema 1.2.0; Import/Export/Backup/Restore rückwärtskompatibel und
+  fail-safe für unknown/inactive Kategorien.
 
-Nicht im Scope: Shared Projection, BSF-02C-RPC, BSF-03 P5, globale
-AVKK-Kataloge (unverändert global).
+Nicht im Scope: Shared Projection, BSF-02C-RPC und BSF-03 P5.
 
-## 2. Ausgangsbasis und Verlauf
+## 2. Architekturkorrektur ARCH-DRIZZLE-01
 
-| Schritt                                  | Referenz                                                          |
-| ---------------------------------------- | ----------------------------------------------------------------- |
-| Basis GitHub `main`                      | `b90f93c`                                                         |
-| Paket 1 (Migration, Vertrag, Resolver)   | `6484555`                                                         |
-| Review-Fix 1 / 2                         | `f422a01` / `5e67fd0`                                             |
-| Governance-Fix Broker (erste Entfernung) | `b619596`                                                         |
-| Plattform-Reinjection Broker             | `b23c50f`, erneut `2f19b6d` (jeweils im Paket-Q-Turn bereinigt)   |
-| Paket V (DB-Verifikation, read-only)     | `docs/BSF-03D-VERIFICATION-2026-09-13.md`                         |
-| Paket D (Doku/Version 1.62.0)            | `15a7124`                                                         |
-| Paket Q (Gates + Governance-Cleanup)     | finaler Workspace-Commit siehe Abschlussbericht im Chat / Git-Log |
+### Ausgangsbefund
 
-Der finale Commit-SHA ist die Workspace-Sicht (Lovable-Spiegel); der
-GitHub-Head ergibt sich erst durch den PR.
+Im Whole-Branch-Review wurden `drizzle.config.ts`, `drizzle/*`, `drizzle-kit`
+und `drizzle-orm` gefunden. Dies widersprach dem bereits dokumentierten
+Architekturvertrag: Supabase/Postgres ist führend; Repo-Migrationen liegen in
+`supabase/migrations/`; Lovable-spezifische Migrationslaufzeiten dürfen keine
+unersetzbare Abhängigkeit bilden.
 
-## 3. Testmatrix Paket Q (alle PASS)
+### Zielstand
 
-| Gate                                       | Ergebnis                                |
-| ------------------------------------------ | --------------------------------------- |
-| Auth-Client-Contract-Test                  | 3/3                                     |
-| Typecheck                                  | PASS                                    |
-| ESLint / No-Console                        | PASS                                    |
-| Prettier `--check .`                       | PASS                                    |
-| Vitest gesamt                              | 101 Dateien, 765 PASS, 4 todo           |
-| A11y (Unit/axe)                            | 4/4                                     |
-| Security-Suite + Checks                    | 112/112; CRITICAL 0 / HIGH 0 / MEDIUM 0 |
-| Technical Debt                             | Critical 0; neu nur Low/Info            |
-| docs:check                                 | PASS                                    |
-| project-status:check                       | PASS                                    |
-| Bundle/Perf                                | PASS                                    |
-| CI-Gate-Tests                              | 12/12                                   |
-| Production Build                           | PASS                                    |
-| E2E Kategorie-Spec                         | 4/4                                     |
-| E2E gesamt (chromium)                      | 77/77                                   |
-| Beispieldateien / API-Gate / Security-Gate | PASS                                    |
-| Technischer Prüfbericht                    | v15, passed-with-findings, 0 Blocker    |
-| Quality Gate (`ci:gate`)                   | OK — 0 Blocker                          |
+Kanonische Migration:
 
-Detaillierte Kommandos: `docs/BSF-03D-VERIFICATION-2026-09-13.md`, Abschnitt 8.
+`supabase/migrations/20260913213000_bsf03d_workpackage_category_reference_data.sql`
 
-## 4. DB-Nachweis (Paket V, referenziert — keine erneute DB-Änderung)
+Der SQL-Inhalt wurde beim Verschieben nicht verändert. Der alte und neue Pfad
+besitzen identisch den Blob:
 
-- `supabase/tests/bsf03d-workpackage-category.sql` live auf der
-  Projekt-Datenbank in genau einer Transaktion `BEGIN … ROLLBACK`:
-  **T01–T16 = 16/16 PASS**; synthetische Daten danach 0.
-- Live-Schema-Vertrag PASS: `reference_catalog.scope_type` DEFAULT `global`
-  - NOT NULL + CHECK; `reference_value.systemhouse_id` + FK ON DELETE RESTRICT;
-    partielle Unique-Indizes global/systemhouse; Scope-/History-Indizes;
-    Scope-Trigger; RLS auf `reference_value`/`reference_value_history`; keine
-    DELETE-Policy; History `systemhouse_id`.
-- DB dauerhaft geändert: **NEIN** (in Paket V und Paket Q).
+`c5dad976ee5cd9e94b29f2eb94c1026fdf3c3693`
 
-## 5. Security Advisor
+Entfernt wurden:
 
-Offizieller Supabase Security Advisor: ERROR 0, CRITICAL 0, WARN 2 — beide
-Typ 0029 und ausschließlich bekannte SEC-01-Baseline (`avkk_can_write`,
-`avkk_people_directory`). Keine neuen BSF-03D-Findings.
+- `drizzle.config.ts`
+- `drizzle/schema.ts`
+- `drizzle/migrations/0000_bsf03d_reference_data_systemhouse_scope.sql`
+- `drizzle/migrations/meta/0000_snapshot.json`
+- `drizzle/migrations/meta/_journal.json`
+- `drizzle-kit`
+- `drizzle-orm`
 
-## 6. E2E-Realität
+`package.json` und `bun.lock` wurden exakt auf die nachweislich unveränderten
+Vor-Drizzle-Blobs des Elternstands `9135a672…` zurückgeführt. Kein anderes
+Migrationsframework wurde eingeführt. Die produktive Datenbank wurde durch
+diese Repo-Korrektur nicht verändert.
 
-`e2e/specs/security/workpackage-category.spec.ts` prüft UI-Gating (Default
-keine Kategorie, aktive Werte des eigenen Systemhauses, Mehrfach-Membership,
-Admin-Pflege mit Deaktivieren, Viewer ohne Pflege-/Anlege-Eintrag) mit
-Data-API-Route-Mocking. Die tatsächliche Durchsetzung von Viewer Write DENY
-und Cross-Systemhouse DENY ist durch das Live-SQL-Artefakt belegt, nicht
-durch E2E. UI-Gating ist UX; RLS/serverseitige Prüfung bleiben Sicherheitsgrenze.
+## 3. TDD / Commitfolge der Architekturkorrektur
 
-## 7. Security / Governance
+| Schritt | Referenz |
+| --- | --- |
+| Vor-Drizzle-Paketgraph | `9135a672346a4e310abaaf1e90a488dd89127d8c` |
+| Drizzle-Einführung | `8a75038b9025c5abc47a7221e320b1e8744d021b` |
+| Vor ARCH-DRIZZLE-01 | `833f61f5ec3e22c84617e3c0bc4698bab12eb2e0` |
+| Separater Architektur-Vertragstest | `c95fe9ae4cbee1623b69295bb15a70272c1a962c` |
+| Architekturfix | `1090897aa8edd024829e9ff904ea7175aae41f34` |
 
-- Preview-Auth-Broker: `src/integrations/supabase/previewAuthStorage.ts`
-  entfernt; `client.ts` bytegleich zum abgenommenen Vertrag `425fbed`
-  (Storage `typeof window !== "undefined" ? localStorage : undefined`).
-  Regressionstest `supabase-client-contract.test.ts` 3/3 PASS.
-- Keine Secrets/Service-Role im Code, Chat, Tests oder Reports.
-- Auth-/RLS-/RBAC-Semantik über BSF-03D-Migration hinaus unverändert; Shared
-  Projection, BSF-02C-RPC und BSF-03 P5 nicht angefasst.
-- Providerneutralität: Fachvertrag (`categoryKey`, Schema 1.2.0, Resolver)
-  nicht an Supabase gekoppelt; Azure-SQL-Migration nicht erschwert.
+Der Testcommit wurde vor dem Fix angelegt. Auf seinem Ausgangsstand waren die
+Vertragsbedingungen objektiv verletzt: Drizzle-Dateien und -Pakete existierten,
+der kanonische Supabase-Migrationspfad noch nicht. Der Runtime-GREEN-Nachweis
+wird über den Pull-Request-CI-Lauf erbracht.
 
-## 8. Restrisiken
+## 4. Live-DB- und Security-Nachweis aus Paket V
 
-1. Die Plattform kann den Preview-Auth-Broker bei künftigen Lovable-Turns
-   erneut erzeugen; der Contract-Test macht dies in CI sichtbar. Vor jedem
-   PR ist der Test verpflichtend zu prüfen.
-2. Historisch kein separater RED-Commit für das frühe Paket 1; spätere Pakete
-   dokumentieren RED→GREEN.
-3. Technical Debt 2 High / 6 Medium bestehend (Trendmetrik, nicht BSF-03D-verursacht).
-4. E2E in der Sandbox über `E2E_CHROMIUM_PATH`; CI nutzt die Playwright-Binärdatei.
-5. GitHub-Integration ausstehend: Branch + PR, separater Security-Workflow,
-   vollständige CI inkl. `14 · Technical Report & Quality Gate`, Merge mit
-   Expected-Head-SHA.
+Der bereits ausgeführte Live-Nachweis bleibt gültig, weil ARCH-DRIZZLE-01 nur
+den Repo-Migrationspfad und Paketgraph korrigiert und keine DB-Änderung
+vornimmt:
+
+- `supabase/tests/bsf03d-workpackage-category.sql`
+- eine Transaktion `BEGIN … ROLLBACK`
+- T01–T16 = **16/16 PASS**
+- synthetische Daten nach Rollback = 0
+- Live-Schema-Vertrag = PASS
+- DB dauerhaft geändert = **NEIN**
+- Supabase Security Advisor: ERROR 0, CRITICAL 0, WARN 2 nur bekannte
+  SEC-01-Baseline (`avkk_can_write`, `avkk_people_directory`)
+- neue BSF-03D-Findings = 0
+
+## 5. Vorherige Paket-Q-Gates
+
+Vor dem Architekturreview bestanden bereits Typecheck, Lint/No-Console,
+Format, komplette Vitest-Suite, A11y, Security, Technical Debt, Docs,
+Projektstatus, Perf, Build, Kategorie-E2E 4/4, Chromium-E2E 77/77,
+API-/Security-Gates, technischer Prüfbericht und `ci:gate`.
+
+Wegen Änderung von Migrationspfad und Paketgraph werden diese Ergebnisse nicht
+als finaler Nachweis übernommen. Der PR muss die offiziellen GitHub-Gates auf
+dem korrigierten Head erneut bestehen.
+
+## 6. Auth-/Governance-Vertrag
+
+Der historisch abgenommene Supabase-Auth-Client-Vertrag ist
+`425fbed6cecbf5900a0eda17c735f90221d31d8d`.
+
+Erster eindeutig nachvollziehbarer Broker-Cleanup dieser Session:
+`072991129822835f6f5551db766132413523f67d`.
+
+Zielzustand:
+
+- `src/integrations/supabase/previewAuthStorage.ts` nicht vorhanden,
+- kein `previewAuthStorage` / `brokeredPreviewStorage` in `client.ts`,
+- Storage = `typeof window !== "undefined" ? localStorage : undefined`,
+- `supabase-client-contract.test.ts` = 3/3 PASS.
+
+`b619596` wird nicht als definitive erste Entfernung dokumentiert.
+
+## 7. E2E-Realität
+
+Das Kategorie-E2E prüft UI-Gating mit Data-API-Route-Mocking. Viewer Write DENY
+und Cross-Systemhouse DENY sind durch das transaktionale Live-SQL-Artefakt
+belegt. UI-Gating ist UX, nicht Sicherheitsgrenze.
+
+## 8. Aktueller Status / Restrisiken
+
+1. GitHub-CI nach ARCH-DRIZZLE-01 ist noch ausstehend.
+2. Historisch existiert für das sehr frühe Paket 1 kein separater RED-Commit;
+   für ARCH-DRIZZLE-01 existiert dagegen ein separater Testcommit vor dem Fix.
+3. Der Preview-Auth-Broker kann durch künftige Lovable-Turns wieder injiziert
+   werden; der Contract-Test schützt den Releasepfad.
+4. Bestehende Technical-Debt-Trendwerte sind nicht BSF-03D-verursacht.
+
+## 9. Freigabestatus
+
+| Nachweis | Ergebnis |
+| --- | --- |
+| Fachfunktion BSF-03D | PASS |
+| Live-DB T01–T16 | 16/16 PASS, ROLLBACK |
+| Security Advisor Delta | PASS |
+| ARCH-DRIZZLE-01 statischer Zielstand | PASS |
+| Drizzle im korrigierten Branch | 0 |
+| Kanonische Supabase-Migration | PASS |
+| GitHub-CI / Security auf korrigiertem Head | **AUSSTEHEND** |
+| Merge | NEIN |
+| Deploy | NEIN |
+| Gesamtstatus | **PARTIAL** |
+
+Issue #103 bleibt offen. Merge oder Deployment sind nicht Bestandteil dieses
+Zwischenabschlusses.
