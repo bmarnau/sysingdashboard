@@ -106,7 +106,8 @@ describe("KioskView", () => {
         onLogout={() => undefined}
       />,
     );
-    expect(screen.getByText("UNBEKANNT")).toBeVisible();
+    expect(screen.getAllByText("UNBEKANNT")).toHaveLength(2);
+    expect(screen.getByText("—")).toBeVisible();
   });
 
   it("shows controlled loading, initial error and last-good refresh warning", () => {
