@@ -146,15 +146,6 @@ async function json(route: Route, body: unknown, status = 200): Promise<void> {
   });
 }
 
-function readRpcBody(route: Route): Record<string, unknown> {
-  try {
-    const body = route.request().postDataJSON();
-    return body && typeof body === "object" ? (body as Record<string, unknown>) : {};
-  } catch {
-    return {};
-  }
-}
-
 /**
  * Beantwortet alle Requests an die synthetische Supabase-Origin
  * deterministisch. Unbekannte Tabellen liefern bewusst eine leere Menge —
@@ -218,12 +209,11 @@ export async function installSupabaseMock(
       return;
     }
     if (path.startsWith("/rest/v1/rpc/has_permission")) {
-      const body = readRpcBody(route);
-      const hasKioskView =
-        identity?.role === "kiosk" &&
-        body._user_id === identity.id &&
-        body._perm === "kiosk.view";
-      await json(route, hasKioskView);
+      const body = route.request().postDataJSON() as Record<string, unknown>;
+      const sameUser = body._user_id === identity?.id;
+      const asksForKiosk = body._perm === "kiosk.view";
+      const isKiosk = identity?.role === "kiosk";
+      await json(route, isKiosk && sameUser && asksForKiosk);
       return;
     }
     if (path.startsWith("/rest/v1/rpc/")) {
