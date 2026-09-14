@@ -184,19 +184,19 @@ Damit wird der bestehende externe Wallboard-Vertrag aus Issue #123 / Draft-PR #1
 
 Lovable wird gezielt dort eingesetzt, wo sichtbarer UI-/Preview-Nutzen entsteht.
 
-| Sprint | Lovable-Einsatz |
-|---|---|
-| BSF-KIOSK-01 | **hoch** — Layout, Wallboard, Großbild, Demo-Zustände |
-| BSF-03A | mittel — Filter, Tabellen, Summen, Rollen-Preview |
-| BSF-KIOSK-02 | mittel — Kiosk-UI gegen internen Read-Provider |
-| BSF-03B | mittel — Prüfsicht/Finalisierungsdialog |
-| BSF-03E | gezielt — Personensicht/Vertretung |
-| BSF-07 | **hoch** — Führungs-/Managementsichten |
-| BSF-KIOSK-03 | **hoch** — finale Management-Wallboard-Darstellung |
-| BSF-03C | gezielt — PDF-/Preview-Layout |
-| BSF-DOC-02 | **0** |
-| BSF-04 / 05A / 06 | gering; Architektur/Backend/Governance zuerst |
-| BSF-09 | gezielt — Reporting-Preview |
+| Sprint            | Lovable-Einsatz                                       |
+| ----------------- | ----------------------------------------------------- |
+| BSF-KIOSK-01      | **hoch** — Layout, Wallboard, Großbild, Demo-Zustände |
+| BSF-03A           | mittel — Filter, Tabellen, Summen, Rollen-Preview     |
+| BSF-KIOSK-02      | mittel — Kiosk-UI gegen internen Read-Provider        |
+| BSF-03B           | mittel — Prüfsicht/Finalisierungsdialog               |
+| BSF-03E           | gezielt — Personensicht/Vertretung                    |
+| BSF-07            | **hoch** — Führungs-/Managementsichten                |
+| BSF-KIOSK-03      | **hoch** — finale Management-Wallboard-Darstellung    |
+| BSF-03C           | gezielt — PDF-/Preview-Layout                         |
+| BSF-DOC-02        | **0**                                                 |
+| BSF-04 / 05A / 06 | gering; Architektur/Backend/Governance zuerst         |
+| BSF-09            | gezielt — Reporting-Preview                           |
 
 Credits werden nicht künstlich verbraucht. Git-/CI-/Architektur-/Security-Arbeiten werden nicht zu Lovable verschoben, wenn dafür ein geeigneterer Weg vorhanden ist.
 
