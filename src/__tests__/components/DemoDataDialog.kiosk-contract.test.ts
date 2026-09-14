@@ -10,7 +10,7 @@ const source = readFileSync(
 describe("DemoDataDialog kiosk integration", () => {
   it("embeds the kiosk demo data section with the current actor", () => {
     expect(source).toContain(
-      'import { KioskDemoDataSection } from "@/components/kiosk/KioskDemoDataSection";',
+      "import { KioskDemoDataSection } from \"@/components/kiosk/KioskDemoDataSection\";",
     );
     expect(source).toContain("<KioskDemoDataSection actor={user} />");
   });
