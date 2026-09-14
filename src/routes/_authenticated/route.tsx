@@ -3,6 +3,7 @@ import { trySupabase } from "@/integrations/supabase/safe-client";
 import { loadAuthConfig } from "@/integrations/supabase/runtime-config";
 import { useIdleLogout } from "@/hooks/useIdleLogout";
 import { IdleWarningDialog } from "@/components/session/IdleWarningDialog";
+import { resolveKioskSessionPolicy } from "@/lib/kiosk/kiosk-session-policy";
 
 /**
  * Auth-Gate für alle Routen unter `_authenticated/`.
@@ -91,7 +92,33 @@ export const Route = createFileRoute("/_authenticated")({
         if (isRedirect(statusErr)) throw statusErr;
         // RPC-Ausfall: Session bleibt gültig, Statusprüfung wird verschoben.
       }
-      return { userId: data.user.id };
+
+      // Kiosk ist ein technischer, exklusiver Kontotyp. Ohne belastbare
+      // serverseitige Berechtigungsantwort darf der Router ihn nicht als
+      // normalen Dashboard-Benutzer behandeln. Deshalb: fail closed.
+      const { data: hasKioskView, error: kioskPermissionError } = await result.client.rpc(
+        "has_permission",
+        {
+          _user_id: data.user.id,
+          _perm: "kiosk.view",
+        },
+      );
+      if (kioskPermissionError) {
+        throw redirect({
+          to: "/auth",
+          search: { redirect: safeInternalTarget, reason: "unavailable" },
+        });
+      }
+
+      const kioskSessionPolicy = resolveKioskSessionPolicy({
+        pathname: location.pathname,
+        hasKioskView: hasKioskView === true,
+      });
+      if (kioskSessionPolicy.redirectTo) {
+        throw redirect({ to: kioskSessionPolicy.redirectTo });
+      }
+
+      return { userId: data.user.id, kioskSessionPolicy };
     } catch (e) {
       if (isRedirect(e)) throw e;
       throw redirect({ to: "/auth", search: { redirect: safeInternalTarget } });
@@ -103,9 +130,12 @@ export const Route = createFileRoute("/_authenticated")({
 /**
  * Layout des geschützten Bereichs. Nur hier läuft die Inaktivitätsüberwachung —
  * öffentliche Routen (`/`, `/auth`, `/reset-password`) bleiben unberührt.
+ * Für das dedizierte Kiosk-Konto ist nur die Inaktivitätsüberwachung auf
+ * `/kiosk` deaktiviert; Auth-, Status- und Logout-Regeln bleiben aktiv.
  */
 function AuthenticatedLayout() {
-  const idle = useIdleLogout(true);
+  const { kioskSessionPolicy } = Route.useRouteContext();
+  const idle = useIdleLogout(kioskSessionPolicy.idleLogoutEnabled);
   return (
     <>
       <Outlet />
