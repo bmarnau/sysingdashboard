@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { KIOSK_DOMAIN_IDS } from "@/lib/kiosk/kiosk-contract";
-import {
-  KIOSK_DEMO_DATASET_VERSION,
-  type KioskDemoDataset,
-} from "@/lib/kiosk/kiosk-demo-dataset";
+import { KIOSK_DEMO_DATASET_VERSION, type KioskDemoDataset } from "@/lib/kiosk/kiosk-demo-dataset";
 
 export const KIOSK_DEMO_IMPORT_SCHEMA_VERSION = "sysing.kiosk.demo.v1";
 export const KIOSK_DEMO_IMPORT_MAX_BYTES = 256 * 1024;
