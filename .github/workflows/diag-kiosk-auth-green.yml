@@ -1,0 +1,18 @@
+name: Diagnose Kiosk Auth GREEN
+
+on:
+  push:
+    branches:
+      - diag/kiosk-auth-green
+
+jobs:
+  targeted-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Kiosk auth account contract
+        run: bunx vitest run src/__tests__/security/auth-accounts-functions.test.ts
+      - name: Kiosk migration security contract
+        run: bunx vitest run src/__tests__/security/kiosk-migration-security.test.ts
