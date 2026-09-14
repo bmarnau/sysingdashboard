@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 
-# Rerun after minimal policy implementation.
+# Verify after policy + authenticated-route integration.
 jobs:
   red:
     runs-on: ubuntu-latest
@@ -20,4 +20,6 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
+      - run: bunx prettier --check src/lib/kiosk/kiosk-session-policy.ts src/routes/_authenticated/route.tsx src/__tests__/lib/kiosk-session-policy.test.ts
+      - run: bun run typecheck
       - run: bunx vitest run src/__tests__/lib/kiosk-session-policy.test.ts
