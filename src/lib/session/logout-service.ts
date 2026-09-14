@@ -15,7 +15,7 @@ import { logger } from "@/lib/logger";
 import { trySupabase } from "@/integrations/supabase/safe-client";
 import { clearLastActivity } from "@/lib/session/idle-channel";
 
-export type LogoutReason = "manual" | "idle_timeout" | "account_inactive";
+export type LogoutReason = "manual" | "idle_timeout" | "account_inactive" | "session_invalid";
 
 export interface LogoutOptions {
   reason: LogoutReason;
@@ -57,7 +57,9 @@ export async function performLogout(options: LogoutOptions): Promise<boolean> {
   logoutInFlight = true;
 
   const target =
-    options.reason === "manual" ? "/auth" : `/auth?reason=${encodeURIComponent(options.reason)}`;
+    options.reason === "manual" || options.reason === "session_invalid"
+      ? "/auth"
+      : `/auth?reason=${encodeURIComponent(options.reason)}`;
 
   try {
     clearLocalSessionState();
