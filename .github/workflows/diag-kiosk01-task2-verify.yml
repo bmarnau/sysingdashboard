@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
 
+# Rerun after Task-2 exhaustiveness fixes.
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -22,7 +23,7 @@ jobs:
         with:
           node-version: 22
       - run: bun install --frozen-lockfile
-      - run: bunx prettier --check src/lib/user-management.ts src/lib/rbac/permissions.ts backend/services/rbac.mjs src/lib/rbac/permission-groups.ts src/integrations/supabase/types.ts src/__tests__/lib/kiosk-rbac.test.ts
+      - run: bunx prettier --check src/lib/user-management.ts src/lib/rbac/permissions.ts backend/services/rbac.mjs backend/services/rbac.d.mts src/lib/rbac/permission-groups.ts src/integrations/supabase/types.ts src/components/UserManagementDialog.tsx src/__tests__/lib/kiosk-rbac.test.ts
       - run: node scripts/check-rbac.mjs
       - run: bun run typecheck
       - run: bunx vitest run src/__tests__/lib/kiosk-rbac.test.ts
