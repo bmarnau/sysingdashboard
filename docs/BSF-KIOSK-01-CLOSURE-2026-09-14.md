@@ -129,25 +129,23 @@ Der Advisor-Lauf ist der erste vorgesehene Lovable-Schritt nach Wiederverfügbar
 
 ## 7. Abnahmematrix
 
-| Prüffeld | Status | Nachweis |
-| --- | --- | --- |
-| Kiosk-Route und read-only UI | PASS | Produktcode, Unit/Component, E2E |
-| Demo-/Providergrenze | PASS | KioskDataProvider, Demo-Service, Tests |
-| Rolle `kiosk` / `kiosk.view` | PASS | Migration, RBAC-/Security-Tests |
-| Rollenexklusivität | PASS | DB-Trigger/Vertragstests |
-| Kiosk-Routenbeschränkung | PASS | Route Policy, E2E |
-| Session-Watchdog / fail-closed | PASS | Unit/Component, Security-Suite |
-| Admin-Provisionierung | PASS | RED→GREEN-TDD, Unit/Component |
-| GitHub Security Workflow | PASS | Security #760 auf `8a672ef...` |
-| Vollständige GitHub CI | PASS | CI #766 auf `8a672ef...` |
-| Playwright E2E | PASS | Job `11 · E2E (Playwright)` |
-| Accessibility | PASS | Job `12 · Accessibility` |
-| Technical Debt | PASS | Job `13 · Technical Debt` |
-| Technical Report / Quality Gate | PASS | Job `14 · Technical Report & Quality Gate` |
-| Offizieller Supabase Advisor | PENDING | nach Lovable-Creditreset |
-| gezielter Runtime-/Preview-Retest, sofern noch erforderlich | PENDING | Lovable-Referenzumgebung |
-| Merge | NICHT AUSGEFÜHRT | separate Freigabe erforderlich |
-| Deploy | NICHT AUSGEFÜHRT | separate Freigabe erforderlich |
+- Kiosk-Route und read-only UI: **PASS** — Produktcode, Unit/Component und E2E.
+- Demo-/Providergrenze: **PASS** — `KioskDataProvider`, Demo-Service und Tests.
+- Rolle `kiosk` / `kiosk.view`: **PASS** — Migration und RBAC-/Security-Tests.
+- Rollenexklusivität: **PASS** — DB-Trigger und Vertragstests.
+- Kiosk-Routenbeschränkung: **PASS** — Route Policy und E2E.
+- Session-Watchdog / fail-closed: **PASS** — Unit/Component und Security-Suite.
+- Admin-Provisionierung: **PASS** — RED→GREEN-TDD und Unit/Component.
+- GitHub Security Workflow: **PASS** — Security #760 auf `8a672ef...`.
+- Vollständige GitHub CI: **PASS** — CI #766 auf `8a672ef...`.
+- Playwright E2E: **PASS** — Job `11 · E2E (Playwright)`.
+- Accessibility: **PASS** — Job `12 · Accessibility`.
+- Technical Debt: **PASS** — Job `13 · Technical Debt`.
+- Technical Report / Quality Gate: **PASS** — Job `14 · Technical Report & Quality Gate`.
+- Offizieller Supabase Advisor: **PENDING** — nach Lovable-Creditreset.
+- Gezielter Runtime-/Preview-Retest, sofern noch erforderlich: **PENDING** — Lovable-Referenzumgebung.
+- Merge: **NICHT AUSGEFÜHRT** — separate Freigabe erforderlich.
+- Deploy: **NICHT AUSGEFÜHRT** — separate Freigabe erforderlich.
 
 ## 8. Freigabestatus
 
