@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 
-# Verify after policy + authenticated-route integration.
+# Verify after policy + authenticated-route integration (href redirect fix).
 jobs:
   red:
     runs-on: ubuntu-latest
