@@ -27,7 +27,10 @@ describe("DemoKioskDataProvider", () => {
 
   it("renders empty and unknown as explicit semantics", async () => {
     loadKioskDemoDataset(() => NOW);
-    const empty = await createDemoKioskDataProvider({ scenario: "empty", now: () => NOW }).getSnapshot();
+    const empty = await createDemoKioskDataProvider({
+      scenario: "empty",
+      now: () => NOW,
+    }).getSnapshot();
     expect(empty.domains).toHaveLength(6);
     expect(empty.domains.every((domain) => domain.metrics.length === 0)).toBe(true);
 
