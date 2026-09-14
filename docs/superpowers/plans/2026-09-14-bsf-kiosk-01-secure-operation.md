@@ -30,10 +30,12 @@
 ### Task 1: Providerneutraler Kiosk-Vertrag
 
 **Files:**
+
 - Existing RED test: `src/__tests__/lib/kiosk-contract.test.ts`
 - Create: `src/lib/kiosk/kiosk-contract.ts`
 
 **Interfaces:**
+
 - Produces `KIOSK_DOMAIN_IDS`, `KIOSK_REFRESH_MS`, `KioskLevel`, `KioskDatasetState`, `DemoKioskScenario`, `KioskMetric`, `KioskDomainSnapshot`, `KioskSnapshot`, `KioskDataProvider`.
 
 - [x] **Step 1: RED nachweisen.** CI #676 Static/TypeScript scheitert mit `TS2307: Cannot find module '@/lib/kiosk/kiosk-contract'`; Prettier und ESLint davor PASS.
@@ -53,10 +55,29 @@ export type KioskDomainId = (typeof KIOSK_DOMAIN_IDS)[number];
 export type KioskLevel = "ok" | "warning" | "critical" | "unknown";
 export type KioskDatasetState = "loaded" | "not_loaded";
 export type DemoKioskScenario = "default" | "empty" | "unknown" | "error" | "not_loaded";
-export interface KioskMetric { value: number | null; label: string; level: KioskLevel }
-export interface KioskDomainSnapshot { id: KioskDomainId; title: string; level: KioskLevel; metrics: KioskMetric[]; note?: string }
-export interface KioskSnapshot { mode: "demo"; datasetState: KioskDatasetState; datasetVersion: string; generatedAt: string; observedAt: string; domains: KioskDomainSnapshot[] }
-export interface KioskDataProvider { getSnapshot(): Promise<KioskSnapshot> }
+export interface KioskMetric {
+  value: number | null;
+  label: string;
+  level: KioskLevel;
+}
+export interface KioskDomainSnapshot {
+  id: KioskDomainId;
+  title: string;
+  level: KioskLevel;
+  metrics: KioskMetric[];
+  note?: string;
+}
+export interface KioskSnapshot {
+  mode: "demo";
+  datasetState: KioskDatasetState;
+  datasetVersion: string;
+  generatedAt: string;
+  observedAt: string;
+  domains: KioskDomainSnapshot[];
+}
+export interface KioskDataProvider {
+  getSnapshot(): Promise<KioskSnapshot>;
+}
 ```
 
 - [ ] **Step 3: GitHub Actions GREEN fuer Static/TypeScript bestaetigen.**
@@ -66,6 +87,7 @@ export interface KioskDataProvider { getSnapshot(): Promise<KioskSnapshot> }
 ### Task 2: Kiosk-Rolle, Permission und DB-Sicherheitsvertrag
 
 **Files:**
+
 - Modify: `src/lib/user-management.ts`
 - Modify: `src/lib/rbac/permissions.ts`
 - Modify: `backend/services/rbac.mjs`
@@ -93,6 +115,7 @@ ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'kiosk';
 ### Task 3: Kiosk-Session- und Routenpolicy
 
 **Files:**
+
 - Create: `src/lib/kiosk/kiosk-session-policy.ts`
 - Create: `src/__tests__/lib/kiosk-session-policy.test.ts`
 - Modify: `src/routes/_authenticated/route.tsx`
@@ -119,6 +142,7 @@ export function resolveKioskSessionPolicy(input: { pathname: string; hasKioskVie
 ### Task 4: Dediziertes Kiosk-Konto administrativ provisionieren
 
 **Files:**
+
 - Modify: `src/lib/admin/auth-accounts.server.ts`
 - Modify: `src/lib/admin/auth-accounts.functions.ts`
 - Modify: passende Account-/User-Admin-UI
@@ -141,6 +165,7 @@ createKioskAuthAccount({ email, password, displayName }): Promise<{ userId: stri
 ### Task 5: Versionierter lokaler Kiosk-Demodatensatz
 
 **Files:**
+
 - Create: `src/lib/kiosk/kiosk-demo-dataset.ts`
 - Create: `src/lib/kiosk/kiosk-demo-repository.ts`
 - Create: `src/lib/kiosk/kiosk-demo-service.ts`
@@ -149,6 +174,7 @@ createKioskAuthAccount({ email, password, displayName }): Promise<{ userId: stri
 - Modify: `src/components/DemoDataDialog.tsx`
 
 **Interfaces:**
+
 - `KIOSK_DEMO_DATASET_VERSION = "1.0.0"`
 - globaler Storage-Key `northbit-kiosk-demo-dataset-v1` (nicht `userScopedKey`).
 - `readKioskDemoDataset()`, `loadKioskDemoDataset()`, `removeKioskDemoDataset()`.
@@ -164,6 +190,7 @@ createKioskAuthAccount({ email, password, displayName }): Promise<{ userId: stri
 ### Task 6: Demo-Provider und Refresh-State
 
 **Files:**
+
 - Create: `src/lib/kiosk/demo-kiosk-provider.ts`
 - Create: `src/hooks/useKioskSnapshot.ts`
 - Create: `src/__tests__/lib/demo-kiosk-provider.test.ts`
@@ -180,6 +207,7 @@ createKioskAuthAccount({ email, password, displayName }): Promise<{ userId: stri
 ### Task 7: Kiosk-UI, Route, Logout, A11y und E2E
 
 **Files:**
+
 - Create: `src/components/kiosk/KioskDomainCard.tsx`
 - Create: `src/components/kiosk/KioskView.tsx`
 - Create: `src/routes/_authenticated/kiosk.tsx`
@@ -198,6 +226,7 @@ createKioskAuthAccount({ email, password, displayName }): Promise<{ userId: stri
 ### Task 8: Dokumentation, Security und Vollgates
 
 **Files:**
+
 - Modify: `src/lib/help-documentation.ts`
 - Modify: `docs/DEMO-DATA.md`
 - Create: `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md`
