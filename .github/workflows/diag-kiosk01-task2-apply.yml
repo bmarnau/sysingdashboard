@@ -1,0 +1,74 @@
+name: diag-kiosk01-task2-apply
+
+on:
+  push:
+    branches:
+      - diag/kiosk01-task2-apply
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf-kiosk-01-demo-pilot
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Apply exact Task 2 source edits
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          function edit(path, pairs) {
+            let s = fs.readFileSync(path, 'utf8');
+            for (const [from, to] of pairs) {
+              const n = s.split(from).length - 1;
+              if (n !== 1) throw new Error(`${path}: expected exactly 1 occurrence, got ${n}: ${from}`);
+              s = s.replace(from, to);
+            }
+            fs.writeFileSync(path, s);
+          }
+
+          edit('src/lib/user-management.ts', [
+            ['  | "customer"\n  | "viewer";', '  | "customer"\n  | "viewer"\n  | "kiosk";'],
+            ['  customer: "Kunde",\n  viewer: "Viewer",\n};', '  customer: "Kunde",\n  viewer: "Viewer",\n  kiosk: "Kiosk",\n};'],
+            ['  "engineer",\n  "customer",\n  "viewer",\n];', '  "engineer",\n  "customer",\n  "viewer",\n  "kiosk",\n];'],
+          ]);
+
+          edit('src/lib/rbac/permissions.ts', [
+            ['  | "referencedata.manage"\n  | "customer.responsibility.manage";', '  | "referencedata.manage"\n  | "customer.responsibility.manage"\n  | "kiosk.view";'],
+            ['  "referencedata.manage",\n  "customer.responsibility.manage",\n] as const;', '  "referencedata.manage",\n  "customer.responsibility.manage",\n  "kiosk.view",\n] as const;'],
+            ['  "customer.responsibility.manage": "Kundenverantwortung verwalten",\n};', '  "customer.responsibility.manage": "Kundenverantwortung verwalten",\n  "kiosk.view": "Info-Kiosk ansehen",\n};'],
+            ['  viewer: ["dashboard.view", "documentation.view", "avkk.view", "referencedata.view"],\n};', '  viewer: ["dashboard.view", "documentation.view", "avkk.view", "referencedata.view"],\n  kiosk: ["kiosk.view"],\n};'],
+            ['  "customer",\n  "viewer",\n];', '  "customer",\n  "viewer",\n  "kiosk",\n];'],
+          ]);
+
+          edit('backend/services/rbac.mjs', [
+            ['  "customer",\n  "viewer",\n]);', '  "customer",\n  "viewer",\n  "kiosk",\n]);'],
+            ['  "referencedata.manage",\n  "customer.responsibility.manage",\n]);', '  "referencedata.manage",\n  "customer.responsibility.manage",\n  "kiosk.view",\n]);'],
+            ['  viewer: ["dashboard.view", "documentation.view", "avkk.view", "referencedata.view"],\n});', '  viewer: ["dashboard.view", "documentation.view", "avkk.view", "referencedata.view"],\n  kiosk: ["kiosk.view"],\n});'],
+          ]);
+
+          edit('src/lib/rbac/permission-groups.ts', [
+            ['  customer: ["readonly.basic"],\n  viewer: ["readonly.basic"],\n};', '  customer: ["readonly.basic"],\n  viewer: ["readonly.basic"],\n  kiosk: [],\n};'],
+          ]);
+
+          edit('src/integrations/supabase/types.ts', [
+            ['        | "customer"\n        | "viewer"\n      user_status:', '        | "customer"\n        | "viewer"\n        | "kiosk"\n      user_status:'],
+            ['        "customer",\n        "viewer",\n      ],', '        "customer",\n        "viewer",\n        "kiosk",\n      ],'],
+          ]);
+          NODE
+      - name: Format changed source files
+        run: npx prettier --write src/lib/user-management.ts src/lib/rbac/permissions.ts backend/services/rbac.mjs src/lib/rbac/permission-groups.ts src/integrations/supabase/types.ts
+      - name: Commit to feature branch
+        run: |
+          git config user.name "kiosk-task2-apply"
+          git config user.email "noreply@example.invalid"
+          git add src/lib/user-management.ts src/lib/rbac/permissions.ts backend/services/rbac.mjs src/lib/rbac/permission-groups.ts src/integrations/supabase/types.ts
+          git diff --cached --check
+          git commit -m "feat(kiosk): add minimal kiosk RBAC mirrors"
+          git push origin HEAD:feat/bsf-kiosk-01-demo-pilot
