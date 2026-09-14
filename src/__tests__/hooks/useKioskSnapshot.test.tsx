@@ -46,15 +46,17 @@ describe("useKioskSnapshot", () => {
       .fn<() => Promise<KioskSnapshot>>()
       .mockResolvedValueOnce(SNAPSHOT)
       .mockRejectedValueOnce(new Error("network"));
-    const { result } = renderHook(() => useKioskSnapshot({ getSnapshot }));
+    const { result, unmount } = renderHook(() => useKioskSnapshot({ getSnapshot }));
     await act(async () => Promise.resolve());
     expect(result.current.snapshot).toEqual(SNAPSHOT);
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(60_000);
+      vi.advanceTimersByTime(60_000);
+      await Promise.resolve();
     });
     expect(result.current.snapshot).toEqual(SNAPSHOT);
     expect(result.current.refreshError).toBe("Aktualisierung fehlgeschlagen");
+    unmount();
   });
 
   it("reports an initial provider failure without inventing data", async () => {
