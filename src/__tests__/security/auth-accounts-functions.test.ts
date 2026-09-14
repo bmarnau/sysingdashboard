@@ -57,14 +57,16 @@ describe("Admin-Serverfunktionen für Auth-Konten", () => {
     for (const name of PRIVILEGED_FNS) {
       expect(fnBlock(name), `${name} ohne Berechtigungsprüfung`).toContain("assertUserManage");
     }
-    expect(HELPERS).toContain('_perm: "users.manage"');
+    expect(HELPERS).toContain('assertPermission(context, "users.manage")');
+    expect(HELPERS).toContain('_perm: permission');
     expect(HELPERS).toContain("context.supabase.rpc");
   });
 
   it("should_requireRolesManageAdditionally_forKioskProvisioning", () => {
     const block = fnBlock("createKioskAuthAccount");
     expect(block).toContain("assertRolesManage");
-    expect(HELPERS).toContain('_perm: "roles.manage"');
+    expect(HELPERS).toContain('assertPermission(context, "roles.manage")');
+    expect(HELPERS).toContain('_perm: permission');
   });
 
   it("should_provisionExclusiveKioskRole_and_compensatePartialFailure", () => {
