@@ -62,7 +62,6 @@ export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
     const safeInternalTarget = buildSafeInternalTarget(location);
 
-    // Runtime-Fallback für Auth-Config sicherstellen (siehe runtime-config.ts).
     await loadAuthConfig();
     const result = trySupabase();
     if (!result.ok) {
@@ -73,10 +72,7 @@ export const Route = createFileRoute("/_authenticated")({
       if (error || !data.user) {
         throw redirect({ to: "/auth", search: { redirect: safeInternalTarget } });
       }
-      // Statusprüfung: nur `active` darf ins Dashboard. Fehler beim RPC
-      // (Netzwerk, temporäre RLS-Regression) dürfen den authentifizierten
-      // Zugriff NICHT als "nicht eingeloggt" behandeln — sonst kippt eine
-      // reine Statusprüfung eine gültige Session in eine Login-Schleife.
+
       try {
         const { data: active, error: activeErr } = await result.client.rpc("is_account_active", {
           _user_id: data.user.id,
@@ -90,12 +86,8 @@ export const Route = createFileRoute("/_authenticated")({
         }
       } catch (statusErr) {
         if (isRedirect(statusErr)) throw statusErr;
-        // RPC-Ausfall: Session bleibt gültig, Statusprüfung wird verschoben.
       }
 
-      // Kiosk ist ein technischer, exklusiver Kontotyp. Ohne belastbare
-      // serverseitige Berechtigungsantwort darf der Router ihn nicht als
-      // normalen Dashboard-Benutzer behandeln. Deshalb: fail closed.
       const { data: hasKioskView, error: kioskPermissionError } = await result.client.rpc(
         "has_permission",
         {
@@ -115,7 +107,7 @@ export const Route = createFileRoute("/_authenticated")({
         hasKioskView: hasKioskView === true,
       });
       if (kioskSessionPolicy.redirectTo) {
-        throw redirect({ to: kioskSessionPolicy.redirectTo });
+        throw redirect({ href: kioskSessionPolicy.redirectTo });
       }
 
       return { userId: data.user.id, kioskSessionPolicy };
@@ -127,12 +119,6 @@ export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
 });
 
-/**
- * Layout des geschützten Bereichs. Nur hier läuft die Inaktivitätsüberwachung —
- * öffentliche Routen (`/`, `/auth`, `/reset-password`) bleiben unberührt.
- * Für das dedizierte Kiosk-Konto ist nur die Inaktivitätsüberwachung auf
- * `/kiosk` deaktiviert; Auth-, Status- und Logout-Regeln bleiben aktiv.
- */
 function AuthenticatedLayout() {
   const { kioskSessionPolicy } = Route.useRouteContext();
   const idle = useIdleLogout(kioskSessionPolicy.idleLogoutEnabled);
@@ -149,5 +135,4 @@ function AuthenticatedLayout() {
   );
 }
 
-/** Test-Export: interne Redirect-Ziel-Bildung. Nicht in Produktcode nutzen. */
 export const __test = { buildSafeInternalTarget };
