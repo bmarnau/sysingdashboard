@@ -34,9 +34,7 @@ export function useKioskSessionWatchdog({
   check,
   logout = defaultLogout,
 }: UseKioskSessionWatchdogOptions): { status: KioskSessionWatchdogStatus } {
-  const [status, setStatus] = useState<KioskSessionWatchdogStatus>(
-    enabled ? "checking" : "valid",
-  );
+  const [status, setStatus] = useState<KioskSessionWatchdogStatus>(enabled ? "checking" : "valid");
 
   useEffect(() => {
     if (!enabled) {
