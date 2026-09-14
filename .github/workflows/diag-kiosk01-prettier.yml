@@ -1,0 +1,31 @@
+name: diag-kiosk01-prettier
+
+on:
+  push:
+    branches:
+      - diag/kiosk01-prettier-plan
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bunx prettier --write docs/superpowers/plans/2026-09-14-bsf-kiosk-01-secure-operation.md
+      - name: Commit formatted plan
+        run: |
+          if git diff --quiet -- docs/superpowers/plans/2026-09-14-bsf-kiosk-01-secure-operation.md; then
+            echo "already formatted"
+            exit 0
+          fi
+          git config user.name "kiosk-prettier-diagnostic"
+          git config user.email "noreply@example.invalid"
+          git add docs/superpowers/plans/2026-09-14-bsf-kiosk-01-secure-operation.md
+          git commit -m "diag: prettier kiosk secure plan"
+          git push origin HEAD:diag/kiosk01-prettier-plan
