@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   KIOSK_DEMO_DATASET_VERSION,
@@ -6,6 +8,24 @@ import {
   readKioskDemoDataset,
   removeKioskDemoDataset,
 } from "@/lib/kiosk/kiosk-demo-repository";
+import { createKioskDemoDataset } from "@/lib/kiosk/kiosk-demo-dataset";
+import type { KioskDomainSnapshot } from "@/lib/kiosk/kiosk-contract";
+
+interface KioskDemoReference {
+  snapshot: {
+    datasetVersion: string;
+    domains: KioskDomainSnapshot[];
+  };
+}
+
+function readReferenceDataset(): KioskDemoReference {
+  return JSON.parse(
+    readFileSync(
+      resolve(process.cwd(), "docs/examples/kiosk-demo-dataset-v1.json"),
+      "utf8",
+    ),
+  ) as KioskDemoReference;
+}
 
 describe("kiosk demo repository", () => {
   beforeEach(() => window.localStorage.clear());
@@ -22,6 +42,14 @@ describe("kiosk demo repository", () => {
     expect(window.localStorage.getItem(KIOSK_DEMO_STORAGE_KEY)).toContain(
       KIOSK_DEMO_DATASET_VERSION,
     );
+  });
+
+  it("matches the versioned JSON reference dataset", () => {
+    const reference = readReferenceDataset();
+    const runtime = createKioskDemoDataset();
+
+    expect(runtime.version).toBe(reference.snapshot.datasetVersion);
+    expect(runtime.domains).toEqual(reference.snapshot.domains);
   });
 
   it("reloads idempotently to the canonical baseline", () => {
