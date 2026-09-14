@@ -49,9 +49,7 @@ describe("BSF-03D migration location architecture contract", () => {
   it("should_makeMigrationContractTestReadCanonicalSupabaseMigration", () => {
     const contract = readFileSync(MIGRATION_CONTRACT_TEST, "utf8");
 
-    expect(contract).toContain(
-      "20260913213000_bsf03d_workpackage_category_reference_data.sql",
-    );
+    expect(contract).toContain("20260913213000_bsf03d_workpackage_category_reference_data.sql");
     expect(contract).toContain('"supabase"');
     expect(contract).toContain('"migrations"');
     expect(contract).not.toContain('"drizzle"');
