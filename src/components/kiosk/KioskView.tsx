@@ -48,8 +48,8 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
             <div className="max-w-xl">
               <h2 className="text-2xl font-semibold">Sicherheitsprüfung derzeit nicht verfügbar</h2>
               <p className="mt-3 text-muted-foreground">
-                Die Kiosk-Sitzung wird erneut geprüft. Bis zur erfolgreichen Bestätigung werden keine
-                Managementdaten angezeigt.
+                Die Kiosk-Sitzung wird erneut geprüft. Bis zur erfolgreichen Bestätigung werden
+                keine Managementdaten angezeigt.
               </p>
             </div>
           </section>
@@ -64,20 +64,28 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
           >
             <div>
               <h2 className="text-2xl font-semibold">Kiosk-Daten konnten nicht geladen werden</h2>
-              <p className="mt-3 text-muted-foreground">Bitte den Demo-Datensatz und den lokalen Zustand prüfen.</p>
+              <p className="mt-3 text-muted-foreground">
+                Bitte den Demo-Datensatz und den lokalen Zustand prüfen.
+              </p>
             </div>
           </section>
         ) : state.snapshot.datasetState === "not_loaded" ? (
           <section className="grid flex-1 place-items-center rounded-xl border bg-card p-8 text-center">
             <div className="max-w-xl">
-              <h2 className="text-2xl font-semibold">Kiosk-Demodaten sind auf diesem Gerät nicht geladen.</h2>
+              <h2 className="text-2xl font-semibold">
+                Kiosk-Demodaten sind auf diesem Gerät nicht geladen.
+              </h2>
               <p className="mt-3 text-muted-foreground">
-                Ein berechtigter Administrator lädt den synthetischen Kiosk-Datensatz im Servicebereich.
+                Ein berechtigter Administrator lädt den synthetischen Kiosk-Datensatz im
+                Servicebereich.
               </p>
             </div>
           </section>
         ) : (
-          <section aria-label="Kiosk-Domänen" className="grid flex-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <section
+            aria-label="Kiosk-Domänen"
+            className="grid flex-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+          >
             {state.snapshot.domains.map((domain) => (
               <KioskDomainCard key={domain.id} domain={domain} />
             ))}
