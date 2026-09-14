@@ -200,7 +200,9 @@ eigenen aktiven Bestand; alle Kunden desselben Systemhauses verwenden ihn
 gemeinsam. Arbeitspakete referenzieren über `categoryKey` (siehe Schema 1.2.0
 oben). Live-Nachweis (16/16 PASS, Rollback) in
 `docs/BSF-03D-VERIFICATION-2026-09-13.md`. Repo-Migration (idempotent):
-`drizzle/migrations/0000_bsf03d_reference_data_systemhouse_scope.sql`.
+`supabase/migrations/20260913213000_bsf03d_workpackage_category_reference_data.sql`.
+Supabase-Migrationen sind der kanonische Repo-Vertrag; Drizzle wird im
+Zielstand nicht als zweites Migrationsframework verwendet.
 
 ## 3. AVKK
 
