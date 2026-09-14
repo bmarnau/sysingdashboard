@@ -11,7 +11,9 @@ test.describe("Kiosk role", () => {
     await expect(page.getByRole("heading", { name: "Info-Kiosk" })).toBeVisible();
     await expect(page.getByText("DEMO-DATEN — KEINE LIVE-DATEN")).toBeVisible();
     await expect(page.getByRole("button", { name: "Abmelden" })).toBeVisible();
-    await expect(page.getByText(/Kiosk-Demodaten sind auf diesem Gerät nicht geladen/)).toBeVisible();
+    await expect(
+      page.getByText(/Kiosk-Demodaten sind auf diesem Gerät nicht geladen/),
+    ).toBeVisible();
   });
 
   test("has no critical axe violations", async ({ page }) => {
