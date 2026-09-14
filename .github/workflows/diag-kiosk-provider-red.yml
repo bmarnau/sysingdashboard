@@ -1,0 +1,15 @@
+name: Diagnose Kiosk Provider RED
+
+on:
+  push:
+    branches:
+      - diag/kiosk-provider-red
+
+jobs:
+  targeted-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run src/__tests__/lib/demo-kiosk-provider.test.ts src/__tests__/hooks/useKioskSnapshot.test.tsx
