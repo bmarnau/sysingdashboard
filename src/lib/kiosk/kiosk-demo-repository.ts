@@ -35,11 +35,14 @@ export function readKioskDemoDataset(): KioskDemoDataset | null {
   }
 }
 
-export function loadKioskDemoDataset(now = () => new Date()): KioskDemoDataset {
-  const dataset = createKioskDemoDataset(now);
+export function writeKioskDemoDataset(dataset: KioskDemoDataset): KioskDemoDataset {
   const target = storage();
   if (target) target.setItem(KIOSK_DEMO_STORAGE_KEY, JSON.stringify(dataset));
   return dataset;
+}
+
+export function loadKioskDemoDataset(now = () => new Date()): KioskDemoDataset {
+  return writeKioskDemoDataset(createKioskDemoDataset(now));
 }
 
 export function removeKioskDemoDataset(): void {
