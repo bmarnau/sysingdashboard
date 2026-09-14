@@ -50,7 +50,8 @@ describe("useKioskSnapshot", () => {
       .fn<() => Promise<KioskSnapshot>>()
       .mockResolvedValueOnce(SNAPSHOT)
       .mockReturnValueOnce(failedRefresh);
-    const { result, unmount } = renderHook(() => useKioskSnapshot({ getSnapshot }));
+    const provider: KioskDataProvider = { getSnapshot };
+    const { result, unmount } = renderHook(() => useKioskSnapshot(provider));
     await act(async () => Promise.resolve());
     expect(result.current.snapshot).toEqual(SNAPSHOT);
 
