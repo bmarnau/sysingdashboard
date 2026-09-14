@@ -38,7 +38,7 @@ for (const exp of EXPECTED) {
       page,
     }) => {
       await page.goto("/dashboard");
-      expect(new URL(page.url()).pathname).toBe(exp.expectedPath);
+      await expect.poll(() => new URL(page.url()).pathname).toBe(exp.expectedPath);
 
       const btn = page.getByRole("button", { name: /Einstellungen und Services/i });
       if (exp.serviceMenuVisible) {
