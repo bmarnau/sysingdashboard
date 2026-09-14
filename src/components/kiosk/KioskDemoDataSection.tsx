@@ -76,7 +76,11 @@ export function KioskDemoDataSection({ actor }: KioskDemoDataSectionProps) {
         </div>
         <div className="flex flex-wrap gap-2 text-xs">
           <Badge variant="outline">{KIOSK_DEMO_IMPORT_SCHEMA_VERSION}</Badge>
-          {dataset ? <Badge>Version {dataset.version}</Badge> : <Badge variant="secondary">nicht geladen</Badge>}
+          {dataset ? (
+            <Badge>Version {dataset.version}</Badge>
+          ) : (
+            <Badge variant="secondary">nicht geladen</Badge>
+          )}
         </div>
       </div>
 
