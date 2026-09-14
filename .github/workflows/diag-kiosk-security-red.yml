@@ -1,0 +1,16 @@
+name: Diagnose Kiosk Security RED
+
+on:
+  push:
+    branches:
+      - diag/kiosk-security-red
+
+jobs:
+  targeted-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Kiosk migration security contract
+        run: bunx vitest run src/__tests__/security/kiosk-migration-security.test.ts
