@@ -1,0 +1,32 @@
+name: DIAG BSF-03D Prettier
+
+on:
+  push:
+    branches:
+      - diag/bsf03d-prettier-output
+
+permissions:
+  contents: read
+
+jobs:
+  prettier-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Generate exact Prettier diff
+        shell: bash
+        run: |
+          bunx prettier --write \
+            docs/BSF-03D-CLOSURE-2026-09-13.md \
+            docs/BSF-03D-VERIFICATION-2026-09-13.md \
+            docs/DATA-SCHEMA.md \
+            src/__tests__/security/bsf03d-migration-location-contract.test.ts
+          git --no-pager diff -- \
+            docs/BSF-03D-CLOSURE-2026-09-13.md \
+            docs/BSF-03D-VERIFICATION-2026-09-13.md \
+            docs/DATA-SCHEMA.md \
+            src/__tests__/security/bsf03d-migration-location-contract.test.ts
