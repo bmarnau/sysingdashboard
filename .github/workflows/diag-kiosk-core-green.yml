@@ -1,0 +1,28 @@
+name: Diagnose Kiosk Core GREEN
+
+on:
+  push:
+    branches:
+      - diag/kiosk-core-green
+
+jobs:
+  targeted-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: >-
+          bunx vitest run
+          src/__tests__/lib/kiosk-contract.test.ts
+          src/__tests__/lib/kiosk-rbac.test.ts
+          src/__tests__/security/kiosk-migration-security.test.ts
+          src/__tests__/security/auth-accounts-functions.test.ts
+          src/__tests__/lib/kiosk-session-policy.test.ts
+          src/__tests__/lib/kiosk-session-watchdog.test.ts
+          src/__tests__/hooks/useKioskSessionWatchdog.test.tsx
+          src/__tests__/lib/kiosk-demo-repository.test.ts
+          src/__tests__/lib/kiosk-demo-service.test.ts
+          src/__tests__/lib/demo-kiosk-provider.test.ts
+          src/__tests__/hooks/useKioskSnapshot.test.tsx
+          src/__tests__/components/KioskView.test.tsx
