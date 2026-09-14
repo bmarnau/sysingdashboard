@@ -26,10 +26,7 @@ describe("kiosk demo repository", () => {
 
   it("reloads idempotently to the canonical baseline", () => {
     const first = loadKioskDemoDataset();
-    window.localStorage.setItem(
-      KIOSK_DEMO_STORAGE_KEY,
-      JSON.stringify({ ...first, domains: [] }),
-    );
+    window.localStorage.setItem(KIOSK_DEMO_STORAGE_KEY, JSON.stringify({ ...first, domains: [] }));
 
     const reloaded = loadKioskDemoDataset();
     expect(reloaded.domains).toHaveLength(6);
