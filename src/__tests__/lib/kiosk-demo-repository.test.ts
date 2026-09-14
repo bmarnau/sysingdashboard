@@ -20,10 +20,7 @@ interface KioskDemoReference {
 
 function readReferenceDataset(): KioskDemoReference {
   return JSON.parse(
-    readFileSync(
-      resolve(process.cwd(), "docs/examples/kiosk-demo-dataset-v1.json"),
-      "utf8",
-    ),
+    readFileSync(resolve(process.cwd(), "docs/examples/kiosk-demo-dataset-v1.json"), "utf8"),
   ) as KioskDemoReference;
 }
 
