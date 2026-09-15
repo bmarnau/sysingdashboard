@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSyncRouteImport } from './routes/api/sync'
 import { Route as ApiStatusRouteImport } from './routes/api/status'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedKioskRouteImport } from './routes/_authenticated/kiosk'
 import { Route as AuthenticatedMeineKundenIndexRouteImport } from './routes/_authenticated/meine-kunden/index'
 import { Route as AuthenticatedKundenverantwortungIndexRouteImport } from './routes/_authenticated/kundenverantwortung/index'
 import { Route as ApiPublicAuthConfigRouteImport } from './routes/api/public/auth-config'
@@ -55,6 +56,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedKioskRoute = AuthenticatedKioskRouteImport.update({
+  id: '/kiosk',
+  path: '/kiosk',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedMeineKundenIndexRoute =
   AuthenticatedMeineKundenIndexRouteImport.update({
     id: '/meine-kunden/',
@@ -84,6 +90,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/kiosk': typeof AuthenticatedKioskRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/kiosk': typeof AuthenticatedKioskRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/kiosk': typeof AuthenticatedKioskRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/dashboard'
+    | '/kiosk'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/dashboard'
+    | '/kiosk'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/_authenticated/dashboard'
+    | '/_authenticated/kiosk'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -218,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kiosk': {
+      id: '/_authenticated/kiosk'
+      path: '/kiosk'
+      fullPath: '/kiosk'
+      preLoaderRoute: typeof AuthenticatedKioskRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/meine-kunden/': {
       id: '/_authenticated/meine-kunden/'
       path: '/meine-kunden'
@@ -251,6 +270,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedKioskRoute: typeof AuthenticatedKioskRoute
   AuthenticatedKundenverantwortungIndexRoute: typeof AuthenticatedKundenverantwortungIndexRoute
   AuthenticatedMeineKundenIndexRoute: typeof AuthenticatedMeineKundenIndexRoute
   AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute: typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
@@ -258,6 +278,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedKioskRoute: AuthenticatedKioskRoute,
   AuthenticatedKundenverantwortungIndexRoute:
     AuthenticatedKundenverantwortungIndexRoute,
   AuthenticatedMeineKundenIndexRoute: AuthenticatedMeineKundenIndexRoute,

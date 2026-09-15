@@ -30,7 +30,8 @@ export type SeedRole =
   | "projectmanager"
   | "engineer"
   | "customer"
-  | "viewer";
+  | "viewer"
+  | "kiosk";
 
 export const ALL_SEED_ROLES: SeedRole[] = [
   "systemadministrator",
@@ -40,6 +41,7 @@ export const ALL_SEED_ROLES: SeedRole[] = [
   "engineer",
   "customer",
   "viewer",
+  "kiosk",
 ];
 
 /** Deterministische, gültige synthetische UUIDs (v4-Form) je Rolle. */
@@ -51,6 +53,7 @@ const ROLE_UUID: Record<SeedRole, string> = {
   engineer: "e2e00005-0000-4000-8000-000000000005",
   customer: "e2e00006-0000-4000-8000-000000000006",
   viewer: "e2e00007-0000-4000-8000-000000000007",
+  kiosk: "e2e00008-0000-4000-8000-000000000008",
 };
 
 export interface SyntheticIdentity {
@@ -203,6 +206,14 @@ export async function installSupabaseMock(
     // --- RPC ----------------------------------------------------------
     if (path.startsWith("/rest/v1/rpc/is_account_active")) {
       await json(route, identity !== null);
+      return;
+    }
+    if (path.startsWith("/rest/v1/rpc/has_permission")) {
+      const body = route.request().postDataJSON() as Record<string, unknown>;
+      const sameUser = body._user_id === identity?.id;
+      const asksForKiosk = body._perm === "kiosk.view";
+      const isKiosk = identity?.role === "kiosk";
+      await json(route, isKiosk && sameUser && asksForKiosk);
       return;
     }
     if (path.startsWith("/rest/v1/rpc/")) {

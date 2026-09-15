@@ -20,7 +20,8 @@ export type UserRole =
   | "engineer"
   | "projectmanager"
   | "customer"
-  | "viewer";
+  | "viewer"
+  | "kiosk";
 
 export type UserStatus = "active" | "inactive" | "locked" | "archived";
 
@@ -49,6 +50,7 @@ export const ROLE_LABEL: Record<UserRole, string> = {
   projectmanager: "Projektmanager",
   customer: "Kunde",
   viewer: "Viewer",
+  kiosk: "Kiosk",
 };
 
 export const STATUS_LABEL: Record<UserStatus, string> = {
@@ -67,6 +69,7 @@ export const ALL_ROLES: UserRole[] = [
   "engineer",
   "customer",
   "viewer",
+  "kiosk",
 ];
 
 export const ALL_STATUSES: UserStatus[] = ["active", "inactive", "locked", "archived"];

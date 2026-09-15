@@ -74,6 +74,7 @@ export const ROLE_TO_GROUPS: Record<UserRole, readonly string[]> = {
   engineer: ["project.manage"],
   customer: ["readonly.basic"],
   viewer: ["readonly.basic"],
+  kiosk: [],
 };
 
 /** Löst eine Group-Id in ihre Permissions auf. Unbekannte Ids → leer. */

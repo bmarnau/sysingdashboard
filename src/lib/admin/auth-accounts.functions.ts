@@ -225,3 +225,38 @@ export const setAccountPassword = createServerFn({ method: "POST" })
     if (error) throw new Error("Passwort konnte nicht gesetzt werden.");
     return { ok: true };
   });
+
+/**
+ * Legt ein dediziertes Kiosk-Konto an. Der aufrufende Benutzer muss sowohl
+ * Benutzer als auch Rollen verwalten dürfen. Das Passwort wird ausschließlich
+ * an den serverseitigen Provisionierungshelper weitergereicht.
+ */
+export const createKioskAuthAccount = createServerFn({ method: "POST" })
+  .validator((input: { email: string; password: string; displayName?: string }) => {
+    const email = String(input?.email ?? "").trim();
+    const password = typeof input?.password === "string" ? input.password : "";
+    const displayName = String(input?.displayName ?? "Info-Kiosk").trim() || "Info-Kiosk";
+    if (!email || email.length > 254 || !email.includes("@")) {
+      throw new Error("Ungültige E-Mail-Adresse.");
+    }
+    if (password.length < 8) {
+      throw new Error("Das Passwort muss mindestens 8 Zeichen lang sein.");
+    }
+    if (password.length > 200) {
+      throw new Error("Das Passwort ist zu lang (maximal 200 Zeichen).");
+    }
+    return { email, password, displayName };
+  })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; userId: string }> => {
+    const helpers = await import("@/lib/admin/auth-accounts.server");
+    const authContext = context as unknown as AuthContext;
+    await helpers.assertUserManage(authContext);
+    await helpers.assertRolesManage(authContext);
+    const admin = helpers.getAdminClient();
+    const result = await helpers.createKioskAccount(admin, context.userId, data);
+    await helpers.writeAudit(admin, context.userId, "auth_account.kiosk_create", result.userId, {
+      result: "created",
+    });
+    return { ok: true, userId: result.userId };
+  });

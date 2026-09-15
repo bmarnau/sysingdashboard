@@ -3,6 +3,7 @@ import { trySupabase } from "@/integrations/supabase/safe-client";
 import { loadAuthConfig } from "@/integrations/supabase/runtime-config";
 import { useIdleLogout } from "@/hooks/useIdleLogout";
 import { IdleWarningDialog } from "@/components/session/IdleWarningDialog";
+import { resolveKioskSessionPolicy } from "@/lib/kiosk/kiosk-session-policy";
 
 /**
  * Auth-Gate für alle Routen unter `_authenticated/`.
@@ -61,7 +62,6 @@ export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
     const safeInternalTarget = buildSafeInternalTarget(location);
 
-    // Runtime-Fallback für Auth-Config sicherstellen (siehe runtime-config.ts).
     await loadAuthConfig();
     const result = trySupabase();
     if (!result.ok) {
@@ -72,10 +72,7 @@ export const Route = createFileRoute("/_authenticated")({
       if (error || !data.user) {
         throw redirect({ to: "/auth", search: { redirect: safeInternalTarget } });
       }
-      // Statusprüfung: nur `active` darf ins Dashboard. Fehler beim RPC
-      // (Netzwerk, temporäre RLS-Regression) dürfen den authentifizierten
-      // Zugriff NICHT als "nicht eingeloggt" behandeln — sonst kippt eine
-      // reine Statusprüfung eine gültige Session in eine Login-Schleife.
+
       try {
         const { data: active, error: activeErr } = await result.client.rpc("is_account_active", {
           _user_id: data.user.id,
@@ -89,9 +86,31 @@ export const Route = createFileRoute("/_authenticated")({
         }
       } catch (statusErr) {
         if (isRedirect(statusErr)) throw statusErr;
-        // RPC-Ausfall: Session bleibt gültig, Statusprüfung wird verschoben.
       }
-      return { userId: data.user.id };
+
+      const { data: hasKioskView, error: kioskPermissionError } = await result.client.rpc(
+        "has_permission",
+        {
+          _user_id: data.user.id,
+          _perm: "kiosk.view",
+        },
+      );
+      if (kioskPermissionError) {
+        throw redirect({
+          to: "/auth",
+          search: { redirect: safeInternalTarget, reason: "unavailable" },
+        });
+      }
+
+      const kioskSessionPolicy = resolveKioskSessionPolicy({
+        pathname: location.pathname,
+        hasKioskView: hasKioskView === true,
+      });
+      if (kioskSessionPolicy.redirectTo) {
+        throw redirect({ href: kioskSessionPolicy.redirectTo });
+      }
+
+      return { userId: data.user.id, kioskSessionPolicy };
     } catch (e) {
       if (isRedirect(e)) throw e;
       throw redirect({ to: "/auth", search: { redirect: safeInternalTarget } });
@@ -100,12 +119,9 @@ export const Route = createFileRoute("/_authenticated")({
   component: AuthenticatedLayout,
 });
 
-/**
- * Layout des geschützten Bereichs. Nur hier läuft die Inaktivitätsüberwachung —
- * öffentliche Routen (`/`, `/auth`, `/reset-password`) bleiben unberührt.
- */
 function AuthenticatedLayout() {
-  const idle = useIdleLogout(true);
+  const { kioskSessionPolicy } = Route.useRouteContext();
+  const idle = useIdleLogout(kioskSessionPolicy.idleLogoutEnabled);
   return (
     <>
       <Outlet />
@@ -119,5 +135,4 @@ function AuthenticatedLayout() {
   );
 }
 
-/** Test-Export: interne Redirect-Ziel-Bildung. Nicht in Produktcode nutzen. */
 export const __test = { buildSafeInternalTarget };

@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  }
   public: {
     Tables: {
       app_settings: {
@@ -736,15 +731,7 @@ export type Database = {
           systemhouse_id?: string | null
           value_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "reference_value_history_systemhouse_fk"
-            columns: ["systemhouse_id"]
-            isOneToOne: false
-            referencedRelation: "systemhouse"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       shared_activity_projection: {
         Row: {
@@ -1230,6 +1217,7 @@ export type Database = {
         | "engineer"
         | "customer"
         | "viewer"
+        | "kiosk"
       user_status: "active" | "inactive" | "locked" | "archived"
     }
     CompositeTypes: {
@@ -1366,8 +1354,10 @@ export const Constants = {
         "engineer",
         "customer",
         "viewer",
+        "kiosk",
       ],
       user_status: ["active", "inactive", "locked", "archived"],
     },
   },
 } as const
+

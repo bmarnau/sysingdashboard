@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "sysing.kiosk.demo.v1",
+  "synthetic": true,
+  "snapshot": {
+    "mode": "demo",
+    "datasetVersion": "1.0.0",
+    "generatedAt": "2026-09-14T00:00:00Z",
+    "observedAt": "2026-09-14T00:00:00Z",
+    "domains": [
+      {
+        "id": "projects",
+        "title": "Projekte",
+        "level": "warning",
+        "metrics": [
+          {
+            "value": 8,
+            "label": "Aktive Projekte",
+            "level": "ok"
+          },
+          {
+            "value": 1,
+            "label": "Mit Terminrisiko",
+            "level": "warning"
+          }
+        ],
+        "note": "Synthetischer Demo-Stand"
+      },
+      {
+        "id": "workPackages",
+        "title": "Arbeitspakete",
+        "level": "warning",
+        "metrics": [
+          {
+            "value": 24,
+            "label": "Offene Arbeitspakete",
+            "level": "ok"
+          },
+          {
+            "value": 3,
+            "label": "Ueberfaellig",
+            "level": "warning"
+          }
+        ],
+        "note": "Synthetischer Demo-Stand"
+      },
+      {
+        "id": "activities",
+        "title": "Taetigkeiten",
+        "level": "ok",
+        "metrics": [
+          {
+            "value": 126.5,
+            "label": "Stunden im Demo-Zeitraum",
+            "level": "ok"
+          },
+          {
+            "value": 82,
+            "label": "Billable-Anteil in Prozent",
+            "level": "ok"
+          }
+        ],
+        "note": "Nur aggregierte synthetische Werte"
+      },
+      {
+        "id": "availability",
+        "title": "Verfuegbarkeit",
+        "level": "warning",
+        "metrics": [
+          {
+            "value": 9,
+            "label": "Verfuegbar",
+            "level": "ok"
+          },
+          {
+            "value": 2,
+            "label": "Nicht verfuegbar",
+            "level": "warning"
+          }
+        ],
+        "note": "Keine Gruende oder Gesundheitsdaten"
+      },
+      {
+        "id": "infrastructure",
+        "title": "Infrastruktur",
+        "level": "critical",
+        "metrics": [
+          {
+            "value": 42,
+            "label": "Ueberwachte Systeme",
+            "level": "ok"
+          },
+          {
+            "value": 1,
+            "label": "Kritische Meldungen",
+            "level": "critical"
+          }
+        ],
+        "note": "Keine produktiven Hostnamen oder IP-Adressen"
+      },
+      {
+        "id": "support",
+        "title": "Support-Postfach",
+        "level": "warning",
+        "metrics": [
+          {
+            "value": 17,
+            "label": "Offene Nachrichten",
+            "level": "warning"
+          },
+          {
+            "value": 4,
+            "label": "Aelter als 24 Stunden",
+            "level": "warning"
+          }
+        ],
+        "note": "Nur Mengen und Alter, keine Mailinhalte"
+      }
+    ]
+  }
+}
