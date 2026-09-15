@@ -117,6 +117,41 @@ Cross-Systemhouse-Zugriffe bleiben verweigert. Browser-Rollen oder manipulierte 
     relatedTopics: ["navigation-ansichten", "rbac-rollen-berechtigungen", "security-principles"],
   },
   {
+    id: "info-kiosk",
+    title: "Info-Kiosk — Demo-Pilot",
+    category: "Service",
+    route: "/kiosk",
+    component: "KioskView",
+    keywords: [
+      "Info-Kiosk",
+      "Kiosk",
+      "Demo-Pilot",
+      "Demo-Daten",
+      "kiosk.view",
+      "Servicemenü",
+      "Session-Watchdog",
+      "read-only",
+    ],
+    lastUpdated: "2026-09-15",
+    content: `## Zweck und Status
+Der **Info-Kiosk** ist in KIOSK-01 ein ausschließlich lesender Demo-Pilot. Die Ansicht zeigt permanent **DEMO-DATEN — KEINE LIVE-DATEN**. Sie verwendet keine produktiven externen Datenquellen und ist kein zweites Fachsystem.
+
+## Demo-Datensatz
+Die Kiosk-Daten sind lokal, synthetisch und versioniert. Berechtigte Administratoren können sie über **Servicemenü → Demo-Datensatz** laden, als geprüftes JSON importieren oder entfernen. Importiert wird nur das Kiosk-Demoschema; unbekannte oder unvollständige Daten werden vollständig abgewiesen, der letzte gültige Stand bleibt erhalten.
+
+Das technische Kiosk-Konto selbst kann keine Demo-Daten laden, importieren oder entfernen und besitzt keine Fach-, Admin- oder sonstigen Schreibrechte. Seine fachliche Berechtigung ist auf \`kiosk.view\` begrenzt.
+
+## Anmeldung und Sitzung
+Der Kiosk verwendet die reguläre Supabase-Anmeldung. Ein gültiges Kiosk-Konto ist auf die Route \`/kiosk\` begrenzt. Manueller Logout bleibt jederzeit verfügbar. Für den unbeaufsichtigten Anzeigebetrieb gilt nur auf \`/kiosk\` die dokumentierte Kiosk-Idle-Ausnahme; Kontoaktivität, Token-Gültigkeit, Rollenexklusivität und der periodische Session-Watchdog bleiben aktiv und arbeiten fail-closed.
+
+## Daten- und Integrationsgrenzen
+KIOSK-01 enthält **keine** produktive Microsoft-Graph-, SharePoint-, Exchange-, PRTG-, MCP- oder Agenten-Integration. Die Oberfläche liest über die austauschbare \`KioskDataProvider\`-Grenze. Spätere interne Read-Provider dürfen diese Grenze nutzen, ohne die Kiosk-Oberfläche an einen einzelnen Anbieter zu koppeln.
+
+## Sicherheit
+Die Kiosk-Rolle umgeht weder Authentifizierung noch RBAC/RLS. Es werden keine Zugangsdaten in Demo-Dateien, Hilfe oder Quellcode abgelegt. Die produktive Datenbank wird durch Laden oder Entfernen des lokalen Demo-Datensatzes nicht verändert.`,
+    relatedTopics: ["navigation-ansichten", "security-principles", "rbac-rollen-berechtigungen"],
+  },
+  {
     id: "system-status",
     title: "Systemstatus",
     category: "Service",
