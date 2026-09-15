@@ -1,0 +1,60 @@
+name: DB-SOT Bootstrap
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    if: github.head_ref == 'feat/bsf-kiosk-01-demo-pilot'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Check whether bootstrap is still required
+        id: baseline
+        run: |
+          if [ -f supabase/schema/public-schema.sql ]; then
+            echo "required=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "required=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: supabase/setup-cli@v1
+        if: steps.baseline.outputs.required == 'true'
+        with:
+          version: 2.117.0
+      - name: Start local Supabase
+        if: steps.baseline.outputs.required == 'true'
+        run: supabase start
+      - name: Rebuild database from migrations
+        if: steps.baseline.outputs.required == 'true'
+        run: supabase db reset --local --no-seed
+      - name: Verify Kiosk database contract
+        if: steps.baseline.outputs.required == 'true'
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -v ON_ERROR_STOP=1 \
+            -f supabase/tests/bsf-kiosk-01-role-contract.sql
+      - name: Generate canonical schema and types
+        if: steps.baseline.outputs.required == 'true'
+        run: |
+          mkdir -p supabase/schema
+          supabase db dump --local --schema public -f supabase/schema/public-schema.sql
+          supabase gen types --lang typescript --local --schema public > src/integrations/supabase/types.ts
+      - name: Commit generated baseline to feature branch
+        if: steps.baseline.outputs.required == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add supabase/schema/public-schema.sql src/integrations/supabase/types.ts
+          git commit -m "chore(db): bootstrap canonical schema snapshot"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
+      - name: Stop local Supabase
+        if: always() && steps.baseline.outputs.required == 'true'
+        run: supabase stop --no-backup
