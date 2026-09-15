@@ -109,19 +109,19 @@ golden-project-b1 -> customer B
 Fünf Arbeitspakete decken die Kategorie-Semantik ab:
 
 ```text
-golden-wp-a1 -> aktive Kategorie `regelbetrieb`
+golden-wp-a1 -> aktive Kategorie regelbetrieb
 golden-wp-a2 -> explizit keine Kategorie
-golden-wp-a3 -> bekannte, aber inaktive Kategorie `legacy-alt`
+golden-wp-a3 -> bekannte, aber inaktive Kategorie legacy-alt
 golden-wp-a4 -> Legacy-Fall: Kategorie noch nicht beobachtet/publiziert
-golden-wp-b1 -> expliziter unbekannter Key `unknown-golden-category`
+golden-wp-b1 -> expliziter unbekannter Key unknown-golden-category
 ```
 
 Reference Data enthält mindestens:
 
 ```text
-regelbetrieb  -> aktiv
-stoerung      -> aktiv
-legacy-alt    -> inaktiv
+regelbetrieb -> aktiv
+stoerung -> aktiv
+legacy-alt -> inaktiv
 ```
 
 `unknown-golden-category` ist absichtlich **nicht** im Reference-Data-Katalog vorhanden.
@@ -130,16 +130,16 @@ legacy-alt    -> inaktiv
 
 Die positive V1-Referenz enthält acht Tätigkeiten im Zeitraum 2026-09-01 bis 2026-09-05:
 
-| ID | Datum | Kunde | Projekt | AP | Stunden | Billable | Billing Status |
-| --- | --- | --- | --- | --- | ---: | --- | --- |
-| `golden-act-01` | 2026-09-01 | A | A1 | A1 | 4.0 | ja | offen |
-| `golden-act-02` | 2026-09-01 | A | A1 | A1 | 2.0 | nein | nicht_abrechenbar |
-| `golden-act-03` | 2026-09-02 | A | A1 | A2 | 3.0 | ja | offen |
-| `golden-act-04` | 2026-09-03 | A | A2 | A3 | 1.0 | nein | nicht_abrechenbar |
-| `golden-act-05` | 2026-09-01 | B | B1 | B1 | 5.0 | ja | offen |
-| `golden-act-06` | 2026-09-04 | B | B1 | B1 | 2.0 | nein | nicht_abrechenbar |
-| `golden-act-07` | 2026-09-04 | B | B1 | B1 | 3.0 | ja | abgerechnet |
-| `golden-act-08` | 2026-09-05 | A | A2 | A4 | 5.0 | ja | offen |
+```text
+golden-act-01 | 2026-09-01 | Customer A | Project A1 | WP A1 | 4.0 h | billable | offen
+golden-act-02 | 2026-09-01 | Customer A | Project A1 | WP A1 | 2.0 h | non-billable | nicht_abrechenbar
+golden-act-03 | 2026-09-02 | Customer A | Project A1 | WP A2 | 3.0 h | billable | offen
+golden-act-04 | 2026-09-03 | Customer A | Project A2 | WP A3 | 1.0 h | non-billable | nicht_abrechenbar
+golden-act-05 | 2026-09-01 | Customer B | Project B1 | WP B1 | 5.0 h | billable | offen
+golden-act-06 | 2026-09-04 | Customer B | Project B1 | WP B1 | 2.0 h | non-billable | nicht_abrechenbar
+golden-act-07 | 2026-09-04 | Customer B | Project B1 | WP B1 | 3.0 h | billable | abgerechnet
+golden-act-08 | 2026-09-05 | Customer A | Project A2 | WP A4 | 5.0 h | billable | offen
+```
 
 Verbindliche Expected Summary über alle acht Zeilen:
 
@@ -158,10 +158,10 @@ Verbindlicher Tagestrend:
 
 ```text
 2026-09-01 -> total 11.0 / billable 9.0 / non-billable 2.0
-2026-09-02 -> total  3.0 / billable 3.0 / non-billable 0.0
-2026-09-03 -> total  1.0 / billable 0.0 / non-billable 1.0
-2026-09-04 -> total  5.0 / billable 3.0 / non-billable 2.0
-2026-09-05 -> total  5.0 / billable 5.0 / non-billable 0.0
+2026-09-02 -> total 3.0 / billable 3.0 / non-billable 0.0
+2026-09-03 -> total 1.0 / billable 0.0 / non-billable 1.0
+2026-09-04 -> total 5.0 / billable 3.0 / non-billable 2.0
+2026-09-05 -> total 5.0 / billable 5.0 / non-billable 0.0
 ```
 
 Diese Zahlen sind Teil des Fachvertrags und dürfen nicht aus Convenience-Gründen an eine Implementierung angepasst werden.
