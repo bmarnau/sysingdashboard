@@ -1,7 +1,7 @@
 # Datenbankschema als Git-Source-of-Truth
 
 Stand: 2026-09-15  
-Status: **VERBINDLICHER ARCHITEKTUR- UND GOVERNANCE-VERTRAG**  
+Status: **IMPLEMENTIERT / VERBINDLICHER ARCHITEKTUR- UND GOVERNANCE-VERTRAG**  
 Tracking: Issue #143 (`DB-SOT-01`)
 
 ## 1. Ziel
@@ -34,7 +34,7 @@ Die Artefakte erfüllen unterschiedliche Aufgaben:
 - `src/integrations/supabase/types.ts` ist die **generierte Client-Typprojektion** des rekonstruierten Schemas; sie darf nicht manuell als Ersatz für Migrationen gepflegt werden.
 - `supabase/tests/` enthält die **ausführbaren Sicherheits- und Fachverträge** für RLS, Policies, Grants, Funktionen und relevante Constraints.
 
-Bei Widerspruch gilt: Nicht still angleichen. Der Widerspruch ist `DATABASE_SCHEMA_DRIFT` und muss aufgeklärt werden.
+Bei Widerspruch gilt: Nicht still angleichen. Der Widerspruch ist `DATABASE_SCHEMA_DRIFT` oder `DATABASE_TYPES_DRIFT` und muss aufgeklärt werden.
 
 ## 4. Scope des Schema-Snapshots
 
@@ -93,47 +93,94 @@ Für jede DB-verändernde Arbeit gilt ab DB-SOT-01:
    - Live-Objekte read-only gegen den erwarteten Git-Vertrag prüfen.
 8. **Drift-Guard**
    - Migrationen -> saubere lokale Supabase-DB -> generierter Snapshot/Typen.
-   - generierte Artefakte müssen byte-/normalisiert-identisch zu den committed Artefakten sein.
+   - generierte Artefakte müssen normalisiert-identisch zu den committed Artefakten sein.
 9. **Dokumentieren**
    - technischer Prüfbericht, Sprintabschluss und PR nennen Migration, Snapshot, Types, Tests und Advisor-Status.
 
-## 6. Reproduzierbarer lokaler Referenzlauf
+## 6. Implementierter lokaler Referenzlauf
 
-Für DB-SOT-01 wird die Supabase CLI als gepinnte Dev-Abhängigkeit verwendet. Für die Implementierung ist Version `2.117.0` vorgesehen; vor Einführung wird `supabase --version` gegen den Lockfile-Stand geprüft.
+Die dauerhafte CI verwendet die offizielle Action `supabase/setup-cli@v1` mit fest gesetzter Supabase-CLI-Version `2.117.0`. Die CLI wird bewusst **nicht** als zusätzliche npm-/Bun-Abhängigkeit des Anwendungspakets geführt; dadurch bleibt `bun.lock` von der Datenbank-Toolchain unberührt.
 
-Referenzablauf:
+Die in `package.json` versionierten Befehle sind:
 
 ```bash
-bunx supabase start
-bunx supabase db reset --local --no-seed
-bunx supabase db dump --local --schema public -f supabase/schema/public-schema.generated.sql
-bunx supabase gen types --lang typescript --local --schema public > src/integrations/supabase/types.generated.ts
+bun run db:schema:rebuild
+bun run db:schema:snapshot
+bun run db:types:generate
+bun run db:schema:check
 ```
 
-Danach normalisiert der projektinterne Drift-Check ausschließlich technisch irrelevante Zeilenenden/Generator-Metadaten und vergleicht:
+Sie entsprechen:
 
 ```text
-public-schema.generated.sql  <->  public-schema.sql
-types.generated.ts           <->  types.ts
+supabase db reset --local --no-seed
+supabase db dump --local --schema public -f supabase/schema/public-schema.generated.sql
+supabase gen types --lang typescript --local --schema public > src/integrations/supabase/types.generated.ts
+node scripts/database-schema/check-drift.mjs
 ```
 
-Temporäre `*.generated.*`-Dateien werden nicht committed.
+Für einen manuellen lokalen Referenzlauf muss eine kompatible Supabase CLI verfügbar sein; der CI-Nachweis verwendet verbindlich `2.117.0`.
 
-## 7. CI-Drift-Guard
+Der Drift-Check normalisiert ausschließlich technisch irrelevante Unterschiede:
 
-Der CI-Job `Database Schema Drift` muss mindestens prüfen:
+- CRLF/CR -> LF,
+- nachgestellte Leerzeichen/Tabs,
+- leere Zeilen am Dateiende,
+- genau eine abschließende Newline.
 
-1. Supabase CLI-Version entspricht dem gepinnten Lockfile.
-2. Lokale Supabase-Instanz startet erfolgreich.
-3. Alle Migrationen lassen sich von leerem Zustand vollständig anwenden.
-4. `public-schema.sql` entspricht dem daraus generierten Schema.
-5. `types.ts` entspricht den daraus generierten Typen.
-6. relevante DB-Vertragstests sind PASS.
-7. bei Abweichung: harter Fehler `DATABASE_SCHEMA_DRIFT`.
+Er entfernt **keine** SQL-Statements, Policies, Grants, Trigger, Funktionen, Kommentare mit Projektbedeutung oder Objektdefinitionen.
 
-CI darf den committed Snapshot oder die Expected Types nicht automatisch reparieren.
+Verglichen werden:
 
-## 8. Lovable-/Supabase-Betriebsregel
+```text
+supabase/schema/public-schema.generated.sql  <->  supabase/schema/public-schema.sql
+src/integrations/supabase/types.generated.ts <->  src/integrations/supabase/types.ts
+```
+
+Temporäre `*.generated.*`-Dateien sind in `.gitignore` ausgeschlossen und werden nicht committed.
+
+## 7. Implementierter CI-Drift-Guard
+
+Der Job `Database Schema Drift` in `.github/workflows/ci.yml` ist ein hartes Gate und führt auf einer disposable lokalen Supabase-Instanz aus:
+
+1. Checkout des PR-/Commit-Stands.
+2. Installation Supabase CLI `2.117.0`.
+3. `supabase start`.
+4. vollständiger Neuaufbau mit `db reset --local --no-seed` aus **allen** Git-Migrationen.
+5. Ausführung des KIOSK-DB-Vertrags `supabase/tests/bsf-kiosk-01-role-contract.sql` mit ROLLBACK-Testdaten.
+6. Neugenerierung von `public-schema.generated.sql`.
+7. Neugenerierung von `types.generated.ts`.
+8. Upload der generierten Dateien als kurzlebige CI-Evidenz.
+9. fail-closed Vergleich durch `db:schema:check`.
+10. `supabase stop --no-backup` als Always-Cleanup.
+
+Erfolgsmarker:
+
+```text
+DATABASE_SCHEMA_DRIFT: NONE
+DATABASE_TYPES_DRIFT: NONE
+```
+
+Bei echter Abweichung endet der Job non-zero. Der finale Job `14 · Technical Report & Quality Gate` hängt von `db_schema` ab und kann bei Schema-/Type-Drift nicht grün werden.
+
+CI repariert den committed Snapshot oder die Expected Types **niemals automatisch**.
+
+## 8. Baseline-Erzeugung 2026-09-15
+
+Die erste kanonische Baseline wurde aus einer vollständig neu aufgebauten lokalen Supabase-Datenbank erzeugt. Vor der Übernahme waren erfolgreich:
+
+- vollständiger Migration-Rebuild aus leerem Zustand,
+- KIOSK-Rollen-/Permission-Vertrag,
+- Schema-Generierung,
+- Type-Generierung.
+
+Der erste Clean-DB-Lauf deckte dabei einen Testfixture-Fehler auf: Das erste synthetische `auth.users`-Konto wird durch den bestehenden Bootstrap-Vertrag korrekt zum ersten `systemadministrator`. Der KIOSK-Vertrag wurde deshalb um einen ausschließlich innerhalb der ROLLBACK-Transaktion existierenden synthetischen Guard-Sysadmin ergänzt. RLS/RBAC oder der Last-Sysadmin-Schutz wurden nicht abgeschwächt.
+
+Der kanonische Snapshot und die kanonischen Types wurden anschließend **direkt aus demselben generierten CI-Stand** übernommen. Die Git-Blob-Hashes wurden gegen das heruntergeladene CI-Artefakt bytegenau geprüft.
+
+Ein einmaliger, ausschließlich auf den Feature-Branch begrenzter Bootstrap-Workflow wurde nur für die technische Übernahme der großen generierten Dateien verwendet und danach wieder aus dem Repository entfernt. Der dauerhafte Zustand besitzt keinen CI-Schreibpfad für Schema-Snapshots.
+
+## 9. Lovable-/Supabase-Betriebsregel
 
 Für den MVP gilt:
 
@@ -154,7 +201,7 @@ Direkte parallele produktive Schemaänderungen außerhalb des vorgesehenen Lovab
 
 Lovable darf keine nicht versionierte Remote-Änderung als Abkürzung durchführen. Falls eine Analyse unerwarteten Live-Drift entdeckt, lautet das Ergebnis `BLOCKED / DRIFT DETECTED`; zuerst wird die Abweichung nachvollziehbar gemacht und in Git überführt oder zurückgenommen.
 
-## 9. Verhältnis zum Goldenen Datensatz
+## 10. Verhältnis zum Goldenen Datensatz
 
 DB-SOT-01 und GDS-01 haben unterschiedliche Aufgaben:
 
@@ -163,13 +210,21 @@ DB-SOT-01 und GDS-01 haben unterschiedliche Aufgaben:
 
 Beide zusammen bilden die Referenzbasis für spätere Providervergleiche Supabase <-> Azure SQL.
 
-## 10. Übergangsregel für KIOSK-01
+## 11. Übergangsregel für KIOSK-01
 
-KIOSK-01 wurde begonnen, bevor DB-SOT-01 festgeschrieben wurde. Seine Migrationen und Typen liegen bereits im Feature-Branch; die reale Anwendung im korrekten Sysingdashboard-Supabase-Kontext ist noch offen.
+Die **lokale Git-Baseline von DB-SOT-01 ist etabliert**. Damit ist vor BSF-03A technisch nachweisbar, dass der aktuelle Feature-Branch das erwartete Anwendungsschema aus seinen Migrationen reproduzieren kann.
 
-KIOSK-01 wird nicht rückwirkend fachlich erweitert. Bei seiner finalen DB-Abnahme wird jedoch die DB-SOT-01-Baseline erzeugt, soweit der korrekte Lovable/Supabase-Kontext verfügbar ist. Spätestens **vor der nächsten neuen DB-verändernden Änderung in BSF-03A** muss der Snapshot-/Drift-Guard etabliert sein.
+Das ersetzt ausdrücklich **nicht** die noch offene reale KIOSK-01-Abnahme im korrekten Lovable/Supabase-Kontext. Vor KIOSK-01 FINAL PASS bleiben erforderlich:
 
-## 11. Definition of Done für künftige Schemaänderungen
+- Zielprojekt `zffimqwnrsuzuozsgnlc` bzw. eindeutig davon abgeleitete kontrollierte Staging-Umgebung verifizieren,
+- KIOSK-Migrationen dort über den freigegebenen Lovable-Weg anwenden,
+- DB-Vertrag/RLS/Grants prüfen,
+- offiziellen Security Advisor ausführen,
+- Remote-/Git-Parität belegen.
+
+Der aktuell anderweitig verfügbare Supabase-Connector ist kein Ersatz für diesen Nachweis.
+
+## 12. Definition of Done für künftige Schemaänderungen
 
 Eine Schemaänderung ist erst DONE, wenn:
 
@@ -180,11 +235,12 @@ Eine Schemaänderung ist erst DONE, wenn:
 - [ ] `src/integrations/supabase/types.ts` aktuell und generiert ist,
 - [ ] DB-Vertragstest PASS ist,
 - [ ] RLS/Policies/Grants geprüft sind,
-- [ ] Security Advisor ohne unbewertete neue Findings ist,
-- [ ] CI-Drift-Guard PASS ist,
+- [ ] lokaler CI-Drift-Guard PASS ist,
+- [ ] Remote-Anwendung über den freigegebenen Lovable-Weg nachvollzogen ist,
+- [ ] Security Advisor auf dem korrekten Zielkontext ohne unbewertete neue Findings ist,
 - [ ] kein Secret/Produktivdatensatz in Git gelangt ist,
 - [ ] technischer Prüfbericht und Sprintabschluss synchronisiert sind.
 
-## 12. Grundsatz
+## 13. Grundsatz
 
 > **Eine laufende Supabase-Datenbank ist eine Instanz des in Git versionierten Datenbankvertrags — nicht dessen alleinige Quelle.**
