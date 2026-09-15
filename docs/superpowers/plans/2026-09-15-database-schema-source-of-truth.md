@@ -27,6 +27,7 @@
 ### Task 1: Pin the Supabase CLI and add deterministic schema commands
 
 **Files:**
+
 - Modify: `package.json`
 - Modify: `bun.lock`
 - Create: `scripts/database-schema/normalize-schema.mjs`
@@ -34,6 +35,7 @@
 - Test: `src/__tests__/ci/database-schema-drift.test.ts`
 
 **Interfaces:**
+
 - Consumes: existing `supabase/config.toml`, `supabase/migrations/`.
 - Produces: `bun run db:schema:rebuild`, `bun run db:schema:snapshot`, `bun run db:types:generate`, `bun run db:schema:check`.
 
@@ -42,21 +44,21 @@
 Create `src/__tests__/ci/database-schema-drift.test.ts` asserting that `package.json` contains exactly these scripts:
 
 ```ts
-import { describe, expect, it } from "vitest"
-import pkg from "../../../package.json"
+import { describe, expect, it } from "vitest";
+import pkg from "../../../package.json";
 
 describe("database schema source-of-truth scripts", () => {
   it("exposes deterministic schema rebuild and drift commands", () => {
-    expect(pkg.scripts["db:schema:rebuild"]).toBe("supabase db reset --local --no-seed")
+    expect(pkg.scripts["db:schema:rebuild"]).toBe("supabase db reset --local --no-seed");
     expect(pkg.scripts["db:schema:snapshot"]).toBe(
       "supabase db dump --local --schema public -f supabase/schema/public-schema.generated.sql",
-    )
+    );
     expect(pkg.scripts["db:types:generate"]).toBe(
       "supabase gen types --lang typescript --local --schema public > src/integrations/supabase/types.generated.ts",
-    )
-    expect(pkg.scripts["db:schema:check"]).toBe("node scripts/database-schema/check-drift.mjs")
-  })
-})
+    );
+    expect(pkg.scripts["db:schema:check"]).toBe("node scripts/database-schema/check-drift.mjs");
+  });
+});
 ```
 
 - [ ] **Step 2: Run the focused test and verify RED**
@@ -111,7 +113,7 @@ export function normalizeGeneratedText(input) {
     .split("\n")
     .map((line) => line.replace(/[ \t]+$/g, ""))
     .join("\n")
-    .replace(/\n+$/g, "")}\n`
+    .replace(/\n+$/g, "")}\n`;
 }
 ```
 
@@ -154,12 +156,14 @@ git commit -m "build(db): add schema source-of-truth tooling"
 ### Task 2: Establish the first canonical schema snapshot from migrations
 
 **Files:**
+
 - Create: `supabase/schema/public-schema.sql`
 - Create: `supabase/schema/README.md`
 - Modify: `src/integrations/supabase/types.ts`
 - Test: `supabase/tests/bsf-kiosk-01-role-contract.sql`
 
 **Interfaces:**
+
 - Consumes: complete migration chain including KIOSK-01 migrations on the feature branch.
 - Produces: canonical schema snapshot and generated client types for the same reconstructed state.
 
@@ -278,11 +282,13 @@ git commit -m "docs(db): establish canonical schema snapshot"
 ### Task 3: Add the database schema drift CI gate
 
 **Files:**
+
 - Modify: `.github/workflows/ci.yml`
 - Modify: `package.json`
 - Test: `src/__tests__/ci/database-schema-drift.test.ts`
 
 **Interfaces:**
+
 - Consumes: Task 1 scripts and Task 2 snapshot/types.
 - Produces: required CI evidence `Database Schema Drift`.
 
@@ -344,6 +350,7 @@ git commit -m "ci(db): gate database schema drift"
 ### Task 4: Integrate the standard into KIOSK-01 final acceptance and BSF-03A
 
 **Files:**
+
 - Modify: `docs/BSF-CURRENT-PRIORITIES.md`
 - Modify: `docs/LOVABLE-PROMPT-PLAN-BSF-03A.md`
 - Modify: `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md`
@@ -352,6 +359,7 @@ git commit -m "ci(db): gate database schema drift"
 - Modify: `docs/ENTWICKLUNGSTAGEBUCH.md`
 
 **Interfaces:**
+
 - Consumes: binding DB-SOT-01 and Lovable DB-change standard.
 - Produces: planning and audit trail that make the new gate visible in daily work.
 
@@ -429,12 +437,14 @@ git commit -m "docs(db): enforce schema source-of-truth gate"
 ### Task 5: Perform the first controlled remote parity proof through Lovable
 
 **Files:**
+
 - Modify: `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md`
 - Modify: `docs/technical-report-2.md`
 - Modify: `docs/CURRENT-STATUS.md`
 - Modify: `docs/ENTWICKLUNGSTAGEBUCH.md`
 
 **Interfaces:**
+
 - Consumes: approved KIOSK-01 migrations, canonical schema snapshot, Lovable DB-change standard.
 - Produces: first evidence that the real Sysingdashboard Supabase instance is an instance of the Git contract.
 
