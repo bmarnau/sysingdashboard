@@ -15,14 +15,21 @@
 - [x] JSON-Demoimport atomar in das bestehende lokale Kiosk-Demo-Repository; Last-good bleibt bei Fehler erhalten
 - [x] Kiosk-Demo-Steuerung im bestehenden Service-/Demo-Dialog: laden, JSON importieren, entfernen
 - [x] TDD-Nachweise für Parser, Repository, Service, Provider und UI-Wiring
-- [ ] Exact-Head-Gates: Prettier, ESLint, TypeScript, RBAC, Unit/Components, Security, Build, E2E, A11y, Technical Debt, Quality Gate
+- [x] `/kiosk`-Route, Route-Gate, Session-Watchdog und administrative Kiosk-Provisionierung
+- [x] Exact-Head-Gates auf Implementierungs-Head `20835703399a27139e5be3c719c5c4d87d33439f`: Security, CI, Prettier, ESLint, TypeScript, RBAC, Unit/Components, Build, E2E, A11y, Technical Debt, Quality Gate PASS
+- [x] Branch-genauer Lovable Runtime-/Visual-Check: Kiosk-E2E 2/2, 1920×1080 ohne Overflow, keine Consolefehler
+- [x] Offizieller Supabase Advisor auf aktuell verbundener Live-Baseline: PASS, SEC-01 unverändert
+- [ ] Kiosk-spezifischer Post-Migration-Advisor auf kontrollierter Ziel-/Staging-Umgebung
 - [ ] Dokumentation/Version 1.63.0 vollständig synchronisieren
-- [ ] PR #141 Review-Status und Abschlussnachweis aktualisieren
+- [x] PR #141 Review-Status und Abschlussnachweis aktualisieren
+- [ ] FINAL-PASS-/DONE-Entscheidung nach Post-Migration-Advisor
 - [ ] Merge/Deploy nur nach separater Freigabe
 
 ### Abgrenzung
 
 KIOSK-01 enthält ausschließlich synthetische, lokale Demo-Daten. Der allgemeine providerneutrale Import mit realen/partiellen Quelldaten, Provenienz, Freshness und Customer-/Systemhouse-Scope bleibt BSF-05A vorbehalten.
+
+Die aktuell mit Lovable verbundene Supabase-Instanz enthält die Kiosk-Migrationen noch nicht. Der dort ausgeführte offizielle Advisor bestätigt die unveränderte SEC-01-Live-Baseline, ersetzt aber nicht den finalen Kiosk-spezifischen Advisor nach kontrolliert angewandten Migrationen.
 
 ### Nächster interner Schritt nach KIOSK-01
 
