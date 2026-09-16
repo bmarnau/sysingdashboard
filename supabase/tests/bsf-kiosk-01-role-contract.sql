@@ -155,3 +155,11 @@ END
 $do$;
 
 ROLLBACK;
+
+-- T06: Der Rollenvertrag muss auch bei konkurrierenden Transaktionen gelten.
+-- Der Shell-Test nutzt ausschließlich die disposable lokale CI-Datenbank.
+\! bash supabase/tests/bsf-kiosk-01-role-concurrency.sh
+\if :SHELL_ERROR
+  \echo 'FAIL T06: concurrent kiosk role exclusivity regression'
+  SELECT 1 / 0;
+\endif
