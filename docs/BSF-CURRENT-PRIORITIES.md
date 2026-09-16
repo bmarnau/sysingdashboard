@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-09-15  
+Stand: 2026-09-16  
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
@@ -30,41 +30,45 @@ Kundenverantwortung, `Meine Kunden` und die getrennte Managementsicht sind abges
 
 Issue #103 ist geschlossen. Arbeitspaket-Kategorien sind als optionale systemhausweite Stammdaten umgesetzt. Der Merge liegt auf `main`; Post-Merge Security, vollständige CI, E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate sind PASS.
 
-### BSF-KIOSK-01 / #135 — IMPLEMENTIERT / FINALABNAHME BLOCKIERT AUF KORREKTEM SUPABASE-KONTEXT + POST-MIGRATION-ADVISOR
+### BSF-KIOSK-01 / #135 — IMPLEMENTIERT / ZIELMIGRATION ANGEWENDET / FINALABNAHME OFFEN
 
-Der Info-Kiosk-Demo-Pilot ist auf Draft-PR #141 implementiert.
+Der Info-Kiosk-Demo-Pilot ist auf Draft-PR #141 implementiert. Der vollständige Kiosk-Migrationssatz wurde nach ausdrücklicher Freigabe am 2026-09-16 kontrolliert auf die verbundene Sysingdashboard-Zieldatenbank angewendet.
 
-Aktueller Exact Head:
+Aktueller code-tragender Exact Head vor der laufenden Dokumentationssynchronisierung:
 
-`18347399d9948c79d2cc392277f717ec22c3cd1d`
+`2e9eaf126618296d5514c02aabea6e81aed1b16d`
 
 Nachweise auf exakt diesem Head:
 
-- Security #766 / Run `34931202221`: **PASS**
-- CI #772 / Run `34931202172`: **PASS**
+- Security #788 / Run `35062168459`: **PASS**
+- CI #794 / Run `35062168406`: **PASS**
 - Static / Prettier / ESLint / TypeScript / RBAC-Matrix / Docs / Projektmanifest: **PASS**
-- Unit & Components, Backend, API, RBAC & Security: **PASS**
-- Import/Export, Backup/Restore, Production Build: **PASS**
+- Database Schema Drift mit vollständigem Migration-Rebuild und Kiosk-DB-Vertrag T00–T05: **PASS**
+- Unit & Components: **118 Testdateien / 824 Tests PASS / 4 TODO**
+- Backend, API, RBAC & Security, Import/Export, Backup/Restore und Production Build: **PASS**
 - Playwright E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate: **PASS**
-- branch-genauer Lovable Runtime-/Visual-Check auf dem produktlogischen Implementierungs-Head: **PASS**
+- frühere branch-genaue Lovable Runtime-/Visual-Prüfung des Kiosk-Implementierungsstands: **PASS**
 
-Wichtiger Governance-Befund:
+Zusätzliche Endabnahmebefunde wurden vor dem ersten Kiosk-Betrieb behoben:
 
-- Repository `supabase/config.toml`: `zffimqwnrsuzuozsgnlc`
-- aktuell verfügbarer Supabase-Connector: `ondriolofnxpuockhxrc`
-- read-only verifiziert: Connector-Projekt enthält kein `public.app_role`, keine erwarteten AVKK-/Shared-Projection-Objekte und ist **nicht** die Sysingdashboard-Datenbank.
+- `public.has_permission(uuid,text)` wäre durch die ursprüngliche Kiosk-Migration unbeabsichtigt `SECURITY DEFINER` geworden. T00 reproduzierte den Fehler; die forward-only Migration `20260916052000_bsf_kiosk_01_preserve_permission_security_invoker.sql` stellt den bestehenden `SECURITY INVOKER`-Vertrag sicher.
+- Die reale Admin-Provisionierung hätte wegen der automatisch vergebenen Bootstrap-Rolle `viewer` am Kiosk-Exklusivitätstrigger scheitern können. RED-Test `128e59e...`, GREEN-Fix `2e9eaf...`; die Provisionierung ersetzt ausschließlich den erwarteten `viewer`-Bootstrapzustand und bricht bei jeder Abweichung fail-closed ab.
 
-Advisor-Ergebnisse von `ondriolofnxpuockhxrc` sind deshalb kein Sysingdashboard-Abnahmenachweis.
+Read-only Zielnachweis nach der kontrollierten Migration:
 
-Vor FINAL PASS/DONE ist erforderlich:
+- Rolle `kiosk`: **vorhanden**,
+- `public.enforce_kiosk_role_exclusive()`: **vorhanden**,
+- Exklusivitäts-Trigger auf `public.user_roles`: **vorhanden**,
+- `public.has_permission(uuid,text)`: weiterhin **SECURITY INVOKER** (`prosecdef=false`).
 
-1. korrekten Supabase-Kontext `zffimqwnrsuzuozsgnlc` oder eine eindeutig davon abgeleitete kontrollierte Staging-Umgebung bereitstellen,
-2. Kiosk-Migrationen dort nur nach gesonderter Freigabe anwenden,
-3. Rollen-/Permission-/Exklusivitätsvertrag real prüfen,
-4. offiziellen Security Advisor dort read-only ausführen,
-5. keine ERROR / CRITICAL / HIGH und keine neuen WARN gegenüber der historisch dokumentierten SEC-01-Baseline nachweisen.
+Der frühere Connector-Mismatch bleibt nur eine Werkzeuggrenze: Der direkt verfügbare Supabase-Connector zeigt nicht auf die maßgebliche Sysingdashboard-Zielinstanz und wird deshalb nicht für den formalen Advisor-Nachweis verwendet. Er blockiert die bereits ausgeführte Zielmigration nicht mehr.
 
-PR #141 bleibt Draft. Kein Merge, Deploy oder reale Sysingdashboard-DB-Migration ist erfolgt. Abschlussnachweis: `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md`.
+Vor FINAL PASS/DONE sind noch zwei externe Abnahmen erforderlich:
+
+1. offiziellen **Post-Migration Security Advisor** auf genau der migrierten Sysingdashboard-Zielumgebung read-only ausführen und keine neuen Findings gegenüber der dokumentierten SEC-01-Baseline nachweisen,
+2. aktuellen Exact Head im Lovable-Feature-Branch read-only verifizieren und den Preview für Login, `/kiosk`, Admin-Provisionierung, Demo-Daten, Logout, Full-HD und Runtime-Fehlerfreiheit abnehmen.
+
+PR #141 bleibt Draft. Kein Merge und kein Publish/Deploy ist erfolgt. Abschlussnachweis: `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md`.
 
 ### GDS-01 / #142 — VERBINDLICH GEPLANTER QUERSCHNITTSBAUSTEIN
 
@@ -84,7 +88,7 @@ GDS-01 ist **kein neuer Hauptsprint**. KIOSK-01 wird nicht rückwirkend erweiter
 
 ### BSF-03A / #106 — READY / NEXT-FACHSCOPE
 
-Die Projektmanager-Leistungssicht ist nach formaler KIOSK-01-Endabnahme der nächste fachliche Datensprint. Sie wird nicht vorgezogen, solange der korrekte Post-Migration-Advisor von KIOSK-01 offen ist.
+Die Projektmanager-Leistungssicht ist nach formaler KIOSK-01-Endabnahme der nächste fachliche Datensprint. Sie wird nicht vorgezogen, solange Post-Migration-Advisor und aktueller Lovable-Exact-Head-Preview von KIOSK-01 offen sind.
 
 BSF-03A startet mit GDS-01 V1 als reproduzierbarer Testbasis. Controlling-Summen, Filter, Trend und Drill-down müssen gegen unabhängige Golden Expected Results PASS sein.
 
@@ -123,7 +127,7 @@ Golden-Dataset-Grundregeln:
 1. **BSF-02 / BSF-02C — DONE**
 2. **BSF-03 — DONE**
 3. **BSF-03D / #103 — DONE**
-4. **BSF-KIOSK-01 / #135 — IMPLEMENTIERT / KORREKTER POST-MIGRATION-ADVISOR OFFEN**
+4. **BSF-KIOSK-01 / #135 — IMPLEMENTIERT / ZIELMIGRATION PASS / POST-MIGRATION-ADVISOR + LOVABLE-EXACT-HEAD-PREVIEW OFFEN**
 5. **BSF-03A / #106 — READY / NEXT-FACHSCOPE NACH KIOSK-01; START MIT GDS-01 V1**
 6. **BSF-KIOSK-02 / #136 — GEPLANT; Golden-Vergleich für interne KPIs**
 7. **BSF-03B / #107 — GEPLANT; Golden Expected Result Leistungsnachweis ergänzen**
@@ -291,4 +295,4 @@ Der Golden Dataset verwendet dieselbe fachliche Identitätslogik, aber ausschlie
 
 ## Fachlicher roter Faden
 
-`BSF-03D DONE → KIOSK-01 korrekter POST-MIGRATION-ADVISOR → KIOSK-01 FINAL PASS → BSF-03A + GDS-01 V1 → KIOSK-02 → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL + Golden-Regression → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
+`BSF-03D DONE → KIOSK-01 ZIELMIGRATION PASS → KIOSK-01 POST-MIGRATION-ADVISOR + LOVABLE-EXACT-HEAD-PREVIEW → KIOSK-01 FINAL PASS → BSF-03A + GDS-01 V1 → KIOSK-02 → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL + Golden-Regression → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
