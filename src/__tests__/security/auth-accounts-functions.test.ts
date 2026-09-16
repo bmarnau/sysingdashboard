@@ -29,6 +29,13 @@ function fnBlock(name: string): string {
   return FUNCTIONS.slice(start, next === -1 ? undefined : next);
 }
 
+function helperBlock(name: string): string {
+  const start = HELPERS.indexOf(`export async function ${name}(`);
+  expect(start).toBeGreaterThan(-1);
+  const next = HELPERS.indexOf("\nexport async function ", start + 10);
+  return HELPERS.slice(start, next === -1 ? undefined : next);
+}
+
 const PRIVILEGED_FNS = [
   "getAuthBackendStatus",
   "listAuthAccounts",
@@ -74,6 +81,16 @@ describe("Admin-Serverfunktionen für Auth-Konten", () => {
     expect(block).toContain("createKioskAccount");
     expect(HELPERS).toContain('role: "kiosk"');
     expect(HELPERS).toContain("auth.admin.deleteUser");
+  });
+
+  it("should_removeBootstrapViewer_beforeAssigningKioskRole", () => {
+    const block = helperBlock("createKioskAccount");
+    const viewerDelete = block.indexOf('.eq("role", "viewer")');
+    const kioskInsert = block.indexOf('.from("user_roles").insert');
+
+    expect(viewerDelete).toBeGreaterThan(-1);
+    expect(kioskInsert).toBeGreaterThan(-1);
+    expect(viewerDelete).toBeLessThan(kioskInsert);
   });
 
   it("should_neverAuditOrReturnKioskPassword", () => {
