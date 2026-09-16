@@ -1,0 +1,94 @@
+name: Temporary Kiosk Schema Snapshot Sync
+
+on:
+  push:
+    branches:
+      - feat/bsf-kiosk-01-demo-pilot
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify controlled starting point
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "feat/bsf-kiosk-01-demo-pilot"
+          test "$(git rev-parse HEAD^)" = "5b0107f13f1d904e7c4d1202a31a6e89ab6de835"
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.117.0
+
+      - name: Start disposable local Supabase
+        run: supabase start >/dev/null
+
+      - name: Rebuild from migrations
+        run: bun run db:schema:rebuild
+
+      - name: Verify Kiosk database contract
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -v ON_ERROR_STOP=1 \
+            -f supabase/tests/bsf-kiosk-01-role-contract.sql
+
+      - name: Generate canonical candidates
+        run: |
+          mkdir -p supabase/schema
+          bun run db:schema:snapshot
+          bun run db:types:generate
+
+      - name: Verify deterministic generated hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          schema_blob="$(git hash-object supabase/schema/public-schema.generated.sql)"
+          types_blob="$(git hash-object src/integrations/supabase/types.generated.ts)"
+          echo "schema_blob=${schema_blob}"
+          echo "types_blob=${types_blob}"
+          test "${schema_blob}" = "3d21e4d3358167ff3ec73d7adf6ad55bfcf91857"
+          test "${types_blob}" = "9bf56bc62711cf324eff059a256a4c8748faff86"
+          cmp -s src/integrations/supabase/types.generated.ts src/integrations/supabase/types.ts
+
+      - name: Synchronize schema SOT and prove drift closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp supabase/schema/public-schema.generated.sql supabase/schema/public-schema.sql
+          bun run db:schema:check
+          git diff --check
+          test "$(git diff --name-only)" = "supabase/schema/public-schema.sql"
+          test "$(git hash-object supabase/schema/public-schema.sql)" = "3d21e4d3358167ff3ec73d7adf6ad55bfcf91857"
+          git diff --numstat -- supabase/schema/public-schema.sql
+
+      - name: Commit generated schema snapshot only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add supabase/schema/public-schema.sql
+          test "$(git diff --cached --name-only)" = "supabase/schema/public-schema.sql"
+          git commit -m "chore(db): sync generated schema snapshot"
+          git push origin HEAD:feat/bsf-kiosk-01-demo-pilot
+
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup >/dev/null 2>&1 || true
