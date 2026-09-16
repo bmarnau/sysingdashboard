@@ -7,6 +7,23 @@
 
 BEGIN;
 
+-- T00: KIOSK-01 darf den bestehenden Security-Invoker-Vertrag der zentralen
+-- Permission-Funktion nicht auf SECURITY DEFINER zuruecksetzen.
+DO $do$
+DECLARE
+  v_prosecdef boolean;
+BEGIN
+  SELECT p.prosecdef
+  INTO v_prosecdef
+  FROM pg_proc p
+  WHERE p.oid = 'public.has_permission(uuid,text)'::regprocedure;
+
+  IF v_prosecdef THEN
+    RAISE EXCEPTION 'FAIL T00: has_permission ist unerwartet SECURITY DEFINER';
+  END IF;
+END
+$do$;
+
 -- Eine komplett leere, aus Migrationen rekonstruierte Datenbank weist dem
 -- ersten auth.users-Datensatz absichtlich systemadministrator zu. Dieser
 -- synthetische Guard bleibt waehrend des Vertrags bestehen, damit die
