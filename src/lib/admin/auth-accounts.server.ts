@@ -207,6 +207,30 @@ export async function createKioskAccount(
     } as never);
     if (profileError) throw new Error("Kiosk-Profil konnte nicht angelegt werden.");
 
+    // `on_auth_user_created` vergibt synchron die Bootstraprolle `viewer`.
+    // Kiosk ist DB-seitig exklusiv; deshalb ersetzen wir ausschließlich genau
+    // diesen erwarteten Bootstrapzustand und brechen bei jeder Abweichung ab.
+    const { data: bootstrapRoles, error: bootstrapRolesError } = await admin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    if (bootstrapRolesError) {
+      throw new Error("Kiosk-Bootstraprolle konnte nicht geprüft werden.");
+    }
+    const roles = ((bootstrapRoles ?? []) as { role: string }[]).map((entry) => entry.role);
+    if (roles.length !== 1 || roles[0] !== "viewer") {
+      throw new Error("Kiosk-Konto hat einen unerwarteten Bootstrap-Rollenstatus.");
+    }
+
+    const { error: bootstrapRoleDeleteError } = await admin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", userId)
+      .eq("role", "viewer");
+    if (bootstrapRoleDeleteError) {
+      throw new Error("Kiosk-Bootstraprolle konnte nicht ersetzt werden.");
+    }
+
     const { error: roleError } = await admin.from("user_roles").insert({
       user_id: userId,
       role: "kiosk",
