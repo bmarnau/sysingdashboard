@@ -88,6 +88,16 @@ export const Route = createFileRoute("/_authenticated")({
         if (isRedirect(statusErr)) throw statusErr;
       }
 
+      // Resilienz: Ein transienter RPC-/Netzwerkfehler darf eine gültige
+      // Session NICHT invalidieren (analog zu `is_account_active`). In diesem
+      // Fall gilt eine neutrale Policy: keine Kiosk-Umleitung, Idle-Logout an.
+      // Sicherheitsgrenze bleibt serverseitig (RLS + requireSupabaseAuth).
+      let kioskSessionPolicy = {
+        kioskMode: false,
+        redirectTo: null,
+        idleLogoutEnabled: true,
+      } as ReturnType<typeof resolveKioskSessionPolicy>;
+
       const { data: hasKioskView, error: kioskPermissionError } = await result.client.rpc(
         "has_permission",
         {
@@ -95,17 +105,12 @@ export const Route = createFileRoute("/_authenticated")({
           _perm: "kiosk.view",
         },
       );
-      if (kioskPermissionError) {
-        throw redirect({
-          to: "/auth",
-          search: { redirect: safeInternalTarget, reason: "unavailable" },
+      if (!kioskPermissionError) {
+        kioskSessionPolicy = resolveKioskSessionPolicy({
+          pathname: location.pathname,
+          hasKioskView: hasKioskView === true,
         });
       }
-
-      const kioskSessionPolicy = resolveKioskSessionPolicy({
-        pathname: location.pathname,
-        hasKioskView: hasKioskView === true,
-      });
       if (kioskSessionPolicy.redirectTo) {
         throw redirect({ href: kioskSessionPolicy.redirectTo });
       }
