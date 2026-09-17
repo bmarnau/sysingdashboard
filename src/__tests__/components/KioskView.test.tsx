@@ -184,7 +184,9 @@ describe("KioskView", () => {
 
     const operations = screen.getByRole("heading", { name: "Operative Arbeit" }).closest("section");
     expect(operations).not.toBeNull();
-    expect(within(operations!).getByRole("heading", { name: "Urlaub (Mitarbeiter)" })).toBeVisible();
+    expect(
+      within(operations!).getByRole("heading", { name: "Urlaub (Mitarbeiter)" }),
+    ).toBeVisible();
     expect(within(operations!).getByText("Diese Woche im Urlaub")).toBeVisible();
     expect(within(operations!).getByText("Nächste Woche im Urlaub")).toBeVisible();
     expect(within(operations!).getByText("Abrechenbarer Anteil")).toBeVisible();
