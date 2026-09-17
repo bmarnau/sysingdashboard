@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-09-15"
+lastUpdated: "2026-09-17"
 
 project:
   name: "Sysing Dashboard"
@@ -49,7 +49,7 @@ architecturePrinciples:
     rule: "Kundenidentität und Kundenscope sind providerneutral an das Systemhaus gebunden und nicht an einen Microsoft-Tenant oder anderen Provider."
 
 versions:
-  dashboard: "1.62.0"
+  dashboard: "1.63.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -65,7 +65,7 @@ currentState:
   nextSprint: "BSF-03A"
   previousSprint: "BSF-03D"
   previousSprintStatus: "completed"
-  releaseReadiness: "passed"
+  releaseReadiness: "blocked"
   testsPassing: 704
   qualityGates:
     typecheck: "passed"
@@ -696,9 +696,9 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release; volatile report details remain CI artifacts."
 
 releaseManagement:
-  currentRelease: "1.62.0"
-  stage: "production"
-  status: "passed"
+  currentRelease: "1.63.0"
+  stage: "preview"
+  status: "blocked"
   releaseEvidence:
     - "CHANGELOG.md"
     - "docs/PROJECT-GOVERNANCE.md"
