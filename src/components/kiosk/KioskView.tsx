@@ -109,12 +109,6 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
               </div>
             </div>
           </div>
-          <div className="mt-3 border-t border-kiosk-line pt-2 xl:hidden" aria-hidden="true">
-            <h2 className="text-xl font-bold text-kiosk-ink">Operatives Management-Wallboard</h2>
-            <p className="text-xs font-medium text-kiosk-copy">
-              Read-only | Auto-Refresh | Systemhaus
-            </p>
-          </div>
         </header>
 
         {securityBlocked ? (
