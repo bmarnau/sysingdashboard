@@ -169,7 +169,7 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
           UNBEKANNT
         </div>
       ) : null}
-       <div className="grid grid-cols-3 gap-3 2xl:gap-2">
+      <div className="grid grid-cols-3 gap-3 2xl:gap-2">
         {statusMetrics.map((metric) => (
           <MetricTile
             key={`${domain.id}-${metric.label}`}
