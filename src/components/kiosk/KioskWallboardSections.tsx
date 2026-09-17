@@ -1,4 +1,5 @@
 import { AlertTriangle, CheckCircle2, CircleGauge, Clock3, ServerCog } from "lucide-react";
+import type { ReactNode } from "react";
 import type {
   KioskDomainSnapshot,
   KioskLevel,
@@ -159,7 +160,7 @@ function Support({ domain }: { domain: KioskDomainSnapshot }) {
   );
 }
 
-function PanelHeader({ title, icon }: { title: string; icon: React.ReactNode }) {
+function PanelHeader({ title, icon }: { title: string; icon: ReactNode }) {
   return (
     <div className="mb-4 flex items-center gap-3 border-b border-kiosk-border pb-3">
       <span className="grid size-9 shrink-0 place-items-center rounded-md bg-kiosk-accent-soft text-kiosk-accent">
