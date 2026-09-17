@@ -15,6 +15,7 @@ Format pro Eintrag:
 
 ## 1.63.0 - 2026-09-17
 
+- **Info-Kiosk Erweiterungsbereich (BSF-KIOSK-01)**: Die vorhandene Restfläche unter der aggregierten Systemverfügbarkeit ist als unsichtbarer, höhenneutraler Layout-Slot für eine spätere freigegebene read-only Betriebsinformation abgegrenzt; heute entstehen weder Datenvertrag, Datenquelle noch sichtbare Platzhalter.
 - **Info-Kiosk Layout-Abschluss (BSF-KIOSK-01)**: Die „Operative Steuerungsübersicht“ nutzt bei Full HD den verfügbaren vertikalen Raum kompakter, ohne Kennzahlen oder Visualisierungen zu entfernen; die sekundäre Ansicht bleibt responsiv nutzbar.
 - **Info-Kiosk Informationsdichte (BSF-KIOSK-01)**: Der kompakte Kopf zeigt wieder Datenstand und 60-Sekunden-Refresh. Projekte und Arbeitspakete erhalten Statusanteile mit Fortschrittsbalken, die Infrastruktur zeigt aggregierte Systemverfügbarkeit und die vier kompakten Support-KPIs feste synthetische Mini-Verläufe ohne Mailinhalte oder personenbezogene Daten.
 - **Info-Kiosk Wallboard-Finish (BSF-KIOSK-01)**: Die bestehende Read-only-Ansicht ist für Full-HD-Fernlesbarkeit verdichtet und zeigt operative Arbeit, Infrastruktur und Support in drei stabilen Hauptspalten. Gewöhnliche Mengen bleiben neutral; Ampelfarben kennzeichnen ausschließlich Status und Risiken. Der synthetische Referenzdatensatz nutzt deutsche Bezeichnungen, Urlaubsanzahlen ohne personenbezogene Details, Infrastruktur-Bereichswerte sowie vier Support-Kennzahlen.

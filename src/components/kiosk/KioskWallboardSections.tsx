@@ -163,7 +163,7 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
   );
 
   return (
-    <div className="flex flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
       {domain.level === "unknown" ? (
         <div className="mb-3 rounded-md border border-kiosk-border bg-kiosk-muted px-3 py-2 text-sm font-bold text-kiosk-subtle">
           UNBEKANNT
@@ -231,8 +231,13 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
           </dl>
         </div>
       ) : null}
+      <KioskExtensionArea />
     </div>
   );
+}
+
+function KioskExtensionArea() {
+  return <div aria-hidden="true" data-kiosk-extension-area="reserved" className="min-h-0 flex-1" />;
 }
 
 function Support({ domain }: { domain: KioskDomainSnapshot }) {
@@ -324,7 +329,7 @@ export function KioskWallboardSections({ domains }: { domains: Map<string, Kiosk
       data-layout="three-column"
       className="grid flex-1 gap-4 xl:grid-cols-[1.16fr_1fr_0.78fr] 2xl:gap-3"
     >
-      <section className="rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm 2xl:p-3">
+      <section className="flex min-h-0 flex-col rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm 2xl:p-3">
         <PanelHeader
           title="Operative Arbeit"
           icon={<CircleGauge className="size-5" aria-hidden="true" />}

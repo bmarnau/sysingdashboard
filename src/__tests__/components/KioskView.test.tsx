@@ -231,6 +231,17 @@ describe("KioskView", () => {
     expect(
       within(within(infrastructure!).getByText("Nicht verfügbar").closest("div")!).getByText("2"),
     ).toBeVisible();
+    const extensionArea = infrastructure?.querySelector('[data-kiosk-extension-area="reserved"]');
+    const systemAvailability = within(infrastructure!).getByText(
+      "Verfügbarkeit (Systeme)",
+    ).parentElement;
+    expect(extensionArea).toBeInTheDocument();
+    expect(extensionArea).toHaveAttribute("aria-hidden", "true");
+    expect(extensionArea).toBeEmptyDOMElement();
+    expect(systemAvailability?.nextElementSibling).toBe(extensionArea);
+    for (const placeholder of ["Coming soon", "Demnächst", "Weitere Daten folgen"]) {
+      expect(within(infrastructure!).queryByText(placeholder)).not.toBeInTheDocument();
+    }
 
     const support = screen.getByRole("heading", { name: "Support-Postfach" }).closest("section");
     expect(support).not.toBeNull();
