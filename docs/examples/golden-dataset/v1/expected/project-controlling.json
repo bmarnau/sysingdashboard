@@ -1,0 +1,197 @@
+{
+  "summary": {
+    "activities": 8,
+    "customers": 2,
+    "projects": 3,
+    "workPackages": 5,
+    "totalHours": 25,
+    "billableHours": 20,
+    "nonBillableHours": 5,
+    "billableQuotePercent": 80
+  },
+  "cases": {
+    "customerA": {
+      "filters": {
+        "systemhouseId": "golden-systemhouse-01",
+        "customerId": "golden-customer-a"
+      },
+      "activities": 5,
+      "totalHours": 15,
+      "billableHours": 12,
+      "nonBillableHours": 3,
+      "billableQuotePercent": 80
+    },
+    "customerB": {
+      "filters": {
+        "systemhouseId": "golden-systemhouse-01",
+        "customerId": "golden-customer-b"
+      },
+      "activities": 3,
+      "totalHours": 10,
+      "billableHours": 8,
+      "nonBillableHours": 2,
+      "billableQuotePercent": 80
+    },
+    "billableOnly": {
+      "filters": {
+        "billable": true
+      },
+      "activities": 5,
+      "totalHours": 20
+    },
+    "nonBillableOnly": {
+      "filters": {
+        "billable": false
+      },
+      "activities": 3,
+      "totalHours": 5
+    },
+    "categoryRegelbetrieb": {
+      "filters": {
+        "systemhouseId": "golden-systemhouse-01",
+        "categoryState": "known",
+        "categoryKey": "regelbetrieb"
+      },
+      "activities": 2,
+      "totalHours": 6,
+      "billableHours": 4,
+      "nonBillableHours": 2
+    },
+    "categoryNone": {
+      "filters": {
+        "systemhouseId": "golden-systemhouse-01",
+        "categoryState": "none"
+      },
+      "activities": 1,
+      "totalHours": 3
+    },
+    "categoryInactive": {
+      "filters": {
+        "systemhouseId": "golden-systemhouse-01",
+        "categoryState": "inactive",
+        "categoryKey": "legacy-alt"
+      },
+      "activities": 1,
+      "totalHours": 1
+    },
+    "categoryLegacyNotObserved": {
+      "filters": {
+        "systemhouseId": "golden-systemhouse-01",
+        "categoryState": "unobserved"
+      },
+      "activities": 1,
+      "totalHours": 5
+    },
+    "categoryUnknown": {
+      "filters": {
+        "systemhouseId": "golden-systemhouse-01",
+        "categoryState": "unknown",
+        "categoryKey": "unknown-golden-category"
+      },
+      "activities": 3,
+      "totalHours": 10
+    },
+    "projectA1": {
+      "filters": {
+        "systemhouseId": "golden-systemhouse-01",
+        "customerId": "golden-customer-a",
+        "projectId": "golden-project-a1"
+      },
+      "activities": 3,
+      "totalHours": 9,
+      "billableHours": 7,
+      "nonBillableHours": 2
+    },
+    "workPackageA1": {
+      "filters": {
+        "systemhouseId": "golden-systemhouse-01",
+        "customerId": "golden-customer-a",
+        "projectId": "golden-project-a1",
+        "workPackageId": "golden-wp-a1"
+      },
+      "activities": 2,
+      "totalHours": 6,
+      "billableHours": 4,
+      "nonBillableHours": 2
+    }
+  },
+  "trend": [
+    {
+      "date": "2026-09-01",
+      "totalHours": 11,
+      "billableHours": 9,
+      "nonBillableHours": 2
+    },
+    {
+      "date": "2026-09-02",
+      "totalHours": 3,
+      "billableHours": 3,
+      "nonBillableHours": 0
+    },
+    {
+      "date": "2026-09-03",
+      "totalHours": 1,
+      "billableHours": 0,
+      "nonBillableHours": 1
+    },
+    {
+      "date": "2026-09-04",
+      "totalHours": 5,
+      "billableHours": 3,
+      "nonBillableHours": 2
+    },
+    {
+      "date": "2026-09-05",
+      "totalHours": 5,
+      "billableHours": 5,
+      "nonBillableHours": 0
+    }
+  ],
+  "drillDown": [
+    {
+      "customerId": "golden-customer-a",
+      "projects": [
+        {
+          "projectId": "golden-project-a1",
+          "workPackages": [
+            {
+              "workPackageId": "golden-wp-a1",
+              "activityIds": ["golden-act-01", "golden-act-02"]
+            },
+            {
+              "workPackageId": "golden-wp-a2",
+              "activityIds": ["golden-act-03"]
+            }
+          ]
+        },
+        {
+          "projectId": "golden-project-a2",
+          "workPackages": [
+            {
+              "workPackageId": "golden-wp-a3",
+              "activityIds": ["golden-act-04"]
+            },
+            {
+              "workPackageId": "golden-wp-a4",
+              "activityIds": ["golden-act-08"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "customerId": "golden-customer-b",
+      "projects": [
+        {
+          "projectId": "golden-project-b1",
+          "workPackages": [
+            {
+              "workPackageId": "golden-wp-b1",
+              "activityIds": ["golden-act-05", "golden-act-06", "golden-act-07"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "customers": [
+    {
+      "id": "golden-customer-a",
+      "systemhouseId": "golden-systemhouse-01",
+      "name": "Golden Kunde A"
+    },
+    {
+      "id": "golden-customer-b",
+      "systemhouseId": "golden-systemhouse-01",
+      "name": "Golden Kunde B"
+    }
+  ]
+}

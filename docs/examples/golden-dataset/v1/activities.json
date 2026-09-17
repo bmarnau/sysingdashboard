@@ -1,0 +1,100 @@
+{
+  "activities": [
+    {
+      "id": "golden-act-01",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a1",
+      "workPackageId": "golden-wp-a1",
+      "date": "2026-09-01",
+      "title": "Golden Tätigkeit 01",
+      "durationHours": 4,
+      "billable": true,
+      "billingStatus": "offen"
+    },
+    {
+      "id": "golden-act-02",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a1",
+      "workPackageId": "golden-wp-a1",
+      "date": "2026-09-01",
+      "title": "Golden Tätigkeit 02",
+      "durationHours": 2,
+      "billable": false,
+      "billingStatus": "nicht_abrechenbar"
+    },
+    {
+      "id": "golden-act-03",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a1",
+      "workPackageId": "golden-wp-a2",
+      "date": "2026-09-02",
+      "title": "Golden Tätigkeit 03",
+      "durationHours": 3,
+      "billable": true,
+      "billingStatus": "offen"
+    },
+    {
+      "id": "golden-act-04",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a2",
+      "workPackageId": "golden-wp-a3",
+      "date": "2026-09-03",
+      "title": "Golden Tätigkeit 04",
+      "durationHours": 1,
+      "billable": false,
+      "billingStatus": "nicht_abrechenbar"
+    },
+    {
+      "id": "golden-act-05",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-b",
+      "projectId": "golden-project-b1",
+      "workPackageId": "golden-wp-b1",
+      "date": "2026-09-01",
+      "title": "Golden Tätigkeit 05",
+      "durationHours": 5,
+      "billable": true,
+      "billingStatus": "offen"
+    },
+    {
+      "id": "golden-act-06",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-b",
+      "projectId": "golden-project-b1",
+      "workPackageId": "golden-wp-b1",
+      "date": "2026-09-04",
+      "title": "Golden Tätigkeit 06",
+      "durationHours": 2,
+      "billable": false,
+      "billingStatus": "nicht_abrechenbar"
+    },
+    {
+      "id": "golden-act-07",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-b",
+      "projectId": "golden-project-b1",
+      "workPackageId": "golden-wp-b1",
+      "date": "2026-09-04",
+      "title": "Golden Tätigkeit 07",
+      "durationHours": 3,
+      "billable": true,
+      "billingStatus": "abgerechnet"
+    },
+    {
+      "id": "golden-act-08",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a2",
+      "workPackageId": "golden-wp-a4",
+      "date": "2026-09-05",
+      "title": "Golden Tätigkeit 08",
+      "durationHours": 5,
+      "billable": true,
+      "billingStatus": "offen"
+    }
+  ]
+}

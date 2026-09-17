@@ -1,0 +1,25 @@
+{
+  "catalogs": [
+    {
+      "systemhouseId": "golden-systemhouse-01",
+      "catalogKey": "workpackage.category",
+      "values": [
+        {
+          "key": "regelbetrieb",
+          "label": "Regelbetrieb",
+          "active": true
+        },
+        {
+          "key": "stoerung",
+          "label": "Störung",
+          "active": true
+        },
+        {
+          "key": "legacy-alt",
+          "label": "Legacy Alt",
+          "active": false
+        }
+      ]
+    }
+  ]
+}
