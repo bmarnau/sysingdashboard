@@ -30,6 +30,25 @@ Fall fest und ist damit die Prüfliste der manuellen Abnahme. Die Abdeckung
 selbst ist maschinell abgesichert
 (`src/__tests__/lib/demo-data/avkk-dataset.test.ts`).
 
+### Info-Kiosk (`src/lib/kiosk/kiosk-demo-dataset.ts`)
+
+Der separat versionierte Kiosk-Datensatz `1.0.0` speist das helle operative
+Management-Wallboard. Die Referenzdatei
+`docs/examples/kiosk-demo-dataset-v1.json` enthält ausschließlich synthetische,
+aggregierte Werte:
+
+- Projekte, Arbeitspakete und Tätigkeitsstunden mit Statusverdichtung
+- Mitarbeiterurlaub als reine Anzahl für diese und nächste Woche
+- abrechenbarer Anteil als Prozentwert
+- Infrastrukturstatus für Server, Backup, Netzwerk, Firewall, Internet und Cloud
+- Support-Postfach als Mengen für Gesamt, heute, gestern und älter als 24 Stunden
+
+Es werden keine personenbezogenen Daten, Gründe oder Gesundheitsdaten,
+produktiven Hostnamen, IP-Adressen oder E-Mail-Inhalte gespeichert oder
+angezeigt. Der JSON-Import bleibt auf `sysing.kiosk.demo.v1`, maximal 256 KiB,
+bekannte Domänen und bekannte Statuswerte begrenzt; unbekannte Felder werden
+abgewiesen und der letzte gültige Stand bleibt erhalten.
+
 > **Verbindliche Betriebsregel — kein Demo-Seed auf Produktivinstanzen.**
 > AVKK-Daten werden historisiert und nicht gelöscht (ADR-0026); die Rücknahme
 > legt Demofälle nur still. Eine Instanz mit eingespielten Demodaten gilt ohne
@@ -101,3 +120,5 @@ Demoinstanz oder in die Entwicklungsumgebung.
 | `src/lib/demo-data/persona-expectations.ts` | Abnahmereferenz je Person                 |
 | `src/lib/demo-data/index.ts`                | öffentliche API                           |
 | `src/components/DemoDataDialog.tsx`         | Bedienoberfläche                          |
+| `src/lib/kiosk/kiosk-demo-dataset.ts`       | synthetischer Kiosk-Datensatz             |
+| `src/components/kiosk/KioskView.tsx`        | Kiosk-Wallboard                           |

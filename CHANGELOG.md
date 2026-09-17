@@ -13,6 +13,10 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.63.0 - 2026-09-17
+
+- **Info-Kiosk als Management-Wallboard**: Helle, kompakte Drei-Spalten-Ansicht für 1920×1080 mit operativer Arbeit, aggregiertem Mitarbeiterurlaub, abrechenbarem Anteil, Infrastrukturstatus für sechs Bereiche und vier Support-Zeiträumen. Deutsche Labels und Zahlenformatierung wurden vereinheitlicht; Authentifizierung, Rollen und Datenbanksicherheit bleiben unverändert.
+
 ## 1.62.0 - 2026-09-13
 
 - **Arbeitspaket-Kategorien (BSF-03D, Issue #103)**: Arbeitspakete tragen optional genau eine Kategorie (`categoryKey`, Default „keine Kategorie“). Kategorien sind editierbare, systemhausweite Stammdaten; alle Kunden desselben Systemhauses nutzen denselben aktiven Bestand. Tags bleiben unabhängig; Status, Priorität und Abrechenbarkeit werden nicht abgeleitet.
