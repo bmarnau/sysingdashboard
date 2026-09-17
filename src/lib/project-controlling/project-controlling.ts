@@ -1,4 +1,5 @@
 import {
+  PROJECT_CONTROLLING_MAX_ACTIVITIES,
   PROJECT_CONTROLLING_MAX_DAYS,
   type ProjectControllingCompleteness,
   type ProjectControllingFilters,
@@ -123,6 +124,10 @@ export class ProjectControllingService {
     ]);
 
     const rows = repositoryRows.filter((row) => matchesFilters(row, filters));
+
+    if (rows.length > PROJECT_CONTROLLING_MAX_ACTIVITIES) {
+      return { ok: false, error: "PROJECT_CONTROLLING_TOO_MANY_ACTIVITIES" };
+    }
 
     return {
       ok: true,
