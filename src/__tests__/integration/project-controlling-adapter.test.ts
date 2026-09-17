@@ -108,7 +108,9 @@ class FakeQuery implements PromiseLike<ArrayResponse> {
   }
 
   private materialize(): FakeRow[] {
-    let rows = this.sourceRows.filter((row) => this.predicates.every((predicate) => predicate(row)));
+    let rows = this.sourceRows.filter((row) =>
+      this.predicates.every((predicate) => predicate(row)),
+    );
 
     if (this.orders.length > 0) {
       rows = [...rows].sort((left, right) => {
@@ -525,8 +527,7 @@ describe("BSF-03A Supabase project controlling adapter", () => {
     );
     const parentFilter = callsFor(calls, "shared_activity_projection").find(
       (call) =>
-        (call.method === "eq" || call.method === "in") &&
-        call.args[0] === "work_package_source_id",
+        (call.method === "eq" || call.method === "in") && call.args[0] === "work_package_source_id",
     );
     expect(parentFilter).toBeTruthy();
   });
