@@ -314,8 +314,8 @@ Mandantenablagen) ist damit geschaffen.
 Ziel: verhaltensneutrales Refactoring des Backup-/Restore-/Import-Service.
 Ergebnis: `backup-service.ts` (1083 Zeilen) aufgeteilt in dreizehn Module unter
 `src/lib/backup/`; die alte Datei bleibt als Fassade, die öffentliche
-Schnittstelle ist unverändert. Absicherung ausschließlich über die bestehende
-Regressionssuite.
+Schnittstelle ist unverändert. Secret-Filterung und Rollback sind nun isoliert
+prüfbar. Absicherung ausschließlich über die bestehende Regressionssuite.
 Bewertung: Go.
 
 ### Sprint 05D – Entwicklungstagebuch (1.46.0, 2026-08-03)
