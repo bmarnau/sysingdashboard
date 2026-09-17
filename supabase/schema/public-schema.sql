@@ -231,6 +231,8 @@ DECLARE
   v_existing_rev integer;
   v_existing_hash text;
   v_existing_publisher uuid;
+  v_cat_observed boolean;
+  v_cat_key text;
   v_obs_projects text[] := COALESCE(p_observed_project_source_ids, '{}'::text[]);
   v_obs_wps text[] := COALESCE(p_observed_work_package_source_ids, '{}'::text[]);
   v_obs_acts text[] := COALESCE(p_observed_activity_source_ids, '{}'::text[]);
@@ -269,7 +271,7 @@ BEGIN
     RAISE EXCEPTION 'bsf02c_publish_invalid: payload collections must be json arrays' USING ERRCODE = '22023';
   END IF;
 
-  -- 3) Scope- und Rechteprüfung (RLS bleibt zusätzlich aktiv)
+  -- 3) Scope- und Rechtepruefung (RLS bleibt zusaetzlich aktiv)
   IF NOT public.is_account_active(v_actor) THEN
     RAISE EXCEPTION 'bsf02c_publish_denied: account not active' USING ERRCODE = '42501';
   END IF;
@@ -364,6 +366,10 @@ BEGIN
     v_parent_source := NULLIF(btrim(COALESCE(v_item->>'project_source_id', '')), '');
     v_parent_ref := NULL;
 
+    -- Praesenz des JSON-Schluessels = beobachtet; JSON null ist explizit "keine Kategorie".
+    v_cat_observed := (v_item ? 'category_key');
+    v_cat_key := CASE WHEN v_cat_observed THEN v_item->>'category_key' ELSE NULL END;
+
     IF v_parent_status = 'linked' THEN
       IF v_parent_source IS NULL THEN
         RAISE EXCEPTION 'bsf02c_publish_invalid: linked work package requires project_source_id' USING ERRCODE = '22023';
@@ -393,12 +399,13 @@ BEGIN
     IF NOT FOUND THEN
       INSERT INTO public.shared_work_package_projection (
         systemhouse_id, customer_id, source_id, project_ref, project_source_id, parent_link_status,
-        title, legacy_client, status, priority,
+        title, legacy_client, status, priority, category_key, category_observed,
         published_by, published_at, source_revision, source_hash, is_active, withdrawn_at
       ) VALUES (
         p_systemhouse_id, p_customer_id, v_source_id, v_parent_ref, v_parent_source, v_parent_status,
         COALESCE(v_item->>'title', ''), COALESCE(v_item->>'legacy_client', ''),
         COALESCE(v_item->>'status', ''), COALESCE(v_item->>'priority', ''),
+        v_cat_key, COALESCE(v_cat_observed, false),
         v_actor, now(), 1, v_hash, true, NULL
       );
     ELSE
@@ -413,6 +420,14 @@ BEGIN
              legacy_client = COALESCE(v_item->>'legacy_client', ''),
              status = COALESCE(v_item->>'status', ''),
              priority = COALESCE(v_item->>'priority', ''),
+             category_key = CASE
+               WHEN v_cat_observed THEN v_cat_key
+               ELSE public.shared_work_package_projection.category_key
+             END,
+             category_observed = CASE
+               WHEN v_cat_observed THEN true
+               ELSE public.shared_work_package_projection.category_observed
+             END,
              published_at = now(),
              source_revision = v_existing_rev + CASE WHEN v_existing_hash IS DISTINCT FROM v_hash THEN 1 ELSE 0 END,
              source_hash = v_hash,
@@ -566,7 +581,7 @@ $$;
 ALTER FUNCTION "public"."bsf02c_publish_shared_projection_snapshot"("p_systemhouse_id" "uuid", "p_customer_id" "uuid", "p_mode" "text", "p_snapshot_complete" boolean, "p_projects" "jsonb", "p_work_packages" "jsonb", "p_activities" "jsonb", "p_observed_project_source_ids" "text"[], "p_observed_work_package_source_ids" "text"[], "p_observed_activity_source_ids" "text"[]) OWNER TO "postgres";
 
 
-COMMENT ON FUNCTION "public"."bsf02c_publish_shared_projection_snapshot"("p_systemhouse_id" "uuid", "p_customer_id" "uuid", "p_mode" "text", "p_snapshot_complete" boolean, "p_projects" "jsonb", "p_work_packages" "jsonb", "p_activities" "jsonb", "p_observed_project_source_ids" "text"[], "p_observed_work_package_source_ids" "text"[], "p_observed_activity_source_ids" "text"[]) IS 'BSF-02C Phase B2: atomarer Publish eines vollstaendigen Shared-Projection-Snapshots im User-JWT (SECURITY INVOKER, RLS bleibt aktiv).';
+COMMENT ON FUNCTION "public"."bsf02c_publish_shared_projection_snapshot"("p_systemhouse_id" "uuid", "p_customer_id" "uuid", "p_mode" "text", "p_snapshot_complete" boolean, "p_projects" "jsonb", "p_work_packages" "jsonb", "p_activities" "jsonb", "p_observed_project_source_ids" "text"[], "p_observed_work_package_source_ids" "text"[], "p_observed_activity_source_ids" "text"[]) IS 'BSF-02C/03A: atomarer Shared-Projection-Snapshot-Publish im User-JWT; SECURITY INVOKER, RLS bleibt aktiv, Kategorie rueckwaertskompatibel beobachtet.';
 
 
 
@@ -956,20 +971,21 @@ CREATE OR REPLACE FUNCTION "public"."has_permission"("_user_id" "uuid", "_perm" 
           'backup.restore','users.manage','auditlog.view',
           'avkk.view','avkk.edit','avkk.responsibility.assign',
           'avkk.management.view','referencedata.view','referencedata.manage',
-          'customer.responsibility.manage'
+          'customer.responsibility.manage','project.controlling.view'
         )) OR
         (ur.role = 'teamlead' AND _perm IN (
           'dashboard.view','documentation.view','systemstatus.view',
           'project.edit','workpackage.edit','activity.edit','azure.export',
           'avkk.view','avkk.edit','avkk.responsibility.assign',
           'avkk.management.view','referencedata.view',
-          'customer.responsibility.manage'
+          'customer.responsibility.manage','project.controlling.view'
         )) OR
         (ur.role = 'projectmanager' AND _perm IN (
           'dashboard.view','documentation.view',
           'project.edit','workpackage.edit','activity.edit','azure.export',
           'avkk.view','avkk.edit','avkk.responsibility.assign',
-          'avkk.management.view','referencedata.view'
+          'avkk.management.view','referencedata.view',
+          'project.controlling.view'
         )) OR
         (ur.role = 'engineer' AND _perm IN (
           'dashboard.view','documentation.view','workpackage.edit','activity.edit',
@@ -1608,6 +1624,8 @@ CREATE TABLE IF NOT EXISTS "public"."shared_work_package_projection" (
     "withdrawn_at" timestamp with time zone,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "category_key" "text",
+    "category_observed" boolean DEFAULT false NOT NULL,
     CONSTRAINT "shared_work_package_projection_parent_consistency_check" CHECK (((("parent_link_status" = 'linked'::"text") AND ("project_ref" IS NOT NULL)) OR (("parent_link_status" = 'none'::"text") AND ("project_ref" IS NULL)))),
     CONSTRAINT "shared_work_package_projection_parent_status_check" CHECK (("parent_link_status" = ANY (ARRAY['none'::"text", 'linked'::"text"]))),
     CONSTRAINT "shared_work_package_projection_source_id_not_empty" CHECK (("btrim"("source_id") <> ''::"text")),
@@ -1909,6 +1927,10 @@ CREATE INDEX "shared_activity_projection_scope_idx" ON "public"."shared_activity
 
 
 CREATE INDEX "shared_project_projection_scope_idx" ON "public"."shared_project_projection" USING "btree" ("systemhouse_id", "customer_id") WHERE "is_active";
+
+
+
+CREATE INDEX "shared_work_package_projection_active_category_idx" ON "public"."shared_work_package_projection" USING "btree" ("systemhouse_id", "customer_id", "category_key") WHERE "is_active";
 
 
 
