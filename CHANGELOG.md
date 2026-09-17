@@ -15,6 +15,7 @@ Format pro Eintrag:
 
 ## 1.63.0 - 2026-09-17
 
+- **Info-Kiosk Informationsdichte (BSF-KIOSK-01)**: Der kompakte Kopf zeigt wieder Datenstand und 60-Sekunden-Refresh. Projekte und Arbeitspakete erhalten Statusanteile mit Fortschrittsbalken, die Infrastruktur zeigt aggregierte Systemverfügbarkeit und die vier kompakten Support-KPIs feste synthetische Mini-Verläufe ohne Mailinhalte oder personenbezogene Daten.
 - **Info-Kiosk Wallboard-Finish (BSF-KIOSK-01)**: Die bestehende Read-only-Ansicht ist für Full-HD-Fernlesbarkeit verdichtet und zeigt operative Arbeit, Infrastruktur und Support in drei stabilen Hauptspalten. Gewöhnliche Mengen bleiben neutral; Ampelfarben kennzeichnen ausschließlich Status und Risiken. Der synthetische Referenzdatensatz nutzt deutsche Bezeichnungen, Urlaubsanzahlen ohne personenbezogene Details, Infrastruktur-Bereichswerte sowie vier Support-Kennzahlen.
 - **Scope unverändert**: Keine Änderung an Authentifizierung, Rollen, Berechtigungen, Datenbank, Migrationen, Providergrenze oder externen Integrationen; der Demo-Vertrag bleibt `sysing.kiosk.demo.v1`.
 

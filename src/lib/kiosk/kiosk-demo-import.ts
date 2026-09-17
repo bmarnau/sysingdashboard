@@ -14,6 +14,7 @@ const kioskMetricSchema = z
     label: z.string().trim().min(1).max(120),
     level: kioskLevelSchema,
     unit: z.string().trim().min(1).max(12).optional(),
+    trend: z.array(z.number().finite().nonnegative()).min(2).max(14).optional(),
   })
   .strict();
 
@@ -98,7 +99,11 @@ export function parseKioskDemoJson(
     loadedAt: now().toISOString(),
     domains: validated.snapshot.domains.map((domain) => ({
       ...domain,
-      metrics: domain.metrics.map((metric) => ({ ...metric })),
+      metrics: domain.metrics.map((metric) => ({
+        ...metric,
+        trend: metric.trend ? [...metric.trend] : undefined,
+      })),
+      rows: domain.rows?.map((row) => ({ ...row, breakdown: { ...row.breakdown } })),
     })),
   };
 }

@@ -398,11 +398,12 @@ dauerhaft sichtbar.
 Das helle Management-Wallboard gliedert sich in drei Hauptspalten:
 
 1. **Operative Arbeit** — Projekte, Arbeitspakete, Tätigkeiten,
-   abrechenbarer Anteil und Urlaubsanzahlen ohne personenbezogene Details.
-2. **Infrastruktur – Überblick** — Statussummen, Bereichsmatrix und Hinweis zur
+   Statusfortschritt, abrechenbarer Anteil und Urlaubsanzahlen ohne
+   personenbezogene Details.
+2. **Infrastruktur – Überblick** — Statussummen, Bereichsmatrix und aggregierte
    Systemverfügbarkeit ohne produktive Hostnamen oder IP-Adressen.
 3. **Support-Postfach** — Posteingang gesamt, heute, gestern und älter; nur
-   Mengen, keine Nachrichteninhalte.
+   Mengen und synthetische Demo-Trends, keine Nachrichteninhalte.
 
 Normale Mengen erscheinen auf neutralen Flächen. Grün, Amber und Rot markieren
 ausschließlich Status und Risiken. Unbekannte Werte bleiben ausdrücklich als
@@ -410,9 +411,11 @@ ausschließlich Status und Risiken. Unbekannte Werte bleiben ausdrücklich als
 
 ## Betrieb
 Die Ansicht aktualisiert den lokalen Demo-Snapshot automatisch. Datenstand,
-Datensatzversion und letzte Aktualisierung stehen in der Fußzeile. Der manuelle
-Logout bleibt jederzeit erreichbar. Das Kiosk-Konto besitzt keine Schreib-,
-Import-, Export- oder Administrationsrechte.`,
+Datensatzversion, 60-Sekunden-Refresh und letzte Aktualisierung stehen kompakt
+im Kopf. Die Support-Verläufe sind feste synthetische Präsentationswerte; es
+gibt keine Mailinhalte, personenbezogenen Angaben oder Verbindung zu Exchange
+oder Microsoft Graph. Der manuelle Logout bleibt jederzeit erreichbar. Das
+Kiosk-Konto besitzt keine Schreib-, Import-, Export- oder Administrationsrechte.`,
     relatedTopics: ["demo-data", "system-status"],
   },
   {

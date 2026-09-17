@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { KioskWallboardSections } from "@/components/kiosk/KioskWallboardSections";
 import type { KioskSnapshotState } from "@/hooks/useKioskSnapshot";
 import type { KioskSessionWatchdogStatus } from "@/hooks/useKioskSessionWatchdog";
+import { KIOSK_REFRESH_MS } from "@/lib/kiosk/kiosk-contract";
 
 export interface KioskViewProps {
   state: KioskSnapshotState;
@@ -41,7 +42,7 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
     <main className="min-h-dvh bg-kiosk-canvas p-3 text-kiosk-ink sm:p-4">
       <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] max-w-[1920px] flex-col gap-3 sm:min-h-[calc(100dvh-2rem)]">
         <header className="rounded-lg border border-kiosk-border bg-kiosk-surface px-4 py-3 shadow-sm sm:px-5">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+          <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_auto]">
             <div className="min-w-0">
               <p className="text-xs font-bold uppercase text-kiosk-subtle">SYSING / SYSTEMHAUS</p>
               <div className="mt-1 flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
@@ -51,18 +52,32 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
               <p className="text-sm font-medium text-kiosk-subtle">{formatDayDate(now)}</p>
             </div>
 
-            <div className="flex shrink-0 flex-wrap items-center justify-end gap-3">
-              <div className="rounded-md border border-kiosk-warning-border bg-kiosk-warning-soft px-3 py-2 text-sm font-bold text-kiosk-warning">
-                DEMO-DATEN — KEINE LIVE-DATEN
+            <div className="grid shrink-0 justify-items-start gap-2 lg:justify-items-end">
+              <div className="flex flex-wrap items-center justify-end gap-3">
+                <div className="rounded-md border border-kiosk-warning-border bg-kiosk-warning-soft px-3 py-2 text-sm font-bold text-kiosk-warning">
+                  DEMO-DATEN — KEINE LIVE-DATEN
+                </div>
+                <Button
+                  variant="outline"
+                  className="bg-kiosk-surface text-kiosk-ink"
+                  onClick={onLogout}
+                  aria-label="Abmelden"
+                >
+                  <LogOut className="mr-2 size-4" aria-hidden="true" /> Abmelden
+                </Button>
               </div>
-              <Button
-                variant="outline"
-                className="bg-kiosk-surface text-kiosk-ink"
-                onClick={onLogout}
-                aria-label="Abmelden"
-              >
-                <LogOut className="mr-2 size-4" aria-hidden="true" /> Abmelden
-              </Button>
+              <div className="grid grid-cols-1 gap-x-4 gap-y-0.5 text-left text-xs font-medium text-kiosk-subtle sm:grid-cols-2 lg:text-right">
+                <span>Datenstand: {formatTimestamp(state.snapshot?.observedAt ?? null)}</span>
+                <span>Datensatz: {state.snapshot?.datasetVersion ?? "—"}</span>
+                <span>Automatischer Refresh: {KIOSK_REFRESH_MS / 1000} s</span>
+                {state.refreshError ? (
+                  <span role="status" className="font-semibold text-kiosk-critical">
+                    {state.refreshError}
+                  </span>
+                ) : (
+                  <span>Letzte Aktualisierung: {formatTimestamp(state.lastRefreshedAt)}</span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -118,20 +133,6 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
         ) : (
           <KioskWallboardSections domains={domains} />
         )}
-
-        <footer className="grid grid-cols-1 gap-2 rounded-lg border border-kiosk-border bg-kiosk-surface px-4 py-2 text-sm text-kiosk-subtle shadow-sm sm:grid-cols-3 sm:items-center">
-          <span>Datenstand: {formatTimestamp(state.snapshot?.observedAt ?? null)}</span>
-          <span className="sm:text-center">Datensatz: {state.snapshot?.datasetVersion ?? "—"}</span>
-          {state.refreshError ? (
-            <span role="status" className="font-semibold text-destructive">
-              {state.refreshError}
-            </span>
-          ) : (
-            <span className="sm:text-right">
-              Letzte Aktualisierung: {formatTimestamp(state.lastRefreshedAt)}
-            </span>
-          )}
-        </footer>
       </div>
     </main>
   );

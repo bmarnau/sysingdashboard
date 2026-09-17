@@ -19,6 +19,7 @@ export interface KioskMetric {
   label: string;
   level: KioskLevel;
   unit?: string;
+  trend?: number[];
 }
 
 export interface KioskStatusBreakdown {

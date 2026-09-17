@@ -15,7 +15,9 @@ const BASELINE_DOMAINS: readonly KioskDomainSnapshot[] = [
     level: "warning",
     metrics: [
       { label: "Aktive Projekte", value: 8, level: "ok" },
+      { label: "Im Plan", value: 83, level: "ok", unit: "%" },
       { label: "Mit Terminrisiko", value: 1, level: "warning" },
+      { label: "Kritisch", value: 0, level: "critical" },
     ],
     note: "Synthetischer Demo-Stand",
   },
@@ -25,6 +27,8 @@ const BASELINE_DOMAINS: readonly KioskDomainSnapshot[] = [
     level: "warning",
     metrics: [
       { label: "Offene Arbeitspakete", value: 24, level: "ok" },
+      { label: "Im Plan", value: 75, level: "ok", unit: "%" },
+      { label: "Mit Risiken", value: 4, level: "warning" },
       { label: "Überfällig", value: 3, level: "warning" },
     ],
     note: "Synthetischer Demo-Stand",
@@ -57,6 +61,8 @@ const BASELINE_DOMAINS: readonly KioskDomainSnapshot[] = [
       { label: "OK", value: 131, level: "ok" },
       { label: "Warnung", value: 8, level: "warning" },
       { label: "Kritisch", value: 3, level: "critical" },
+      { label: "Verfügbar", value: 9, level: "ok" },
+      { label: "Nicht verfügbar", value: 2, level: "critical" },
     ],
     rows: [
       { label: "Server", breakdown: { ok: 28, warning: 2, critical: 1 } },
@@ -66,17 +72,22 @@ const BASELINE_DOMAINS: readonly KioskDomainSnapshot[] = [
       { label: "Internet", breakdown: { ok: 16, warning: 1, critical: 1 } },
       { label: "Cloud", breakdown: { ok: 25, warning: 1, critical: 0 } },
     ],
-    note: "Keine produktiven Hostnamen oder IP-Adressen",
+    note: "Keine produktiven Hostnamen oder IP-Adressen. Nur aggregierte Demo-Statusdaten.",
   },
   {
     id: "support",
     title: "Support-Postfach",
     level: "warning",
     metrics: [
-      { label: "Posteingang gesamt", value: 87, level: "warning" },
-      { label: "Heute", value: 12, level: "ok" },
-      { label: "Gestern", value: 18, level: "ok" },
-      { label: "Älter", value: 57, level: "warning" },
+      {
+        label: "Posteingang gesamt",
+        value: 87,
+        level: "warning",
+        trend: [61, 68, 72, 70, 79, 83, 87],
+      },
+      { label: "Heute", value: 12, level: "ok", trend: [8, 11, 9, 14, 12, 16, 12] },
+      { label: "Gestern", value: 18, level: "ok", trend: [13, 16, 12, 17, 15, 14, 18] },
+      { label: "Älter", value: 57, level: "warning", trend: [39, 43, 46, 48, 51, 54, 57] },
     ],
     note: "Nur Mengen und Alter, keine Mailinhalte",
   },
@@ -85,7 +96,11 @@ const BASELINE_DOMAINS: readonly KioskDomainSnapshot[] = [
 function cloneDomains(): KioskDomainSnapshot[] {
   return BASELINE_DOMAINS.map((domain) => ({
     ...domain,
-    metrics: domain.metrics.map((metric) => ({ ...metric })),
+    metrics: domain.metrics.map((metric) => ({
+      ...metric,
+      trend: metric.trend ? [...metric.trend] : undefined,
+    })),
+    rows: domain.rows?.map((row) => ({ ...row, breakdown: { ...row.breakdown } })),
   }));
 }
 

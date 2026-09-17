@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, CircleGauge, Clock3, ServerCog } from "lucide-react";
+import { AlertTriangle, CheckCircle2, CircleGauge, Clock3 } from "lucide-react";
 import type { ReactNode } from "react";
 import type { KioskDomainSnapshot, KioskLevel, KioskMetric } from "@/lib/kiosk/kiosk-contract";
 
@@ -58,35 +58,73 @@ function DomainHeading({ domain }: { domain: KioskDomainSnapshot }) {
 function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
   const percentage = domain.metrics.find((metric) => metric.unit === "%");
   const regularMetrics = domain.metrics.filter((metric) => metric !== percentage);
+  const primaryMetric = regularMetrics[0];
+  const detailMetrics = regularMetrics.slice(1);
+  const usesProgressBar = domain.id === "projects" || domain.id === "workPackages";
 
   return (
     <article className="border-b border-kiosk-border pb-4 last:border-b-0 last:pb-0">
       <DomainHeading domain={domain} />
       <dl
-        className={`mt-3 grid gap-3 ${percentage ? "2xl:grid-cols-[1fr_auto]" : "2xl:grid-cols-2"}`}
+        className={`mt-3 grid gap-3 ${percentage ? "2xl:grid-cols-[0.7fr_1fr]" : "2xl:grid-cols-2"}`}
       >
-        <div className="grid gap-3 2xl:grid-cols-2">
-          {regularMetrics.map((metric) => (
-            <MetricTile
-              key={`${domain.id}-${metric.label}`}
-              metric={metric}
-              emphasis={
-                metric.level === "warning" || metric.level === "critical" ? metric.level : undefined
-              }
-            />
-          ))}
-        </div>
+        {primaryMetric ? (
+          <div className="rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3">
+            <dt className="text-sm font-semibold text-kiosk-subtle">{primaryMetric.label}</dt>
+            <dd className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">
+              {value(primaryMetric)}
+            </dd>
+          </div>
+        ) : null}
         {percentage ? (
-          <div className="flex min-h-28 items-center gap-4 rounded-lg border border-kiosk-border bg-kiosk-muted px-5 py-3">
-            <div className="grid size-20 shrink-0 place-items-center rounded-full border-[7px] border-kiosk-accent-soft bg-kiosk-surface">
-              <span className="text-2xl font-bold tabular-nums text-kiosk-ink">
-                {value(percentage)}
-              </span>
-            </div>
-            <div>
-              <dt className="text-base font-semibold text-kiosk-subtle">{percentage.label}</dt>
-              <dd className="mt-1 text-sm text-kiosk-subtle">im Demo-Zeitraum</dd>
-            </div>
+          <div className="rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3">
+            {usesProgressBar ? (
+              <>
+                <div className="flex items-baseline justify-between gap-3">
+                  <dt className="text-sm font-semibold text-kiosk-subtle">{percentage.label}</dt>
+                  <dd className="text-2xl font-bold tabular-nums text-kiosk-ink">
+                    {value(percentage)}
+                  </dd>
+                </div>
+                <progress
+                  aria-label={`${domain.title}: ${percentage.label}`}
+                  max={100}
+                  value={Math.min(100, Math.max(0, percentage.value ?? 0))}
+                  className="mt-3 h-2.5 w-full overflow-hidden rounded-full accent-kiosk-accent"
+                />
+              </>
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="grid size-16 shrink-0 place-items-center rounded-full border-[6px] border-kiosk-accent-soft bg-kiosk-surface">
+                  <dd className="text-xl font-bold tabular-nums text-kiosk-ink">
+                    {value(percentage)}
+                  </dd>
+                </div>
+                <dt className="text-sm font-semibold text-kiosk-subtle">{percentage.label}</dt>
+              </div>
+            )}
+          </div>
+        ) : null}
+        {detailMetrics.length ? (
+          <div className="grid gap-2 2xl:col-span-2 2xl:grid-cols-2">
+            {detailMetrics.map((metric) => (
+              <div
+                key={`${domain.id}-${metric.label}`}
+                data-emphasis={
+                  metric.level === "warning" || metric.level === "critical"
+                    ? metric.level
+                    : "neutral"
+                }
+                className={`flex items-center justify-between rounded-md border px-3 py-2 ${
+                  metric.level === "warning" || metric.level === "critical"
+                    ? STATUS_CLASS[metric.level]
+                    : "border-kiosk-border bg-kiosk-muted text-kiosk-ink"
+                }`}
+              >
+                <dt className="text-sm font-semibold">{metric.label}</dt>
+                <dd className="text-xl font-bold tabular-nums">{value(metric)}</dd>
+              </div>
+            ))}
           </div>
         ) : null}
       </dl>
@@ -95,6 +133,13 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
 }
 
 function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
+  const statusMetrics = domain.metrics.filter(
+    (metric) => domain.level === "unknown" || ["OK", "Warnung", "Kritisch"].includes(metric.label),
+  );
+  const availabilityMetrics = domain.metrics.filter((metric) =>
+    ["Verfügbar", "Nicht verfügbar"].includes(metric.label),
+  );
+
   return (
     <div className="flex h-full flex-col">
       {domain.level === "unknown" ? (
@@ -103,7 +148,7 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
         </div>
       ) : null}
       <div className="grid grid-cols-3 gap-3">
-        {domain.metrics.map((metric) => (
+        {statusMetrics.map((metric) => (
           <MetricTile
             key={`${domain.id}-${metric.label}`}
             metric={metric}
@@ -144,10 +189,24 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
           </table>
         </div>
       ) : null}
-      <div className="mt-auto flex items-center gap-3 border-t border-kiosk-border pt-4 text-base font-semibold text-kiosk-subtle">
-        <ServerCog className="size-5 text-kiosk-accent" aria-hidden="true" />
-        Systemverfügbarkeit wird aus dem letzten Demo-Stand angezeigt.
-      </div>
+      {availabilityMetrics.length ? (
+        <div className="mt-4 border-t border-kiosk-border pt-4">
+          <h3 className="text-lg font-bold text-kiosk-ink">Verfügbarkeit (Systeme)</h3>
+          <dl className="mt-3 grid grid-cols-2 gap-3">
+            {availabilityMetrics.map((metric) => (
+              <div
+                key={`${domain.id}-${metric.label}`}
+                className={`rounded-lg border px-4 py-3 ${STATUS_CLASS[metric.level]}`}
+              >
+                <dt className="text-sm font-semibold">{metric.label}</dt>
+                <dd className="mt-1 text-3xl font-bold tabular-nums text-kiosk-ink">
+                  {value(metric)}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -155,14 +214,59 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
 function Support({ domain }: { domain: KioskDomainSnapshot }) {
   return (
     <dl className="grid flex-1 content-stretch gap-3 sm:grid-cols-2 lg:grid-cols-1">
-      {domain.metrics.map((metric) => (
-        <MetricTile
-          key={`${domain.id}-${metric.label}`}
-          metric={metric}
-          emphasis={metric.label === "Älter" ? "warning" : undefined}
-        />
-      ))}
+      {domain.metrics.map((metric) => {
+        const emphasis = metric.label === "Älter" ? "warning" : undefined;
+        return (
+          <div
+            key={`${domain.id}-${metric.label}`}
+            data-emphasis={emphasis ?? "neutral"}
+            className={`grid min-h-28 grid-cols-[minmax(0,1fr)_7rem] items-center gap-3 rounded-lg border p-4 ${
+              emphasis
+                ? STATUS_CLASS[emphasis]
+                : "border-kiosk-border bg-kiosk-muted text-kiosk-ink"
+            }`}
+          >
+            <div className="min-w-0" data-emphasis={emphasis ?? "neutral"}>
+              <dt className="text-sm font-semibold text-kiosk-subtle">{metric.label}</dt>
+              <dd className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">
+                {value(metric)}
+              </dd>
+              <p className="mt-1 text-xs text-kiosk-subtle">Mengenentwicklung, 7 Demo-Stände</p>
+            </div>
+            <TrendBars label={metric.label} values={metric.trend} />
+          </div>
+        );
+      })}
     </dl>
+  );
+}
+
+function TrendBars({ label, values = [] }: { label: string; values?: number[] }) {
+  const max = Math.max(...values, 1);
+
+  return (
+    <svg
+      role="img"
+      aria-label={`${label}: synthetischer Verlauf`}
+      viewBox="0 0 112 56"
+      preserveAspectRatio="none"
+      className="h-14 w-28 text-kiosk-accent"
+    >
+      {values.map((trendValue, index) => {
+        const height = Math.max(5, (trendValue / max) * 52);
+        return (
+          <rect
+            key={`${label}-${index}`}
+            x={index * 16 + 2}
+            y={54 - height}
+            width="10"
+            height={height}
+            rx="2"
+            fill="currentColor"
+          />
+        );
+      })}
+    </svg>
   );
 }
 
@@ -218,7 +322,7 @@ export function KioskWallboardSections({ domains }: { domains: Map<string, Kiosk
         />
         {infrastructure ? <Infrastructure domain={infrastructure} /> : null}
         <p className="mt-4 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle">
-          Keine produktiven Hostnamen oder IP-Adressen.
+          Keine produktiven Hostnamen oder IP-Adressen. Nur aggregierte Demo-Statusdaten.
         </p>
       </section>
 

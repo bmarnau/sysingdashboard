@@ -33,7 +33,14 @@ function validJson(): string {
           id: "projects",
           title: "Projekte",
           level: "ok",
-          metrics: [{ value: 8, label: "Aktive Projekte", level: "ok" }],
+          metrics: [
+            {
+              value: 8,
+              label: "Aktive Projekte",
+              level: "ok",
+              trend: [5, 6, 7, 8],
+            },
+          ],
         },
       ],
     },
@@ -53,6 +60,7 @@ describe("kiosk demo JSON import", () => {
     expect(result.version).toBe("1.0.0");
     expect(result.loadedAt).toBe("2026-09-14T08:00:00.000Z");
     expect(result.domains[0]?.id).toBe("projects");
+    expect(result.domains[0]?.metrics[0]?.trend).toEqual([5, 6, 7, 8]);
     expect(readKioskDemoDataset()).toEqual(result);
   });
 
@@ -73,6 +81,36 @@ describe("kiosk demo JSON import", () => {
     parsed.extra = "not allowed";
     expect(() =>
       importKioskDemoJsonForActor(actor("administrator"), JSON.stringify(parsed)),
+    ).toThrow();
+  });
+
+  it("keeps trend optional and rejects invalid or oversized trend data", () => {
+    const withoutTrend = JSON.parse(validJson()) as {
+      snapshot: { domains: Array<{ metrics: Array<Record<string, unknown>> }> };
+    };
+    delete withoutTrend.snapshot.domains[0]?.metrics[0]?.trend;
+    expect(() =>
+      importKioskDemoJsonForActor(actor("administrator"), JSON.stringify(withoutTrend)),
+    ).not.toThrow();
+
+    const invalidTrend = JSON.parse(validJson()) as {
+      snapshot: { domains: Array<{ metrics: Array<Record<string, unknown>> }> };
+    };
+    if (invalidTrend.snapshot.domains[0]?.metrics[0]) {
+      invalidTrend.snapshot.domains[0].metrics[0].trend = [1, -1, 3];
+    }
+    expect(() =>
+      importKioskDemoJsonForActor(actor("administrator"), JSON.stringify(invalidTrend)),
+    ).toThrow();
+
+    const oversizedTrend = JSON.parse(validJson()) as {
+      snapshot: { domains: Array<{ metrics: Array<Record<string, unknown>> }> };
+    };
+    if (oversizedTrend.snapshot.domains[0]?.metrics[0]) {
+      oversizedTrend.snapshot.domains[0].metrics[0].trend = Array.from({ length: 32 }, (_, i) => i);
+    }
+    expect(() =>
+      importKioskDemoJsonForActor(actor("administrator"), JSON.stringify(oversizedTrend)),
     ).toThrow();
   });
 

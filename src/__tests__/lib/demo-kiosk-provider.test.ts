@@ -23,6 +23,18 @@ describe("DemoKioskDataProvider", () => {
     expect(snapshot.datasetVersion).toBe("1.0.0");
     expect(snapshot.generatedAt).toBe(NOW.toISOString());
     expect(snapshot.domains).toHaveLength(6);
+    const supportTrend = snapshot.domains
+      .find((domain) => domain.id === "support")
+      ?.metrics.find((metric) => metric.label === "Heute")?.trend;
+    expect(supportTrend).toHaveLength(7);
+
+    if (supportTrend) supportTrend[0] = 999;
+    const nextSnapshot = await provider.getSnapshot();
+    expect(
+      nextSnapshot.domains
+        .find((domain) => domain.id === "support")
+        ?.metrics.find((metric) => metric.label === "Heute")?.trend?.[0],
+    ).not.toBe(999);
   });
 
   it("renders empty and unknown as explicit semantics", async () => {
