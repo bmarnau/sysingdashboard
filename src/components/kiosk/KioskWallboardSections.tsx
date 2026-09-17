@@ -36,6 +36,9 @@ function MetricTile({ metric, emphasis }: { metric: KioskMetric; emphasis?: Kios
     >
       <dt className="text-base font-semibold text-kiosk-subtle">{metric.label}</dt>
       <dd className="mt-3 text-4xl font-bold tabular-nums text-kiosk-ink">{value(metric)}</dd>
+      {metric.level === "unknown" ? (
+        <span className="mt-2 text-xs font-bold uppercase text-kiosk-subtle">UNBEKANNT</span>
+      ) : null}
     </div>
   );
 }
@@ -91,6 +94,11 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
 function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
   return (
     <div className="flex h-full flex-col">
+      {domain.level === "unknown" ? (
+        <div className="mb-3 rounded-md border border-kiosk-border bg-kiosk-muted px-3 py-2 text-sm font-bold text-kiosk-subtle">
+          UNBEKANNT
+        </div>
+      ) : null}
       <div className="grid grid-cols-3 gap-3">
         {domain.metrics.map((metric) => (
           <MetricTile key={`${domain.id}-${metric.label}`} metric={metric} emphasis={metric.level} />

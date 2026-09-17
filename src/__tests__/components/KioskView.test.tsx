@@ -151,7 +151,7 @@ describe("KioskView", () => {
       "Arbeitspakete",
       "Tätigkeiten",
       "Verfügbarkeit",
-      "Infrastruktur",
+      "Infrastruktur – Überblick",
       "Support-Postfach",
     ]) {
       expect(screen.getByRole("heading", { name: title })).toBeVisible();
@@ -270,7 +270,7 @@ describe("KioskView", () => {
 
       expect(screen.getByText("SYSING / SYSTEMHAUS")).toBeVisible();
       expect(screen.getByText("Donnerstag, 17. September 2026")).toBeVisible();
-      expect(container.querySelector("main")).toHaveClass("bg-slate-50");
+      expect(container.querySelector("main")).toHaveClass("bg-kiosk-canvas");
     } finally {
       vi.useRealTimers();
     }
