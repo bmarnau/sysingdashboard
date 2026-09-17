@@ -141,7 +141,11 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
                 {projects ? <KioskDomainCard domain={projects} /> : null}
                 {workPackages ? <KioskDomainCard domain={workPackages} /> : null}
                 {activities ? <KioskDomainCard domain={activities} /> : null}
+                {availability ? <KioskDomainCard domain={availability} /> : null}
               </div>
+              <p className="mt-4 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">
+                Keine Gründe oder Gesundheitsdaten
+              </p>
             </section>
 
             <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -152,11 +156,10 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
                 </p>
               </div>
               <div className="grid gap-3">
-                {availability ? <KioskDomainCard domain={availability} /> : null}
                 {infrastructure ? <KioskDomainCard domain={infrastructure} /> : null}
               </div>
               <p className="mt-4 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">
-                Keine Gründe oder Gesundheitsdaten
+                Keine produktiven Hostnamen oder IP-Adressen.
               </p>
             </section>
 
