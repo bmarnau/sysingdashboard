@@ -763,6 +763,14 @@ CREATE OR REPLACE FUNCTION "public"."enforce_kiosk_role_exclusive"() RETURNS "tr
 DECLARE
   v_conflict boolean;
 BEGIN
+  -- Zwei parallele Rollenschreibvorgaenge duerfen den sichtbarkeitsbasierten
+  -- Konflikttest nicht gleichzeitig passieren. Der transaktionsgebundene,
+  -- benutzerspezifische Advisory Lock wird beim COMMIT/ROLLBACK freigegeben.
+  PERFORM pg_advisory_xact_lock(
+    hashtext('kiosk_role_exclusive'),
+    hashtext(NEW.user_id::text)
+  );
+
   IF NEW.role = 'kiosk'::public.app_role THEN
     SELECT EXISTS (
       SELECT 1
