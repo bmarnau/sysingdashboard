@@ -1,6 +1,6 @@
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { KioskDomainCard } from "@/components/kiosk/KioskDomainCard";
+import { KioskWallboardSections } from "@/components/kiosk/KioskWallboardSections";
 import type { KioskSnapshotState } from "@/hooks/useKioskSnapshot";
 import type { KioskSessionWatchdogStatus } from "@/hooks/useKioskSessionWatchdog";
 
@@ -44,28 +44,28 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
   const support = domains.get("support");
 
   return (
-    <main className="min-h-dvh bg-slate-50 p-4 text-slate-950 sm:p-6">
-      <div className="mx-auto flex min-h-[calc(100dvh-2rem)] max-w-[1920px] flex-col gap-4 sm:min-h-[calc(100dvh-3rem)]">
-        <header className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-500">
+    <main className="min-h-dvh bg-kiosk-canvas p-3 text-kiosk-ink sm:p-4">
+      <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] max-w-[1920px] flex-col gap-3 sm:min-h-[calc(100dvh-2rem)]">
+        <header className="rounded-lg border border-kiosk-border bg-kiosk-surface px-4 py-3 shadow-sm sm:px-5">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase text-kiosk-subtle">
                 SYSING / SYSTEMHAUS
               </p>
-              <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Info-Kiosk</h1>
-                <span className="text-lg font-semibold text-slate-600">{greetingFor(now)}</span>
+              <div className="mt-1 flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
+                <h1 className="truncate text-2xl font-bold sm:text-3xl">Info-Kiosk</h1>
+                <span className="text-lg font-semibold text-kiosk-subtle">{greetingFor(now)}</span>
               </div>
-              <p className="mt-1 text-sm font-medium text-slate-500">{formatDayDate(now)}</p>
+              <p className="text-sm font-medium text-kiosk-subtle">{formatDayDate(now)}</p>
             </div>
 
-            <div className="flex flex-wrap items-center justify-end gap-3">
-              <div className="rounded-md border border-amber-500/60 bg-amber-50 px-3 py-2 text-sm font-bold text-amber-950">
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-3">
+              <div className="rounded-md border border-kiosk-warning-border bg-kiosk-warning-soft px-3 py-2 text-sm font-bold text-kiosk-warning">
                 DEMO-DATEN — KEINE LIVE-DATEN
               </div>
               <Button
                 variant="outline"
-                className="bg-white text-slate-900"
+                className="bg-kiosk-surface text-kiosk-ink"
                 onClick={onLogout}
                 aria-label="Abmelden"
               >
@@ -74,11 +74,11 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
             </div>
           </div>
 
-          <div className="mt-4 border-t border-slate-200 pt-4">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          <div className="mt-3 border-t border-kiosk-border pt-3">
+            <h2 className="text-2xl font-bold sm:text-3xl">
               Operatives Management-Wallboard
             </h2>
-            <p className="mt-1 text-sm font-medium text-slate-500">
+            <p className="text-sm font-medium text-kiosk-subtle">
               Read-only | Auto-Refresh | Systemhaus
             </p>
           </div>
@@ -87,109 +87,59 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
         {securityBlocked ? (
           <section
             role="alert"
-            className="grid flex-1 place-items-center rounded-2xl border border-amber-300 bg-white p-8 text-center shadow-sm"
+            className="grid flex-1 place-items-center rounded-lg border border-kiosk-warning-border bg-kiosk-surface p-8 text-center shadow-sm"
           >
             <div className="max-w-xl">
               <h2 className="text-2xl font-semibold">Sicherheitsprüfung derzeit nicht verfügbar</h2>
-              <p className="mt-3 text-slate-600">
+              <p className="mt-3 text-kiosk-subtle">
                 Die Kiosk-Sitzung wird erneut geprüft. Bis zur erfolgreichen Bestätigung werden
                 keine Managementdaten angezeigt.
               </p>
             </div>
           </section>
         ) : state.status === "loading" ? (
-          <section className="grid flex-1 place-items-center rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+          <section className="grid flex-1 place-items-center rounded-lg border border-kiosk-border bg-kiosk-surface p-8 shadow-sm">
             <p className="text-lg font-medium">Kiosk-Daten werden geladen …</p>
           </section>
         ) : state.status === "error" || !state.snapshot ? (
           <section
             role="alert"
-            className="grid flex-1 place-items-center rounded-2xl border border-destructive/50 bg-white p-8 text-center shadow-sm"
+            className="grid flex-1 place-items-center rounded-lg border border-kiosk-critical-border bg-kiosk-surface p-8 text-center shadow-sm"
           >
             <div>
               <h2 className="text-2xl font-semibold">Kiosk-Daten konnten nicht geladen werden</h2>
-              <p className="mt-3 text-slate-600">
+              <p className="mt-3 text-kiosk-subtle">
                 Bitte den Demo-Datensatz und den lokalen Zustand prüfen.
               </p>
             </div>
           </section>
         ) : state.snapshot.datasetState === "not_loaded" ? (
-          <section className="grid flex-1 place-items-center rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <section className="grid flex-1 place-items-center rounded-lg border border-kiosk-border bg-kiosk-surface p-8 text-center shadow-sm">
             <div className="max-w-xl">
               <h2 className="text-2xl font-semibold">
                 Kiosk-Demodaten sind auf diesem Gerät nicht geladen.
               </h2>
-              <p className="mt-3 text-slate-600">
+              <p className="mt-3 text-kiosk-subtle">
                 Ein berechtigter Administrator lädt den synthetischen Kiosk-Datensatz im
                 Servicebereich.
               </p>
             </div>
           </section>
         ) : (
-          <section
-            aria-label="Kiosk-Domänen"
-            className="grid flex-1 gap-4 lg:grid-cols-[1.15fr_1fr_0.9fr]"
-          >
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="mb-4 border-b border-slate-200 pb-3">
-                <h2 className="text-xl font-bold tracking-tight">Operative Arbeit</h2>
-                <p className="mt-1 text-xs font-medium text-slate-500">
-                  Quelle: synthetische Demo-Daten
-                </p>
-              </div>
-              <div className="grid gap-3">
-                {projects ? <KioskDomainCard domain={projects} /> : null}
-                {workPackages ? <KioskDomainCard domain={workPackages} /> : null}
-                {activities ? <KioskDomainCard domain={activities} /> : null}
-                {availability ? <KioskDomainCard domain={availability} /> : null}
-              </div>
-              <p className="mt-4 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">
-                Keine Gründe oder Gesundheitsdaten
-              </p>
-            </section>
-
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="mb-4 border-b border-slate-200 pb-3">
-                <h2 className="text-xl font-bold tracking-tight">Infrastruktur – Überblick</h2>
-                <p className="mt-1 text-xs font-medium text-slate-500">
-                  Quelle: synthetische Demo-Daten
-                </p>
-              </div>
-              <div className="grid gap-3">
-                {infrastructure ? <KioskDomainCard domain={infrastructure} /> : null}
-              </div>
-              <p className="mt-4 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">
-                Keine produktiven Hostnamen oder IP-Adressen.
-              </p>
-            </section>
-
-            <section
-              aria-label="Support-Postfach"
-              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
-            >
-              <div className="mb-4 border-b border-slate-200 pb-3">
-                <p className="text-xl font-bold tracking-tight">Support-Postfach</p>
-                <p className="mt-1 text-xs font-medium text-slate-500">
-                  Quelle: synthetische Demo-Daten
-                </p>
-              </div>
-              {support ? <KioskDomainCard domain={support} /> : null}
-              <p className="mt-4 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">
-                Nur Mengenansicht. Keine Inhaltsanzeige.
-              </p>
-            </section>
-          </section>
+          <KioskWallboardSections domains={domains} />
         )}
 
-        <footer className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
+        <footer className="grid grid-cols-1 gap-2 rounded-lg border border-kiosk-border bg-kiosk-surface px-4 py-2 text-sm text-kiosk-subtle shadow-sm sm:grid-cols-3 sm:items-center">
           <span>Datenstand: {formatTimestamp(state.snapshot?.observedAt ?? null)}</span>
-          <span>Datensatz: {state.snapshot?.datasetVersion ?? "—"}</span>
+          <span className="sm:text-center">Datensatz: {state.snapshot?.datasetVersion ?? "—"}</span>
           {state.refreshError ? (
             <span role="status" className="font-semibold text-destructive">
               {state.refreshError}
             </span>
           ) : (
-            <span>Letzte Aktualisierung: {formatTimestamp(state.lastRefreshedAt)}</span>
+            <span className="sm:text-right">
+              Letzte Aktualisierung: {formatTimestamp(state.lastRefreshedAt)}
+            </span>
           )}
         </footer>
       </div>
