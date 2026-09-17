@@ -209,6 +209,37 @@ describe("KioskView", () => {
     expect(container.querySelector('[class*="bg-background"]')).not.toBeInTheDocument();
   });
 
+  it("keeps ordinary quantities neutral and reserves emphasis for operational risk", () => {
+    render(
+      <KioskView
+        state={ready(snapshot(WALLBOARD_DOMAINS))}
+        securityStatus="valid"
+        onLogout={() => undefined}
+      />,
+    );
+
+    const support = screen.getByRole("region", { name: "Support-Postfach" });
+    expect(within(support).getByText("Posteingang gesamt").closest("div")).toHaveAttribute(
+      "data-emphasis",
+      "neutral",
+    );
+    expect(within(support).getByText("Heute").closest("div")).toHaveAttribute(
+      "data-emphasis",
+      "neutral",
+    );
+    expect(within(support).getByText("Gestern").closest("div")).toHaveAttribute(
+      "data-emphasis",
+      "neutral",
+    );
+    expect(within(support).getByText("Älter").closest("div")).toHaveAttribute(
+      "data-emphasis",
+      "warning",
+    );
+
+    const wallboard = screen.getByRole("region", { name: "Kiosk-Domänen" });
+    expect(wallboard).toHaveAttribute("data-layout", "three-column");
+  });
+
   it("shows the approved time-based German greeting", () => {
     vi.useFakeTimers();
     try {
