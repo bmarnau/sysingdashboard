@@ -401,7 +401,10 @@ Die helle Steuerungsübersicht gliedert sich in drei Hauptspalten:
    Statusfortschritt, abrechenbarer Anteil und Urlaubsanzahlen ohne
    personenbezogene Details.
 2. **Infrastruktur – Überblick** — Statussummen, Bereichsmatrix und aggregierte
-   Systemverfügbarkeit ohne produktive Hostnamen oder IP-Adressen.
+   Systemverfügbarkeit ohne produktive Hostnamen oder IP-Adressen. Darunter ist
+   vorhandene Restfläche technisch für zukünftige aggregierte read-only
+   Betriebsinformationen reserviert. Sie besitzt heute bewusst weder einen
+   Fachdatensatz noch eine produktive Datenquelle oder sichtbare Platzhalter.
 3. **Support-Postfach** — Posteingang gesamt, heute, gestern und älter; nur
    Mengen und synthetische Demo-Trends, keine Nachrichteninhalte.
 

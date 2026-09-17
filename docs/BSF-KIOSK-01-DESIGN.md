@@ -255,6 +255,28 @@ aus Exchange oder Microsoft Graph.
 
 Der dauerhaft sichtbare Hinweis `DEMO-DATEN — KEINE LIVE-DATEN` ist Pflicht. Farbe ist nie alleinige Statussemantik; `OK`, `WARNUNG`, `KRITISCH` und `UNBEKANNT` werden auch textlich bzw. zugaenglich vermittelt.
 
+### Reservierter Erweiterungsbereich
+
+Die mittlere Spalte der Operativen Steuerungsübersicht enthält unterhalb der
+Systemverfügbarkeit einen reservierten Erweiterungsbereich für zukünftige
+aggregierte read-only Betriebsinformationen. Der Bereich besitzt derzeit
+bewusst keinen Fachdatensatz und keine produktive Datenquelle. Ein konkreter
+Datenvertrag wird erst mit einer freigegebenen fachlichen Anforderung ergänzt.
+
+Der technisch als `KioskExtensionArea` abgegrenzte, visuell leere Layout-Slot
+nutzt ausschließlich die vorhandene Restfläche der Infrastrukturspalte. Er hat
+keine feste oder minimale Höhe, verändert weder Spaltenbreite noch
+Gesamthöhe und zeigt heute keine Beschriftung, Karte, Kennzahl oder künstlichen
+Zustand.
+
+Eine spätere fachliche Implementierung muss read-only und aggregiert bleiben.
+Sie darf keine personenbezogenen Detaildaten, Mailinhalte, Betreffzeilen,
+Absender, Gesundheitsdaten, Secrets, produktiven Hostnamen oder IP-Adressen
+anzeigen. Provider- und Fachlogik bleiben getrennt. Erst ein späterer,
+freigegebener Fachvertrag darf die Zustände `not-configured`, `loading`,
+`loaded`, `unknown` und `error` einführen; KIOSK-01 implementiert diese Zustände
+für den Erweiterungsbereich ausdrücklich nicht.
+
 ## 13. Fehler- und Sicherheitsverhalten
 
 ### Loading
