@@ -37,7 +37,7 @@
           },
           {
             "value": 3,
-            "label": "Ueberfaellig",
+            "label": "Überfällig",
             "level": "warning"
           }
         ],
@@ -45,39 +45,41 @@
       },
       {
         "id": "activities",
-        "title": "Taetigkeiten",
+        "title": "Tätigkeiten",
         "level": "ok",
         "metrics": [
           {
             "value": 126.5,
             "label": "Stunden im Demo-Zeitraum",
-            "level": "ok"
+            "level": "ok",
+            "unit": "h"
           },
           {
             "value": 82,
-            "label": "Billable-Anteil in Prozent",
-            "level": "ok"
+            "label": "Abrechenbarer Anteil",
+            "level": "ok",
+            "unit": "%"
           }
         ],
         "note": "Nur aggregierte synthetische Werte"
       },
       {
         "id": "availability",
-        "title": "Verfuegbarkeit",
-        "level": "warning",
+        "title": "Urlaub (Mitarbeiter)",
+        "level": "ok",
         "metrics": [
           {
-            "value": 9,
-            "label": "Verfuegbar",
+            "value": 4,
+            "label": "Diese Woche im Urlaub",
             "level": "ok"
           },
           {
-            "value": 2,
-            "label": "Nicht verfuegbar",
-            "level": "warning"
+            "value": 6,
+            "label": "Nächste Woche im Urlaub",
+            "level": "ok"
           }
         ],
-        "note": "Keine Gruende oder Gesundheitsdaten"
+        "note": "Keine Gründe oder Gesundheitsdaten"
       },
       {
         "id": "infrastructure",
@@ -85,15 +87,28 @@
         "level": "critical",
         "metrics": [
           {
-            "value": 42,
-            "label": "Ueberwachte Systeme",
+            "value": 131,
+            "label": "OK",
             "level": "ok"
           },
           {
-            "value": 1,
-            "label": "Kritische Meldungen",
+            "value": 8,
+            "label": "Warnung",
+            "level": "warning"
+          },
+          {
+            "value": 3,
+            "label": "Kritisch",
             "level": "critical"
           }
+        ],
+        "rows": [
+          { "label": "Server", "breakdown": { "ok": 28, "warning": 2, "critical": 1 } },
+          { "label": "Backup", "breakdown": { "ok": 18, "warning": 1, "critical": 0 } },
+          { "label": "Netzwerk", "breakdown": { "ok": 32, "warning": 2, "critical": 1 } },
+          { "label": "Firewall", "breakdown": { "ok": 12, "warning": 1, "critical": 0 } },
+          { "label": "Internet", "breakdown": { "ok": 16, "warning": 1, "critical": 1 } },
+          { "label": "Cloud", "breakdown": { "ok": 25, "warning": 1, "critical": 0 } }
         ],
         "note": "Keine produktiven Hostnamen oder IP-Adressen"
       },
@@ -103,13 +118,23 @@
         "level": "warning",
         "metrics": [
           {
-            "value": 17,
-            "label": "Offene Nachrichten",
+            "value": 87,
+            "label": "Posteingang gesamt",
             "level": "warning"
           },
           {
-            "value": 4,
-            "label": "Aelter als 24 Stunden",
+            "value": 12,
+            "label": "Heute",
+            "level": "ok"
+          },
+          {
+            "value": 18,
+            "label": "Gestern",
+            "level": "ok"
+          },
+          {
+            "value": 57,
+            "label": "Älter",
             "level": "warning"
           }
         ],

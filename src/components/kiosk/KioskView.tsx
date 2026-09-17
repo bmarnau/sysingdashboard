@@ -36,12 +36,6 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
   const securityBlocked = securityStatus !== "valid";
   const now = new Date();
   const domains = new Map((state.snapshot?.domains ?? []).map((domain) => [domain.id, domain]));
-  const projects = domains.get("projects");
-  const workPackages = domains.get("workPackages");
-  const activities = domains.get("activities");
-  const availability = domains.get("availability");
-  const infrastructure = domains.get("infrastructure");
-  const support = domains.get("support");
 
   return (
     <main className="min-h-dvh bg-kiosk-canvas p-3 text-kiosk-ink sm:p-4">
