@@ -122,8 +122,7 @@ function buildDailyTrend(
       totalHourHundredths: 0,
       billableHourHundredths: 0,
     };
-    const nonBillableHourHundredths =
-      totals.totalHourHundredths - totals.billableHourHundredths;
+    const nonBillableHourHundredths = totals.totalHourHundredths - totals.billableHourHundredths;
 
     trend.push({
       date,
