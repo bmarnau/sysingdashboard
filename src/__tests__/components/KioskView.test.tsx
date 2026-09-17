@@ -200,6 +200,13 @@ describe("KioskView", () => {
     ).toBeVisible();
     expect(within(operations!).getByText("Diese Woche im Urlaub")).toBeVisible();
     expect(within(operations!).getByText("Nächste Woche im Urlaub")).toBeVisible();
+    const vacationCards = within(operations!).getByText("Diese Woche im Urlaub").closest("dl");
+    expect(vacationCards).toHaveAttribute("data-layout", "equal-vacation-cards");
+    expect(vacationCards?.children).toHaveLength(2);
+    expect(vacationCards?.children[0]).toHaveAttribute(
+      "class",
+      vacationCards?.children[1]?.getAttribute("class"),
+    );
     expect(within(operations!).getByText("Abrechenbarer Anteil")).toBeVisible();
     expect(within(operations!).getByText("82 %")).toBeVisible();
     expect(within(operations!).getAllByRole("progressbar")).toHaveLength(2);

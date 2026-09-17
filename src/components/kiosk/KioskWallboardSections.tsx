@@ -56,6 +56,7 @@ function DomainHeading({ domain }: { domain: KioskDomainSnapshot }) {
 }
 
 function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
+  const isAvailability = domain.id === "availability";
   const percentage = domain.metrics.find((metric) => metric.unit === "%");
   const regularMetrics = domain.metrics.filter((metric) => metric !== percentage);
   const primaryMetric = regularMetrics[0];
@@ -65,6 +66,21 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
   return (
     <article className="border-b border-kiosk-border pb-4 last:border-b-0 last:pb-0">
       <DomainHeading domain={domain} />
+      {isAvailability ? (
+        <dl data-layout="equal-vacation-cards" className="mt-3 grid grid-cols-2 gap-3">
+          {domain.metrics.map((metric) => (
+            <div
+              key={`${domain.id}-${metric.label}`}
+              className="flex min-h-24 flex-col justify-between rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3"
+            >
+              <dt className="text-sm font-semibold text-kiosk-subtle">{metric.label}</dt>
+              <dd className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">
+                {value(metric)}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
       <dl
         className={`mt-3 grid gap-3 ${percentage ? "2xl:grid-cols-[0.7fr_1fr]" : "2xl:grid-cols-2"}`}
       >
@@ -128,6 +144,7 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
           </div>
         ) : null}
       </dl>
+      )}
     </article>
   );
 }
