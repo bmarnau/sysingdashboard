@@ -15,7 +15,11 @@ export interface DemoKioskProviderOptions {
 function cloneDomains(domains: readonly KioskDomainSnapshot[]): KioskDomainSnapshot[] {
   return domains.map((domain) => ({
     ...domain,
-    metrics: domain.metrics.map((metric) => ({ ...metric })),
+    metrics: domain.metrics.map((metric) => ({
+      ...metric,
+      trend: metric.trend ? [...metric.trend] : undefined,
+    })),
+    rows: domain.rows?.map((row) => ({ ...row, breakdown: { ...row.breakdown } })),
   }));
 }
 

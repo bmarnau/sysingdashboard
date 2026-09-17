@@ -44,7 +44,7 @@ const DOMAINS: KioskDomainSnapshot[] = [
 ];
 
 type RichDomainSnapshot = KioskDomainSnapshot & {
-  metrics: Array<KioskDomainSnapshot["metrics"][number] & { unit?: string }>;
+  metrics: Array<KioskDomainSnapshot["metrics"][number] & { unit?: string; trend?: number[] }>;
   rows?: Array<{
     label: string;
     breakdown: { ok: number; warning: number; critical: number };
@@ -58,7 +58,9 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     level: "warning",
     metrics: [
       { label: "Aktive Projekte", value: 8, level: "ok" },
+      { label: "Im Plan", value: 83, level: "ok", unit: "%" },
       { label: "Mit Terminrisiko", value: 1, level: "warning" },
+      { label: "Kritisch", value: 0, level: "critical" },
     ],
   },
   {
@@ -67,6 +69,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     level: "warning",
     metrics: [
       { label: "Offene Arbeitspakete", value: 24, level: "ok" },
+      { label: "Im Plan", value: 75, level: "ok", unit: "%" },
+      { label: "Mit Risiken", value: 4, level: "warning" },
       { label: "Überfällig", value: 3, level: "warning" },
     ],
   },
@@ -97,6 +101,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
       { label: "OK", value: 131, level: "ok" },
       { label: "Warnung", value: 8, level: "warning" },
       { label: "Kritisch", value: 3, level: "critical" },
+      { label: "Verfügbar", value: 9, level: "ok" },
+      { label: "Nicht verfügbar", value: 2, level: "critical" },
     ],
     rows: [
       { label: "Server", breakdown: { ok: 28, warning: 2, critical: 1 } },
@@ -112,10 +118,15 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     title: "Support-Postfach",
     level: "warning",
     metrics: [
-      { label: "Posteingang gesamt", value: 87, level: "warning" },
-      { label: "Heute", value: 12, level: "ok" },
-      { label: "Gestern", value: 18, level: "ok" },
-      { label: "Älter", value: 57, level: "warning" },
+      {
+        label: "Posteingang gesamt",
+        value: 87,
+        level: "warning",
+        trend: [61, 68, 72, 70, 79, 83, 87],
+      },
+      { label: "Heute", value: 12, level: "ok", trend: [8, 11, 9, 14, 12, 16, 12] },
+      { label: "Gestern", value: 18, level: "ok", trend: [13, 16, 12, 17, 15, 14, 18] },
+      { label: "Älter", value: 57, level: "warning", trend: [39, 43, 46, 48, 51, 54, 57] },
     ],
     note: "Nur Mengen und Alter, keine Mailinhalte",
   },
@@ -191,6 +202,11 @@ describe("KioskView", () => {
     expect(within(operations!).getByText("Nächste Woche im Urlaub")).toBeVisible();
     expect(within(operations!).getByText("Abrechenbarer Anteil")).toBeVisible();
     expect(within(operations!).getByText("82 %")).toBeVisible();
+    expect(within(operations!).getAllByRole("progressbar")).toHaveLength(2);
+    expect(within(operations!).getAllByText("Im Plan")).toHaveLength(2);
+    expect(within(operations!).getByText("Mit Terminrisiko")).toBeVisible();
+    expect(within(operations!).getByText("Mit Risiken")).toBeVisible();
+    expect(within(operations!).getByText("Überfällig")).toBeVisible();
 
     const infrastructure = screen
       .getByRole("heading", { name: "Infrastruktur – Überblick" })
@@ -199,12 +215,24 @@ describe("KioskView", () => {
     for (const label of ["Server", "Backup", "Netzwerk", "Firewall", "Internet", "Cloud"]) {
       expect(within(infrastructure!).getByText(label)).toBeVisible();
     }
+    expect(within(infrastructure!).getByText("Verfügbarkeit (Systeme)")).toBeVisible();
+    expect(within(infrastructure!).getByText("Verfügbar")).toBeVisible();
+    expect(within(infrastructure!).getByText("Nicht verfügbar")).toBeVisible();
+    expect(
+      within(within(infrastructure!).getByText("Verfügbar").closest("div")!).getByText("9"),
+    ).toBeVisible();
+    expect(
+      within(within(infrastructure!).getByText("Nicht verfügbar").closest("div")!).getByText("2"),
+    ).toBeVisible();
 
     const support = screen.getByRole("heading", { name: "Support-Postfach" }).closest("section");
     expect(support).not.toBeNull();
     for (const label of ["Posteingang gesamt", "Heute", "Gestern", "Älter"]) {
       expect(within(support!).getByText(label)).toBeVisible();
     }
+    expect(within(support!).getAllByRole("img", { name: /synthetischer Verlauf/i })).toHaveLength(
+      4,
+    );
 
     expect(container.querySelector('[class*="bg-background"]')).not.toBeInTheDocument();
   });
@@ -258,6 +286,22 @@ describe("KioskView", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("keeps data and refresh status in the compact header", () => {
+    render(
+      <KioskView
+        state={ready(snapshot(WALLBOARD_DOMAINS))}
+        securityStatus="valid"
+        onLogout={() => undefined}
+      />,
+    );
+
+    const header = screen.getByRole("banner");
+    expect(within(header).getByText(/Datenstand:/)).toBeVisible();
+    expect(within(header).getByText(/Letzte Aktualisierung:/)).toBeVisible();
+    expect(within(header).getByText("Automatischer Refresh: 60 s")).toBeVisible();
+    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
   });
 
   it("shows the Systemhaus wordmark, German date and light wallboard surface", () => {

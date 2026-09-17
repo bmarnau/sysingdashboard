@@ -245,6 +245,14 @@ Status und Risiken begrenzt; gewöhnliche Mengen erhalten keine semantische
 Färbung. Große Werte, deutsche Beschriftungen und die gleichmäßige Verteilung
 der drei Hauptspalten sichern die Fernlesbarkeit auf Full-HD-Anzeigen.
 
+Der kompakte Kopf enthält Datenstand, Datensatzversion, Aktualisierungsstatus
+und das 60-Sekunden-Refreshintervall. Projekte und Arbeitspakete zeigen ihre
+synthetischen Statusanteile als Fortschrittsbalken. Die Infrastruktur weist die
+Systemverfügbarkeit ausschließlich aggregiert aus. Kleine Support-Verläufe
+verwenden optionale, feste synthetische Trendwerte; sie enthalten keine
+Mailinhalte, Absender oder andere personenbezogene Angaben und stammen nicht
+aus Exchange oder Microsoft Graph.
+
 Der dauerhaft sichtbare Hinweis `DEMO-DATEN — KEINE LIVE-DATEN` ist Pflicht. Farbe ist nie alleinige Statussemantik; `OK`, `WARNUNG`, `KRITISCH` und `UNBEKANNT` werden auch textlich bzw. zugaenglich vermittelt.
 
 ## 13. Fehler- und Sicherheitsverhalten

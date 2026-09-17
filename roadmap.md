@@ -19,6 +19,7 @@
 - [x] Exact-Head-Gates auf Implementierungs-Head `20835703399a27139e5be3c719c5c4d87d33439f`: Security, CI, Prettier, ESLint, TypeScript, RBAC, Unit/Components, Build, E2E, A11y, Technical Debt, Quality Gate PASS
 - [x] Branch-genauer Lovable Runtime-/Visual-Check: Kiosk-E2E 2/2, 1920×1080 ohne Overflow, keine Consolefehler
 - [x] Helles Management-Wallboard mit drei Hauptspalten, neutralen Mengenflächen und semantischen Statusfarben für Full HD fertiggestellt
+- [x] Informationsdichte wiederhergestellt: Projekt-/Arbeitspaketfortschritt, aggregierte Systemverfügbarkeit, kompakte synthetische Support-Trends und Refreshstatus im Kopf
 - [x] Offizieller Supabase Advisor auf aktuell verbundener Live-Baseline: PASS, SEC-01 unverändert
 - [ ] Kiosk-spezifischer Post-Migration-Advisor auf kontrollierter Ziel-/Staging-Umgebung
 - [x] Dokumentation/Version 1.63.0 vollständig synchronisieren
