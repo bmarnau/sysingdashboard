@@ -1,0 +1,11 @@
+{
+  "activities": [
+    {
+      "id": "golden-negative-cross-customer-act",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-b",
+      "projectId": "golden-project-a1",
+      "workPackageId": "golden-wp-a1"
+    }
+  ]
+}

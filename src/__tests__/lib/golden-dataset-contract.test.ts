@@ -5,6 +5,8 @@ import {
   GOLDEN_DATASET_VERSION,
   GOLDEN_REFERENCE_TIME,
   GOLDEN_SCHEMA_VERSION,
+  type GoldenRelationDataset,
+  validateGoldenDatasetRelations,
   validateGoldenManifest,
 } from "@/lib/golden-dataset/golden-dataset-contract";
 
@@ -22,6 +24,32 @@ const GOLDEN_V1_FILES = [
   "expected/project-controlling.json",
   "expected/kiosk-summary.json",
 ];
+
+type GoldenActivityRelation = GoldenRelationDataset["activities"][number];
+
+async function readGoldenJson<T>(relativePath: string): Promise<T> {
+  return JSON.parse(await readFile(resolve(GOLDEN_ROOT, relativePath), "utf8")) as T;
+}
+
+async function loadPositiveRelations(): Promise<GoldenRelationDataset> {
+  const [systemhouses, customers, projects, workPackages, activities] = await Promise.all([
+    readGoldenJson<{ systemhouses: GoldenRelationDataset["systemhouses"] }>("systemhouse.json"),
+    readGoldenJson<{ customers: GoldenRelationDataset["customers"] }>("customers.json"),
+    readGoldenJson<{ projects: GoldenRelationDataset["projects"] }>("projects.json"),
+    readGoldenJson<{ workPackages: GoldenRelationDataset["workPackages"] }>(
+      "work-packages.json",
+    ),
+    readGoldenJson<{ activities: GoldenRelationDataset["activities"] }>("activities.json"),
+  ]);
+
+  return {
+    systemhouses: systemhouses.systemhouses,
+    customers: customers.customers,
+    projects: projects.projects,
+    workPackages: workPackages.workPackages,
+    activities: activities.activities,
+  };
+}
 
 describe("GDS-01 Golden Dataset V1 contract", () => {
   it("exposes the fixed Golden V1 constants", () => {
@@ -78,5 +106,67 @@ describe("GDS-01 Golden Dataset V1 contract", () => {
     };
 
     expect(validateGoldenManifest(manifest)).toEqual({ ok: false, error });
+  });
+
+  it("keeps the foreign systemhouse fixture isolated from positive expected results", async () => {
+    const foreign = await readGoldenJson<GoldenRelationDataset>("negative/cross-systemhouse.json");
+    const expected = await readFile(
+      resolve(GOLDEN_ROOT, "expected/project-controlling.json"),
+      "utf8",
+    );
+
+    expect(validateGoldenDatasetRelations(foreign)).toEqual({ ok: true });
+    expect(expected).not.toContain("golden-systemhouse-foreign");
+    expect(expected).not.toContain("golden-customer-foreign");
+  });
+
+  it("rejects a cross-customer activity relation fail-closed", async () => {
+    const positive = await loadPositiveRelations();
+    const fixture = await readGoldenJson<{ activities: GoldenActivityRelation[] }>(
+      "negative/cross-customer.json",
+    );
+
+    expect(
+      validateGoldenDatasetRelations({
+        ...positive,
+        activities: [...positive.activities, ...fixture.activities],
+      }),
+    ).toEqual({ ok: false, error: "golden_cross_customer_relation" });
+  });
+
+  it("rejects missing project and work-package references with stable errors", async () => {
+    const positive = await loadPositiveRelations();
+    const fixture = await readGoldenJson<{
+      missingProjectActivity: GoldenActivityRelation;
+      missingWorkPackageActivity: GoldenActivityRelation;
+    }>("negative/invalid-relations.json");
+
+    expect(
+      validateGoldenDatasetRelations({
+        ...positive,
+        activities: [...positive.activities, fixture.missingProjectActivity],
+      }),
+    ).toEqual({ ok: false, error: "golden_project_reference_missing" });
+
+    expect(
+      validateGoldenDatasetRelations({
+        ...positive,
+        activities: [...positive.activities, fixture.missingWorkPackageActivity],
+      }),
+    ).toEqual({ ok: false, error: "golden_workpackage_reference_missing" });
+  });
+
+  it("rejects duplicate IDs with a stable error", async () => {
+    const positive = await loadPositiveRelations();
+    const fixture = await readGoldenJson<{ duplicateActivities: GoldenActivityRelation[] }>(
+      "negative/invalid-relations.json",
+    );
+
+    expect(
+      validateGoldenDatasetRelations({
+        ...positive,
+        activities: [...positive.activities, ...fixture.duplicateActivities],
+      }),
+    ).toEqual({ ok: false, error: "golden_duplicate_id" });
   });
 });
