@@ -18,6 +18,10 @@ export interface KioskDomainCardProps {
   domain: KioskDomainSnapshot;
 }
 
+function formatMetricValue(value: number | null): string {
+  return value === null ? "—" : value.toLocaleString("de-DE");
+}
+
 export function KioskDomainCard({ domain }: KioskDomainCardProps) {
   return (
     <article className={`min-h-48 rounded-xl border p-5 shadow-sm ${LEVEL_CLASS[domain.level]}`}>
@@ -39,7 +43,7 @@ export function KioskDomainCard({ domain }: KioskDomainCardProps) {
               <dt className="text-sm text-muted-foreground">{metric.label}</dt>
               <dd className="mt-1 flex items-baseline justify-between gap-3">
                 <span className="text-2xl font-semibold tabular-nums">
-                  {metric.value === null ? "—" : metric.value}
+                  {formatMetricValue(metric.value)}
                 </span>
                 <span className="text-xs font-medium">{LEVEL_LABEL[metric.level]}</span>
               </dd>
