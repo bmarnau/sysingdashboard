@@ -157,27 +157,29 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
             aria-label="Kiosk-Domänen"
             className="grid flex-1 min-h-0 gap-3 lg:grid-cols-[1.08fr_1fr_0.82fr]"
           >
-            <section className="min-w-0 overflow-hidden rounded-md border border-kiosk-line bg-kiosk-surface p-3 shadow-sm">
+            <section className="flex min-w-0 flex-col overflow-hidden rounded-md border border-kiosk-line bg-kiosk-surface p-3 shadow-sm">
               <ColumnHeader title="Operative Arbeit" />
-              <OperationsColumn
-                projects={domains.get("projects")}
-                workPackages={domains.get("workPackages")}
-                activities={domains.get("activities")}
-                availability={domains.get("availability")}
-              />
+              <div className="min-h-0 flex-1">
+                <OperationsColumn
+                  projects={domains.get("projects")}
+                  workPackages={domains.get("workPackages")}
+                  activities={domains.get("activities")}
+                  availability={domains.get("availability")}
+                />
+              </div>
             </section>
-            <section className="min-w-0 overflow-hidden rounded-md border border-kiosk-line bg-kiosk-surface p-3 shadow-sm">
+            <section className="flex min-w-0 flex-col overflow-hidden rounded-md border border-kiosk-line bg-kiosk-surface p-3 shadow-sm">
               <ColumnHeader title="Infrastruktur – Überblick" />
-              <div className="mt-3">
+              <div className="mt-3 min-h-0 flex-1">
                 <InfrastructureColumn domain={domains.get("infrastructure")} />
               </div>
             </section>
             <section
               aria-label="Support-Postfach"
-              className="min-w-0 overflow-hidden rounded-md border border-kiosk-line bg-kiosk-surface p-3 shadow-sm"
+              className="flex min-w-0 flex-col overflow-hidden rounded-md border border-kiosk-line bg-kiosk-surface p-3 shadow-sm"
             >
               <ColumnHeader title="Support-Postfach" />
-              <div className="mt-3">
+              <div className="mt-3 min-h-0 flex-1">
                 <SupportColumn domain={domains.get("support")} />
               </div>
               <p className="mt-3 rounded-md bg-kiosk-blue-soft px-3 py-2 text-xs font-semibold text-kiosk-copy">

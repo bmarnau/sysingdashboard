@@ -87,7 +87,7 @@ function OperationalSummary({
   const progress = total > 0 ? Math.min(100, Math.round((okValue / total) * 100)) : 0;
 
   return (
-    <article className="border-b border-kiosk-line py-3 last:border-b-0">
+    <article className="flex min-h-0 flex-col justify-center border-b border-kiosk-line py-3 last:border-b-0">
       <DomainHeading icon={icon} title={domain.title} />
       <div className="mt-2 grid grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] items-end gap-4">
         <div className="min-w-0">
@@ -185,7 +185,7 @@ export function OperationsColumn({
   availability: KioskDomainSnapshot | undefined;
 }) {
   return (
-    <div className="divide-y divide-kiosk-line">
+    <div className="grid h-full grid-rows-[repeat(3,minmax(0,1fr))_auto] divide-y divide-kiosk-line">
       <OperationalSummary domain={projects} icon={BriefcaseBusiness} />
       <OperationalSummary domain={workPackages} icon={Check} />
       <OperationalSummary domain={activities} icon={Activity} />
@@ -204,7 +204,7 @@ export function InfrastructureColumn({ domain }: { domain: KioskDomainSnapshot |
   if (!domain || domain.metrics.length === 0) return <EmptyDomain title="Infrastruktur" />;
   const total = domain.metrics.reduce((sum, metric) => sum + (metric.value ?? 0), 0);
   return (
-    <div>
+    <div className="flex h-full flex-col">
       {domain.level === "unknown" ? (
         <p className="mb-2 text-sm font-bold text-kiosk-copy">UNBEKANNT</p>
       ) : null}
@@ -272,7 +272,7 @@ export function InfrastructureColumn({ domain }: { domain: KioskDomainSnapshot |
         </table>
       </div>
 
-      <article className="mt-3 rounded-md border border-kiosk-line p-3">
+      <article className="mt-auto rounded-md border border-kiosk-line p-3">
         <DomainHeading icon={ShieldAlert} title="Verfügbarkeit (Systeme)" />
         <div className="mt-3 grid grid-cols-2 gap-2">
           <div className="flex items-center gap-3 rounded-md bg-kiosk-green-soft p-3">
@@ -302,13 +302,13 @@ const SUPPORT_BARS = [35, 52, 42, 66, 48, 74, 58, 82];
 export function SupportColumn({ domain }: { domain: KioskDomainSnapshot | undefined }) {
   if (!domain || domain.metrics.length === 0) return <EmptyDomain title="Support-Postfach" />;
   return (
-    <div className="grid gap-3">
+    <div className="grid h-full grid-rows-4 gap-3">
       {domain.metrics.slice(0, 4).map((metric, index) => {
         const Icon = SUPPORT_ICONS[index] ?? Mail;
         return (
           <article
             key={metric.label}
-            className={`rounded-md border p-4 ${METRIC_SURFACE[metric.level]}`}
+            className={`flex items-center rounded-md border p-4 ${METRIC_SURFACE[metric.level]}`}
           >
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
               <div className="min-w-0">
