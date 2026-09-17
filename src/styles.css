@@ -34,6 +34,19 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-kiosk-canvas: oklch(0.975 0.008 240);
+  --color-kiosk-surface: oklch(0.995 0.003 240);
+  --color-kiosk-ink: oklch(0.24 0.095 265);
+  --color-kiosk-copy: oklch(0.43 0.055 255);
+  --color-kiosk-line: oklch(0.89 0.025 245);
+  --color-kiosk-blue: oklch(0.61 0.17 253);
+  --color-kiosk-blue-soft: oklch(0.95 0.035 245);
+  --color-kiosk-green: oklch(0.62 0.16 150);
+  --color-kiosk-green-soft: oklch(0.96 0.045 150);
+  --color-kiosk-amber: oklch(0.7 0.15 80);
+  --color-kiosk-amber-soft: oklch(0.97 0.045 85);
+  --color-kiosk-red: oklch(0.62 0.21 25);
+  --color-kiosk-red-soft: oklch(0.96 0.04 20);
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
