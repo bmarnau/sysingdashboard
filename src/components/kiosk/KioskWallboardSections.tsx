@@ -1,10 +1,6 @@
 import { AlertTriangle, CheckCircle2, CircleGauge, Clock3, ServerCog } from "lucide-react";
 import type { ReactNode } from "react";
-import type {
-  KioskDomainSnapshot,
-  KioskLevel,
-  KioskMetric,
-} from "@/lib/kiosk/kiosk-contract";
+import type { KioskDomainSnapshot, KioskLevel, KioskMetric } from "@/lib/kiosk/kiosk-contract";
 
 const LEVEL_LABEL: Record<KioskLevel, string> = {
   ok: "OK",
@@ -66,20 +62,26 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
   return (
     <article className="border-b border-kiosk-border pb-4 last:border-b-0 last:pb-0">
       <DomainHeading domain={domain} />
-      <dl className={`mt-3 grid gap-3 ${percentage ? "sm:grid-cols-[1fr_auto]" : "sm:grid-cols-2"}`}>
+      <dl
+        className={`mt-3 grid gap-3 ${percentage ? "sm:grid-cols-[1fr_auto]" : "sm:grid-cols-2"}`}
+      >
         <div className="grid gap-3 sm:grid-cols-2">
           {regularMetrics.map((metric) => (
             <MetricTile
               key={`${domain.id}-${metric.label}`}
               metric={metric}
-              emphasis={metric.level === "warning" || metric.level === "critical" ? metric.level : undefined}
+              emphasis={
+                metric.level === "warning" || metric.level === "critical" ? metric.level : undefined
+              }
             />
           ))}
         </div>
         {percentage ? (
           <div className="flex min-h-28 items-center gap-4 rounded-lg border border-kiosk-border bg-kiosk-muted px-5 py-3">
             <div className="grid size-20 shrink-0 place-items-center rounded-full border-[7px] border-kiosk-accent-soft bg-kiosk-surface">
-              <span className="text-2xl font-bold tabular-nums text-kiosk-ink">{value(percentage)}</span>
+              <span className="text-2xl font-bold tabular-nums text-kiosk-ink">
+                {value(percentage)}
+              </span>
             </div>
             <div>
               <dt className="text-base font-semibold text-kiosk-subtle">{percentage.label}</dt>
@@ -102,7 +104,11 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
       ) : null}
       <div className="grid grid-cols-3 gap-3">
         {domain.metrics.map((metric) => (
-          <MetricTile key={`${domain.id}-${metric.label}`} metric={metric} emphasis={metric.level} />
+          <MetricTile
+            key={`${domain.id}-${metric.label}`}
+            metric={metric}
+            emphasis={metric.level}
+          />
         ))}
       </div>
       {domain.rows?.length ? (
@@ -191,26 +197,43 @@ export function KioskWallboardSections({ domains }: { domains: Map<string, Kiosk
       className="grid flex-1 gap-4 xl:grid-cols-[1.16fr_1fr_0.78fr]"
     >
       <section className="rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm">
-        <PanelHeader title="Operative Arbeit" icon={<CircleGauge className="size-5" aria-hidden="true" />} />
-        <div className="grid gap-4">{operational.map((domain) => <OperationalDomain key={domain.id} domain={domain} />)}</div>
+        <PanelHeader
+          title="Operative Arbeit"
+          icon={<CircleGauge className="size-5" aria-hidden="true" />}
+        />
+        <div className="grid gap-4">
+          {operational.map((domain) => (
+            <OperationalDomain key={domain.id} domain={domain} />
+          ))}
+        </div>
         <p className="mt-4 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle">
           Keine Gründe oder Gesundheitsdaten
         </p>
       </section>
 
       <section className="rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm">
-        <PanelHeader title="Infrastruktur – Überblick" icon={<CheckCircle2 className="size-5" aria-hidden="true" />} />
+        <PanelHeader
+          title="Infrastruktur – Überblick"
+          icon={<CheckCircle2 className="size-5" aria-hidden="true" />}
+        />
         {infrastructure ? <Infrastructure domain={infrastructure} /> : null}
         <p className="mt-4 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle">
           Keine produktiven Hostnamen oder IP-Adressen.
         </p>
       </section>
 
-      <section aria-label="Support-Postfach" className="flex flex-col rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm">
-        <PanelHeader title="Support-Postfach" icon={<Clock3 className="size-5" aria-hidden="true" />} />
+      <section
+        aria-label="Support-Postfach"
+        className="flex flex-col rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm"
+      >
+        <PanelHeader
+          title="Support-Postfach"
+          icon={<Clock3 className="size-5" aria-hidden="true" />}
+        />
         {support ? <Support domain={support} /> : null}
         <p className="mt-4 flex items-center gap-2 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle">
-          <AlertTriangle className="size-4 shrink-0" aria-hidden="true" /> Nur Mengenansicht. Keine Inhaltsanzeige.
+          <AlertTriangle className="size-4 shrink-0" aria-hidden="true" /> Nur Mengenansicht. Keine
+          Inhaltsanzeige.
         </p>
       </section>
     </section>

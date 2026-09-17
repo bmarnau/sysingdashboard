@@ -43,9 +43,7 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
         <header className="rounded-lg border border-kiosk-border bg-kiosk-surface px-4 py-3 shadow-sm sm:px-5">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase text-kiosk-subtle">
-                SYSING / SYSTEMHAUS
-              </p>
+              <p className="text-xs font-bold uppercase text-kiosk-subtle">SYSING / SYSTEMHAUS</p>
               <div className="mt-1 flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
                 <h1 className="truncate text-2xl font-bold sm:text-3xl">Info-Kiosk</h1>
                 <span className="text-lg font-semibold text-kiosk-subtle">{greetingFor(now)}</span>
@@ -69,9 +67,7 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
           </div>
 
           <div className="mt-3 border-t border-kiosk-border pt-3">
-            <h2 className="text-2xl font-bold sm:text-3xl">
-              Operatives Management-Wallboard
-            </h2>
+            <h2 className="text-2xl font-bold sm:text-3xl">Operatives Management-Wallboard</h2>
             <p className="text-sm font-medium text-kiosk-subtle">
               Read-only | Auto-Refresh | Systemhaus
             </p>
