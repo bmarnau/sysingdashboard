@@ -63,9 +63,9 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
     <article className="border-b border-kiosk-border pb-4 last:border-b-0 last:pb-0">
       <DomainHeading domain={domain} />
       <dl
-        className={`mt-3 grid gap-3 ${percentage ? "sm:grid-cols-[1fr_auto]" : "sm:grid-cols-2"}`}
+        className={`mt-3 grid gap-3 ${percentage ? "2xl:grid-cols-[1fr_auto]" : "2xl:grid-cols-2"}`}
       >
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 2xl:grid-cols-2">
           {regularMetrics.map((metric) => (
             <MetricTile
               key={`${domain.id}-${metric.label}`}
