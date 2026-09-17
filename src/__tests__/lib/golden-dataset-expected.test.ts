@@ -79,8 +79,7 @@ function buildDrillDown(activities: readonly Activity[]) {
   const customers = new Map<string, Map<string, Map<string, string[]>>>();
 
   for (const activity of activities) {
-    const projects =
-      customers.get(activity.customerId) ?? new Map<string, Map<string, string[]>>();
+    const projects = customers.get(activity.customerId) ?? new Map<string, Map<string, string[]>>();
     const workPackages = projects.get(activity.projectId) ?? new Map<string, string[]>();
     const activityIds = workPackages.get(activity.workPackageId) ?? [];
     activityIds.push(activity.id);
