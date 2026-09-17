@@ -163,7 +163,7 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
   );
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col">
       {domain.level === "unknown" ? (
         <div className="mb-3 rounded-md border border-kiosk-border bg-kiosk-muted px-3 py-2 text-sm font-bold text-kiosk-subtle">
           UNBEKANNT
