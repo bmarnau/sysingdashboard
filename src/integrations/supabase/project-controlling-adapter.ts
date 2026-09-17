@@ -129,11 +129,12 @@ function categoryState(
 }
 
 function sortRows(rows: ProjectControllingRow[]): ProjectControllingRow[] {
-  return rows.sort((left, right) =>
-    left.activityDate.localeCompare(right.activityDate) ||
-    left.activityId.localeCompare(right.activityId) ||
-    left.systemhouseId.localeCompare(right.systemhouseId) ||
-    left.customerId.localeCompare(right.customerId),
+  return rows.sort(
+    (left, right) =>
+      left.activityDate.localeCompare(right.activityDate) ||
+      left.activityId.localeCompare(right.activityId) ||
+      left.systemhouseId.localeCompare(right.systemhouseId) ||
+      left.customerId.localeCompare(right.customerId),
   );
 }
 
@@ -256,7 +257,8 @@ export function createSupabaseProjectControllingRepository(
       .eq("is_active", true)
       .in("systemhouse_id", unique(readableScopes.map((scope) => scope.systemhouseId)))
       .in("customer_id", unique(readableScopes.map((scope) => scope.customerId)));
-    if (filters.projectSourceId) projectQuery = projectQuery.eq("source_id", filters.projectSourceId);
+    if (filters.projectSourceId)
+      projectQuery = projectQuery.eq("source_id", filters.projectSourceId);
 
     let workPackageQuery = client
       .from("shared_work_package_projection")
@@ -331,10 +333,7 @@ export function createSupabaseProjectControllingRepository(
     const workPackageIdsByScope = new Map<string, string[]>();
     for (const row of context.workPackages) {
       const key = scopeKey(row.systemhouse_id, row.customer_id);
-      workPackageIdsByScope.set(key, [
-        ...(workPackageIdsByScope.get(key) ?? []),
-        row.source_id,
-      ]);
+      workPackageIdsByScope.set(key, [...(workPackageIdsByScope.get(key) ?? []), row.source_id]);
     }
 
     const parentFilterRequired = Boolean(
@@ -534,13 +533,16 @@ export function createSupabaseProjectControllingRepository(
       }
 
       for (const project of context.projects) {
-        add(`project:${projectKey(project.systemhouse_id, project.customer_id, project.source_id)}`, {
-          kind: "project",
-          systemhouseId: project.systemhouse_id,
-          customerId: project.customer_id,
-          projectSourceId: project.source_id,
-          label: project.name,
-        });
+        add(
+          `project:${projectKey(project.systemhouse_id, project.customer_id, project.source_id)}`,
+          {
+            kind: "project",
+            systemhouseId: project.systemhouse_id,
+            customerId: project.customer_id,
+            projectSourceId: project.source_id,
+            label: project.name,
+          },
+        );
       }
 
       for (const workPackage of context.workPackages) {
