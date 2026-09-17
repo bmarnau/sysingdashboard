@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { KioskView } from "@/components/kiosk/KioskView";
 import type { KioskSnapshot, KioskDomainSnapshot } from "@/lib/kiosk/kiosk-contract";
@@ -40,6 +40,84 @@ const DOMAINS: KioskDomainSnapshot[] = [
     title: "Support-Postfach",
     level: "warning",
     metrics: [{ label: "Heute", value: 11, level: "warning" }],
+  },
+];
+
+type RichDomainSnapshot = KioskDomainSnapshot & {
+  metrics: Array<KioskDomainSnapshot["metrics"][number] & { unit?: string }>;
+  rows?: Array<{
+    label: string;
+    breakdown: { ok: number; warning: number; critical: number };
+  }>;
+};
+
+const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
+  {
+    id: "projects",
+    title: "Projekte",
+    level: "warning",
+    metrics: [
+      { label: "Aktive Projekte", value: 8, level: "ok" },
+      { label: "Mit Terminrisiko", value: 1, level: "warning" },
+    ],
+  },
+  {
+    id: "workPackages",
+    title: "Arbeitspakete",
+    level: "warning",
+    metrics: [
+      { label: "Offene Arbeitspakete", value: 24, level: "ok" },
+      { label: "Überfällig", value: 3, level: "warning" },
+    ],
+  },
+  {
+    id: "activities",
+    title: "Tätigkeiten",
+    level: "ok",
+    metrics: [
+      { label: "Stunden im Demo-Zeitraum", value: 126.5, level: "ok", unit: "h" },
+      { label: "Abrechenbarer Anteil", value: 82, level: "ok", unit: "%" },
+    ],
+  },
+  {
+    id: "availability",
+    title: "Urlaub (Mitarbeiter)",
+    level: "ok",
+    metrics: [
+      { label: "Diese Woche im Urlaub", value: 4, level: "ok" },
+      { label: "Nächste Woche im Urlaub", value: 6, level: "ok" },
+    ],
+    note: "Nur Anzahl, keine personenbezogenen Daten",
+  },
+  {
+    id: "infrastructure",
+    title: "Infrastruktur",
+    level: "critical",
+    metrics: [
+      { label: "OK", value: 131, level: "ok" },
+      { label: "Warnung", value: 8, level: "warning" },
+      { label: "Kritisch", value: 3, level: "critical" },
+    ],
+    rows: [
+      { label: "Server", breakdown: { ok: 28, warning: 2, critical: 1 } },
+      { label: "Backup", breakdown: { ok: 18, warning: 1, critical: 0 } },
+      { label: "Netzwerk", breakdown: { ok: 32, warning: 2, critical: 1 } },
+      { label: "Firewall", breakdown: { ok: 12, warning: 1, critical: 0 } },
+      { label: "Internet", breakdown: { ok: 16, warning: 1, critical: 1 } },
+      { label: "Cloud", breakdown: { ok: 25, warning: 1, critical: 0 } },
+    ],
+  },
+  {
+    id: "support",
+    title: "Support-Postfach",
+    level: "warning",
+    metrics: [
+      { label: "Posteingang gesamt", value: 87, level: "warning" },
+      { label: "Heute", value: 12, level: "ok" },
+      { label: "Gestern", value: 18, level: "ok" },
+      { label: "Älter", value: 57, level: "warning" },
+    ],
+    note: "Nur Mengen und Alter, keine Mailinhalte",
   },
 ];
 
@@ -93,6 +171,40 @@ describe("KioskView", () => {
     expect(screen.getAllByText("Quelle: synthetische Demo-Daten").length).toBeGreaterThanOrEqual(3);
     expect(screen.getByText("Keine Gründe oder Gesundheitsdaten")).toBeVisible();
     expect(screen.getByText("Nur Mengenansicht. Keine Inhaltsanzeige.")).toBeVisible();
+  });
+
+  it("renders the approved wallboard information set without dark metric tiles", () => {
+    const { container } = render(
+      <KioskView
+        state={ready(snapshot(WALLBOARD_DOMAINS))}
+        securityStatus="valid"
+        onLogout={() => undefined}
+      />,
+    );
+
+    const operations = screen.getByRole("heading", { name: "Operative Arbeit" }).closest("section");
+    expect(operations).not.toBeNull();
+    expect(within(operations!).getByRole("heading", { name: "Urlaub (Mitarbeiter)" })).toBeVisible();
+    expect(within(operations!).getByText("Diese Woche im Urlaub")).toBeVisible();
+    expect(within(operations!).getByText("Nächste Woche im Urlaub")).toBeVisible();
+    expect(within(operations!).getByText("Abrechenbarer Anteil")).toBeVisible();
+    expect(within(operations!).getByText("82 %")).toBeVisible();
+
+    const infrastructure = screen
+      .getByRole("heading", { name: "Infrastruktur – Überblick" })
+      .closest("section");
+    expect(infrastructure).not.toBeNull();
+    for (const label of ["Server", "Backup", "Netzwerk", "Firewall", "Internet", "Cloud"]) {
+      expect(within(infrastructure!).getByText(label)).toBeVisible();
+    }
+
+    const support = screen.getByRole("heading", { name: "Support-Postfach" }).closest("section");
+    expect(support).not.toBeNull();
+    for (const label of ["Posteingang gesamt", "Heute", "Gestern", "Älter"]) {
+      expect(within(support!).getByText(label)).toBeVisible();
+    }
+
+    expect(container.querySelector('[class*="bg-background"]')).not.toBeInTheDocument();
   });
 
   it("shows the approved time-based German greeting", () => {
