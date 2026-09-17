@@ -102,21 +102,21 @@ function OperationalSummary({
             .slice(1)
             .filter((metric) => metric.label !== "Abrechenbarer Anteil")
             .map((metric) => (
-            <div
-              key={metric.label}
-              className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2"
-            >
-              <span
-                className={`size-2.5 rounded-full ${LEVEL_DOT[metric.level]}`}
-                aria-hidden="true"
-              />
-              <div className="flex min-w-0 items-baseline justify-between gap-2 text-sm">
-                <dt className="truncate font-medium text-kiosk-copy">{metric.label}</dt>
-                <dd className="shrink-0 font-bold tabular-nums text-kiosk-ink">
-                  {formatValue(metric)}
-                </dd>
+              <div
+                key={metric.label}
+                className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2"
+              >
+                <span
+                  className={`size-2.5 rounded-full ${LEVEL_DOT[metric.level]}`}
+                  aria-hidden="true"
+                />
+                <div className="flex min-w-0 items-baseline justify-between gap-2 text-sm">
+                  <dt className="truncate font-medium text-kiosk-copy">{metric.label}</dt>
+                  <dd className="shrink-0 font-bold tabular-nums text-kiosk-ink">
+                    {formatValue(metric)}
+                  </dd>
+                </div>
               </div>
-            </div>
             ))}
         </dl>
       </div>
