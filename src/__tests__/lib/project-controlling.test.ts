@@ -205,4 +205,16 @@ describe("BSF-03A provider-neutral project controlling", () => {
 
     expect(result.ok && result.value.rows.map((row) => row.activityId)).toEqual(["target"]);
   });
+
+  it("fails closed when more than 5000 filtered activities are returned", async () => {
+    const rows = Array.from({ length: 5_001 }, (_, index) =>
+      makeRow({ activityId: `activity-${index}` }),
+    );
+    const service = new ProjectControllingService(makeRepository(rows));
+
+    await expect(service.get(BASE_FILTERS)).resolves.toEqual({
+      ok: false,
+      error: "PROJECT_CONTROLLING_TOO_MANY_ACTIVITIES",
+    });
+  });
 });
