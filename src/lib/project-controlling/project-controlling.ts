@@ -63,28 +63,31 @@ function summarize(rows: readonly ProjectControllingRow[]): ProjectControllingSu
   const customers = new Set<string>();
   const projects = new Set<string>();
   const workPackages = new Set<string>();
-  let totalHours = 0;
-  let billableHours = 0;
+  let totalHourHundredths = 0;
+  let billableHourHundredths = 0;
 
   for (const row of rows) {
     customers.add(row.customerId);
     if (row.projectSourceId) projects.add(row.projectSourceId);
     if (row.workPackageSourceId) workPackages.add(row.workPackageSourceId);
-    totalHours += row.durationHours;
-    if (row.billable) billableHours += row.durationHours;
+
+    const durationHourHundredths = Math.round(row.durationHours * 100);
+    totalHourHundredths += durationHourHundredths;
+    if (row.billable) billableHourHundredths += durationHourHundredths;
   }
 
-  const nonBillableHours = totalHours - billableHours;
+  const nonBillableHourHundredths = totalHourHundredths - billableHourHundredths;
 
   return {
     activities: rows.length,
     customers: customers.size,
     projects: projects.size,
     workPackages: workPackages.size,
-    totalHours,
-    billableHours,
-    nonBillableHours,
-    billableQuotePercent: totalHours === 0 ? 0 : (billableHours / totalHours) * 100,
+    totalHours: totalHourHundredths / 100,
+    billableHours: billableHourHundredths / 100,
+    nonBillableHours: nonBillableHourHundredths / 100,
+    billableQuotePercent:
+      totalHourHundredths === 0 ? 0 : (billableHourHundredths / totalHourHundredths) * 100,
   };
 }
 
