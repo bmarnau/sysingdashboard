@@ -381,6 +381,47 @@ Abnahmebericht.`,
     relatedTopics: ["reports", "avkk-management", "backup"],
   },
   {
+    id: "info-kiosk",
+    title: "Info-Kiosk — Steuerungsübersicht",
+    category: "Betrieb",
+    component: "KioskView",
+    route: "/kiosk",
+    roles: ["kiosk"],
+    keywords: ["Kiosk", "Wallboard", "Full HD", "Demo", "Infrastruktur", "Support"],
+    lastUpdated: "2026-09-17",
+    content: `## Zweck
+Der Info-Kiosk zeigt einen ausschließlich lesenden, synthetischen Demo-Stand auf
+einem Großbildschirm. Der Hinweis „DEMO-DATEN — KEINE LIVE-DATEN“ bleibt
+dauerhaft sichtbar.
+
+## Aufbau
+Die helle Steuerungsübersicht gliedert sich in drei Hauptspalten:
+
+1. **Operative Arbeit** — Projekte, Arbeitspakete, Tätigkeiten,
+   Statusfortschritt, abrechenbarer Anteil und Urlaubsanzahlen ohne
+   personenbezogene Details.
+2. **Infrastruktur – Überblick** — Statussummen, Bereichsmatrix und aggregierte
+   Systemverfügbarkeit ohne produktive Hostnamen oder IP-Adressen. Darunter ist
+   vorhandene Restfläche technisch für zukünftige aggregierte read-only
+   Betriebsinformationen reserviert. Sie besitzt heute bewusst weder einen
+   Fachdatensatz noch eine produktive Datenquelle oder sichtbare Platzhalter.
+3. **Support-Postfach** — Posteingang gesamt, heute, gestern und älter; nur
+   Mengen und synthetische Demo-Trends, keine Nachrichteninhalte.
+
+Normale Mengen erscheinen auf neutralen Flächen. Grün, Amber und Rot markieren
+ausschließlich Status und Risiken. Unbekannte Werte bleiben ausdrücklich als
+„UNBEKANNT“ sichtbar und werden nicht als null oder in Ordnung dargestellt.
+
+## Betrieb
+Die Ansicht aktualisiert den lokalen Demo-Snapshot automatisch. Datenstand,
+Datensatzversion, 60-Sekunden-Refresh und letzte Aktualisierung stehen kompakt
+im Kopf. Die Support-Verläufe sind feste synthetische Präsentationswerte; es
+gibt keine Mailinhalte, personenbezogenen Angaben oder Verbindung zu Exchange
+oder Microsoft Graph. Der manuelle Logout bleibt jederzeit erreichbar. Das
+Kiosk-Konto besitzt keine Schreib-, Import-, Export- oder Administrationsrechte.`,
+    relatedTopics: ["demo-data", "system-status"],
+  },
+  {
     id: "avkk-management",
     title: "AVKK Management — Führungssicht",
     category: "Fachmodell",

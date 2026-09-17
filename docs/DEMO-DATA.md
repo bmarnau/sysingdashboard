@@ -14,6 +14,20 @@ MVP-Abnahme. Er ist ein Abnahmeartefakt nach `docs/MVP-PLAN.md` Abschnitt 3.3.
 
 ## Inhalt
 
+### Info-Kiosk (`docs/examples/kiosk-demo-dataset-v1.json`)
+
+Der lokale, vollständig synthetische Kiosk-Datensatz speist die helle
+Steuerungsübersicht mit drei Hauptspalten. Er enthält aggregierte operative
+Kennzahlen, Urlaubsanzahlen ohne Gründe oder Gesundheitsdaten, eine
+Infrastruktur-Statusmatrix, aggregierte Systemverfügbarkeit und reine Mengen
+für das Support-Postfach. Die kleinen Support-Verläufe beruhen ausschließlich
+auf festen synthetischen Demo-Trendwerten. Sie enthalten weder Mailinhalte noch
+Absender, Betreffzeilen oder andere personenbezogene Daten; eine produktive
+Exchange-/Microsoft-Graph-Verbindung besteht nicht. Neutrale Mengen bleiben
+farblich neutral; Warn- und Kritischfarben markieren nur Risiken. Der Vertrag
+bleibt `sysing.kiosk.demo.v1`, wird strikt validiert und schreibt nicht in
+produktive Fachtabellen.
+
 ### Lokaler Bestand (`src/lib/demo-data/dataset.ts`)
 
 - 3 Projekte: Netzwerkmodernisierung, Microsoft-365-Migration, Backup-Konzept

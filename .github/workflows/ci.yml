@@ -71,6 +71,52 @@ jobs:
       - name: Project manifest check
         run: bun run project-status:check
 
+  # DB-SOT – Rebuild / Snapshot / Types / Drift ----------------------------
+  db_schema:
+    name: Database Schema Drift
+    needs: static
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: "${{ env.BUN_VERSION }}" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.117.0
+      - name: Start local Supabase
+        run: supabase start
+      - name: Rebuild database from migrations
+        run: bun run db:schema:rebuild
+      - name: Kiosk database contract
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -v ON_ERROR_STOP=1 \
+            -f supabase/tests/bsf-kiosk-01-role-contract.sql
+      - name: Generate schema snapshot
+        run: |
+          mkdir -p supabase/schema
+          bun run db:schema:snapshot
+      - name: Generate Supabase types
+        run: bun run db:types:generate
+      - name: Upload generated database evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-schema-generated
+          path: |
+            supabase/schema/public-schema.generated.sql
+            src/integrations/supabase/types.generated.ts
+          retention-days: 14
+      - name: Database schema drift
+        run: bun run db:schema:check
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup
+
   # 3+4 – Unit- und Komponenten-Tests -------------------------------------
   unit:
     name: 3+4 · Unit & Components
@@ -341,7 +387,7 @@ jobs:
   # 14 – Zentraler Prüfbericht + Quality-Gate -----------------------------
   report:
     name: 14 · Technical Report & Quality Gate
-    needs: [static, unit, backend, api, security, io, backup, build, e2e, a11y, debt]
+    needs: [static, db_schema, unit, backend, api, security, io, backup, build, e2e, a11y, debt]
     if: always()
     runs-on: ubuntu-latest
     steps:

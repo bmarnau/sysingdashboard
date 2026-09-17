@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-09-13"
+lastUpdated: "2026-09-17"
 
 project:
   name: "Sysing Dashboard"
@@ -49,7 +49,7 @@ architecturePrinciples:
     rule: "Kundenidentität und Kundenscope sind providerneutral an das Systemhaus gebunden und nicht an einen Microsoft-Tenant oder anderen Provider."
 
 versions:
-  dashboard: "1.62.0"
+  dashboard: "1.63.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 7
@@ -59,13 +59,13 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "BSF-03D"
-  currentSprintTitle: "Arbeitspaket-Kategorien"
+  currentSprint: "BSF-KIOSK-01"
+  currentSprintTitle: "Info-Kiosk Demo-Pilot"
   currentSprintStatus: "in-progress"
   nextSprint: "BSF-03A"
-  previousSprint: "BSF-03"
+  previousSprint: "BSF-03D"
   previousSprintStatus: "completed"
-  releaseReadiness: "passed"
+  releaseReadiness: "blocked"
   testsPassing: 704
   qualityGates:
     typecheck: "passed"
@@ -78,6 +78,12 @@ currentState:
     e2e: "passed"
     technicalReportQualityGate: "passed"
   knownVerificationLimits:
+    - id: "kiosk-post-migration-advisor"
+      status: "open"
+      severity: "high"
+      description: "BSF-KIOSK-01 ist implementiert und auf dem Feature-Branch gegatet; der Kiosk-spezifische Security-Advisor-Nachweis nach kontrollierter Anwendung der Kiosk-Migrationen auf einer geeigneten Ziel- oder Staging-Umgebung steht noch aus."
+      reference: "docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md"
+      targetSprint: "BSF-KIOSK-01"
     - id: "session-server-enforcement"
       status: "open"
       severity: "medium"
@@ -177,8 +183,18 @@ phases:
       - "BSF-03 P3/P4 Runtime/UI Meine Kunden und Kundendetail integriert und vollständig gegatet"
       - "BSF-03 P5 Kundenverantwortung mit datensparsamer Managementsicht, atomarem Lifecycle und unverändert engem operativem Kundenscope umgesetzt"
       - "BSF-03 Kundenverantwortung und Kundensicht vollständig abgeschlossen"
+      - "BSF-03D Arbeitspaket-Kategorien vollständig abgeschlossen und auf main integriert"
+      - "BSF-KIOSK-01 technisch implementiert; formale Finalabnahme wartet auf den Post-Migration-Security-Advisor"
 
 completedSprints:
+  - id: "BSF-03D"
+    title: "Arbeitspaket-Kategorien"
+    version: "1.62.0"
+    status: "completed"
+    summary: >-
+      Optionale systemhausweite Arbeitspaket-Kategorien als stabile Referenzdaten-
+      und Auswertungsdimension umgesetzt; Import/Export/Backup rückwärtskompatibel,
+      DB-/Security-Verträge und vollständige Quality Gates PASS; nach main integriert.
   - id: "BSF-03"
     title: "Kundenverantwortung und Kundensicht"
     version: "1.61.0"
@@ -350,24 +366,28 @@ roadmap:
       - "Bestehende lokale Daten bleiben kompatibel bzw. kontrolliert migrierbar"
       - "Minimaler gemeinsamer Read-/Datenpfad serverseitig geschützt"
       - "Cross-Systemhaus- und Cross-Customer-Negativtests vorhanden"
-  - id: "BSF-03D"
-    title: "Arbeitspaket-Kategorien"
-    status: "completed"
+  - id: "BSF-KIOSK-01"
+    title: "Info-Kiosk Demo-Pilot"
+    status: "in-progress"
     priority: "high"
-    goal: "Systemhausweite editierbare AP-Kategorien als optionale stabile Auswertungsdimension bereitstellen. Stand 1.62.0: implementiert; DB-Verifikation T01-T16 16/16 PASS (Rollback), Live-Schema PASS, Advisor ohne neue BSF-03D-Findings; Paket Q 2026-09-13: alle Quality Gates grün, E2E 77/77, Governance-Cleanup Preview-Auth-Broker abgeschlossen (docs/BSF-03D-CLOSURE-2026-09-13.md); GitHub-PR/Merge ausstehend."
+    goal: >-
+      Einen read-only Info-Kiosk mit ausschließlich synthetischen Demo-Daten,
+      providerneutraler KioskDataProvider-Grenze und einem eng begrenzten,
+      sicher betreibbaren Kiosk-Rollen-/Sessionprofil bereitstellen.
     dependencies:
-      - "BSF-03"
+      - "BSF-03D"
     exitCriteria:
-      - "Kategorie sicher pflegbar und filterbar"
-      - "Viewer ohne Write"
-      - "Vollständige Quality Gates und Governance-Cleanup abgeschlossen"
+      - "Vollständige Required Checks auf dem maßgeblichen Exact Head PASS"
+      - "Kiosk-Migrationen kontrolliert auf einer geeigneten Ziel- oder Staging-Umgebung angewendet"
+      - "Offizieller Post-Migration Security Advisor ohne neue ERROR, CRITICAL, HIGH oder WARN gegenüber der dokumentierten SEC-01-Baseline"
+      - "Abschluss-, Status-, Entwicklungstagebuch- und Hilfedokumentation synchron"
   - id: "BSF-03A"
     title: "Projektmanager-Leistungssicht und Controlling"
     status: "planned"
     priority: "high"
     goal: "Read-only-Leistungssicht nach Zeitraum, Kunde, Projekt und Tätigkeiten bereitstellen."
     dependencies:
-      - "BSF-03D"
+      - "BSF-KIOSK-01"
     exitCriteria:
       - "Summen und Drill-down im zulässigen Projekt-/Verantwortungsscope"
       - "Keine Teamlead-Finalisierungsrechte"
@@ -676,9 +696,9 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release; volatile report details remain CI artifacts."
 
 releaseManagement:
-  currentRelease: "1.62.0"
-  stage: "production"
-  status: "passed"
+  currentRelease: "1.63.0"
+  stage: "preview"
+  status: "blocked"
   releaseEvidence:
     - "CHANGELOG.md"
     - "docs/PROJECT-GOVERNANCE.md"
@@ -689,6 +709,7 @@ releaseManagement:
     - "docs/ENTWICKLUNGSTAGEBUCH.md"
     - "docs/ARCHITECTURE.md"
     - "docs/BSF-CURRENT-PRIORITIES.md"
+    - "docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md"
     - "docs/BSF-01-ARCHITECTURE-BASELINE.md"
     - "docs/BSF-03-P1-TARGET-VALIDATION-2026-09-13.md"
     - "docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md"
@@ -696,10 +717,11 @@ releaseManagement:
     - "docs/BSF-03-CLOSURE-2026-09-13.md"
     - "docs/BSF-03D-VERIFICATION-2026-09-13.md"
     - "docs/BSF-03D-CLOSURE-2026-09-13.md"
+    - "docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md"
     - "docs/CODEX-GIT-CI-RULE.md"
     - "docs/ADR/0029-systemhouse-customer-scope.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
-  nextReleaseTarget: "BSF-03D PR/Merge und BSF-03A"
+  nextReleaseTarget: "BSF-KIOSK-01 Finalabnahme und BSF-03A"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"

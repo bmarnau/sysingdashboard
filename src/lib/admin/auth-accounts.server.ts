@@ -18,7 +18,6 @@ export interface AuthAccountSummary {
   lastSignInAt: string | null;
   hasProfile: boolean;
   role: string | null;
-  /** Eigenes Konto des anfragenden Administrators. */
   isSelf: boolean;
 }
 
@@ -31,15 +30,27 @@ export type AuthContext = {
 
 type AdminClient = typeof supabaseAdmin;
 
-/** Prüft die Berechtigung im Benutzerkontext (nicht privilegiert). */
-export async function assertUserManage(context: AuthContext): Promise<void> {
+async function assertPermission(
+  context: AuthContext,
+  permission: "users.manage" | "roles.manage",
+): Promise<void> {
   const { data, error } = await context.supabase.rpc("has_permission", {
     _user_id: context.userId,
-    _perm: "users.manage",
+    _perm: permission,
   });
   if (error || data !== true) {
-    throw new Error("Forbidden: users.manage erforderlich");
+    throw new Error(`Forbidden: ${permission} erforderlich`);
   }
+}
+
+/** Prüft die Berechtigung im Benutzerkontext (nicht privilegiert). */
+export async function assertUserManage(context: AuthContext): Promise<void> {
+  await assertPermission(context, "users.manage");
+}
+
+/** Kiosk-Provisionierung ist zusätzlich eine Rollenverwaltungsoperation. */
+export async function assertRolesManage(context: AuthContext): Promise<void> {
+  await assertPermission(context, "roles.manage");
 }
 
 export function getAdminClient(): AdminClient {
@@ -158,8 +169,81 @@ export async function listAccounts(
     .sort((a, b) => a.email.localeCompare(b.email, "de"));
 }
 
-/** Mindestlänge gemäß bestehender Auth-Policy (Registrierung, Recovery). */
 export const MIN_PASSWORD_LENGTH = 8;
+
+export interface CreateKioskAccountInput {
+  email: string;
+  password: string;
+  displayName: string;
+}
+
+/**
+ * Erstellt atomar aus Anwendungssicht ein technisches Kiosk-Konto. Scheitert
+ * Profil- oder Rollenzuordnung, wird der zuvor erzeugte Auth-User kompensierend
+ * entfernt. Das Passwort wird ausschließlich an Supabase Auth weitergereicht.
+ */
+export async function createKioskAccount(
+  admin: AdminClient,
+  actorId: string,
+  input: CreateKioskAccountInput,
+): Promise<{ userId: string }> {
+  const { data: created, error: createError } = await admin.auth.admin.createUser({
+    email: input.email,
+    password: input.password,
+    email_confirm: true,
+    user_metadata: { display_name: input.displayName },
+  });
+  const userId = created?.user?.id;
+  if (createError || !userId) {
+    throw new Error("Kiosk-Konto konnte nicht angelegt werden.");
+  }
+
+  try {
+    const { error: profileError } = await admin.from("profiles").upsert({
+      id: userId,
+      display_name: input.displayName,
+      email: input.email,
+      status: "active",
+    } as never);
+    if (profileError) throw new Error("Kiosk-Profil konnte nicht angelegt werden.");
+
+    // `on_auth_user_created` vergibt synchron die Bootstraprolle `viewer`.
+    // Kiosk ist DB-seitig exklusiv; deshalb ersetzen wir ausschließlich genau
+    // diesen erwarteten Bootstrapzustand und brechen bei jeder Abweichung ab.
+    const { data: bootstrapRoles, error: bootstrapRolesError } = await admin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    if (bootstrapRolesError) {
+      throw new Error("Kiosk-Bootstraprolle konnte nicht geprüft werden.");
+    }
+    const roles = ((bootstrapRoles ?? []) as { role: string }[]).map((entry) => entry.role);
+    if (roles.length !== 1 || roles[0] !== "viewer") {
+      throw new Error("Kiosk-Konto hat einen unerwarteten Bootstrap-Rollenstatus.");
+    }
+
+    const { error: bootstrapRoleDeleteError } = await admin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", userId)
+      .eq("role", "viewer");
+    if (bootstrapRoleDeleteError) {
+      throw new Error("Kiosk-Bootstraprolle konnte nicht ersetzt werden.");
+    }
+
+    const { error: roleError } = await admin.from("user_roles").insert({
+      user_id: userId,
+      role: "kiosk",
+      granted_by: actorId,
+    } as never);
+    if (roleError) throw new Error("Kiosk-Rolle konnte nicht zugewiesen werden.");
+
+    return { userId };
+  } catch (error) {
+    await admin.auth.admin.deleteUser(userId).catch(() => undefined);
+    throw error;
+  }
+}
 
 /** Hat das Konto die Rolle Systemadministrator? */
 export async function isSystemAdministrator(admin: AdminClient, userId: string): Promise<boolean> {

@@ -5,7 +5,8 @@ export type Role =
   | "projectmanager"
   | "engineer"
   | "customer"
-  | "viewer";
+  | "viewer"
+  | "kiosk";
 
 export const ALL_ROLES: readonly Role[];
 export const ALL_PERMISSIONS: readonly string[];

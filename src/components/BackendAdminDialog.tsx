@@ -6,7 +6,7 @@
  * löschen). Es werden bewusst keine Plattform-Zugangsdaten, Projektkennungen,
  * URLs oder Schlüssel angezeigt oder gespeichert.
  */
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { SetPasswordDialog } from "@/components/admin/SetPasswordDialog";
 import {
   Dialog,
@@ -17,6 +17,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   CheckCircle2,
   KeyRound,
@@ -35,6 +37,7 @@ import {
   deleteAuthAccount,
   requestPasswordReset,
   setAccountPassword,
+  createKioskAuthAccount,
   type AuthAccountSummary,
 } from "@/lib/admin/auth-accounts.functions";
 
@@ -42,6 +45,8 @@ interface BackendAdminDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+const CREATE_KIOSK_BUSY_ID = "create-kiosk";
 
 function fmt(value: string | null): string {
   if (!value) return "—";
@@ -55,6 +60,12 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [pwTarget, setPwTarget] = useState<AuthAccountSummary | null>(null);
+  const [kioskFormOpen, setKioskFormOpen] = useState(false);
+  const [kioskDisplayName, setKioskDisplayName] = useState("Info-Kiosk");
+  const [kioskEmail, setKioskEmail] = useState("");
+  const [kioskPassword, setKioskPassword] = useState("");
+  const [kioskPasswordConfirmation, setKioskPasswordConfirmation] = useState("");
+  const [kioskError, setKioskError] = useState<string | null>(null);
 
   const authConfig = getAuthConfigurationStatus();
 
@@ -76,6 +87,17 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
     if (open) void load();
   }, [open, load]);
 
+  useEffect(() => {
+    if (!open) {
+      setKioskFormOpen(false);
+      setKioskDisplayName("Info-Kiosk");
+      setKioskEmail("");
+      setKioskPassword("");
+      setKioskPasswordConfirmation("");
+      setKioskError(null);
+    }
+  }, [open]);
+
   async function run(id: string, action: () => Promise<unknown>, okMessage: string) {
     setBusyId(id);
     try {
@@ -89,6 +111,49 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
       toast.error(message);
     } finally {
       setBusyId(null);
+    }
+  }
+
+  function resetKioskForm() {
+    setKioskFormOpen(false);
+    setKioskDisplayName("Info-Kiosk");
+    setKioskEmail("");
+    setKioskPassword("");
+    setKioskPasswordConfirmation("");
+    setKioskError(null);
+  }
+
+  async function handleCreateKioskAccount(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (kioskPassword !== kioskPasswordConfirmation) {
+      setKioskError("Passwörter stimmen nicht überein.");
+      return;
+    }
+
+    setBusyId(CREATE_KIOSK_BUSY_ID);
+    setKioskError(null);
+    try {
+      await createKioskAuthAccount({
+        data: {
+          email: kioskEmail,
+          password: kioskPassword,
+          displayName: kioskDisplayName,
+        },
+      });
+      toast.success("Kiosk-Konto wurde angelegt.");
+      resetKioskForm();
+      await load();
+    } catch (err) {
+      const message =
+        err instanceof Error && err.message
+          ? err.message
+          : "Kiosk-Konto konnte nicht angelegt werden.";
+      setKioskError(message);
+      toast.error(message);
+    } finally {
+      setBusyId(null);
+      setKioskPassword("");
+      setKioskPasswordConfirmation("");
     }
   }
 
@@ -140,6 +205,102 @@ export function BackendAdminDialog({ open, onOpenChange }: BackendAdminDialogPro
           bereit. Kontopflege erfolgt deshalb ausschließlich hier (Befund F-15, siehe Handbuch
           „Backend- und Auth-Administration").
         </p>
+
+        <section aria-label="Kiosk-Konto" className="rounded-lg border border-border p-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h3 className="font-medium">Dediziertes Kiosk-Konto</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Legt ein eigenes Konto mit der exklusiven Rolle „kiosk“ an. Die serverseitige
+                Berechtigungsprüfung bleibt maßgeblich; Passwörter werden nicht angezeigt oder
+                gespeichert.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                if (kioskFormOpen) {
+                  resetKioskForm();
+                } else {
+                  setKioskFormOpen(true);
+                  setKioskError(null);
+                }
+              }}
+              disabled={busyId === CREATE_KIOSK_BUSY_ID}
+            >
+              {kioskFormOpen ? "Abbrechen" : "Kiosk-Konto anlegen"}
+            </Button>
+          </div>
+
+          {kioskFormOpen && (
+            <form
+              className="mt-4 grid gap-3"
+              onSubmit={(event) => void handleCreateKioskAccount(event)}
+            >
+              <div>
+                <Label htmlFor="kiosk-display-name">Anzeigename</Label>
+                <Input
+                  id="kiosk-display-name"
+                  value={kioskDisplayName}
+                  onChange={(event) => setKioskDisplayName(event.target.value)}
+                  maxLength={120}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="kiosk-email">Kiosk-E-Mail</Label>
+                <Input
+                  id="kiosk-email"
+                  type="email"
+                  autoComplete="off"
+                  value={kioskEmail}
+                  onChange={(event) => setKioskEmail(event.target.value)}
+                  maxLength={254}
+                  required
+                />
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="kiosk-password">Kiosk-Passwort</Label>
+                  <Input
+                    id="kiosk-password"
+                    type="password"
+                    autoComplete="new-password"
+                    value={kioskPassword}
+                    onChange={(event) => setKioskPassword(event.target.value)}
+                    minLength={8}
+                    maxLength={200}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="kiosk-password-confirmation">Passwort bestätigen</Label>
+                  <Input
+                    id="kiosk-password-confirmation"
+                    type="password"
+                    autoComplete="new-password"
+                    value={kioskPasswordConfirmation}
+                    onChange={(event) => setKioskPasswordConfirmation(event.target.value)}
+                    minLength={8}
+                    maxLength={200}
+                    required
+                  />
+                </div>
+              </div>
+              {kioskError && (
+                <p role="alert" className="text-sm text-destructive">
+                  {kioskError}
+                </p>
+              )}
+              <div className="flex justify-end">
+                <Button type="submit" disabled={busyId === CREATE_KIOSK_BUSY_ID}>
+                  Kiosk-Konto erstellen
+                </Button>
+              </div>
+            </form>
+          )}
+        </section>
 
         {error && (
           <p role="alert" className="text-sm text-destructive">

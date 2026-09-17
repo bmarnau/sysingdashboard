@@ -1,10 +1,9 @@
 /**
  * Statische Absicherung der Admin-Serverfunktionen für Auth-Konten.
  *
- * Der Passwort-Reset ist eine privilegierte Auth-Operation. Diese Tests
- * verhindern, dass die Sicherheitsmerkmale (Rollenprüfung, kein privilegierter
- * Client im Browser, kein Setzen/Ausgeben von Passwörtern oder Tokens,
- * Audit-Eintrag) durch spätere Änderungen unbemerkt verloren gehen.
+ * Privilegierte Auth-Operationen bleiben serverseitig abgesichert. Kiosk-
+ * Provisionierung benötigt zusätzlich `roles.manage` und darf Passwortdaten
+ * weder protokollieren noch zurückgeben.
  */
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
@@ -23,12 +22,18 @@ const DIALOG = readFileSync(
   "utf8",
 );
 
-/** Handler-Rumpf einer exportierten Serverfunktion ausschneiden. */
 function fnBlock(name: string): string {
   const start = FUNCTIONS.indexOf(`export const ${name} =`);
   expect(start).toBeGreaterThan(-1);
   const next = FUNCTIONS.indexOf("\nexport const ", start + 10);
   return FUNCTIONS.slice(start, next === -1 ? undefined : next);
+}
+
+function helperBlock(name: string): string {
+  const start = HELPERS.indexOf(`export async function ${name}(`);
+  expect(start).toBeGreaterThan(-1);
+  const next = HELPERS.indexOf("\nexport async function ", start + 10);
+  return HELPERS.slice(start, next === -1 ? undefined : next);
 }
 
 const PRIVILEGED_FNS = [
@@ -38,12 +43,13 @@ const PRIVILEGED_FNS = [
   "resendConfirmation",
   "requestPasswordReset",
   "deleteAuthAccount",
+  "createKioskAuthAccount",
 ];
 
 describe("Admin-Serverfunktionen für Auth-Konten", () => {
   it("should_useCanonicalTanStackValidatorApi", () => {
     expect(FUNCTIONS).not.toContain(".inputValidator(");
-    expect(FUNCTIONS.match(/\.validator\(/g)).toHaveLength(5);
+    expect(FUNCTIONS.match(/\.validator\(/g)).toHaveLength(6);
   });
 
   it("should_requireAuthenticatedSession_forEveryFunction", () => {
@@ -58,16 +64,46 @@ describe("Admin-Serverfunktionen für Auth-Konten", () => {
     for (const name of PRIVILEGED_FNS) {
       expect(fnBlock(name), `${name} ohne Berechtigungsprüfung`).toContain("assertUserManage");
     }
-    // Prüfung läuft im Benutzerkontext, nicht über den privilegierten Client.
-    expect(HELPERS).toContain('_perm: "users.manage"');
+    expect(HELPERS).toContain('assertPermission(context, "users.manage")');
+    expect(HELPERS).toContain("_perm: permission");
     expect(HELPERS).toContain("context.supabase.rpc");
   });
 
+  it("should_requireRolesManageAdditionally_forKioskProvisioning", () => {
+    const block = fnBlock("createKioskAuthAccount");
+    expect(block).toContain("assertRolesManage");
+    expect(HELPERS).toContain('assertPermission(context, "roles.manage")');
+    expect(HELPERS).toContain("_perm: permission");
+  });
+
+  it("should_provisionExclusiveKioskRole_and_compensatePartialFailure", () => {
+    const block = fnBlock("createKioskAuthAccount");
+    expect(block).toContain("createKioskAccount");
+    expect(HELPERS).toContain('role: "kiosk"');
+    expect(HELPERS).toContain("auth.admin.deleteUser");
+  });
+
+  it("should_removeBootstrapViewer_beforeAssigningKioskRole", () => {
+    const block = helperBlock("createKioskAccount");
+    const viewerDelete = block.indexOf('.eq("role", "viewer")');
+    const kioskInsert = block.indexOf('.from("user_roles").insert');
+
+    expect(viewerDelete).toBeGreaterThan(-1);
+    expect(kioskInsert).toBeGreaterThan(-1);
+    expect(viewerDelete).toBeLessThan(kioskInsert);
+  });
+
+  it("should_neverAuditOrReturnKioskPassword", () => {
+    const block = fnBlock("createKioskAuthAccount");
+    expect(block).toContain('"auth_account.kiosk_create"');
+    const auditPart = block.slice(block.indexOf('"auth_account.kiosk_create"'));
+    expect(auditPart).not.toMatch(/password\s*:/i);
+    expect(auditPart).not.toMatch(/return[^;]*password/i);
+  });
+
   it("should_loadPrivilegedClientOnlyOnServer", () => {
-    // Kein Top-Level-Import des privilegierten Clients im Serverfunktionsmodul.
     expect(FUNCTIONS).not.toMatch(/^import .*client\.server/m);
     expect(FUNCTIONS).toContain('await import("@/lib/admin/auth-accounts.server")');
-    // Der Dialog (Browser) darf den privilegierten Pfad nie importieren.
     expect(DIALOG).not.toMatch(/client\.server|auth-accounts\.server/);
   });
 
@@ -84,7 +120,6 @@ describe("Admin-Serverfunktionen für Auth-Konten", () => {
     const block = fnBlock("requestPasswordReset");
     expect(block).toContain("auth.admin.getUserById");
     expect(block).toContain("Konto wurde nicht gefunden.");
-    // Die Zieladresse stammt nicht aus der Client-Eingabe.
     expect(block).not.toMatch(/input\??\.email|data\.email/);
   });
 
@@ -99,7 +134,6 @@ describe("Admin-Serverfunktionen für Auth-Konten", () => {
     const block = fnBlock("requestPasswordReset");
     expect(block).toContain('"auth.password_reset_requested"');
     expect(block).toContain('result: error ? "failed" : "sent"');
-    // Kein Token-Wert im Audit-Payload (Kommentare bleiben unberührt).
     const payload = block.slice(block.indexOf('"auth.password_reset_requested"'));
     expect(payload).not.toMatch(/token/i);
   });

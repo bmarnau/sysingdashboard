@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-13 · Dashboard-Version 1.62.0
+Stand: 2026-09-17 · Dashboard-Version 1.63.0
 
 ## Vision
 
@@ -39,10 +39,10 @@ Leitplanken von Anfang an:
 | Frage               | Antwort                                                                                                                                                 |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
-| Zeitraum            | Mai 2026 bis August 2026                                                                                                                                |
-| Aktueller Stand     | Version 1.61.0; MVP-Baseline CLOSED/PASS; BSF-03 Kundenverantwortung und Kundensicht P1–P5 abgeschlossen; BSF-03D folgt.                       |
+| Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
+| Aktueller Stand     | Version 1.62.0; MVP-Baseline CLOSED/PASS; BSF-03 und BSF-03D abgeschlossen; BSF-KIOSK-01 implementiert, Finalabnahme wartet auf Post-Migration-Advisor. |
 | Größte Hürden       | Der operative Fachbestand ist noch teilweise user-scoped lokal; echte Kunden-/Mehrbenutzersichten benötigen einen kontrollierten gemeinsamen Read-Pfad. |
-| Nächster Nutzen     | Kundenmodell → Kundenverantwortung/„Meine Kunden“ → Projektmanager-Leistungssicht → Teamlead-Leistungsnachweis.                                         |
+| Nächster Nutzen     | KIOSK-01 formal abschließen → Projektmanager-Leistungssicht (BSF-03A) → KIOSK-02 → Teamlead-Leistungsnachweis.                                         |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -912,3 +912,30 @@ Dokumentation: `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md`.
 ### Nachtrag Paket Q (2026-09-13)
 
 Governance-Cleanup: Preview-Auth-Broker entfernt, `client.ts` bytegleich zu `425fbed`, Contract-Test 3/3. Gate-Lauf komplett grün: Typecheck, Lint, Prettier, No-Console, Vitest 101/765, A11y 4/4, Security 112/112 (CRIT/HIGH/MED 0), Technical Debt 0 Critical, Docs, Projektstatus, Bundle, CI-Gate-Tests 12/12, Build, E2E 77/77 (Kategorie 4/4), Beispieldateien, API-Gate, Security-Gate, Technical Report v15, Quality Gate 0 Blocker. DB/Auth-Semantik unverändert, kein Merge/Deploy. Abschluss: `docs/BSF-03D-CLOSURE-2026-09-13.md`.
+
+## BSF-KIOSK-01 — Info-Kiosk Demo-Pilot (2026-09-15)
+
+Der Kiosk-Pilot ist im Draft-PR #141 technisch vollständig implementiert und bleibt bis zur formalen Endabnahme **IMPLEMENTATION COMPLETE / FINAL ACCEPTANCE PENDING**. Er ist bewusst kein zweites Fachsystem: Die Oberfläche liest über die providerneutrale `KioskDataProvider`-Grenze ausschließlich einen synthetischen Demo-Snapshot. Ein produktiver Graph-, SharePoint-, Exchange-, PRTG-, MCP- oder Agentenpfad ist in KIOSK-01 nicht enthalten.
+
+Umgesetzt sind:
+
+- Route `/kiosk` als read-only Fullscreen-Ansicht mit dauerhaft sichtbarer Kennzeichnung **DEMO-DATEN — KEINE LIVE-DATEN**,
+- lokaler, versionierter und idempotenter Demo-Datensatz einschließlich validiertem JSON-Import und Last-Good-/Fail-Closed-Verhalten,
+- technische Rolle `kiosk` mit ausschließlich der atomaren Berechtigung `kiosk.view` und Rollenexklusivität,
+- Kiosk-Routenbeschränkung, reguläre Supabase-Anmeldung, manueller Logout und Session-Watchdog,
+- eng begrenzte Idle-Ausnahme nur für ein Kiosk-Konto auf `/kiosk`; Konto-/Token-Sicherheitsprüfungen bleiben aktiv,
+- geschützte administrative Kiosk-Provisionierung; das Kiosk-Konto selbst besitzt keine Seed-, Import-, Admin- oder Schreibrechte.
+
+Konsolidierter Branch-Head vor der Dokumentationssynchronisierung: `847db830e245ee1941d03a5619aca7266d37f4c4`.
+
+Nachweise auf diesem Head:
+
+- Security #765 / Run `34929256947`: **PASS**,
+- CI #771 / Run `34929256983`: **PASS** einschließlich E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate,
+- branch-genauer Lovable Runtime-/Visual-Check auf dem geprüften Implementierungs-Head: **PASS** (Kiosk-E2E 2/2, 1920×1080, kein horizontaler Overflow, keine Console-/Page-Errors, Info-Kiosk/Demo-Warnung/Logout sichtbar).
+
+Der offizielle Supabase Security Advisor auf der unveränderten verbundenen Live-Baseline ist ebenfalls PASS. Er meldet exakt die zwei bekannten SEC-01-WARN vom Typ `0029_authenticated_security_definer_function_executable` für `public.avkk_can_write(_subject uuid)` und `public.avkk_people_directory()`; keine ERROR / CRITICAL / HIGH und keine neuen WARN.
+
+**Noch offen:** Die Kiosk-Migrationen sind auf der verbundenen Supabase-Instanz nicht angewendet. Deshalb ist der Advisor-Lauf ein Baseline-Nachweis, aber noch kein Kiosk-spezifischer Post-Migration-Nachweis. Vor FINAL PASS/DONE müssen die Migrationen kontrolliert auf einer geeigneten Ziel-/Staging-Umgebung angewendet und der offizielle Security Advisor dort erneut ohne neue Findings gegenüber SEC-01 ausgeführt werden.
+
+Bis dahin bleiben Issue #135 offen und PR #141 Draft. Es erfolgten kein Merge, kein Deploy und kein realer DB-Write. **BSF-03A startet erst nach formaler KIOSK-01-Endabnahme.**

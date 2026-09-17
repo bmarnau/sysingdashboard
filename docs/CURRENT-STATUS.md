@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-09-13
+Stand: 2026-09-16
 
 ## Zweck
 
@@ -20,16 +20,17 @@ Für den F-11-/MVP-Abschluss gelten weiterhin in dieser Reihenfolge:
 Für den laufenden BSF-Ausbau gelten zusätzlich:
 
 1. `docs/BSF-CURRENT-PRIORITIES.md` — operative Reihenfolge und aktueller Wiederanlaufpunkt,
-2. `docs/SPRINT-PLAN-MVP-BSF.md` — operative Sprintfolge,
-3. Issue #105 — laufende BSF-03-Steuerung,
-4. `docs/BSF-01-ARCHITECTURE-BASELINE.md` — Architektur-Baseline,
-5. `docs/ADR/0029-systemhouse-customer-scope.md` — kanonischer Systemhaus-/Customer-Scope,
-6. `docs/BSF-CONCEPT-REGISTER.md` — gesicherte fachliche Entscheidungen,
-7. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
-8. `docs/BSF-03-P1-TARGET-VALIDATION-2026-09-13.md` — Customer-Responsibility-Datenbasis und serverseitige Target-Validation,
-9. `docs/BSF-03-RUNTIME-UI-MEINE-KUNDEN-2026-09-13.md` — Runtime/UI „Meine Kunden“ inkl. Kundendetail,
-10. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel,
-11. `docs/BSF-03D-VERIFICATION-2026-09-13.md` — Arbeitspaket-Kategorien: DB-/Security-Nachweis und offene Restpunkte.
+2. `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` — verbindliche interne Kiosk-first-Reihenfolge,
+3. Issue #135 und Draft-PR #141 — aktiver BSF-KIOSK-01-Abnahmepfad,
+4. `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` — KIOSK-01-Abschluss- und Abnahmenachweis,
+5. `docs/SPRINT-PLAN-MVP-BSF.md` — operative Sprintfolge,
+6. `docs/BSF-01-ARCHITECTURE-BASELINE.md` — Architektur-Baseline,
+7. `docs/ADR/0029-systemhouse-customer-scope.md` — kanonischer Systemhaus-/Customer-Scope,
+8. `docs/BSF-CONCEPT-REGISTER.md` — gesicherte fachliche Entscheidungen,
+9. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
+10. `docs/BSF-03-CLOSURE-2026-09-13.md` — Abschluss Kundenverantwortung/Kundensicht,
+11. `docs/BSF-03D-CLOSURE-2026-09-13.md` — Abschluss Arbeitspaket-Kategorien,
+12. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
 
 Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und werden durch die oben genannten laufenden Quellen fortgeschrieben.
 
@@ -70,20 +71,58 @@ Verbindlicher Endzustand:
 
 P5-Evidenz: Migration `20260913150000_bsf03_p5_responsibility_management`, SQL-Vertrag R19–R31, Live-Read-only-Prüfung von Funktionsmodus/Grants/RLS sowie 90 Unit-/Component-Testdateien mit 704 PASS / 4 TODO auf dem geprüften Funktions-Head. Abschlussnachweis: `docs/BSF-03-CLOSURE-2026-09-13.md`.
 
-Nach finalem PR-#132-Merge ist **BSF-03D — Arbeitspaket-Kategorien (#103)** der nächste Entwicklungsschritt.
+### BSF-03D — DONE / Issue #103
 
-### BSF-03D — FINAL PASS (technisch verifiziert, PR/Merge ausstehend) / Issue #103
+Arbeitspaket-Kategorien sind mit Version 1.62.0 als systemhausweit editierbarer Katalog `workpackage.category` umgesetzt: Scope `systemhouse`, keine Seed-Werte, Key unveränderlich, deaktivieren statt löschen, `WorkPackage.categoryKey?: string | null` mit Default „keine Kategorie“, Tags unabhängig und keine Ableitung von billable/priority/status. JSON-Schema 1.2.0 bleibt für Import/Export/Backup/Restore rückwärtskompatibel.
 
-Arbeitspaket-Kategorien sind fachlich implementiert (Version 1.62.0): systemhausweit editierbarer Katalog `workpackage.category` (Scope `systemhouse`, keine Seed-Werte, Key unveränderlich, deaktivieren statt löschen), `WorkPackage.categoryKey?: string | null` mit Default „keine Kategorie“, Tags unabhängig, keine Ableitung von billable/priority/status, JSON-Schema 1.2.0 mit rückwärtskompatiblem Import/Export/Backup/Restore, Kategorie-Auswahl im Arbeitspaket-Dialog und Verwaltungsdialog nur mit `referencedata.manage`.
+Abschlussnachweis:
 
-Verifikationsstand:
+- Live-SQL-Artefakt `supabase/tests/bsf03d-workpackage-category.sql`: **T01–T16 16/16 PASS** mit Rollback,
+- Live-Schema-Vertrag PASS,
+- Security Advisor ohne neues BSF-03D-Finding gegenüber SEC-01,
+- vollständiger Gate-Lauf einschließlich Typecheck, Lint, Prettier, Unit/Component, A11y, Security, Technical Debt, Docs, Projektstatus, Build, E2E und Quality Gate PASS,
+- PR/Merge nach `main` abgeschlossen; Issue #103 geschlossen,
+- Nachweise: `docs/BSF-03D-VERIFICATION-2026-09-13.md` und `docs/BSF-03D-CLOSURE-2026-09-13.md`.
 
-- Live-SQL-Artefakt `supabase/tests/bsf03d-workpackage-category.sql`: **T01–T16 16/16 PASS**, eine Transaktion mit Rollback, DB dauerhaft unverändert,
-- Live-Schema-Vertrag PASS (Scope-Spalte, FK, partielle Unique-Indizes, Scope-Trigger, RLS ohne DELETE-Policy, History-Scope),
-- Security Advisor: ERROR 0 / CRITICAL 0 / WARN 2 — ausschließlich bekannte SEC-01-Baseline, **kein neues BSF-03D-Finding**,
-- E2E prüft UI-Gating per Route-Mocking; echte Viewer-/Cross-Systemhouse-Durchsetzung ist durch das SQL-Artefakt belegt.
+### BSF-KIOSK-01 — IMPLEMENTATION COMPLETE / TARGET MIGRATION APPLIED / FINAL ACCEPTANCE PENDING / Issue #135
 
-Paket Q (2026-09-13): vollständiger Gate-Lauf grün — Typecheck, Lint, Prettier, Vitest 765/765, A11y, Security 112/112, Technical Debt (0 Critical), Docs, Projektstatus, Build, E2E 77/77 (Kategorie-Spec 4/4), Quality Gate 0 Blocker. Preview-Auth-Broker final entfernt, Contract-Test 3/3. Offen bleibt ausschließlich die GitHub-Integration (Branch + PR, Security-Workflow, CI, Merge mit Expected-Head-SHA); Issue #103 wird erst danach geschlossen. Nachweise: `docs/BSF-03D-VERIFICATION-2026-09-13.md`, `docs/BSF-03D-CLOSURE-2026-09-13.md`.
+Der Info-Kiosk-Demo-Pilot ist auf Draft-PR #141 implementiert. Die Architektur hält den Kiosk als read-only Präsentationsschicht hinter einer austauschbaren `KioskDataProvider`-Grenze. Enthalten sind synthetische lokale Demo-Daten und ein enger JSON-Demoimport, die technische Rolle `kiosk` mit ausschließlich `kiosk.view`, Rollenexklusivität, Kiosk-Routenbeschränkung, Session-Watchdog sowie eine geschützte administrative Provisionierung.
+
+Aktueller code-tragender Exact Head vor der laufenden Dokumentationssynchronisierung:
+
+`2e9eaf126618296d5514c02aabea6e81aed1b16d`
+
+GitHub-Evidenz auf diesem Head:
+
+- Security #788 / Run `35062168459`: **PASS**,
+- CI #794 / Run `35062168406`: **PASS**,
+- Database Schema Drift mit vollständigem lokalem Supabase-Rebuild, Kiosk-DB-Vertrag T00–T05, Snapshot/Types und Driftcheck: **PASS**,
+- Unit & Components: **118 Testdateien / 824 Tests PASS / 4 TODO**,
+- Backend, API, RBAC & Security, Import/Export, Backup/Restore und Production Build: **PASS**,
+- Playwright E2E, Accessibility, Technical Debt sowie Technical Report & Quality Gate: **PASS**.
+
+Vor der Zielmigration wurde eine SECURITY-DEFINER-Regression in `public.has_permission(uuid,text)` entdeckt, testgetrieben reproduziert und mit der forward-only Migration `20260916052000_bsf_kiosk_01_preserve_permission_security_invoker.sql` behoben. Zusätzlich zeigte das Endreview einen realen Provisionierungsfehler: Der Trigger `on_auth_user_created` vergibt nach `auth.admin.createUser()` zunächst `viewer`; die direkte Kiosk-Zuweisung wäre am Exklusivitätstrigger gescheitert. Der RED-Test auf Commit `128e59e157411326a194a3625eb2852f3c720008` wurde mit dem GREEN-Fix `2e9eaf126618296d5514c02aabea6e81aed1b16d` geschlossen. Die Provisionierung ersetzt ausschließlich den erwarteten Bootstrapzustand `viewer` und bricht bei Abweichungen fail-closed ab.
+
+Nach ausdrücklicher Freigabe wurde der vollständige Kiosk-Migrationssatz am 2026-09-16 kontrolliert auf der verbundenen Sysingdashboard-Zieldatenbank angewendet. Der unmittelbare read-only Nachcheck bestätigte:
+
+- Rolle `kiosk`: vorhanden,
+- `public.enforce_kiosk_role_exclusive()`: vorhanden,
+- Exklusivitäts-Trigger auf `public.user_roles`: vorhanden,
+- `public.has_permission(uuid,text)`: weiterhin **SECURITY INVOKER** (`prosecdef=false`).
+
+Der offizielle Supabase Security Advisor auf der Vor-Kiosk-Baseline war PASS. Die SEC-01-Baseline bleibt dort exakt zwei WARN vom Typ `0029_authenticated_security_definer_function_executable` für `public.avkk_can_write(_subject uuid)` und `public.avkk_people_directory()`; keine ERROR / CRITICAL / HIGH und keine neuen Kiosk-Findings.
+
+Der frühere branch-genaue Lovable Runtime-/Visual-Check des Implementierungsstands war ebenfalls PASS: Kiosk-E2E 2/2, Full-HD 1920×1080 ohne horizontalen Overflow, sichtbarer Titel `Info-Kiosk`, permanente Kennzeichnung `DEMO-DATEN — KEINE LIVE-DATEN`, sichtbarer manueller Logout und keine Runtime-Console-/Page-Errors.
+
+**Noch offen für FINAL PASS/DONE:**
+
+1. Offiziellen Post-Migration-Security-Advisor auf genau der jetzt migrierten Sysingdashboard-Zielumgebung read-only ausführen und keine neuen Findings gegenüber SEC-01 nachweisen.
+2. Den aktuellen Lovable-Feature-Branch auf die maßgebliche Exact Head SHA prüfen und den Preview für Login, `/kiosk`, Admin-Provisionierung, Demo-Daten, Logout, Full-HD und Runtime-Fehlerfreiheit abnehmen.
+3. Den abschließenden reinen Dokumentations-Head wieder vollständig durch die Required GitHub Checks führen.
+
+Der direkte Supabase-Connector zeigt aktuell nicht auf die maßgebliche Sysingdashboard-Zielinstanz und wird deshalb nicht ersatzweise für den Post-Migration-Advisor verwendet. Der Feature-Branch ist inzwischen im Lovable-Branch-Picker sichtbar; der Published-Stand enthält `/kiosk` weiterhin noch nicht.
+
+Bis zu den beiden externen Nachweisen bleibt PR #141 Draft und Issue #135 offen. **Kein Merge und kein Publish/Deploy wurden ausgeführt.** BSF-03A / #106 ist der nächste Fachscope erst nach formaler KIOSK-01-Endabnahme.
 
 ## F-11
 
@@ -259,16 +298,17 @@ Branch Protection ist eine letzte technische Sicherheitsgrenze und ersetzt nicht
 
 ## BSF aktiv — aktueller roter Faden
 
-Die operative Reihenfolge ist in `docs/BSF-CURRENT-PRIORITIES.md` und `docs/SPRINT-PLAN-MVP-BSF.md` festgeschrieben:
+Die operative Reihenfolge ist in `docs/BSF-CURRENT-PRIORITIES.md`, `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` und `docs/SPRINT-PLAN-MVP-BSF.md` festgeschrieben:
 
-`BSF-03/P5 → BSF-03-Abschluss → BSF-03D → BSF-03A → BSF-03B → BSF-03E → BSF-03C → Dokumentationsblock → BSF-04 → BSF-04A → BSF-05 → BSF-06 → BSF-07 → BSF-09 → BSF-10 → BSF-FINAL → INTEGRATION-READINESS`
+`BSF-03D DONE → KIOSK-01 ZIELMIGRATION PASS → KIOSK-01 POST-MIGRATION-ADVISOR + LOVABLE-EXACT-HEAD-PREVIEW → KIOSK-01 FINAL PASS → BSF-03A → KIOSK-02 → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
 
 Die kanonische Kundenidentität bleibt `(systemhouseId, customerId)`; `systemhouseId` ist providerneutral und nicht gleich Microsoft Entra Tenant ID. Kundenverantwortung bleibt Scope/Beziehung, keine globale Rolle. Der vollständige Datenhaltungsumbau bleibt BSF-04.
 
 ## Dokumentationszustand
 
-- `docs/ENTWICKLUNGSTAGEBUCH.md` enthält die laufenden BSF-03-Nachweise.
-- `docs/PROJECT-STATUS.yaml`, `docs/BSF-CURRENT-PRIORITIES.md`, `docs/SPRINT-PLAN-MVP-BSF.md` und dieses Dokument werden gemeinsam auf den P5-Wiederanlaufpunkt synchronisiert.
+- `docs/ENTWICKLUNGSTAGEBUCH.md` wird auf den KIOSK-01-Zielmigrations- und Abnahmestand vom 2026-09-16 fortgeschrieben.
+- `docs/PROJECT-STATUS.yaml`, `docs/BSF-CURRENT-PRIORITIES.md`, `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` und dieses Dokument bilden gemeinsam den KIOSK-01-Wiederanlaufpunkt ab.
+- `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` ist der zentrale KIOSK-01-Abschluss- und Abnahmenachweis; FINAL PASS bleibt bis zu Post-Migration-Advisor und aktuellem Lovable-Exact-Head-Preview ausstehend.
 - `SYSING-001` existiert als Living Document `docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md` mit gemeinsamer Markdown-Quelle für PDF/Word.
 - SYSING-001 wird in BSF-DOC-02 kontrolliert aktualisiert und TDF-konform abgenommen; es wird keine zweite Dokumentquelle erzeugt.
 - BSF-DOC-03 macht die freigegebene SYSING-001-Fassung read-only aus dem Board erreichbar.

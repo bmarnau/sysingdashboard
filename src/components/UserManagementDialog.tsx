@@ -58,6 +58,8 @@ function roleStyle(r: UserRole): string {
       return "bg-muted text-muted-foreground border-border";
     case "viewer":
       return "bg-secondary text-muted-foreground border-border";
+    case "kiosk":
+      return "bg-accent text-accent-foreground border-border";
   }
 }
 
@@ -520,7 +522,7 @@ function UserAdmin({
                           className="ipt h-7 py-0 text-xs"
                           title="Rolle ändern"
                         >
-                          {ALL_ROLES.map((r) => (
+                          {ALL_ROLES.filter((r) => r !== "kiosk").map((r) => (
                             <option key={r} value={r}>
                               {ROLE_LABEL[r]}
                             </option>

@@ -36,6 +36,7 @@ import {
 } from "@/lib/demo-data";
 import type { DemoPersonaAccounts, DemoPersonaId } from "@/lib/demo-data";
 import { logger } from "@/lib/logger";
+import { KioskDemoDataSection } from "@/components/kiosk/KioskDemoDataSection";
 
 interface DemoDataDialogProps {
   open: boolean;
@@ -196,6 +197,8 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
             </Button>
           </div>
         </section>
+
+        <KioskDemoDataSection actor={user} />
 
         <section className="space-y-2 rounded-lg border border-border p-4">
           <h3 className="text-sm font-semibold">AVKK-Abnahmefälle (Datenbank)</h3>

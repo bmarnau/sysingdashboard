@@ -1,6 +1,45 @@
 # Roadmap
 
-## BSF-03D (#103) Arbeitspaket-Kategorien
+## BSF-KIOSK-01 (#135) Info-Kiosk Demo-Pilot
+
+- [x] Kiosk-first-Roadmap als verbindliche interne Reihenfolge übernommen
+- [x] Providerneutraler `KioskDataProvider` und lokaler Demo-Provider
+- [x] Großbild-Kioskansicht mit dauerhaftem Hinweis `DEMO-DATEN — KEINE LIVE-DATEN`
+- [x] Zustände `default`, `empty`, `unknown`, `error`, `not_loaded` und Last-good-Verhalten
+- [x] Technische Rolle `kiosk` + atomare Permission `kiosk.view`
+- [x] Kiosk-Konto auf `/kiosk` beschränkt; keine normalen Dashboard-/Schreib-/Adminrechte
+- [x] Idle-Logout-Ausnahme nur für exklusiven Kiosk-Betrieb; Auth-/Sperr-/Logout-Prüfungen bleiben aktiv
+- [x] Versionierter lokaler Kiosk-Demodatensatz, idempotent ladbar und vollständig entfernbar
+- [x] Demo-JSON-Vertrag `sysing.kiosk.demo.v1` mit 256-KiB-Limit und fail-closed Validierung
+- [x] Versionierter Referenzdatensatz `docs/examples/kiosk-demo-dataset-v1.json`
+- [x] JSON-Demoimport atomar in das bestehende lokale Kiosk-Demo-Repository; Last-good bleibt bei Fehler erhalten
+- [x] Kiosk-Demo-Steuerung im bestehenden Service-/Demo-Dialog: laden, JSON importieren, entfernen
+- [x] TDD-Nachweise für Parser, Repository, Service, Provider und UI-Wiring
+- [x] `/kiosk`-Route, Route-Gate, Session-Watchdog und administrative Kiosk-Provisionierung
+- [x] Exact-Head-Gates auf Implementierungs-Head `20835703399a27139e5be3c719c5c4d87d33439f`: Security, CI, Prettier, ESLint, TypeScript, RBAC, Unit/Components, Build, E2E, A11y, Technical Debt, Quality Gate PASS
+- [x] Branch-genauer Lovable Runtime-/Visual-Check: Kiosk-E2E 2/2, 1920×1080 ohne Overflow, keine Consolefehler
+- [x] Helles Management-Wallboard mit drei Hauptspalten, neutralen Mengenflächen und semantischen Statusfarben für Full HD fertiggestellt
+- [x] Informationsdichte wiederhergestellt: Projekt-/Arbeitspaketfortschritt, aggregierte Systemverfügbarkeit, kompakte synthetische Support-Trends und Refreshstatus im Kopf
+- [x] Offizieller Supabase Advisor auf aktuell verbundener Live-Baseline: PASS, SEC-01 unverändert
+- [ ] Kiosk-spezifischer Post-Migration-Advisor auf kontrollierter Ziel-/Staging-Umgebung
+- [x] Dokumentation/Version 1.63.0 vollständig synchronisieren
+- [x] PR #141 Review-Status und Abschlussnachweis aktualisieren
+- [ ] FINAL-PASS-/DONE-Entscheidung nach Post-Migration-Advisor
+- [ ] Merge/Deploy nur nach separater Freigabe
+
+### Abgrenzung
+
+KIOSK-01 enthält ausschließlich synthetische, lokale Demo-Daten. Der allgemeine providerneutrale Import mit realen/partiellen Quelldaten, Provenienz, Freshness und Customer-/Systemhouse-Scope bleibt BSF-05A vorbehalten.
+
+Die aktuell mit Lovable verbundene Supabase-Instanz enthält die Kiosk-Migrationen noch nicht. Der dort ausgeführte offizielle Advisor bestätigt die unveränderte SEC-01-Live-Baseline, ersetzt aber nicht den finalen Kiosk-spezifischen Advisor nach kontrolliert angewandten Migrationen.
+
+### Nächster interner Schritt nach KIOSK-01
+
+`BSF-03A (#106) → KIOSK-02 (#136)`
+
+---
+
+## BSF-03D (#103) Arbeitspaket-Kategorien — DONE
 
 - [x] Basis gegen GitHub main b90f93c prüfen
 - [x] Idempotente Repo-Migration für Reference-Data-Systemhouse-Scope (DB-Drift schließen)
@@ -15,7 +54,7 @@
 - [x] Gates: typecheck, lint, prettier, vitest, a11y, security, debt, docs, build, e2e (Paket Q 2026-09-13, alle grün; E2E 77/77, Kategorie 4/4)
 - [x] Doku: REFERENCE-DATA, DATA-SCHEMA, RBAC, Help, CHANGELOG 1.62.0, CURRENT-STATUS, Nachweis
 - [x] Governance: finaler Cleanup des erneut eingespielten Preview-Auth-Brokers (Contract-Test 3/3)
-- [ ] GitHub: Branch + PR, Security-Workflow, CI, Merge mit Expected-Head-SHA (außerhalb Lovable)
+- [x] GitHub: Branch + PR #134, Security/CI PASS und Merge auf `main`
 
 ## BSF-03D Review-Fix Runde 1 (HIGH-2, MEDIUM-1, MEDIUM-2, LOW-1)
 

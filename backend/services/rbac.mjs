@@ -15,6 +15,7 @@ export const ALL_ROLES = Object.freeze([
   "engineer",
   "customer",
   "viewer",
+  "kiosk",
 ]);
 
 export const ALL_PERMISSIONS = Object.freeze([
@@ -39,6 +40,7 @@ export const ALL_PERMISSIONS = Object.freeze([
   "referencedata.view",
   "referencedata.manage",
   "customer.responsibility.manage",
+  "kiosk.view",
 ]);
 
 export const ROLE_PERMISSIONS = Object.freeze({
@@ -125,6 +127,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
   ],
   customer: ["dashboard.view", "documentation.view", "referencedata.view"],
   viewer: ["dashboard.view", "documentation.view", "avkk.view", "referencedata.view"],
+  kiosk: ["kiosk.view"],
 });
 
 /** Prüft, ob die Rolle eine bestimmte Permission besitzt. */

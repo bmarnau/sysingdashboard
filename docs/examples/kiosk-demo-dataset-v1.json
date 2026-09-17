@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "sysing.kiosk.demo.v1",
+  "synthetic": true,
+  "snapshot": {
+    "mode": "demo",
+    "datasetVersion": "1.0.0",
+    "generatedAt": "2026-09-14T00:00:00Z",
+    "observedAt": "2026-09-14T00:00:00Z",
+    "domains": [
+      {
+        "id": "projects",
+        "title": "Projekte",
+        "level": "warning",
+        "metrics": [
+          {
+            "value": 8,
+            "label": "Aktive Projekte",
+            "level": "ok"
+          },
+          {
+            "value": 83,
+            "label": "Im Plan",
+            "level": "ok",
+            "unit": "%"
+          },
+          {
+            "value": 1,
+            "label": "Mit Terminrisiko",
+            "level": "warning"
+          },
+          {
+            "value": 0,
+            "label": "Kritisch",
+            "level": "critical"
+          }
+        ],
+        "note": "Synthetischer Demo-Stand"
+      },
+      {
+        "id": "workPackages",
+        "title": "Arbeitspakete",
+        "level": "warning",
+        "metrics": [
+          {
+            "value": 24,
+            "label": "Offene Arbeitspakete",
+            "level": "ok"
+          },
+          {
+            "value": 75,
+            "label": "Im Plan",
+            "level": "ok",
+            "unit": "%"
+          },
+          {
+            "value": 4,
+            "label": "Mit Risiken",
+            "level": "warning"
+          },
+          {
+            "value": 3,
+            "label": "Überfällig",
+            "level": "warning"
+          }
+        ],
+        "note": "Synthetischer Demo-Stand"
+      },
+      {
+        "id": "activities",
+        "title": "Tätigkeiten",
+        "level": "ok",
+        "metrics": [
+          {
+            "value": 126.5,
+            "label": "Stunden im Demo-Zeitraum",
+            "level": "ok",
+            "unit": "h"
+          },
+          {
+            "value": 82,
+            "label": "Abrechenbarer Anteil",
+            "level": "ok",
+            "unit": "%"
+          }
+        ],
+        "note": "Nur aggregierte synthetische Werte"
+      },
+      {
+        "id": "availability",
+        "title": "Urlaub (Mitarbeiter)",
+        "level": "ok",
+        "metrics": [
+          {
+            "value": 4,
+            "label": "Diese Woche im Urlaub",
+            "level": "ok"
+          },
+          {
+            "value": 6,
+            "label": "Nächste Woche im Urlaub",
+            "level": "ok"
+          }
+        ],
+        "note": "Keine Gründe oder Gesundheitsdaten"
+      },
+      {
+        "id": "infrastructure",
+        "title": "Infrastruktur",
+        "level": "critical",
+        "metrics": [
+          {
+            "value": 131,
+            "label": "OK",
+            "level": "ok"
+          },
+          {
+            "value": 8,
+            "label": "Warnung",
+            "level": "warning"
+          },
+          {
+            "value": 3,
+            "label": "Kritisch",
+            "level": "critical"
+          },
+          {
+            "value": 9,
+            "label": "Verfügbar",
+            "level": "ok"
+          },
+          {
+            "value": 2,
+            "label": "Nicht verfügbar",
+            "level": "critical"
+          }
+        ],
+        "rows": [
+          { "label": "Server", "breakdown": { "ok": 28, "warning": 2, "critical": 1 } },
+          { "label": "Backup", "breakdown": { "ok": 18, "warning": 1, "critical": 0 } },
+          { "label": "Netzwerk", "breakdown": { "ok": 32, "warning": 2, "critical": 1 } },
+          { "label": "Firewall", "breakdown": { "ok": 12, "warning": 1, "critical": 0 } },
+          { "label": "Internet", "breakdown": { "ok": 16, "warning": 1, "critical": 1 } },
+          { "label": "Cloud", "breakdown": { "ok": 25, "warning": 1, "critical": 0 } }
+        ],
+        "note": "Keine produktiven Hostnamen oder IP-Adressen. Nur aggregierte Demo-Statusdaten."
+      },
+      {
+        "id": "support",
+        "title": "Support-Postfach",
+        "level": "warning",
+        "metrics": [
+          {
+            "value": 87,
+            "label": "Posteingang gesamt",
+            "level": "warning",
+            "trend": [61, 68, 72, 70, 79, 83, 87]
+          },
+          {
+            "value": 12,
+            "label": "Heute",
+            "level": "ok",
+            "trend": [8, 11, 9, 14, 12, 16, 12]
+          },
+          {
+            "value": 18,
+            "label": "Gestern",
+            "level": "ok",
+            "trend": [13, 16, 12, 17, 15, 14, 18]
+          },
+          {
+            "value": 57,
+            "label": "Älter",
+            "level": "warning",
+            "trend": [39, 43, 46, 48, 51, 54, 57]
+          }
+        ],
+        "note": "Nur Mengen und Alter, keine Mailinhalte"
+      }
+    ]
+  }
+}

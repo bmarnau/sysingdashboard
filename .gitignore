@@ -36,5 +36,9 @@ dist-ssr
 .env.*
 !.env.example
 
+# Generated database schema/type drift evidence
+/supabase/schema/public-schema.generated.sql
+/src/integrations/supabase/types.generated.ts
+
 # Technical report history snapshots (Sprint 04)
 test-report/release-override.audit.log
