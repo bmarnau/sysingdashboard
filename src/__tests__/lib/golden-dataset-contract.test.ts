@@ -2,7 +2,8 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const MANIFEST_PATH = resolve("docs/examples/golden-dataset/v1/manifest.json");
+const GOLDEN_ROOT = resolve("docs/examples/golden-dataset/v1");
+const MANIFEST_PATH = resolve(GOLDEN_ROOT, "manifest.json");
 
 const GOLDEN_V1_FILES = [
   "systemhouse.json",
@@ -30,5 +31,11 @@ describe("GDS-01 Golden Dataset V1 contract", () => {
     const manifest = JSON.parse(await readFile(MANIFEST_PATH, "utf8")) as { files?: unknown };
 
     expect(manifest.files).toEqual(GOLDEN_V1_FILES);
+  });
+
+  it("contains every file declared by the Golden V1 manifest", async () => {
+    for (const file of GOLDEN_V1_FILES) {
+      await expect(readFile(resolve(GOLDEN_ROOT, file), "utf8")).resolves.toBeTruthy();
+    }
   });
 });
