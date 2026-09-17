@@ -1,8 +1,4 @@
-import type {
-  KioskDomainSnapshot,
-  KioskLevel,
-  KioskMetric,
-} from "@/lib/kiosk/kiosk-contract";
+import type { KioskDomainSnapshot, KioskLevel, KioskMetric } from "@/lib/kiosk/kiosk-contract";
 
 const LEVEL_LABEL: Record<KioskLevel, string> = {
   ok: "OK",
