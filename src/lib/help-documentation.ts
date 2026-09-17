@@ -382,7 +382,7 @@ Abnahmebericht.`,
   },
   {
     id: "info-kiosk",
-    title: "Info-Kiosk — Management-Wallboard",
+    title: "Info-Kiosk — Steuerungsübersicht",
     category: "Betrieb",
     component: "KioskView",
     route: "/kiosk",
@@ -395,7 +395,7 @@ einem Großbildschirm. Der Hinweis „DEMO-DATEN — KEINE LIVE-DATEN“ bleibt
 dauerhaft sichtbar.
 
 ## Aufbau
-Das helle Management-Wallboard gliedert sich in drei Hauptspalten:
+Die helle Steuerungsübersicht gliedert sich in drei Hauptspalten:
 
 1. **Operative Arbeit** — Projekte, Arbeitspakete, Tätigkeiten,
    Statusfortschritt, abrechenbarer Anteil und Urlaubsanzahlen ohne

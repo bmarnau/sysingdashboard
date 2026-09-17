@@ -39,10 +39,10 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
   const domains = new Map((state.snapshot?.domains ?? []).map((domain) => [domain.id, domain]));
 
   return (
-    <main className="min-h-dvh bg-kiosk-canvas p-3 text-kiosk-ink sm:p-4">
-      <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] max-w-[1920px] flex-col gap-3 sm:min-h-[calc(100dvh-2rem)]">
-        <header className="rounded-lg border border-kiosk-border bg-kiosk-surface px-4 py-3 shadow-sm sm:px-5">
-          <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_auto]">
+    <main className="min-h-dvh bg-kiosk-canvas p-3 text-kiosk-ink sm:p-4 2xl:p-2">
+      <div className="mx-auto flex min-h-[calc(100dvh-1.5rem)] max-w-[1920px] flex-col gap-3 sm:min-h-[calc(100dvh-2rem)] 2xl:min-h-[calc(100dvh-1rem)] 2xl:gap-2">
+        <header className="rounded-lg border border-kiosk-border bg-kiosk-surface px-4 py-3 shadow-sm sm:px-5 2xl:py-2">
+          <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_auto] 2xl:gap-3">
             <div className="min-w-0">
               <p className="text-xs font-bold uppercase text-kiosk-subtle">SYSING / SYSTEMHAUS</p>
               <div className="mt-1 flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
@@ -52,9 +52,9 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
               <p className="text-sm font-medium text-kiosk-subtle">{formatDayDate(now)}</p>
             </div>
 
-            <div className="grid shrink-0 justify-items-start gap-2 lg:justify-items-end">
+            <div className="grid shrink-0 justify-items-start gap-2 lg:justify-items-end 2xl:gap-1">
               <div className="flex flex-wrap items-center justify-end gap-3">
-                <div className="rounded-md border border-kiosk-warning-border bg-kiosk-warning-soft px-3 py-2 text-sm font-bold text-kiosk-warning">
+                <div className="rounded-md border border-kiosk-warning-border bg-kiosk-warning-soft px-3 py-2 text-sm font-bold text-kiosk-warning 2xl:py-1.5">
                   DEMO-DATEN — KEINE LIVE-DATEN
                 </div>
                 <Button
@@ -81,8 +81,8 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
             </div>
           </div>
 
-          <div className="mt-3 border-t border-kiosk-border pt-3">
-            <h2 className="text-2xl font-bold sm:text-3xl">Operatives Management-Wallboard</h2>
+          <div className="mt-3 border-t border-kiosk-border pt-3 2xl:mt-2 2xl:pt-2">
+            <h2 className="text-2xl font-bold sm:text-3xl">Operative Steuerungsübersicht</h2>
             <p className="text-sm font-medium text-kiosk-subtle">
               Read-only | Auto-Refresh | Systemhaus
             </p>

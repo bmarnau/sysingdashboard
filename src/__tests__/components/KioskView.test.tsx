@@ -174,7 +174,7 @@ describe("KioskView", () => {
   it("renders the approved management wallboard information hierarchy", () => {
     render(<KioskView state={ready()} securityStatus="valid" onLogout={() => undefined} />);
 
-    expect(screen.getByRole("heading", { name: "Operatives Management-Wallboard" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Operative Steuerungsübersicht" })).toBeVisible();
     expect(screen.getByText("Read-only | Auto-Refresh | Systemhaus")).toBeVisible();
     expect(screen.getByRole("heading", { name: "Operative Arbeit" })).toBeVisible();
     expect(screen.getByRole("heading", { name: "Infrastruktur – Überblick" })).toBeVisible();
