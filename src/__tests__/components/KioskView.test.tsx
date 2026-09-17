@@ -231,10 +231,10 @@ describe("KioskView", () => {
     expect(
       within(within(infrastructure!).getByText("Nicht verfügbar").closest("div")!).getByText("2"),
     ).toBeVisible();
-    const extensionArea = infrastructure?.querySelector(
-      '[data-kiosk-extension-area="reserved"]',
-    );
-    const systemAvailability = within(infrastructure!).getByText("Verfügbarkeit (Systeme)").parentElement;
+    const extensionArea = infrastructure?.querySelector('[data-kiosk-extension-area="reserved"]');
+    const systemAvailability = within(infrastructure!).getByText(
+      "Verfügbarkeit (Systeme)",
+    ).parentElement;
     expect(extensionArea).toBeInTheDocument();
     expect(extensionArea).toHaveAttribute("aria-hidden", "true");
     expect(extensionArea).toBeEmptyDOMElement();

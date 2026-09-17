@@ -237,13 +237,7 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
 }
 
 function KioskExtensionArea() {
-  return (
-    <div
-      aria-hidden="true"
-      data-kiosk-extension-area="reserved"
-      className="min-h-0 flex-1"
-    />
-  );
+  return <div aria-hidden="true" data-kiosk-extension-area="reserved" className="min-h-0 flex-1" />;
 }
 
 function Support({ domain }: { domain: KioskDomainSnapshot }) {
