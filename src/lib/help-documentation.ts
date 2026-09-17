@@ -381,6 +381,41 @@ Abnahmebericht.`,
     relatedTopics: ["reports", "avkk-management", "backup"],
   },
   {
+    id: "info-kiosk",
+    title: "Info-Kiosk — Management-Wallboard",
+    category: "Betrieb",
+    component: "KioskView",
+    route: "/kiosk",
+    roles: ["kiosk"],
+    keywords: ["Kiosk", "Wallboard", "Full HD", "Demo", "Infrastruktur", "Support"],
+    lastUpdated: "2026-09-17",
+    content: `## Zweck
+Der Info-Kiosk zeigt einen ausschließlich lesenden, synthetischen Demo-Stand auf
+einem Großbildschirm. Der Hinweis „DEMO-DATEN — KEINE LIVE-DATEN“ bleibt
+dauerhaft sichtbar.
+
+## Aufbau
+Das helle Management-Wallboard gliedert sich in drei Hauptspalten:
+
+1. **Operative Arbeit** — Projekte, Arbeitspakete, Tätigkeiten,
+   abrechenbarer Anteil und Urlaubsanzahlen ohne personenbezogene Details.
+2. **Infrastruktur – Überblick** — Statussummen, Bereichsmatrix und Hinweis zur
+   Systemverfügbarkeit ohne produktive Hostnamen oder IP-Adressen.
+3. **Support-Postfach** — Posteingang gesamt, heute, gestern und älter; nur
+   Mengen, keine Nachrichteninhalte.
+
+Normale Mengen erscheinen auf neutralen Flächen. Grün, Amber und Rot markieren
+ausschließlich Status und Risiken. Unbekannte Werte bleiben ausdrücklich als
+„UNBEKANNT“ sichtbar und werden nicht als null oder in Ordnung dargestellt.
+
+## Betrieb
+Die Ansicht aktualisiert den lokalen Demo-Snapshot automatisch. Datenstand,
+Datensatzversion und letzte Aktualisierung stehen in der Fußzeile. Der manuelle
+Logout bleibt jederzeit erreichbar. Das Kiosk-Konto besitzt keine Schreib-,
+Import-, Export- oder Administrationsrechte.`,
+    relatedTopics: ["demo-data", "system-status"],
+  },
+  {
     id: "avkk-management",
     title: "AVKK Management — Führungssicht",
     category: "Fachmodell",
