@@ -79,7 +79,8 @@ function buildDrillDown(activities: readonly Activity[]) {
   const customers = new Map<string, Map<string, Map<string, string[]>>>();
 
   for (const activity of activities) {
-    const projects = customers.get(activity.customerId) ?? new Map<string, Map<string, string[]>>();
+    const projects =
+      customers.get(activity.customerId) ?? new Map<string, Map<string, string[]>>();
     const workPackages = projects.get(activity.projectId) ?? new Map<string, string[]>();
     const activityIds = workPackages.get(activity.workPackageId) ?? [];
     activityIds.push(activity.id);
@@ -126,10 +127,16 @@ describe("GDS-01 Golden Dataset V1 expected business results", () => {
       workPackages: new Set(activities.map((activity) => activity.workPackageId)).size,
     }).toEqual(expected.summary);
 
-    const workPackageById = new Map(workPackages.map((workPackage) => [workPackage.id, workPackage]));
-    const categoryCatalog = catalogs.find((catalog) => catalog.catalogKey === "workpackage.category");
+    const workPackageById = new Map(
+      workPackages.map((workPackage) => [workPackage.id, workPackage]),
+    );
+    const categoryCatalog = catalogs.find(
+      (catalog) => catalog.catalogKey === "workpackage.category",
+    );
     expect(categoryCatalog).toBeDefined();
-    const activeKeys = new Set(categoryCatalog?.values.filter((value) => value.active).map((value) => value.key));
+    const activeKeys = new Set(
+      categoryCatalog?.values.filter((value) => value.active).map((value) => value.key),
+    );
     const inactiveKeys = new Set(
       categoryCatalog?.values.filter((value) => !value.active).map((value) => value.key),
     );
@@ -145,7 +152,9 @@ describe("GDS-01 Golden Dataset V1 expected business results", () => {
         if (filters.categoryState) {
           const workPackage = workPackageById.get(activity.workPackageId);
           if (!workPackage) return false;
-          if (categoryState(workPackage, activeKeys, inactiveKeys) !== filters.categoryState) return false;
+          if (categoryState(workPackage, activeKeys, inactiveKeys) !== filters.categoryState) {
+            return false;
+          }
           if (filters.categoryKey && workPackage.categoryKey !== filters.categoryKey) return false;
         }
 
