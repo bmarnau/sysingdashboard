@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 import { E2E_SUPABASE_URL, E2E_SUPABASE_PUBLISHABLE_KEY } from "../e2e/fixtures/supabase-e2e";
 export default defineConfig({
-  testDir: ".tmp-kiosk-verify",
+  testDir: ".",
   timeout: 60000,
   reporter: "list",
   use: { baseURL: "http://localhost:8184", trace: "off", screenshot: "off", video: "off" },
