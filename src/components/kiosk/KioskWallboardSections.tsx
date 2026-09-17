@@ -146,7 +146,9 @@ function VacationAndBillable({
             </div>
           ))}
         </dl>
-        <p className="mt-2 text-xs font-medium text-kiosk-copy">Keine personenbezogenen Daten</p>
+        <p className="mt-2 text-xs font-medium text-kiosk-copy">
+          Keine Gründe oder Gesundheitsdaten
+        </p>
       </article>
       <article className="rounded-md border border-kiosk-green/25 bg-kiosk-green-soft p-3">
         <DomainHeading icon={Activity} title="Abrechenbarer Anteil" />
