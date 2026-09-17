@@ -18,6 +18,18 @@ export interface KioskMetric {
   value: number | null;
   label: string;
   level: KioskLevel;
+  unit?: "h" | "%";
+}
+
+export interface KioskStatusBreakdown {
+  ok: number;
+  warning: number;
+  critical: number;
+}
+
+export interface KioskStatusRow {
+  label: string;
+  breakdown: KioskStatusBreakdown;
 }
 
 export interface KioskDomainSnapshot {
@@ -26,6 +38,7 @@ export interface KioskDomainSnapshot {
   level: KioskLevel;
   metrics: KioskMetric[];
   note?: string;
+  rows?: KioskStatusRow[];
 }
 
 export interface KioskSnapshot {

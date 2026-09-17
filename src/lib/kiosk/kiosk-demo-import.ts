@@ -13,6 +13,20 @@ const kioskMetricSchema = z
     value: z.number().finite().nullable(),
     label: z.string().trim().min(1).max(120),
     level: kioskLevelSchema,
+    unit: z.enum(["h", "%"]).optional(),
+  })
+  .strict();
+
+const kioskStatusRowSchema = z
+  .object({
+    label: z.string().trim().min(1).max(80),
+    breakdown: z
+      .object({
+        ok: z.number().int().nonnegative(),
+        warning: z.number().int().nonnegative(),
+        critical: z.number().int().nonnegative(),
+      })
+      .strict(),
   })
   .strict();
 
@@ -23,6 +37,7 @@ const kioskDomainSchema = z
     level: kioskLevelSchema,
     metrics: z.array(kioskMetricSchema).max(50),
     note: z.string().trim().max(500).optional(),
+    rows: z.array(kioskStatusRowSchema).max(12).optional(),
   })
   .strict();
 
@@ -82,6 +97,7 @@ export function parseKioskDemoJson(
     domains: validated.snapshot.domains.map((domain) => ({
       ...domain,
       metrics: domain.metrics.map((metric) => ({ ...metric })),
+      rows: domain.rows?.map((row) => ({ ...row, breakdown: { ...row.breakdown } })),
     })),
   };
 }

@@ -323,8 +323,10 @@ Auswirkung auf Echtdaten wieder entfernen.`,
       "Seed",
       "Systemhaus",
       "AVKK",
+      "Kiosk",
+      "Wallboard",
     ],
-    lastUpdated: "2026-08-13",
+    lastUpdated: "2026-09-17",
     content: `## Zweck
 Im Servicemenü öffnet „Demo-Datensatz…" die Verwaltung eines vollständig
 fiktiven Systemhaus-Datensatzes. Er dient Schulungen, Vorführungen und der
@@ -333,6 +335,11 @@ Abnahme — nicht dem Produktivbetrieb.
 ## Inhalt
 - **Lokaler Bestand**: Projekte (Netzwerkmodernisierung, Microsoft-365-Migration,
   Backup-Konzept), zugehörige Arbeitspakete und Tätigkeiten.
+- **Info-Kiosk**: Das helle Management-Wallboard verdichtet ausschließlich
+  synthetische Demo-Daten in drei Spalten: operative Arbeit mit aggregiertem
+  Mitarbeiterurlaub und abrechenbarem Anteil, Infrastrukturstatus nach sechs
+  Bereichen sowie Support-Mengen nach Alter. Es zeigt keine Namen,
+  Gesundheitsdaten, Hostnamen, IP-Adressen oder E-Mail-Inhalte.
 - **AVKK-Abnahmefälle**: acht zusammenhängende Sachverhalte, die jede
   Bewertungslage einmal abdecken — unkritisch, gefährdet, kritisch, überfällig,
   Voraussetzungslücke, Wissens- und Informationslücke, hohe Kundenkonsequenz,

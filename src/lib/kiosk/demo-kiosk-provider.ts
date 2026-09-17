@@ -16,6 +16,7 @@ function cloneDomains(domains: readonly KioskDomainSnapshot[]): KioskDomainSnaps
   return domains.map((domain) => ({
     ...domain,
     metrics: domain.metrics.map((metric) => ({ ...metric })),
+    rows: domain.rows?.map((row) => ({ ...row, breakdown: { ...row.breakdown } })),
   }));
 }
 
