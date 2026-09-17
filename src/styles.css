@@ -34,6 +34,23 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-kiosk-canvas: var(--kiosk-canvas);
+  --color-kiosk-surface: var(--kiosk-surface);
+  --color-kiosk-muted: var(--kiosk-muted);
+  --color-kiosk-border: var(--kiosk-border);
+  --color-kiosk-ink: var(--kiosk-ink);
+  --color-kiosk-subtle: var(--kiosk-subtle);
+  --color-kiosk-accent: var(--kiosk-accent);
+  --color-kiosk-accent-soft: var(--kiosk-accent-soft);
+  --color-kiosk-success: var(--kiosk-success);
+  --color-kiosk-success-soft: var(--kiosk-success-soft);
+  --color-kiosk-success-border: var(--kiosk-success-border);
+  --color-kiosk-warning: var(--kiosk-warning);
+  --color-kiosk-warning-soft: var(--kiosk-warning-soft);
+  --color-kiosk-warning-border: var(--kiosk-warning-border);
+  --color-kiosk-critical: var(--kiosk-critical);
+  --color-kiosk-critical-soft: var(--kiosk-critical-soft);
+  --color-kiosk-critical-border: var(--kiosk-critical-border);
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
@@ -78,6 +95,25 @@
   --border: oklch(0.32 0.03 260);
   --input: oklch(0.3 0.03 260);
   --ring: oklch(0.72 0.18 200);
+
+  /* Light, high-legibility management wallboard */
+  --kiosk-canvas: oklch(0.97 0.008 225);
+  --kiosk-surface: oklch(1 0 0);
+  --kiosk-muted: oklch(0.96 0.008 225);
+  --kiosk-border: oklch(0.87 0.014 225);
+  --kiosk-ink: oklch(0.25 0.025 245);
+  --kiosk-subtle: oklch(0.47 0.025 245);
+  --kiosk-accent: oklch(0.5 0.11 220);
+  --kiosk-accent-soft: oklch(0.91 0.04 220);
+  --kiosk-success: oklch(0.42 0.11 155);
+  --kiosk-success-soft: oklch(0.95 0.035 155);
+  --kiosk-success-border: oklch(0.78 0.08 155);
+  --kiosk-warning: oklch(0.48 0.11 72);
+  --kiosk-warning-soft: oklch(0.96 0.055 82);
+  --kiosk-warning-border: oklch(0.8 0.1 78);
+  --kiosk-critical: oklch(0.5 0.17 28);
+  --kiosk-critical-soft: oklch(0.95 0.04 28);
+  --kiosk-critical-border: oklch(0.77 0.1 28);
 
   --gradient-primary: linear-gradient(135deg, oklch(0.72 0.18 200), oklch(0.7 0.2 320));
   --gradient-card: linear-gradient(160deg, oklch(0.24 0.035 260), oklch(0.2 0.03 265));

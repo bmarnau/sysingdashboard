@@ -1,6 +1,6 @@
 # BSF-KIOSK-01 — Info-Kiosk Demo-Pilot Design
 
-Stand: 2026-09-14
+Stand: 2026-09-17
 Status: SPEC REVIEW
 Issue: #135
 Roadmap: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`
@@ -228,15 +228,22 @@ Primaeres Ziel ist 1920 x 1080 im Browser-Vollbild; 1366 x 768 bleibt kontrollie
 
 ```text
 +------------------------------------------------------------------+
-| Sysing Info-Kiosk | DEMO | Datenstand | Abmelden                 |
+| Sysing Info-Kiosk | Begruessung | DEMO | Abmelden                |
 +------------------------------------------------------------------+
-| Projekte          | Arbeitspakete      | Taetigkeiten             |
+| Operative Arbeit  | Infrastruktur       | Support-Postfach         |
+| Projekte          | Statussummen        | Posteingang gesamt       |
+| Arbeitspakete     | Bereichsmatrix      | Heute / Gestern          |
+| Taetigkeiten      | Systemverfuegbarkeit| Aelter (Warnung)         |
+| Urlaub            |                     |                           |
 +------------------------------------------------------------------+
-| Verfuegbarkeit    | Infrastruktur      | Support-Postfach          |
-+------------------------------------------------------------------+
-| Demo-Hinweis / Zustand / letzter Refresh                         |
+| Datenstand | Datensatz | letzte Aktualisierung                   |
 +------------------------------------------------------------------+
 ```
+
+Die Oberfläche nutzt helle, neutrale KPI-Flächen. Grün, Amber und Rot sind auf
+Status und Risiken begrenzt; gewöhnliche Mengen erhalten keine semantische
+Färbung. Große Werte, deutsche Beschriftungen und die gleichmäßige Verteilung
+der drei Hauptspalten sichern die Fernlesbarkeit auf Full-HD-Anzeigen.
 
 Der dauerhaft sichtbare Hinweis `DEMO-DATEN — KEINE LIVE-DATEN` ist Pflicht. Farbe ist nie alleinige Statussemantik; `OK`, `WARNUNG`, `KRITISCH` und `UNBEKANNT` werden auch textlich bzw. zugaenglich vermittelt.
 

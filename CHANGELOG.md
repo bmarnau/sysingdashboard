@@ -13,6 +13,11 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.63.0 - 2026-09-17
+
+- **Info-Kiosk Wallboard-Finish (BSF-KIOSK-01)**: Die bestehende Read-only-Ansicht ist für Full-HD-Fernlesbarkeit verdichtet und zeigt operative Arbeit, Infrastruktur und Support in drei stabilen Hauptspalten. Gewöhnliche Mengen bleiben neutral; Ampelfarben kennzeichnen ausschließlich Status und Risiken. Der synthetische Referenzdatensatz nutzt deutsche Bezeichnungen, Urlaubsanzahlen ohne personenbezogene Details, Infrastruktur-Bereichswerte sowie vier Support-Kennzahlen.
+- **Scope unverändert**: Keine Änderung an Authentifizierung, Rollen, Berechtigungen, Datenbank, Migrationen, Providergrenze oder externen Integrationen; der Demo-Vertrag bleibt `sysing.kiosk.demo.v1`.
+
 ## 1.62.0 - 2026-09-13
 
 - **Arbeitspaket-Kategorien (BSF-03D, Issue #103)**: Arbeitspakete tragen optional genau eine Kategorie (`categoryKey`, Default „keine Kategorie“). Kategorien sind editierbare, systemhausweite Stammdaten; alle Kunden desselben Systemhauses nutzen denselben aktiven Bestand. Tags bleiben unabhängig; Status, Priorität und Abrechenbarkeit werden nicht abgeleitet.

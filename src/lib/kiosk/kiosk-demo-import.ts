@@ -13,6 +13,22 @@ const kioskMetricSchema = z
     value: z.number().finite().nullable(),
     label: z.string().trim().min(1).max(120),
     level: kioskLevelSchema,
+    unit: z.string().trim().min(1).max(12).optional(),
+  })
+  .strict();
+
+const kioskStatusBreakdownSchema = z
+  .object({
+    ok: z.number().int().nonnegative(),
+    warning: z.number().int().nonnegative(),
+    critical: z.number().int().nonnegative(),
+  })
+  .strict();
+
+const kioskStatusRowSchema = z
+  .object({
+    label: z.string().trim().min(1).max(120),
+    breakdown: kioskStatusBreakdownSchema,
   })
   .strict();
 
@@ -23,6 +39,7 @@ const kioskDomainSchema = z
     level: kioskLevelSchema,
     metrics: z.array(kioskMetricSchema).max(50),
     note: z.string().trim().max(500).optional(),
+    rows: z.array(kioskStatusRowSchema).max(20).optional(),
   })
   .strict();
 
