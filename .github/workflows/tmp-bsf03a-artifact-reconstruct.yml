@@ -1,0 +1,76 @@
+name: Temporary BSF-03A CI Artifact Reconstruction
+
+on:
+  push:
+    branches:
+      - tmp/bsf03a-ci-artifact-897
+    paths:
+      - .github/workflows/tmp-bsf03a-artifact-reconstruct.yml
+      - .tmp/ci-artifact/**
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout transport branch
+        uses: actions/checkout@v4
+        with:
+          ref: tmp/bsf03a-ci-artifact-897
+          fetch-depth: 1
+
+      - name: Reconstruct and verify CI generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat \
+            .tmp/ci-artifact/types.generated.ts.b64.part1 \
+            .tmp/ci-artifact/types.generated.ts.b64.part2 \
+            .tmp/ci-artifact/types.generated.ts.b64.part3 \
+            .tmp/ci-artifact/types.generated.ts.b64.part4 \
+            > /tmp/types.generated.ts.b64
+
+          base64 -d /tmp/types.generated.ts.b64 > src/integrations/supabase/types.ts
+          base64 -d .tmp/ci-artifact/public-schema.generated.sql.gz.b64 | gzip -dc > supabase/schema/public-schema.sql
+
+          test "$(wc -c < src/integrations/supabase/types.ts)" -eq 40870
+          test "$(wc -c < supabase/schema/public-schema.sql)" -eq 117795
+
+          printf '%s  %s\n' \
+            '62ec8261027b2df36b2fe313832a0f55e9b88045caf569c34cd136ed218062b7' \
+            'src/integrations/supabase/types.ts' | sha256sum -c -
+          printf '%s  %s\n' \
+            'd6383b3124772e5a654e516499d61a10e4dafed92c35a34d21ff75844e02109a' \
+            'supabase/schema/public-schema.sql' | sha256sum -c -
+
+          test "$(git hash-object src/integrations/supabase/types.ts)" = '35a1f6bab4e10d060899f44698b8f01068a6ec2c'
+          test "$(git hash-object supabase/schema/public-schema.sql)" = 'dd83aa6b2c01c771163b806905599764268a2edc'
+
+          actual="$(git status --porcelain | awk '{print $2}' | sort)"
+          expected="$(printf '%s\n' 'src/integrations/supabase/types.ts' 'supabase/schema/public-schema.sql' | sort)"
+          test "$actual" = "$expected"
+
+      - name: Commit verified reconstruction to temporary branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/integrations/supabase/types.ts supabase/schema/public-schema.sql
+          git commit -m 'chore(tmp): reconstruct CI #897 canonical evidence'
+          git push origin HEAD:tmp/bsf03a-ci-artifact-897
+
+      - name: Final evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "types_size=$(wc -c < src/integrations/supabase/types.ts)"
+          echo "schema_size=$(wc -c < supabase/schema/public-schema.sql)"
+          echo "types_sha256=$(sha256sum src/integrations/supabase/types.ts | awk '{print $1}')"
+          echo "schema_sha256=$(sha256sum supabase/schema/public-schema.sql | awk '{print $1}')"
+          echo "types_blob=$(git hash-object src/integrations/supabase/types.ts)"
+          echo "schema_blob=$(git hash-object supabase/schema/public-schema.sql)"
+          git show --name-only --format= HEAD
