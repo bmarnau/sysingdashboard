@@ -43,6 +43,7 @@ Legende: ● erlaubt · ○ verboten
 | `avkk.management.view`       |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
 | `referencedata.view`         |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
 | `referencedata.manage`       |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| `project.controlling.view`   |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
 
 ### Fachregel Delegation
 
