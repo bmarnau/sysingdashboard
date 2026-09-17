@@ -15,8 +15,8 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSyncRouteImport } from './routes/api/sync'
 import { Route as ApiStatusRouteImport } from './routes/api/status'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedKioskRouteImport } from './routes/_authenticated/kiosk'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMeineKundenIndexRouteImport } from './routes/_authenticated/meine-kunden/index'
 import { Route as AuthenticatedKundenverantwortungIndexRouteImport } from './routes/_authenticated/kundenverantwortung/index'
 import { Route as ApiPublicAuthConfigRouteImport } from './routes/api/public/auth-config'
@@ -51,14 +51,14 @@ const ApiStatusRoute = ApiStatusRouteImport.update({
   path: '/api/status',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedKioskRoute = AuthenticatedKioskRouteImport.update({
   id: '/kiosk',
   path: '/kiosk',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMeineKundenIndexRoute =
@@ -223,18 +223,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/kiosk': {
       id: '/_authenticated/kiosk'
       path: '/kiosk'
       fullPath: '/kiosk'
       preLoaderRoute: typeof AuthenticatedKioskRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/meine-kunden/': {
