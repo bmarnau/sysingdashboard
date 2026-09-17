@@ -1,0 +1,20 @@
+name: Diagnose BSF-03A Trend Prettier
+
+on:
+  push:
+    branches:
+      - feat/bsf-03a-project-controlling
+
+jobs:
+  prettier-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Show exact Prettier diff
+        run: |
+          bunx prettier --write src/lib/project-controlling/project-controlling.ts
+          git diff -- src/lib/project-controlling/project-controlling.ts
