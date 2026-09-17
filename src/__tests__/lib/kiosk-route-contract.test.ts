@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const routePath = resolve(process.cwd(), "src/routes/_authenticated/kiosk.tsx");
+const authenticatedRoutePath = resolve(process.cwd(), "src/routes/_authenticated/route.tsx");
 
 describe("kiosk route contract", () => {
   it("defines the authenticated /kiosk child route through the provider boundary", () => {
@@ -18,5 +19,14 @@ describe("kiosk route contract", () => {
     expect(source).toContain("<KioskView");
     expect(source).toContain("performLogout");
     expect(source).not.toMatch(/supabase\.from\(|service_role|fetch\(/i);
+  });
+
+  it("fails closed when kiosk permission lookup is unavailable", () => {
+    const source = readFileSync(authenticatedRoutePath, "utf8");
+
+    expect(source).toContain("if (kioskPermissionError)");
+    expect(source).toContain('to: "/auth"');
+    expect(source).toContain('reason: "unavailable"');
+    expect(source).not.toContain("if (!kioskPermissionError)");
   });
 });
