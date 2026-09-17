@@ -36,9 +36,7 @@ async function loadPositiveRelations(): Promise<GoldenRelationDataset> {
     readGoldenJson<{ systemhouses: GoldenRelationDataset["systemhouses"] }>("systemhouse.json"),
     readGoldenJson<{ customers: GoldenRelationDataset["customers"] }>("customers.json"),
     readGoldenJson<{ projects: GoldenRelationDataset["projects"] }>("projects.json"),
-    readGoldenJson<{ workPackages: GoldenRelationDataset["workPackages"] }>(
-      "work-packages.json",
-    ),
+    readGoldenJson<{ workPackages: GoldenRelationDataset["workPackages"] }>("work-packages.json"),
     readGoldenJson<{ activities: GoldenRelationDataset["activities"] }>("activities.json"),
   ]);
 
