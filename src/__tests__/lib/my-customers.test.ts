@@ -139,6 +139,8 @@ describe("BSF-03 buildCustomerProjectionTree (M07–M08)", () => {
         title: "AP 1",
         status: "offen",
         priority: "hoch",
+        categoryKey: null,
+        categoryObserved: false,
       },
       {
         ...base,
@@ -149,6 +151,8 @@ describe("BSF-03 buildCustomerProjectionTree (M07–M08)", () => {
         title: "AP verwaist",
         status: "offen",
         priority: "niedrig",
+        categoryKey: null,
+        categoryObserved: false,
       },
     ],
     activities: [
