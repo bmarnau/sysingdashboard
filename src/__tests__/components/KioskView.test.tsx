@@ -82,6 +82,19 @@ describe("KioskView", () => {
     expect(onLogout).toHaveBeenCalledTimes(1);
   });
 
+  it("renders the approved management wallboard information hierarchy", () => {
+    render(<KioskView state={ready()} securityStatus="valid" onLogout={() => undefined} />);
+
+    expect(screen.getByRole("heading", { name: "Operatives Management-Wallboard" })).toBeVisible();
+    expect(screen.getByText("Read-only | Auto-Refresh | Systemhaus")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Operative Arbeit" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Infrastruktur – Überblick" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Support-Postfach" })).toBeVisible();
+    expect(screen.getAllByText("Quelle: synthetische Demo-Daten").length).toBeGreaterThanOrEqual(3);
+    expect(screen.getByText("Keine Gründe oder Gesundheitsdaten")).toBeVisible();
+    expect(screen.getByText("Nur Mengenansicht. Keine Inhaltsanzeige.")).toBeVisible();
+  });
+
   it("shows a clear not-loaded state without a seed action", () => {
     const value = { ...snapshot([]), datasetState: "not_loaded" as const };
     render(<KioskView state={ready(value)} securityStatus="valid" onLogout={() => undefined} />);
