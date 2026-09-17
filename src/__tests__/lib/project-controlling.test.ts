@@ -259,4 +259,34 @@ describe("BSF-03A provider-neutral project controlling", () => {
     expect(forward.ok && forward.value.summary).toEqual(expectedSummary);
     expect(reverse.ok && reverse.value.summary).toEqual(expectedSummary);
   });
+
+  it("builds a daily trend from the filtered rows and fills empty days with zero", async () => {
+    const service = new ProjectControllingService(
+      makeRepository([
+        makeRow({ activityId: "day-1-a", durationHours: 0.1, billable: true }),
+        makeRow({ activityId: "day-1-b", durationHours: 0.2, billable: true }),
+        makeRow({
+          activityId: "day-3",
+          activityDate: "2026-09-03",
+          durationHours: 0.3,
+          billable: false,
+        }),
+        makeRow({
+          activityId: "outside",
+          activityDate: "2026-09-06",
+          durationHours: 99,
+        }),
+      ]),
+    );
+
+    const result = await service.get(BASE_FILTERS);
+
+    expect(result.ok && result.value.trend).toEqual([
+      { date: "2026-09-01", totalHours: 0.3, billableHours: 0.3, nonBillableHours: 0 },
+      { date: "2026-09-02", totalHours: 0, billableHours: 0, nonBillableHours: 0 },
+      { date: "2026-09-03", totalHours: 0.3, billableHours: 0, nonBillableHours: 0.3 },
+      { date: "2026-09-04", totalHours: 0, billableHours: 0, nonBillableHours: 0 },
+      { date: "2026-09-05", totalHours: 0, billableHours: 0, nonBillableHours: 0 },
+    ]);
+  });
 });
