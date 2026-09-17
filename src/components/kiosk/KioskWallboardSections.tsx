@@ -98,7 +98,10 @@ function OperationalSummary({
           <p className="mt-1 text-xs font-semibold text-kiosk-copy">{progress} % im Plan</p>
         </div>
         <dl className="grid gap-1.5">
-          {domain.metrics.slice(1).map((metric) => (
+          {domain.metrics
+            .slice(1)
+            .filter((metric) => metric.label !== "Abrechenbarer Anteil")
+            .map((metric) => (
             <div
               key={metric.label}
               className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2"
@@ -114,7 +117,7 @@ function OperationalSummary({
                 </dd>
               </div>
             </div>
-          ))}
+            ))}
         </dl>
       </div>
     </article>
@@ -200,6 +203,9 @@ export function InfrastructureColumn({ domain }: { domain: KioskDomainSnapshot |
   const total = domain.metrics.reduce((sum, metric) => sum + (metric.value ?? 0), 0);
   return (
     <div>
+      {domain.level === "unknown" ? (
+        <p className="mb-2 text-sm font-bold text-kiosk-copy">UNBEKANNT</p>
+      ) : null}
       <div className="grid grid-cols-3 gap-2">
         {domain.metrics.slice(0, 3).map((metric) => {
           const share =
@@ -213,6 +219,9 @@ export function InfrastructureColumn({ domain }: { domain: KioskDomainSnapshot |
                 {formatValue(metric)}
               </p>
               <p className="mt-0.5 text-sm font-bold text-kiosk-ink">{metric.label}</p>
+              {metric.level === "unknown" ? (
+                <p className="mt-1 text-xs font-bold text-kiosk-copy">UNBEKANNT</p>
+              ) : null}
               <p className="mt-1 text-sm font-semibold tabular-nums text-kiosk-copy">{share} %</p>
             </article>
           );
