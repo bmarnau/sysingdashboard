@@ -21,7 +21,7 @@
 - [x] Management-Wallboard UI: kompakter Kopf, drei fachlich getrennte Spalten, Urlaub/Abrechenbarkeit, Infrastrukturmatrix und Support-Altersstruktur
 - [x] Offizieller Supabase Advisor auf aktuell verbundener Live-Baseline: PASS, SEC-01 unverändert
 - [ ] Kiosk-spezifischer Post-Migration-Advisor auf kontrollierter Ziel-/Staging-Umgebung
-- [ ] Dokumentation/Version 1.63.0 vollständig synchronisieren
+- [x] Dokumentation/Version 1.63.0 vollständig synchronisieren
 - [x] PR #141 Review-Status und Abschlussnachweis aktualisieren
 - [ ] FINAL-PASS-/DONE-Entscheidung nach Post-Migration-Advisor
 - [ ] Merge/Deploy nur nach separater Freigabe
