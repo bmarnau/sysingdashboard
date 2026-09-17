@@ -95,6 +95,63 @@ describe("KioskView", () => {
     expect(screen.getByText("Nur Mengenansicht. Keine Inhaltsanzeige.")).toBeVisible();
   });
 
+  it("shows the approved time-based German greeting", () => {
+    vi.useFakeTimers();
+    try {
+      for (const [hour, greeting] of [
+        [8, "Guten Morgen"],
+        [14, "Guten Tag"],
+        [20, "Guten Abend"],
+      ] as const) {
+        vi.setSystemTime(new Date(2026, 8, 17, hour, 0, 0));
+        const { unmount } = render(
+          <KioskView state={ready()} securityStatus="valid" onLogout={() => undefined} />,
+        );
+        expect(screen.getByText(greeting)).toBeVisible();
+        unmount();
+      }
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("shows the Systemhaus wordmark, German date and light wallboard surface", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 8, 17, 8, 0, 0));
+    try {
+      const { container } = render(
+        <KioskView state={ready()} securityStatus="valid" onLogout={() => undefined} />,
+      );
+
+      expect(screen.getByText("SYSING / SYSTEMHAUS")).toBeVisible();
+      expect(screen.getByText("Donnerstag, 17. September 2026")).toBeVisible();
+      expect(container.querySelector("main")).toHaveClass("bg-slate-50");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("formats management metrics with German grouping", () => {
+    const domains = DOMAINS.map((domain) =>
+      domain.id === "projects"
+        ? {
+            ...domain,
+            metrics: [{ label: "Aktiv", value: 1234, level: "ok" as const }],
+          }
+        : domain,
+    );
+
+    render(
+      <KioskView
+        state={ready(snapshot(domains))}
+        securityStatus="valid"
+        onLogout={() => undefined}
+      />,
+    );
+
+    expect(screen.getByText("1.234")).toBeVisible();
+  });
+
   it("shows a clear not-loaded state without a seed action", () => {
     const value = { ...snapshot([]), datasetState: "not_loaded" as const };
     render(<KioskView state={ready(value)} securityStatus="valid" onLogout={() => undefined} />);
