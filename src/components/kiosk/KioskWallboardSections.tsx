@@ -27,12 +27,14 @@ function MetricTile({ metric, emphasis }: { metric: KioskMetric; emphasis?: Kios
   return (
     <div
       data-emphasis={emphasis ?? "neutral"}
-      className={`flex min-h-28 flex-col justify-between rounded-lg border p-4 ${
+      className={`flex min-h-28 flex-col justify-between rounded-lg border p-4 2xl:min-h-24 2xl:p-3 ${
         emphasis ? STATUS_CLASS[visualLevel] : "border-kiosk-border bg-kiosk-muted text-kiosk-ink"
       }`}
     >
       <dt className="text-base font-semibold text-kiosk-subtle">{metric.label}</dt>
-      <dd className="mt-3 text-4xl font-bold tabular-nums text-kiosk-ink">{value(metric)}</dd>
+      <dd className="mt-3 text-4xl font-bold tabular-nums text-kiosk-ink 2xl:mt-2">
+        {value(metric)}
+      </dd>
       {metric.level === "unknown" ? (
         <span className="mt-2 text-xs font-bold uppercase text-kiosk-subtle">UNBEKANNT</span>
       ) : null}
@@ -64,14 +66,17 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
   const usesProgressBar = domain.id === "projects" || domain.id === "workPackages";
 
   return (
-    <article className="border-b border-kiosk-border pb-4 last:border-b-0 last:pb-0">
+    <article className="border-b border-kiosk-border pb-4 last:border-b-0 last:pb-0 2xl:pb-2">
       <DomainHeading domain={domain} />
       {isAvailability ? (
-        <dl data-layout="equal-vacation-cards" className="mt-3 grid grid-cols-2 gap-3">
+        <dl
+          data-layout="equal-vacation-cards"
+          className="mt-3 grid grid-cols-2 gap-3 2xl:mt-2 2xl:gap-2"
+        >
           {domain.metrics.map((metric) => (
             <div
               key={`${domain.id}-${metric.label}`}
-              className="flex min-h-24 flex-col justify-between rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3"
+              className="flex min-h-24 flex-col justify-between rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3 2xl:min-h-20 2xl:py-2"
             >
               <dt className="text-sm font-semibold text-kiosk-subtle">{metric.label}</dt>
               <dd className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">
@@ -82,10 +87,10 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
         </dl>
       ) : (
         <dl
-          className={`mt-3 grid gap-3 ${percentage ? "2xl:grid-cols-[0.7fr_1fr]" : "2xl:grid-cols-2"}`}
+          className={`mt-3 grid gap-3 2xl:mt-2 2xl:gap-2 ${percentage ? "2xl:grid-cols-[0.7fr_1fr]" : "2xl:grid-cols-2"}`}
         >
           {primaryMetric ? (
-            <div className="rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3">
+            <div className="rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3 2xl:py-2">
               <dt className="text-sm font-semibold text-kiosk-subtle">{primaryMetric.label}</dt>
               <dd className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">
                 {value(primaryMetric)}
@@ -93,7 +98,7 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
             </div>
           ) : null}
           {percentage ? (
-            <div className="rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3">
+            <div className="rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3 2xl:py-2">
               {usesProgressBar ? (
                 <>
                   <div className="flex items-baseline justify-between gap-3">
@@ -106,7 +111,7 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
                     aria-label={`${domain.title}: ${percentage.label}`}
                     max={100}
                     value={Math.min(100, Math.max(0, percentage.value ?? 0))}
-                    className="mt-3 h-2.5 w-full overflow-hidden rounded-full accent-kiosk-accent"
+                    className="mt-3 h-2.5 w-full overflow-hidden rounded-full accent-kiosk-accent 2xl:mt-2"
                   />
                 </>
               ) : (
@@ -131,7 +136,7 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
                       ? metric.level
                       : "neutral"
                   }
-                  className={`flex items-center justify-between rounded-md border px-3 py-2 ${
+                  className={`flex items-center justify-between rounded-md border px-3 py-2 2xl:py-1.5 ${
                     metric.level === "warning" || metric.level === "critical"
                       ? STATUS_CLASS[metric.level]
                       : "border-kiosk-border bg-kiosk-muted text-kiosk-ink"
@@ -158,13 +163,13 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
   );
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col">
       {domain.level === "unknown" ? (
         <div className="mb-3 rounded-md border border-kiosk-border bg-kiosk-muted px-3 py-2 text-sm font-bold text-kiosk-subtle">
           UNBEKANNT
         </div>
       ) : null}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-3 2xl:gap-2">
         {statusMetrics.map((metric) => (
           <MetricTile
             key={`${domain.id}-${metric.label}`}
@@ -174,9 +179,9 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
         ))}
       </div>
       {domain.rows?.length ? (
-        <div className="mt-4 overflow-hidden rounded-lg border border-kiosk-border">
+        <div className="mt-4 overflow-hidden rounded-lg border border-kiosk-border 2xl:mt-3">
           <table className="w-full border-collapse text-base">
-            <caption className="bg-kiosk-muted px-4 py-3 text-left font-bold text-kiosk-ink">
+            <caption className="bg-kiosk-muted px-4 py-3 text-left font-bold text-kiosk-ink 2xl:py-2">
               Status nach Bereichen
             </caption>
             <thead className="border-y border-kiosk-border bg-kiosk-muted text-sm text-kiosk-subtle">
@@ -190,14 +195,16 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
             <tbody>
               {domain.rows.map((row) => (
                 <tr key={row.label} className="border-b border-kiosk-border last:border-b-0">
-                  <th className="px-4 py-3 text-left font-semibold text-kiosk-ink">{row.label}</th>
-                  <td className="px-2 py-3 text-right font-semibold tabular-nums text-kiosk-success">
+                  <th className="px-4 py-3 text-left font-semibold text-kiosk-ink 2xl:py-2">
+                    {row.label}
+                  </th>
+                  <td className="px-2 py-3 text-right font-semibold tabular-nums text-kiosk-success 2xl:py-2">
                     {row.breakdown.ok}
                   </td>
-                  <td className="px-2 py-3 text-right font-semibold tabular-nums text-kiosk-warning">
+                  <td className="px-2 py-3 text-right font-semibold tabular-nums text-kiosk-warning 2xl:py-2">
                     {row.breakdown.warning}
                   </td>
-                  <td className="px-4 py-3 text-right font-semibold tabular-nums text-kiosk-critical">
+                  <td className="px-4 py-3 text-right font-semibold tabular-nums text-kiosk-critical 2xl:py-2">
                     {row.breakdown.critical}
                   </td>
                 </tr>
@@ -207,13 +214,13 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
         </div>
       ) : null}
       {availabilityMetrics.length ? (
-        <div className="mt-4 border-t border-kiosk-border pt-4">
+        <div className="mt-4 border-t border-kiosk-border pt-4 2xl:mt-3 2xl:pt-3">
           <h3 className="text-lg font-bold text-kiosk-ink">Verfügbarkeit (Systeme)</h3>
-          <dl className="mt-3 grid grid-cols-2 gap-3">
+          <dl className="mt-3 grid grid-cols-2 gap-3 2xl:mt-2 2xl:gap-2">
             {availabilityMetrics.map((metric) => (
               <div
                 key={`${domain.id}-${metric.label}`}
-                className={`rounded-lg border px-4 py-3 ${STATUS_CLASS[metric.level]}`}
+                className={`rounded-lg border px-4 py-3 2xl:py-2 ${STATUS_CLASS[metric.level]}`}
               >
                 <dt className="text-sm font-semibold">{metric.label}</dt>
                 <dd className="mt-1 text-3xl font-bold tabular-nums text-kiosk-ink">
@@ -230,14 +237,14 @@ function Infrastructure({ domain }: { domain: KioskDomainSnapshot }) {
 
 function Support({ domain }: { domain: KioskDomainSnapshot }) {
   return (
-    <dl className="grid flex-1 content-stretch gap-3 sm:grid-cols-2 lg:grid-cols-1">
+    <dl className="grid flex-1 content-stretch gap-3 sm:grid-cols-2 lg:grid-cols-1 2xl:gap-2">
       {domain.metrics.map((metric) => {
         const emphasis = metric.label === "Älter" ? "warning" : undefined;
         return (
           <div
             key={`${domain.id}-${metric.label}`}
             data-emphasis={emphasis ?? "neutral"}
-            className={`grid min-h-28 grid-cols-[minmax(0,1fr)_7rem] items-center gap-3 rounded-lg border p-4 ${
+            className={`grid min-h-28 grid-cols-[minmax(0,1fr)_7rem] items-center gap-3 rounded-lg border p-4 2xl:min-h-24 2xl:p-3 ${
               emphasis
                 ? STATUS_CLASS[emphasis]
                 : "border-kiosk-border bg-kiosk-muted text-kiosk-ink"
@@ -289,7 +296,7 @@ function TrendBars({ label, values = [] }: { label: string; values?: number[] })
 
 function PanelHeader({ title, icon }: { title: string; icon: ReactNode }) {
   return (
-    <div className="mb-4 flex items-center gap-3 border-b border-kiosk-border pb-3">
+    <div className="mb-4 flex items-center gap-3 border-b border-kiosk-border pb-3 2xl:mb-2 2xl:pb-2">
       <span className="grid size-9 shrink-0 place-items-center rounded-md bg-kiosk-accent-soft text-kiosk-accent">
         {icon}
       </span>
@@ -315,44 +322,44 @@ export function KioskWallboardSections({ domains }: { domains: Map<string, Kiosk
     <section
       aria-label="Kiosk-Domänen"
       data-layout="three-column"
-      className="grid flex-1 gap-4 xl:grid-cols-[1.16fr_1fr_0.78fr]"
+      className="grid flex-1 gap-4 xl:grid-cols-[1.16fr_1fr_0.78fr] 2xl:gap-3"
     >
-      <section className="rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm">
+      <section className="rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm 2xl:p-3">
         <PanelHeader
           title="Operative Arbeit"
           icon={<CircleGauge className="size-5" aria-hidden="true" />}
         />
-        <div className="grid gap-4">
+        <div className="grid gap-4 2xl:gap-2">
           {operational.map((domain) => (
             <OperationalDomain key={domain.id} domain={domain} />
           ))}
         </div>
-        <p className="mt-4 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle">
+        <p className="mt-4 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle 2xl:mt-2 2xl:py-1.5">
           Keine Gründe oder Gesundheitsdaten
         </p>
       </section>
 
-      <section className="rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm">
+      <section className="rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm 2xl:p-3">
         <PanelHeader
           title="Infrastruktur – Überblick"
           icon={<CheckCircle2 className="size-5" aria-hidden="true" />}
         />
         {infrastructure ? <Infrastructure domain={infrastructure} /> : null}
-        <p className="mt-4 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle">
+        <p className="mt-4 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle 2xl:mt-2 2xl:py-1.5">
           Keine produktiven Hostnamen oder IP-Adressen. Nur aggregierte Demo-Statusdaten.
         </p>
       </section>
 
       <section
         aria-label="Support-Postfach"
-        className="flex flex-col rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm"
+        className="flex flex-col rounded-lg border border-kiosk-border bg-kiosk-surface p-5 shadow-sm 2xl:p-3"
       >
         <PanelHeader
           title="Support-Postfach"
           icon={<Clock3 className="size-5" aria-hidden="true" />}
         />
         {support ? <Support domain={support} /> : null}
-        <p className="mt-4 flex items-center gap-2 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle">
+        <p className="mt-4 flex items-center gap-2 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle 2xl:mt-2 2xl:py-1.5">
           <AlertTriangle className="size-4 shrink-0" aria-hidden="true" /> Nur Mengenansicht. Keine
           Inhaltsanzeige.
         </p>

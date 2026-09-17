@@ -16,8 +16,8 @@ MVP-Abnahme. Er ist ein Abnahmeartefakt nach `docs/MVP-PLAN.md` Abschnitt 3.3.
 
 ### Info-Kiosk (`docs/examples/kiosk-demo-dataset-v1.json`)
 
-Der lokale, vollständig synthetische Kiosk-Datensatz speist das helle
-Management-Wallboard mit drei Hauptspalten. Er enthält aggregierte operative
+Der lokale, vollständig synthetische Kiosk-Datensatz speist die helle
+Steuerungsübersicht mit drei Hauptspalten. Er enthält aggregierte operative
 Kennzahlen, Urlaubsanzahlen ohne Gründe oder Gesundheitsdaten, eine
 Infrastruktur-Statusmatrix, aggregierte Systemverfügbarkeit und reine Mengen
 für das Support-Postfach. Die kleinen Support-Verläufe beruhen ausschließlich
