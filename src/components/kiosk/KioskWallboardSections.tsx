@@ -81,69 +81,69 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
           ))}
         </dl>
       ) : (
-      <dl
-        className={`mt-3 grid gap-3 ${percentage ? "2xl:grid-cols-[0.7fr_1fr]" : "2xl:grid-cols-2"}`}
-      >
-        {primaryMetric ? (
-          <div className="rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3">
-            <dt className="text-sm font-semibold text-kiosk-subtle">{primaryMetric.label}</dt>
-            <dd className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">
-              {value(primaryMetric)}
-            </dd>
-          </div>
-        ) : null}
-        {percentage ? (
-          <div className="rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3">
-            {usesProgressBar ? (
-              <>
-                <div className="flex items-baseline justify-between gap-3">
+        <dl
+          className={`mt-3 grid gap-3 ${percentage ? "2xl:grid-cols-[0.7fr_1fr]" : "2xl:grid-cols-2"}`}
+        >
+          {primaryMetric ? (
+            <div className="rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3">
+              <dt className="text-sm font-semibold text-kiosk-subtle">{primaryMetric.label}</dt>
+              <dd className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">
+                {value(primaryMetric)}
+              </dd>
+            </div>
+          ) : null}
+          {percentage ? (
+            <div className="rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3">
+              {usesProgressBar ? (
+                <>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <dt className="text-sm font-semibold text-kiosk-subtle">{percentage.label}</dt>
+                    <dd className="text-2xl font-bold tabular-nums text-kiosk-ink">
+                      {value(percentage)}
+                    </dd>
+                  </div>
+                  <progress
+                    aria-label={`${domain.title}: ${percentage.label}`}
+                    max={100}
+                    value={Math.min(100, Math.max(0, percentage.value ?? 0))}
+                    className="mt-3 h-2.5 w-full overflow-hidden rounded-full accent-kiosk-accent"
+                  />
+                </>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="grid size-16 shrink-0 place-items-center rounded-full border-[6px] border-kiosk-accent-soft bg-kiosk-surface">
+                    <dd className="text-xl font-bold tabular-nums text-kiosk-ink">
+                      {value(percentage)}
+                    </dd>
+                  </div>
                   <dt className="text-sm font-semibold text-kiosk-subtle">{percentage.label}</dt>
-                  <dd className="text-2xl font-bold tabular-nums text-kiosk-ink">
-                    {value(percentage)}
-                  </dd>
                 </div>
-                <progress
-                  aria-label={`${domain.title}: ${percentage.label}`}
-                  max={100}
-                  value={Math.min(100, Math.max(0, percentage.value ?? 0))}
-                  className="mt-3 h-2.5 w-full overflow-hidden rounded-full accent-kiosk-accent"
-                />
-              </>
-            ) : (
-              <div className="flex items-center gap-3">
-                <div className="grid size-16 shrink-0 place-items-center rounded-full border-[6px] border-kiosk-accent-soft bg-kiosk-surface">
-                  <dd className="text-xl font-bold tabular-nums text-kiosk-ink">
-                    {value(percentage)}
-                  </dd>
+              )}
+            </div>
+          ) : null}
+          {detailMetrics.length ? (
+            <div className="grid gap-2 2xl:col-span-2 2xl:grid-cols-2">
+              {detailMetrics.map((metric) => (
+                <div
+                  key={`${domain.id}-${metric.label}`}
+                  data-emphasis={
+                    metric.level === "warning" || metric.level === "critical"
+                      ? metric.level
+                      : "neutral"
+                  }
+                  className={`flex items-center justify-between rounded-md border px-3 py-2 ${
+                    metric.level === "warning" || metric.level === "critical"
+                      ? STATUS_CLASS[metric.level]
+                      : "border-kiosk-border bg-kiosk-muted text-kiosk-ink"
+                  }`}
+                >
+                  <dt className="text-sm font-semibold">{metric.label}</dt>
+                  <dd className="text-xl font-bold tabular-nums">{value(metric)}</dd>
                 </div>
-                <dt className="text-sm font-semibold text-kiosk-subtle">{percentage.label}</dt>
-              </div>
-            )}
-          </div>
-        ) : null}
-        {detailMetrics.length ? (
-          <div className="grid gap-2 2xl:col-span-2 2xl:grid-cols-2">
-            {detailMetrics.map((metric) => (
-              <div
-                key={`${domain.id}-${metric.label}`}
-                data-emphasis={
-                  metric.level === "warning" || metric.level === "critical"
-                    ? metric.level
-                    : "neutral"
-                }
-                className={`flex items-center justify-between rounded-md border px-3 py-2 ${
-                  metric.level === "warning" || metric.level === "critical"
-                    ? STATUS_CLASS[metric.level]
-                    : "border-kiosk-border bg-kiosk-muted text-kiosk-ink"
-                }`}
-              >
-                <dt className="text-sm font-semibold">{metric.label}</dt>
-                <dd className="text-xl font-bold tabular-nums">{value(metric)}</dd>
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </dl>
+              ))}
+            </div>
+          ) : null}
+        </dl>
       )}
     </article>
   );
