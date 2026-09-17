@@ -64,7 +64,9 @@ function EmptyDomain({ title }: { title: string }) {
   return (
     <div className="border-b border-kiosk-line py-3 last:border-b-0">
       <h3 className="text-lg font-bold text-kiosk-ink">{title}</h3>
-      <p className="mt-2 text-sm font-semibold text-kiosk-copy">Keine Demo-Daten für diesen Bereich</p>
+      <p className="mt-2 text-sm font-semibold text-kiosk-copy">
+        Keine Demo-Daten für diesen Bereich
+      </p>
     </div>
   );
 }
@@ -76,7 +78,8 @@ function OperationalSummary({
   domain: KioskDomainSnapshot | undefined;
   icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 }) {
-  if (!domain || domain.metrics.length === 0) return <EmptyDomain title={domain?.title ?? "Bereich"} />;
+  if (!domain || domain.metrics.length === 0)
+    return <EmptyDomain title={domain?.title ?? "Bereich"} />;
   const primary = domain.metrics[0];
   if (!primary) return <EmptyDomain title={domain.title} />;
   const total = domain.metrics.reduce((sum, metric) => sum + (metric.value ?? 0), 0);
@@ -96,11 +99,19 @@ function OperationalSummary({
         </div>
         <dl className="grid gap-1.5">
           {domain.metrics.slice(1).map((metric) => (
-            <div key={metric.label} className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
-              <span className={`size-2.5 rounded-full ${LEVEL_DOT[metric.level]}`} aria-hidden="true" />
+            <div
+              key={metric.label}
+              className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2"
+            >
+              <span
+                className={`size-2.5 rounded-full ${LEVEL_DOT[metric.level]}`}
+                aria-hidden="true"
+              />
               <div className="flex min-w-0 items-baseline justify-between gap-2 text-sm">
                 <dt className="truncate font-medium text-kiosk-copy">{metric.label}</dt>
-                <dd className="shrink-0 font-bold tabular-nums text-kiosk-ink">{formatValue(metric)}</dd>
+                <dd className="shrink-0 font-bold tabular-nums text-kiosk-ink">
+                  {formatValue(metric)}
+                </dd>
               </div>
             </div>
           ))}
@@ -126,7 +137,9 @@ function VacationAndBillable({
           {(availability?.metrics ?? []).slice(0, 2).map((metric) => (
             <div key={metric.label} className="px-2 first:pl-0 last:pr-0">
               <dt className="min-h-9 text-xs font-semibold text-kiosk-copy">{metric.label}</dt>
-              <dd className="text-3xl font-bold tabular-nums text-kiosk-ink">{formatValue(metric)}</dd>
+              <dd className="text-3xl font-bold tabular-nums text-kiosk-ink">
+                {formatValue(metric)}
+              </dd>
             </div>
           ))}
         </dl>
@@ -189,10 +202,16 @@ export function InfrastructureColumn({ domain }: { domain: KioskDomainSnapshot |
     <div>
       <div className="grid grid-cols-3 gap-2">
         {domain.metrics.slice(0, 3).map((metric) => {
-          const share = total > 0 && metric.value !== null ? Math.round((metric.value / total) * 100) : 0;
+          const share =
+            total > 0 && metric.value !== null ? Math.round((metric.value / total) * 100) : 0;
           return (
-            <article key={metric.label} className={`rounded-md border p-3 ${METRIC_SURFACE[metric.level]}`}>
-              <p className="text-3xl font-bold tabular-nums text-kiosk-ink">{formatValue(metric)}</p>
+            <article
+              key={metric.label}
+              className={`rounded-md border p-3 ${METRIC_SURFACE[metric.level]}`}
+            >
+              <p className="text-3xl font-bold tabular-nums text-kiosk-ink">
+                {formatValue(metric)}
+              </p>
               <p className="mt-0.5 text-sm font-bold text-kiosk-ink">{metric.label}</p>
               <p className="mt-1 text-sm font-semibold tabular-nums text-kiosk-copy">{share} %</p>
             </article>
@@ -221,9 +240,15 @@ export function InfrastructureColumn({ domain }: { domain: KioskDomainSnapshot |
               return (
                 <tr key={row.label}>
                   <th className="px-3 py-2 text-left font-semibold text-kiosk-ink">{row.label}</th>
-                  <td className="px-2 py-2 text-center tabular-nums text-kiosk-copy">{row.breakdown.ok}</td>
-                  <td className="px-2 py-2 text-center tabular-nums text-kiosk-copy">{row.breakdown.warning}</td>
-                  <td className="px-2 py-2 text-center tabular-nums text-kiosk-copy">{row.breakdown.critical}</td>
+                  <td className="px-2 py-2 text-center tabular-nums text-kiosk-copy">
+                    {row.breakdown.ok}
+                  </td>
+                  <td className="px-2 py-2 text-center tabular-nums text-kiosk-copy">
+                    {row.breakdown.warning}
+                  </td>
+                  <td className="px-2 py-2 text-center tabular-nums text-kiosk-copy">
+                    {row.breakdown.critical}
+                  </td>
                   <td className="px-2 py-2 text-center">
                     <span className={`inline-block size-3 rounded-full ${LEVEL_DOT[level]}`}>
                       <span className="sr-only">{LEVEL_TEXT[level]}</span>
@@ -241,11 +266,17 @@ export function InfrastructureColumn({ domain }: { domain: KioskDomainSnapshot |
         <div className="mt-3 grid grid-cols-2 gap-2">
           <div className="flex items-center gap-3 rounded-md bg-kiosk-green-soft p-3">
             <Check className="size-7 text-kiosk-green" aria-hidden="true" />
-            <div><p className="text-xs font-semibold text-kiosk-copy">Verfügbar</p><p className="text-2xl font-bold text-kiosk-ink">9</p></div>
+            <div>
+              <p className="text-xs font-semibold text-kiosk-copy">Verfügbar</p>
+              <p className="text-2xl font-bold text-kiosk-ink">9</p>
+            </div>
           </div>
           <div className="flex items-center gap-3 rounded-md bg-kiosk-red-soft p-3">
             <CircleAlert className="size-7 text-kiosk-red" aria-hidden="true" />
-            <div><p className="text-xs font-semibold text-kiosk-copy">Nicht verfügbar</p><p className="text-2xl font-bold text-kiosk-ink">2</p></div>
+            <div>
+              <p className="text-xs font-semibold text-kiosk-copy">Nicht verfügbar</p>
+              <p className="text-2xl font-bold text-kiosk-ink">2</p>
+            </div>
           </div>
         </div>
       </article>
@@ -264,21 +295,36 @@ export function SupportColumn({ domain }: { domain: KioskDomainSnapshot | undefi
       {domain.metrics.slice(0, 4).map((metric, index) => {
         const Icon = SUPPORT_ICONS[index] ?? Mail;
         return (
-          <article key={metric.label} className={`rounded-md border p-4 ${METRIC_SURFACE[metric.level]}`}>
+          <article
+            key={metric.label}
+            className={`rounded-md border p-4 ${METRIC_SURFACE[metric.level]}`}
+          >
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <Icon className="size-5 shrink-0 text-kiosk-blue" aria-hidden="true" />
                   <h3 className="truncate text-base font-bold text-kiosk-ink">{metric.label}</h3>
                 </div>
-                <p className="mt-2 text-4xl font-bold tabular-nums text-kiosk-ink">{formatValue(metric)}</p>
+                <p className="mt-2 text-4xl font-bold tabular-nums text-kiosk-ink">
+                  {formatValue(metric)}
+                </p>
                 <p className="mt-1 text-xs font-medium text-kiosk-copy">
-                  {index === 0 ? "Alle E-Mails im Posteingang" : index === 1 ? "E-Mails seit 0:00 Uhr" : index === 2 ? "E-Mails von gestern" : "E-Mails älter als 24 Stunden"}
+                  {index === 0
+                    ? "Alle E-Mails im Posteingang"
+                    : index === 1
+                      ? "E-Mails seit 0:00 Uhr"
+                      : index === 2
+                        ? "E-Mails von gestern"
+                        : "E-Mails älter als 24 Stunden"}
                 </p>
               </div>
               <div className="flex h-12 items-end gap-1" aria-hidden="true">
                 {SUPPORT_BARS.map((height, barIndex) => (
-                  <span key={barIndex} className="w-2 rounded-sm bg-kiosk-blue/55" style={{ height: `${height}%` }} />
+                  <span
+                    key={barIndex}
+                    className="w-2 rounded-sm bg-kiosk-blue/55"
+                    style={{ height: `${height}%` }}
+                  />
                 ))}
               </div>
             </div>
