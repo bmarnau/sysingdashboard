@@ -14,6 +14,10 @@ import type {
 type ProjectRow = Tables<"shared_project_projection">;
 type WorkPackageRow = Tables<"shared_work_package_projection">;
 type ActivityRow = Tables<"shared_activity_projection">;
+type WorkPackageCategoryRow = WorkPackageRow & {
+  category_key?: string | null;
+  category_observed?: boolean;
+};
 
 type PublishMode = "structure" | "activities";
 
@@ -70,12 +74,14 @@ async function workPackagePayload(batch: SharedCustomerPublishBatch): Promise<Js
       legacy_client: workPackage.legacyClient ?? "",
       status: workPackage.status,
       priority: workPackage.priority,
+      category_key: workPackage.categoryKey ?? null,
       source_hash: await sha256({
         projectId: workPackage.projectId,
         title: workPackage.title,
         legacyClient: workPackage.legacyClient ?? "",
         status: workPackage.status,
         priority: workPackage.priority,
+        categoryKey: workPackage.categoryKey ?? null,
       }),
     })),
   );
@@ -149,6 +155,7 @@ function toProject(row: ProjectRow): SharedProjectRecord {
 }
 
 function toWorkPackage(row: WorkPackageRow): SharedWorkPackageRecord {
+  const categoryRow = row as WorkPackageCategoryRow;
   return {
     projectionId: row.id,
     systemhouseId: row.systemhouse_id,
@@ -160,6 +167,8 @@ function toWorkPackage(row: WorkPackageRow): SharedWorkPackageRecord {
     legacyClient: row.legacy_client,
     status: row.status,
     priority: row.priority,
+    categoryKey: categoryRow.category_key ?? null,
+    categoryObserved: categoryRow.category_observed === true,
     publishedBy: row.published_by,
     publishedAt: row.published_at,
     sourceRevision: row.source_revision,
