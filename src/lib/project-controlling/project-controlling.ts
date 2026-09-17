@@ -29,6 +29,35 @@ function toUtcDay(value: string): number | null {
   return timestamp / MILLISECONDS_PER_DAY;
 }
 
+function hasInvalidScope(filters: ProjectControllingFilters): boolean {
+  if (filters.customerId && !filters.systemhouseId) return true;
+  if (filters.projectSourceId && (!filters.systemhouseId || !filters.customerId)) return true;
+  if (
+    filters.workPackageSourceId &&
+    (!filters.systemhouseId || !filters.customerId || !filters.projectSourceId)
+  ) {
+    return true;
+  }
+  if (filters.categoryKey && !filters.systemhouseId) return true;
+
+  return false;
+}
+
+function matchesFilters(row: ProjectControllingRow, filters: ProjectControllingFilters): boolean {
+  if (row.activityDate < filters.from || row.activityDate > filters.to) return false;
+  if (filters.billable === "billable" && !row.billable) return false;
+  if (filters.billable === "nonBillable" && row.billable) return false;
+  if (filters.systemhouseId && row.systemhouseId !== filters.systemhouseId) return false;
+  if (filters.customerId && row.customerId !== filters.customerId) return false;
+  if (filters.projectSourceId && row.projectSourceId !== filters.projectSourceId) return false;
+  if (filters.workPackageSourceId && row.workPackageSourceId !== filters.workPackageSourceId) {
+    return false;
+  }
+  if (filters.categoryKey && row.categoryKey !== filters.categoryKey) return false;
+
+  return true;
+}
+
 function summarize(rows: readonly ProjectControllingRow[]): ProjectControllingSummary {
   const customers = new Set<string>();
   const projects = new Set<string>();
@@ -84,14 +113,16 @@ export class ProjectControllingService {
       return { ok: false, error: "PROJECT_CONTROLLING_RANGE_TOO_LARGE" };
     }
 
+    if (hasInvalidScope(filters)) {
+      return { ok: false, error: "PROJECT_CONTROLLING_INVALID_SCOPE" };
+    }
+
     const [repositoryRows, repositoryScopeOptions] = await Promise.all([
       this.repository.listRows(filters),
       this.repository.listScopeOptions(filters),
     ]);
 
-    const rows = repositoryRows.filter(
-      (row) => row.activityDate >= filters.from && row.activityDate <= filters.to,
-    );
+    const rows = repositoryRows.filter((row) => matchesFilters(row, filters));
 
     return {
       ok: true,
