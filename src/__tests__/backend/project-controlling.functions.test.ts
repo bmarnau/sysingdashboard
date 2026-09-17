@@ -224,7 +224,11 @@ describe("BSF-03A project controlling server authorization", () => {
   });
 
   it("denies a manipulated project source id using the generic message", async () => {
-    const filters = { ...SCOPED_FILTERS, projectSourceId: "P-foreign", workPackageSourceId: undefined };
+    const filters = {
+      ...SCOPED_FILTERS,
+      projectSourceId: "P-foreign",
+      workPackageSourceId: undefined,
+    };
     await expectDenied({}, filters, fakeRepository());
   });
 
