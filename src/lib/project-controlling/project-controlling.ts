@@ -7,6 +7,7 @@ import {
   type ProjectControllingRepository,
   type ProjectControllingRow,
   type ProjectControllingSummary,
+  type ProjectControllingTrendPoint,
 } from "./project-controlling-contract";
 
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -91,6 +92,50 @@ function summarize(rows: readonly ProjectControllingRow[]): ProjectControllingSu
   };
 }
 
+function buildDailyTrend(
+  rows: readonly ProjectControllingRow[],
+  fromDay: number,
+  toDay: number,
+): ProjectControllingTrendPoint[] {
+  const totalsByDate = new Map<
+    string,
+    { totalHourHundredths: number; billableHourHundredths: number }
+  >();
+
+  for (const row of rows) {
+    const totals = totalsByDate.get(row.activityDate) ?? {
+      totalHourHundredths: 0,
+      billableHourHundredths: 0,
+    };
+    const durationHourHundredths = Math.round(row.durationHours * 100);
+
+    totals.totalHourHundredths += durationHourHundredths;
+    if (row.billable) totals.billableHourHundredths += durationHourHundredths;
+    totalsByDate.set(row.activityDate, totals);
+  }
+
+  const trend: ProjectControllingTrendPoint[] = [];
+
+  for (let day = fromDay; day <= toDay; day += 1) {
+    const date = new Date(day * MILLISECONDS_PER_DAY).toISOString().slice(0, 10);
+    const totals = totalsByDate.get(date) ?? {
+      totalHourHundredths: 0,
+      billableHourHundredths: 0,
+    };
+    const nonBillableHourHundredths =
+      totals.totalHourHundredths - totals.billableHourHundredths;
+
+    trend.push({
+      date,
+      totalHours: totals.totalHourHundredths / 100,
+      billableHours: totals.billableHourHundredths / 100,
+      nonBillableHours: nonBillableHourHundredths / 100,
+    });
+  }
+
+  return trend;
+}
+
 function measureCompleteness(
   rows: readonly ProjectControllingRow[],
 ): ProjectControllingCompleteness {
@@ -137,7 +182,7 @@ export class ProjectControllingService {
       value: {
         filters: { ...filters },
         summary: summarize(rows),
-        trend: [],
+        trend: buildDailyTrend(rows, fromDay, toDay),
         scopeOptions: [...repositoryScopeOptions],
         rows: [...rows],
         completeness: measureCompleteness(rows),
