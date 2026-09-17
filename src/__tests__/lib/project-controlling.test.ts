@@ -218,48 +218,45 @@ describe("BSF-03A provider-neutral project controlling", () => {
     });
   });
 
-  it(
-    "summarizes the same filtered decimal-hour rows reproducibly regardless of repository order",
-    async () => {
-      const sourceRows = [
-        makeRow({ activityId: "decimal-a", durationHours: 0.1, billable: true }),
-        makeRow({ activityId: "decimal-b", durationHours: 0.2, billable: true }),
-        makeRow({
-          activityId: "decimal-c",
-          durationHours: 0.3,
-          billable: false,
-          customerId: "customer-2",
-          customerName: "Kunde Zwei",
-          projectSourceId: null,
-          projectName: null,
-          workPackageSourceId: null,
-          workPackageTitle: null,
-        }),
-        makeRow({
-          activityId: "outside",
-          activityDate: "2026-09-06",
-          durationHours: 99,
-        }),
-      ];
-      const forward = await new ProjectControllingService(makeRepository(sourceRows)).get(
-        BASE_FILTERS,
-      );
-      const reverse = await new ProjectControllingService(
-        makeRepository([...sourceRows].reverse()),
-      ).get(BASE_FILTERS);
-      const expectedSummary = {
-        activities: 3,
-        customers: 2,
-        projects: 1,
-        workPackages: 1,
-        totalHours: 0.6,
-        billableHours: 0.3,
-        nonBillableHours: 0.3,
-        billableQuotePercent: 50,
-      };
+  it("summarizes the same filtered decimal-hour rows reproducibly regardless of repository order", async () => {
+    const sourceRows = [
+      makeRow({ activityId: "decimal-a", durationHours: 0.1, billable: true }),
+      makeRow({ activityId: "decimal-b", durationHours: 0.2, billable: true }),
+      makeRow({
+        activityId: "decimal-c",
+        durationHours: 0.3,
+        billable: false,
+        customerId: "customer-2",
+        customerName: "Kunde Zwei",
+        projectSourceId: null,
+        projectName: null,
+        workPackageSourceId: null,
+        workPackageTitle: null,
+      }),
+      makeRow({
+        activityId: "outside",
+        activityDate: "2026-09-06",
+        durationHours: 99,
+      }),
+    ];
+    const forward = await new ProjectControllingService(makeRepository(sourceRows)).get(
+      BASE_FILTERS,
+    );
+    const reverse = await new ProjectControllingService(
+      makeRepository([...sourceRows].reverse()),
+    ).get(BASE_FILTERS);
+    const expectedSummary = {
+      activities: 3,
+      customers: 2,
+      projects: 1,
+      workPackages: 1,
+      totalHours: 0.6,
+      billableHours: 0.3,
+      nonBillableHours: 0.3,
+      billableQuotePercent: 50,
+    };
 
-      expect(forward.ok && forward.value.summary).toEqual(expectedSummary);
-      expect(reverse.ok && reverse.value.summary).toEqual(expectedSummary);
-    },
-  );
+    expect(forward.ok && forward.value.summary).toEqual(expectedSummary);
+    expect(reverse.ok && reverse.value.summary).toEqual(expectedSummary);
+  });
 });
