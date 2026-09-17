@@ -269,10 +269,10 @@ SELECT pg_temp.assert((
 ), 'T19a publish RPC remains SECURITY INVOKER');
 
 SELECT pg_temp.assert((
-  SELECT p.prosecdef = true AND p.proconfig @> ARRAY['search_path=public']
+  SELECT p.prosecdef = false AND p.proconfig @> ARRAY['search_path=public']
   FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
   WHERE n.nspname='public' AND p.proname='has_permission'
-), 'T19b has_permission keeps established SECURITY DEFINER contract');
+), 'T19b has_permission keeps established SECURITY INVOKER contract');
 
 -- T20: Fehler spaet im RPC muss vorherige Writes desselben Calls zurueckrollen.
 SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000c303');
