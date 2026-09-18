@@ -153,7 +153,7 @@ Zwei Ebenen, bewusst getrennt:
 2. **Serverseitige Grenze** — RLS-Policies plus Prüfungen in den Server-Routes.
    Erst diese Ebene ist verbindlich.
 
-Modell: 7 Rollen, Scopes und Ressourcen nach
+Modell: 8 Rollen (einschließlich der technischen `kiosk`-Rolle) und 23 atomare Permissions; Scopes und Ressourcen nach
 [ADR-0007](./ADR/0007-rbac-v2-scopes-and-resources.md) und
 [ADR-0008](./ADR/0008-rbac-v2-assignment-architecture.md).
 Die Spiegelung zwischen `src/lib/rbac` und `backend/services/rbac.mjs` prüft

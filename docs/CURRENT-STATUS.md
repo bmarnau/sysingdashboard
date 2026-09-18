@@ -109,7 +109,7 @@ Nachweise auf exakt diesem Head:
 - BSF-03A SQL-Vertrag T01–T20d: **PASS**,
 - Technical Report **v17**, Status `passed-with-findings`, Quality Gate **0 Blocker**,
 - Golden Dataset V1 und unabhängige Project-Controlling-Expected-Results: **PASS**.
-- Benutzerhandbuch / kontextsensitive Hilfe für `/projektcontrolling`: im Dokumentationsnachlauf ergänzt; Handbuchversion **1.21.0**.
+- Benutzerhandbuch / kontextsensitive Hilfe für `/projektcontrolling`: im Dokumentationsnachlauf ergänzt; Handbuchversion **1.22.0**.
 
 Der offizielle Supabase Security Advisor wurde read-only im verifizierten Sysingdashboard-Kontext ausgeführt: 0 ERROR, 0 CRITICAL und exakt die zwei bekannten SEC-01-WARN vom Typ `0029_authenticated_security_definer_function_executable` für `public.avkk_can_write(_subject uuid)` und `public.avkk_people_directory()`; **keine neuen BSF-03A-Findings**. `public.has_permission(uuid,text)` und `public.bsf02c_publish_shared_projection_snapshot` bleiben `SECURITY INVOKER`.
 
@@ -293,19 +293,21 @@ Branch Protection ist eine letzte technische Sicherheitsgrenze und ersetzt nicht
 
 Die operative Reihenfolge ist in `docs/BSF-CURRENT-PRIORITIES.md`, `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` und `docs/SPRINT-PLAN-MVP-BSF.md` festgeschrieben:
 
-`BSF-03D DONE → KIOSK-01 ZIELMIGRATION PASS → KIOSK-01 POST-MIGRATION-ADVISOR + LOVABLE-EXACT-HEAD-PREVIEW → KIOSK-01 FINAL PASS → BSF-03A → KIOSK-02 → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
+`BSF-03D DONE → KIOSK-01 DONE → BSF-03A EXACT-HEAD GREEN / LOVABLE PREVIEW OFFEN → KIOSK-02 → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
 
 Die kanonische Kundenidentität bleibt `(systemhouseId, customerId)`; `systemhouseId` ist providerneutral und nicht gleich Microsoft Entra Tenant ID. Kundenverantwortung bleibt Scope/Beziehung, keine globale Rolle. Der vollständige Datenhaltungsumbau bleibt BSF-04.
 
 ## Dokumentationszustand
 
-- `docs/ENTWICKLUNGSTAGEBUCH.md` wird auf den KIOSK-01-Zielmigrations- und Abnahmestand vom 2026-09-16 fortgeschrieben.
-- `docs/PROJECT-STATUS.yaml`, `docs/BSF-CURRENT-PRIORITIES.md`, `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` und dieses Dokument bilden gemeinsam den KIOSK-01-Wiederanlaufpunkt ab.
-- `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` ist der zentrale KIOSK-01-Abschluss- und Abnahmenachweis; FINAL PASS bleibt bis zu Post-Migration-Advisor und aktuellem Lovable-Exact-Head-Preview ausstehend.
+- `docs/ENTWICKLUNGSTAGEBUCH.md` ist bis zum BSF-03A-Dokumentations-/Handbuch-Audit vom 2026-09-18 fortgeschrieben.
+- `docs/PROJECT-STATUS.yaml`, `docs/BSF-CURRENT-PRIORITIES.md`, `roadmap.md` und dieses Dokument bilden gemeinsam den aktuellen BSF-03A-Finalverifikationsstand ab.
+- `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` dokumentiert den abgeschlossenen KIOSK-01-Sprint; PR #141 ist auf `main`.
+- `docs/BSF-03A-CLOSURE-2026-09-14.md` ist der zentrale BSF-03A-Abnahmebericht. Offen bleibt ausschließlich der branch-genaue Lovable-Exact-Head-Preview.
+- Benutzerhandbuch und kontextsensitive Hilfe stehen auf Version **1.22.0**; Projektcontrolling, aktuelle RBAC-/Kiosk-Rechte, Kundenverantwortung und der heutige Supabase-MVP-Betriebsmodus sind synchronisiert.
 - `SYSING-001` existiert als Living Document `docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md` mit gemeinsamer Markdown-Quelle für PDF/Word.
 - SYSING-001 wird in BSF-DOC-02 kontrolliert aktualisiert und TDF-konform abgenommen; es wird keine zweite Dokumentquelle erzeugt.
 - BSF-DOC-03 macht die freigegebene SYSING-001-Fassung read-only aus dem Board erreichbar.
-- Kontext-sensitive Hilfe und Benutzerhandbuch werden ab BSF als Teil der Definition of Done jedes betroffenen Fachsprints synchron gehalten; BSF-DOC-01 bleibt zusätzlicher Konsolidierungsblock.
+- Kontext-sensitive Hilfe und Benutzerhandbuch bleiben Teil der Definition of Done jedes betroffenen Fachsprints; BSF-DOC-01 bleibt zusätzlicher Konsolidierungsblock.
 
 ## Bewusst zurückgestellter Zukunftsscope
 
