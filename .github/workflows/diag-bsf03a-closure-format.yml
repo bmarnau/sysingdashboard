@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   format-closure-docs:
-    if: contains(github.event.head_commit.message, 'chore(diag): add BSF03A closure formatter')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
