@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { CustomerPageShell } from "@/components/customers/CustomerPageShell";
 import { PermissionGate } from "@/components/PermissionGate";
 import {
@@ -42,11 +42,12 @@ function currentMonthFilters(): ProjectControllingFilters {
 }
 
 function ProjectControllingPage() {
-  const filters = useMemo(currentMonthFilters, []);
+  const [filters, setFilters] = useState<ProjectControllingFilters>(currentMonthFilters);
   const [state, setState] = useState<ProjectControllingViewState>({ kind: "loading" });
 
   useEffect(() => {
     let cancelled = false;
+    setState({ kind: "loading" });
 
     readProjectControllingFn({ data: filters })
       .then((outcome) => {
@@ -68,7 +69,7 @@ function ProjectControllingPage() {
   return (
     <PermissionGate permission="project.controlling.view">
       <CustomerPageShell sectionTitle="Projektcontrolling">
-        <ProjectControllingView state={state} />
+        <ProjectControllingView state={state} onFiltersChange={setFilters} />
       </CustomerPageShell>
     </PermissionGate>
   );
