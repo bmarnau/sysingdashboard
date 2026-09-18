@@ -9,10 +9,15 @@ interface Props {
   onChange?: (filters: ProjectControllingFilterValue) => void;
 }
 
-function uniqueOptions(options: readonly ProjectControllingScopeOption[], kind: ProjectControllingScopeOption["kind"]) {
+function uniqueOptions(
+  options: readonly ProjectControllingScopeOption[],
+  kind: ProjectControllingScopeOption["kind"],
+) {
   const seen = new Set<string>();
+
   return options.filter((option) => {
     if (option.kind !== kind) return false;
+
     const key = [
       option.systemhouseId,
       option.customerId ?? "",
@@ -20,6 +25,7 @@ function uniqueOptions(options: readonly ProjectControllingScopeOption[], kind: 
       option.workPackageSourceId ?? "",
       option.categoryKey ?? "",
     ].join(":");
+
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -150,7 +156,9 @@ export function ProjectControllingFilters({ filters, scopeOptions, onChange }: P
           <select
             value={filters.workPackageSourceId ?? ""}
             disabled={!filters.systemhouseId || !filters.customerId}
-            onChange={(event) => update({ workPackageSourceId: event.target.value || undefined })}
+            onChange={(event) =>
+              update({ workPackageSourceId: event.target.value || undefined })
+            }
             className="h-9 w-full rounded-md border border-input bg-background px-3 disabled:opacity-50"
           >
             <option value="">Alle Arbeitspakete</option>
@@ -173,7 +181,8 @@ export function ProjectControllingFilters({ filters, scopeOptions, onChange }: P
             <option value="">Alle Kategorien</option>
             {categories.map((option) => (
               <option key={option.categoryKey} value={option.categoryKey}>
-                {option.label}{option.active === false ? " (inaktiv)" : ""}
+                {option.label}
+                {option.active === false ? " (inaktiv)" : ""}
               </option>
             ))}
           </select>
