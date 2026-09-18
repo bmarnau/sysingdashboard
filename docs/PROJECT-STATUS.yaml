@@ -82,7 +82,7 @@ currentState:
       status: "open"
       severity: "medium"
       description: "BSF-03A ist auf dem code-tragenden Exact Head vollständig gegatet; der branch-genaue Lovable-L2/L3-Preview-/Driftnachweis auf dem aktuellen PR-Head ist wegen Head-Drift und anschließend ausgeschöpfter Lovable-Credits noch offen."
-      reference: "docs/BSF-03A-CLOSURE-2026-09-14.md"
+      reference: "BSF-03A"
       targetSprint: "BSF-03A"
     - id: "session-server-enforcement"
       status: "open"
@@ -375,21 +375,6 @@ roadmap:
       - "Bestehende lokale Daten bleiben kompatibel bzw. kontrolliert migrierbar"
       - "Minimaler gemeinsamer Read-/Datenpfad serverseitig geschützt"
       - "Cross-Systemhaus- und Cross-Customer-Negativtests vorhanden"
-  - id: "BSF-KIOSK-01"
-    title: "Info-Kiosk Demo-Pilot"
-    status: "completed"
-    priority: "high"
-    goal: >-
-      Einen read-only Info-Kiosk mit ausschließlich synthetischen Demo-Daten,
-      providerneutraler KioskDataProvider-Grenze und einem eng begrenzten,
-      sicher betreibbaren Kiosk-Rollen-/Sessionprofil bereitstellen.
-    dependencies:
-      - "BSF-03D"
-    exitCriteria:
-      - "Vollständige Required Checks auf dem maßgeblichen Exact Head PASS"
-      - "Kiosk-Migrationen kontrolliert auf einer geeigneten Ziel- oder Staging-Umgebung angewendet"
-      - "Offizieller Post-Migration Security Advisor ohne neue ERROR, CRITICAL, HIGH oder WARN gegenüber der dokumentierten SEC-01-Baseline"
-      - "Abschluss-, Status-, Entwicklungstagebuch- und Hilfedokumentation synchron"
   - id: "BSF-03A"
     title: "Projektmanager-Leistungssicht und Controlling"
     status: "in-progress"
