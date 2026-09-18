@@ -7,16 +7,16 @@ Groups, Assignments) beschreibt ADR-0007.
 
 ## Rollen
 
-| Rolle                   | Kurzbeschreibung                                                                                        |
-| ----------------------- | ------------------------------------------------------------------------------------------------------- |
-| `systemadministrator` | Höchste administrative Rolle inkl. Rollenverwaltung und Azure-DB-Aufbau.                               |
-| `administrator`       | Administrativer Betrieb inkl. Benutzer, Audit, Backup, Referenzdaten und Kundenverantwortung.           |
-| `teamlead`            | Operative Führung, AVKK-Führung, Kundenverantwortung und Projektcontrolling.                            |
-| `projectmanager`      | Projekt-/Leistungssteuerung inkl. AVKK-Führung und Projektcontrolling, ohne Benutzerverwaltung.         |
-| `engineer`            | Arbeitspakete/Tätigkeiten (eigene) und AVKK; kein Projektcontrolling.                                   |
-| `customer`            | Stark begrenzte Lesesicht; keine Admin-, Systemstatus- oder AVKK-Führungssicht.                         |
-| `viewer`              | Allgemeine read-only Rolle ohne Edit-, Azure-, Manage- oder Backup-Rechte.                             |
-| `kiosk`               | Technische Sonderrolle mit ausschließlich `kiosk.view`; kein Dashboard-/Dokumentations-/Fachzugriff.  |
+| Rolle                 | Kurzbeschreibung                                                                                     |
+| --------------------- | ---------------------------------------------------------------------------------------------------- |
+| `systemadministrator` | Höchste administrative Rolle inkl. Rollenverwaltung und Azure-DB-Aufbau.                             |
+| `administrator`       | Administrativer Betrieb inkl. Benutzer, Audit, Backup, Referenzdaten und Kundenverantwortung.        |
+| `teamlead`            | Operative Führung, AVKK-Führung, Kundenverantwortung und Projektcontrolling.                         |
+| `projectmanager`      | Projekt-/Leistungssteuerung inkl. AVKK-Führung und Projektcontrolling, ohne Benutzerverwaltung.      |
+| `engineer`            | Arbeitspakete/Tätigkeiten (eigene) und AVKK; kein Projektcontrolling.                                |
+| `customer`            | Stark begrenzte Lesesicht; keine Admin-, Systemstatus- oder AVKK-Führungssicht.                      |
+| `viewer`              | Allgemeine read-only Rolle ohne Edit-, Azure-, Manage- oder Backup-Rechte.                           |
+| `kiosk`               | Technische Sonderrolle mit ausschließlich `kiosk.view`; kein Dashboard-/Dokumentations-/Fachzugriff. |
 
 ## Matrix Rolle × Aktion (v1, flach)
 
@@ -24,29 +24,29 @@ Legende: ● erlaubt · ○ verboten
 
 | Aktion                           | sysadmin | admin | teamlead | projmgr | engineer | customer | viewer | kiosk |
 | -------------------------------- | :------: | :---: | :------: | :-----: | :------: | :------: | :----: | :---: |
-| `dashboard.view`                |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |   ○   |
-| `documentation.view`            |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |   ○   |
-| `systemstatus.view`             |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |   ○   |
-| `project.edit`                  |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
-| `workpackage.edit`              |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |   ○   |
-| `activity.edit`                 |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |   ○   |
-| `azure.connection.test`         |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
-| `azure.export`                  |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
-| `azure.import`                  |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
-| `azure.database.build`          |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
-| `backup.restore`                |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
-| `users.manage`                  |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
-| `roles.manage`                  |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
-| `auditlog.view`                 |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
-| `avkk.view`                     |    ●     |   ●   |    ●     |    ●    |    ●     |    ○     |   ●    |   ○   |
-| `avkk.edit`                     |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |   ○   |
-| `avkk.responsibility.assign`    |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
-| `avkk.management.view`          |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
-| `referencedata.view`            |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |   ○   |
-| `referencedata.manage`          |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
-| `customer.responsibility.manage`|    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |   ○   |
-| `project.controlling.view`      |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
-| `kiosk.view`                    |    ○     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ●   |
+| `dashboard.view`                 |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |   ○   |
+| `documentation.view`             |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |   ○   |
+| `systemstatus.view`              |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `project.edit`                   |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `workpackage.edit`               |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |   ○   |
+| `activity.edit`                  |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |   ○   |
+| `azure.connection.test`          |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `azure.export`                   |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `azure.import`                   |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `azure.database.build`           |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `backup.restore`                 |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `users.manage`                   |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `roles.manage`                   |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `auditlog.view`                  |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `avkk.view`                      |    ●     |   ●   |    ●     |    ●    |    ●     |    ○     |   ●    |   ○   |
+| `avkk.edit`                      |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |   ○   |
+| `avkk.responsibility.assign`     |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `avkk.management.view`           |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `referencedata.view`             |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |   ○   |
+| `referencedata.manage`           |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `customer.responsibility.manage` |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `project.controlling.view`       |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `kiosk.view`                     |    ○     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ●   |
 
 ### Fachregel Delegation
 

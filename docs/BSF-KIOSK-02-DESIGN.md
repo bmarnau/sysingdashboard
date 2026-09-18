@@ -161,6 +161,7 @@ normale angemeldete Leitungs-Session -> project.controlling.view
 ```
 
 Die bestehende KIOSK-01-Rollenexklusivität bleibt unverändert:
+
 - die technische Rolle `kiosk` besitzt ausschließlich `kiosk.view`,
 - `kiosk` erhält **kein** `project.controlling.view`,
 - reguläre Rollen erhalten **kein** `kiosk.view`,
