@@ -37,7 +37,8 @@ export function ProjectControllingDrilldown({
       <div>
         <h2 className="text-lg font-semibold">Leistungsdetails</h2>
         <p className="text-sm text-muted-foreground">
-          Kunde → Projekt → Arbeitspaket → Tätigkeit. Fehlende Zuordnungen bleiben ausdrücklich sichtbar.
+          Kunde → Projekt → Arbeitspaket → Tätigkeit. Fehlende Zuordnungen bleiben ausdrücklich
+          sichtbar.
         </p>
       </div>
 
@@ -46,7 +47,8 @@ export function ProjectControllingDrilldown({
         completeness.rowsWithoutProject > 0 ||
         completeness.rowsWithoutWorkPackage > 0) && (
         <p className="rounded-md border bg-muted/40 p-3 text-sm text-muted-foreground">
-          Der Datenbestand enthält unvollständige oder historische Zuordnungen. Diese werden nicht automatisch umgedeutet.
+          Der Datenbestand enthält unvollständige oder historische Zuordnungen. Diese werden nicht
+          automatisch umgedeutet.
         </p>
       )}
 
@@ -79,7 +81,9 @@ export function ProjectControllingDrilldown({
                   <td className="px-3 py-2">{row.workPackageTitle ?? "Ohne Arbeitspaket"}</td>
                   <td className="px-3 py-2">{categoryText(row)}</td>
                   <td className="px-3 py-2 font-medium">{row.activityTitle}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{formatHours(row.durationHours)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">
+                    {formatHours(row.durationHours)}
+                  </td>
                   <td className="px-3 py-2">{row.billable ? "Ja" : "Nein"}</td>
                   <td className="px-3 py-2">{row.billingStatus ?? "—"}</td>
                 </tr>
