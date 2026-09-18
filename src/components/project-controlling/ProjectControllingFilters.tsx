@@ -155,7 +155,7 @@ export function ProjectControllingFilters({ filters, scopeOptions, onChange }: P
           <span className="font-medium">Arbeitspaket</span>
           <select
             value={filters.workPackageSourceId ?? ""}
-            disabled={!filters.systemhouseId || !filters.customerId}
+            disabled={!filters.systemhouseId || !filters.customerId || !filters.projectSourceId}
             onChange={(event) => update({ workPackageSourceId: event.target.value || undefined })}
             className="h-9 w-full rounded-md border border-input bg-background px-3 disabled:opacity-50"
           >
