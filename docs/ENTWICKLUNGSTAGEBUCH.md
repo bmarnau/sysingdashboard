@@ -968,7 +968,10 @@ Festgestellte und behobene Drifts:
 
 - Benutzerhandbuch und kontextsensitive Hilfe besaßen noch kein eigenes Kapitel für die neue Route `/projektcontrolling`.
 - Die Routenhilfe priorisierte generische `/`-Kapitel vor spezifischen Routen; spezifischere Treffer werden nun zuerst geliefert und per Regressionstest abgesichert.
-- Handbuchversion auf 1.21.0 fortgeschrieben.
+- Handbuchversion zunächst auf 1.21.0 und nach dem vollständigen Handbuchabgleich auf **1.22.0** fortgeschrieben.
+- Die Hilfe „Meine Kunden“ enthielt noch die veraltete Aussage, die Verwaltung von Kundenverantwortungen sei nicht Teil der Oberfläche; sie verweist nun korrekt auf die getrennte Managementsicht mit `customer.responsibility.manage`.
+- Das RBAC-Handbuch war noch auf sieben Rollen und 14 Permissions eingefroren; es dokumentiert nun acht Rollen, 23 atomare Rechte sowie die BSF-/Kiosk-Grenzen.
+- „Lokaler Betrieb ohne Azure“ wurde korrigiert: Azure bleibt optional, der heutige vollständige Mehrbenutzer-/BSF-MVP benötigt jedoch Supabase für Auth, RLS und gemeinsame Datenpfade.
 - `ARCHITECTURE.md` beschrieb die Domänenpersistenz noch zu pauschal als Local-First; dokumentiert ist jetzt das reale Übergangsmodell aus lokalen CRUD-Pfaden und serverseitiger BSF-Shared-Projection.
 - `DATA-SCHEMA.md` führte seinen Supabase-Abschnitt noch als Stand 1.52.0, obwohl BSF-Systemhaus-/Customer-/Shared-Projection-Strukturen bereits enthalten sind.
 - `API.md` nannte noch Lovable-Cloud-Auth und behauptete fälschlich, es gebe keine `/api/public/*`-Route; der aktuelle Supabase-Auth-/`auth-config`-Stand ist nun dokumentiert.

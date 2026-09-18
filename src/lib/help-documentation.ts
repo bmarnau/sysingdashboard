@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.21.0";
+export const DOCUMENTATION_VERSION = "1.22.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -109,7 +109,7 @@ const builtInTopics: HelpTopic[] = [
       "Tätigkeiten",
       "BSF-03",
     ],
-    lastUpdated: "2026-09-13",
+    lastUpdated: "2026-09-18",
     content: `## Wo finde ich „Meine Kunden“?
 Im Dashboard über die Schaltfläche **Meine Kunden** in der Bereichsleiste (Berechtigung
 \`dashboard.view\`). Die Seite listet ausschließlich Kunden, für die Sie fachlich
@@ -139,11 +139,19 @@ Die Kundenverantwortung ist eine fachliche Beziehung und erweitert weder Rollen 
 Schreibrechte. Auch bei angezeigtem „Schreibzugriff“ setzen Änderungen an Projekten,
 Arbeitspaketen oder Tätigkeiten weiterhin die jeweilige Fachberechtigung voraus.
 
+## Kundenverantwortung verwalten
+Die persönliche Ansicht **Meine Kunden** bleibt bewusst read-only. Zuweisen, Wechseln
+oder Beenden einer primären Kundenverantwortung erfolgt in der getrennten Ansicht
+**Kundenverantwortung**. Sie ist ausschließlich mit
+`customer.responsibility.manage` für Systemadministrator, Administrator und Teamlead
+verfügbar. Diese Verwaltungsberechtigung erzeugt keinen operativen Zugriff auf die
+Projekte, Arbeitspakete oder Tätigkeiten des Kunden.
+
 ## Hinweise
 - „Kunde nicht verfügbar“ erscheint gleichermaßen für fremde, beendete oder unbekannte
   Kunden; die Anwendung verrät nicht, ob eine ID existiert.
-- Die Vergabe und Beendigung von Kundenverantwortungen ist noch nicht Teil der
-  Oberfläche und erfolgt administrativ.`,
+- Verantwortung und Kundenzugriff bleiben getrennte Sicherheitsbegriffe: Eine
+  Responsibility allein erweitert weder Rolle noch Customer Access.`,
   },
   {
     id: "avkk-arbeitsplatz",
@@ -1712,76 +1720,91 @@ Backups ab Version 1.14 enthalten zusätzlich eine kanonische \`dashboard.json\`
       "Rollen",
       "Berechtigungen",
       "Permissions",
+      "Projektcontrolling",
+      "Kiosk",
+      "Kundenverantwortung",
       "Entra",
-      "Administrator",
-      "Viewer",
     ],
-    lastUpdated: "2026-07-24",
+    lastUpdated: "2026-09-18",
     content: `## Rollen
-Sieben Rollen mit klarer Privileg-Reihenfolge (hoch → niedrig):
-1. **System-Administrator** — darf alles. Einzige Rolle für Datenbankaufbau (\`azure.database.build\`) und Rollenverwaltung (\`roles.manage\`).
-2. **Administrator** — Tagesbetrieb inkl. Benutzerverwaltung, Audit Logs, Backup-Restore, Azure-Export/Import. Kein Datenbankaufbau, keine Rollenverwaltung.
-3. **Teamleiter** — bearbeitet Projekte / Arbeitspakete / Tätigkeiten und darf nach Azure exportieren. Kein Import.
-4. **Projektmanager** — wie Teamleiter, aber ohne Systemstatus-Einsicht.
-5. **Systemingenieur** — bearbeitet Arbeitspakete und Tätigkeiten.
-6. **Kunde** — sieht Dashboard und Dokumentation, sonst nichts. Keine Admin- oder Statusansichten.
-7. **Viewer** — read-only.
+Acht Rollen sind in der aktuellen Matrix definiert:
+1. **System-Administrator** — höchste administrative Rolle; als einzige Rolle mit \`roles.manage\` und \`azure.database.build\`.
+2. **Administrator** — administrativer Tagesbetrieb einschließlich Benutzerverwaltung, Audit, Backup-Restore, Referenzdatenpflege und Kundenverantwortung.
+3. **Teamleiter** — operative Führung mit Projekt-/Arbeitspaket-/Tätigkeitsbearbeitung, AVKK-Führungssicht, Kundenverantwortung und Projektcontrolling.
+4. **Projektmanager** — Projekt-/Leistungssteuerung einschließlich AVKK-Führungssicht und Projektcontrolling, ohne Benutzer- oder Rollenverwaltung.
+5. **Systemingenieur** — operative Arbeit an Arbeitspaketen und Tätigkeiten sowie AVKK; kein Projektcontrolling.
+6. **Kunde** — stark begrenzte Lesesicht ohne Systemstatus, AVKK-Führung oder Verwaltungsrechte.
+7. **Viewer** — allgemeine read-only Rolle; keine Edit-, Azure-, Manage- oder Backup-Rechte.
+8. **Kiosk** — technische Sonderrolle mit ausschließlich \`kiosk.view\`; kein Dashboard-, Dokumentations-, Fach- oder Administrationsrecht.
 
-## Permission-Matrix (14 atomare Rechte)
-\`dashboard.view\`, \`documentation.view\`, \`systemstatus.view\`, \`project.edit\`, \`workpackage.edit\`, \`activity.edit\`, \`azure.connection.test\`, \`azure.export\`, \`azure.import\`, \`azure.database.build\`, \`backup.restore\`, \`users.manage\`, \`roles.manage\`, \`auditlog.view\`.
+## Permission-Matrix (23 atomare Rechte)
+Die aktuelle Source of Truth enthält:
+- Basis: \`dashboard.view\`, \`documentation.view\`, \`systemstatus.view\`
+- Fachbearbeitung: \`project.edit\`, \`workpackage.edit\`, \`activity.edit\`
+- Azure: \`azure.connection.test\`, \`azure.export\`, \`azure.import\`, \`azure.database.build\`
+- Administration: \`backup.restore\`, \`users.manage\`, \`roles.manage\`, \`auditlog.view\`
+- AVKK: \`avkk.view\`, \`avkk.edit\`, \`avkk.responsibility.assign\`, \`avkk.management.view\`
+- Referenzdaten: \`referencedata.view\`, \`referencedata.manage\`
+- BSF: \`customer.responsibility.manage\`, \`project.controlling.view\`
+- Kiosk: \`kiosk.view\`
 
-Single Source of Truth: \`src/lib/rbac/permissions.ts\` (Frontend) mit identischem Mirror in \`backend/services/rbac.mjs\` (Server). Der CI-Check \`bun run rbac:check\` (Script \`scripts/check-rbac.mjs\`) vergleicht beide Matrizen und failed bei Drift.
+Single Source of Truth ist \`src/lib/rbac/permissions.ts\`; der Server-Mirror wird durch \`scripts/check-rbac.mjs\` in CI auf Drift geprüft.
 
-## Garantierte Invarianten
-- \`azure.database.build\` ⊆ {System-Administrator}
-- \`azure.import\` ⊆ {System-Administrator, Administrator}
-- Träger(\`azure.import\`) ⊆ Träger(\`azure.export\`) — Import ist strikter als Export.
-- \`roles.manage\` ⊆ {System-Administrator}
-- \`users.manage\`, \`auditlog.view\`, \`backup.restore\` nur für Admins.
-- Viewer hat keine Edit-/Azure-/Manage-/Backup-Permission.
-- Kunde sieht keinen Systemstatus.
+## Wichtige Sicherheitsgrenzen
+- Eine UI-Sichtbarkeit ist keine Sicherheitsfreigabe. Serverseitige Funktionen prüfen Authentifizierung, Permission und den jeweiligen Daten-Scope erneut.
+- \`project.controlling.view\` erlaubt nur die Controlling-Funktion; sichtbare Daten bleiben zusätzlich durch Systemhaus-Zugehörigkeit, Customer Access und RLS begrenzt.
+- \`customer.responsibility.manage\` verwaltet die fachliche Verantwortung, erzeugt aber keinen operativen Customer Access.
+- Die technische \`kiosk\`-Rolle ist exklusiv: Sie besitzt nur \`kiosk.view\` und keine internen Leistungs- oder Administrationsrechte.
+- Viewer besitzt keine Edit-, Azure-, Manage- oder Backup-Permission; Customer sieht keinen Systemstatus.
 
 ## Schutz vor Self-Lockout
-Der letzte aktive System-Administrator kann nicht degradiert, deaktiviert oder gelöscht werden. Im Benutzer-Editor ist die Rollen-Auswahl ohne \`roles.manage\` gesperrt und die SysAdmin-Rolle ausgeblendet.
-
-## Migration
-Bestehende Default-Administratoren werden beim Start einmalig auf \`systemadministrator\` angehoben (Flag \`northbit-rbac-migrated-v1\`). Nachfolgende Starts ändern nichts mehr.
+Der letzte aktive System-Administrator kann nicht degradiert, deaktiviert oder gelöscht werden. Rollenänderungen bleiben an \`roles.manage\` gebunden.
 
 ## Entra-ID-Readiness
-\`config/roleResolver.mjs\` enthält \`resolveRoleFromGroups(groupIds, mapping)\`. Mehrere Treffer ergeben die höchstprivilegierte Rolle, kein Treffer ergibt \`viewer\` (Least-Privilege-Fallback). Beispielmapping: \`config/entraMapping.example.json\`. Entra liefert nur Identität — die interne Permission-Matrix bleibt die einzige Autorität für Aktionen.
+Ein späterer Entra-Gruppenresolver darf Identitäten auf interne Rollen abbilden; die interne Permission-Matrix bleibt die Autorität für Aktionen. Provider- oder Tenant-Bezeichner ersetzen nicht den fachlichen Systemhaus-/Customer-Scope.
 
-## UI-Gating vs. Server-Guard
-\`PermissionGate\` und \`usePermission()\` blenden UI rein lokal. Sobald serverseitige Auth aktiv ist, muss jede schreibende Server-Route zusätzlich \`requirePermission()\` aus \`backend/services/rbac.mjs\` aufrufen — UI-Gating ist niemals der einzige Schutz.
-
-## Ausblick: RBAC v2 Assignments
-Die Weiterentwicklung Richtung Multi-Customer, Azure-Ressourcen-Scopes und Entra-Gruppen ist in **ADR-0007** (Typen) und **ADR-0008** (Assignment-Architektur) beschrieben. Solange keine Assignments gepflegt sind, gilt weiterhin die flache v1-Matrix.`,
+## Weiterführend
+Für die vollständige aktuelle Rollen-/Permission-Matrix siehe \`docs/RBAC-MATRIX.md\`. Für Daten-Scope und RLS gelten zusätzlich die jeweiligen BSF-Verträge.`,
+    relatedTopics: [
+      "project-controlling",
+      "customer-responsibility-management",
+      "info-kiosk",
+      "security-principles",
+    ],
   },
   {
     id: "local-operation",
-    title: "Lokaler Betrieb ohne Azure",
+    title: "Betrieb ohne Azure",
     category: "Betrieb",
-    keywords: ["lokal", "offline", "Azure", "Standalone", "Browser", "localStorage"],
-    lastUpdated: "2026-07-24",
+    keywords: ["lokal", "Supabase", "Azure", "Standalone", "Browser", "Portabilität"],
+    lastUpdated: "2026-09-18",
     content: `## Worum geht es?
-Das Dashboard funktioniert vollständig ohne Azure und ohne Backend. Alle Daten liegen lokal im Browser (localStorage / IndexedDB) und verlassen das Gerät nur, wenn Sie es aktiv anstoßen (Export, Backup-Download, Sync).
+Das Dashboard ist **nicht von Azure abhängig**. Azure SQL, Azure Table Storage und Microsoft Entra ID sind optionale spätere Provider-/Migrationsziele.
 
-## Was lokal funktioniert
-- Anlage und Pflege von Projekten, Arbeitspaketen und Tätigkeiten
-- Wochen- und Monatsansicht inkl. Leistungsreport
-- PDF-, CSV- und JSON-Export
-- Tägliches ZIP-Backup, Downloadbereich
-- Import/Export-Wizard
-- Benutzerhandbuch, Systemstatus-Anzeige
-- Benutzerverwaltung und Rollen-Wechsel
+Das bedeutet jedoch nicht mehr, dass der aktuelle Mehrbenutzer-MVP vollständig ohne Backend läuft: **Supabase ist derzeit die führende Daten- und Authentifizierungsplattform** für Anmeldung, serverseitige Berechtigungsprüfungen, RLS und die gemeinsamen BSF-Datenpfade.
 
-## Was zusätzlich Azure braucht
-- Aktiver Sync nach Azure SQL / Table Storage
-- Datenbankaufbau in Azure
-- Cloud-übergreifender Datenaustausch zwischen mehreren Geräten
+## Was weiterhin browsernah/lokal ist
+Ein Teil der bestehenden Arbeits-, Export-, Download- und Backup-Funktionen besitzt weiterhin browsergebundene Daten- oder Cache-Anteile. Diese lokalen Pfade ersetzen nicht die serverseitigen Auth-/Scope-Grenzen für Mehrbenutzerfunktionen.
+
+## Was Supabase heute benötigt
+Insbesondere:
+- Anmeldung und Session,
+- Benutzer-/Rollenverwaltung,
+- AVKK- und Referenzdaten,
+- Systemhaus-Zugehörigkeit und Customer Access,
+- Kundenverantwortung,
+- gemeinsame Shared Projection,
+- „Meine Kunden“ und Kundenverantwortungsverwaltung,
+- Projektcontrolling.
+
+## Portabilitätsziel
+Fachlogik, Authentifizierung, Datenzugriff und Provideradapter werden getrennt gehalten. Dadurch soll die Anwendung später als Docker-Container im Unternehmen betrieben und bei Bedarf auf Entra ID, Azure SQL oder andere geeignete Provider umgestellt werden können, ohne die Fachlogik neu zu schreiben.
+
+Lovable Cloud ist dabei keine technisch unersetzbare Laufzeitabhängigkeit.
 
 ## Empfehlung
-Wenn Sie das Dashboard nur als Einzelplatz nutzen, ist keine Azure-Konfiguration nötig. Die Sektion "Azure" im Systemstatus bleibt dann auf "Not configured" — das ist beabsichtigt.`,
-    relatedTopics: ["offline-mode", "azure-service-area"],
+Für den heutigen MVP ist eine korrekt konfigurierte Supabase-Umgebung Voraussetzung für die vollständige Mehrbenutzer-/BSF-Funktion. Azure-Konfiguration ist dagegen **nicht** erforderlich.`,
+    relatedTopics: ["system-status", "architektur", "security-principles"],
   },
   {
     id: "azure-service-area",

@@ -15,6 +15,8 @@ Format pro Eintrag:
 
 ## 1.64.0 - 2026-09-18
 
+- **Dokumentations-/Handbuch-Audit**: Benutzerhandbuch auf v1.22.0 aktualisiert; Projektcontrolling kontextsensitiv dokumentiert, Kundenverantwortung nicht mehr als „noch nicht in der Oberfläche“ bezeichnet, RBAC auf acht Rollen/23 atomare Rechte fortgeschrieben und der Betrieb ohne Azure klar vom heutigen Supabase-MVP-Betriebsmodell getrennt.
+
 - **Projektcontrolling (BSF-03A, Issue #106)**: Neue read-only Route `/projektcontrolling` für berechtigte Leitungsrollen mit Zeitraum, Systemhaus, Kunde, Projekt, Arbeitspaket, AP-Kategorie und Billable-Filter sowie reproduzierbaren KPIs, Tagestrend und Drill-down.
 - **Providerneutrale Fachlogik**: Aggregation und Filter liegen im `ProjectControllingService`/`ProjectControllingRepository`; Supabase ist auf den User-JWT-Adapter begrenzt. Kein Service-Role-Normalpfad und keine Lovable-Cloud-only Fachlogik.
 - **RBAC/Security**: Neue Permission `project.controlling.view` für Systemadministrator, Administrator, Teamlead und Projektmanager; Engineer, Viewer, Customer und Kiosk bleiben DENY. Customer-/Systemhouse-Scope, RLS und IDOR/BOLA-Prüfungen bleiben serverseitig.

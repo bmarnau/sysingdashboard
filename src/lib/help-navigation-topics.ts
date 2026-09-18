@@ -17,7 +17,7 @@ export const dashboardNavigationHelpTopics: HelpTopic[] = [
       "AVKK",
       "Hilfe",
     ],
-    lastUpdated: "2026-09-13",
+    lastUpdated: "2026-09-18",
     content: `## Hauptnavigation
 Die fachlichen Ansichten werden über die Tab-Leiste direkt unter dem Kopfbereich geöffnet:
 - **Projekte** — Projektübersicht und Einstieg in das Projektdetail.
