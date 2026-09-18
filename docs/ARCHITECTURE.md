@@ -12,18 +12,18 @@ Entscheidungen mit Trade-offs stehen einzeln in [`docs/ADR/`](./ADR/).
 
 ## 1. Architekturübersicht
 
-| Ebene      | Technologie / Ort                                                        |
-| ---------- | ------------------------------------------------------------------------ |
-| Frontend   | React 19 + TanStack Start v1 (SSR, File-based Routing) + Vite 7          |
-| Styling    | Tailwind CSS v4 + oklch-Design-Tokens in `src/styles.css`                |
-| UI-Kit     | shadcn/ui (Radix Primitives) + Lucide Icons                              |
-| State      | Pub-Sub-Store (`src/lib/store/`) + `useSyncExternalStore`                |
+| Ebene      | Technologie / Ort                                                                        |
+| ---------- | ---------------------------------------------------------------------------------------- |
+| Frontend   | React 19 + TanStack Start v1 (SSR, File-based Routing) + Vite 7                          |
+| Styling    | Tailwind CSS v4 + oklch-Design-Tokens in `src/styles.css`                                |
+| UI-Kit     | shadcn/ui (Radix Primitives) + Lucide Icons                                              |
+| State      | Pub-Sub-Store (`src/lib/store/`) + `useSyncExternalStore`                                |
 | Persistenz | `localStorage` (bestehende CRUD-Pfade) · IndexedDB · Supabase Shared Projection/RBAC/RLS |
-| Identität  | Supabase Auth (E-Mail/Passwort), Profile + Rollen in Postgres mit RLS    |
-| Server     | TanStack Server-Routes auf Cloudflare Worker (`nodejs_compat`)           |
-| Services   | `src/lib/*` (Client) · `backend/services/*` (framework-freie ESM-Module) |
-| Governance | Project Manifest + Validator + CI-Gates                                  |
-| CI         | GitHub Actions: static, lint, docs, tests, security, tech-debt, build    |
+| Identität  | Supabase Auth (E-Mail/Passwort), Profile + Rollen in Postgres mit RLS                    |
+| Server     | TanStack Server-Routes auf Cloudflare Worker (`nodejs_compat`)                           |
+| Services   | `src/lib/*` (Client) · `backend/services/*` (framework-freie ESM-Module)                 |
+| Governance | Project Manifest + Validator + CI-Gates                                                  |
+| CI         | GitHub Actions: static, lint, docs, tests, security, tech-debt, build                    |
 
 ```text
 ┌──────────────────────────── Browser ────────────────────────────┐
@@ -124,16 +124,16 @@ Prinzip im aktuellen Übergang: Lokale Fach-Edits bleiben Local-First; serversei
 
 ## 6. Supabase
 
-| Objekt                | Zweck                                             | Zugriff                                       |
-| --------------------- | ------------------------------------------------- | --------------------------------------------- |
-| `auth.users`          | Identität (E-Mail/Passwort)                       | Supabase-verwaltet                            |
-| `public.profiles`     | Anzeigename, Kontostatus                          | RLS: eigener Datensatz, Admin über `has_role` |
-| `public.user_roles`   | Rollenzuordnung (separate Tabelle, nie am Profil) | RLS + Security-Definer-Funktion               |
-| `public.app_settings` | globale Einstellungen (z. B. Idle-Timeout)        | freigegebene Keys bzw. Admin                   |
-| `public.systemhouse` / `systemhouse_membership` | providerneutraler Organisationsscope und aktive Zugehörigkeit | RLS/Grants, self-/scope-begrenzt |
-| `public.customer` / `customer_access` | Customer-Identität und technische Read-/Write-Grenze | Systemhouse-/Customer-Scope + RLS |
-| `public.customer_responsibility` | fachliche Kundenverantwortung, getrennt vom Datenzugriff | historisiert, scoped, RLS/RPC |
-| `public.shared_*_projection` | gemeinsamer read-optimierter Project-/WorkPackage-/Activity-Bestand | User-JWT, Customer Access, RLS; Publish separat kontrolliert |
+| Objekt                                          | Zweck                                                               | Zugriff                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `auth.users`                                    | Identität (E-Mail/Passwort)                                         | Supabase-verwaltet                                           |
+| `public.profiles`                               | Anzeigename, Kontostatus                                            | RLS: eigener Datensatz, Admin über `has_role`                |
+| `public.user_roles`                             | Rollenzuordnung (separate Tabelle, nie am Profil)                   | RLS + Security-Definer-Funktion                              |
+| `public.app_settings`                           | globale Einstellungen (z. B. Idle-Timeout)                          | freigegebene Keys bzw. Admin                                 |
+| `public.systemhouse` / `systemhouse_membership` | providerneutraler Organisationsscope und aktive Zugehörigkeit       | RLS/Grants, self-/scope-begrenzt                             |
+| `public.customer` / `customer_access`           | Customer-Identität und technische Read-/Write-Grenze                | Systemhouse-/Customer-Scope + RLS                            |
+| `public.customer_responsibility`                | fachliche Kundenverantwortung, getrennt vom Datenzugriff            | historisiert, scoped, RLS/RPC                                |
+| `public.shared_*_projection`                    | gemeinsamer read-optimierter Project-/WorkPackage-/Activity-Bestand | User-JWT, Customer Access, RLS; Publish separat kontrolliert |
 
 - Rollenprüfung über die Security-Definer-Funktion `has_role(uuid, app_role)`,
   Kontostatus über `is_account_active(uuid)`; `EXECUTE` ist von `PUBLIC` entzogen.
@@ -198,13 +198,13 @@ Phasenmodell: [ADR-0023](./ADR/0023-phasenmodell-infrastrukturabschluss.md).
 
 ## 10. Geplante Bausteine (heute kein Code)
 
-| Baustein           | Zielbild                                                                                                                         | Sprint  |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| Baustein           | Zielbild                                                                                                                     | Sprint  |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------- | ------- |
 | **Reference Data** | **Umgesetzt**: globale und systemhausbezogene Kataloge; BSF-03D ergänzt `workpackage.category` mit stabilem Key und Historie | Bestand |
-| **AVKK**           | **Umgesetzt**: Fachmodell, Datenbank, RLS/RBAC, persönliche und Management-Sichten; weitere Integrationen bleiben separat | Bestand |
-| **Report Service** | Serverseitig erzeugte, versionierte Berichte statt clientseitigem PDF-Bau                                                        | nach 08 |
-| **Microsoft 365**  | Graph-Anbindung (Kalender, Aufgaben, SharePoint) über Server-Routes, Entra-ID-Identität                                          | später  |
-| **KI-Agenten**     | Lesende Agenten auf Manifest, Prüfbericht und Tagebuch; Schreibzugriff nur über regulären Commit (`mcpAndAgents.guardrails`)     | später  |
+| **AVKK**           | **Umgesetzt**: Fachmodell, Datenbank, RLS/RBAC, persönliche und Management-Sichten; weitere Integrationen bleiben separat    | Bestand |
+| **Report Service** | Serverseitig erzeugte, versionierte Berichte statt clientseitigem PDF-Bau                                                    | nach 08 |
+| **Microsoft 365**  | Graph-Anbindung (Kalender, Aufgaben, SharePoint) über Server-Routes, Entra-ID-Identität                                      | später  |
+| **KI-Agenten**     | Lesende Agenten auf Manifest, Prüfbericht und Tagebuch; Schreibzugriff nur über regulären Commit (`mcpAndAgents.guardrails`) | später  |
 
 Regel: Kein geplanter Baustein darf implizit über UI-Code entstehen — er beginnt mit ADR
 und Manifest-Eintrag.

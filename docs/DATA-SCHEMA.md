@@ -160,16 +160,16 @@ vermerkt.
 Seit BSF-02/02C ergänzt die Datenbank den ursprünglichen Identitäts-/AVKK-Bestand um
 einen providerneutralen Mehrbenutzer-Scope:
 
-| Objekt | Zweck |
-| --- | --- |
-| `systemhouse` | fachlicher Organisationsanker; keine Microsoft-Tenant-ID |
-| `systemhouse_membership` | aktive Benutzerzugehörigkeit zu einem Systemhaus |
-| `customer` | Customer-Identität innerhalb eines Systemhauses |
-| `customer_access` | technische Read-/Write-Zugriffsgrenze je Benutzer und Kunde |
-| `customer_responsibility` | fachliche Kundenverantwortung, getrennt vom Datenzugriff |
-| `shared_project_projection` | read-optimierte, veröffentlichte Projektsicht |
+| Objekt                           | Zweck                                                                                     |
+| -------------------------------- | ----------------------------------------------------------------------------------------- |
+| `systemhouse`                    | fachlicher Organisationsanker; keine Microsoft-Tenant-ID                                  |
+| `systemhouse_membership`         | aktive Benutzerzugehörigkeit zu einem Systemhaus                                          |
+| `customer`                       | Customer-Identität innerhalb eines Systemhauses                                           |
+| `customer_access`                | technische Read-/Write-Zugriffsgrenze je Benutzer und Kunde                               |
+| `customer_responsibility`        | fachliche Kundenverantwortung, getrennt vom Datenzugriff                                  |
+| `shared_project_projection`      | read-optimierte, veröffentlichte Projektsicht                                             |
 | `shared_work_package_projection` | read-optimierte Arbeitspaketsicht; BSF-03A ergänzt `category_key` und `category_observed` |
-| `shared_activity_projection` | read-optimierte Tätigkeits-/Leistungssicht |
+| `shared_activity_projection`     | read-optimierte Tätigkeits-/Leistungssicht                                                |
 
 Kanonische Kundenidentität ist `(systemhouseId, customerId)`. Membership,
 Customer Access und Responsibility sind drei getrennte Beziehungen. Eine Responsibility
@@ -184,6 +184,7 @@ dürfen einen bereits erlaubten Customer-Scope nur verengen.
 
 Die Shared Projection ist derzeit ein kontrollierter Mehrbenutzer-Read-Pfad. Sie ersetzt
 noch nicht sämtliche lokalen CRUD-Persistenzpfade; diese Konsolidierung bleibt BSF-04.
+
 ## 2. Reference Data
 
 ### `reference_catalog`
