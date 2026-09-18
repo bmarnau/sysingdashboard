@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.64.0 - 2026-09-18
+
+- **Projektcontrolling (BSF-03A, Issue #106)**: Neue read-only Route `/projektcontrolling` für berechtigte Leitungsrollen mit Zeitraum, Systemhaus, Kunde, Projekt, Arbeitspaket, AP-Kategorie und Billable-Filter sowie reproduzierbaren KPIs, Tagestrend und Drill-down.
+- **Providerneutrale Fachlogik**: Aggregation und Filter liegen im `ProjectControllingService`/`ProjectControllingRepository`; Supabase ist auf den User-JWT-Adapter begrenzt. Kein Service-Role-Normalpfad und keine Lovable-Cloud-only Fachlogik.
+- **RBAC/Security**: Neue Permission `project.controlling.view` für Systemadministrator, Administrator, Teamlead und Projektmanager; Engineer, Viewer, Customer und Kiosk bleiben DENY. Customer-/Systemhouse-Scope, RLS und IDOR/BOLA-Prüfungen bleiben serverseitig.
+- **Shared-Projection-Kategoriebrücke**: `category_key` und `category_observed` führen BSF-03D-Kategorien rückwärtskompatibel in den BSF-02C-Publish-Pfad; Legacy, explizit keine Kategorie, bekannte/inaktive und unbekannte historische Keys bleiben unterscheidbar. Publish-RPC und `has_permission` bleiben `SECURITY INVOKER`.
+- **Golden Dataset V1**: Synthetische Referenzbasis `sysing.golden.v1` / `1.0.0` mit 8 Tätigkeiten, 25.0 h Gesamt, 20.0 h billable, 5.0 h non-billable und 80.0 % Billable-Quote; Validator und unabhängige Expected Results sind Bestandteil der Regression.
+- **Qualitätsnachweis**: Code-Head `ffc2890` mit Security #956 und CI #962 vollständig PASS; 917 Unit/Component-Tests, 91 E2E, 7 Accessibility-Tests, BSF-02C T01–T30 und BSF-03A T01–T20d PASS, Schema-/Types-Drift NONE, Quality Gate 0 Blocker. Finaler Lovable-Exact-Head-Preview bleibt vor FINAL DONE offen.
+
 ## 1.63.0 - 2026-09-17
 
 - **Info-Kiosk Erweiterungsbereich (BSF-KIOSK-01)**: Die vorhandene Restfläche unter der aggregierten Systemverfügbarkeit ist als unsichtbarer, höhenneutraler Layout-Slot für eine spätere freigegebene read-only Betriebsinformation abgegrenzt; heute entstehen weder Datenvertrag, Datenquelle noch sichtbare Platzhalter.

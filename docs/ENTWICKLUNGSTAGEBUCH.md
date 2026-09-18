@@ -939,3 +939,20 @@ Der offizielle Supabase Security Advisor auf der unveränderten verbundenen Live
 **Noch offen:** Die Kiosk-Migrationen sind auf der verbundenen Supabase-Instanz nicht angewendet. Deshalb ist der Advisor-Lauf ein Baseline-Nachweis, aber noch kein Kiosk-spezifischer Post-Migration-Nachweis. Vor FINAL PASS/DONE müssen die Migrationen kontrolliert auf einer geeigneten Ziel-/Staging-Umgebung angewendet und der offizielle Security Advisor dort erneut ohne neue Findings gegenüber SEC-01 ausgeführt werden.
 
 Bis dahin bleiben Issue #135 offen und PR #141 Draft. Es erfolgten kein Merge, kein Deploy und kein realer DB-Write. **BSF-03A startet erst nach formaler KIOSK-01-Endabnahme.**
+
+## 2026-09-18 — Version 1.64.0 — BSF-03A Projektcontrolling
+
+BSF-03A / Issue #106 ist auf Draft-PR #144 technisch vollständig umgesetzt und auf dem code-tragenden Exact Head `ffc28901c3017d9459c89a9fe68c030da0f07386` vollständig gegatet.
+
+Umgesetzt wurden die atomare Permission `project.controlling.view`, die rückwärtskompatible Kategoriebrücke in die Shared Projection, der providerneutrale Controlling-Vertrag mit reproduzierbarer Dezimalaggregation und 5.000-Zeilen-Fail-closed-Grenze, der Supabase-Read-Adapter im User-JWT-Kontext, serverseitige Scope-/IDOR-/BOLA-Prüfungen sowie die read-only Route `/projektcontrolling` mit Filterkaskade, KPIs, Tagestrend und Drill-down.
+
+GDS-01 V1 ist als synthetische Referenzbasis integriert. Die verbindlichen Grundwerte sind 8 Tätigkeiten, 2 Kunden, 3 Projekte, 5 Arbeitspakete, 25.0 h gesamt, 20.0 h billable, 5.0 h non-billable und 80.0 % Billable-Quote. Golden-Validator und unabhängige Expected Results sind PASS.
+
+Exact-Head-Evidenz: Security #956 PASS; CI #962 PASS; 131 Unit-/Component-Testdateien mit 917 PASS / 4 TODO; E2E 91/91 PASS; Accessibility 7/7 PASS; BSF-02C T01–T30 PASS; BSF-03A DB-Vertrag T01–T20d PASS; DATABASE_SCHEMA_DRIFT NONE; DATABASE_TYPES_DRIFT NONE; Technical Report v17 `passed-with-findings`; Quality Gate 0 Blocker.
+
+Der offizielle Supabase Security Advisor im verifizierten Sysingdashboard-Kontext meldet 0 ERROR, 0 CRITICAL und exakt die zwei bekannten SEC-01-WARN für `public.avkk_can_write(_subject uuid)` und `public.avkk_people_directory()`; neue BSF-03A-Findings: keine. `public.has_permission(uuid,text)` und `public.bsf02c_publish_shared_projection_snapshot` bleiben SECURITY INVOKER.
+
+Der Lovable-L2-Precheck wurde analyse-only ausgeführt und zeigte einen vom PR-Head abweichenden erreichbaren Lovable-Stand. Ein späterer branch-genauer Reachability-/Preview-Recheck war wegen ausgeschöpfter Lovable-Credits nicht möglich. Deshalb bleibt ausschließlich dieser visuelle/branch-genaue Nachweis offen; keine Lovable-Datei- oder DB-Änderung wurde übernommen.
+
+Abschlussnachweis: `docs/BSF-03A-CLOSURE-2026-09-14.md`. PR #144 bleibt Draft. Kein Merge, kein Deploy. Nächster Sprint nach formaler BSF-03A-Abnahme: BSF-KIOSK-02 / #136.
+

@@ -69,6 +69,12 @@ Invarianten aus `scripts/check-rbac.mjs`:
 - `engineer` ohne `avkk.responsibility.assign`
 - `teamlead` und `projectmanager` mit `avkk.responsibility.assign`
 
+### Projektcontrolling (BSF-03A, Issue #106)
+
+`project.controlling.view` ist eine eigenständige read-only Permission für Systemadministrator, Administrator, Teamlead und Projektmanager. Engineer, Customer und Viewer bleiben DENY; die technische Kiosk-Rolle erhält die Permission ebenfalls nicht.
+
+Die Permission allein erweitert keinen Datenscope. Serverseitig gilt zusätzlich die Schnittmenge aus aktivem Konto, aktiver Systemhaus-Zugehörigkeit, Customer Access mindestens `read` und bestehender Shared-Projection-RLS. Projekt-, Arbeitspaket- und Kategorie-IDs verengen nur einen bereits zulässigen Customer-Scope. Namen, Labels und das Legacy-Feld `Project.lead` sind keine Sicherheitsidentitäten.
+
 ### Arbeitspaket-Kategorien (BSF-03D, Issue #103)
 
 Kategorien sind systemhausweite Referenzdaten im Katalog `workpackage.category`

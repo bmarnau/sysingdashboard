@@ -1,12 +1,14 @@
 # Sysing Dashboard — Lovable-Promptplan BSF-03A
 
-Stand: 2026-09-15
-Status: PLANUNG / NICHT AUSGEFÜHRT
+Stand: 2026-09-18
+Status: L2-ANALYSE AUSGEFÜHRT / EXACT-HEAD-PREVIEW BLOCKED
 Issue: #106
 Golden Dataset: #142 / `docs/GOLDEN-DATASET-STRATEGY.md`
 Design: `docs/BSF-03A-DESIGN.md`
 Implementation Plan: `docs/superpowers/plans/2026-09-14-bsf-03a-project-controlling.md`
 Golden Foundation Plan: `docs/superpowers/plans/2026-09-15-golden-dataset-foundation.md`
+
+Aktueller Ausführungsstand: Der L2-Precheck wurde analyse-only ausgeführt. Der erreichbare Lovable-Stand wich vom aktuellen GitHub-PR-Head ab; deshalb wurden keine Lovable-Codeänderungen übernommen. Ein späterer read-only Branch-/Head-Recheck war wegen ausgeschöpfter Lovable-Credits nicht ausführbar. L2/L3-Exact-Head-Preview bleibt vor FINAL DONE offen.
 
 ## 1. Zweck
 

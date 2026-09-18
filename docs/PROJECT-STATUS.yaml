@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-09-17"
+lastUpdated: "2026-09-18"
 
 project:
   name: "Sysing Dashboard"
@@ -49,24 +49,24 @@ architecturePrinciples:
     rule: "Kundenidentität und Kundenscope sind providerneutral an das Systemhaus gebunden und nicht an einen Microsoft-Tenant oder anderen Provider."
 
 versions:
-  dashboard: "1.63.0"
+  dashboard: "1.64.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
-  technicalReportVersion: 7
+  technicalReportVersion: 17
   backupFormat: "2.0"
   backupManifestTarget: "2.0"
   api: "not-versioned"
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "BSF-KIOSK-01"
-  currentSprintTitle: "Info-Kiosk Demo-Pilot"
+  currentSprint: "BSF-03A"
+  currentSprintTitle: "Projektmanager-Leistungssicht und Controlling"
   currentSprintStatus: "in-progress"
-  nextSprint: "BSF-03A"
-  previousSprint: "BSF-03D"
+  nextSprint: "BSF-KIOSK-02"
+  previousSprint: "BSF-KIOSK-01"
   previousSprintStatus: "completed"
   releaseReadiness: "blocked"
-  testsPassing: 704
+  testsPassing: 917
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
@@ -78,12 +78,12 @@ currentState:
     e2e: "passed"
     technicalReportQualityGate: "passed"
   knownVerificationLimits:
-    - id: "kiosk-post-migration-advisor"
+    - id: "bsf03a-lovable-exact-head-preview"
       status: "open"
-      severity: "high"
-      description: "BSF-KIOSK-01 ist implementiert und auf dem Feature-Branch gegatet; der Kiosk-spezifische Security-Advisor-Nachweis nach kontrollierter Anwendung der Kiosk-Migrationen auf einer geeigneten Ziel- oder Staging-Umgebung steht noch aus."
-      reference: "docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md"
-      targetSprint: "BSF-KIOSK-01"
+      severity: "medium"
+      description: "BSF-03A ist auf dem code-tragenden Exact Head vollständig gegatet; der branch-genaue Lovable-L2/L3-Preview-/Driftnachweis auf dem aktuellen PR-Head ist wegen Head-Drift und anschließend ausgeschöpfter Lovable-Credits noch offen."
+      reference: "docs/BSF-03A-CLOSURE-2026-09-14.md"
+      targetSprint: "BSF-03A"
     - id: "session-server-enforcement"
       status: "open"
       severity: "medium"
@@ -184,9 +184,18 @@ phases:
       - "BSF-03 P5 Kundenverantwortung mit datensparsamer Managementsicht, atomarem Lifecycle und unverändert engem operativem Kundenscope umgesetzt"
       - "BSF-03 Kundenverantwortung und Kundensicht vollständig abgeschlossen"
       - "BSF-03D Arbeitspaket-Kategorien vollständig abgeschlossen und auf main integriert"
-      - "BSF-KIOSK-01 technisch implementiert; formale Finalabnahme wartet auf den Post-Migration-Security-Advisor"
+      - "BSF-KIOSK-01 vollständig abgeschlossen und auf main integriert"
+      - "BSF-03A technisch vollständig gegatet; branch-genauer Lovable-Preview-/Driftnachweis noch offen"
 
 completedSprints:
+  - id: "BSF-KIOSK-01"
+    title: "Info-Kiosk Demo-Pilot"
+    version: "1.63.0"
+    status: "completed"
+    summary: >-
+      Read-only Kiosk mit synthetischen Demo-Daten, KioskDataProvider-Grenze,
+      exklusiver kiosk-Rolle, Session-Watchdog und abgesicherter Provisionierung;
+      Zielmigration, Security Advisor, Required Checks und Post-Merge-Gates PASS.
   - id: "BSF-03D"
     title: "Arbeitspaket-Kategorien"
     version: "1.62.0"
@@ -368,7 +377,7 @@ roadmap:
       - "Cross-Systemhaus- und Cross-Customer-Negativtests vorhanden"
   - id: "BSF-KIOSK-01"
     title: "Info-Kiosk Demo-Pilot"
-    status: "in-progress"
+    status: "completed"
     priority: "high"
     goal: >-
       Einen read-only Info-Kiosk mit ausschließlich synthetischen Demo-Daten,
@@ -383,7 +392,7 @@ roadmap:
       - "Abschluss-, Status-, Entwicklungstagebuch- und Hilfedokumentation synchron"
   - id: "BSF-03A"
     title: "Projektmanager-Leistungssicht und Controlling"
-    status: "planned"
+    status: "in-progress"
     priority: "high"
     goal: "Read-only-Leistungssicht nach Zeitraum, Kunde, Projekt und Tätigkeiten bereitstellen."
     dependencies:
@@ -696,7 +705,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release; volatile report details remain CI artifacts."
 
 releaseManagement:
-  currentRelease: "1.63.0"
+  currentRelease: "1.64.0"
   stage: "preview"
   status: "blocked"
   releaseEvidence:
@@ -718,10 +727,11 @@ releaseManagement:
     - "docs/BSF-03D-VERIFICATION-2026-09-13.md"
     - "docs/BSF-03D-CLOSURE-2026-09-13.md"
     - "docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md"
+    - "docs/BSF-03A-CLOSURE-2026-09-14.md"
     - "docs/CODEX-GIT-CI-RULE.md"
     - "docs/ADR/0029-systemhouse-customer-scope.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
-  nextReleaseTarget: "BSF-KIOSK-01 Finalabnahme und BSF-03A"
+  nextReleaseTarget: "BSF-03A Finalabnahme und BSF-KIOSK-02"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"
