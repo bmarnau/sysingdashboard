@@ -1,6 +1,12 @@
-export type ProjectControllingLoadState = "loading" | "ready" | "error";
+import { ProjectControllingSummary } from "@/components/project-controlling/ProjectControllingSummary";
+import type { ProjectControllingResult } from "@/lib/project-controlling/project-controlling-contract";
 
-export function ProjectControllingView({ state }: { state: ProjectControllingLoadState }) {
+export type ProjectControllingViewState =
+  | { kind: "loading" }
+  | { kind: "ready"; result: ProjectControllingResult }
+  | { kind: "error" };
+
+export function ProjectControllingView({ state }: { state: ProjectControllingViewState }) {
   return (
     <section aria-labelledby="project-controlling-title" className="space-y-4">
       <div>
@@ -9,17 +15,13 @@ export function ProjectControllingView({ state }: { state: ProjectControllingLoa
           Projektcontrolling
         </h1>
       </div>
-      {state === "loading" && (
+      {state.kind === "loading" && (
         <p role="status" className="text-sm text-muted-foreground">
           Controlling-Daten werden geladen …
         </p>
       )}
-      {state === "ready" && (
-        <p className="text-sm text-muted-foreground">
-          Die read-only Controlling-Sicht wird vorbereitet.
-        </p>
-      )}
-      {state === "error" && (
+      {state.kind === "ready" && <ProjectControllingSummary summary={state.result.summary} />}
+      {state.kind === "error" && (
         <p role="alert" className="text-sm text-destructive">
           Projektcontrolling konnte nicht geladen werden.
         </p>

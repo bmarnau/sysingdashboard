@@ -4,7 +4,7 @@ import { CustomerPageShell } from "@/components/customers/CustomerPageShell";
 import { PermissionGate } from "@/components/PermissionGate";
 import {
   ProjectControllingView,
-  type ProjectControllingLoadState,
+  type ProjectControllingViewState,
 } from "@/components/project-controlling/ProjectControllingView";
 import { readProjectControllingFn } from "@/lib/project-controlling-runtime/project-controlling.functions";
 import type { ProjectControllingFilters } from "@/lib/project-controlling/project-controlling-contract";
@@ -43,20 +43,21 @@ function currentMonthFilters(): ProjectControllingFilters {
 
 function ProjectControllingPage() {
   const filters = useMemo(currentMonthFilters, []);
-  const [state, setState] = useState<ProjectControllingLoadState>("loading");
+  const [state, setState] = useState<ProjectControllingViewState>({ kind: "loading" });
 
   useEffect(() => {
     let cancelled = false;
 
     readProjectControllingFn({ data: filters })
       .then((outcome) => {
-        if (!cancelled) setState(outcome.ok ? "ready" : "error");
+        if (cancelled) return;
+        setState(outcome.ok ? { kind: "ready", result: outcome.value } : { kind: "error" });
       })
       .catch((error: unknown) => {
         logger.warn("project-controlling.read.failed", {
           message: String((error as Error)?.message ?? error).slice(0, 200),
         });
-        if (!cancelled) setState("error");
+        if (!cancelled) setState({ kind: "error" });
       });
 
     return () => {
