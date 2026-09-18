@@ -41,9 +41,10 @@ test.describe("BSF-03A Projektcontrolling – berechtigte Sicht", () => {
 
     await page.getByLabel("Kunde").selectOption(CUSTOMER_A);
     await expect(page.getByLabel("Projekt")).toBeEnabled();
-    await expect(page.getByLabel("Arbeitspaket")).toBeEnabled();
+    await expect(page.getByLabel("Arbeitspaket")).toBeDisabled();
 
     await page.getByLabel("Projekt").selectOption(PROJECT_A);
+    await expect(page.getByLabel("Arbeitspaket")).toBeEnabled();
     await page.getByLabel("Arbeitspaket").selectOption(WORK_PACKAGE_A);
     await page.getByLabel("AP-Kategorie").selectOption("wartung");
 
