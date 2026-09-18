@@ -2,6 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { CustomerPageShell } from "@/components/customers/CustomerPageShell";
 import { PermissionGate } from "@/components/PermissionGate";
+import {
+  ProjectControllingView,
+  type ProjectControllingLoadState,
+} from "@/components/project-controlling/ProjectControllingView";
 import { readProjectControllingFn } from "@/lib/project-controlling-runtime/project-controlling.functions";
 import type { ProjectControllingFilters } from "@/lib/project-controlling/project-controlling-contract";
 import { logger } from "@/lib/logger";
@@ -39,7 +43,7 @@ function currentMonthFilters(): ProjectControllingFilters {
 
 function ProjectControllingPage() {
   const filters = useMemo(currentMonthFilters, []);
-  const [state, setState] = useState<"loading" | "ready" | "error">("loading");
+  const [state, setState] = useState<ProjectControllingLoadState>("loading");
 
   useEffect(() => {
     let cancelled = false;
@@ -63,29 +67,7 @@ function ProjectControllingPage() {
   return (
     <PermissionGate permission="project.controlling.view">
       <CustomerPageShell sectionTitle="Projektcontrolling">
-        <section aria-labelledby="project-controlling-title" className="space-y-4">
-          <div>
-            <p className="text-sm font-medium text-primary">BSF-03A</p>
-            <h1 id="project-controlling-title" className="text-2xl font-semibold tracking-tight">
-              Projektcontrolling
-            </h1>
-          </div>
-          {state === "loading" && (
-            <p role="status" className="text-sm text-muted-foreground">
-              Controlling-Daten werden geladen …
-            </p>
-          )}
-          {state === "ready" && (
-            <p className="text-sm text-muted-foreground">
-              Die read-only Controlling-Sicht wird vorbereitet.
-            </p>
-          )}
-          {state === "error" && (
-            <p role="alert" className="text-sm text-destructive">
-              Projektcontrolling konnte nicht geladen werden.
-            </p>
-          )}
-        </section>
+        <ProjectControllingView state={state} />
       </CustomerPageShell>
     </PermissionGate>
   );
