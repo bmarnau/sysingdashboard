@@ -226,11 +226,13 @@ function decodeTssValue(value: unknown): unknown {
   }
   if (node.t === 10 && node.p && typeof node.p === "object") {
     const payload = node.p as Record<string, unknown>;
-    if (Array.isArray(payload.k) && Array.isArray(payload.v)) {
+    const keys = payload.k;
+    const values = payload.v;
+    if (Array.isArray(keys) && Array.isArray(values)) {
       const decoded: Record<string, unknown> = {};
-      payload.k.forEach((key, index) => {
+      keys.forEach((key, index) => {
         if (typeof key !== "string") return;
-        const child = decodeTssValue(payload.v?.[index]);
+        const child = decodeTssValue(values[index]);
         if (child !== undefined) decoded[key] = child;
       });
       return decoded;
