@@ -23,7 +23,11 @@ test.describe("BSF-03A Projektcontrolling – berechtigte Sicht", () => {
     await expect(page.getByRole("region", { name: "Filter" })).toBeVisible();
     await expect(page.getByRole("region", { name: "Täglicher Stundenverlauf" })).toBeVisible();
     await expect(page.getByRole("region", { name: "Drill-down" })).toBeVisible();
-    await expect(page.getByText("25,00 h")).toBeVisible();
+    await expect(
+      page.locator("[data-kpi]").filter({ hasText: "Gesamtstunden" }).getByText("25,00 h", {
+        exact: true,
+      }),
+    ).toBeVisible();
     await expect(page.getByText("Unbekannte Kategorie (legacy-key)")).toBeVisible();
   });
 
@@ -82,11 +86,19 @@ test.describe("BSF-03A Projektcontrolling – berechtigte Sicht", () => {
     });
 
     await page.goto("/projektcontrolling");
-    await expect(page.getByText("25,00 h")).toBeVisible();
+    await expect(
+      page.locator("[data-kpi]").filter({ hasText: "Gesamtstunden" }).getByText("25,00 h", {
+        exact: true,
+      }),
+    ).toBeVisible();
 
     await page.getByLabel("Abrechenbarkeit").selectOption("nonBillable");
 
-    await expect(page.getByText("5,00 h").first()).toBeVisible();
+    await expect(
+      page.locator("[data-kpi]").filter({ hasText: "Gesamtstunden" }).getByText("5,00 h", {
+        exact: true,
+      }),
+    ).toBeVisible();
     await expect(page.getByLabel("Abrechenbarkeit")).toHaveValue("nonBillable");
   });
 });
