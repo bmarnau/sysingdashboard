@@ -9,7 +9,7 @@ import type { Page, Route } from "@playwright/test";
 import type {
   ProjectControllingFilters,
   ProjectControllingResult,
-} from "@/lib/project-controlling/project-controlling-contract";
+} from "../../src/lib/project-controlling/project-controlling-contract";
 
 export const SH_A = "11111111-1111-4111-8111-111111111111";
 export const SH_B = "11111111-1111-4111-8111-1111111111b2";
