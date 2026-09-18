@@ -18,24 +18,24 @@ stabilen AQGS-Gate-IDs sichtbar.
 
 Die bestehende Qualitätssicherung lässt sich vollständig auf G0-G15 abbilden.
 
-| Gate | Vorhandene Sysingdashboard-Evidence | Pilot-Einordnung |
-| --- | --- | --- |
-| G0 | Git/PR/Exact SHA | blocking |
-| G1 | Static: Prettier, ESLint, TypeScript, no-console | blocking |
-| G2 | Unit/Component + Backend | blocking |
-| G3 | Security Suite + separater Security Workflow | blocking |
-| G4 | Production Build + Bundle | blocking |
-| G5 | DB-Rebuild, Contracts, Schema-/Type-Drift | blocking |
-| G6 | RBAC-/Security-/RLS-Verträge | blocking |
-| G7 | API, Discovery, Smoke, Functional | blocking |
-| G8 | Import/Export | blocking |
-| G9 | Backup/Restore + transaktionaler Rollback-Snapshot | blocking |
-| G10 | Playwright E2E; sprintabhängige externe Preview zusätzlich möglich | blocking |
-| G11 | Accessibility | advisory, wie heutige CI |
-| G12 | Docs-Sync + Project-Manifest + Governance-Dokumente | blocking |
-| G13 | Technical Debt / Portability | advisory, wie heutige CI |
-| G14 | Technical Report + zentraler Quality Gate | blocking |
-| G15 | vorhandene Ops-Suite | conditional/advisory; nicht Teil der Default-CI |
+| Gate | Vorhandene Sysingdashboard-Evidence                                | Pilot-Einordnung                                |
+| ---- | ------------------------------------------------------------------ | ----------------------------------------------- |
+| G0   | Git/PR/Exact SHA                                                   | blocking                                        |
+| G1   | Static: Prettier, ESLint, TypeScript, no-console                   | blocking                                        |
+| G2   | Unit/Component + Backend                                           | blocking                                        |
+| G3   | Security Suite + separater Security Workflow                       | blocking                                        |
+| G4   | Production Build + Bundle                                          | blocking                                        |
+| G5   | DB-Rebuild, Contracts, Schema-/Type-Drift                          | blocking                                        |
+| G6   | RBAC-/Security-/RLS-Verträge                                       | blocking                                        |
+| G7   | API, Discovery, Smoke, Functional                                  | blocking                                        |
+| G8   | Import/Export                                                      | blocking                                        |
+| G9   | Backup/Restore + transaktionaler Rollback-Snapshot                 | blocking                                        |
+| G10  | Playwright E2E; sprintabhängige externe Preview zusätzlich möglich | blocking                                        |
+| G11  | Accessibility                                                      | advisory, wie heutige CI                        |
+| G12  | Docs-Sync + Project-Manifest + Governance-Dokumente                | blocking                                        |
+| G13  | Technical Debt / Portability                                       | advisory, wie heutige CI                        |
+| G14  | Technical Report + zentraler Quality Gate                          | blocking                                        |
+| G15  | vorhandene Ops-Suite                                               | conditional/advisory; nicht Teil der Default-CI |
 
 ## Abgleich mit dem vorhandenen Technical Report
 
