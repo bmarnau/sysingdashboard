@@ -419,7 +419,7 @@ Unmittelbar vor dem nächsten Lovable-Lauf muss der aktuelle Head von PR #144 au
 GitHub ermittelt werden. **Dieser aktuelle PR-Head ist EXPECTED_HEAD.** Der
 Prompt darf keinen älteren SHA als Sollzustand übernehmen.
 
-\`\`\`text
+```text
 SYSING DASHBOARD — BSF-03A FINAL EXACT-HEAD RECOVERY + READ-ONLY PREVIEW
 
 SOURCE OF TRUTH
@@ -502,7 +502,7 @@ DB_CHANGED = NEIN
 COMMIT = NEIN
 MERGE = NEIN
 DEPLOY = NEIN
-\`\`\`
+```
 
 Bei einer erneuten tool-, credit-, quota- oder plattformbedingten Unterbrechung
 wird keine fehlende Abnahme ersetzt. Stattdessen kann erneut ein TIECS

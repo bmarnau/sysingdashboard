@@ -994,9 +994,9 @@ nicht der vorherige Chat oder ein Tool-Workspace.
 Der read-only Kontext-Wiederanlauf bestätigte:
 
 - aktiver Sprint: **BSF-03A / Issue #106**,
-- aktiver Draft-PR: **#144** auf \`feat/bsf-03a-project-controlling\`,
+- aktiver Draft-PR: **#144** auf `feat/bsf-03a-project-controlling`,
 - letzter vollständig grüner Exact Head vor dieser TIECS-Pilotänderung:
-  \`0ce0e5a5f6e43835292d59587e0a6ae5b1ced7df\`,
+  `0ce0e5a5f6e43835292d59587e0a6ae5b1ced7df`,
 - Security #977: **PASS**,
 - CI #983: **PASS**,
 - verbleibender fachlicher Abnahmeblocker: branch-genauer Lovable-Exact-Head-
@@ -1010,13 +1010,13 @@ Der Maintenance-Window-Check fand zusätzlich zwei dokumentationsbezogene Punkte
 - ein TIECS-Mikrostatus und ein Makro-Statusboard waren noch nicht vorhanden.
 
 Für diesen Chat wird das **TIECS Strict Continuity Profile** angewendet. Das
-Statusboard ist eine reine Ableitung aus \`roadmap.md\`, \`PROJECT-STATUS.yaml\`,
-\`CURRENT-STATUS.md\`, \`ARCHITECTURE.md\`, Entwicklungstagebuch und
+Statusboard ist eine reine Ableitung aus `roadmap.md`, `PROJECT-STATUS.yaml`,
+`CURRENT-STATUS.md`, `ARCHITECTURE.md`, Entwicklungstagebuch und
 PR-/CI-Evidenz. Es ersetzt keine dieser Quellen.
 
 ### Mikro-Statusboard
 
-\`\`\`mermaid
+```mermaid
 stateDiagram-v2
     [*] --> KIOSK01
     KIOSK01: BSF-KIOSK-01\nDONE
@@ -1028,9 +1028,9 @@ stateDiagram-v2
     REVIEW: PR #144 Review / Merge\nPLANNED
     REVIEW --> KIOSK02
     KIOSK02: BSF-KIOSK-02\nPLANNED
-\`\`\`
+```
 
-Makro-Snapshot: \`docs/status-board.html\`.
+Makro-Snapshot: `docs/status-board.html`.
 
 Governance dieses Maintenance Windows:
 
