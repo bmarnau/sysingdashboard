@@ -1,0 +1,19 @@
+name: Diagnostic BSF03A E2E Prettier Diff
+
+on:
+  push:
+    branches:
+      - feat/bsf-03a-project-controlling
+
+jobs:
+  prettier-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Print exact Prettier diff
+        run: |
+          bunx prettier             e2e/fixtures/project-controlling-e2e.ts             e2e/specs/project-controlling/project-controlling.spec.ts             src/__tests__/lib/project-controlling-e2e-fixture.test.ts             --write
+          git diff --             e2e/fixtures/project-controlling-e2e.ts             e2e/specs/project-controlling/project-controlling.spec.ts             src/__tests__/lib/project-controlling-e2e-fixture.test.ts
