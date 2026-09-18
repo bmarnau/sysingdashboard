@@ -1,0 +1,36 @@
+name: Diagnostic BSF03A Task8 Prettier Diff
+
+on:
+  push:
+    branches:
+      - feat/bsf-03a-project-controlling
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  prettier-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Emit exact Task 8 Prettier diff
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          bunx prettier --write             src/__tests__/a11y/project-controlling.test.tsx             src/__tests__/components/ProjectControllingFilters.test.tsx             src/components/project-controlling/ProjectControllingFilters.tsx             e2e/fixtures/project-controlling-e2e.ts             e2e/specs/project-controlling/project-controlling.spec.ts             e2e/specs/security/project-controlling-scope.spec.ts
+          git diff --no-ext-diff > /tmp/prettier-task8.diff
+          {
+            echo '### Diagnostic Task 8 Prettier Diff'
+            echo
+            echo '~~~diff'
+            cat /tmp/prettier-task8.diff
+            echo '~~~'
+          } > /tmp/comment.md
+          gh api repos/${{ github.repository }}/issues/144/comments -F body=@/tmp/comment.md
+          test ! -s /tmp/prettier-task8.diff
