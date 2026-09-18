@@ -84,7 +84,9 @@ for (const role of ["engineer", "viewer", "customer"] as const) {
 
       await page.goto("/projektcontrolling");
 
-      await expect(page.getByRole("heading", { name: "Projektcontrolling", level: 1 })).toHaveCount(0);
+      await expect(page.getByRole("heading", { name: "Projektcontrolling", level: 1 })).toHaveCount(
+        0,
+      );
       await expect(page.getByRole("region", { name: "Kennzahlen" })).toHaveCount(0);
       await expect(page.getByText("25,00 h")).toHaveCount(0);
     });
