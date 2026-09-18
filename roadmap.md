@@ -1,5 +1,8 @@
 # Roadmap
 
+Visualisierung (abgeleitete TIECS-Statussicht): `docs/status-board.html`  
+Maßgebliche Fakten bleiben in Roadmap, Projektstatus, Architektur, Entwicklungstagebuch und PR-/CI-Evidenz.
+
 ## BSF-KIOSK-01 (#135) Info-Kiosk Demo-Pilot — DONE
 
 - [x] Kiosk-first-Roadmap als verbindliche interne Reihenfolge übernommen

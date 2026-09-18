@@ -149,7 +149,7 @@ Die Ansicht ist für Systemadministrator, Administrator, Teamlead und Projektman
 Ein im Projekt gepflegtes Lead-Feld ist **keine** Sicherheitsidentität und schaltet keine Daten frei.
 
 ## Zeitraum und Filter
-Standard ist der **aktuelle Kalendermonat bis heute**. Ein benutzerdefinierter Zeitraum darf höchstens 366 Tage umfassen.
+Standard ist der **aktueller Kalendermonat bis heute**. Ein benutzerdefinierter Zeitraum darf höchstens 366 Tage umfassen.
 
 Die Filter bauen voneinander abhängig auf:
 - Systemhaus,

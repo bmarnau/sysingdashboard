@@ -983,3 +983,60 @@ Festgestellte und behobene Drifts:
 - Die KIOSK-02-Planungsdokumente wurden mit Issue #136 synchronisiert: technische Kiosk-Sessions bleiben Demo-only mit `kiosk.view`; interne Daten laufen nur in normalen Leitungs-Sessions über `project.controlling.view`; Freshness wird ohne DB-Migration additiv aus vorhandenen Projection-`published_at`-Werten ergänzt.
 
 Historische, datierte Abschlussberichte bleiben als Evidenz ihres damaligen Prüfzeitpunkts unverändert. Maßgeblich für den laufenden Stand bleiben `CURRENT-STATUS.md`, `PROJECT-STATUS.yaml`, `BSF-CURRENT-PRIORITIES.md`, `roadmap.md` und der aktive PR-/CI-Nachweis.
+
+## 2026-09-18 — TIECS Strict Continuity Pilot / Tool-Pause
+
+Während der temporären Lovable-Credit-Pause wurde der neue TDF-Ansatz
+**Tool-Independent Engineering Continuity Standard (TIECS)** in diesem Chat
+erstmals auf das Sysing Dashboard angewendet. Maßgebliche Quelle blieb GitHub,
+nicht der vorherige Chat oder ein Tool-Workspace.
+
+Der read-only Kontext-Wiederanlauf bestätigte:
+
+- aktiver Sprint: **BSF-03A / Issue #106**,
+- aktiver Draft-PR: **#144** auf \`feat/bsf-03a-project-controlling\`,
+- letzter vollständig grüner Exact Head vor dieser TIECS-Pilotänderung:
+  \`0ce0e5a5f6e43835292d59587e0a6ae5b1ced7df\`,
+- Security #977: **PASS**,
+- CI #983: **PASS**,
+- verbleibender fachlicher Abnahmeblocker: branch-genauer Lovable-Exact-Head-
+  Preview-/Driftnachweis,
+- keine offene DB-, RBAC-, RLS- oder Fachlogik-Korrektur.
+
+Der Maintenance-Window-Check fand zusätzlich zwei dokumentationsbezogene Punkte:
+
+- die grammatisch falsche Form „aktuelle Kalendermonat“ war erneut in
+  Handbuch/Test synchronisiert und wird auf „aktueller Kalendermonat“ korrigiert,
+- ein TIECS-Mikrostatus und ein Makro-Statusboard waren noch nicht vorhanden.
+
+Für diesen Chat wird das **TIECS Strict Continuity Profile** angewendet. Das
+Statusboard ist eine reine Ableitung aus \`roadmap.md\`, \`PROJECT-STATUS.yaml\`,
+\`CURRENT-STATUS.md\`, \`ARCHITECTURE.md\`, Entwicklungstagebuch und
+PR-/CI-Evidenz. Es ersetzt keine dieser Quellen.
+
+### Mikro-Statusboard
+
+\`\`\`mermaid
+stateDiagram-v2
+    [*] --> KIOSK01
+    KIOSK01: BSF-KIOSK-01\nDONE
+    KIOSK01 --> BSF03A
+    BSF03A: BSF-03A\nACTIVE - Finalverifikation
+    BSF03A --> LOVABLE: GitHub Exact-Head-Gates grün
+    LOVABLE: Lovable Exact-Head-Preview\nBLOCKED - Credits / Branch-Recovery
+    LOVABLE --> REVIEW: nach Preview PASS
+    REVIEW: PR #144 Review / Merge\nPLANNED
+    REVIEW --> KIOSK02
+    KIOSK02: BSF-KIOSK-02\nPLANNED
+\`\`\`
+
+Makro-Snapshot: \`docs/status-board.html\`.
+
+Governance dieses Maintenance Windows:
+
+- Runtime geändert: **NEIN**,
+- Datenbank/RLS/Grants/Auth geändert: **NEIN**,
+- Merge: **NEIN**,
+- Deploy: **NEIN**,
+- fehlender Lovable-Nachweis bleibt ausdrücklich **offen**.
+
