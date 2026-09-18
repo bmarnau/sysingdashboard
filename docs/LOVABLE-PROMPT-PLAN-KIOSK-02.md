@@ -1,7 +1,7 @@
 # Sysing Dashboard — Lovable-Promptplan BSF-KIOSK-02
 
-Stand: 2026-09-14
-Status: PLANUNG / NICHT AUSGEFÜHRT
+Stand: 2026-09-18
+Status: READY NACH BSF-03A-FINALABNAHME / NICHT AUSGEFÜHRT
 Issue: #136
 Design: `docs/BSF-KIOSK-02-DESIGN.md`
 Implementation Plan: `docs/superpowers/plans/2026-09-14-bsf-kiosk-02-internal-read.md`
@@ -24,7 +24,7 @@ VERBINDLICHE BASIS
 HARTE GRENZEN
 - Keine DB-/Migration-/RLS-/Grant-/Function-Änderung.
 - Keine neue Permission.
-- Keine Auth-/Idle-Logout-Änderung.
+- Keine Auth-/Idle-Logout-Änderung im Lovable-Pass; der repository-seitig implementierte Vertrag muss bereits gelten: technische `kiosk`-Session nur Demo mit `kiosk.view`, normale Leitungs-Session für `mode=internal` mit serverseitigem `project.controlling.view`.
 - Keine direkte Supabase-Logik in Kiosk-Komponenten.
 - Keine zweite Aggregationslogik.
 - Keine Demo-Werte als Ersatz für ausgefallene interne Quellen.

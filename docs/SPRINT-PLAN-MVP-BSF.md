@@ -180,11 +180,12 @@ Kiosk UI
 
 ### Regeln
 
-- Demo-Provider bleibt erhalten,
-- Customer-/Systemhouse-Scope wiederverwenden,
+- Demo-Provider bleibt für die technische `kiosk`-Session mit ausschließlich `kiosk.view` erhalten,
+- interner Modus läuft nur in normalen Leitungs-Sessions und benötigt serverseitig `project.controlling.view`,
+- Customer-/Systemhouse-Scope vor der Aggregation eindeutig auflösen und wiederverwenden,
 - `categoryKey` reguläre Dimension,
-- fehlende Daten explizit `unknown/not available`,
-- Infrastruktur/Support/Abwesenheit dürfen Demo bleiben, solange keine belastbare interne Quelle existiert,
+- fehlende interne Daten explizit `unknown/not available`; kein stiller Demo-Ersatz für interne Projekt-/AP-/Tätigkeitswerte,
+- Infrastruktur/Support/Abwesenheit dürfen klar gekennzeichnete Demo-Domänen bleiben, solange keine belastbare interne Quelle existiert,
 - keine stillen Ersatzwerte.
 
 ### Gate

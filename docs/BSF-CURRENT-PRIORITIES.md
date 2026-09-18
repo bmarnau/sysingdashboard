@@ -167,8 +167,9 @@ BSF-10 KI-/Agenten-Labor ist nicht mehr zwingender Bestandteil des internen Haup
 - erster interner Read-Provider hinter derselben Kiosk-Schnittstelle,
 - Shared Projection/Customer Scope wiederverwenden,
 - `categoryKey` als reguläre Dimension,
-- Demo-Provider bleibt für Tests und Schulung,
-- fehlende interne Quellen bleiben Demo oder `unknown` statt erfundener Echtwerte,
+- Demo-Provider bleibt für technische Kiosk-Sessions, Tests und Schulung,
+- technische `kiosk`-Rolle bleibt exklusiv auf `kiosk.view`; interne Leistungsdaten laufen nur in normalen Leitungs-Sessions über `project.controlling.view`,
+- fehlende **interne** Quellen werden `unavailable/unknown`; nur die ausdrücklich als Demo definierten Domänen bleiben Demo,
 - vergleichbare interne KPIs gegen `expected/kiosk-summary.json` prüfen,
 - kein zweiter KPI-/Stundenvertrag.
 

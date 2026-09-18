@@ -12,6 +12,7 @@
 
 - Voraussetzung: BSF-KIOSK-01 und BSF-03A vollständig abgenommen.
 - Kein neuer DB-/RLS-/Grant-/Permission-Vertrag.
+- KIOSK-01-Rollenexklusivität bleibt unverändert: `kiosk` == ausschließlich `kiosk.view`; keine reguläre Rolle erhält `kiosk.view`.
 - Kein Service Role.
 - Kein direkter Supabase-Zugriff aus Kiosk-Komponenten.
 - Kein zweiter Stunden-/Billable-Aggregator.
@@ -48,7 +49,8 @@
 - Create: `src/lib/kiosk/internal-kiosk-snapshot.ts`
 - Create: `src/__tests__/lib/internal-kiosk-snapshot.test.ts`
 
-- [ ] Sicherstellen, dass der Controlling-Result `oldestPublishedAt` und `latestPublishedAt` aus tatsächlich verwendeten Projection-Zeilen enthält.
+- [ ] Roten Test für fehlende Freshness im aktuellen BSF-03A-Result schreiben.
+- [ ] `oldestPublishedAt` und `latestPublishedAt` additiv aus den `published_at`-Werten der tatsächlich verwendeten Project-/WorkPackage-/Activity-Projections ableiten; keine DB-Migration.
 - [ ] Roten Mapper-Test schreiben: Controlling-Summary -> interne Projects/WorkPackages/Activities-Karten.
 - [ ] Labels ausdrücklich auf „mit Leistung im Zeitraum“ begrenzen.
 - [ ] Projekte: Projekt-/Customer-Anzahl aus Controlling-Summary.
@@ -122,6 +124,9 @@ readInternalKioskSnapshotFn
 - Modify: Kiosk Component Tests
 
 - [ ] Roten Test für `mode=demo|internal` schreiben.
+- [ ] technische `kiosk`-Session + `mode=demo` bleibt KIOSK-01-Vertrag.
+- [ ] normale Session + `mode=internal` darf bis zur Child-Route gelangen; interne Daten bleiben serverseitig an `project.controlling.view` gebunden.
+- [ ] technische `kiosk`-Session + manipuliertes `mode=internal` -> DENY/unavailable, kein Demo-Fallback.
 - [ ] `mode=internal` nur mit internem Provider verdrahten.
 - [ ] Keine automatische Demo-Umschaltung bei internem Fehler.
 - [ ] Header `HYBRID — INTERNE DATEN + DEMO-DATEN` darstellen.
@@ -144,8 +149,10 @@ readInternalKioskSnapshotFn
 - Create: `e2e/specs/security/kiosk-internal-scope.spec.ts`
 - Modify: `src/__tests__/a11y/kiosk.test.tsx`
 
-- [ ] Demo-Modus weiterhin für `dashboard.view` testen.
-- [ ] Interner Modus für Projektmanager/Teamlead/Admin testen.
+- [ ] Demo-Modus weiterhin für technische `kiosk`-Session mit ausschließlich `kiosk.view` testen.
+- [ ] Reguläre Rolle ohne `kiosk.view` bleibt im Default-/Demo-Pfad außerhalb des Kiosk.
+- [ ] Interner Modus für Projektmanager/Teamlead/Admin mit `project.controlling.view` testen.
+- [ ] technisches Kiosk-Konto im Internal-Modus -> DENY testen.
 - [ ] Viewer/Engineer/Customer internal -> DENY testen.
 - [ ] fremdes Systemhaus/Customer -> keine Daten testen.
 - [ ] Hybridkennzeichnung testen.

@@ -977,5 +977,9 @@ Festgestellte und behobene Drifts:
 - `API.md` nannte noch Lovable-Cloud-Auth und behauptete fälschlich, es gebe keine `/api/public/*`-Route; der aktuelle Supabase-Auth-/`auth-config`-Stand ist nun dokumentiert.
 - `roadmap.md` wurde vom alten KIOSK-01-Abnahmestand auf KIOSK-01 DONE / BSF-03A Finalverifikation / KIOSK-02 NEXT gebracht.
 - Entwicklungstagebuch-Kopf, Managementübersicht und Sprintübersicht waren noch auf Version 1.62/1.63 stehen geblieben und wurden auf 1.64.0 fortgeschrieben.
+- `RBAC-MATRIX.md` enthielt die neue Kiosk-Rolle nur im Fließtext und ließ `customer.responsibility.manage`/`kiosk.view` in der eigentlichen Matrix aus; die Matrix ist nun vollständig auf acht Rollen und 23 Permissions synchronisiert.
+- `ARCHITECTURE.md` nannte weiterhin sieben Rollen und wurde auf den aktuellen RBAC-Vertrag korrigiert.
+- Der untere „BSF aktiv“-Abschnitt in `CURRENT-STATUS.md` verwies noch auf die KIOSK-01-Finalabnahme; er bildet nun KIOSK-01 DONE / BSF-03A Finalverifikation ab.
+- Die KIOSK-02-Planungsdokumente wurden mit Issue #136 synchronisiert: technische Kiosk-Sessions bleiben Demo-only mit `kiosk.view`; interne Daten laufen nur in normalen Leitungs-Sessions über `project.controlling.view`; Freshness wird ohne DB-Migration additiv aus vorhandenen Projection-`published_at`-Werten ergänzt.
 
 Historische, datierte Abschlussberichte bleiben als Evidenz ihres damaligen Prüfzeitpunkts unverändert. Maßgeblich für den laufenden Stand bleiben `CURRENT-STATUS.md`, `PROJECT-STATUS.yaml`, `BSF-CURRENT-PRIORITIES.md`, `roadmap.md` und der aktive PR-/CI-Nachweis.
