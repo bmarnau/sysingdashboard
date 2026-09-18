@@ -164,7 +164,9 @@ describe("BSF-03A ProjectControllingView", () => {
     render(<ProjectControllingView state={{ kind: "ready", result }} />);
 
     expect(screen.getByRole("region", { name: "Filter" })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "Täglicher Stundenverlauf" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Täglicher Stundenverlauf" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "Drill-down" })).toBeInTheDocument();
 
     expect(screen.getByText("Patch-Analyse")).toBeInTheDocument();
@@ -177,6 +179,8 @@ describe("BSF-03A ProjectControllingView", () => {
 
     expect(screen.queryByText("11111111-1111-4111-8111-111111111111")).not.toBeInTheDocument();
     expect(screen.queryByText("22222222-2222-4222-8222-222222222222")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /bearbeiten|finalisieren/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /bearbeiten|finalisieren/i }),
+    ).not.toBeInTheDocument();
   });
 });
