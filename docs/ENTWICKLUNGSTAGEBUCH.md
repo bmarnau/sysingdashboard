@@ -955,4 +955,3 @@ Der offizielle Supabase Security Advisor im verifizierten Sysingdashboard-Kontex
 Der Lovable-L2-Precheck wurde analyse-only ausgeführt und zeigte einen vom PR-Head abweichenden erreichbaren Lovable-Stand. Ein späterer branch-genauer Reachability-/Preview-Recheck war wegen ausgeschöpfter Lovable-Credits nicht möglich. Deshalb bleibt ausschließlich dieser visuelle/branch-genaue Nachweis offen; keine Lovable-Datei- oder DB-Änderung wurde übernommen.
 
 Abschlussnachweis: `docs/BSF-03A-CLOSURE-2026-09-14.md`. PR #144 bleibt Draft. Kein Merge, kein Deploy. Nächster Sprint nach formaler BSF-03A-Abnahme: BSF-KIOSK-02 / #136.
-

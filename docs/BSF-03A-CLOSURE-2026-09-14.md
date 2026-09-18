@@ -177,23 +177,23 @@ Dies ist ein **Preview-/Werkzeugnachweis**, keine offene DB-/RBAC-/RLS-/Fachlogi
 
 ## 10. Abschlussstatus
 
-| Nachweis | Ergebnis |
-| --- | --- |
-| Permission / RBAC | PASS |
-| DB / Kategoriebrücke | PASS |
-| SECURITY INVOKER | PASS |
-| Golden Dataset V1 | PASS |
-| Fachaggregation / Filter / Trend / Drill-down | PASS |
-| Scope / IDOR / BOLA | PASS |
-| BSF-02C Regression | PASS |
-| Unit / Components | PASS |
-| E2E | 91/91 PASS |
-| Accessibility | 7/7 PASS |
-| Security Advisor | PASS, nur SEC-01-Baseline |
-| Schema-/Types-Drift | NONE |
-| Technical Report / Quality Gate | PASS / 0 Blocker |
-| Lovable Exact-Head Preview | **PENDING** |
-| Merge | **NEIN** |
-| Deploy | **NEIN** |
+| Nachweis                                      | Ergebnis                  |
+| --------------------------------------------- | ------------------------- |
+| Permission / RBAC                             | PASS                      |
+| DB / Kategoriebrücke                          | PASS                      |
+| SECURITY INVOKER                              | PASS                      |
+| Golden Dataset V1                             | PASS                      |
+| Fachaggregation / Filter / Trend / Drill-down | PASS                      |
+| Scope / IDOR / BOLA                           | PASS                      |
+| BSF-02C Regression                            | PASS                      |
+| Unit / Components                             | PASS                      |
+| E2E                                           | 91/91 PASS                |
+| Accessibility                                 | 7/7 PASS                  |
+| Security Advisor                              | PASS, nur SEC-01-Baseline |
+| Schema-/Types-Drift                           | NONE                      |
+| Technical Report / Quality Gate               | PASS / 0 Blocker          |
+| Lovable Exact-Head Preview                    | **PENDING**               |
+| Merge                                         | **NEIN**                  |
+| Deploy                                        | **NEIN**                  |
 
 BSF-03A ist technisch implementation-complete und auf dem code-tragenden Head vollständig gegatet. FINAL DONE wird erst nach dem branch-genauen Lovable-Preview-/Driftnachweis gesetzt. Nach formaler Abnahme folgt **BSF-KIOSK-02 / #136**.
