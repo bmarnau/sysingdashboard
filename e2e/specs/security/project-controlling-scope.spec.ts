@@ -52,7 +52,7 @@ test.describe("BSF-03A Projektcontrolling – Scope/IDOR/BOLA", () => {
     const messages: string[] = [];
     await installProjectControllingServerFnMock(page, {
       resolve: ({ filters }) => {
-        if (filters.customerId === CUSTOMER_A) {
+        if (!filters.customerId || filters.customerId === CUSTOMER_A) {
           return { kind: "ok", value: projectControllingResult(filters) };
         }
         messages.push("Projektcontrolling für diesen Scope nicht zulässig.");
