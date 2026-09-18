@@ -1,7 +1,7 @@
 standard:
   name: AQGS
   version: 1.0.0-draft
-  canonical_repository: bmarnau-standards/LeadOS-Org-AQGS-Application-Quality-Gate-Standard
+  canonical_repository: bmarnau-standards/AQGS-Application-Quality-Gate-Standard
 
 application:
   name: Sysing Dashboard
