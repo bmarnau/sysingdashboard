@@ -72,9 +72,15 @@ export function ProjectControllingView({
                   {state.result.trend.map((point) => (
                     <tr key={point.date}>
                       <td className="py-2 pr-3">{point.date}</td>
-                      <td className="py-2 pr-3 text-right tabular-nums">{formatHours(point.totalHours)}</td>
-                      <td className="py-2 pr-3 text-right tabular-nums">{formatHours(point.billableHours)}</td>
-                      <td className="py-2 text-right tabular-nums">{formatHours(point.nonBillableHours)}</td>
+                      <td className="py-2 pr-3 text-right tabular-nums">
+                        {formatHours(point.totalHours)}
+                      </td>
+                      <td className="py-2 pr-3 text-right tabular-nums">
+                        {formatHours(point.billableHours)}
+                      </td>
+                      <td className="py-2 text-right tabular-nums">
+                        {formatHours(point.nonBillableHours)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
