@@ -44,17 +44,18 @@ test.describe("BSF-03A Projektcontrolling – berechtigte Sicht", () => {
     await expect(page.getByLabel("Kunde")).toBeEnabled();
 
     await page.getByLabel("Kunde").selectOption(CUSTOMER_A);
-    await expect(page.getByLabel("Projekt", { exact: true })).toBeEnabled();
+    const projectFilter = page.locator("label").filter({ hasText: /^Projekt/ }).locator("select");
+    await expect(projectFilter).toBeEnabled();
     await expect(page.getByLabel("Arbeitspaket")).toBeDisabled();
 
-    await page.getByLabel("Projekt", { exact: true }).selectOption(PROJECT_A);
+    await projectFilter.selectOption(PROJECT_A);
     await expect(page.getByLabel("Arbeitspaket")).toBeEnabled();
     await page.getByLabel("Arbeitspaket").selectOption(WORK_PACKAGE_A);
     await page.getByLabel("AP-Kategorie").selectOption("wartung");
 
     await expect(page.getByLabel("Systemhaus")).toHaveValue(SH_A);
     await expect(page.getByLabel("Kunde")).toHaveValue(CUSTOMER_A);
-    await expect(page.getByLabel("Projekt", { exact: true })).toHaveValue(PROJECT_A);
+    await expect(projectFilter).toHaveValue(PROJECT_A);
     await expect(page.getByLabel("Arbeitspaket")).toHaveValue(WORK_PACKAGE_A);
     await expect(page.getByLabel("AP-Kategorie")).toHaveValue("wartung");
   });
