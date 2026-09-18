@@ -1,9 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import type { ComponentType } from "react";
 import { describe, expect, it } from "vitest";
-import {
-  ProjectControllingView as CurrentProjectControllingView,
-} from "@/components/project-controlling/ProjectControllingView";
+import { ProjectControllingView as CurrentProjectControllingView } from "@/components/project-controlling/ProjectControllingView";
 import type { ProjectControllingResult } from "@/lib/project-controlling/project-controlling-contract";
 
 const result: ProjectControllingResult = {
