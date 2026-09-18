@@ -44,7 +44,10 @@ test.describe("BSF-03A Projektcontrolling – berechtigte Sicht", () => {
     await expect(page.getByLabel("Kunde")).toBeEnabled();
 
     await page.getByLabel("Kunde").selectOption(CUSTOMER_A);
-    const projectFilter = page.locator("label").filter({ hasText: /^Projekt/ }).locator("select");
+    const projectFilter = page
+      .locator("label")
+      .filter({ hasText: /^Projekt/ })
+      .locator("select");
     await expect(projectFilter).toBeEnabled();
     await expect(page.getByLabel("Arbeitspaket")).toBeDisabled();
 
