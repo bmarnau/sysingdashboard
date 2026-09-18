@@ -25,8 +25,12 @@ function result(rows: ProjectControllingResult["rows"]): ProjectControllingResul
       projects: rows.some((row) => row.projectSourceId) ? 1 : 0,
       workPackages: rows.some((row) => row.workPackageSourceId) ? 1 : 0,
       totalHours: rows.reduce((sum, row) => sum + row.durationHours, 0),
-      billableHours: rows.filter((row) => row.billable).reduce((sum, row) => sum + row.durationHours, 0),
-      nonBillableHours: rows.filter((row) => !row.billable).reduce((sum, row) => sum + row.durationHours, 0),
+      billableHours: rows
+        .filter((row) => row.billable)
+        .reduce((sum, row) => sum + row.durationHours, 0),
+      nonBillableHours: rows
+        .filter((row) => !row.billable)
+        .reduce((sum, row) => sum + row.durationHours, 0),
       billableQuotePercent: rows.length ? 50 : 0,
     },
     trend: [
