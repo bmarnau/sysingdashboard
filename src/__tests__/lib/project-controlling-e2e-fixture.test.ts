@@ -79,14 +79,7 @@ describe("BSF-03A E2E ServerFn fixture", () => {
               t: 10,
               i: 1,
               p: {
-                k: [
-                  "from",
-                  "to",
-                  "billable",
-                  "systemhouseId",
-                  "customerId",
-                  "projectSourceId",
-                ],
+                k: ["from", "to", "billable", "systemhouseId", "customerId", "projectSourceId"],
                 v: [
                   tssString("2026-09-01"),
                   tssString("2026-09-18"),
