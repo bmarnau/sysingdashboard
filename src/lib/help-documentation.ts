@@ -143,7 +143,7 @@ Arbeitspaketen oder Tätigkeiten weiterhin die jeweilige Fachberechtigung voraus
 Die persönliche Ansicht **Meine Kunden** bleibt bewusst read-only. Zuweisen, Wechseln
 oder Beenden einer primären Kundenverantwortung erfolgt in der getrennten Ansicht
 **Kundenverantwortung**. Sie ist ausschließlich mit
-`customer.responsibility.manage` für Systemadministrator, Administrator und Teamlead
+\`customer.responsibility.manage\` für Systemadministrator, Administrator und Teamlead
 verfügbar. Diese Verwaltungsberechtigung erzeugt keinen operativen Zugriff auf die
 Projekte, Arbeitspakete oder Tätigkeiten des Kunden.
 
