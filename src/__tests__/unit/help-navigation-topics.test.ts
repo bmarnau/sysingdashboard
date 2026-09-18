@@ -39,7 +39,7 @@ describe("Dashboard-Navigation im Benutzerhandbuch", () => {
       "teamlead",
       "projectmanager",
     ]);
-    expect(topic?.content).toContain("aktuelle Kalendermonat bis heute");
+    expect(topic?.content).toContain("aktueller Kalendermonat bis heute");
     expect(topic?.content).toContain("5.000");
     expect(topic?.content).toContain("keine Eurobeträge");
     expect(topic?.content).toContain("Kunde → Projekt → Arbeitspaket → Tätigkeit");
