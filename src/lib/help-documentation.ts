@@ -83,7 +83,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.20.0";
+export const DOCUMENTATION_VERSION = "1.21.0";
 /** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -3155,7 +3155,9 @@ export const HelpDocumentationService = {
     });
   },
   getTopicsForRoute(route: string, role: UserRole | null = null): HelpTopic[] {
-    return allTopics().filter((t) => topicVisible(t, role) && t.route && route.startsWith(t.route));
+    return allTopics()
+      .filter((t) => topicVisible(t, role) && t.route && route.startsWith(t.route))
+      .sort((a, b) => (b.route?.length ?? 0) - (a.route?.length ?? 0));
   },
   getTopicsForRole(role: UserRole): HelpTopic[] {
     return allTopics().filter((t) => topicVisible(t, role));

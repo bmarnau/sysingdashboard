@@ -1,6 +1,6 @@
 # Sysing Dashboard — Strategischer Gesamtplan
 
-Stand: 2026-09-09  
+Stand: 2026-09-18  
 Status: strategische Gesamtplanung, unabhängig von Wochenplänen  
 Repository: `bmarnau/sysingdashboard`
 
@@ -170,6 +170,8 @@ Bevorzugte Umsetzung:
 ---
 
 ### Phase 4 — BSF-03A: Projektmanager-Leistungssicht / Controlling
+
+**Status 2026-09-18:** technisch implementation-complete auf Draft-PR #144; Security #963 und CI #969 vollständig PASS. Offen ist ausschließlich der branch-genaue Lovable-Exact-Head-Preview vor FINAL DONE/Merge.
 
 Ziel:
 

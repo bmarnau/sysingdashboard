@@ -29,6 +29,32 @@ describe("Dashboard-Navigation im Benutzerhandbuch", () => {
     expect(topic?.content).toContain("AVKK-Projektkontext");
   });
 
+  it("dokumentiert Projektcontrolling rollen- und routenspezifisch", () => {
+    const topic = HelpDocumentationService.getTopicById("project-controlling");
+
+    expect(topic?.route).toBe("/projektcontrolling");
+    expect(topic?.roles).toEqual([
+      "systemadministrator",
+      "administrator",
+      "teamlead",
+      "projectmanager",
+    ]);
+    expect(topic?.content).toContain("aktuellen Kalendermonat bis heute");
+    expect(topic?.content).toContain("5.000");
+    expect(topic?.content).toContain("keine Eurobeträge");
+    expect(topic?.content).toContain("Kunde → Projekt → Arbeitspaket → Tätigkeit");
+
+    const contextual = HelpDocumentationService.getTopicsForRoute(
+      "/projektcontrolling",
+      "projectmanager",
+    );
+    expect(contextual[0]?.id).toBe("project-controlling");
+    expect(
+      HelpDocumentationService.getTopicsForRoute("/projektcontrolling", "engineer").some(
+        (entry) => entry.id === "project-controlling",
+      ),
+    ).toBe(false);
+  });
   it("überschreibt die historische Systemstatus-Hilfe mit dem aktuellen Betriebsmodell", () => {
     const topic = HelpDocumentationService.getTopicById("system-status");
 

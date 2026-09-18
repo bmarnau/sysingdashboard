@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-17 · Dashboard-Version 1.63.0
+Stand: 2026-09-18 · Dashboard-Version 1.64.0
 
 ## Vision
 
@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | Version 1.62.0; MVP-Baseline CLOSED/PASS; BSF-03 und BSF-03D abgeschlossen; BSF-KIOSK-01 implementiert, Finalabnahme wartet auf Post-Migration-Advisor. |
-| Größte Hürden       | Der operative Fachbestand ist noch teilweise user-scoped lokal; echte Kunden-/Mehrbenutzersichten benötigen einen kontrollierten gemeinsamen Read-Pfad. |
-| Nächster Nutzen     | KIOSK-01 formal abschließen → Projektmanager-Leistungssicht (BSF-03A) → KIOSK-02 → Teamlead-Leistungsnachweis.                                         |
+| Aktueller Stand     | Version 1.64.0 als BSF-03A-Release-Kandidat; MVP-Baseline CLOSED/PASS; BSF-03, BSF-03D und KIOSK-01 abgeschlossen; BSF-03A technisch vollständig grün, Lovable-Exact-Head-Preview noch offen. |
+| Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
+| Nächster Nutzen     | BSF-03A per Lovable-Exact-Head-Preview final abnehmen → PR #144 mergen → KIOSK-02 an den bestehenden internen Read-/Controlling-Vertrag anbinden. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -115,6 +115,10 @@ Betreiberhoheit und spätere Integrationen.
 | 1.59.3–1.59.4 | 2026-08-18 bis 08-21 | Viewer-/CRUD-Härtung      | Local-First-Schreibpfade und Dialoggrenzen fail-closed                  |
 | 1.59.5–1.59.6 | 2026-08-21 bis 08-24 | F-11 / MVP-Abschluss      | Rollen-/Negativtests abgeschlossen; MVP 100 % / BASELINE READY          |
 | 1.60.0        | 2026-09-13           | BSF-03 „Meine Kunden“     | Read-only Liste/Detail, E2E-/Security-/A11y-Abdeckung; P5 offen         |
+| 1.61.0        | 2026-09-13           | Kundenverantwortung       | Management-Zuweisung/Wechsel/Beenden mit engem Systemhaus-Scope         |
+| 1.62.0        | 2026-09-13           | Arbeitspaket-Kategorien   | Systemhausweiter Reference-Data-Katalog, Import/Backup fail-safe        |
+| 1.63.0        | 2026-09-17           | Info-Kiosk Demo-Pilot     | Read-only Full-HD-Wallboard mit exklusiver Kiosk-Rolle und Demo-Vertrag |
+| 1.64.0        | 2026-09-18           | Projektcontrolling        | Read-only BSF-03A-Leistungssicht, Golden Dataset, Scope-/IDOR-Gates     |
 
 ## Schwierigkeiten und ihre Lösung
 
@@ -955,3 +959,20 @@ Der offizielle Supabase Security Advisor im verifizierten Sysingdashboard-Kontex
 Der Lovable-L2-Precheck wurde analyse-only ausgeführt und zeigte einen vom PR-Head abweichenden erreichbaren Lovable-Stand. Ein späterer branch-genauer Reachability-/Preview-Recheck war wegen ausgeschöpfter Lovable-Credits nicht möglich. Deshalb bleibt ausschließlich dieser visuelle/branch-genaue Nachweis offen; keine Lovable-Datei- oder DB-Änderung wurde übernommen.
 
 Abschlussnachweis: `docs/BSF-03A-CLOSURE-2026-09-14.md`. PR #144 bleibt Draft. Kein Merge, kein Deploy. Nächster Sprint nach formaler BSF-03A-Abnahme: BSF-KIOSK-02 / #136.
+
+## 2026-09-18 — Dokumentations-, Handbuch- und Hilfe-Audit
+
+Nach dem vollständig grünen BSF-03A-GitHub-Head `d9b1645a6529aeec2cadd7bc6223f36e7bc71b71` wurden die vier Dokumentationsflächen gezielt gegen den tatsächlichen Code- und Sprintstand geprüft.
+
+Festgestellte und behobene Drifts:
+
+- Benutzerhandbuch und kontextsensitive Hilfe besaßen noch kein eigenes Kapitel für die neue Route `/projektcontrolling`.
+- Die Routenhilfe priorisierte generische `/`-Kapitel vor spezifischen Routen; spezifischere Treffer werden nun zuerst geliefert und per Regressionstest abgesichert.
+- Handbuchversion auf 1.21.0 fortgeschrieben.
+- `ARCHITECTURE.md` beschrieb die Domänenpersistenz noch zu pauschal als Local-First; dokumentiert ist jetzt das reale Übergangsmodell aus lokalen CRUD-Pfaden und serverseitiger BSF-Shared-Projection.
+- `DATA-SCHEMA.md` führte seinen Supabase-Abschnitt noch als Stand 1.52.0, obwohl BSF-Systemhaus-/Customer-/Shared-Projection-Strukturen bereits enthalten sind.
+- `API.md` nannte noch Lovable-Cloud-Auth und behauptete fälschlich, es gebe keine `/api/public/*`-Route; der aktuelle Supabase-Auth-/`auth-config`-Stand ist nun dokumentiert.
+- `roadmap.md` wurde vom alten KIOSK-01-Abnahmestand auf KIOSK-01 DONE / BSF-03A Finalverifikation / KIOSK-02 NEXT gebracht.
+- Entwicklungstagebuch-Kopf, Managementübersicht und Sprintübersicht waren noch auf Version 1.62/1.63 stehen geblieben und wurden auf 1.64.0 fortgeschrieben.
+
+Historische, datierte Abschlussberichte bleiben als Evidenz ihres damaligen Prüfzeitpunkts unverändert. Maßgeblich für den laufenden Stand bleiben `CURRENT-STATUS.md`, `PROJECT-STATUS.yaml`, `BSF-CURRENT-PRIORITIES.md`, `roadmap.md` und der aktive PR-/CI-Nachweis.

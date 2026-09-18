@@ -93,14 +93,14 @@ Der Info-Kiosk-Demo-Pilot wurde mit PR #141 am 2026-09-17 nach `main` integriert
 
 BSF-03A liefert die read-only Projektmanager-Leistungssicht `/projektcontrolling` mit Zeitraum, Systemhaus, Kunde, Projekt, Arbeitspaket, AP-Kategorie und Billable-Filter. Die Fachaggregation ist providerneutral; der Supabase-Adapter arbeitet mit User-JWT. Die Autorisierung bleibt serverseitig und verwendet `project.controlling.view`, aktive Systemhouse Membership, Customer Access und die bestehende Shared-Projection-RLS.
 
-Code-tragender Exact Head vor dieser Dokumentationsfortschreibung:
+Letzter vollständig grüner GitHub-Exact-Head vor diesem Dokumentations-/Handbuch-Nachlauf:
 
-`ffc28901c3017d9459c89a9fe68c030da0f07386`
+`d9b1645a6529aeec2cadd7bc6223f36e7bc71b71`
 
 Nachweise auf exakt diesem Head:
 
-- Security #956 / Run `35314033958`: **PASS**,
-- CI #962 / Run `35314033937`: **PASS**,
+- Security #963 / Run `35317863838`: **PASS**,
+- CI #969 / Run `35317863829`: **PASS**,
 - Unit & Components: **131 Testdateien / 917 PASS / 4 TODO**,
 - Playwright E2E: **91/91 PASS**,
 - Accessibility: **7/7 PASS**,
@@ -109,6 +109,7 @@ Nachweise auf exakt diesem Head:
 - BSF-03A SQL-Vertrag T01–T20d: **PASS**,
 - Technical Report **v17**, Status `passed-with-findings`, Quality Gate **0 Blocker**,
 - Golden Dataset V1 und unabhängige Project-Controlling-Expected-Results: **PASS**.
+- Benutzerhandbuch / kontextsensitive Hilfe für `/projektcontrolling`: im Dokumentationsnachlauf ergänzt; Handbuchversion **1.21.0**.
 
 Der offizielle Supabase Security Advisor wurde read-only im verifizierten Sysingdashboard-Kontext ausgeführt: 0 ERROR, 0 CRITICAL und exakt die zwei bekannten SEC-01-WARN vom Typ `0029_authenticated_security_definer_function_executable` für `public.avkk_can_write(_subject uuid)` und `public.avkk_people_directory()`; **keine neuen BSF-03A-Findings**. `public.has_permission(uuid,text)` und `public.bsf02c_publish_shared_projection_snapshot` bleiben `SECURITY INVOKER`.
 

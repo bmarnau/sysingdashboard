@@ -175,7 +175,25 @@ Damit bleibt offen:
 
 Dies ist ein **Preview-/Werkzeugnachweis**, keine offene DB-/RBAC-/RLS-/Fachlogik-Korrektur.
 
-## 10. Abschlussstatus
+## 10. Dokumentation, Handbuch und Hilfe
+
+Der Dokumentationsnachlauf am 2026-09-18 hat die betroffenen Benutzer- und Technikflächen gegen den implementierten BSF-03A-Vertrag geprüft.
+
+Synchronisiert wurden:
+
+- Benutzerhandbuch und kontextsensitive Hilfe mit eigenem Topic `project-controlling` für `/projektcontrolling`,
+- rollenabhängige Sichtbarkeit für Systemadministrator, Administrator, Teamlead und Projektmanager,
+- Filter-, Scope-, 366-Tage-, 5.000-Zeilen- und read-only-Grenzen,
+- Handbuchversion 1.21.0,
+- Routenhilfe: spezifischste Route gewinnt vor generischem `/`-Match,
+- `ARCHITECTURE.md` auf das reale Local-First/Shared-Projection-Übergangsmodell,
+- `DATA-SCHEMA.md` auf den aktuellen BSF-Systemhaus-/Customer-/Projection-Stand,
+- `API.md` auf Supabase Auth und den vorhandenen öffentlichen `/api/public/auth-config`-Fallback,
+- `roadmap.md`, Gesamtplan und Entwicklungstagebuch auf KIOSK-01 DONE / BSF-03A Finalverifikation / KIOSK-02 NEXT.
+
+Historische datierte Nachweise werden nicht rückwirkend inhaltlich umgedeutet.
+
+## 11. Abschlussstatus
 
 | Nachweis                                      | Ergebnis                  |
 | --------------------------------------------- | ------------------------- |

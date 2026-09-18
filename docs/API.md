@@ -9,7 +9,7 @@ Server-Routen des Dashboards. Alle Endpoints liegen unter `src/routes/api/`
 > vertragsrelevante Details (Payload-Beispiele, Fehlercodes) und wird
 > gegen das Inventar per CI abgeglichen.
 
-**Auth-Status (Stand 2026-07-24)**: Lovable-Cloud-Auth ist aktiv. Öffentliche
+**Auth-Status (Stand 2026-09-18)**: Supabase Auth ist die aktive MVP-/BSF-Authentifizierung. Öffentliche
 Health-Routen bleiben anonym und secret-frei; schreibende Routen benötigen eine
 gültige Bearer-Session und prüfen Berechtigungen serverseitig.
 
@@ -23,7 +23,7 @@ Health-/Systemstatus, secret-frei. Wird vom Dashboard-Dialog
 ```json
 {
   "status": "ok",
-  "version": "1.24.0",
+  "version": "1.64.0",
   "commit": "abc1234",
   "buildTime": "2026-07-08T09:00:00.000Z",
   "azure": { "configured": false, "reachable": null },
@@ -83,12 +83,17 @@ Shape: siehe [`DATA-SCHEMA.md`](./DATA-SCHEMA.md) und `src/lib/json-schema.ts`.
 - `500` bei Azure-Fehler — Details im Response-Body, Secret-frei.
 - `503` wenn `AZURE_*`-ENV in PROD nicht gesetzt.
 
-## Nicht öffentliche Endpoints
+## Öffentliche Endpoints
 
-Es gibt derzeit **keine** `/api/public/*`-Routen, keine Webhooks, keine Cron-
-Endpoints. Sollten welche entstehen: **immer** Signatur-Verifikation im Handler
-(HMAC + `timingSafeEqual`), da `/api/public/*` auf published-Sites Auth
-umgeht.
+`GET /api/public/auth-config` liefert ausschließlich die für den Browser erforderliche
+öffentliche Supabase-Clientkonfiguration als Laufzeit-Fallback. Die Route liefert keine
+Service-Role-Keys, Passwörter oder sonstigen Geheimnisse und ist durch eigene Security-/
+Contract-Tests abgesichert.
+
+Weitere Webhooks oder Cron-Endpunkte existieren derzeit nicht. Neue öffentliche,
+zustandsändernde Endpoints benötigen einen eigenen Authentizitätsvertrag
+(z. B. Signatur-Verifikation) und dürfen nicht allein aufgrund des Pfads als vertrauenswürdig
+behandelt werden.
 
 ## Historisches Standalone-Backend
 
