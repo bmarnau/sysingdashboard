@@ -1,97 +1,318 @@
 <!doctype html>
 <html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sysing Dashboard - Status Board</title>
-<style>
-:root{color-scheme:dark;--bg:#071426;--panel:#0d1d33;--panel2:#102843;--text:#eef6ff;--muted:#9fb2c8;--green:#22c55e;--blue:#38bdf8;--amber:#f59e0b;--purple:#a78bfa;--line:#24415f}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06111f,#0b1b31 55%,#071426);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
-main{max-width:1500px;margin:auto;padding:36px}.top{display:flex;gap:24px;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:22px}
-h1{margin:0;font-size:34px}.sub{color:var(--muted);margin-top:8px}.badge{display:inline-block;border-radius:999px;padding:7px 11px;font-weight:700;font-size:12px;letter-spacing:.04em}
-.green{background:#123924;color:#87efad}.amber{background:#47320b;color:#ffd36c}.blue{background:#103c58;color:#8bddff}.purple{background:#31234e;color:#cdbbff}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:26px}.col{background:rgba(13,29,51,.9);border:1px solid var(--line);border-radius:18px;padding:18px;min-height:390px}
-h2{font-size:19px;margin:0 0 16px}.card{background:var(--panel2);border:1px solid #294966;border-radius:13px;padding:14px;margin:10px 0}.card strong{display:block;margin-bottom:7px}.small{font-size:13px;color:var(--muted);line-height:1.45}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}.fact{background:rgba(16,40,67,.8);border:1px solid var(--line);border-radius:13px;padding:14px}.fact b{display:block;font-size:20px;margin-top:4px}.section{margin-top:25px;background:rgba(13,29,51,.72);border:1px solid var(--line);border-radius:18px;padding:20px}
-ol{margin:8px 0 0 22px;padding:0}li{margin:8px 0}.timeline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.node{padding:10px 12px;border-radius:10px;background:#102843;border:1px solid #2a4a68}.arrow{color:var(--blue);font-weight:700}
-footer{margin-top:24px;color:var(--muted);font-size:12px;line-height:1.5;border-top:1px solid var(--line);padding-top:16px}
-@media(max-width:1000px){.grid,.facts{grid-template-columns:1fr 1fr}}@media(max-width:650px){main{padding:18px}.grid,.facts{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
-</style>
-</head>
-<body>
-<main>
-  <div class="top">
-    <div>
-      <h1>Sysing Dashboard - TIECS Status Board</h1>
-      <div class="sub">Stand 18.09.2026 - abgeleitete Managementsicht, keine eigene Source of Truth</div>
-    </div>
-    <span class="badge amber">BSF-03A FINALVERIFIKATION</span>
-  </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sysing Dashboard - Status Board</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #071426;
+        --panel: #0d1d33;
+        --panel2: #102843;
+        --text: #eef6ff;
+        --muted: #9fb2c8;
+        --green: #22c55e;
+        --blue: #38bdf8;
+        --amber: #f59e0b;
+        --purple: #a78bfa;
+        --line: #24415f;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: linear-gradient(135deg, #06111f, #0b1b31 55%, #071426);
+        color: var(--text);
+        font-family:
+          Inter,
+          Segoe UI,
+          Arial,
+          sans-serif;
+      }
+      main {
+        max-width: 1500px;
+        margin: auto;
+        padding: 36px;
+      }
+      .top {
+        display: flex;
+        gap: 24px;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 22px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 34px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .badge {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 7px 11px;
+        font-weight: 700;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+      }
+      .green {
+        background: #123924;
+        color: #87efad;
+      }
+      .amber {
+        background: #47320b;
+        color: #ffd36c;
+      }
+      .blue {
+        background: #103c58;
+        color: #8bddff;
+      }
+      .purple {
+        background: #31234e;
+        color: #cdbbff;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-top: 26px;
+      }
+      .col {
+        background: rgba(13, 29, 51, 0.9);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+        min-height: 390px;
+      }
+      h2 {
+        font-size: 19px;
+        margin: 0 0 16px;
+      }
+      .card {
+        background: var(--panel2);
+        border: 1px solid #294966;
+        border-radius: 13px;
+        padding: 14px;
+        margin: 10px 0;
+      }
+      .card strong {
+        display: block;
+        margin-bottom: 7px;
+      }
+      .small {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+      }
+      .fact {
+        background: rgba(16, 40, 67, 0.8);
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 14px;
+      }
+      .fact b {
+        display: block;
+        font-size: 20px;
+        margin-top: 4px;
+      }
+      .section {
+        margin-top: 25px;
+        background: rgba(13, 29, 51, 0.72);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px;
+      }
+      ol {
+        margin: 8px 0 0 22px;
+        padding: 0;
+      }
+      li {
+        margin: 8px 0;
+      }
+      .timeline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .node {
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #102843;
+        border: 1px solid #2a4a68;
+      }
+      .arrow {
+        color: var(--blue);
+        font-weight: 700;
+      }
+      footer {
+        margin-top: 24px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+      }
+      @media (max-width: 1000px) {
+        .grid,
+        .facts {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 650px) {
+        main {
+          padding: 18px;
+        }
+        .grid,
+        .facts {
+          grid-template-columns: 1fr;
+        }
+        .top {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="top">
+        <div>
+          <h1>Sysing Dashboard - TIECS Status Board</h1>
+          <div class="sub">
+            Stand 18.09.2026 - abgeleitete Managementsicht, keine eigene Source of Truth
+          </div>
+        </div>
+        <span class="badge amber">BSF-03A FINALVERIFIKATION</span>
+      </div>
 
-  <div class="facts">
-    <div class="fact"><span class="small">Aktiver Sprint</span><b>BSF-03A</b></div>
-    <div class="fact"><span class="small">Pull Request</span><b>#144 Draft</b></div>
-    <div class="fact"><span class="small">Grüne Evidenz vor Board-Update</span><b>0ce0e5a5</b></div>
-    <div class="fact"><span class="small">Offener Blocker</span><b>Lovable Preview</b></div>
-  </div>
+      <div class="facts">
+        <div class="fact"><span class="small">Aktiver Sprint</span><b>BSF-03A</b></div>
+        <div class="fact"><span class="small">Pull Request</span><b>#144 Draft</b></div>
+        <div class="fact">
+          <span class="small">Grüne Evidenz vor Board-Update</span><b>0ce0e5a5</b>
+        </div>
+        <div class="fact"><span class="small">Offener Blocker</span><b>Lovable Preview</b></div>
+      </div>
 
-  <div class="grid">
-    <section class="col">
-      <h2>Abgeschlossen</h2>
-      <div class="card"><span class="badge green">DONE</span><strong>BSF-03D</strong><span class="small">Arbeitspaket-Kategorien</span></div>
-      <div class="card"><span class="badge green">DONE</span><strong>BSF-KIOSK-01</strong><span class="small">Info-Kiosk Demo-Pilot, auf main integriert</span></div>
-      <div class="card"><span class="badge green">DONE</span><strong>BSF-03A Implementierung</strong><span class="small">Fachlogik, Security, DB-Verträge, Golden Dataset, E2E/A11y und Dokumentationsaudit abgeschlossen.</span></div>
-    </section>
+      <div class="grid">
+        <section class="col">
+          <h2>Abgeschlossen</h2>
+          <div class="card">
+            <span class="badge green">DONE</span><strong>BSF-03D</strong
+            ><span class="small">Arbeitspaket-Kategorien</span>
+          </div>
+          <div class="card">
+            <span class="badge green">DONE</span><strong>BSF-KIOSK-01</strong
+            ><span class="small">Info-Kiosk Demo-Pilot, auf main integriert</span>
+          </div>
+          <div class="card">
+            <span class="badge green">DONE</span><strong>BSF-03A Implementierung</strong
+            ><span class="small"
+              >Fachlogik, Security, DB-Verträge, Golden Dataset, E2E/A11y und Dokumentationsaudit
+              abgeschlossen.</span
+            >
+          </div>
+        </section>
 
-    <section class="col">
-      <h2>Aktuell</h2>
-      <div class="card"><span class="badge amber">ACTIVE</span><strong>BSF-03A Finalverifikation</strong><span class="small">GitHub-Exact-Head-Evidenz vor diesem Board-Update: Security #977 PASS, CI #983 PASS. Durch dieses Maintenance-Commit werden Exact-Head-Gates erneut erforderlich.</span></div>
-      <div class="card"><strong>TIECS Maintenance Window</strong><span class="small">Git Hygiene, Dokumentationsaudit, Planungs-/Statussicht und Vorbereitung des nächsten Tool-Laufs. Keine Runtime-/DB-/Auth-Änderung.</span></div>
-    </section>
+        <section class="col">
+          <h2>Aktuell</h2>
+          <div class="card">
+            <span class="badge amber">ACTIVE</span><strong>BSF-03A Finalverifikation</strong
+            ><span class="small"
+              >GitHub-Exact-Head-Evidenz vor diesem Board-Update: Security #977 PASS, CI #983 PASS.
+              Durch dieses Maintenance-Commit werden Exact-Head-Gates erneut erforderlich.</span
+            >
+          </div>
+          <div class="card">
+            <strong>TIECS Maintenance Window</strong
+            ><span class="small"
+              >Git Hygiene, Dokumentationsaudit, Planungs-/Statussicht und Vorbereitung des nächsten
+              Tool-Laufs. Keine Runtime-/DB-/Auth-Änderung.</span
+            >
+          </div>
+        </section>
 
-    <section class="col">
-      <h2>Nächste Schritte</h2>
-      <div class="card"><span class="badge blue">NEXT</span><strong>1. Exact-Head-Gates</strong><span class="small">Security und CI auf dem Commit, der dieses Board enthält.</span></div>
-      <div class="card"><span class="badge blue">NEXT</span><strong>2. Lovable Exact-Head Preview</strong><span class="small">Aktuellen PR-Head aus GitHub auflösen, read-only erreichen und Responsive/Runtime prüfen.</span></div>
-      <div class="card"><span class="badge blue">NEXT</span><strong>3. Review / Merge</strong><span class="small">Nur nach vollständigem Preview-PASS und separater Freigabe.</span></div>
-    </section>
+        <section class="col">
+          <h2>Nächste Schritte</h2>
+          <div class="card">
+            <span class="badge blue">NEXT</span><strong>1. Exact-Head-Gates</strong
+            ><span class="small">Security und CI auf dem Commit, der dieses Board enthält.</span>
+          </div>
+          <div class="card">
+            <span class="badge blue">NEXT</span><strong>2. Lovable Exact-Head Preview</strong
+            ><span class="small"
+              >Aktuellen PR-Head aus GitHub auflösen, read-only erreichen und Responsive/Runtime
+              prüfen.</span
+            >
+          </div>
+          <div class="card">
+            <span class="badge blue">NEXT</span><strong>3. Review / Merge</strong
+            ><span class="small">Nur nach vollständigem Preview-PASS und separater Freigabe.</span>
+          </div>
+        </section>
 
-    <section class="col">
-      <h2>Pipeline</h2>
-      <div class="card"><span class="badge purple">NEXT SPRINT</span><strong>BSF-KIOSK-02 / #136</strong><span class="small">Interner read-only Provider / Feinschliff.</span></div>
-      <div class="card"><strong>BSF-03B / #107</strong><span class="small">Teamlead-Leistungsnachweis.</span></div>
-      <div class="card"><strong>BSF-03E / #63</strong><span class="small">Geplanter Folgeschritt.</span></div>
-      <div class="card"><strong>BSF-07 / #140</strong><span class="small">Vorgezogen geplant.</span></div>
-    </section>
-  </div>
+        <section class="col">
+          <h2>Pipeline</h2>
+          <div class="card">
+            <span class="badge purple">NEXT SPRINT</span><strong>BSF-KIOSK-02 / #136</strong
+            ><span class="small">Interner read-only Provider / Feinschliff.</span>
+          </div>
+          <div class="card">
+            <strong>BSF-03B / #107</strong><span class="small">Teamlead-Leistungsnachweis.</span>
+          </div>
+          <div class="card">
+            <strong>BSF-03E / #63</strong><span class="small">Geplanter Folgeschritt.</span>
+          </div>
+          <div class="card">
+            <strong>BSF-07 / #140</strong><span class="small">Vorgezogen geplant.</span>
+          </div>
+        </section>
+      </div>
 
-  <section class="section">
-    <h2>Phasenverlauf</h2>
-    <div class="timeline">
-      <span class="node">KIOSK-01 DONE</span><span class="arrow">-&gt;</span>
-      <span class="node">BSF-03A Implementierung DONE</span><span class="arrow">-&gt;</span>
-      <span class="node">GitHub-Gates</span><span class="arrow">-&gt;</span>
-      <span class="node">Lovable Exact-Head Preview BLOCKED</span><span class="arrow">-&gt;</span>
-      <span class="node">PR #144 Review/Merge</span><span class="arrow">-&gt;</span>
-      <span class="node">KIOSK-02</span>
-    </div>
-  </section>
+      <section class="section">
+        <h2>Phasenverlauf</h2>
+        <div class="timeline">
+          <span class="node">KIOSK-01 DONE</span><span class="arrow">-&gt;</span>
+          <span class="node">BSF-03A Implementierung DONE</span><span class="arrow">-&gt;</span>
+          <span class="node">GitHub-Gates</span><span class="arrow">-&gt;</span>
+          <span class="node">Lovable Exact-Head Preview BLOCKED</span
+          ><span class="arrow">-&gt;</span> <span class="node">PR #144 Review/Merge</span
+          ><span class="arrow">-&gt;</span>
+          <span class="node">KIOSK-02</span>
+        </div>
+      </section>
 
-  <section class="section">
-    <h2>Abnahmekriterien für BSF-03A</h2>
-    <ol>
-      <li>Aktueller GitHub-PR-Head vollständig durch Required CI und Security gegatet.</li>
-      <li>Lovable erreicht exakt denselben Head mit sauberem Arbeitsbaum.</li>
-      <li>Kein client.ts-Drift, kein previewAuthStorage.ts, keine drizzle-Altartefakte.</li>
-      <li>Read-only Preview 1920x1080 und 1366x768 ohne Clipping/Overflow oder neue Runtimefehler.</li>
-      <li>Kein Merge und kein Deploy vor separater Freigabe.</li>
-    </ol>
-  </section>
+      <section class="section">
+        <h2>Abnahmekriterien für BSF-03A</h2>
+        <ol>
+          <li>Aktueller GitHub-PR-Head vollständig durch Required CI und Security gegatet.</li>
+          <li>Lovable erreicht exakt denselben Head mit sauberem Arbeitsbaum.</li>
+          <li>Kein client.ts-Drift, kein previewAuthStorage.ts, keine drizzle-Altartefakte.</li>
+          <li>
+            Read-only Preview 1920x1080 und 1366x768 ohne Clipping/Overflow oder neue Runtimefehler.
+          </li>
+          <li>Kein Merge und kein Deploy vor separater Freigabe.</li>
+        </ol>
+      </section>
 
-  <footer>
-    Quellen: roadmap.md, docs/PROJECT-STATUS.yaml, docs/CURRENT-STATUS.md, docs/ARCHITECTURE.md,
-    docs/ENTWICKLUNGSTAGEBUCH.md, docs/BSF-CURRENT-PRIORITIES.md, PR #144 und Exact-Head-CI/Security.
-    Dieses Board ist ausschließlich eine abgeleitete Sicht. Bei Widerspruch gelten die genannten Quellen und GitHub als Source of Truth.
-  </footer>
-</main>
-</body>
+      <footer>
+        Quellen: roadmap.md, docs/PROJECT-STATUS.yaml, docs/CURRENT-STATUS.md, docs/ARCHITECTURE.md,
+        docs/ENTWICKLUNGSTAGEBUCH.md, docs/BSF-CURRENT-PRIORITIES.md, PR #144 und
+        Exact-Head-CI/Security. Dieses Board ist ausschließlich eine abgeleitete Sicht. Bei
+        Widerspruch gelten die genannten Quellen und GitHub als Source of Truth.
+      </footer>
+    </main>
+  </body>
 </html>

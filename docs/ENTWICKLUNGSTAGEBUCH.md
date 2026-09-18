@@ -1039,4 +1039,3 @@ Governance dieses Maintenance Windows:
 - Merge: **NEIN**,
 - Deploy: **NEIN**,
 - fehlender Lovable-Nachweis bleibt ausdrücklich **offen**.
-

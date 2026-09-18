@@ -508,4 +508,3 @@ Bei einer erneuten tool-, credit-, quota- oder plattformbedingten Unterbrechung
 wird keine fehlende Abnahme ersetzt. Stattdessen kann erneut ein TIECS
 Maintenance Window für Git-, Doku-, Planungs-, CI-/Security- oder
 Backlog-Hygiene genutzt werden.
-
