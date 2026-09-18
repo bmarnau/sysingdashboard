@@ -55,6 +55,27 @@ test.describe("BSF-03A Projektcontrolling – berechtigte Sicht", () => {
     await expect(page.getByLabel("AP-Kategorie")).toHaveValue("wartung");
   });
 
+  test("Zeitraumfilter werden an die Servergrenze übergeben", async ({ page }) => {
+    const seen: Array<{ from: string; to: string }> = [];
+    await installProjectControllingServerFnMock(page, {
+      resolve: ({ filters }) => {
+        seen.push({ from: filters.from, to: filters.to });
+        return { kind: "ok", value: projectControllingResult(filters) };
+      },
+    });
+
+    await page.goto("/projektcontrolling");
+
+    await page.getByLabel("Von").fill("2026-09-03");
+    await expect(page.getByLabel("Von")).toHaveValue("2026-09-03");
+
+    await page.getByLabel("Bis").fill("2026-09-10");
+    await expect(page.getByLabel("Bis")).toHaveValue("2026-09-10");
+
+    await expect.poll(() => seen.some((item) => item.from === "2026-09-03")).toBe(true);
+    await expect.poll(() => seen.some((item) => item.to === "2026-09-10")).toBe(true);
+  });
+
   test("Billable-Filter verändert Ergebnis reproduzierbar", async ({ page }) => {
     await installProjectControllingServerFnMock(page, {
       resolve: ({ filters }) => ({ kind: "ok", value: projectControllingResult(filters) }),
