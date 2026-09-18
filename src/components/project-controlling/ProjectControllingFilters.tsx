@@ -156,9 +156,7 @@ export function ProjectControllingFilters({ filters, scopeOptions, onChange }: P
           <select
             value={filters.workPackageSourceId ?? ""}
             disabled={!filters.systemhouseId || !filters.customerId}
-            onChange={(event) =>
-              update({ workPackageSourceId: event.target.value || undefined })
-            }
+            onChange={(event) => update({ workPackageSourceId: event.target.value || undefined })}
             className="h-9 w-full rounded-md border border-input bg-background px-3 disabled:opacity-50"
           >
             <option value="">Alle Arbeitspakete</option>
