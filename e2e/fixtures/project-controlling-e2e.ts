@@ -213,6 +213,35 @@ export function projectControllingResult(
   };
 }
 
+function decodeTssValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(decodeTssValue);
+  if (!value || typeof value !== "object") return value;
+
+  const node = value as Record<string, unknown>;
+  if (node.t === 1 && typeof node.s === "string") {
+    return node.s;
+  }
+  if (node.t === 2) {
+    return undefined;
+  }
+  if (node.t === 10 && node.p && typeof node.p === "object") {
+    const payload = node.p as Record<string, unknown>;
+    if (Array.isArray(payload.k) && Array.isArray(payload.v)) {
+      const decoded: Record<string, unknown> = {};
+      payload.k.forEach((key, index) => {
+        if (typeof key !== "string") return;
+        const child = decodeTssValue(payload.v?.[index]);
+        if (child !== undefined) decoded[key] = child;
+      });
+      return decoded;
+    }
+  }
+
+  return Object.fromEntries(
+    Object.entries(node).map(([key, child]) => [key, decodeTssValue(child)]),
+  );
+}
+
 function findFilterObject(value: unknown): ProjectControllingFilters | null {
   if (!value || typeof value !== "object") return null;
 
@@ -239,13 +268,13 @@ function regexValue(raw: string, key: string): string | undefined {
   return match?.[1];
 }
 
-function parseFilters(raw: string): ProjectControllingFilters {
+export function parseProjectControllingE2eFilters(raw: string): ProjectControllingFilters {
   try {
-    const parsed = JSON.parse(raw) as unknown;
+    const parsed = decodeTssValue(JSON.parse(raw) as unknown);
     const found = findFilterObject(parsed);
     if (found) return { ...DEFAULT_FILTERS, ...found };
   } catch {
-    // Fallback below also supports framework-specific serialization.
+    // Fallback below keeps the fixture tolerant of plain JSON/text bodies.
   }
 
   const billable = regexValue(raw, "billable");
@@ -262,6 +291,21 @@ function parseFilters(raw: string): ProjectControllingFilters {
     workPackageSourceId: regexValue(raw, "workPackageSourceId"),
     categoryKey: regexValue(raw, "categoryKey"),
   };
+}
+
+function serverFnExport(rawUrl: string): string {
+  try {
+    const url = new URL(rawUrl);
+    const encodedDescriptor = url.pathname.split("/_serverFn/")[1]?.split("/")[0];
+    if (!encodedDescriptor) return "";
+
+    const descriptor = JSON.parse(Buffer.from(encodedDescriptor, "base64url").toString("utf8")) as {
+      export?: unknown;
+    };
+    return typeof descriptor.export === "string" ? descriptor.export : "";
+  } catch {
+    return "";
+  }
 }
 
 async function ok(route: Route, value: ProjectControllingResult): Promise<void> {
@@ -287,8 +331,15 @@ export async function installProjectControllingServerFnMock(
   await page.route(
     (url) => url.pathname.includes("_serverFn"),
     async (route) => {
-      const rawBody = route.request().postData() ?? "";
-      const filters = parseFilters(rawBody);
+      const request = route.request();
+      const exportName = serverFnExport(request.url());
+      if (!/readProjectControllingFn/i.test(exportName)) {
+        await route.fallback();
+        return;
+      }
+
+      const rawBody = request.postData() ?? "";
+      const filters = parseProjectControllingE2eFilters(rawBody);
       const outcome = behaviour.resolve({ filters, rawBody });
 
       if (outcome.kind === "deny") {
