@@ -36,7 +36,7 @@ type ProjectControllingViewState =
   | { kind: "ready"; result: ProjectControllingResult }
   | { kind: "error" };
 
-const ProjectControllingView = CurrentProjectControllingView as ComponentType<{
+const ProjectControllingView = CurrentProjectControllingView as unknown as ComponentType<{
   state: ProjectControllingViewState;
 }>;
 
