@@ -140,8 +140,11 @@ const result: ProjectControllingResult = {
     rowsWithoutProject: 1,
     rowsWithoutWorkPackage: 1,
   },
-  oldestPublishedAt: "2026-09-01T08:00:00.000Z",
-  latestPublishedAt: "2026-09-02T10:00:00.000Z",
+  freshness: {
+    oldestPublishedAt: "2026-09-01T08:00:00.000Z",
+    latestPublishedAt: "2026-09-02T10:00:00.000Z",
+    observedRows: 4,
+  },
 };
 
 type ProjectControllingViewState =
