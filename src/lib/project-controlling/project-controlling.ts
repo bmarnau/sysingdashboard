@@ -136,12 +136,14 @@ function buildDailyTrend(
   return trend;
 }
 
-function measureFreshness(
-  rows: readonly ProjectControllingRow[],
-): ProjectControllingFreshness {
+function measureFreshness(rows: readonly ProjectControllingRow[]): ProjectControllingFreshness {
   const observed = new Map<string, string | null>();
 
-  const record = (kind: string, identity: string | null, publishedAt: string | null | undefined) => {
+  const record = (
+    kind: string,
+    identity: string | null,
+    publishedAt: string | null | undefined,
+  ) => {
     if (!identity) return;
     const timestamp =
       typeof publishedAt === "string" && publishedAt.length > 0 ? publishedAt : null;
