@@ -60,6 +60,11 @@ function result(rows: ProjectControllingResult["rows"]): ProjectControllingResul
       rowsWithoutProject: rows.filter((row) => !row.projectSourceId).length,
       rowsWithoutWorkPackage: rows.filter((row) => !row.workPackageSourceId).length,
     },
+    freshness: {
+      oldestPublishedAt: null,
+      latestPublishedAt: null,
+      observedRows: 0,
+    },
   };
 }
 
