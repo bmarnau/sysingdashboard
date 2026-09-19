@@ -29,8 +29,11 @@ function result(overrides: Partial<ProjectControllingResult> = {}): ProjectContr
       rowsWithoutProject: 0,
       rowsWithoutWorkPackage: 0,
     },
-    oldestPublishedAt: "2026-09-14T08:00:00.000Z",
-    latestPublishedAt: "2026-09-18T10:00:00.000Z",
+    freshness: {
+      oldestPublishedAt: "2026-09-14T08:00:00.000Z",
+      latestPublishedAt: "2026-09-18T10:00:00.000Z",
+      observedRows: 16,
+    },
     ...overrides,
   };
 }
@@ -107,8 +110,11 @@ describe("BSF-KIOSK-02 internal kiosk snapshot mapper", () => {
   it("keeps successful internal data explicit when source freshness is unknown", () => {
     const mapped = mapInternalKioskSnapshot(
       result({
-        oldestPublishedAt: null,
-        latestPublishedAt: null,
+        freshness: {
+          oldestPublishedAt: null,
+          latestPublishedAt: null,
+          observedRows: 0,
+        },
       }),
     );
 
