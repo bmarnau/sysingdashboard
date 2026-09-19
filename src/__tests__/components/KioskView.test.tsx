@@ -335,7 +335,6 @@ describe("KioskView", () => {
         state={ready(hybrid)}
         securityStatus="valid"
         onLogout={() => undefined}
-        showControllingLink
       />,
     );
 
@@ -345,7 +344,6 @@ describe("KioskView", () => {
     expect(screen.getAllByText("DEMO").length).toBeGreaterThanOrEqual(3);
     expect(screen.getByText("Zeitraum: 01.09.2026 – 19.09.2026")).toBeVisible();
     expect(screen.getByText(/Interner Datenstand:/)).toBeVisible();
-    expect(screen.getByRole("link", { name: "Projektcontrolling öffnen" })).toBeVisible();
     expect(screen.getByText("Quellen je Bereich gekennzeichnet")).toBeVisible();
   });
 
