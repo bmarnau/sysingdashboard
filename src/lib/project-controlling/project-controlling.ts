@@ -136,41 +136,37 @@ function buildDailyTrend(
   return trend;
 }
 
+function normalizedPublishedAt(value: string | null | undefined): string | null {
+  return typeof value === "string" && value.length > 0 ? value : null;
+}
+
+function freshnessKey(kind: string, identity: string, publishedAt: string | null): string {
+  return `${kind}:${identity}:${publishedAt ?? "unknown"}`;
+}
+
 function measureFreshness(
   rows: readonly ProjectControllingRow[],
 ): ProjectControllingFreshness {
   const observed = new Map<string, string | null>();
 
-  const record = (
-    kind: string,
-    identity: string | null,
-    publishedAt: string | null | undefined,
-  ) => {
-    if (!identity) return;
-    const timestamp =
-      typeof publishedAt === "string" && publishedAt.length > 0 ? publishedAt : null;
-    observed.set(`${kind}:${identity}:${timestamp ?? "unknown"}`, timestamp);
-  };
-
   for (const row of rows) {
-    record(
-      "project",
-      row.projectSourceId
-        ? `${row.systemhouseId}:${row.customerId}:${row.projectSourceId}`
-        : null,
-      row.projectPublishedAt,
-    );
-    record(
-      "work-package",
-      row.workPackageSourceId
-        ? `${row.systemhouseId}:${row.customerId}:${row.workPackageSourceId}`
-        : null,
-      row.workPackagePublishedAt,
-    );
-    record(
-      "activity",
-      `${row.systemhouseId}:${row.customerId}:${row.activityId}`,
-      row.activityPublishedAt,
+    if (row.projectSourceId) {
+      const identity = `${row.systemhouseId}:${row.customerId}:${row.projectSourceId}`;
+      const publishedAt = normalizedPublishedAt(row.projectPublishedAt);
+      observed.set(freshnessKey("project", identity, publishedAt), publishedAt);
+    }
+
+    if (row.workPackageSourceId) {
+      const identity = `${row.systemhouseId}:${row.customerId}:${row.workPackageSourceId}`;
+      const publishedAt = normalizedPublishedAt(row.workPackagePublishedAt);
+      observed.set(freshnessKey("work-package", identity, publishedAt), publishedAt);
+    }
+
+    const activityIdentity = `${row.systemhouseId}:${row.customerId}:${row.activityId}`;
+    const activityPublishedAt = normalizedPublishedAt(row.activityPublishedAt);
+    observed.set(
+      freshnessKey("activity", activityIdentity, activityPublishedAt),
+      activityPublishedAt,
     );
   }
 
