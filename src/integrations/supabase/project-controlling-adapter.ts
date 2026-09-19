@@ -482,9 +482,6 @@ export function createSupabaseProjectControllingRepository(
           categoryState: state,
           projectPublishedAt: project?.published_at ?? null,
           workPackagePublishedAt: workPackage?.published_at ?? null,
-          activityPublishedAt: activity.published_at,
-          projectPublishedAt: project?.published_at ?? null,
-          workPackagePublishedAt: workPackage?.published_at ?? null,
           activityPublishedAt: activity.published_at ?? null,
         });
       }
