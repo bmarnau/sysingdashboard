@@ -1,0 +1,85 @@
+name: Backfill released version tags
+
+on:
+  push:
+    branches:
+      - diag/version-release-backfill-2026-09-19
+
+permissions:
+  contents: write
+
+jobs:
+  publish-tags-and-releases:
+    runs-on: ubuntu-latest
+    env:
+      TAG_163: v1.63.0
+      SHA_163: 91adefa97054aa3cbc6ad03e4cb2a58b868e4e75
+      TAG_164: v1.64.0
+      SHA_164: b9aef5aa9b3174f2abd022e11d492190102933a4
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify release commits
+        run: |
+          git cat-file -e "$SHA_163^{commit}"
+          git cat-file -e "$SHA_164^{commit}"
+          git show "$SHA_163:CHANGELOG.md" | grep -q '^## 1.63.0 - 2026-09-17$'
+          git show "$SHA_164:CHANGELOG.md" | grep -q '^## 1.64.0 - 2026-09-18$'
+
+      - name: Create annotated tags
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          ensure_tag () {
+            tag="$1"
+            sha="$2"
+            message="$3"
+
+            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              actual="$(git rev-list -n 1 "$tag")"
+              if [ "$actual" != "$sha" ]; then
+                echo "Tag $tag exists on unexpected commit $actual (expected $sha)." >&2
+                exit 1
+              fi
+              echo "$tag already exists on expected commit."
+            else
+              git tag -a "$tag" "$sha" -m "$message"
+              git push origin "refs/tags/$tag"
+            fi
+          }
+
+          ensure_tag "$TAG_163" "$SHA_163" "Sysing Dashboard v1.63.0 - BSF-KIOSK-01 Demo-Pilot"
+          ensure_tag "$TAG_164" "$SHA_164" "Sysing Dashboard v1.64.0 - BSF-03A Projektcontrolling"
+
+      - name: Publish GitHub releases
+        run: |
+          if gh release view "$TAG_163" >/dev/null 2>&1; then
+            echo "$TAG_163 release already exists."
+          else
+            gh release create "$TAG_163" \
+              --verify-tag \
+              --title "Sysing Dashboard v1.63.0 - BSF-KIOSK-01" \
+              --notes "Freigegebener Stand des Info-Kiosk Demo-Piloten (BSF-KIOSK-01 / PR #141). Read-only Wallboard, klar gekennzeichnete synthetische Demo-Daten, providerneue KioskDataProvider-Grenze und abgeschlossene Security-/CI-Abnahme." \
+              --latest=false
+          fi
+
+          if gh release view "$TAG_164" >/dev/null 2>&1; then
+            echo "$TAG_164 release already exists."
+          else
+            gh release create "$TAG_164" \
+              --verify-tag \
+              --title "Sysing Dashboard v1.64.0 - BSF-03A Projektcontrolling" \
+              --notes "Freigegebener Stand des Projektcontrollings (BSF-03A / PR #144). Providerneutrale read-only Leistungssicht, project.controlling.view, serverseitige Scope-/RLS-Pruefungen, Golden Dataset V1 und vollstaendige Exact-Head-Abnahme." \
+              --latest
+          fi
+
+      - name: Verify published state
+        run: |
+          test "$(git rev-list -n 1 "$TAG_163")" = "$SHA_163"
+          test "$(git rev-list -n 1 "$TAG_164")" = "$SHA_164"
+          gh release view "$TAG_163" --json tagName,isDraft,isPrerelease
+          gh release view "$TAG_164" --json tagName,isDraft,isPrerelease
