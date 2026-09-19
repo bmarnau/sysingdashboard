@@ -100,18 +100,25 @@ export async function executeInternalKioskSnapshotRequest(
     return { ok: false, error: "INTERNAL_KIOSK_SCOPE_REQUIRED" };
   }
 
-  const outcome = await executeProjectControllingRequest(
-    supabase,
-    userId,
-    currentMonthInternalKioskFilters(now, systemhouseId),
-    repository,
-  );
+  try {
+    const outcome = await executeProjectControllingRequest(
+      supabase,
+      userId,
+      currentMonthInternalKioskFilters(now, systemhouseId),
+      repository,
+    );
 
-  if (!outcome.ok) {
+    if (!outcome.ok) {
+      return { ok: false, error: "INTERNAL_KIOSK_DATA_UNAVAILABLE" };
+    }
+
+    return { ok: true, value: mapInternalKioskSnapshot(outcome.value) };
+  } catch (error) {
+    if (error instanceof Error && error.message === PROJECT_CONTROLLING_DENIED) {
+      throw error;
+    }
     return { ok: false, error: "INTERNAL_KIOSK_DATA_UNAVAILABLE" };
   }
-
-  return { ok: true, value: mapInternalKioskSnapshot(outcome.value) };
 }
 
 export const readInternalKioskSnapshotFn = createServerFn({ method: "POST" })
