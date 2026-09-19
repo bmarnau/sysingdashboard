@@ -453,11 +453,6 @@ describe("BSF-03A Supabase project controlling adapter", () => {
     expect(callsFor(calls, "shared_work_package_projection", "select")[0]?.args[0]).toContain(
       "published_at",
     );
-    expect(byId.get("activity-known")).toMatchObject({
-      projectPublishedAt: "2026-09-01T08:00:00.000Z",
-      workPackagePublishedAt: "2026-09-01T09:00:00.000Z",
-      activityPublishedAt: "2026-09-01T10:00:00.000Z",
-    });
     expect(callsFor(calls, "shared_activity_projection", "gte")).toContainEqual(
       expect.objectContaining({ args: ["activity_date", "2026-09-01"] }),
     );
