@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.65.0 - 2026-09-19
+
+- **Info-Kiosk interner Read-Provider (BSF-KIOSK-02, Issue #136)**: Der bestehende Kiosk unterstützt neben dem unveränderten Demo-Pfad einen expliziten internen Hybridmodus für berechtigte Leitungs-Sessions. Projekte, Arbeitspakete und Tätigkeiten werden aus dem vorhandenen BSF-03A-Controlling-Vertrag abgeleitet; Verfügbarkeit, Infrastruktur und Support bleiben eindeutig gekennzeichnete synthetische Demo-Domänen.
+- **Quellen- und Freshness-Vertrag**: Jede Kiosk-Domäne kennzeichnet ihre Quelle als INTERN, DEMO oder NICHT VERFÜGBAR. Zeitraum und interner Datenstand stammen aus dem fachlichen Read-/Projection-Vertrag; ein Fehler interner Leistungsdaten fällt nicht still auf Demo-Werte zurück.
+- **Security und Datenschutz**: Der technische Kiosk-Account bleibt exklusiv auf `kiosk.view` begrenzt. Interne Leistungsdaten erfordern serverseitig `project.controlling.view` sowie die bestehenden Systemhouse-/Customer-/RLS-Grenzen. Die Großbildsicht zeigt nur Aggregate und keine Tätigkeitstitel, Personennamen, Engineer-IDs, internen IDs oder Eurobeträge.
+- **Golden Dataset und Regression**: Vergleichbare Leistungskennzahlen verwenden dieselbe Golden-Dataset-Fachdefinition wie das Projektcontrolling. Der Code-Head `8c69cca` ist mit Security #1075 und CI #1081 vollständig PASS, einschließlich 98/98 E2E, Accessibility, Database Schema Drift, Technical Debt und Quality Gate.
+- **Handbuch**: Kontextsensitive Hilfe und Benutzerhandbuch beschreiben Demo- und Hybridmodus, Quellenkennzeichnung, Berechtigungsgrenzen, Freshness und den read-only Übergang zum Projektcontrolling.
+- **Lovable-Abnahme**: Der K02-L1 Exact-Tree-/Responsive-Preview ist vorbereitet, konnte am 19.09.2026 wegen ausgeschöpfter Lovable-Credits jedoch nicht gestartet werden. Keine DB-/Auth-/RBAC-/RLS-Änderung, kein Merge und kein Deploy.
+
 ## 1.64.0 - 2026-09-18
 
 - **Dokumentations-/Handbuch-Audit**: Benutzerhandbuch auf v1.22.0 aktualisiert; Projektcontrolling kontextsensitiv dokumentiert, Kundenverantwortung nicht mehr als „noch nicht in der Oberfläche“ bezeichnet, RBAC auf acht Rollen/23 atomare Rechte fortgeschrieben und der Betrieb ohne Azure klar vom heutigen Supabase-MVP-Betriebsmodell getrennt.
