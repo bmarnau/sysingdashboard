@@ -93,7 +93,6 @@ export function createInternalReadKioskDataProvider({
 
       const demoDomains = selectDemoDomains(demoSnapshot);
       const internalObservedAt = internalOutcome.ok ? internalOutcome.value.observedAt : null;
-      const demoObservedAt = demoSnapshot?.observedAt ?? null;
 
       return {
         mode: "hybrid",
