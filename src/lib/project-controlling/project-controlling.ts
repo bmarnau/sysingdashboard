@@ -173,6 +173,27 @@ function measureFreshness(rows: readonly ProjectControllingRow[]): {
   };
 }
 
+function measureFreshness(rows: readonly ProjectControllingRow[]): {
+  oldestPublishedAt: string | null;
+  latestPublishedAt: string | null;
+} {
+  const timestamps = rows.flatMap((row) =>
+    [row.projectPublishedAt, row.workPackagePublishedAt, row.activityPublishedAt].filter(
+      (value): value is string => typeof value === "string" && value.length > 0,
+    ),
+  );
+
+  if (timestamps.length === 0) {
+    return { oldestPublishedAt: null, latestPublishedAt: null };
+  }
+
+  timestamps.sort((left, right) => left.localeCompare(right));
+  return {
+    oldestPublishedAt: timestamps[0] ?? null,
+    latestPublishedAt: timestamps[timestamps.length - 1] ?? null,
+  };
+}
+
 function measureCompleteness(
   rows: readonly ProjectControllingRow[],
 ): ProjectControllingCompleteness {
@@ -216,10 +237,14 @@ export class ProjectControllingService {
 
     const freshness = measureFreshness(rows);
 
+    const freshness = measureFreshness(rows);
+
     return {
       ok: true,
       value: {
         filters: { ...filters },
+        oldestPublishedAt: freshness.oldestPublishedAt,
+        latestPublishedAt: freshness.latestPublishedAt,
         summary: summarize(rows),
         trend: buildDailyTrend(rows, fromDay, toDay),
         scopeOptions: [...repositoryScopeOptions],
