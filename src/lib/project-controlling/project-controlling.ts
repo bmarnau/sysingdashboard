@@ -144,9 +144,7 @@ function freshnessKey(kind: string, identity: string, publishedAt: string | null
   return `${kind}:${identity}:${publishedAt ?? "unknown"}`;
 }
 
-function measureFreshness(
-  rows: readonly ProjectControllingRow[],
-): ProjectControllingFreshness {
+function measureFreshness(rows: readonly ProjectControllingRow[]): ProjectControllingFreshness {
   const observed = new Map<string, string | null>();
 
   for (const row of rows) {
