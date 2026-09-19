@@ -57,6 +57,16 @@ function buildSafeInternalTarget(location: { pathname?: string; search?: unknown
   return combined;
 }
 
+function isInternalKioskRequest(search: unknown): boolean {
+  if (typeof search === "string") {
+    const query = search.startsWith("?") ? search.slice(1) : search;
+    return new URLSearchParams(query).get("mode") === "internal";
+  }
+
+  if (!search || typeof search !== "object") return false;
+  return (search as Record<string, unknown>).mode === "internal";
+}
+
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async ({ location }) => {
@@ -102,9 +112,30 @@ export const Route = createFileRoute("/_authenticated")({
         });
       }
 
+      const internalModeRequested =
+        location.pathname === "/kiosk" && isInternalKioskRequest(location.search);
+      let hasProjectControllingView = false;
+
+      if (internalModeRequested) {
+        const { data: projectControlling, error: projectControllingError } =
+          await result.client.rpc("has_permission", {
+            _user_id: data.user.id,
+            _perm: "project.controlling.view",
+          });
+        if (projectControllingError) {
+          throw redirect({
+            to: "/auth",
+            search: { redirect: safeInternalTarget, reason: "unavailable" },
+          });
+        }
+        hasProjectControllingView = projectControlling === true;
+      }
+
       const kioskSessionPolicy = resolveKioskSessionPolicy({
         pathname: location.pathname,
         hasKioskView: hasKioskView === true,
+        internalModeRequested,
+        hasProjectControllingView,
       });
       if (kioskSessionPolicy.redirectTo) {
         throw redirect({ href: kioskSessionPolicy.redirectTo });
@@ -135,4 +166,4 @@ function AuthenticatedLayout() {
   );
 }
 
-export const __test = { buildSafeInternalTarget };
+export const __test = { buildSafeInternalTarget, isInternalKioskRequest };

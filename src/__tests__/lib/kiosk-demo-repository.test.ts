@@ -14,8 +14,17 @@ import type { KioskDomainSnapshot } from "@/lib/kiosk/kiosk-contract";
 interface KioskDemoReference {
   snapshot: {
     datasetVersion: string;
-    domains: KioskDomainSnapshot[];
+    domains: Array<Record<string, unknown>>;
   };
+}
+
+function referenceShape(domains: KioskDomainSnapshot[]): Array<Record<string, unknown>> {
+  return domains.map((domain) => {
+    const serialized = JSON.parse(JSON.stringify(domain)) as Record<string, unknown>;
+    delete serialized.sourceKind;
+    delete serialized.observedAt;
+    return serialized;
+  });
 }
 
 function readReferenceDataset(): KioskDemoReference {
@@ -46,7 +55,7 @@ describe("kiosk demo repository", () => {
     const runtime = createKioskDemoDataset();
 
     expect(runtime.version).toBe(reference.snapshot.datasetVersion);
-    expect(runtime.domains).toEqual(reference.snapshot.domains);
+    expect(referenceShape(runtime.domains)).toEqual(reference.snapshot.domains);
   });
 
   it("reloads idempotently to the canonical baseline", () => {

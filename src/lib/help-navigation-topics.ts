@@ -194,38 +194,52 @@ Die Datenabgrenzung wird serverseitig geprüft; manipulierte URLs oder IDs erwei
   },
   {
     id: "info-kiosk",
-    title: "Info-Kiosk — Demo-Pilot",
+    title: "Info-Kiosk — Demo und interne Hybrid-Sicht",
     category: "Service",
     route: "/kiosk",
     component: "KioskView",
+    roles: ["kiosk", "systemadministrator", "administrator", "teamlead", "projectmanager"],
     keywords: [
       "Info-Kiosk",
       "Kiosk",
-      "Demo-Pilot",
+      "Wallboard",
       "Demo-Daten",
+      "Hybrid",
+      "Intern",
+      "project.controlling.view",
       "kiosk.view",
-      "Servicemenü",
-      "Session-Watchdog",
+      "Datenstand",
       "read-only",
     ],
-    lastUpdated: "2026-09-15",
-    content: `## Zweck und Status
-Der **Info-Kiosk** ist in KIOSK-01 ein ausschließlich lesender Demo-Pilot. Die Ansicht zeigt permanent **DEMO-DATEN — KEINE LIVE-DATEN**. Sie verwendet keine produktiven externen Datenquellen und ist kein zweites Fachsystem.
+    lastUpdated: "2026-09-19",
+    content: `## Zweck und Betriebsarten
+Der **Info-Kiosk** ist eine ausschließlich lesende Großbildsicht. KIOSK-01 bleibt als klar gekennzeichneter Demo-Pfad erhalten. KIOSK-02 ergänzt einen expliziten internen Hybridmodus, ohne einen zweiten Reporting- oder Aggregationspfad aufzubauen.
 
-## Demo-Datensatz
-Die Kiosk-Daten sind lokal, synthetisch und versioniert. Berechtigte Administratoren können sie über **Servicemenü → Demo-Datensatz** laden, als geprüftes JSON importieren oder entfernen. Importiert wird nur das Kiosk-Demoschema; unbekannte oder unvollständige Daten werden vollständig abgewiesen, der letzte gültige Stand bleibt erhalten.
+## Demo-Modus
+Das technische Kiosk-Konto nutzt weiterhin ausschließlich den Demo-Pfad mit der Berechtigung \`kiosk.view\`. Es besitzt keine Fach-, Admin- oder sonstigen Schreibrechte und erhält insbesondere **kein** \`project.controlling.view\`. Die Anzeige bleibt deutlich als **DEMO-DATEN — KEINE LIVE-DATEN** gekennzeichnet.
 
-Das technische Kiosk-Konto selbst kann keine Demo-Daten laden, importieren oder entfernen und besitzt keine Fach-, Admin- oder sonstigen Schreibrechte. Seine fachliche Berechtigung ist auf \`kiosk.view\` begrenzt.
+## Interner Hybridmodus
+Normale angemeldete Leitungsrollen mit \`project.controlling.view\` können den expliziten internen Modus nutzen. Der Header zeigt **HYBRID — INTERNE DATEN + DEMO-DATEN**. Dabei stammen:
+- **Projekte, Arbeitspakete und Tätigkeiten** aus demselben serverseitig abgesicherten Projektcontrolling-Vertrag wie \`/projektcontrolling\`,
+- **Verfügbarkeit, Infrastruktur und Support** weiterhin aus eindeutig gekennzeichneten synthetischen Demo-Domänen.
 
-## Anmeldung und Sitzung
-Der Kiosk verwendet die reguläre Supabase-Anmeldung. Ein gültiges Kiosk-Konto ist auf die Route \`/kiosk\` begrenzt. Manueller Logout bleibt jederzeit verfügbar. Für den unbeaufsichtigten Anzeigebetrieb gilt nur auf \`/kiosk\` die dokumentierte Kiosk-Idle-Ausnahme; Kontoaktivität, Token-Gültigkeit, Rollenexklusivität und der periodische Session-Watchdog bleiben aktiv und arbeiten fail-closed.
+Jede Domäne trägt sichtbar **INTERN**, **DEMO** oder **NICHT VERFÜGBAR**. Ein Fehler einer internen Quelle wird niemals still durch Demo-Leistungswerte ersetzt.
 
-## Daten- und Integrationsgrenzen
-KIOSK-01 enthält **keine** produktive Microsoft-Graph-, SharePoint-, Exchange-, PRTG-, MCP- oder Agenten-Integration. Die Oberfläche liest über die austauschbare \`KioskDataProvider\`-Grenze. Spätere interne Read-Provider dürfen diese Grenze nutzen, ohne die Kiosk-Oberfläche an einen einzelnen Anbieter zu koppeln.
+## Zeitraum, Datenstand und Datenschutz
+Interne Leistungskennzahlen verwenden standardmäßig den aktuellen Kalendermonat bis heute. Zeitraum und Source-Freshness werden sichtbar angezeigt; die Renderzeit wird nicht als Datenstand ausgegeben.
 
-## Sicherheit
-Die Kiosk-Rolle umgeht weder Authentifizierung noch RBAC/RLS. Es werden keine Zugangsdaten in Demo-Dateien, Hilfe oder Quellcode abgelegt. Die produktive Datenbank wird durch Laden oder Entfernen des lokalen Demo-Datensatzes nicht verändert.`,
-    relatedTopics: ["navigation-ansichten", "security-principles", "rbac-rollen-berechtigungen"],
+Die Großbildsicht enthält nur Aggregate. Tätigkeitstitel, Personennamen, Engineer-IDs, interne Datenbank-IDs, Eurobeträge und Nachrichteninhalte werden nicht angezeigt.
+
+## Sicherheit und Navigation
+Der interne Datenzugriff wird serverseitig durch \`project.controlling.view\`, Systemhouse Membership, Customer Access und die bestehenden RLS-Grenzen erzwungen. Manipulierte URLs oder Scopes erweitern keine Rechte. Berechtigte Benutzer können für Detailanalysen über **Projektcontrolling öffnen** in die read-only Controlling-Sicht wechseln.
+
+KIOSK-02 führt keine produktive Microsoft-Graph-, SharePoint-, Exchange-, PRTG-, MCP- oder Agenten-Integration ein. Die Oberfläche bleibt an die providerneutrale \`KioskDataProvider\`-Grenze gebunden.`,
+    relatedTopics: [
+      "project-controlling",
+      "navigation-ansichten",
+      "security-principles",
+      "rbac-rollen-berechtigungen",
+    ],
   },
   {
     id: "system-status",

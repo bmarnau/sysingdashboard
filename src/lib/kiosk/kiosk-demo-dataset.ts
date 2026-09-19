@@ -8,7 +8,9 @@ export interface KioskDemoDataset {
   domains: KioskDomainSnapshot[];
 }
 
-const BASELINE_DOMAINS: readonly KioskDomainSnapshot[] = [
+type DemoDomainTemplate = Omit<KioskDomainSnapshot, "sourceKind" | "observedAt">;
+
+const BASELINE_DOMAINS: readonly DemoDomainTemplate[] = [
   {
     id: "projects",
     title: "Projekte",
@@ -93,9 +95,11 @@ const BASELINE_DOMAINS: readonly KioskDomainSnapshot[] = [
   },
 ];
 
-function cloneDomains(): KioskDomainSnapshot[] {
+function cloneDomains(observedAt: string): KioskDomainSnapshot[] {
   return BASELINE_DOMAINS.map((domain) => ({
     ...domain,
+    sourceKind: "demo",
+    observedAt,
     metrics: domain.metrics.map((metric) => ({
       ...metric,
       trend: metric.trend ? [...metric.trend] : undefined,
@@ -105,9 +109,10 @@ function cloneDomains(): KioskDomainSnapshot[] {
 }
 
 export function createKioskDemoDataset(now = () => new Date()): KioskDemoDataset {
+  const loadedAt = now().toISOString();
   return {
     version: KIOSK_DEMO_DATASET_VERSION,
-    loadedAt: now().toISOString(),
-    domains: cloneDomains(),
+    loadedAt,
+    domains: cloneDomains(loadedAt),
   };
 }

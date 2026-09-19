@@ -11,6 +11,8 @@ export const KIOSK_REFRESH_MS = 60_000;
 
 export type KioskDomainId = (typeof KIOSK_DOMAIN_IDS)[number];
 export type KioskLevel = "ok" | "warning" | "critical" | "unknown";
+export type KioskSourceKind = "demo" | "internal" | "unavailable";
+export type KioskMode = "demo" | "hybrid" | "internal";
 export type KioskDatasetState = "loaded" | "not_loaded";
 export type DemoKioskScenario = "default" | "empty" | "unknown" | "error" | "not_loaded";
 
@@ -37,17 +39,23 @@ export interface KioskDomainSnapshot {
   id: KioskDomainId;
   title: string;
   level: KioskLevel;
+  sourceKind: KioskSourceKind;
+  observedAt: string | null;
   metrics: KioskMetric[];
   note?: string;
   rows?: KioskStatusBreakdownRow[];
 }
 
 export interface KioskSnapshot {
-  mode: "demo";
+  mode: KioskMode;
   datasetState: KioskDatasetState;
   datasetVersion: string;
   generatedAt: string;
-  observedAt: string;
+  observedAt: string | null;
+  period?: {
+    from: string;
+    to: string;
+  };
   domains: KioskDomainSnapshot[];
 }
 

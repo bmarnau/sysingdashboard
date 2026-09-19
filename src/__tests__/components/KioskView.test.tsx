@@ -9,36 +9,48 @@ const DOMAINS: KioskDomainSnapshot[] = [
     id: "projects",
     title: "Projekte",
     level: "ok",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Aktiv", value: 12, level: "ok" }],
   },
   {
     id: "workPackages",
     title: "Arbeitspakete",
     level: "warning",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Offen", value: 34, level: "warning" }],
   },
   {
     id: "activities",
     title: "Tätigkeiten",
     level: "ok",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Heute", value: 18, level: "ok" }],
   },
   {
     id: "availability",
     title: "Verfügbarkeit",
     level: "ok",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Abwesend", value: 2, level: "ok" }],
   },
   {
     id: "infrastructure",
     title: "Infrastruktur",
     level: "critical",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Kritisch", value: 1, level: "critical" }],
   },
   {
     id: "support",
     title: "Support-Postfach",
     level: "warning",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Heute", value: 11, level: "warning" }],
   },
 ];
@@ -56,6 +68,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "projects",
     title: "Projekte",
     level: "warning",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       { label: "Aktive Projekte", value: 8, level: "ok" },
       { label: "Im Plan", value: 83, level: "ok", unit: "%" },
@@ -67,6 +81,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "workPackages",
     title: "Arbeitspakete",
     level: "warning",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       { label: "Offene Arbeitspakete", value: 24, level: "ok" },
       { label: "Im Plan", value: 75, level: "ok", unit: "%" },
@@ -78,6 +94,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "activities",
     title: "Tätigkeiten",
     level: "ok",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       { label: "Stunden im Demo-Zeitraum", value: 126.5, level: "ok", unit: "h" },
       { label: "Abrechenbarer Anteil", value: 82, level: "ok", unit: "%" },
@@ -87,6 +105,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "availability",
     title: "Urlaub (Mitarbeiter)",
     level: "ok",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       { label: "Diese Woche im Urlaub", value: 4, level: "ok" },
       { label: "Nächste Woche im Urlaub", value: 6, level: "ok" },
@@ -97,6 +117,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "infrastructure",
     title: "Infrastruktur",
     level: "critical",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       { label: "OK", value: 131, level: "ok" },
       { label: "Warnung", value: 8, level: "warning" },
@@ -117,6 +139,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "support",
     title: "Support-Postfach",
     level: "warning",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       {
         label: "Posteingang gesamt",
@@ -200,7 +224,9 @@ describe("KioskView", () => {
     ).toBeVisible();
     expect(within(operations!).getByText("Diese Woche im Urlaub")).toBeVisible();
     expect(within(operations!).getByText("Nächste Woche im Urlaub")).toBeVisible();
-    const vacationCards = within(operations!).getByText("Diese Woche im Urlaub").closest("dl");
+    const vacationCards = within(operations!)
+      .getByText("Diese Woche im Urlaub")
+      .closest('[data-layout="equal-vacation-cards"]');
     expect(vacationCards).toHaveAttribute("data-layout", "equal-vacation-cards");
     expect(vacationCards?.children).toHaveLength(2);
     expect(vacationCards?.children[0]).toHaveAttribute(
@@ -284,6 +310,66 @@ describe("KioskView", () => {
 
     const wallboard = screen.getByRole("region", { name: "Kiosk-Domänen" });
     expect(wallboard).toHaveAttribute("data-layout", "three-column");
+  });
+
+  it("shows hybrid source labels, internal freshness and the reporting period", () => {
+    const hybridDomains = WALLBOARD_DOMAINS.map((domain) => ({
+      ...domain,
+      sourceKind:
+        domain.id === "projects" || domain.id === "workPackages" || domain.id === "activities"
+          ? ("internal" as const)
+          : ("demo" as const),
+      observedAt:
+        domain.id === "projects" || domain.id === "workPackages" || domain.id === "activities"
+          ? "2026-09-18T10:00:00.000Z"
+          : "2026-09-19T05:00:00.000Z",
+    }));
+    const hybrid = {
+      ...snapshot(hybridDomains),
+      mode: "hybrid" as const,
+      datasetVersion: "sysing.kiosk.hybrid.v1",
+      observedAt: "2026-09-18T10:00:00.000Z",
+      period: { from: "2026-09-01", to: "2026-09-19" },
+    };
+
+    render(<KioskView state={ready(hybrid)} securityStatus="valid" onLogout={() => undefined} />);
+
+    expect(screen.getByText("HYBRID — INTERNE DATEN + DEMO-DATEN")).toBeVisible();
+    expect(screen.queryByText("DEMO-DATEN — KEINE LIVE-DATEN")).not.toBeInTheDocument();
+    expect(screen.getAllByText("INTERN")).toHaveLength(3);
+    expect(screen.getAllByText("DEMO").length).toBeGreaterThanOrEqual(3);
+    expect(screen.getByText("Zeitraum: 01.09.2026 – 19.09.2026")).toBeVisible();
+    expect(screen.getByText(/Interner Datenstand:/)).toBeVisible();
+    expect(screen.getByText("Quellen je Bereich gekennzeichnet")).toBeVisible();
+  });
+
+  it("shows unavailable as a source state instead of demo", () => {
+    const unavailable = {
+      ...snapshot([
+        {
+          ...DOMAINS[0],
+          sourceKind: "unavailable" as const,
+          observedAt: null,
+          level: "unknown" as const,
+          metrics: [],
+          note: "Interne Daten derzeit nicht verfügbar.",
+        },
+        ...DOMAINS.slice(1).map((domain) => ({
+          ...domain,
+          sourceKind: "demo" as const,
+          observedAt: "2026-09-19T05:00:00.000Z",
+        })),
+      ]),
+      mode: "hybrid" as const,
+      observedAt: null,
+    };
+
+    render(
+      <KioskView state={ready(unavailable)} securityStatus="valid" onLogout={() => undefined} />,
+    );
+
+    expect(screen.getByText("NICHT VERFÜGBAR")).toBeVisible();
+    expect(screen.getByText("Interne Daten derzeit nicht verfügbar.")).toBeVisible();
   });
 
   it("shows the approved time-based German greeting", () => {

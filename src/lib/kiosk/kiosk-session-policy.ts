@@ -1,6 +1,8 @@
 export interface KioskSessionPolicyInput {
   pathname: string;
   hasKioskView: boolean;
+  internalModeRequested?: boolean;
+  hasProjectControllingView?: boolean;
 }
 
 export interface KioskSessionPolicy {
@@ -12,6 +14,8 @@ export interface KioskSessionPolicy {
 export function resolveKioskSessionPolicy({
   pathname,
   hasKioskView,
+  internalModeRequested = false,
+  hasProjectControllingView = false,
 }: KioskSessionPolicyInput): KioskSessionPolicy {
   if (hasKioskView) {
     return {
@@ -21,9 +25,12 @@ export function resolveKioskSessionPolicy({
     };
   }
 
+  const internalKioskAllowed =
+    pathname === "/kiosk" && internalModeRequested && hasProjectControllingView;
+
   return {
     kioskMode: false,
-    redirectTo: pathname === "/kiosk" ? "/dashboard" : null,
+    redirectTo: pathname === "/kiosk" && !internalKioskAllowed ? "/dashboard" : null,
     idleLogoutEnabled: true,
   };
 }

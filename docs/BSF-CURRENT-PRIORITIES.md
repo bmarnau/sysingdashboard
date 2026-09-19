@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-09-18  
+Stand: 2026-09-19  
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
@@ -46,28 +46,33 @@ Der Goldene Datensatz V1 ist die versionierte, vollständig synthetische und det
 
 Golden-Validator und unabhängige Project-Controlling-Expected-Results sind im BSF-03A-Gate PASS.
 
-### BSF-03A / #106 — IMPLEMENTATION COMPLETE / EXACT-HEAD GREEN / LOVABLE PREVIEW OFFEN
+### BSF-03A / #106 — DONE
 
-Aktiver Draft-PR: #144, Branch `feat/bsf-03a-project-controlling`.
+PR #144 ist am 19.09.2026 nach vollständiger GitHub- und Exact-Tree-Lovable-Abnahme auf `main` gemergt. Finaler Kandidat `763cf874b9f5bb8fadbd2875d7e11f0bd7165361`; Security #989, CI #995 und Quality Gate PASS. Merge-Commit: `b9aef5aa9b3174f2abd022e11d492190102933a4`.
 
-Code-tragender Exact Head vor der Abschlussdokumentation: `ffc28901c3017d9459c89a9fe68c030da0f07386`.
+### BSF-KIOSK-02 / #136 — AKTIV / IMPLEMENTATION COMPLETE / LOVABLE PREVIEW BLOCKED
 
-- Security #956: **PASS**
-- CI #962: **PASS**
-- Unit/Components: **917 PASS / 4 TODO**
-- E2E: **91/91 PASS**
-- Accessibility: **7/7 PASS**
-- BSF-02C T01–T30: **PASS**
-- BSF-03A DB T01–T20d: **PASS**
-- Schema-/Types-Drift: **NONE**
-- Technical Report v17 / Quality Gate: **0 Blocker**
-- offizieller Security Advisor: **keine neuen BSF-03A-Findings**, nur SEC-01-Baseline.
+Aktiver Draft-PR: #147, Branch `feat/bsf-kiosk-02-internal-read`.
 
-Noch offen ist der branch-genaue Lovable-Preview-/Driftcheck. Der Precheck fand einen Lovable-Head-Drift; ein erneuter Read-only-Recheck war wegen ausgeschöpfter Credits nicht möglich. Deshalb kein FINAL DONE, kein Merge und kein Deploy.
+Code-tragender Implementierungs-Head vor dem Dokumentationsnachlauf: `8c69ccac189f00d1d61e93674a61ebb7cbc64fc4`.
 
-### BSF-KIOSK-02 / #136 — NEXT NACH BSF-03A-FINALABNAHME
+- Security #1075: **PASS**
+- CI #1081: **PASS**
+- E2E: **98/98 PASS**
+- Accessibility: **PASS**
+- Database Schema Drift: **PASS**
+- Technical Debt: **PASS**
+- Technical Report / Quality Gate: **PASS**
+- keine neue DB-Migration oder Permission,
+- drei interne Leistungsdomänen aus dem BSF-03A-Vertrag,
+- drei klar markierte Demo-Domänen,
+- kein stiller Demo-Fallback bei internem Fehler.
 
-KIOSK-02 bindet den bestehenden Kiosk ohne UI-Neubau an den internen, serverseitig abgesicherten BSF-03A-Read-/Controlling-Vertrag an.
+Offen ist nur der gezielte K02-L1 Exact-Tree-/Responsive-Preview bei 1920×1080 und 1366×768. Der Prompt ist vorbereitet; der Lovable-Workspace meldet derzeit **keine verfügbaren Credits**. Bis zu diesem Nachweis bleibt PR #147 Draft und KIOSK-02 nicht FINAL DONE.
+
+### NÄCHSTER SPRINT — BSF-03B / #107
+
+Nach KIOSK-02-Abnahme folgt der Teamlead-Leistungsnachweis V1. Verbindliche Planung und Lovable-Prompts L1/L2/L3 liegen bereits im Repository.
 
 ## Kiosk-first- und Golden-Dataset-Regel
 
@@ -105,8 +110,8 @@ Golden-Dataset-Grundregeln:
 2. **BSF-03 — DONE**
 3. **BSF-03D / #103 — DONE**
 4. **BSF-KIOSK-01 / #135 — DONE**
-5. **BSF-03A / #106 — IMPLEMENTATION COMPLETE / EXACT-HEAD GREEN / LOVABLE PREVIEW OFFEN**
-6. **BSF-KIOSK-02 / #136 — NEXT NACH BSF-03A-FINALABNAHME**
+5. **BSF-03A / #106 — DONE**
+6. **BSF-KIOSK-02 / #136 — AKTIV / IMPLEMENTATION COMPLETE / LOVABLE PREVIEW BLOCKED**
 7. **BSF-03B / #107 — GEPLANT; Golden Expected Result Leistungsnachweis ergänzen**
 8. **BSF-03E / #63 — GEPLANT**
 9. **BSF-07 / #140 — VORGEZOGEN / GEPLANT**

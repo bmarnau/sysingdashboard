@@ -12,9 +12,14 @@ export interface DemoKioskProviderOptions {
   now?: () => Date;
 }
 
-function cloneDomains(domains: readonly KioskDomainSnapshot[]): KioskDomainSnapshot[] {
+function cloneDomains(
+  domains: readonly KioskDomainSnapshot[],
+  observedAt: string,
+): KioskDomainSnapshot[] {
   return domains.map((domain) => ({
     ...domain,
+    sourceKind: "demo",
+    observedAt,
     metrics: domain.metrics.map((metric) => ({
       ...metric,
       trend: metric.trend ? [...metric.trend] : undefined,
@@ -33,7 +38,7 @@ function emptyDomains(domains: readonly KioskDomainSnapshot[]): KioskDomainSnaps
 }
 
 function unknownDomains(domains: readonly KioskDomainSnapshot[]): KioskDomainSnapshot[] {
-  const copy = cloneDomains(domains);
+  const copy = cloneDomains(domains, domains[0]?.observedAt ?? new Date(0).toISOString());
   const target = copy.find((domain) => domain.id === "infrastructure") ?? copy[0];
   if (target) {
     target.level = "unknown";
@@ -69,9 +74,9 @@ export function createDemoKioskDataProvider({
       const dataset = readKioskDemoDataset();
       if (!dataset) return notLoadedSnapshot(timestamp);
 
-      let domains = cloneDomains(dataset.domains);
-      if (scenario === "empty") domains = emptyDomains(dataset.domains);
-      if (scenario === "unknown") domains = unknownDomains(dataset.domains);
+      let domains = cloneDomains(dataset.domains, dataset.loadedAt);
+      if (scenario === "empty") domains = emptyDomains(domains);
+      if (scenario === "unknown") domains = unknownDomains(domains);
 
       return {
         mode: "demo",

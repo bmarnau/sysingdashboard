@@ -1,4 +1,9 @@
-import type { KioskDomainSnapshot, KioskLevel, KioskMetric } from "@/lib/kiosk/kiosk-contract";
+import type {
+  KioskDomainSnapshot,
+  KioskLevel,
+  KioskMetric,
+  KioskSourceKind,
+} from "@/lib/kiosk/kiosk-contract";
 
 const LEVEL_LABEL: Record<KioskLevel, string> = {
   ok: "OK",
@@ -12,6 +17,12 @@ const LEVEL_CLASS: Record<KioskLevel, string> = {
   warning: "border-amber-500/50 bg-amber-500/5",
   critical: "border-destructive/60 bg-destructive/5",
   unknown: "border-muted-foreground/40 bg-muted/30",
+};
+
+const SOURCE_LABEL: Record<KioskSourceKind, string> = {
+  demo: "DEMO",
+  internal: "INTERN",
+  unavailable: "NICHT VERFÜGBAR",
 };
 
 export interface KioskDomainCardProps {
@@ -30,9 +41,14 @@ export function KioskDomainCard({ domain }: KioskDomainCardProps) {
     <article className={`min-h-48 rounded-xl border p-4 shadow-sm ${LEVEL_CLASS[domain.level]}`}>
       <div className="mb-3 flex items-start justify-between gap-4">
         <h2 className="text-xl font-semibold tracking-tight">{domain.title}</h2>
-        <span className="rounded-full border border-current px-2.5 py-1 text-xs font-semibold">
-          {LEVEL_LABEL[domain.level]}
-        </span>
+        <div className="flex flex-wrap justify-end gap-2">
+          <span className="rounded-full border border-current px-2.5 py-1 text-xs font-semibold">
+            {SOURCE_LABEL[domain.sourceKind ?? "demo"]}
+          </span>
+          <span className="rounded-full border border-current px-2.5 py-1 text-xs font-semibold">
+            {LEVEL_LABEL[domain.level]}
+          </span>
+        </div>
       </div>
 
       {domain.metrics.length === 0 ? (

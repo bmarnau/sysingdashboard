@@ -1,7 +1,7 @@
 # Sysing Dashboard — Operative Sprintplanung MVP → BSF → Integration
 
-Stand: 2026-09-18  
-Status: **verbindliche operative Kiosk-first-Planung; BSF-03A in Finalverifikation**  
+Stand: 2026-09-19  
+Status: **verbindliche operative Kiosk-first-Planung; BSF-KIOSK-02 in Finalverifikation**  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
 Tagesfokus: `docs/BSF-CURRENT-PRIORITIES.md`  
@@ -50,15 +50,16 @@ BSF-03D wurde über PR #134 auf `main` integriert. Post-Merge Security sowie vol
 
 ### Jetzt
 
-- **BSF-03A / #106 — IMPLEMENTATION COMPLETE / EXACT-HEAD GREEN / LOVABLE PREVIEW OFFEN**
-- **BSF-KIOSK-02 / #136 — NEXT nach formaler BSF-03A-Abnahme**
+- **BSF-03A / #106 — DONE / PR #144 gemergt**
+- **BSF-KIOSK-02 / #136 — AKTIV / IMPLEMENTATION COMPLETE / LOVABLE PREVIEW BLOCKED**
+- **BSF-03B / #107 — NEXT nach KIOSK-02-Abnahme**
 
 ## 4. Verbindliche operative Reihenfolge
 
 ```text
-BSF-03A / #106
-→ BSF-KIOSK-02 / #136
-→ BSF-03B / #107
+BSF-03A / #106 — DONE
+→ BSF-KIOSK-02 / #136 — AKTIV
+→ BSF-03B / #107 — NEXT
 → BSF-03E / #63
 → BSF-07 Managementcockpit 2
 → BSF-KIOSK-03 / #137
@@ -166,6 +167,8 @@ Serverseitig abgesicherte read-only Leistungssicht für den zulässigen Customer
 Gezielt für Filter, Tabellen, Summen, Drill-down und Rollen-Preview.
 
 ## 7. BSF-KIOSK-02 — interner Read-Provider (#136)
+
+**Status 19.09.2026:** Implementation complete; Code-Head `8c69cca` mit Security #1075 und CI #1081 vollständig PASS, 98/98 E2E. Offen ist ausschließlich der gezielte Lovable-K02-L1 Exact-Tree-/Responsive-Preview; aktuell durch fehlende Workspace-Credits blockiert. PR #147 bleibt Draft, kein Merge/Deploy.
 
 ### Ziel
 

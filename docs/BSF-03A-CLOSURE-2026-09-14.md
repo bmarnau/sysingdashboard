@@ -1,7 +1,7 @@
 # BSF-03A — Abschluss- und Abnahmenachweis Projektcontrolling
 
 Stand: 2026-09-18  
-Status: **IMPLEMENTATION COMPLETE / EXACT-HEAD GATES PASS / LOVABLE EXACT-HEAD PREVIEW PENDING**  
+Status: **FINAL DONE / MERGED**  
 Version: 1.64.0  
 Issue: #106  
 Pull Request: #144  
@@ -216,3 +216,21 @@ Historische datierte Nachweise werden nicht rückwirkend inhaltlich umgedeutet.
 | Deploy                                        | **NEIN**                  |
 
 BSF-03A ist technisch implementation-complete und auf dem code-tragenden Head vollständig gegatet. FINAL DONE wird erst nach dem branch-genauen Lovable-Preview-/Driftnachweis gesetzt. Nach formaler Abnahme folgt **BSF-KIOSK-02 / #136**.
+
+## 12. Finale Exact-Tree-Abnahme und Merge
+
+Die ausstehende Finalabnahme wurde am 19.09.2026 gegen den exakten GitHub-Kandidaten `763cf874b9f5bb8fadbd2875d7e11f0bd7165361` in einem isolierten Lovable-Validierungsprojekt mit frischem temporären Checkout abgeschlossen.
+
+Nachweise:
+
+- Git tree EXPECTED = ACTUAL = `d0c54fadc8851288ec92a7e9f26aa66eba702515`,
+- Golden Dataset V1: PASS,
+- 11 targeted Vitest-Dateien / 66 Tests: PASS,
+- Project-Controlling E2E: PASS,
+- Scope-Security E2E: PASS,
+- 1920×1080 und 1366×768: PASS,
+- Filterhierarchie, KPI/Trend/Drill-down, Read-only UI, Runtime Console und Network/ServerFn: PASS,
+- Security #989 und CI #995: PASS,
+- Quality Gate: PASS / 0 Blocker.
+
+PR #144 wurde anschließend auf exakt diesem Kandidaten-Head nach `main` gemergt. Merge-Commit: `b9aef5aa9b3174f2abd022e11d492190102933a4`. Issue #106 ist geschlossen.
