@@ -41,6 +41,7 @@ function KioskPage() {
       securityStatus={securityStatus}
       onLogout={() => void performLogout({ reason: "manual" })}
       showControllingLink={mode === "internal" && !kioskSessionPolicy.kioskMode}
+      requestedMode={mode}
     />
   );
 }
