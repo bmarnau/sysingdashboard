@@ -51,7 +51,7 @@ export interface KioskSnapshot {
   datasetState: KioskDatasetState;
   datasetVersion: string;
   generatedAt: string;
-  observedAt: string;
+  observedAt: string | null;
   period?: {
     from: string;
     to: string;
