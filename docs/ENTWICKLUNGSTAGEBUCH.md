@@ -1021,24 +1021,24 @@ stateDiagram-v2
     [*] --> KIOSK01
     KIOSK01: BSF-KIOSK-01\nDONE
     KIOSK01 --> BSF03A
-    BSF03A: BSF-03A\nACTIVE - Finalverifikation
-    BSF03A --> LOVABLE: GitHub Exact-Head-Gates grün
-    LOVABLE: Lovable Exact-Head-Preview\nBLOCKED - Credits / Branch-Recovery
-    LOVABLE --> REVIEW: nach Preview PASS
-    REVIEW: PR #144 Review / Merge\nPLANNED
-    REVIEW --> KIOSK02
-    KIOSK02: BSF-KIOSK-02\nPLANNED
+    BSF03A: BSF-03A\nDONE
+    BSF03A --> KIOSK02: PR #144 + Post-Merge-Gates PASS
+    KIOSK02: BSF-KIOSK-02\nACTIVE - Internal Read
+    KIOSK02 --> BSF03B: nach KIOSK-02-Abnahme
+    BSF03B: BSF-03B\nPLANNED
 ```
 
 Makro-Snapshot: `docs/status-board.html`.
 
-Governance dieses Maintenance Windows:
+Governance dieses Statusübergangs:
 
-- Runtime geändert: **NEIN**,
-- Datenbank/RLS/Grants/Auth geändert: **NEIN**,
-- Merge: **NEIN**,
+- BSF-03A-Fachmerge: **JA**, PR #144 auf `main`,
+- Post-Merge Security #990 / CI #996: **PASS**,
+- Runtime durch diesen Board-Update geändert: **NEIN**,
+- Datenbank/RLS/Grants/Auth durch diesen Board-Update geändert: **NEIN**,
 - Deploy: **NEIN**,
-- fehlender Lovable-Nachweis bleibt ausdrücklich **offen**.
+- BSF-03A-Abnahmeblocker: **KEINER**,
+- aktiver Sprint: **BSF-KIOSK-02 / #136**.
 
 
 ## 2026-09-19 — BSF-03A FINAL DONE / Übergang zu KIOSK-02

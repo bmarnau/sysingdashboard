@@ -191,37 +191,38 @@
         <div>
           <h1>Sysing Dashboard - TIECS Status Board</h1>
           <div class="sub">
-            Stand 18.09.2026 - abgeleitete Managementsicht, keine eigene Source of Truth
+            Stand 19.09.2026 - abgeleitete Managementsicht, keine eigene Source of Truth
           </div>
         </div>
-        <span class="badge amber">BSF-03A FINALVERIFIKATION</span>
+        <span class="badge green">BSF-03A DONE · KIOSK-02 CURRENT</span>
       </div>
 
       <div class="facts">
-        <div class="fact"><span class="small">Aktiver Sprint</span><b>BSF-03A</b></div>
-        <div class="fact"><span class="small">Pull Request</span><b>#144 Draft</b></div>
-        <div class="fact">
-          <span class="small">Grüne Evidenz vor Board-Update</span><b>0ce0e5a5</b>
-        </div>
-        <div class="fact"><span class="small">Offener Blocker</span><b>Lovable Preview</b></div>
+        <div class="fact"><span class="small">Aktiver Sprint</span><b>BSF-KIOSK-02</b></div>
+        <div class="fact"><span class="small">Vorheriger Sprint</span><b>BSF-03A DONE</b></div>
+        <div class="fact"><span class="small">Main-Baseline</span><b>b9aef5aa</b></div>
+        <div class="fact"><span class="small">BSF-03A Blocker</span><b>Keine</b></div>
       </div>
 
       <div class="grid">
         <section class="col">
           <h2>Abgeschlossen</h2>
           <div class="card">
-            <span class="badge green">DONE</span><strong>BSF-03D</strong
-            ><span class="small">Arbeitspaket-Kategorien</span>
-          </div>
-          <div class="card">
             <span class="badge green">DONE</span><strong>BSF-KIOSK-01</strong
-            ><span class="small">Info-Kiosk Demo-Pilot, auf main integriert</span>
+            ><span class="small">Info-Kiosk Demo-Pilot, auf main integriert.</span>
           </div>
           <div class="card">
-            <span class="badge green">DONE</span><strong>BSF-03A Implementierung</strong
+            <span class="badge green">DONE</span><strong>BSF-03A / #106</strong
             ><span class="small"
-              >Fachlogik, Security, DB-Verträge, Golden Dataset, E2E/A11y und Dokumentationsaudit
-              abgeschlossen.</span
+              >Projektcontrolling, Golden Dataset, Exact-Tree-/Lovable-Abnahme, PR #144 und
+              Post-Merge-Gates vollständig PASS.</span
+            >
+          </div>
+          <div class="card">
+            <strong>Post-Merge-Evidenz</strong
+            ><span class="small"
+              >main b9aef5aa · Security #990 PASS · CI #996 inklusive Technical Report &amp;
+              Quality Gate PASS.</span
             >
           </div>
         </section>
@@ -229,17 +230,17 @@
         <section class="col">
           <h2>Aktuell</h2>
           <div class="card">
-            <span class="badge amber">ACTIVE</span><strong>BSF-03A Finalverifikation</strong
+            <span class="badge amber">ACTIVE</span><strong>BSF-KIOSK-02 / #136</strong
             ><span class="small"
-              >GitHub-Exact-Head-Evidenz vor diesem Board-Update: Security #977 PASS, CI #983 PASS.
-              Durch dieses Maintenance-Commit werden Exact-Head-Gates erneut erforderlich.</span
+              >Bestehenden Demo-Kiosk über den BSF-03A-Vertrag um abgesicherte interne
+              Aggregatdaten erweitern.</span
             >
           </div>
           <div class="card">
-            <strong>TIECS Maintenance Window</strong
+            <strong>Verbindliche Grenzen</strong
             ><span class="small"
-              >Git Hygiene, Dokumentationsaudit, Planungs-/Statussicht und Vorbereitung des nächsten
-              Tool-Laufs. Keine Runtime-/DB-/Auth-Änderung.</span
+              >Keine neue DB-Migration oder Permission; kein zweiter Aggregator; technische
+              kiosk-Session bleibt Demo-only.</span
             >
           </div>
         </section>
@@ -247,36 +248,43 @@
         <section class="col">
           <h2>Nächste Schritte</h2>
           <div class="card">
-            <span class="badge blue">NEXT</span><strong>1. Exact-Head-Gates</strong
-            ><span class="small">Security und CI auf dem Commit, der dieses Board enthält.</span>
-          </div>
-          <div class="card">
-            <span class="badge blue">NEXT</span><strong>2. Lovable Exact-Head Preview</strong
+            <span class="badge blue">1</span><strong>Kiosk-Vertrag TDD</strong
             ><span class="small"
-              >Aktuellen PR-Head aus GitHub auflösen, read-only erreichen und Responsive/Runtime
-              prüfen.</span
+              >mode/sourceKind/observedAt additiv ergänzen; KIOSK-01-Demo-Regressionsvertrag
+              erhalten.</span
             >
           </div>
           <div class="card">
-            <span class="badge blue">NEXT</span><strong>3. Review / Merge</strong
-            ><span class="small">Nur nach vollständigem Preview-PASS und separater Freigabe.</span>
+            <span class="badge blue">2</span><strong>Freshness + Mapper</strong
+            ><span class="small"
+              >Projection-published_at in den BSF-03A-Result aufnehmen und auf interne
+              Wallboard-Metriken abbilden.</span
+            >
+          </div>
+          <div class="card">
+            <span class="badge blue">3</span><strong>Server Function + Provider</strong
+            ><span class="small"
+              >project.controlling.view, Systemhouse-Scope, fail-closed und kein
+              Internal→Demo-Fallback.</span
+            >
           </div>
         </section>
 
         <section class="col">
           <h2>Pipeline</h2>
           <div class="card">
-            <span class="badge purple">NEXT SPRINT</span><strong>BSF-KIOSK-02 / #136</strong
-            ><span class="small">Interner read-only Provider / Feinschliff.</span>
+            <span class="badge purple">NEXT</span><strong>BSF-03B / #107</strong
+            ><span class="small">Teamlead-Leistungsnachweis nach KIOSK-02-Abnahme.</span>
           </div>
           <div class="card">
-            <strong>BSF-03B / #107</strong><span class="small">Teamlead-Leistungsnachweis.</span>
+            <strong>BSF-03E / #63</strong><span class="small">Vertretungs- und Personensicht.</span>
           </div>
           <div class="card">
-            <strong>BSF-03E / #63</strong><span class="small">Geplanter Folgeschritt.</span>
+            <strong>BSF-07 / #140</strong><span class="small">Managementcockpit 2.</span>
           </div>
           <div class="card">
-            <strong>BSF-07 / #140</strong><span class="small">Vorgezogen geplant.</span>
+            <strong>BSF-KIOSK-03 / #137</strong
+            ><span class="small">Management-Kiosk auf freigegebenen Managementdaten.</span>
           </div>
         </section>
       </div>
@@ -285,33 +293,34 @@
         <h2>Phasenverlauf</h2>
         <div class="timeline">
           <span class="node">KIOSK-01 DONE</span><span class="arrow">-&gt;</span>
-          <span class="node">BSF-03A Implementierung DONE</span><span class="arrow">-&gt;</span>
-          <span class="node">GitHub-Gates</span><span class="arrow">-&gt;</span>
-          <span class="node">Lovable Exact-Head Preview BLOCKED</span
-          ><span class="arrow">-&gt;</span> <span class="node">PR #144 Review/Merge</span
-          ><span class="arrow">-&gt;</span>
-          <span class="node">KIOSK-02</span>
+          <span class="node">BSF-03A DONE</span><span class="arrow">-&gt;</span>
+          <span class="node">KIOSK-02 ACTIVE</span><span class="arrow">-&gt;</span>
+          <span class="node">BSF-03B</span><span class="arrow">-&gt;</span>
+          <span class="node">BSF-03E</span><span class="arrow">-&gt;</span>
+          <span class="node">BSF-07</span>
         </div>
       </section>
 
       <section class="section">
-        <h2>Abnahmekriterien für BSF-03A</h2>
+        <h2>Abnahmekriterien für BSF-KIOSK-02</h2>
         <ol>
-          <li>Aktueller GitHub-PR-Head vollständig durch Required CI und Security gegatet.</li>
-          <li>Lovable erreicht exakt denselben Head mit sauberem Arbeitsbaum.</li>
-          <li>Kein client.ts-Drift, kein previewAuthStorage.ts, keine drizzle-Altartefakte.</li>
-          <li>
-            Read-only Preview 1920x1080 und 1366x768 ohne Clipping/Overflow oder neue Runtimefehler.
-          </li>
-          <li>Kein Merge und kein Deploy vor separater Freigabe.</li>
+          <li>KIOSK-01-Demo-Provider und exklusive kiosk.view-Rolle bleiben unverändert nutzbar.</li>
+          <li>Interne Leistungsdaten laufen nur über Server Function und project.controlling.view.</li>
+          <li>Systemhouse-Scope wird vor Aggregation aufgelöst; Cross-Scope/IDOR/BOLA bleibt fail-closed.</li>
+          <li>Kein zweiter Stunden-/Billable-Aggregator und kein stiller Demo-Fallback.</li>
+          <li>INTERN / DEMO / NICHT VERFÜGBAR sowie Source-Freshness sind sichtbar.</li>
+          <li>Keine personenbezogenen Leistungsdetails oder Eurobeträge im Großbild.</li>
+          <li>E2E, Accessibility, Security und vollständige CI/Quality Gates PASS.</li>
+          <li>Lovable erst nach repository-seitiger Implementierung für den gezielten Hybrid-Preview-Pass.</li>
         </ol>
       </section>
 
       <footer>
-        Quellen: roadmap.md, docs/PROJECT-STATUS.yaml, docs/CURRENT-STATUS.md, docs/ARCHITECTURE.md,
-        docs/ENTWICKLUNGSTAGEBUCH.md, docs/BSF-CURRENT-PRIORITIES.md, PR #144 und
-        Exact-Head-CI/Security. Dieses Board ist ausschließlich eine abgeleitete Sicht. Bei
-        Widerspruch gelten die genannten Quellen und GitHub als Source of Truth.
+        Quellen: roadmap.md, docs/PROJECT-STATUS.yaml, docs/CURRENT-STATUS.md,
+        docs/ARCHITECTURE.md, docs/ENTWICKLUNGSTAGEBUCH.md,
+        docs/BSF-CURRENT-PRIORITIES.md, Issue #136 sowie Post-Merge Security #990 / CI #996.
+        Dieses Board ist ausschließlich eine abgeleitete Sicht. Bei Widerspruch gelten die
+        genannten Quellen und GitHub als Source of Truth.
       </footer>
     </main>
   </body>
