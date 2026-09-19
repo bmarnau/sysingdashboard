@@ -80,7 +80,6 @@ describe("BSF-KIOSK-02 hybrid accessibility", () => {
         }}
         securityStatus="valid"
         onLogout={() => undefined}
-        showControllingLink
         requestedMode="internal"
       />,
     );
