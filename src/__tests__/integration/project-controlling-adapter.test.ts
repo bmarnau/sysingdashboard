@@ -446,6 +446,18 @@ describe("BSF-03A Supabase project controlling adapter", () => {
 
     const activitySelect = callsFor(calls, "shared_activity_projection", "select")[0];
     expect(activitySelect?.args[0]).not.toContain("engineer_id");
+    expect(activitySelect?.args[0]).toContain("published_at");
+    expect(callsFor(calls, "shared_project_projection", "select")[0]?.args[0]).toContain(
+      "published_at",
+    );
+    expect(callsFor(calls, "shared_work_package_projection", "select")[0]?.args[0]).toContain(
+      "published_at",
+    );
+    expect(byId.get("activity-known")).toMatchObject({
+      projectPublishedAt: "2026-09-01T08:00:00.000Z",
+      workPackagePublishedAt: "2026-09-01T09:00:00.000Z",
+      activityPublishedAt: "2026-09-01T10:00:00.000Z",
+    });
     expect(callsFor(calls, "shared_activity_projection", "gte")).toContainEqual(
       expect.objectContaining({ args: ["activity_date", "2026-09-01"] }),
     );
@@ -560,6 +572,7 @@ describe("BSF-03A Supabase project controlling adapter", () => {
         title: "Bekannt",
         category_key: "cat-known",
         category_observed: true,
+        published_at: "2026-09-01T09:00:00.000Z",
         is_active: true,
       },
     ];
@@ -573,6 +586,7 @@ describe("BSF-03A Supabase project controlling adapter", () => {
       billable: true,
       billing_status: "offen",
       work_package_source_id: "wp-known",
+      published_at: "2026-09-01T10:00:00.000Z",
       is_active: true,
     }));
 
