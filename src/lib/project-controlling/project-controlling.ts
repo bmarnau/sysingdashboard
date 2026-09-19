@@ -138,44 +138,6 @@ function buildDailyTrend(
 function measureFreshness(rows: readonly ProjectControllingRow[]): {
   oldestPublishedAt: string | null;
   latestPublishedAt: string | null;
-  observedRows: number;
-} {
-  const timestamps: string[] = [];
-  const observedProjectionKeys = new Set<string>();
-
-  const observe = (key: string | null, timestamp: string | null | undefined): void => {
-    if (!key || !timestamp) return;
-    if (observedProjectionKeys.has(key)) return;
-
-    observedProjectionKeys.add(key);
-    timestamps.push(timestamp);
-  };
-
-  for (const row of rows) {
-    const scope = `${row.systemhouseId}::${row.customerId}`;
-    observe(`activity::${scope}::${row.activityId}`, row.activityPublishedAt);
-    observe(
-      row.workPackageSourceId ? `workPackage::${scope}::${row.workPackageSourceId}` : null,
-      row.workPackagePublishedAt,
-    );
-    observe(
-      row.projectSourceId ? `project::${scope}::${row.projectSourceId}` : null,
-      row.projectPublishedAt,
-    );
-  }
-
-  timestamps.sort((left, right) => left.localeCompare(right));
-
-  return {
-    oldestPublishedAt: timestamps[0] ?? null,
-    latestPublishedAt: timestamps.at(-1) ?? null,
-    observedRows: observedProjectionKeys.size,
-  };
-}
-
-function measureFreshness(rows: readonly ProjectControllingRow[]): {
-  oldestPublishedAt: string | null;
-  latestPublishedAt: string | null;
 } {
   const timestamps = rows.flatMap((row) =>
     [row.projectPublishedAt, row.workPackagePublishedAt, row.activityPublishedAt].filter(
@@ -237,8 +199,6 @@ export class ProjectControllingService {
 
     const freshness = measureFreshness(rows);
 
-    const freshness = measureFreshness(rows);
-
     return {
       ok: true,
       value: {
@@ -250,7 +210,6 @@ export class ProjectControllingService {
         scopeOptions: [...repositoryScopeOptions],
         rows: [...rows],
         completeness: measureCompleteness(rows),
-        freshness,
       },
     };
   }
