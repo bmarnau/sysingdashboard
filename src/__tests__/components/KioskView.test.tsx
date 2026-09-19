@@ -330,9 +330,7 @@ describe("KioskView", () => {
       period: { from: "2026-09-01", to: "2026-09-19" },
     };
 
-    render(
-      <KioskView state={ready(hybrid)} securityStatus="valid" onLogout={() => undefined} />,
-    );
+    render(<KioskView state={ready(hybrid)} securityStatus="valid" onLogout={() => undefined} />);
 
     expect(screen.getByText("HYBRID — INTERNE DATEN + DEMO-DATEN")).toBeVisible();
     expect(screen.queryByText("DEMO-DATEN — KEINE LIVE-DATEN")).not.toBeInTheDocument();
