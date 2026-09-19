@@ -210,8 +210,11 @@ export function projectControllingResult(
       rowsWithoutProject: 0,
       rowsWithoutWorkPackage: 0,
     },
-    oldestPublishedAt: "2026-09-14T08:00:00.000Z",
-    latestPublishedAt: "2026-09-14T10:00:00.000Z",
+    freshness: {
+      oldestPublishedAt: "2026-09-14T08:00:00.000Z",
+      latestPublishedAt: "2026-09-14T10:00:00.000Z",
+      observedRows: 10,
+    },
   };
 }
 
