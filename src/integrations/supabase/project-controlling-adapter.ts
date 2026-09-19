@@ -35,6 +35,7 @@ interface ProjectRow {
   customer_id: string;
   source_id: string;
   name: string;
+  published_at: string;
 }
 
 interface WorkPackageRow {
@@ -45,6 +46,7 @@ interface WorkPackageRow {
   title: string;
   category_key: string | null;
   category_observed: boolean;
+  published_at: string;
 }
 
 interface ActivityRow {
@@ -57,6 +59,7 @@ interface ActivityRow {
   billable: boolean;
   billing_status: string | null;
   work_package_source_id: string | null;
+  published_at: string;
 }
 
 interface ReferenceCatalogRow {
@@ -253,7 +256,7 @@ export function createSupabaseProjectControllingRepository(
 
     let projectQuery = client
       .from("shared_project_projection")
-      .select("systemhouse_id, customer_id, source_id, name")
+      .select("systemhouse_id, customer_id, source_id, name, published_at")
       .eq("is_active", true)
       .in("systemhouse_id", unique(readableScopes.map((scope) => scope.systemhouseId)))
       .in("customer_id", unique(readableScopes.map((scope) => scope.customerId)));
@@ -263,7 +266,7 @@ export function createSupabaseProjectControllingRepository(
     let workPackageQuery = client
       .from("shared_work_package_projection")
       .select(
-        "systemhouse_id, customer_id, source_id, project_source_id, title, category_key, category_observed",
+        "systemhouse_id, customer_id, source_id, project_source_id, title, category_key, category_observed, published_at",
       )
       .eq("is_active", true)
       .in("systemhouse_id", unique(readableScopes.map((scope) => scope.systemhouseId)))
@@ -357,7 +360,7 @@ export function createSupabaseProjectControllingRepository(
         let query = client
           .from("shared_activity_projection")
           .select(
-            "systemhouse_id, customer_id, source_id, title, activity_date, duration_hours, billable, billing_status, work_package_source_id",
+            "systemhouse_id, customer_id, source_id, title, activity_date, duration_hours, billable, billing_status, work_package_source_id, published_at",
           )
           .eq("is_active", true)
           .eq("systemhouse_id", scope.systemhouseId)
@@ -477,6 +480,9 @@ export function createSupabaseProjectControllingRepository(
           categoryKey: workPackage?.category_observed ? (workPackage.category_key ?? null) : null,
           categoryLabel: reference?.label ?? null,
           categoryState: state,
+          projectPublishedAt: project?.published_at ?? null,
+          workPackagePublishedAt: workPackage?.published_at ?? null,
+          activityPublishedAt: activity.published_at ?? null,
         });
       }
 
