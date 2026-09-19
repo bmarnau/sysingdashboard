@@ -94,11 +94,14 @@ export function parseKioskDemoJson(
   }
 
   const validated = kioskDemoImportSchema.parse(parsed);
+  const loadedAt = now().toISOString();
   return {
     version: validated.snapshot.datasetVersion,
-    loadedAt: now().toISOString(),
+    loadedAt,
     domains: validated.snapshot.domains.map((domain) => ({
       ...domain,
+      sourceKind: "demo",
+      observedAt: loadedAt,
       metrics: domain.metrics.map((metric) => ({
         ...metric,
         trend: metric.trend ? [...metric.trend] : undefined,
