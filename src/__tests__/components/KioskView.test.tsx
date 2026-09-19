@@ -286,6 +286,72 @@ describe("KioskView", () => {
     expect(wallboard).toHaveAttribute("data-layout", "three-column");
   });
 
+  it("shows hybrid source labels, internal freshness and the reporting period", () => {
+    const hybridDomains = WALLBOARD_DOMAINS.map((domain) => ({
+      ...domain,
+      sourceKind:
+        domain.id === "projects" || domain.id === "workPackages" || domain.id === "activities"
+          ? ("internal" as const)
+          : ("demo" as const),
+      observedAt:
+        domain.id === "projects" || domain.id === "workPackages" || domain.id === "activities"
+          ? "2026-09-18T10:00:00.000Z"
+          : "2026-09-19T05:00:00.000Z",
+    }));
+    const hybrid = {
+      ...snapshot(hybridDomains),
+      mode: "hybrid" as const,
+      datasetVersion: "sysing.kiosk.hybrid.v1",
+      observedAt: "2026-09-18T10:00:00.000Z",
+      period: { from: "2026-09-01", to: "2026-09-19" },
+    };
+
+    render(
+      <KioskView
+        state={ready(hybrid)}
+        securityStatus="valid"
+        onLogout={() => undefined}
+        showControllingLink
+      />,
+    );
+
+    expect(screen.getByText("HYBRID — INTERNE DATEN + DEMO-DATEN")).toBeVisible();
+    expect(screen.queryByText("DEMO-DATEN — KEINE LIVE-DATEN")).not.toBeInTheDocument();
+    expect(screen.getAllByText("INTERN")).toHaveLength(3);
+    expect(screen.getAllByText("DEMO").length).toBeGreaterThanOrEqual(3);
+    expect(screen.getByText("Zeitraum: 01.09.2026 – 19.09.2026")).toBeVisible();
+    expect(screen.getByText(/Interner Datenstand:/)).toBeVisible();
+    expect(screen.getByRole("link", { name: "Projektcontrolling öffnen" })).toBeVisible();
+    expect(screen.getByText("Quellen je Bereich gekennzeichnet")).toBeVisible();
+  });
+
+  it("shows unavailable as a source state instead of demo", () => {
+    const unavailable = {
+      ...snapshot([
+        {
+          ...DOMAINS[0],
+          sourceKind: "unavailable" as const,
+          observedAt: null,
+          level: "unknown" as const,
+          metrics: [],
+          note: "Interne Daten derzeit nicht verfügbar.",
+        },
+        ...DOMAINS.slice(1).map((domain) => ({
+          ...domain,
+          sourceKind: "demo" as const,
+          observedAt: "2026-09-19T05:00:00.000Z",
+        })),
+      ]),
+      mode: "hybrid" as const,
+      observedAt: null,
+    };
+
+    render(<KioskView state={ready(unavailable)} securityStatus="valid" onLogout={() => undefined} />);
+
+    expect(screen.getByText("NICHT VERFÜGBAR")).toBeVisible();
+    expect(screen.getByText("Interne Daten derzeit nicht verfügbar.")).toBeVisible();
+  });
+
   it("shows the approved time-based German greeting", () => {
     vi.useFakeTimers();
     try {
