@@ -57,6 +57,9 @@ export interface ProjectControllingRow {
   categoryKey: string | null;
   categoryLabel: string | null;
   categoryState: ProjectControllingCategoryState;
+  projectPublishedAt?: string | null;
+  workPackagePublishedAt?: string | null;
+  activityPublishedAt?: string | null;
 }
 
 export interface ProjectControllingSummary {
@@ -91,6 +94,8 @@ export interface ProjectControllingResult {
   scopeOptions: ProjectControllingScopeOption[];
   rows: ProjectControllingRow[];
   completeness: ProjectControllingCompleteness;
+  oldestPublishedAt: string | null;
+  latestPublishedAt: string | null;
 }
 
 export interface ProjectControllingRepository {
