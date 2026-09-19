@@ -60,8 +60,8 @@ function result(rows: ProjectControllingResult["rows"]): ProjectControllingResul
       rowsWithoutProject: rows.filter((row) => !row.projectSourceId).length,
       rowsWithoutWorkPackage: rows.filter((row) => !row.workPackageSourceId).length,
     },
-  oldestPublishedAt: null,
-  latestPublishedAt: null,
+    oldestPublishedAt: null,
+    latestPublishedAt: null,
   };
 }
 
