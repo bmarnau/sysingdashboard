@@ -9,36 +9,48 @@ const DOMAINS: KioskDomainSnapshot[] = [
     id: "projects",
     title: "Projekte",
     level: "ok",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Aktiv", value: 12, level: "ok" }],
   },
   {
     id: "workPackages",
     title: "Arbeitspakete",
     level: "warning",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Offen", value: 34, level: "warning" }],
   },
   {
     id: "activities",
     title: "Tätigkeiten",
     level: "ok",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Heute", value: 18, level: "ok" }],
   },
   {
     id: "availability",
     title: "Verfügbarkeit",
     level: "ok",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Abwesend", value: 2, level: "ok" }],
   },
   {
     id: "infrastructure",
     title: "Infrastruktur",
     level: "critical",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Kritisch", value: 1, level: "critical" }],
   },
   {
     id: "support",
     title: "Support-Postfach",
     level: "warning",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [{ label: "Heute", value: 11, level: "warning" }],
   },
 ];
@@ -56,6 +68,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "projects",
     title: "Projekte",
     level: "warning",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       { label: "Aktive Projekte", value: 8, level: "ok" },
       { label: "Im Plan", value: 83, level: "ok", unit: "%" },
@@ -67,6 +81,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "workPackages",
     title: "Arbeitspakete",
     level: "warning",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       { label: "Offene Arbeitspakete", value: 24, level: "ok" },
       { label: "Im Plan", value: 75, level: "ok", unit: "%" },
@@ -78,6 +94,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "activities",
     title: "Tätigkeiten",
     level: "ok",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       { label: "Stunden im Demo-Zeitraum", value: 126.5, level: "ok", unit: "h" },
       { label: "Abrechenbarer Anteil", value: 82, level: "ok", unit: "%" },
@@ -87,6 +105,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "availability",
     title: "Urlaub (Mitarbeiter)",
     level: "ok",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       { label: "Diese Woche im Urlaub", value: 4, level: "ok" },
       { label: "Nächste Woche im Urlaub", value: 6, level: "ok" },
@@ -97,6 +117,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "infrastructure",
     title: "Infrastruktur",
     level: "critical",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       { label: "OK", value: 131, level: "ok" },
       { label: "Warnung", value: 8, level: "warning" },
@@ -117,6 +139,8 @@ const WALLBOARD_DOMAINS: RichDomainSnapshot[] = [
     id: "support",
     title: "Support-Postfach",
     level: "warning",
+    sourceKind: "demo",
+    observedAt: "2026-09-14T05:55:00.000Z",
     metrics: [
       {
         label: "Posteingang gesamt",
