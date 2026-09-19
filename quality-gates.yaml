@@ -1,0 +1,219 @@
+standard:
+  name: AQGS
+  version: 1.0.0-draft
+  canonical_repository: bmarnau-standards/AQGS-Application-Quality-Gate-Standard
+
+application:
+  name: Sysing Dashboard
+  repository: bmarnau/sysingdashboard
+  profile: security-data
+  profile_reason: >-
+    Authenticated multi-user application with Supabase persistence,
+    RBAC/RLS boundaries, import/export, backup/restore, runtime UI,
+    security-sensitive scope separation, and portability requirements.
+
+source_of_truth:
+  branch: main
+  candidate_identity:
+    - repository
+    - branch_or_release_context
+    - exact_commit_sha
+
+decision:
+  overall_gate: G14
+  no_silent_skip: true
+  default_evidence_reuse: false
+  allowed_states:
+    - PASS
+    - PASS_WITH_FINDINGS
+    - BLOCKED
+    - FAIL
+    - NOT_APPLICABLE
+
+gates:
+  G0:
+    name: Source Integrity
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - Git commit SHA and pull-request head
+      - .github/workflows/ci.yml
+    evidence_reuse: false
+
+  G1:
+    name: Static Quality
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "2 · Static (format, lint, types, docs)"
+      - bunx prettier --check .
+      - bun run lint
+      - bun run typecheck
+      - bun run lint:no-console
+    evidence_reuse: false
+
+  G2:
+    name: Unit and Component Verification
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "3+4 · Unit & Components"
+      - CI job "5 · Backend"
+      - bun run test:coverage
+      - bun run test:backend
+
+  G3:
+    name: Security Baseline
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "7 · RBAC & Security"
+      - .github/workflows/security.yml
+      - bun run test:security
+      - bun run security:check
+
+  G4:
+    name: Production Build
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "10 · Production Build"
+      - bun run build
+      - bun run test:perf
+
+  G5:
+    name: Data and Schema Integrity
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "Database Schema Drift"
+      - bun run db:schema:rebuild
+      - bun run db:schema:check
+      - database contract SQL tests
+
+  G6:
+    name: Authentication, Authorization, RBAC and RLS
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "7 · RBAC & Security"
+      - bun run rbac:check
+      - authorization/RLS contract tests
+      - negative security tests
+
+  G7:
+    name: API and Integration Contracts
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "6 · API"
+      - bun run test:api
+      - bun run api:discover
+      - bun run test:api:discovery
+      - bun run test:api:smoke
+      - bun run test:api:functional
+
+  G8:
+    name: Import, Export and Data Portability
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "8 · Import/Export"
+      - bun run test:io
+      - bun run test:examples
+
+  G9:
+    name: Backup, Restore and Rollback
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "9 · Backup/Restore"
+      - bun run test:backup:integrity
+      - src/lib/backup/restore.ts
+      - src/lib/backup/rollback.ts
+      - transactional restore with pre-snapshot rollback
+
+  G10:
+    name: Runtime and End-to-End
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "11 · E2E (Playwright)"
+      - bun run test:e2e
+    manual_or_external:
+      rule: >-
+        A sprint-specific preview or external runtime check becomes required
+        when its acceptance criteria explicitly require it.
+      unavailable_result: BLOCKED
+
+  G11:
+    name: UI and Accessibility
+    requirement: required
+    enforcement: advisory
+    implementation:
+      - CI job "12 · Accessibility"
+      - bun run test:a11y
+    note: Current CI implementation is warning-oriented.
+
+  G12:
+    name: Documentation and Project State
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - Static CI docs sync check
+      - bun run docs:check
+      - bun run project-status:check
+      - roadmap.md
+      - docs/PROJECT-STATUS.yaml
+      - docs/ARCHITECTURE.md
+      - docs/ENTWICKLUNGSTAGEBUCH.md
+
+  G13:
+    name: Technical Debt and Portability
+    requirement: required
+    enforcement: advisory
+    implementation:
+      - CI job "13 · Technical Debt"
+      - bun run test:debt
+      - architecture/provider-boundary review
+    note: Current CI implementation is warning-oriented.
+
+  G14:
+    name: Evidence and Release Gate
+    requirement: required
+    enforcement: blocking
+    implementation:
+      - CI job "14 · Technical Report & Quality Gate"
+      - bun run report:technical:ci
+      - bun run ci:gate
+    evidence_reuse: false
+
+  G15:
+    name: Operations and Resilience
+    requirement: conditional
+    enforcement: advisory
+    implementation:
+      - bun run test:ops
+      - bun run ops:report
+    note: >-
+      Operations checks exist but are not currently a blocking job in the
+      default main CI pipeline. Strengthening this is a future governance decision.
+
+golden_dataset:
+  role: reference_evidence
+  supports_gates:
+    - G2
+    - G5
+    - G7
+    - G8
+    - G10
+    - G14
+  strategy: docs/GOLDEN-DATASET-STRATEGY.md
+  main_branch_status: planned_contract
+  implementation_note: >-
+    The strategy and expected values exist on main. Golden Dataset V1 fixtures
+    are implemented as part of the BSF-03A work stream and must only become
+    current-main evidence after that change is accepted and merged.
+  production_data_allowed: false
+
+exceptions: []
