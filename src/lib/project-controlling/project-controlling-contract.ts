@@ -95,6 +95,8 @@ export interface ProjectControllingFreshness {
 
 export interface ProjectControllingResult {
   filters: ProjectControllingFilters;
+  oldestPublishedAt: string | null;
+  latestPublishedAt: string | null;
   summary: ProjectControllingSummary;
   trend: ProjectControllingTrendPoint[];
   scopeOptions: ProjectControllingScopeOption[];
