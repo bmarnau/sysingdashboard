@@ -860,6 +860,15 @@ function Dashboard() {
               Meine Kunden
             </Link>
           </PermissionGate>
+          <PermissionGate permission="project.controlling.view">
+            <Link
+              to="/projektcontrolling"
+              className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <TrendingUp className="size-4" />
+              Projektcontrolling
+            </Link>
+          </PermissionGate>
           <PermissionGate permission="customer.responsibility.manage">
             <Link
               to="/kundenverantwortung"

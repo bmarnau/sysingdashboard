@@ -96,6 +96,16 @@ jobs:
           psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
             -v ON_ERROR_STOP=1 \
             -f supabase/tests/bsf-kiosk-01-role-contract.sql
+      - name: BSF-02C shared projection regression
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -v ON_ERROR_STOP=1 \
+            -f supabase/tests/bsf-02c-shared-projection.sql
+      - name: BSF-03A project controlling database contract
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -v ON_ERROR_STOP=1 \
+            -f supabase/tests/bsf03a-project-controlling.sql
       - name: Generate schema snapshot
         run: |
           mkdir -p supabase/schema

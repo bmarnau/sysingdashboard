@@ -15,8 +15,9 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSyncRouteImport } from './routes/api/sync'
 import { Route as ApiStatusRouteImport } from './routes/api/status'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedProjektcontrollingRouteImport } from './routes/_authenticated/projektcontrolling'
 import { Route as AuthenticatedKioskRouteImport } from './routes/_authenticated/kiosk'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMeineKundenIndexRouteImport } from './routes/_authenticated/meine-kunden/index'
 import { Route as AuthenticatedKundenverantwortungIndexRouteImport } from './routes/_authenticated/kundenverantwortung/index'
 import { Route as ApiPublicAuthConfigRouteImport } from './routes/api/public/auth-config'
@@ -51,14 +52,20 @@ const ApiStatusRoute = ApiStatusRouteImport.update({
   path: '/api/status',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
+const AuthenticatedProjektcontrollingRoute =
+  AuthenticatedProjektcontrollingRouteImport.update({
+    id: '/projektcontrolling',
+    path: '/projektcontrolling',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedKioskRoute = AuthenticatedKioskRouteImport.update({
   id: '/kiosk',
   path: '/kiosk',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMeineKundenIndexRoute =
@@ -91,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kiosk': typeof AuthenticatedKioskRoute
+  '/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -104,6 +112,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kiosk': typeof AuthenticatedKioskRoute
+  '/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -119,6 +128,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/kiosk': typeof AuthenticatedKioskRoute
+  '/_authenticated/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard'
     | '/kiosk'
+    | '/projektcontrolling'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard'
     | '/kiosk'
+    | '/projektcontrolling'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/kiosk'
+    | '/_authenticated/projektcontrolling'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -223,11 +236,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+    '/_authenticated/projektcontrolling': {
+      id: '/_authenticated/projektcontrolling'
+      path: '/projektcontrolling'
+      fullPath: '/projektcontrolling'
+      preLoaderRoute: typeof AuthenticatedProjektcontrollingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/kiosk': {
@@ -235,6 +248,13 @@ declare module '@tanstack/react-router' {
       path: '/kiosk'
       fullPath: '/kiosk'
       preLoaderRoute: typeof AuthenticatedKioskRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/meine-kunden/': {
@@ -271,6 +291,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKioskRoute: typeof AuthenticatedKioskRoute
+  AuthenticatedProjektcontrollingRoute: typeof AuthenticatedProjektcontrollingRoute
   AuthenticatedKundenverantwortungIndexRoute: typeof AuthenticatedKundenverantwortungIndexRoute
   AuthenticatedMeineKundenIndexRoute: typeof AuthenticatedMeineKundenIndexRoute
   AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute: typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
@@ -279,6 +300,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKioskRoute: AuthenticatedKioskRoute,
+  AuthenticatedProjektcontrollingRoute: AuthenticatedProjektcontrollingRoute,
   AuthenticatedKundenverantwortungIndexRoute:
     AuthenticatedKundenverantwortungIndexRoute,
   AuthenticatedMeineKundenIndexRoute: AuthenticatedMeineKundenIndexRoute,

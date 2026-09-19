@@ -1,7 +1,7 @@
 # BSF-KIOSK-02 — Info-Kiosk mit internem Read-Provider
 
-Stand: 2026-09-14
-Status: PLANUNG / IMPLEMENTIERUNGSVERTRAG
+Stand: 2026-09-18
+Status: READY NACH BSF-03A-FINALABNAHME / IMPLEMENTIERUNGSVERTRAG
 Issue: #136
 Vorgänger: BSF-03A / #106
 Nachfolger: BSF-03B / #107
@@ -151,18 +151,23 @@ Damit kann kein Betrachter Demo-Infrastruktur oder Demo-Support versehentlich al
 Demo-Modus:
 
 ```text
-dashboard.view
+technische Kiosk-Session -> kiosk.view
 ```
 
 Interner Modus beziehungsweise interne Domänen:
 
 ```text
-project.controlling.view
+normale angemeldete Leitungs-Session -> project.controlling.view
 ```
 
-Keine neue Kiosk-Permission.
+Die bestehende KIOSK-01-Rollenexklusivität bleibt unverändert:
 
-Die interne Server Function prüft die Permission selbst. Ein manipulierter Query-Parameter oder ein direkt aufgerufener Client-Provider erweitert keine Rechte.
+- die technische Rolle `kiosk` besitzt ausschließlich `kiosk.view`,
+- `kiosk` erhält **kein** `project.controlling.view`,
+- reguläre Rollen erhalten **kein** `kiosk.view`,
+- keine neue Permission.
+
+Die interne Server Function prüft `project.controlling.view` selbst. Ein manipulierter Query-Parameter oder ein direkt aufgerufener Client-Provider erweitert keine Rechte.
 
 ## 9. Route und Modus
 
@@ -176,8 +181,9 @@ mode=demo | internal
 
 Regeln:
 
-- `mode=demo` bleibt für reproduzierbare Schulung/Preview verfügbar.
-- `mode=internal` verlangt `project.controlling.view` serverseitig.
+- `mode=demo` bleibt der KIOSK-01-Pfad für die technische `kiosk`-Session mit `kiosk.view`.
+- `mode=internal` ist ein expliziter Pfad für normale angemeldete Leitungs-Sessions und verlangt `project.controlling.view` serverseitig.
+- ein technisches Kiosk-Konto mit manipuliertem `mode=internal` erhält keinen internen Zugriff.
 - kein stiller Fallback von `internal` auf `demo` bei Berechtigungs- oder Datenfehlern.
 - KIOSK-02 ändert den Default nicht zwingend auf internal; die explizite Betriebsfreigabe für einen echten Management-Wallboard-Default folgt in KIOSK-03.
 
@@ -187,6 +193,7 @@ Interne Kiosk-Daten werden nie systemhausübergreifend vermischt.
 
 Regeln:
 
+- der zulässige Systemhouse-Scope wird **vor** der Metrikaggregation aufgelöst,
 - bei genau einem zulässigen Systemhaus kann dieses automatisch verwendet werden,
 - bei mehreren zulässigen Systemhäusern ist `systemhouseId` explizit erforderlich,
 - ein unbekannter oder fremder `systemhouseId` führt fail-closed zu keiner internen Anzeige,
@@ -212,7 +219,7 @@ KIOSK-02 führt keine frei editierbare Controlling-Filterleiste ein. Für tiefer
 
 Ein interner Kiosk darf die Renderzeit nicht als Datenstand ausgeben.
 
-BSF-03A liefert beziehungsweise ergänzt deshalb im Ergebnis eine Datenvollständigkeits-/Freshness-Information aus den tatsächlich verwendeten Projection-Zeilen:
+Der heute implementierte BSF-03A-Result enthält diese Freshness-Felder noch nicht. KIOSK-02 ergänzt sie additiv im providerneutralen Result aus den bereits vorhandenen `published_at`-Werten der tatsächlich verwendeten Projection-Zeilen; dafür ist **keine DB-Migration** erforderlich:
 
 ```text
 oldestPublishedAt

@@ -1,0 +1,49 @@
+{
+  "workPackages": [
+    {
+      "id": "golden-wp-a1",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a1",
+      "title": "Golden Arbeitspaket A1",
+      "categoryObserved": true,
+      "categoryKey": "regelbetrieb"
+    },
+    {
+      "id": "golden-wp-a2",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a1",
+      "title": "Golden Arbeitspaket A2",
+      "categoryObserved": true,
+      "categoryKey": null
+    },
+    {
+      "id": "golden-wp-a3",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a2",
+      "title": "Golden Arbeitspaket A3",
+      "categoryObserved": true,
+      "categoryKey": "legacy-alt"
+    },
+    {
+      "id": "golden-wp-a4",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a2",
+      "title": "Golden Arbeitspaket A4",
+      "categoryObserved": false,
+      "categoryKey": null
+    },
+    {
+      "id": "golden-wp-b1",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-b",
+      "projectId": "golden-project-b1",
+      "title": "Golden Arbeitspaket B1",
+      "categoryObserved": true,
+      "categoryKey": "unknown-golden-category"
+    }
+  ]
+}

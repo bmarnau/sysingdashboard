@@ -13,6 +13,18 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.64.0 - 2026-09-18
+
+- **Dokumentations-/Handbuch-Audit**: Benutzerhandbuch auf v1.22.0 aktualisiert; Projektcontrolling kontextsensitiv dokumentiert, Kundenverantwortung nicht mehr als „noch nicht in der Oberfläche“ bezeichnet, RBAC auf acht Rollen/23 atomare Rechte fortgeschrieben und der Betrieb ohne Azure klar vom heutigen Supabase-MVP-Betriebsmodell getrennt.
+
+- **Projektcontrolling (BSF-03A, Issue #106)**: Neue read-only Route `/projektcontrolling` für berechtigte Leitungsrollen mit Zeitraum, Systemhaus, Kunde, Projekt, Arbeitspaket, AP-Kategorie und Billable-Filter sowie reproduzierbaren KPIs, Tagestrend und Drill-down.
+- **Providerneutrale Fachlogik**: Aggregation und Filter liegen im `ProjectControllingService`/`ProjectControllingRepository`; Supabase ist auf den User-JWT-Adapter begrenzt. Kein Service-Role-Normalpfad und keine Lovable-Cloud-only Fachlogik.
+- **RBAC/Security**: Neue Permission `project.controlling.view` für Systemadministrator, Administrator, Teamlead und Projektmanager; Engineer, Viewer, Customer und Kiosk bleiben DENY. Customer-/Systemhouse-Scope, RLS und IDOR/BOLA-Prüfungen bleiben serverseitig.
+- **Shared-Projection-Kategoriebrücke**: `category_key` und `category_observed` führen BSF-03D-Kategorien rückwärtskompatibel in den BSF-02C-Publish-Pfad; Legacy, explizit keine Kategorie, bekannte/inaktive und unbekannte historische Keys bleiben unterscheidbar. Publish-RPC und `has_permission` bleiben `SECURITY INVOKER`.
+- **Golden Dataset V1**: Synthetische Referenzbasis `sysing.golden.v1` / `1.0.0` mit 8 Tätigkeiten, 25.0 h Gesamt, 20.0 h billable, 5.0 h non-billable und 80.0 % Billable-Quote; Validator und unabhängige Expected Results sind Bestandteil der Regression.
+- **Qualitätsnachweis**: Finaler GitHub-Head vor dem Dokumentations-/Handbuch-Nachlauf `d9b1645` mit Security #963 und CI #969 vollständig PASS; 917 Unit/Component-Tests, 91 E2E, 7 Accessibility-Tests, BSF-02C T01–T30 und BSF-03A T01–T20d PASS, Schema-/Types-Drift NONE, Quality Gate 0 Blocker. Finaler Lovable-Exact-Head-Preview bleibt vor FINAL DONE offen.
+- **Handbuch und kontextsensitive Hilfe**: Neues Kapitel „Projektcontrolling — Leistungen auswerten“ mit rollenabhängiger Route `/projektcontrolling`, Filter-/Scope-/5.000-Zeilen-Grenze und bewussten Nicht-Scope-Hinweisen; spezifische Routenhilfe wird nun vor generischen `/`-Kapitelmatches priorisiert. Handbuchversion 1.22.0.
+
 ## 1.63.0 - 2026-09-17
 
 - **Info-Kiosk Erweiterungsbereich (BSF-KIOSK-01)**: Die vorhandene Restfläche unter der aggregierten Systemverfügbarkeit ist als unsichtbarer, höhenneutraler Layout-Slot für eine spätere freigegebene read-only Betriebsinformation abgegrenzt; heute entstehen weder Datenvertrag, Datenquelle noch sichtbare Platzhalter.
@@ -109,10 +121,6 @@ Format pro Eintrag:
 - **Normalisierung**: Einheitliche Klein- oder Großschreibung wird korrigiert; korrekte Eigenschreibweisen zusammengesetzter Namen bleiben erhalten.
 
 ## 1.58.9 - 2026-08-14
-
-- **Demo-Personenzuordnung wirkt jetzt auch nachträglich** (Befund F-11): Beim erneuten Einspielen werden vorhandene Demofälle nicht mehr übersprungen, sondern ihre Verantwortung auf die im Dialog gewählte Person umgehängt (bisherige Zuordnung wird historisiert, nicht gelöscht).
-- **Rückmeldung im Protokoll**: Der Demo-Dialog weist umgehängte Fälle getrennt aus und meldet Fälle, bei denen die Zuordnung mangels Berechtigung nicht geändert werden konnte, statt sie still zu übergehen.
-- **Hinweis zum lokalen Bestand**: Der Demo-Dialog erklärt, dass Projekte, Arbeitspakete und Tätigkeiten browsergebunden sind und jede Demo-Person sie nach eigener Anmeldung einmal einspielen muss — sonst bleibt „Mein AVKK" leer.
 
 ## 1.58.8 - 2026-08-14
 

@@ -1,0 +1,32 @@
+{
+  "missingProjectActivity": {
+    "id": "golden-negative-missing-project",
+    "systemhouseId": "golden-systemhouse-01",
+    "customerId": "golden-customer-a",
+    "projectId": "golden-project-missing",
+    "workPackageId": "golden-wp-a1"
+  },
+  "missingWorkPackageActivity": {
+    "id": "golden-negative-missing-workpackage",
+    "systemhouseId": "golden-systemhouse-01",
+    "customerId": "golden-customer-a",
+    "projectId": "golden-project-a1",
+    "workPackageId": "golden-wp-missing"
+  },
+  "duplicateActivities": [
+    {
+      "id": "golden-negative-duplicate-act",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a1",
+      "workPackageId": "golden-wp-a1"
+    },
+    {
+      "id": "golden-negative-duplicate-act",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "projectId": "golden-project-a1",
+      "workPackageId": "golden-wp-a1"
+    }
+  ]
+}

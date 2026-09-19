@@ -1,0 +1,18 @@
+{
+  "systemhouses": [
+    {
+      "id": "golden-systemhouse-foreign",
+      "name": "Golden Foreign Systemhouse"
+    }
+  ],
+  "customers": [
+    {
+      "id": "golden-customer-foreign",
+      "systemhouseId": "golden-systemhouse-foreign",
+      "name": "Golden Foreign Customer"
+    }
+  ],
+  "projects": [],
+  "workPackages": [],
+  "activities": []
+}

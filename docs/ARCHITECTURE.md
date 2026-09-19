@@ -1,6 +1,6 @@
 # Sysing Dashboard — Architektur
 
-Stand: 2026-08-07 · Version: siehe `CHANGELOG.md` (Single Source of Truth)
+Stand: 2026-09-18 · Version: siehe `CHANGELOG.md` (Single Source of Truth)
 · Steuerungsebene: [`docs/PROJECT-GOVERNANCE.md`](./PROJECT-GOVERNANCE.md) und
 [`docs/PROJECT-STATUS.yaml`](./PROJECT-STATUS.yaml)
 
@@ -12,18 +12,18 @@ Entscheidungen mit Trade-offs stehen einzeln in [`docs/ADR/`](./ADR/).
 
 ## 1. Architekturübersicht
 
-| Ebene      | Technologie / Ort                                                        |
-| ---------- | ------------------------------------------------------------------------ |
-| Frontend   | React 19 + TanStack Start v1 (SSR, File-based Routing) + Vite 7          |
-| Styling    | Tailwind CSS v4 + oklch-Design-Tokens in `src/styles.css`                |
-| UI-Kit     | shadcn/ui (Radix Primitives) + Lucide Icons                              |
-| State      | Pub-Sub-Store (`src/lib/store/`) + `useSyncExternalStore`                |
-| Persistenz | `localStorage` (user-scoped) · IndexedDB (Logs, Downloads) · Supabase    |
-| Identität  | Supabase Auth (E-Mail/Passwort), Profile + Rollen in Postgres mit RLS    |
-| Server     | TanStack Server-Routes auf Cloudflare Worker (`nodejs_compat`)           |
-| Services   | `src/lib/*` (Client) · `backend/services/*` (framework-freie ESM-Module) |
-| Governance | Project Manifest + Validator + CI-Gates                                  |
-| CI         | GitHub Actions: static, lint, docs, tests, security, tech-debt, build    |
+| Ebene      | Technologie / Ort                                                                        |
+| ---------- | ---------------------------------------------------------------------------------------- |
+| Frontend   | React 19 + TanStack Start v1 (SSR, File-based Routing) + Vite 7                          |
+| Styling    | Tailwind CSS v4 + oklch-Design-Tokens in `src/styles.css`                                |
+| UI-Kit     | shadcn/ui (Radix Primitives) + Lucide Icons                                              |
+| State      | Pub-Sub-Store (`src/lib/store/`) + `useSyncExternalStore`                                |
+| Persistenz | `localStorage` (bestehende CRUD-Pfade) · IndexedDB · Supabase Shared Projection/RBAC/RLS |
+| Identität  | Supabase Auth (E-Mail/Passwort), Profile + Rollen in Postgres mit RLS                    |
+| Server     | TanStack Server-Routes auf Cloudflare Worker (`nodejs_compat`)                           |
+| Services   | `src/lib/*` (Client) · `backend/services/*` (framework-freie ESM-Module)                 |
+| Governance | Project Manifest + Validator + CI-Gates                                                  |
+| CI         | GitHub Actions: static, lint, docs, tests, security, tech-debt, build                    |
 
 ```text
 ┌──────────────────────────── Browser ────────────────────────────┐
@@ -36,7 +36,7 @@ Entscheidungen mit Trade-offs stehen einzeln in [`docs/ADR/`](./ADR/).
 │ Services (src/lib/*: backup, export, import, pdf, rbac, session) │
 │        │                        │                                │
 │        ▼                        ▼                                │
-│ Persistenz: localStorage (user-scoped) · IndexedDB (Logs/Downloads)│
+│ Persistenz: localStorage/IndexedDB + Supabase Shared Projection     │
 └───────────────┬─────────────────────────────┬────────────────────┘
                 │ HTTPS                       │ supabase-js
                 ▼                             ▼
@@ -109,28 +109,31 @@ und ist nicht Teil des Builds.
 
 ## 5. Persistenz und Repository-Grenze
 
-- **Domänendaten**: `localStorage`, debounced 300 ms, Schlüssel user-scoped
-  (`<key>::<userId>`, `userScopedKey()`), Cross-Tab-Sync über das `storage`-Event
-  ([ADR-0003](./ADR/0003-local-first-localstorage.md)).
+- **Operative CRUD-Bestandsdaten**: bestehende Projekt-/Arbeitspaket-/Tätigkeitspfade arbeiten weiterhin user-scoped in `localStorage`, debounced 300 ms, mit Cross-Tab-Sync über das `storage`-Event ([ADR-0003](./ADR/0003-local-first-localstorage.md)). Diese Persistenz ist im BSF-Übergang **noch nicht vollständig abgelöst**.
+- **Gemeinsame BSF-Lesesichten**: Seit BSF-02C werden freigegebene Project-/WorkPackage-/Activity-Snapshots zusätzlich über die Supabase-Tabellen `shared_project_projection`, `shared_work_package_projection` und `shared_activity_projection` bereitgestellt. BSF-03 („Meine Kunden“) und BSF-03A („Projektcontrolling“) lesen daraus serverseitig im User-JWT-Kontext unter Membership-, Customer-Access- und RLS-Grenzen.
+- **Vollständige Zentralisierung**: Die Shared Projection ist der kleinste bestätigte Mehrbenutzer-Read-Pfad, **nicht** die vorgezogene Komplettablösung des Local-First-Modells. Die dauerhafte zentrale Datenstrategie bleibt BSF-04.
 - **Logs**: IndexedDB-Ringbuffer (`logger.indexeddb.ts`), kein Netzwerk-Export ohne
   Benutzeraktion ([ADR-0005](./ADR/0005-frontend-logger-no-sentry.md)).
 - **Downloads**: IndexedDB-Ablage mit Metadaten und Aufbewahrungsfrist
   (`export-download-service.ts`).
-- **Supabase**: Identität, Rollen und anwendungsweite Einstellungen.
+- **Supabase**: Identität, Rollen, Einstellungen, Systemhaus-/Customer-Scope, Kundenverantwortung, Reference Data sowie die gemeinsamen BSF-Shared-Projections.
 
-Prinzip **Local-First**: Edits landen sofort lokal; Cloud-Synchronisation ist ein
-bewusst ausgelöster Vorgang, kein Live-Two-Way-Sync.
+Prinzip im aktuellen Übergang: Lokale Fach-Edits bleiben Local-First; serverseitige Mehrbenutzer-Lesesichten nutzen die Shared Projection. Es existiert weiterhin **kein** allgemeiner Live-Two-Way-Sync.
 
 ---
 
 ## 6. Supabase
 
-| Objekt                | Zweck                                             | Zugriff                                       |
-| --------------------- | ------------------------------------------------- | --------------------------------------------- |
-| `auth.users`          | Identität (E-Mail/Passwort)                       | Supabase-verwaltet                            |
-| `public.profiles`     | Anzeigename, Kontostatus                          | RLS: eigener Datensatz, Admin über `has_role` |
-| `public.user_roles`   | Rollenzuordnung (separate Tabelle, nie am Profil) | RLS + Security-Definer-Funktion               |
-| `public.app_settings` | globale Einstellungen (z. B. Idle-Timeout)        | Lesen authentifiziert, Schreiben Admin        |
+| Objekt                                          | Zweck                                                               | Zugriff                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `auth.users`                                    | Identität (E-Mail/Passwort)                                         | Supabase-verwaltet                                           |
+| `public.profiles`                               | Anzeigename, Kontostatus                                            | RLS: eigener Datensatz, Admin über `has_role`                |
+| `public.user_roles`                             | Rollenzuordnung (separate Tabelle, nie am Profil)                   | RLS + Security-Definer-Funktion                              |
+| `public.app_settings`                           | globale Einstellungen (z. B. Idle-Timeout)                          | freigegebene Keys bzw. Admin                                 |
+| `public.systemhouse` / `systemhouse_membership` | providerneutraler Organisationsscope und aktive Zugehörigkeit       | RLS/Grants, self-/scope-begrenzt                             |
+| `public.customer` / `customer_access`           | Customer-Identität und technische Read-/Write-Grenze                | Systemhouse-/Customer-Scope + RLS                            |
+| `public.customer_responsibility`                | fachliche Kundenverantwortung, getrennt vom Datenzugriff            | historisiert, scoped, RLS/RPC                                |
+| `public.shared_*_projection`                    | gemeinsamer read-optimierter Project-/WorkPackage-/Activity-Bestand | User-JWT, Customer Access, RLS; Publish separat kontrolliert |
 
 - Rollenprüfung über die Security-Definer-Funktion `has_role(uuid, app_role)`,
   Kontostatus über `is_account_active(uuid)`; `EXECUTE` ist von `PUBLIC` entzogen.
@@ -150,7 +153,7 @@ Zwei Ebenen, bewusst getrennt:
 2. **Serverseitige Grenze** — RLS-Policies plus Prüfungen in den Server-Routes.
    Erst diese Ebene ist verbindlich.
 
-Modell: 7 Rollen, Scopes und Ressourcen nach
+Modell: 8 Rollen (einschließlich der technischen `kiosk`-Rolle) und 23 atomare Permissions; Scopes und Ressourcen nach
 [ADR-0007](./ADR/0007-rbac-v2-scopes-and-resources.md) und
 [ADR-0008](./ADR/0008-rbac-v2-assignment-architecture.md).
 Die Spiegelung zwischen `src/lib/rbac` und `backend/services/rbac.mjs` prüft
@@ -195,13 +198,13 @@ Phasenmodell: [ADR-0023](./ADR/0023-phasenmodell-infrastrukturabschluss.md).
 
 ## 10. Geplante Bausteine (heute kein Code)
 
-| Baustein           | Zielbild                                                                                                                         | Sprint  |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| **Reference Data** | Zentrale Stammdatenschicht (Kataloge, Klassifizierungen) als eigener Service mit eigener Supabase-Tabelle und Cache im Store     | nach 07 |
-| **AVKK**           | Fachliche Erweiterung der Arbeitspakete: eigenes Datenmodell, Migration mit RLS/Grants, Berücksichtigung in Import/Export/Backup | 07      |
-| **Report Service** | Serverseitig erzeugte, versionierte Berichte statt clientseitigem PDF-Bau                                                        | nach 08 |
-| **Microsoft 365**  | Graph-Anbindung (Kalender, Aufgaben, SharePoint) über Server-Routes, Entra-ID-Identität                                          | später  |
-| **KI-Agenten**     | Lesende Agenten auf Manifest, Prüfbericht und Tagebuch; Schreibzugriff nur über regulären Commit (`mcpAndAgents.guardrails`)     | später  |
+| Baustein           | Zielbild                                                                                                                     | Sprint  |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------- | ------- |
+| **Reference Data** | **Umgesetzt**: globale und systemhausbezogene Kataloge; BSF-03D ergänzt `workpackage.category` mit stabilem Key und Historie | Bestand |
+| **AVKK**           | **Umgesetzt**: Fachmodell, Datenbank, RLS/RBAC, persönliche und Management-Sichten; weitere Integrationen bleiben separat    | Bestand |
+| **Report Service** | Serverseitig erzeugte, versionierte Berichte statt clientseitigem PDF-Bau                                                    | nach 08 |
+| **Microsoft 365**  | Graph-Anbindung (Kalender, Aufgaben, SharePoint) über Server-Routes, Entra-ID-Identität                                      | später  |
+| **KI-Agenten**     | Lesende Agenten auf Manifest, Prüfbericht und Tagebuch; Schreibzugriff nur über regulären Commit (`mcpAndAgents.guardrails`) | später  |
 
 Regel: Kein geplanter Baustein darf implizit über UI-Code entstehen — er beginnt mit ADR
 und Manifest-Eintrag.

@@ -7,42 +7,46 @@ Groups, Assignments) beschreibt ADR-0007.
 
 ## Rollen
 
-| Rolle                 | Kurzbeschreibung                                                                |
-| --------------------- | ------------------------------------------------------------------------------- |
-| `systemadministrator` | Vollzugriff inkl. Rollenverwaltung und Azure DB-Aufbau.                         |
-| `administrator`       | Betrieb + Benutzerverwaltung, keine Rollenmatrix.                               |
-| `teamlead`            | Projekte + Export + AVKK-Führungssicht; darf Verantwortung delegieren/zuweisen. |
-| `projectmanager`      | Projektbearbeitung + Export; darf Verantwortung delegieren/zuweisen.            |
-| `engineer`            | Arbeitspakete + Tätigkeiten (eigene); keine Verantwortungszuweisung.            |
-| `customer`            | Nur Dashboard + Dokumentation.                                                  |
-| `viewer`              | Read-only.                                                                      |
+| Rolle                 | Kurzbeschreibung                                                                                     |
+| --------------------- | ---------------------------------------------------------------------------------------------------- |
+| `systemadministrator` | Höchste administrative Rolle inkl. Rollenverwaltung und Azure-DB-Aufbau.                             |
+| `administrator`       | Administrativer Betrieb inkl. Benutzer, Audit, Backup, Referenzdaten und Kundenverantwortung.        |
+| `teamlead`            | Operative Führung, AVKK-Führung, Kundenverantwortung und Projektcontrolling.                         |
+| `projectmanager`      | Projekt-/Leistungssteuerung inkl. AVKK-Führung und Projektcontrolling, ohne Benutzerverwaltung.      |
+| `engineer`            | Arbeitspakete/Tätigkeiten (eigene) und AVKK; kein Projektcontrolling.                                |
+| `customer`            | Stark begrenzte Lesesicht; keine Admin-, Systemstatus- oder AVKK-Führungssicht.                      |
+| `viewer`              | Allgemeine read-only Rolle ohne Edit-, Azure-, Manage- oder Backup-Rechte.                           |
+| `kiosk`               | Technische Sonderrolle mit ausschließlich `kiosk.view`; kein Dashboard-/Dokumentations-/Fachzugriff. |
 
 ## Matrix Rolle × Aktion (v1, flach)
 
 Legende: ● erlaubt · ○ verboten
 
-| Aktion                       | sysadmin | admin | teamlead | projmgr | engineer | customer | viewer |
-| ---------------------------- | :------: | :---: | :------: | :-----: | :------: | :------: | :----: |
-| `dashboard.view`             |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
-| `documentation.view`         |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
-| `systemstatus.view`          |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |
-| `project.edit`               |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
-| `workpackage.edit`           |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
-| `activity.edit`              |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
-| `azure.connection.test`      |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `azure.export`               |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
-| `azure.import`               |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `azure.database.build`       |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `backup.restore`             |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `users.manage`               |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `roles.manage`               |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `auditlog.view`              |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
-| `avkk.view`                  |    ●     |   ●   |    ●     |    ●    |    ●     |    ○     |   ●    |
-| `avkk.edit`                  |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |
-| `avkk.responsibility.assign` |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
-| `avkk.management.view`       |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |
-| `referencedata.view`         |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |
-| `referencedata.manage`       |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |
+| Aktion                           | sysadmin | admin | teamlead | projmgr | engineer | customer | viewer | kiosk |
+| -------------------------------- | :------: | :---: | :------: | :-----: | :------: | :------: | :----: | :---: |
+| `dashboard.view`                 |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |   ○   |
+| `documentation.view`             |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |   ○   |
+| `systemstatus.view`              |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `project.edit`                   |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `workpackage.edit`               |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |   ○   |
+| `activity.edit`                  |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |   ○   |
+| `azure.connection.test`          |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `azure.export`                   |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `azure.import`                   |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `azure.database.build`           |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `backup.restore`                 |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `users.manage`                   |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `roles.manage`                   |    ●     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `auditlog.view`                  |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `avkk.view`                      |    ●     |   ●   |    ●     |    ●    |    ●     |    ○     |   ●    |   ○   |
+| `avkk.edit`                      |    ●     |   ●   |    ●     |    ●    | ● (own)  |    ○     |   ○    |   ○   |
+| `avkk.responsibility.assign`     |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `avkk.management.view`           |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `referencedata.view`             |    ●     |   ●   |    ●     |    ●    |    ●     |    ●     |   ●    |   ○   |
+| `referencedata.manage`           |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `customer.responsibility.manage` |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |   ○   |
+| `project.controlling.view`       |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `kiosk.view`                     |    ○     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ●   |
 
 ### Fachregel Delegation
 
@@ -67,6 +71,15 @@ Invarianten aus `scripts/check-rbac.mjs`:
 - `customer` ohne `systemstatus.view`
 - `engineer` ohne `avkk.responsibility.assign`
 - `teamlead` und `projectmanager` mit `avkk.responsibility.assign`
+- `customer.responsibility.manage` nur für systemadministrator, administrator und teamlead
+- `project.controlling.view` nur für systemadministrator, administrator, teamlead und projectmanager
+- `kiosk` besitzt ausschließlich `kiosk.view`; keine andere Rolle besitzt `kiosk.view`
+
+### Projektcontrolling (BSF-03A, Issue #106)
+
+`project.controlling.view` ist eine eigenständige read-only Permission für Systemadministrator, Administrator, Teamlead und Projektmanager. Engineer, Customer und Viewer bleiben DENY; die technische Kiosk-Rolle erhält die Permission ebenfalls nicht.
+
+Die Permission allein erweitert keinen Datenscope. Serverseitig gilt zusätzlich die Schnittmenge aus aktivem Konto, aktiver Systemhaus-Zugehörigkeit, Customer Access mindestens `read` und bestehender Shared-Projection-RLS. Projekt-, Arbeitspaket- und Kategorie-IDs verengen nur einen bereits zulässigen Customer-Scope. Namen, Labels und das Legacy-Feld `Project.lead` sind keine Sicherheitsidentitäten.
 
 ### Arbeitspaket-Kategorien (BSF-03D, Issue #103)
 

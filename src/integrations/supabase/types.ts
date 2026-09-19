@@ -908,6 +908,8 @@ export type Database = {
       }
       shared_work_package_projection: {
         Row: {
+          category_key: string | null
+          category_observed: boolean
           created_at: string
           customer_id: string
           id: string
@@ -929,6 +931,8 @@ export type Database = {
           withdrawn_at: string | null
         }
         Insert: {
+          category_key?: string | null
+          category_observed?: boolean
           created_at?: string
           customer_id: string
           id?: string
@@ -950,6 +954,8 @@ export type Database = {
           withdrawn_at?: string | null
         }
         Update: {
+          category_key?: string | null
+          category_observed?: boolean
           created_at?: string
           customer_id?: string
           id?: string

@@ -1,7 +1,7 @@
 # Sysing Dashboard — Operative Sprintplanung MVP → BSF → Integration
 
-Stand: 2026-09-14  
-Status: **verbindliche operative Kiosk-first-Planung zur Freigabe per PR**  
+Stand: 2026-09-18  
+Status: **verbindliche operative Kiosk-first-Planung; BSF-03A in Finalverifikation**  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
 Tagesfokus: `docs/BSF-CURRENT-PRIORITIES.md`  
@@ -44,19 +44,19 @@ GitHub bleibt Source of Truth. Kein Merge/Release ohne die vorgesehenen GitHub-G
 - BSF-02 / BSF-02C Customer + Shared Projection — **DONE**
 - BSF-03 Kundenverantwortung / Meine Kunden — **DONE**
 - BSF-03D Arbeitspaket-Kategorien / #103 — **DONE**
+- BSF-KIOSK-01 Info-Kiosk Demo-Pilot / #135 — **DONE**
 
 BSF-03D wurde über PR #134 auf `main` integriert. Post-Merge Security sowie vollständige CI einschließlich E2E, Accessibility, Technical Debt und Technical Report & Quality Gate sind PASS.
 
 ### Jetzt
 
-- **BSF-KIOSK-01 / #135 — NEXT**
-- **BSF-03A / #106 — READY / NEXT-FACHSCOPE unmittelbar danach**
+- **BSF-03A / #106 — IMPLEMENTATION COMPLETE / EXACT-HEAD GREEN / LOVABLE PREVIEW OFFEN**
+- **BSF-KIOSK-02 / #136 — NEXT nach formaler BSF-03A-Abnahme**
 
 ## 4. Verbindliche operative Reihenfolge
 
 ```text
-BSF-KIOSK-01 / #135
-→ BSF-03A / #106
+BSF-03A / #106
 → BSF-KIOSK-02 / #136
 → BSF-03B / #107
 → BSF-03E / #63
@@ -180,11 +180,12 @@ Kiosk UI
 
 ### Regeln
 
-- Demo-Provider bleibt erhalten,
-- Customer-/Systemhouse-Scope wiederverwenden,
+- Demo-Provider bleibt für die technische `kiosk`-Session mit ausschließlich `kiosk.view` erhalten,
+- interner Modus läuft nur in normalen Leitungs-Sessions und benötigt serverseitig `project.controlling.view`,
+- Customer-/Systemhouse-Scope vor der Aggregation eindeutig auflösen und wiederverwenden,
 - `categoryKey` reguläre Dimension,
-- fehlende Daten explizit `unknown/not available`,
-- Infrastruktur/Support/Abwesenheit dürfen Demo bleiben, solange keine belastbare interne Quelle existiert,
+- fehlende interne Daten explizit `unknown/not available`; kein stiller Demo-Ersatz für interne Projekt-/AP-/Tätigkeitswerte,
+- Infrastruktur/Support/Abwesenheit dürfen klar gekennzeichnete Demo-Domänen bleiben, solange keine belastbare interne Quelle existiert,
 - keine stillen Ersatzwerte.
 
 ### Gate

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "sysing.golden.v1",
+  "datasetVersion": "1.0.0",
+  "synthetic": true,
+  "referenceTime": "2026-09-14T00:00:00Z",
+  "files": [
+    "systemhouse.json",
+    "customers.json",
+    "projects.json",
+    "work-packages.json",
+    "activities.json",
+    "reference-data.json",
+    "kiosk.json",
+    "expected/project-controlling.json",
+    "expected/kiosk-summary.json"
+  ]
+}

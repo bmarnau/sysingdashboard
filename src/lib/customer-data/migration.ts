@@ -197,6 +197,7 @@ export function buildSharedDataMigrationPlan(
       legacyClient: workPackage.client,
       status: workPackage.status,
       priority: workPackage.priority,
+      categoryKey: workPackage.categoryKey ?? null,
     };
   });
 

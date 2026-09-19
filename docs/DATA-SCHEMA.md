@@ -134,9 +134,12 @@ Regeln:
 
 # Supabase-Datenbankstand
 
-Stand: Dashboard 1.52.0 (Sprint 07B). Dieser Abschnitt beschreibt **den
-tatsächlich migrierten Zustand**, nicht die Planung. Geplante, aber nicht
-angelegte Tabellen sind hier nicht aufgeführt. Technische Begründungen:
+Stand: 2026-09-18 / Dashboard 1.64.0 Release-Kandidat. Dieser Abschnitt beschreibt den
+durch versionierte Git-Migrationen und den kanonischen Schema-Snapshot belegten Zustand.
+Geplante, aber nicht angelegte Tabellen sind hier nicht aufgeführt. Für den jeweils
+exakten DDL-Vertrag gelten `supabase/migrations/*` und
+`supabase/schema/public-schema.sql` als technische Source of Truth
+(`docs/DATABASE-SCHEMA-SOURCE-OF-TRUTH.md`). AVKK-Hintergrund:
 [ADR-0025](./ADR/0025-avkk-umsetzung-07b.md).
 
 Alle Tabellen liegen im Schema `public`, haben RLS aktiviert und `id uuid`
@@ -151,6 +154,36 @@ vermerkt.
 | `user_roles`   | `id`                | Rollenzuordnung                   | `UNIQUE (user_id, role)`, Enum `app_role` (7 Werte)    |
 | `app_settings` | `key`               | Key/Value-Konfiguration (`jsonb`) | Audit-Trigger, kein DELETE                             |
 | `audit_log`    | `id`                | Zentrales Protokoll               | append-only, kein UPDATE/DELETE, nur Trigger schreiben |
+
+## BSF-Systemhaus-, Customer- und Shared-Projection-Fundament
+
+Seit BSF-02/02C ergänzt die Datenbank den ursprünglichen Identitäts-/AVKK-Bestand um
+einen providerneutralen Mehrbenutzer-Scope:
+
+| Objekt                           | Zweck                                                                                     |
+| -------------------------------- | ----------------------------------------------------------------------------------------- |
+| `systemhouse`                    | fachlicher Organisationsanker; keine Microsoft-Tenant-ID                                  |
+| `systemhouse_membership`         | aktive Benutzerzugehörigkeit zu einem Systemhaus                                          |
+| `customer`                       | Customer-Identität innerhalb eines Systemhauses                                           |
+| `customer_access`                | technische Read-/Write-Zugriffsgrenze je Benutzer und Kunde                               |
+| `customer_responsibility`        | fachliche Kundenverantwortung, getrennt vom Datenzugriff                                  |
+| `shared_project_projection`      | read-optimierte, veröffentlichte Projektsicht                                             |
+| `shared_work_package_projection` | read-optimierte Arbeitspaketsicht; BSF-03A ergänzt `category_key` und `category_observed` |
+| `shared_activity_projection`     | read-optimierte Tätigkeits-/Leistungssicht                                                |
+
+Kanonische Kundenidentität ist `(systemhouseId, customerId)`. Membership,
+Customer Access und Responsibility sind drei getrennte Beziehungen. Eine Responsibility
+erteilt weder automatisch Lese- noch Schreibzugriff.
+
+Der transaktionale Publish-Pfad der Shared Projection bleibt von den Read-Pfaden getrennt.
+`public.bsf02c_publish_shared_projection_snapshot` und
+`public.has_permission(uuid,text)` laufen im aktuellen Vertrag als
+**SECURITY INVOKER**. BSF-03A liest über einen providerneutralen Repository-/Servicevertrag
+und einen Supabase-Adapter im User-JWT-Kontext; Projekt-/Arbeitspaket-/Kategorie-Filter
+dürfen einen bereits erlaubten Customer-Scope nur verengen.
+
+Die Shared Projection ist derzeit ein kontrollierter Mehrbenutzer-Read-Pfad. Sie ersetzt
+noch nicht sämtliche lokalen CRUD-Persistenzpfade; diese Konsolidierung bleibt BSF-04.
 
 ## 2. Reference Data
 

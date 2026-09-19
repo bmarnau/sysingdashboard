@@ -1,12 +1,14 @@
 # Sysing Dashboard — Lovable-Promptplan BSF-03A
 
-Stand: 2026-09-15
-Status: PLANUNG / NICHT AUSGEFÜHRT
+Stand: 2026-09-18
+Status: L2-ANALYSE AUSGEFÜHRT / EXACT-HEAD-PREVIEW BLOCKED
 Issue: #106
 Golden Dataset: #142 / `docs/GOLDEN-DATASET-STRATEGY.md`
 Design: `docs/BSF-03A-DESIGN.md`
 Implementation Plan: `docs/superpowers/plans/2026-09-14-bsf-03a-project-controlling.md`
 Golden Foundation Plan: `docs/superpowers/plans/2026-09-15-golden-dataset-foundation.md`
+
+Aktueller Ausführungsstand: Der L2-Precheck wurde analyse-only ausgeführt. Der erreichbare Lovable-Stand wich vom aktuellen GitHub-PR-Head ab; deshalb wurden keine Lovable-Codeänderungen übernommen. Ein späterer read-only Branch-/Head-Recheck war wegen ausgeschöpfter Lovable-Credits nicht ausführbar. L2/L3-Exact-Head-Preview bleibt vor FINAL DONE offen.
 
 ## 1. Zweck
 
@@ -406,3 +408,103 @@ Lovable meldet `BLOCKED` statt selbständig den Scope zu erweitern, wenn:
 - neue monetäre Daten nötig scheinen,
 - bestehende RLS-/Customer-Access-Grenzen gelockert werden müssten,
 - eine Security-Definer-RPC für den normalen Controlling-Pfad nötig scheint.
+
+## 9. TIECS / finaler Exact-Head-Wiederanlauf
+
+Für den verbleibenden Lovable-Nachweis gilt ab jetzt ein tool-unabhängiger
+Wiederanlauf. Historische SHAs in älteren Kommentaren sind nur Evidenz ihres
+damaligen Zeitpunkts.
+
+Unmittelbar vor dem nächsten Lovable-Lauf muss der aktuelle Head von PR #144 aus
+GitHub ermittelt werden. **Dieser aktuelle PR-Head ist EXPECTED_HEAD.** Der
+Prompt darf keinen älteren SHA als Sollzustand übernehmen.
+
+```text
+SYSING DASHBOARD — BSF-03A FINAL EXACT-HEAD RECOVERY + READ-ONLY PREVIEW
+
+SOURCE OF TRUTH
+GitHub: bmarnau/sysingdashboard
+PR: #144
+Branch: feat/bsf-03a-project-controlling
+
+PHASE 0 — RESOLVE EXPECTED HEAD
+1. Ermittle read-only den aktuellen Head von GitHub PR #144.
+2. Setze exakt diesen SHA als EXPECTED_HEAD.
+3. Verwende keinen historischen SHA aus älteren Chats, Kommentaren oder
+   Preview-Workspaces.
+4. Kann der aktuelle PR-Head nicht eindeutig ermittelt werden: STATUS=BLOCKED.
+
+HARTE REGELN
+- Keine Datei ändern.
+- Keine .lovable/plan.md schreiben oder aktualisieren.
+- Keine DB-/Migration-/RLS-/Grant-/Function-/Auth-/RBAC-Änderung.
+- Keine Supabase-Schreiboperation.
+- Kein Commit.
+- Kein Merge.
+- Kein Deploy.
+- Keine automatische Reparatur.
+- Bei nicht erreichbarem EXPECTED_HEAD: STATUS=BLOCKED und sofort stoppen.
+
+PHASE A — EXACT-HEAD REACHABILITY
+- git status --porcelain
+- git rev-parse HEAD
+- git fetch --all --prune
+- Feature-Branch und EXPECTED_HEAD prüfen.
+- Arbeitsbaum nur dann auf den Feature-Head bringen, wenn dies ohne
+  Dateiänderung, Merge oder Cherry-pick möglich ist.
+- Danach erneut HEAD und sauberen Arbeitsbaum prüfen.
+
+Nur fortfahren, wenn:
+HEAD == EXPECTED_HEAD
+und git status leer ist.
+
+PHASE B — VERTRAGSDRIFT
+Auf dem exakten Head prüfen:
+- src/integrations/supabase/client.ts entspricht GitHub,
+- src/integrations/supabase/previewAuthStorage.ts existiert NICHT,
+- keine drizzle/-Artefakte aus dem alten Lovable-Pfad,
+- keine unerwarteten lokalen Änderungen.
+
+PHASE C — READ-ONLY PREVIEW
+Route: /projektcontrolling
+
+Prüfen:
+- 1920x1080,
+- 1366x768,
+- keine Überlappung / kein Clipping / kein horizontaler Kern-Overflow,
+- Filterhierarchie Zeitraum -> Systemhaus -> Kunde -> Projekt -> Arbeitspaket
+  -> AP-Kategorie,
+- Arbeitspaket erst nach eindeutigem Projekt aktiv,
+- KPI-Hierarchie, Tagestrend und Drill-down lesbar,
+- Legacy/Unknown/Unlinked-Zustände verständlich,
+- Empty/Loading/Error nicht layoutgebrochen,
+- keine Personennamen-/Engineer-Rangliste,
+- keine Eurobeträge,
+- keine neue Runtime-Exception,
+- kein unerklärter Network-/ServerFn-Fehler im gültigen berechtigten Pfad.
+
+PHASE D — ABSCHLUSSBERICHT
+STATUS = PASS | BLOCKED | FAIL
+EXPECTED_HEAD
+ACTUAL_HEAD
+GIT_STATUS_CLEAN = JA/NEIN
+BRANCH_REACHABLE = JA/NEIN
+CLIENT_TS_DRIFT = JA/NEIN
+PREVIEW_AUTH_STORAGE_PRESENT = JA/NEIN
+DRIZZLE_DRIFT_PRESENT = JA/NEIN
+PREVIEW_1920x1080 = PASS/FAIL/BLOCKED
+PREVIEW_1366x768 = PASS/FAIL/BLOCKED
+FILTER_HIERARCHY = PASS/FAIL/BLOCKED
+KPI_TREND_DRILLDOWN = PASS/FAIL/BLOCKED
+RUNTIME_CONSOLE = PASS/FAIL/BLOCKED
+FILES_CHANGED = NEIN
+DB_CHANGED = NEIN
+COMMIT = NEIN
+MERGE = NEIN
+DEPLOY = NEIN
+```
+
+Bei einer erneuten tool-, credit-, quota- oder plattformbedingten Unterbrechung
+wird keine fehlende Abnahme ersetzt. Stattdessen kann erneut ein TIECS
+Maintenance Window für Git-, Doku-, Planungs-, CI-/Security- oder
+Backlog-Hygiene genutzt werden.

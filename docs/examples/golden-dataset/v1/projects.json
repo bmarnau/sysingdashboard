@@ -1,0 +1,22 @@
+{
+  "projects": [
+    {
+      "id": "golden-project-a1",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "name": "Golden Projekt A1"
+    },
+    {
+      "id": "golden-project-a2",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "name": "Golden Projekt A2"
+    },
+    {
+      "id": "golden-project-b1",
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-b",
+      "name": "Golden Projekt B1"
+    }
+  ]
+}

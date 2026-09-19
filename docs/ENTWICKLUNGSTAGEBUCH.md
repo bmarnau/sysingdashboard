@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-17 · Dashboard-Version 1.63.0
+Stand: 2026-09-18 · Dashboard-Version 1.64.0
 
 ## Vision
 
@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | Version 1.62.0; MVP-Baseline CLOSED/PASS; BSF-03 und BSF-03D abgeschlossen; BSF-KIOSK-01 implementiert, Finalabnahme wartet auf Post-Migration-Advisor. |
-| Größte Hürden       | Der operative Fachbestand ist noch teilweise user-scoped lokal; echte Kunden-/Mehrbenutzersichten benötigen einen kontrollierten gemeinsamen Read-Pfad. |
-| Nächster Nutzen     | KIOSK-01 formal abschließen → Projektmanager-Leistungssicht (BSF-03A) → KIOSK-02 → Teamlead-Leistungsnachweis.                                         |
+| Aktueller Stand     | Version 1.64.0 als BSF-03A-Release-Kandidat; MVP-Baseline CLOSED/PASS; BSF-03, BSF-03D und KIOSK-01 abgeschlossen; BSF-03A technisch vollständig grün, Lovable-Exact-Head-Preview noch offen. |
+| Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
+| Nächster Nutzen     | BSF-03A per Lovable-Exact-Head-Preview final abnehmen → PR #144 mergen → KIOSK-02 an den bestehenden internen Read-/Controlling-Vertrag anbinden. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -115,6 +115,10 @@ Betreiberhoheit und spätere Integrationen.
 | 1.59.3–1.59.4 | 2026-08-18 bis 08-21 | Viewer-/CRUD-Härtung      | Local-First-Schreibpfade und Dialoggrenzen fail-closed                  |
 | 1.59.5–1.59.6 | 2026-08-21 bis 08-24 | F-11 / MVP-Abschluss      | Rollen-/Negativtests abgeschlossen; MVP 100 % / BASELINE READY          |
 | 1.60.0        | 2026-09-13           | BSF-03 „Meine Kunden“     | Read-only Liste/Detail, E2E-/Security-/A11y-Abdeckung; P5 offen         |
+| 1.61.0        | 2026-09-13           | Kundenverantwortung       | Management-Zuweisung/Wechsel/Beenden mit engem Systemhaus-Scope         |
+| 1.62.0        | 2026-09-13           | Arbeitspaket-Kategorien   | Systemhausweiter Reference-Data-Katalog, Import/Backup fail-safe        |
+| 1.63.0        | 2026-09-17           | Info-Kiosk Demo-Pilot     | Read-only Full-HD-Wallboard mit exklusiver Kiosk-Rolle und Demo-Vertrag |
+| 1.64.0        | 2026-09-18           | Projektcontrolling        | Read-only BSF-03A-Leistungssicht, Golden Dataset, Scope-/IDOR-Gates     |
 
 ## Schwierigkeiten und ihre Lösung
 
@@ -939,3 +943,99 @@ Der offizielle Supabase Security Advisor auf der unveränderten verbundenen Live
 **Noch offen:** Die Kiosk-Migrationen sind auf der verbundenen Supabase-Instanz nicht angewendet. Deshalb ist der Advisor-Lauf ein Baseline-Nachweis, aber noch kein Kiosk-spezifischer Post-Migration-Nachweis. Vor FINAL PASS/DONE müssen die Migrationen kontrolliert auf einer geeigneten Ziel-/Staging-Umgebung angewendet und der offizielle Security Advisor dort erneut ohne neue Findings gegenüber SEC-01 ausgeführt werden.
 
 Bis dahin bleiben Issue #135 offen und PR #141 Draft. Es erfolgten kein Merge, kein Deploy und kein realer DB-Write. **BSF-03A startet erst nach formaler KIOSK-01-Endabnahme.**
+
+## 2026-09-18 — Version 1.64.0 — BSF-03A Projektcontrolling
+
+BSF-03A / Issue #106 ist auf Draft-PR #144 technisch vollständig umgesetzt und auf dem code-tragenden Exact Head `ffc28901c3017d9459c89a9fe68c030da0f07386` vollständig gegatet.
+
+Umgesetzt wurden die atomare Permission `project.controlling.view`, die rückwärtskompatible Kategoriebrücke in die Shared Projection, der providerneutrale Controlling-Vertrag mit reproduzierbarer Dezimalaggregation und 5.000-Zeilen-Fail-closed-Grenze, der Supabase-Read-Adapter im User-JWT-Kontext, serverseitige Scope-/IDOR-/BOLA-Prüfungen sowie die read-only Route `/projektcontrolling` mit Filterkaskade, KPIs, Tagestrend und Drill-down.
+
+GDS-01 V1 ist als synthetische Referenzbasis integriert. Die verbindlichen Grundwerte sind 8 Tätigkeiten, 2 Kunden, 3 Projekte, 5 Arbeitspakete, 25.0 h gesamt, 20.0 h billable, 5.0 h non-billable und 80.0 % Billable-Quote. Golden-Validator und unabhängige Expected Results sind PASS.
+
+Exact-Head-Evidenz: Security #956 PASS; CI #962 PASS; 131 Unit-/Component-Testdateien mit 917 PASS / 4 TODO; E2E 91/91 PASS; Accessibility 7/7 PASS; BSF-02C T01–T30 PASS; BSF-03A DB-Vertrag T01–T20d PASS; DATABASE_SCHEMA_DRIFT NONE; DATABASE_TYPES_DRIFT NONE; Technical Report v17 `passed-with-findings`; Quality Gate 0 Blocker.
+
+Der offizielle Supabase Security Advisor im verifizierten Sysingdashboard-Kontext meldet 0 ERROR, 0 CRITICAL und exakt die zwei bekannten SEC-01-WARN für `public.avkk_can_write(_subject uuid)` und `public.avkk_people_directory()`; neue BSF-03A-Findings: keine. `public.has_permission(uuid,text)` und `public.bsf02c_publish_shared_projection_snapshot` bleiben SECURITY INVOKER.
+
+Der Lovable-L2-Precheck wurde analyse-only ausgeführt und zeigte einen vom PR-Head abweichenden erreichbaren Lovable-Stand. Ein späterer branch-genauer Reachability-/Preview-Recheck war wegen ausgeschöpfter Lovable-Credits nicht möglich. Deshalb bleibt ausschließlich dieser visuelle/branch-genaue Nachweis offen; keine Lovable-Datei- oder DB-Änderung wurde übernommen.
+
+Abschlussnachweis: `docs/BSF-03A-CLOSURE-2026-09-14.md`. PR #144 bleibt Draft. Kein Merge, kein Deploy. Nächster Sprint nach formaler BSF-03A-Abnahme: BSF-KIOSK-02 / #136.
+
+## 2026-09-18 — Dokumentations-, Handbuch- und Hilfe-Audit
+
+Nach dem vollständig grünen BSF-03A-GitHub-Head `d9b1645a6529aeec2cadd7bc6223f36e7bc71b71` wurden die vier Dokumentationsflächen gezielt gegen den tatsächlichen Code- und Sprintstand geprüft.
+
+Festgestellte und behobene Drifts:
+
+- Benutzerhandbuch und kontextsensitive Hilfe besaßen noch kein eigenes Kapitel für die neue Route `/projektcontrolling`.
+- Die Routenhilfe priorisierte generische `/`-Kapitel vor spezifischen Routen; spezifischere Treffer werden nun zuerst geliefert und per Regressionstest abgesichert.
+- Handbuchversion zunächst auf 1.21.0 und nach dem vollständigen Handbuchabgleich auf **1.22.0** fortgeschrieben.
+- Die Hilfe „Meine Kunden“ enthielt noch die veraltete Aussage, die Verwaltung von Kundenverantwortungen sei nicht Teil der Oberfläche; sie verweist nun korrekt auf die getrennte Managementsicht mit `customer.responsibility.manage`.
+- Das RBAC-Handbuch war noch auf sieben Rollen und 14 Permissions eingefroren; es dokumentiert nun acht Rollen, 23 atomare Rechte sowie die BSF-/Kiosk-Grenzen.
+- „Lokaler Betrieb ohne Azure“ wurde korrigiert: Azure bleibt optional, der heutige vollständige Mehrbenutzer-/BSF-MVP benötigt jedoch Supabase für Auth, RLS und gemeinsame Datenpfade.
+- `ARCHITECTURE.md` beschrieb die Domänenpersistenz noch zu pauschal als Local-First; dokumentiert ist jetzt das reale Übergangsmodell aus lokalen CRUD-Pfaden und serverseitiger BSF-Shared-Projection.
+- `DATA-SCHEMA.md` führte seinen Supabase-Abschnitt noch als Stand 1.52.0, obwohl BSF-Systemhaus-/Customer-/Shared-Projection-Strukturen bereits enthalten sind.
+- `API.md` nannte noch Lovable-Cloud-Auth und behauptete fälschlich, es gebe keine `/api/public/*`-Route; der aktuelle Supabase-Auth-/`auth-config`-Stand ist nun dokumentiert.
+- `roadmap.md` wurde vom alten KIOSK-01-Abnahmestand auf KIOSK-01 DONE / BSF-03A Finalverifikation / KIOSK-02 NEXT gebracht.
+- Entwicklungstagebuch-Kopf, Managementübersicht und Sprintübersicht waren noch auf Version 1.62/1.63 stehen geblieben und wurden auf 1.64.0 fortgeschrieben.
+- `RBAC-MATRIX.md` enthielt die neue Kiosk-Rolle nur im Fließtext und ließ `customer.responsibility.manage`/`kiosk.view` in der eigentlichen Matrix aus; die Matrix ist nun vollständig auf acht Rollen und 23 Permissions synchronisiert.
+- `ARCHITECTURE.md` nannte weiterhin sieben Rollen und wurde auf den aktuellen RBAC-Vertrag korrigiert.
+- Der untere „BSF aktiv“-Abschnitt in `CURRENT-STATUS.md` verwies noch auf die KIOSK-01-Finalabnahme; er bildet nun KIOSK-01 DONE / BSF-03A Finalverifikation ab.
+- Die KIOSK-02-Planungsdokumente wurden mit Issue #136 synchronisiert: technische Kiosk-Sessions bleiben Demo-only mit `kiosk.view`; interne Daten laufen nur in normalen Leitungs-Sessions über `project.controlling.view`; Freshness wird ohne DB-Migration additiv aus vorhandenen Projection-`published_at`-Werten ergänzt.
+
+Historische, datierte Abschlussberichte bleiben als Evidenz ihres damaligen Prüfzeitpunkts unverändert. Maßgeblich für den laufenden Stand bleiben `CURRENT-STATUS.md`, `PROJECT-STATUS.yaml`, `BSF-CURRENT-PRIORITIES.md`, `roadmap.md` und der aktive PR-/CI-Nachweis.
+
+## 2026-09-18 — TIECS Strict Continuity Pilot / Tool-Pause
+
+Während der temporären Lovable-Credit-Pause wurde der neue TDF-Ansatz
+**Tool-Independent Engineering Continuity Standard (TIECS)** in diesem Chat
+erstmals auf das Sysing Dashboard angewendet. Maßgebliche Quelle blieb GitHub,
+nicht der vorherige Chat oder ein Tool-Workspace.
+
+Der read-only Kontext-Wiederanlauf bestätigte:
+
+- aktiver Sprint: **BSF-03A / Issue #106**,
+- aktiver Draft-PR: **#144** auf `feat/bsf-03a-project-controlling`,
+- letzter vollständig grüner Exact Head vor dieser TIECS-Pilotänderung:
+  `0ce0e5a5f6e43835292d59587e0a6ae5b1ced7df`,
+- Security #977: **PASS**,
+- CI #983: **PASS**,
+- verbleibender fachlicher Abnahmeblocker: branch-genauer Lovable-Exact-Head-
+  Preview-/Driftnachweis,
+- keine offene DB-, RBAC-, RLS- oder Fachlogik-Korrektur.
+
+Der Maintenance-Window-Check fand zusätzlich zwei dokumentationsbezogene Punkte:
+
+- die grammatisch falsche Form „aktuelle Kalendermonat“ war erneut in
+  Handbuch/Test synchronisiert und wird auf „aktueller Kalendermonat“ korrigiert,
+- ein TIECS-Mikrostatus und ein Makro-Statusboard waren noch nicht vorhanden.
+
+Für diesen Chat wird das **TIECS Strict Continuity Profile** angewendet. Das
+Statusboard ist eine reine Ableitung aus `roadmap.md`, `PROJECT-STATUS.yaml`,
+`CURRENT-STATUS.md`, `ARCHITECTURE.md`, Entwicklungstagebuch und
+PR-/CI-Evidenz. Es ersetzt keine dieser Quellen.
+
+### Mikro-Statusboard
+
+```mermaid
+stateDiagram-v2
+    [*] --> KIOSK01
+    KIOSK01: BSF-KIOSK-01\nDONE
+    KIOSK01 --> BSF03A
+    BSF03A: BSF-03A\nACTIVE - Finalverifikation
+    BSF03A --> LOVABLE: GitHub Exact-Head-Gates grün
+    LOVABLE: Lovable Exact-Head-Preview\nBLOCKED - Credits / Branch-Recovery
+    LOVABLE --> REVIEW: nach Preview PASS
+    REVIEW: PR #144 Review / Merge\nPLANNED
+    REVIEW --> KIOSK02
+    KIOSK02: BSF-KIOSK-02\nPLANNED
+```
+
+Makro-Snapshot: `docs/status-board.html`.
+
+Governance dieses Maintenance Windows:
+
+- Runtime geändert: **NEIN**,
+- Datenbank/RLS/Grants/Auth geändert: **NEIN**,
+- Merge: **NEIN**,
+- Deploy: **NEIN**,
+- fehlender Lovable-Nachweis bleibt ausdrücklich **offen**.

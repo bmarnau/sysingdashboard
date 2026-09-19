@@ -1,7 +1,7 @@
 # BSF-03A — Projektmanager-Leistungssicht / Controlling
 
-Stand: 2026-09-14
-Status: PLANUNG / IMPLEMENTIERUNGSVERTRAG
+Stand: 2026-09-18
+Status: IMPLEMENTIERT / EXACT-HEAD GATES PASS / LOVABLE-PREVIEW AUSSTEHEND
 Issue: #106
 Vorgänger: BSF-KIOSK-01 / #135
 Nachfolger: BSF-KIOSK-02 / #136

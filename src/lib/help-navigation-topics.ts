@@ -17,7 +17,7 @@ export const dashboardNavigationHelpTopics: HelpTopic[] = [
       "AVKK",
       "Hilfe",
     ],
-    lastUpdated: "2026-09-13",
+    lastUpdated: "2026-09-18",
     content: `## Hauptnavigation
 Die fachlichen Ansichten werden über die Tab-Leiste direkt unter dem Kopfbereich geöffnet:
 - **Projekte** — Projektübersicht und Einstieg in das Projektdetail.
@@ -27,9 +27,10 @@ Die fachlichen Ansichten werden über die Tab-Leiste direkt unter dem Kopfbereic
 - **Mein AVKK** — persönlicher AVKK-Arbeitsplatz.
 - **AVKK Management** — Führungssicht; sichtbar nur mit passender Berechtigung.
 
-Zusätzlich stehen im Kopfbereich kundenbezogene Einstiege zur Verfügung:
+Zusätzlich stehen im Kopfbereich kunden- und steuerungsbezogene Einstiege zur Verfügung:
 - **Meine Kunden** — persönliche, fail-closed Kundensicht für eigene aktive Verantwortungen mit eigenem Kundenzugriff.
 - **Kundenverantwortung** — getrennte Verwaltungsansicht; nur sichtbar mit \`customer.responsibility.manage\`.
+- **Projektcontrolling** — read-only Leistungssicht für berechtigte Leitungsrollen; sichtbar nur mit \`project.controlling.view\`.
 
 ## Projektdetail öffnen
 Im Tab **Projekte** auf den **Projektnamen** der gewünschten Projektkarte klicken. Das Projektdetail zeigt Projektkopf, Kennzahlen, Arbeitspakete, Tätigkeiten und bei Berechtigung AVKK im Projektkontext. **Zurück zu Projekte** führt wieder in die Übersicht.
@@ -44,6 +45,7 @@ Das **Fragezeichen** öffnet die Hilfe und das Benutzerhandbuch. Das **Zahnrad**
     relatedTopics: [
       "projects",
       "customer-responsibility-management",
+      "project-controlling",
       "avkk-arbeitsplatz",
       "berichte",
     ],
@@ -115,6 +117,80 @@ Beim Wechsel wird die bisherige Responsibility historisch beendet und die neue R
 ## Sicherheitsgrenzen
 Cross-Systemhouse-Zugriffe bleiben verweigert. Browser-Rollen oder manipulierte Client-Daten begründen keine Berechtigung; maßgeblich sind die serverseitigen Auth-, RBAC- und RLS-Prüfungen.`,
     relatedTopics: ["navigation-ansichten", "rbac-rollen-berechtigungen", "security-principles"],
+  },
+  {
+    id: "project-controlling",
+    title: "Projektcontrolling — Leistungen auswerten",
+    category: "Auswertung",
+    route: "/projektcontrolling",
+    component: "ProjectControllingView",
+    roles: ["systemadministrator", "administrator", "teamlead", "projectmanager"],
+    keywords: [
+      "Projektcontrolling",
+      "Leistung",
+      "Leistungssicht",
+      "Projektmanager",
+      "Zeitraum",
+      "Systemhaus",
+      "Kunde",
+      "Projekt",
+      "Arbeitspaket",
+      "Kategorie",
+      "Billable",
+      "Drill-down",
+    ],
+    lastUpdated: "2026-09-18",
+    content: `## Zweck
+Das **Projektcontrolling** ist eine ausschließlich lesende Leistungssicht. Es verdichtet freigegebene Tätigkeiten aus dem gemeinsamen serverseitigen Datenbestand, ohne Buchungen, Projekte oder Arbeitspakete zu verändern.
+
+## Wer darf die Ansicht nutzen?
+Die Ansicht ist für Systemadministrator, Administrator, Teamlead und Projektmanager vorgesehen. Technisch ist die Berechtigung \`project.controlling.view\` erforderlich. Sie allein erweitert den Datenzugriff jedoch nicht: Zusätzlich gelten aktive Systemhaus-Zugehörigkeit, eigener zulässiger Kundenzugriff und die bestehenden Datenbankregeln.
+
+Ein im Projekt gepflegtes Lead-Feld ist **keine** Sicherheitsidentität und schaltet keine Daten frei.
+
+## Zeitraum und Filter
+Standard ist der **aktueller Kalendermonat bis heute**. Ein benutzerdefinierter Zeitraum darf höchstens 366 Tage umfassen.
+
+Die Filter bauen voneinander abhängig auf:
+- Systemhaus,
+- Kunde,
+- Projekt,
+- Arbeitspaket,
+- Arbeitspaket-Kategorie,
+- alle / abrechenbar / nicht abrechenbar.
+
+Kunde, Projekt und Arbeitspaket werden über ihre technischen Identitäten gefiltert. Ein abhängiger Filter wird erst angeboten, wenn sein übergeordneter Scope eindeutig ist.
+
+## Kennzahlen und Verlauf
+Die Übersicht zeigt insbesondere:
+- Gesamtstunden,
+- abrechenbare und nicht abrechenbare Stunden,
+- Billable-Quote,
+- Anzahl Tätigkeiten, Kunden, Projekte und Arbeitspakete,
+- täglichen Stundenverlauf,
+- Drill-down **Kunde → Projekt → Arbeitspaket → Tätigkeit**.
+
+Nicht zuordenbare Daten sowie Legacy-, unbekannte oder inzwischen inaktive Kategorien bleiben sichtbar gekennzeichnet; sie werden nicht stillschweigend umgedeutet.
+
+## Große Ergebnismengen
+Es werden höchstens 5.000 passende Tätigkeiten ausgewertet. Würde ein Filter mehr liefern, erscheint die Aufforderung, **Zeitraum oder Filter einzuschränken**. Es gibt keine stille Kürzung der Ergebnisliste.
+
+## Bewusste Grenzen
+BSF-03A ist read-only:
+- keine Änderung von Tätigkeiten oder Abrechenbarkeit,
+- keine Finalisierung oder Rechnungsfreigabe,
+- keine Eurobeträge,
+- keine personenbezogene Leistungsrangliste,
+- kein Name des Leistungserbringers in dieser Controlling-Sicht.
+
+Die Datenabgrenzung wird serverseitig geprüft; manipulierte URLs oder IDs erweitern den sichtbaren Scope nicht.`,
+    relatedTopics: [
+      "navigation-ansichten",
+      "meine-kunden",
+      "workpackage-categories",
+      "rbac-rollen-berechtigungen",
+      "security-principles",
+    ],
   },
   {
     id: "info-kiosk",

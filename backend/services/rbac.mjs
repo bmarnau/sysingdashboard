@@ -40,6 +40,7 @@ export const ALL_PERMISSIONS = Object.freeze([
   "referencedata.view",
   "referencedata.manage",
   "customer.responsibility.manage",
+  "project.controlling.view",
   "kiosk.view",
 ]);
 
@@ -66,6 +67,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
     "referencedata.view",
     "referencedata.manage",
     "customer.responsibility.manage",
+    "project.controlling.view",
   ],
   administrator: [
     "dashboard.view",
@@ -87,6 +89,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
     "referencedata.view",
     "referencedata.manage",
     "customer.responsibility.manage",
+    "project.controlling.view",
   ],
   teamlead: [
     "dashboard.view",
@@ -102,6 +105,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
     "avkk.management.view",
     "referencedata.view",
     "customer.responsibility.manage",
+    "project.controlling.view",
   ],
   projectmanager: [
     "dashboard.view",
@@ -115,6 +119,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
     "avkk.responsibility.assign",
     "avkk.management.view",
     "referencedata.view",
+    "project.controlling.view",
   ],
   engineer: [
     "dashboard.view",

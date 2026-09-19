@@ -1,0 +1,12 @@
+{
+  "period": {
+    "from": "2026-09-01",
+    "to": "2026-09-05"
+  },
+  "metrics": {
+    "projectsWithActivity": 3,
+    "workPackagesWithActivity": 5,
+    "activityHours": 25,
+    "billableQuotePercent": 80
+  }
+}

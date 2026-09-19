@@ -1,6 +1,9 @@
 # Roadmap
 
-## BSF-KIOSK-01 (#135) Info-Kiosk Demo-Pilot
+Visualisierung (abgeleitete TIECS-Statussicht): `docs/status-board.html`  
+Maßgebliche Fakten bleiben in Roadmap, Projektstatus, Architektur, Entwicklungstagebuch und PR-/CI-Evidenz.
+
+## BSF-KIOSK-01 (#135) Info-Kiosk Demo-Pilot — DONE
 
 - [x] Kiosk-first-Roadmap als verbindliche interne Reihenfolge übernommen
 - [x] Providerneutraler `KioskDataProvider` und lokaler Demo-Provider
@@ -21,21 +24,46 @@
 - [x] Helles Management-Wallboard mit drei Hauptspalten, neutralen Mengenflächen und semantischen Statusfarben für Full HD fertiggestellt
 - [x] Informationsdichte wiederhergestellt: Projekt-/Arbeitspaketfortschritt, aggregierte Systemverfügbarkeit, kompakte synthetische Support-Trends und Refreshstatus im Kopf
 - [x] Offizieller Supabase Advisor auf aktuell verbundener Live-Baseline: PASS, SEC-01 unverändert
-- [ ] Kiosk-spezifischer Post-Migration-Advisor auf kontrollierter Ziel-/Staging-Umgebung
+- [x] Kiosk-spezifischer Post-Migration-Advisor auf der kontrolliert migrierten Sysingdashboard-Zielumgebung ohne neue Findings gegenüber SEC-01
 - [x] Dokumentation/Version 1.63.0 vollständig synchronisieren
 - [x] PR #141 Review-Status und Abschlussnachweis aktualisieren
-- [ ] FINAL-PASS-/DONE-Entscheidung nach Post-Migration-Advisor
-- [ ] Merge/Deploy nur nach separater Freigabe
+- [x] FINAL-PASS-/DONE-Entscheidung nach Post-Migration-Advisor
+- [x] PR #141 nach separater Freigabe gemergt; Post-Merge Security #849 und CI #855 PASS (kein zusätzlicher produktiver Integrationsscope)
 
 ### Abgrenzung
 
 KIOSK-01 enthält ausschließlich synthetische, lokale Demo-Daten. Der allgemeine providerneutrale Import mit realen/partiellen Quelldaten, Provenienz, Freshness und Customer-/Systemhouse-Scope bleibt BSF-05A vorbehalten.
 
-Die aktuell mit Lovable verbundene Supabase-Instanz enthält die Kiosk-Migrationen noch nicht. Der dort ausgeführte offizielle Advisor bestätigt die unveränderte SEC-01-Live-Baseline, ersetzt aber nicht den finalen Kiosk-spezifischen Advisor nach kontrolliert angewandten Migrationen.
+Die Kiosk-Migrationen wurden kontrolliert auf der maßgeblichen Sysingdashboard-Zielumgebung angewendet. Der offizielle Post-Migration-Security-Advisor zeigte keine neuen Findings gegenüber der dokumentierten SEC-01-Baseline. PR #141 ist seit 2026-09-17 auf `main`.
 
 ### Nächster interner Schritt nach KIOSK-01
 
-`BSF-03A (#106) → KIOSK-02 (#136)`
+BSF-03A ist technisch implementation-complete; offen ist nur der branch-genaue Lovable-Exact-Head-Preview vor FINAL DONE. Danach folgt KIOSK-02 / #136.
+
+---
+
+## BSF-03A (#106) Projektmanager-Leistungssicht / Controlling — FINALVERIFIKATION
+
+- [x] Golden Dataset V1 als deterministische Referenzbasis
+- [x] atomare Permission `project.controlling.view`
+- [x] providerneutraler ProjectControllingService/Repository-Vertrag
+- [x] User-JWT-Supabase-Adapter; kein Service-Role-Normalpfad
+- [x] serverseitige Systemhouse-/Customer-/IDOR-/BOLA-Grenzen
+- [x] Kategoriebrücke `category_key` / `category_observed` in der Shared Projection
+- [x] Zeitraum max. 366 Tage, identitätsbasierte abhängige Filter, Billable-Filter
+- [x] deterministische Summen, Tagestrend und Drill-down
+- [x] 5.000-Zeilen-Grenze; 5.001 fail-closed statt stiller Kürzung
+- [x] Route `/projektcontrolling` read-only
+- [x] E2E 91/91 und Accessibility 7/7 auf dem vollständig grünen GitHub-Head `d9b1645`
+- [x] Security #963 und CI #969 vollständig PASS; Quality Gate 0 Blocker
+- [x] offizieller Security Advisor ohne neue BSF-03A-Findings
+- [x] Benutzerhandbuch, kontextsensitive Hilfe, Architektur-/Schema-/API-Doku und Entwicklungstagebuch synchronisiert
+- [ ] Lovable auf exakt aktuellen PR-Head synchronisieren und read-only Responsive-/Runtime-Preview abnehmen
+- [ ] FINAL DONE / PR #144 Review und Merge nach separater Freigabe
+
+### Danach
+
+`BSF-KIOSK-02 (#136) → BSF-03B → BSF-03E → BSF-07`
 
 ---
 
