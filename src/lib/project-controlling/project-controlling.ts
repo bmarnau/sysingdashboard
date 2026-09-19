@@ -136,7 +136,9 @@ function buildDailyTrend(
   return trend;
 }
 
-function measureFreshness(rows: readonly ProjectControllingRow[]): ProjectControllingFreshness {
+function measureFreshness(
+  rows: readonly ProjectControllingRow[],
+): ProjectControllingFreshness {
   const observed = new Map<string, string | null>();
 
   const record = (
