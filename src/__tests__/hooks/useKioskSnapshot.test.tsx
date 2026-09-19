@@ -12,6 +12,33 @@ const SNAPSHOT: KioskSnapshot = {
   domains: [],
 };
 
+
+const HYBRID_SNAPSHOT: KioskSnapshot = {
+  ...SNAPSHOT,
+  mode: "hybrid",
+  datasetVersion: "sysing.kiosk.hybrid.v1",
+  observedAt: "2026-09-18T10:00:00.000Z",
+  period: { from: "2026-09-01", to: "2026-09-19" },
+  domains: [
+    {
+      id: "projects",
+      title: "Projekte",
+      level: "ok",
+      sourceKind: "internal",
+      observedAt: "2026-09-18T10:00:00.000Z",
+      metrics: [{ label: "Projekte mit Leistung im Zeitraum", value: 3, level: "ok" }],
+    },
+    {
+      id: "infrastructure",
+      title: "Infrastruktur",
+      level: "ok",
+      sourceKind: "demo",
+      observedAt: "2026-09-19T05:00:00.000Z",
+      metrics: [{ label: "OK", value: 10, level: "ok" }],
+    },
+  ],
+};
+
 afterEach(() => {
   vi.useRealTimers();
 });
@@ -65,6 +92,30 @@ describe("useKioskSnapshot", () => {
       await Promise.resolve();
     });
     expect(result.current.snapshot).toEqual(SNAPSHOT);
+    expect(result.current.refreshError).toBe("Aktualisierung fehlgeschlagen");
+    unmount();
+  });
+
+  it("retains the last good hybrid snapshot when an internal refresh fails", async () => {
+    vi.useFakeTimers();
+    const getSnapshot = vi
+      .fn<() => Promise<KioskSnapshot>>()
+      .mockResolvedValueOnce(HYBRID_SNAPSHOT)
+      .mockRejectedValueOnce(new Error("internal read failed"));
+    const provider: KioskDataProvider = { getSnapshot };
+    const { result, unmount } = renderHook(() => useKioskSnapshot(provider));
+
+    await act(async () => Promise.resolve());
+    expect(result.current.snapshot).toEqual(HYBRID_SNAPSHOT);
+
+    await act(async () => {
+      vi.advanceTimersByTime(60_000);
+      await Promise.resolve();
+    });
+
+    expect(result.current.status).toBe("ready");
+    expect(result.current.snapshot).toEqual(HYBRID_SNAPSHOT);
+    expect(result.current.snapshot?.mode).toBe("hybrid");
     expect(result.current.refreshError).toBe("Aktualisierung fehlgeschlagen");
     unmount();
   });
