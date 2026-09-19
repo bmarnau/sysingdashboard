@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/kiosk")({
 
 function KioskPage() {
   const { mode, scenario, systemhouseId } = Route.useSearch();
-  const { userId } = Route.useRouteContext();
+  const { userId, kioskSessionPolicy } = Route.useRouteContext();
   const provider = useMemo(
     () =>
       mode === "internal"
@@ -40,6 +40,7 @@ function KioskPage() {
       state={state}
       securityStatus={securityStatus}
       onLogout={() => void performLogout({ reason: "manual" })}
+      showControllingLink={mode === "internal" && !kioskSessionPolicy.kioskMode}
     />
   );
 }
