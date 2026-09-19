@@ -200,6 +200,13 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
           ) : null}
         </dl>
       )}
+      {domain.note &&
+      (domain.sourceKind === "unavailable" ||
+        (domain.sourceKind === "internal" && domain.observedAt === null)) ? (
+        <p className="mt-3 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle">
+          {domain.note}
+        </p>
+      ) : null}
     </article>
   );
 }
