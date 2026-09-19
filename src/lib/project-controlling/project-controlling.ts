@@ -135,6 +135,25 @@ function buildDailyTrend(
   return trend;
 }
 
+function measureFreshness(rows: readonly ProjectControllingRow[]): {
+  oldestPublishedAt: string | null;
+  latestPublishedAt: string | null;
+} {
+  const timestamps = rows
+    .flatMap((row) => [
+      row.projectPublishedAt,
+      row.workPackagePublishedAt,
+      row.activityPublishedAt,
+    ])
+    .filter((value): value is string => typeof value === "string" && value.length > 0)
+    .sort((left, right) => left.localeCompare(right));
+
+  return {
+    oldestPublishedAt: timestamps[0] ?? null,
+    latestPublishedAt: timestamps.at(-1) ?? null,
+  };
+}
+
 function measureCompleteness(
   rows: readonly ProjectControllingRow[],
 ): ProjectControllingCompleteness {
@@ -176,6 +195,8 @@ export class ProjectControllingService {
       return { ok: false, error: "PROJECT_CONTROLLING_TOO_MANY_ACTIVITIES" };
     }
 
+    const freshness = measureFreshness(rows);
+
     return {
       ok: true,
       value: {
@@ -185,6 +206,8 @@ export class ProjectControllingService {
         scopeOptions: [...repositoryScopeOptions],
         rows: [...rows],
         completeness: measureCompleteness(rows),
+        oldestPublishedAt: freshness.oldestPublishedAt,
+        latestPublishedAt: freshness.latestPublishedAt,
       },
     };
   }
