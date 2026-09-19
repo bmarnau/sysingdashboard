@@ -371,8 +371,8 @@ describe("BSF-03A provider-neutral project controlling", () => {
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.oldestPublishedAt).toBe("2026-09-01T08:00:00.000Z");
-    expect(result.value.latestPublishedAt).toBe("2026-09-05T08:00:00.000Z");
+    expect(result.value.freshness.oldestPublishedAt).toBe("2026-09-01T08:00:00.000Z");
+    expect(result.value.freshness.latestPublishedAt).toBe("2026-09-05T08:00:00.000Z");
   });
 
   it("returns null freshness for an empty filtered result", async () => {
@@ -380,8 +380,8 @@ describe("BSF-03A provider-neutral project controlling", () => {
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.oldestPublishedAt).toBeNull();
-    expect(result.value.latestPublishedAt).toBeNull();
+    expect(result.value.freshness.oldestPublishedAt).toBeNull();
+    expect(result.value.freshness.latestPublishedAt).toBeNull();
   });
 
   it("builds a daily trend from the filtered rows and fills empty days with zero", async () => {
