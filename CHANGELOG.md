@@ -19,7 +19,7 @@ Format pro Eintrag:
 - **Quellen- und Freshness-Vertrag**: Jede Kiosk-Domäne kennzeichnet ihre Quelle als INTERN, DEMO oder NICHT VERFÜGBAR. Zeitraum und interner Datenstand stammen aus dem fachlichen Read-/Projection-Vertrag; ein Fehler interner Leistungsdaten fällt nicht still auf Demo-Werte zurück.
 - **Security und Datenschutz**: Der technische Kiosk-Account bleibt exklusiv auf `kiosk.view` begrenzt. Interne Leistungsdaten erfordern serverseitig `project.controlling.view` sowie die bestehenden Systemhouse-/Customer-/RLS-Grenzen. Die Großbildsicht zeigt nur Aggregate und keine Tätigkeitstitel, Personennamen, Engineer-IDs, internen IDs oder Eurobeträge.
 - **Golden Dataset und Regression**: Vergleichbare Leistungskennzahlen verwenden dieselbe Golden-Dataset-Fachdefinition wie das Projektcontrolling. Der Code-Head `8c69cca` ist mit Security #1075 und CI #1081 vollständig PASS, einschließlich 98/98 E2E, Accessibility, Database Schema Drift, Technical Debt und Quality Gate.
-- **Handbuch**: Kontextsensitive Hilfe und Benutzerhandbuch beschreiben Demo- und Hybridmodus, Quellenkennzeichnung, Berechtigungsgrenzen, Freshness und den read-only Übergang zum Projektcontrolling.
+- **Handbuch**: Kontextsensitive Hilfe und Benutzerhandbuch Version 1.23.0 beschreiben Demo- und Hybridmodus, Quellenkennzeichnung, Berechtigungsgrenzen, Freshness und den read-only Übergang zum Projektcontrolling.
 - **Lovable-Abnahme**: Der K02-L1 Exact-Tree-/Responsive-Preview ist vorbereitet, konnte am 19.09.2026 wegen ausgeschöpfter Lovable-Credits jedoch nicht gestartet werden. Keine DB-/Auth-/RBAC-/RLS-Änderung, kein Merge und kein Deploy.
 
 ## 1.64.0 - 2026-09-18
