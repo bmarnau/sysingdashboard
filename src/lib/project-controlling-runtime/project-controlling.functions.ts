@@ -13,7 +13,7 @@ import { ProjectControllingService } from "@/lib/project-controlling/project-con
 
 export const PROJECT_CONTROLLING_DENIED = "Projektcontrolling für diesen Scope nicht zulässig.";
 
-const PROJECT_CONTROLLING_PERMISSION = "project.controlling.view";
+export const PROJECT_CONTROLLING_PERMISSION = "project.controlling.view";
 const PROJECT_CONTROLLING_AUTHORIZATION_FAILED =
   "Projektcontrolling-Autorisierung konnte nicht geprüft werden.";
 
@@ -138,12 +138,10 @@ export function parseProjectControllingRequest(input: unknown): ProjectControlli
   return requestSchema.parse(input);
 }
 
-export async function executeProjectControllingRequest(
+export async function requireProjectControllingAccess(
   supabase: UserSupabaseClient,
   userId: string,
-  filters: ProjectControllingFilters,
-  repository: ProjectControllingRepository,
-): Promise<ProjectControllingOutcome> {
+): Promise<void> {
   const [active, permission] = await Promise.all([
     supabase.rpc("is_account_active", { _user_id: userId }),
     supabase.rpc("has_permission", {
@@ -158,6 +156,15 @@ export async function executeProjectControllingRequest(
   if (active.data !== true || permission.data !== true) {
     throw new Error(PROJECT_CONTROLLING_DENIED);
   }
+}
+
+export async function executeProjectControllingRequest(
+  supabase: UserSupabaseClient,
+  userId: string,
+  filters: ProjectControllingFilters,
+  repository: ProjectControllingRepository,
+): Promise<ProjectControllingOutcome> {
+  await requireProjectControllingAccess(supabase, userId);
 
   if (filters.systemhouseId) {
     const membership = await supabase.rpc("has_active_systemhouse_membership", {
