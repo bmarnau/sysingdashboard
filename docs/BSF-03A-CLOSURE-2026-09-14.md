@@ -217,7 +217,6 @@ Historische datierte Nachweise werden nicht rückwirkend inhaltlich umgedeutet.
 
 BSF-03A ist technisch implementation-complete und auf dem code-tragenden Head vollständig gegatet. FINAL DONE wird erst nach dem branch-genauen Lovable-Preview-/Driftnachweis gesetzt. Nach formaler Abnahme folgt **BSF-KIOSK-02 / #136**.
 
-
 ## 12. Finale Exact-Tree-Abnahme und Merge
 
 Die ausstehende Finalabnahme wurde am 19.09.2026 gegen den exakten GitHub-Kandidaten `763cf874b9f5bb8fadbd2875d7e11f0bd7165361` in einem isolierten Lovable-Validierungsprojekt mit frischem temporären Checkout abgeschlossen.
