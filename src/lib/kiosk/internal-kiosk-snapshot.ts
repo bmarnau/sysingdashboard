@@ -11,17 +11,17 @@ export interface InternalKioskSnapshotProjection {
 }
 
 function internalLevel(result: ProjectControllingResult): KioskDomainSnapshot["level"] {
-  return result.latestPublishedAt ? "ok" : "unknown";
+  return result.freshness.latestPublishedAt ? "ok" : "unknown";
 }
 
 function freshnessNote(result: ProjectControllingResult): string | undefined {
-  return result.latestPublishedAt ? undefined : "Datenstand der internen Quelle ist unbekannt.";
+  return result.freshness.latestPublishedAt ? undefined : "Datenstand der internen Quelle ist unbekannt.";
 }
 
 export function mapInternalKioskSnapshot(
   result: ProjectControllingResult,
 ): InternalKioskSnapshotProjection {
-  const observedAt = result.latestPublishedAt;
+  const observedAt = result.freshness.latestPublishedAt;
   const level = internalLevel(result);
   const note = freshnessNote(result);
 
