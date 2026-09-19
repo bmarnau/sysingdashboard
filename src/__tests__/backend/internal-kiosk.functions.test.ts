@@ -175,6 +175,34 @@ describe("BSF-KIOSK-02 internal kiosk server contract", () => {
     ).rejects.toThrow(PROJECT_CONTROLLING_DENIED);
   });
 
+  it("maps an internal repository read failure to unavailable without inventing data", async () => {
+    const { client } = fakeClient();
+    const failingRepository: ProjectControllingRepository = {
+      async listScopeOptions() {
+        return [
+          {
+            kind: "systemhouse",
+            systemhouseId: SH_A,
+            label: "Systemhaus A",
+          },
+        ];
+      },
+      async listRows() {
+        throw new Error("internal read failed");
+      },
+    };
+
+    await expect(
+      executeInternalKioskSnapshotRequest(
+        client,
+        USER_ID,
+        SH_A,
+        failingRepository,
+        new Date(2026, 8, 19),
+      ),
+    ).resolves.toEqual({ ok: false, error: "INTERNAL_KIOSK_DATA_UNAVAILABLE" });
+  });
+
   it("uses authenticated User-JWT wiring and contains no privileged client path", () => {
     const source = readFileSync(
       resolve(process.cwd(), "src/lib/kiosk-runtime/internal-kiosk.functions.ts"),
