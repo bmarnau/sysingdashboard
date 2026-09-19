@@ -394,40 +394,49 @@ Abnahmebericht.`,
     category: "Betrieb",
     component: "KioskView",
     route: "/kiosk",
-    roles: ["kiosk"],
-    keywords: ["Kiosk", "Wallboard", "Full HD", "Demo", "Infrastruktur", "Support"],
-    lastUpdated: "2026-09-17",
+    roles: ["kiosk", "systemadministrator", "administrator", "teamlead", "projectmanager"],
+    keywords: [
+      "Kiosk",
+      "Wallboard",
+      "Full HD",
+      "Demo",
+      "Hybrid",
+      "Intern",
+      "Projektcontrolling",
+      "Datenstand",
+      "Infrastruktur",
+      "Support",
+    ],
+    lastUpdated: "2026-09-19",
     content: `## Zweck
-Der Info-Kiosk zeigt einen ausschließlich lesenden, synthetischen Demo-Stand auf
-einem Großbildschirm. Der Hinweis „DEMO-DATEN — KEINE LIVE-DATEN“ bleibt
-dauerhaft sichtbar.
+Der Info-Kiosk ist eine ausschließlich lesende Großbildansicht mit zwei klar getrennten Betriebsarten.
 
-## Aufbau
-Die helle Steuerungsübersicht gliedert sich in drei Hauptspalten:
+**Demo:** Das technische Kiosk-Konto zeigt weiterhin ausschließlich synthetische Daten und besitzt nur \`kiosk.view\`.
 
-1. **Operative Arbeit** — Projekte, Arbeitspakete, Tätigkeiten,
-   Statusfortschritt, abrechenbarer Anteil und Urlaubsanzahlen ohne
-   personenbezogene Details.
-2. **Infrastruktur – Überblick** — Statussummen, Bereichsmatrix und aggregierte
-   Systemverfügbarkeit ohne produktive Hostnamen oder IP-Adressen. Darunter ist
-   vorhandene Restfläche technisch für zukünftige aggregierte read-only
-   Betriebsinformationen reserviert. Sie besitzt heute bewusst weder einen
-   Fachdatensatz noch eine produktive Datenquelle oder sichtbare Platzhalter.
-3. **Support-Postfach** — Posteingang gesamt, heute, gestern und älter; nur
-   Mengen und synthetische Demo-Trends, keine Nachrichteninhalte.
+**Intern/Hybrid:** Berechtigte normale Leitungs-Sessions können den expliziten internen Modus verwenden. Dafür ist serverseitig \`project.controlling.view\` erforderlich. Dieser Modus erweitert keine Customer- oder Systemhouse-Rechte.
 
-Normale Mengen erscheinen auf neutralen Flächen. Grün, Amber und Rot markieren
-ausschließlich Status und Risiken. Unbekannte Werte bleiben ausdrücklich als
-„UNBEKANNT“ sichtbar und werden nicht als null oder in Ordnung dargestellt.
+## Hybrid-Aufbau
+Die Steuerungsübersicht gliedert sich in drei Hauptspalten. Im Hybridmodus sind die Quellen jeder Domäne ausdrücklich gekennzeichnet:
 
-## Betrieb
-Die Ansicht aktualisiert den lokalen Demo-Snapshot automatisch. Datenstand,
-Datensatzversion, 60-Sekunden-Refresh und letzte Aktualisierung stehen kompakt
-im Kopf. Die Support-Verläufe sind feste synthetische Präsentationswerte; es
-gibt keine Mailinhalte, personenbezogenen Angaben oder Verbindung zu Exchange
-oder Microsoft Graph. Der manuelle Logout bleibt jederzeit erreichbar. Das
-Kiosk-Konto besitzt keine Schreib-, Import-, Export- oder Administrationsrechte.`,
-    relatedTopics: ["demo-data", "system-status"],
+- **INTERN:** Projekte, Arbeitspakete und Tätigkeiten aus dem vorhandenen Projektcontrolling-Read-Vertrag.
+- **DEMO:** Verfügbarkeit, Infrastruktur und Support bleiben synthetische Demo-Domänen.
+- **NICHT VERFÜGBAR:** Eine interne Quelle konnte nicht sicher gelesen werden.
+
+Der Header zeigt im Hybridmodus **HYBRID — INTERNE DATEN + DEMO-DATEN**. Ein interner Fehler führt niemals zu einem stillen Ersatz durch Demo-Leistungswerte.
+
+## Kennzahlen und Datenstand
+Die internen Leistungswerte verwenden standardmäßig den aktuellen Kalendermonat bis heute. Angezeigt werden aggregierte Projekt-/Kunden-/Arbeitspaket-Anzahlen sowie Tätigkeitsstunden und Billable-Quote. Diese Kennzahlen stammen aus derselben Fachdefinition wie das Projektcontrolling und werden nicht im Kiosk neu berechnet.
+
+Der Datenstand stammt aus der Source-/Projection-Freshness der verwendeten internen Daten. Die Renderzeit ist kein fachlicher Datenstand. Für Details führt **Projektcontrolling öffnen** in die read-only Auswertung.
+
+## Datenschutz und Sicherheit
+Die Großbildsicht zeigt keine Tätigkeitstitel, Personennamen, Engineer-IDs, internen Datenbank-IDs, Eurobeträge, Nachrichteninhalte oder Gesundheitsdaten. Kundenspezifische Detailausgaben werden in KIOSK-02 nicht eingeführt.
+
+Das technische Kiosk-Konto erhält keine internen Controlling-Rechte. Normale Rollen erhalten umgekehrt nicht automatisch \`kiosk.view\`. Scope-, RBAC- und RLS-Prüfungen erfolgen serverseitig und bleiben fail-closed.
+
+## Externe Integrationen
+KIOSK-02 enthält weiterhin keine produktive Microsoft-Graph-, SharePoint-, Exchange-, PRTG-, MCP- oder Agenten-Anbindung. Die UI arbeitet ausschließlich über die providerneutrale \`KioskDataProvider\`-Grenze.`,
+    relatedTopics: ["project-controlling", "demo-data", "system-status"],
   },
   {
     id: "avkk-management",
