@@ -156,9 +156,12 @@ describe("BSF-KIOSK-02 internal kiosk server contract", () => {
   });
 
   it.each([
-    [{ permission: false }, "missing project.controlling.view"],
-    [{ active: false }, "inactive account"],
-  ])("denies %s (%s)", async (auth) => {
+    { auth: { permission: false }, label: "missing project.controlling.view" },
+    { auth: { active: false }, label: "inactive account" },
+  ] satisfies Array<{
+    auth: Parameters<typeof fakeClient>[0];
+    label: string;
+  }>)("denies $label", async ({ auth }) => {
     const { client } = fakeClient(auth);
 
     await expect(
