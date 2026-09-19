@@ -342,6 +342,48 @@ describe("BSF-03A provider-neutral project controlling", () => {
     });
   });
 
+  it("derives freshness only from projection timestamps of the filtered rows", async () => {
+    const service = new ProjectControllingService(
+      makeRepository([
+        makeRow({
+          activityId: "a",
+          projectPublishedAt: "2026-09-02T08:00:00.000Z",
+          workPackagePublishedAt: "2026-09-03T08:00:00.000Z",
+          activityPublishedAt: "2026-09-04T08:00:00.000Z",
+        }),
+        makeRow({
+          activityId: "b",
+          projectPublishedAt: "2026-09-01T08:00:00.000Z",
+          workPackagePublishedAt: null,
+          activityPublishedAt: "2026-09-05T08:00:00.000Z",
+        }),
+        makeRow({
+          activityId: "outside",
+          activityDate: "2026-09-06",
+          projectPublishedAt: "2020-01-01T00:00:00.000Z",
+          workPackagePublishedAt: "2030-01-01T00:00:00.000Z",
+          activityPublishedAt: "2030-01-02T00:00:00.000Z",
+        }),
+      ]),
+    );
+
+    const result = await service.get(BASE_FILTERS);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.oldestPublishedAt).toBe("2026-09-01T08:00:00.000Z");
+    expect(result.value.latestPublishedAt).toBe("2026-09-05T08:00:00.000Z");
+  });
+
+  it("returns null freshness for an empty filtered result", async () => {
+    const result = await new ProjectControllingService(makeRepository([])).get(BASE_FILTERS);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.oldestPublishedAt).toBeNull();
+    expect(result.value.latestPublishedAt).toBeNull();
+  });
+
   it("builds a daily trend from the filtered rows and fills empty days with zero", async () => {
     const service = new ProjectControllingService(
       makeRepository([
