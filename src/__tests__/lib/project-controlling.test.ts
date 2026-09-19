@@ -25,6 +25,9 @@ function makeRow(overrides: Partial<ProjectControllingRow> = {}): ProjectControl
     categoryKey: "regelbetrieb",
     categoryLabel: "Regelbetrieb",
     categoryState: "known",
+    projectPublishedAt: "2026-09-01T08:00:00.000Z",
+    workPackagePublishedAt: "2026-09-01T09:00:00.000Z",
+    activityPublishedAt: "2026-09-01T10:00:00.000Z",
     ...overrides,
   };
 }
@@ -258,6 +261,32 @@ describe("BSF-03A provider-neutral project controlling", () => {
 
     expect(forward.ok && forward.value.summary).toEqual(expectedSummary);
     expect(reverse.ok && reverse.value.summary).toEqual(expectedSummary);
+  });
+
+  it("derives source freshness from the actually used projection rows", async () => {
+    const service = new ProjectControllingService(
+      makeRepository([
+        makeRow({
+          activityId: "freshness-a",
+          projectPublishedAt: "2026-09-01T07:00:00.000Z",
+          workPackagePublishedAt: "2026-09-01T08:00:00.000Z",
+          activityPublishedAt: "2026-09-01T09:00:00.000Z",
+        }),
+        makeRow({
+          activityId: "freshness-b",
+          projectPublishedAt: "2026-09-02T07:00:00.000Z",
+          workPackagePublishedAt: null,
+          activityPublishedAt: "2026-09-02T11:00:00.000Z",
+        }),
+      ]),
+    );
+
+    const result = await service.get(BASE_FILTERS);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.oldestPublishedAt).toBe("2026-09-01T07:00:00.000Z");
+    expect(result.value.latestPublishedAt).toBe("2026-09-02T11:00:00.000Z");
   });
 
   it("builds a daily trend from the filtered rows and fills empty days with zero", async () => {
