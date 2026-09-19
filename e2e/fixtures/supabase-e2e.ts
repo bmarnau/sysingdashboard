@@ -212,8 +212,19 @@ export async function installSupabaseMock(
       const body = route.request().postDataJSON() as Record<string, unknown>;
       const sameUser = body._user_id === identity?.id;
       const asksForKiosk = body._perm === "kiosk.view";
+      const asksForProjectControlling = body._perm === "project.controlling.view";
       const isKiosk = identity?.role === "kiosk";
-      await json(route, isKiosk && sameUser && asksForKiosk);
+      const canViewProjectControlling =
+        identity?.role === "systemadministrator" ||
+        identity?.role === "administrator" ||
+        identity?.role === "teamlead" ||
+        identity?.role === "projectmanager";
+      await json(
+        route,
+        sameUser &&
+          ((asksForKiosk && isKiosk) ||
+            (asksForProjectControlling && canViewProjectControlling)),
+      );
       return;
     }
     if (path.startsWith("/rest/v1/rpc/")) {
