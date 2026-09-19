@@ -3,6 +3,7 @@ import {
   PROJECT_CONTROLLING_MAX_DAYS,
   type ProjectControllingCompleteness,
   type ProjectControllingFilters,
+  type ProjectControllingFreshness,
   type ProjectControllingOutcome,
   type ProjectControllingRepository,
   type ProjectControllingRow,
@@ -135,24 +136,48 @@ function buildDailyTrend(
   return trend;
 }
 
-function measureFreshness(rows: readonly ProjectControllingRow[]): {
-  oldestPublishedAt: string | null;
-  latestPublishedAt: string | null;
-} {
-  const timestamps = rows.flatMap((row) =>
-    [row.projectPublishedAt, row.workPackagePublishedAt, row.activityPublishedAt].filter(
-      (value): value is string => typeof value === "string" && value.length > 0,
-    ),
-  );
+function measureFreshness(
+  rows: readonly ProjectControllingRow[],
+): ProjectControllingFreshness {
+  const observed = new Map<string, string | null>();
 
-  if (timestamps.length === 0) {
-    return { oldestPublishedAt: null, latestPublishedAt: null };
+  const record = (kind: string, identity: string | null, publishedAt: string | null | undefined) => {
+    if (!identity) return;
+    const timestamp =
+      typeof publishedAt === "string" && publishedAt.length > 0 ? publishedAt : null;
+    observed.set(`${kind}:${identity}:${timestamp ?? "unknown"}`, timestamp);
+  };
+
+  for (const row of rows) {
+    record(
+      "project",
+      row.projectSourceId
+        ? `${row.systemhouseId}:${row.customerId}:${row.projectSourceId}`
+        : null,
+      row.projectPublishedAt,
+    );
+    record(
+      "work-package",
+      row.workPackageSourceId
+        ? `${row.systemhouseId}:${row.customerId}:${row.workPackageSourceId}`
+        : null,
+      row.workPackagePublishedAt,
+    );
+    record(
+      "activity",
+      `${row.systemhouseId}:${row.customerId}:${row.activityId}`,
+      row.activityPublishedAt,
+    );
   }
 
-  timestamps.sort((left, right) => left.localeCompare(right));
+  const timestamps = [...observed.values()]
+    .filter((value): value is string => value !== null)
+    .sort((left, right) => left.localeCompare(right));
+
   return {
     oldestPublishedAt: timestamps[0] ?? null,
     latestPublishedAt: timestamps[timestamps.length - 1] ?? null,
+    observedRows: observed.size,
   };
 }
 
@@ -203,8 +228,7 @@ export class ProjectControllingService {
       ok: true,
       value: {
         filters: { ...filters },
-        oldestPublishedAt: freshness.oldestPublishedAt,
-        latestPublishedAt: freshness.latestPublishedAt,
+        freshness,
         summary: summarize(rows),
         trend: buildDailyTrend(rows, fromDay, toDay),
         scopeOptions: [...repositoryScopeOptions],
