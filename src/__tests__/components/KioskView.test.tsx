@@ -331,11 +331,7 @@ describe("KioskView", () => {
     };
 
     render(
-      <KioskView
-        state={ready(hybrid)}
-        securityStatus="valid"
-        onLogout={() => undefined}
-      />,
+      <KioskView state={ready(hybrid)} securityStatus="valid" onLogout={() => undefined} />,
     );
 
     expect(screen.getByText("HYBRID — INTERNE DATEN + DEMO-DATEN")).toBeVisible();
