@@ -222,8 +222,7 @@ export async function installSupabaseMock(
       await json(
         route,
         sameUser &&
-          ((asksForKiosk && isKiosk) ||
-            (asksForProjectControlling && canViewProjectControlling)),
+          ((asksForKiosk && isKiosk) || (asksForProjectControlling && canViewProjectControlling)),
       );
       return;
     }

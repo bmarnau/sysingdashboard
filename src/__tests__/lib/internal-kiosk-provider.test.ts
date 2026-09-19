@@ -143,7 +143,9 @@ describe("BSF-KIOSK-02 InternalReadKioskDataProvider", () => {
       readInternal: vi.fn().mockResolvedValue(internalOk()),
     }).getSnapshot();
 
-    expect(snapshot.domains.find((domain) => domain.id === "projects")?.sourceKind).toBe("internal");
+    expect(snapshot.domains.find((domain) => domain.id === "projects")?.sourceKind).toBe(
+      "internal",
+    );
     for (const id of ["availability", "infrastructure", "support"] as const) {
       expect(snapshot.domains.find((domain) => domain.id === id)?.sourceKind).toBe("unavailable");
     }
@@ -152,7 +154,9 @@ describe("BSF-KIOSK-02 InternalReadKioskDataProvider", () => {
   it("does not catch authorization failures from the internal server boundary", async () => {
     const provider = createInternalReadKioskDataProvider({
       demoProvider: demoProvider(),
-      readInternal: vi.fn().mockRejectedValue(new Error("Projektcontrolling für diesen Scope nicht zulässig.")),
+      readInternal: vi
+        .fn()
+        .mockRejectedValue(new Error("Projektcontrolling für diesen Scope nicht zulässig.")),
     });
 
     await expect(provider.getSnapshot()).rejects.toThrow(

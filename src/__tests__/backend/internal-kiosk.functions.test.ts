@@ -21,7 +21,9 @@ const SH_B = "11111111-1111-4111-8111-1111111111b2";
 
 type RpcName = "has_permission" | "is_account_active" | "has_active_systemhouse_membership";
 
-function fakeClient(options: { permission?: boolean; active?: boolean; membership?: boolean } = {}) {
+function fakeClient(
+  options: { permission?: boolean; active?: boolean; membership?: boolean } = {},
+) {
   const calls: Array<{ fn: RpcName; args: Record<string, unknown> }> = [];
   const client = {
     async rpc(fn: RpcName, args: Record<string, unknown>) {
@@ -84,9 +86,7 @@ function repository(systemhouses: string[]): ProjectControllingRepository {
 
 describe("BSF-KIOSK-02 internal kiosk server contract", () => {
   it("uses the current calendar month through today", () => {
-    expect(
-      currentMonthInternalKioskFilters(new Date(2026, 8, 19, 5, 30), SH_A),
-    ).toEqual({
+    expect(currentMonthInternalKioskFilters(new Date(2026, 8, 19, 5, 30), SH_A)).toEqual({
       from: "2026-09-01",
       to: "2026-09-19",
       billable: "all",

@@ -15,9 +15,7 @@ function internalLevel(result: ProjectControllingResult): KioskDomainSnapshot["l
 }
 
 function freshnessNote(result: ProjectControllingResult): string | undefined {
-  return result.latestPublishedAt
-    ? undefined
-    : "Datenstand der internen Quelle ist unbekannt.";
+  return result.latestPublishedAt ? undefined : "Datenstand der internen Quelle ist unbekannt.";
 }
 
 export function mapInternalKioskSnapshot(

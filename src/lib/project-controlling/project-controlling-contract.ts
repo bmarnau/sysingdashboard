@@ -87,7 +87,6 @@ export interface ProjectControllingCompleteness {
   rowsWithoutWorkPackage: number;
 }
 
-
 export interface ProjectControllingResult {
   filters: ProjectControllingFilters;
   oldestPublishedAt: string | null;

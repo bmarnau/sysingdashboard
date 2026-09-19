@@ -346,7 +346,9 @@ describe("KioskView", () => {
       observedAt: null,
     };
 
-    render(<KioskView state={ready(unavailable)} securityStatus="valid" onLogout={() => undefined} />);
+    render(
+      <KioskView state={ready(unavailable)} securityStatus="valid" onLogout={() => undefined} />,
+    );
 
     expect(screen.getByText("NICHT VERFÜGBAR")).toBeVisible();
     expect(screen.getByText("Interne Daten derzeit nicht verfügbar.")).toBeVisible();

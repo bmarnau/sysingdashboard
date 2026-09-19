@@ -159,9 +159,7 @@ export function KioskView({
           >
             <div>
               <h2 className="text-2xl font-semibold">Kiosk-Daten konnten nicht geladen werden</h2>
-              <p className="mt-3 text-kiosk-subtle">
-                Bitte Sitzung und Datenquelle prüfen.
-              </p>
+              <p className="mt-3 text-kiosk-subtle">Bitte Sitzung und Datenquelle prüfen.</p>
             </div>
           </section>
         ) : state.snapshot.datasetState === "not_loaded" ? (
