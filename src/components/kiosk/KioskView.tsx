@@ -11,6 +11,7 @@ export interface KioskViewProps {
   securityStatus: KioskSessionWatchdogStatus;
   onLogout: () => void;
   showControllingLink?: boolean;
+  requestedMode?: "demo" | "internal";
 }
 
 function formatTimestamp(value: string | null): string {
@@ -49,10 +50,11 @@ export function KioskView({
   securityStatus,
   onLogout,
   showControllingLink = false,
+  requestedMode = "demo",
 }: KioskViewProps) {
   const securityBlocked = securityStatus !== "valid";
   const now = new Date();
-  const mode = state.snapshot?.mode ?? "demo";
+  const mode = state.snapshot?.mode ?? requestedMode;
   const period = formatPeriod(state.snapshot?.period);
   const domains = new Map((state.snapshot?.domains ?? []).map((domain) => [domain.id, domain]));
   const banner =
