@@ -44,8 +44,6 @@ export interface KioskDomainSnapshot {
   metrics: KioskMetric[];
   note?: string;
   rows?: KioskStatusBreakdownRow[];
-  sourceKind?: KioskSourceKind;
-  observedAt?: string | null;
 }
 
 export interface KioskSnapshot {
