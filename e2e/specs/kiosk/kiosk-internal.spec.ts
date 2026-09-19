@@ -25,7 +25,8 @@ test.describe("BSF-KIOSK-02 internal hybrid wallboard", () => {
     await expect(page.getByText("Zeitraum: 01.09.2026 – 19.09.2026")).toBeVisible();
     await expect(page.getByText("25 h")).toBeVisible();
     await expect(page.getByText("80 %")).toBeVisible();
-    await expect(page.getByText("INTERN")).toHaveCount(3);
+    await expect(page.getByText("INTERN", { exact: true })).toHaveCount(3);
+    await expect(page.getByText("DEMO", { exact: true })).toHaveCount(3);
     await expect(page.getByText("Quelle: synthetische Demo-Daten")).toHaveCount(2);
     await expect(page.getByRole("link", { name: "Projektcontrolling öffnen" })).toBeVisible();
 
