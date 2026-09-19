@@ -39,6 +39,8 @@ export interface KioskDomainSnapshot {
   id: KioskDomainId;
   title: string;
   level: KioskLevel;
+  sourceKind: KioskSourceKind;
+  observedAt: string | null;
   metrics: KioskMetric[];
   note?: string;
   rows?: KioskStatusBreakdownRow[];
