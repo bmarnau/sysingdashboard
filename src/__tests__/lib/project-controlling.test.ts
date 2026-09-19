@@ -285,8 +285,61 @@ describe("BSF-03A provider-neutral project controlling", () => {
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.oldestPublishedAt).toBe("2026-09-01T07:00:00.000Z");
-    expect(result.value.latestPublishedAt).toBe("2026-09-02T11:00:00.000Z");
+    expect(result.value.freshness).toEqual({
+      oldestPublishedAt: "2026-09-01T07:00:00.000Z",
+      latestPublishedAt: "2026-09-02T11:00:00.000Z",
+      observedRows: 6,
+    });
+  });
+
+  it("deduplicates shared parent projections and ignores filtered-out freshness", async () => {
+    const service = new ProjectControllingService(
+      makeRepository([
+        makeRow({
+          activityId: "included-a",
+          activityDate: "2026-09-01",
+          projectPublishedAt: "2026-09-01T07:00:00.000Z",
+          workPackagePublishedAt: "2026-09-01T08:00:00.000Z",
+          activityPublishedAt: "2026-09-01T09:00:00.000Z",
+        }),
+        makeRow({
+          activityId: "included-b",
+          activityDate: "2026-09-02",
+          projectPublishedAt: "2026-09-01T07:00:00.000Z",
+          workPackagePublishedAt: "2026-09-01T08:00:00.000Z",
+          activityPublishedAt: "2026-09-02T10:00:00.000Z",
+        }),
+        makeRow({
+          activityId: "filtered-out",
+          activityDate: "2026-09-06",
+          projectPublishedAt: "2026-09-06T07:00:00.000Z",
+          workPackagePublishedAt: "2026-09-06T08:00:00.000Z",
+          activityPublishedAt: "2026-09-06T12:00:00.000Z",
+        }),
+      ]),
+    );
+
+    const result = await service.get(BASE_FILTERS);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.freshness).toEqual({
+      oldestPublishedAt: "2026-09-01T07:00:00.000Z",
+      latestPublishedAt: "2026-09-02T10:00:00.000Z",
+      observedRows: 4,
+    });
+  });
+
+  it("reports unknown freshness for an empty result without a now fallback", async () => {
+    const result = await new ProjectControllingService(makeRepository([])).get(BASE_FILTERS);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.freshness).toEqual({
+      oldestPublishedAt: null,
+      latestPublishedAt: null,
+      observedRows: 0,
+    });
   });
 
   it("builds a daily trend from the filtered rows and fills empty days with zero", async () => {
