@@ -1,6 +1,42 @@
 import { AlertTriangle, CheckCircle2, CircleGauge, Clock3 } from "lucide-react";
 import type { ReactNode } from "react";
-import type { KioskDomainSnapshot, KioskLevel, KioskMetric } from "@/lib/kiosk/kiosk-contract";
+import type {
+  KioskDomainSnapshot,
+  KioskLevel,
+  KioskMetric,
+  KioskSourceKind,
+} from "@/lib/kiosk/kiosk-contract";
+
+const SOURCE_LABEL: Record<KioskSourceKind, string> = {
+  demo: "DEMO",
+  internal: "INTERN",
+  unavailable: "NICHT VERFÜGBAR",
+};
+
+const SOURCE_CLASS: Record<KioskSourceKind, string> = {
+  demo: "border-kiosk-warning-border bg-kiosk-warning-soft text-kiosk-warning",
+  internal: "border-kiosk-accent bg-kiosk-accent-soft text-kiosk-accent",
+  unavailable: "border-kiosk-border bg-kiosk-muted text-kiosk-subtle",
+};
+
+function domainSourceKind(domain: KioskDomainSnapshot): KioskSourceKind {
+  return domain.sourceKind ?? "demo";
+}
+
+function formatObservedAt(value: string | null | undefined): string {
+  if (!value) return "unbekannt";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "unbekannt" : date.toLocaleString("de-DE");
+}
+
+function panelSourceDescription(domains: readonly KioskDomainSnapshot[]): string {
+  const kinds = new Set(domains.map(domainSourceKind));
+  if (kinds.size > 1) return "Quellen je Bereich gekennzeichnet";
+  const kind = [...kinds][0] ?? "demo";
+  if (kind === "internal") return "Quelle: interne Read-Daten";
+  if (kind === "unavailable") return "Quelle: nicht verfügbar";
+  return "Quelle: synthetische Demo-Daten";
+}
 
 const LEVEL_LABEL: Record<KioskLevel, string> = {
   ok: "OK",
@@ -43,16 +79,30 @@ function MetricTile({ metric, emphasis }: { metric: KioskMetric; emphasis?: Kios
 }
 
 function DomainHeading({ domain }: { domain: KioskDomainSnapshot }) {
+  const sourceKind = domainSourceKind(domain);
+
   return (
-    <div className="flex items-center justify-between gap-3">
-      <h3 className="text-xl font-bold text-kiosk-ink">{domain.title}</h3>
-      {domain.level === "warning" || domain.level === "critical" || domain.level === "unknown" ? (
+    <div className="flex items-start justify-between gap-3">
+      <div>
+        <h3 className="text-xl font-bold text-kiosk-ink">{domain.title}</h3>
+        <p className="mt-1 text-xs font-medium text-kiosk-subtle">
+          Datenstand: {formatObservedAt(domain.observedAt)}
+        </p>
+      </div>
+      <div className="flex flex-wrap justify-end gap-2">
         <span
-          className={`rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${STATUS_CLASS[domain.level]}`}
+          className={`rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${SOURCE_CLASS[sourceKind]}`}
         >
-          {LEVEL_LABEL[domain.level]}
+          {SOURCE_LABEL[sourceKind]}
         </span>
-      ) : null}
+        {domain.level === "warning" || domain.level === "critical" || domain.level === "unknown" ? (
+          <span
+            className={`rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${STATUS_CLASS[domain.level]}`}
+          >
+            {LEVEL_LABEL[domain.level]}
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -299,7 +349,15 @@ function TrendBars({ label, values = [] }: { label: string; values?: number[] })
   );
 }
 
-function PanelHeader({ title, icon }: { title: string; icon: ReactNode }) {
+function PanelHeader({
+  title,
+  icon,
+  domains,
+}: {
+  title: string;
+  icon: ReactNode;
+  domains: readonly KioskDomainSnapshot[];
+}) {
   return (
     <div className="mb-4 flex items-center gap-3 border-b border-kiosk-border pb-3 2xl:mb-2 2xl:pb-2">
       <span className="grid size-9 shrink-0 place-items-center rounded-md bg-kiosk-accent-soft text-kiosk-accent">
@@ -307,7 +365,7 @@ function PanelHeader({ title, icon }: { title: string; icon: ReactNode }) {
       </span>
       <div>
         <h2 className="text-xl font-bold text-kiosk-ink">{title}</h2>
-        <p className="text-sm font-medium text-kiosk-subtle">Quelle: synthetische Demo-Daten</p>
+        <p className="text-sm font-medium text-kiosk-subtle">{panelSourceDescription(domains)}</p>
       </div>
     </div>
   );
@@ -333,6 +391,7 @@ export function KioskWallboardSections({ domains }: { domains: Map<string, Kiosk
         <PanelHeader
           title="Operative Arbeit"
           icon={<CircleGauge className="size-5" aria-hidden="true" />}
+          domains={operational}
         />
         <div className="grid gap-4 2xl:gap-2">
           {operational.map((domain) => (
@@ -348,6 +407,7 @@ export function KioskWallboardSections({ domains }: { domains: Map<string, Kiosk
         <PanelHeader
           title="Infrastruktur – Überblick"
           icon={<CheckCircle2 className="size-5" aria-hidden="true" />}
+          domains={infrastructure ? [infrastructure] : []}
         />
         {infrastructure ? <Infrastructure domain={infrastructure} /> : null}
         <p className="mt-4 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle 2xl:mt-2 2xl:py-1.5">
@@ -362,6 +422,7 @@ export function KioskWallboardSections({ domains }: { domains: Map<string, Kiosk
         <PanelHeader
           title="Support-Postfach"
           icon={<Clock3 className="size-5" aria-hidden="true" />}
+          domains={support ? [support] : []}
         />
         {support ? <Support domain={support} /> : null}
         <p className="mt-4 flex items-center gap-2 rounded-md bg-kiosk-muted px-3 py-2 text-sm font-medium text-kiosk-subtle 2xl:mt-2 2xl:py-1.5">
