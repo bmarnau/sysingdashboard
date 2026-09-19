@@ -1,0 +1,43 @@
+name: KIOSK-02 One-shot Format
+
+on:
+  push:
+    branches:
+      - "feat/bsf-kiosk-02-internal-read"
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Format KIOSK-02 files
+        run: |
+          bunx prettier --write \
+            e2e/fixtures/supabase-e2e.ts \
+            e2e/specs/kiosk/kiosk-internal.spec.ts \
+            src/__tests__/backend/internal-kiosk.functions.test.ts \
+            src/__tests__/components/KioskView.test.tsx \
+            src/__tests__/lib/internal-kiosk-provider.test.ts \
+            src/components/kiosk/KioskView.tsx \
+            src/lib/project-controlling/project-controlling-contract.ts \
+            src/lib/project-controlling/project-controlling.ts \
+            src/lib/kiosk/internal-kiosk-snapshot.ts \
+            src/__tests__/lib/internal-kiosk-snapshot.test.ts
+      - name: Remove one-shot workflow
+        run: rm .github/workflows/kiosk02-format.yml
+      - name: Commit formatter output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "style(kiosk): format KIOSK-02 implementation"
+          git push origin HEAD:feat/bsf-kiosk-02-internal-read
