@@ -12,7 +12,6 @@ const SNAPSHOT: KioskSnapshot = {
   domains: [],
 };
 
-
 const HYBRID_SNAPSHOT: KioskSnapshot = {
   ...SNAPSHOT,
   mode: "hybrid",
