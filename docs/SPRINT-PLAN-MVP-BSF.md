@@ -1,7 +1,7 @@
 # Sysing Dashboard — Operative Sprintplanung MVP → BSF → Integration
 
 Stand: 2026-09-18  
-Status: **verbindliche operative Kiosk-first-Planung; BSF-03A in Finalverifikation**  
+Status: **verbindliche operative Kiosk-first-Planung; BSF-KIOSK-02 in Umsetzung**  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
 Tagesfokus: `docs/BSF-CURRENT-PRIORITIES.md`  
@@ -45,19 +45,19 @@ GitHub bleibt Source of Truth. Kein Merge/Release ohne die vorgesehenen GitHub-G
 - BSF-03 Kundenverantwortung / Meine Kunden — **DONE**
 - BSF-03D Arbeitspaket-Kategorien / #103 — **DONE**
 - BSF-KIOSK-01 Info-Kiosk Demo-Pilot / #135 — **DONE**
+- BSF-03A Projektmanager-Leistungssicht / #106 — **DONE**
 
 BSF-03D wurde über PR #134 auf `main` integriert. Post-Merge Security sowie vollständige CI einschließlich E2E, Accessibility, Technical Debt und Technical Report & Quality Gate sind PASS.
 
 ### Jetzt
 
-- **BSF-03A / #106 — IMPLEMENTATION COMPLETE / EXACT-HEAD GREEN / LOVABLE PREVIEW OFFEN**
-- **BSF-KIOSK-02 / #136 — NEXT nach formaler BSF-03A-Abnahme**
+- **BSF-KIOSK-02 / #136 — CURRENT / TDD-UMSETZUNG**
+- **BSF-03B / #107 — NEXT nach KIOSK-02-Abnahme**
 
 ## 4. Verbindliche operative Reihenfolge
 
 ```text
-BSF-03A / #106
-→ BSF-KIOSK-02 / #136
+BSF-KIOSK-02 / #136
 → BSF-03B / #107
 → BSF-03E / #63
 → BSF-07 Managementcockpit 2

@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | Version 1.64.0 als BSF-03A-Release-Kandidat; MVP-Baseline CLOSED/PASS; BSF-03, BSF-03D und KIOSK-01 abgeschlossen; BSF-03A technisch vollständig grün, Lovable-Exact-Head-Preview noch offen. |
+| Aktueller Stand     | Version 1.64.0 mit BSF-03A FINAL DONE; PR #144 auf main integriert, Post-Merge Security #990 und CI #996 PASS; BSF-KIOSK-02 ist der aktive Sprint. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | BSF-03A per Lovable-Exact-Head-Preview final abnehmen → PR #144 mergen → KIOSK-02 an den bestehenden internen Read-/Controlling-Vertrag anbinden. |
+| Nächster Nutzen     | BSF-KIOSK-02 bindet den bestehenden Info-Kiosk ohne zweiten Aggregationspfad an den gemergten BSF-03A-Read-/Controlling-Vertrag an; danach folgt BSF-03B. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -1039,3 +1039,20 @@ Governance dieses Maintenance Windows:
 - Merge: **NEIN**,
 - Deploy: **NEIN**,
 - fehlender Lovable-Nachweis bleibt ausdrücklich **offen**.
+
+
+## 2026-09-19 — BSF-03A FINAL DONE / Übergang zu KIOSK-02
+
+BSF-03A / Issue #106 wurde nach vollständiger Exact-Tree-/Lovable-Abnahme und GitHub-Gates mit PR #144 auf `main` integriert. Merge-Commit: `b9aef5aa9b3174f2abd022e11d492190102933a4`.
+
+Finale Evidenz:
+- finaler Feature-Head `763cf874b9f5bb8fadbd2875d7e11f0bd7165361`,
+- Exact-Tree-Match `d0c54fadc8851288ec92a7e9f26aa66eba702515`,
+- Golden Dataset / Project Controlling PASS,
+- 11 gezielte Vitest-Dateien / 66 Tests PASS,
+- Project-Controlling- und Scope-Security-E2E PASS,
+- Responsive-/Runtime-Abnahme 1920×1080 und 1366×768 PASS,
+- Security #989 und CI #995 vor Merge PASS,
+- Post-Merge Security #990 und CI #996 inklusive Technical Report & Quality Gate PASS.
+
+Issue #106 ist CLOSED / COMPLETED. Der aktive Sprint wechselt zu BSF-KIOSK-02 / Issue #136. KIOSK-02 verwendet den bestehenden KIOSK-01-Demo-Pfad weiter und ergänzt interne Aggregatdaten ausschließlich über den serverseitig abgesicherten BSF-03A-Vertrag. Keine neue DB-Migration oder Permission ist vorgesehen; Lovable wird erst nach repository-seitiger Implementierung gezielt für den Hybrid-/Großbild-Preview-Pass eingesetzt.

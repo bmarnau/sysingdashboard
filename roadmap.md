@@ -38,11 +38,11 @@ Die Kiosk-Migrationen wurden kontrolliert auf der maßgeblichen Sysingdashboard-
 
 ### Nächster interner Schritt nach KIOSK-01
 
-BSF-03A ist technisch implementation-complete; offen ist nur der branch-genaue Lovable-Exact-Head-Preview vor FINAL DONE. Danach folgt KIOSK-02 / #136.
+BSF-03A ist FINAL DONE und mit PR #144 auf `main` integriert. Post-Merge Security #990 und CI #996 sind PASS. Aktueller interner Schritt ist KIOSK-02 / #136.
 
 ---
 
-## BSF-03A (#106) Projektmanager-Leistungssicht / Controlling — FINALVERIFIKATION
+## BSF-03A (#106) Projektmanager-Leistungssicht / Controlling — DONE
 
 - [x] Golden Dataset V1 als deterministische Referenzbasis
 - [x] atomare Permission `project.controlling.view`
@@ -54,16 +54,26 @@ BSF-03A ist technisch implementation-complete; offen ist nur der branch-genaue L
 - [x] deterministische Summen, Tagestrend und Drill-down
 - [x] 5.000-Zeilen-Grenze; 5.001 fail-closed statt stiller Kürzung
 - [x] Route `/projektcontrolling` read-only
-- [x] E2E 91/91 und Accessibility 7/7 auf dem vollständig grünen GitHub-Head `d9b1645`
-- [x] Security #963 und CI #969 vollständig PASS; Quality Gate 0 Blocker
+- [x] E2E/Accessibility und vollständige Required Checks auf finalem Feature-Head `763cf874` PASS
+- [x] Security #989 und CI #995 auf finalem Feature-Head PASS; Quality Gate 0 Blocker
 - [x] offizieller Security Advisor ohne neue BSF-03A-Findings
 - [x] Benutzerhandbuch, kontextsensitive Hilfe, Architektur-/Schema-/API-Doku und Entwicklungstagebuch synchronisiert
-- [ ] Lovable auf exakt aktuellen PR-Head synchronisieren und read-only Responsive-/Runtime-Preview abnehmen
-- [ ] FINAL DONE / PR #144 Review und Merge nach separater Freigabe
+- [x] Lovable-/Exact-Tree-Abnahme über vollständigen Git-Tree `d0c54fadc885...`: Golden, 66 targeted Tests, E2E, 1920×1080, 1366×768, Runtime/Network PASS
+- [x] FINAL DONE / PR #144 gemergt; `main@b9aef5aa...`; Post-Merge Security #990 und CI #996 PASS
 
-### Danach
+### Aktuell
 
-`BSF-KIOSK-02 (#136) → BSF-03B → BSF-03E → BSF-07`
+**BSF-KIOSK-02 / #136 — CURRENT**
+
+- [ ] Kiosk-Vertrag additiv um `mode`, `sourceKind` und Domain-`observedAt` erweitern
+- [ ] BSF-03A-Freshness additiv aus Projection-`published_at` ableiten
+- [ ] internen Kiosk-Snapshot-Mapper ohne zweiten Aggregationspfad umsetzen
+- [ ] serverseitige Internal-Kiosk-Function mit `project.controlling.view` und Systemhouse-Scope
+- [ ] Hybrid-Provider und Route/UI ohne stillen Demo-Fallback
+- [ ] Security/E2E/A11y und gezielter Lovable-Großbild-Pass
+- [ ] vollständige Exact-Head-Gates, Dokumentation und Abschluss
+
+Danach: `BSF-03B → BSF-03E → BSF-07`
 
 ---
 

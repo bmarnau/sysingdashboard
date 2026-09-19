@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-09-18"
+lastUpdated: "2026-09-19"
 
 project:
   name: "Sysing Dashboard"
@@ -59,13 +59,13 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "BSF-03A"
-  currentSprintTitle: "Projektmanager-Leistungssicht und Controlling"
+  currentSprint: "BSF-KIOSK-02"
+  currentSprintTitle: "Info-Kiosk an internes Read-Modell anbinden"
   currentSprintStatus: "in-progress"
-  nextSprint: "BSF-KIOSK-02"
-  previousSprint: "BSF-KIOSK-01"
+  nextSprint: "BSF-03B"
+  previousSprint: "BSF-03A"
   previousSprintStatus: "completed"
-  releaseReadiness: "blocked"
+  releaseReadiness: "not-assessed"
   testsPassing: 917
   qualityGates:
     typecheck: "passed"
@@ -78,12 +78,6 @@ currentState:
     e2e: "passed"
     technicalReportQualityGate: "passed"
   knownVerificationLimits:
-    - id: "bsf03a-lovable-exact-head-preview"
-      status: "open"
-      severity: "medium"
-      description: "BSF-03A ist auf dem code-tragenden Exact Head vollständig gegatet; der branch-genaue Lovable-L2/L3-Preview-/Driftnachweis auf dem aktuellen PR-Head ist wegen Head-Drift und anschließend ausgeschöpfter Lovable-Credits noch offen."
-      reference: "BSF-03A"
-      targetSprint: "BSF-03A"
     - id: "session-server-enforcement"
       status: "open"
       severity: "medium"
@@ -185,9 +179,17 @@ phases:
       - "BSF-03 Kundenverantwortung und Kundensicht vollständig abgeschlossen"
       - "BSF-03D Arbeitspaket-Kategorien vollständig abgeschlossen und auf main integriert"
       - "BSF-KIOSK-01 vollständig abgeschlossen und auf main integriert"
-      - "BSF-03A technisch vollständig gegatet; branch-genauer Lovable-Preview-/Driftnachweis noch offen"
+      - "BSF-03A vollständig abgenommen, mit PR #144 auf main integriert und post-merge vollständig gegatet"
 
 completedSprints:
+  - id: "BSF-03A"
+    title: "Projektmanager-Leistungssicht und Controlling"
+    version: "1.64.0"
+    status: "completed"
+    summary: >-
+      Read-only Projektcontrolling mit providerneutraler Aggregation, atomarer
+      Permission, serverseitigem Scope, Golden Dataset V1, Exact-Tree-/Lovable-
+      Abnahme sowie vollständigem Post-Merge Security-/CI-/Quality-Gate-Nachweis.
   - id: "BSF-KIOSK-01"
     title: "Info-Kiosk Demo-Pilot"
     version: "1.63.0"
@@ -377,7 +379,7 @@ roadmap:
       - "Cross-Systemhaus- und Cross-Customer-Negativtests vorhanden"
   - id: "BSF-03A"
     title: "Projektmanager-Leistungssicht und Controlling"
-    status: "in-progress"
+    status: "completed"
     priority: "high"
     goal: "Read-only-Leistungssicht nach Zeitraum, Kunde, Projekt und Tätigkeiten bereitstellen."
     dependencies:
@@ -386,13 +388,25 @@ roadmap:
       - "Summen und Drill-down im zulässigen Projekt-/Verantwortungsscope"
       - "Keine Teamlead-Finalisierungsrechte"
       - "Serverseitige Scope-Negativtests PASS"
+  - id: "BSF-KIOSK-02"
+    title: "Info-Kiosk an internes Read-Modell anbinden"
+    status: "in-progress"
+    priority: "high"
+    goal: "Bestehenden Demo-Kiosk über den BSF-03A-Read-Vertrag um serverseitig abgesicherte interne Aggregatdaten erweitern."
+    dependencies:
+      - "BSF-03A"
+    exitCriteria:
+      - "Demo-Provider und exklusive kiosk.view-Rolle bleiben unverändert nutzbar"
+      - "Interne Daten ausschließlich über Server Function und project.controlling.view"
+      - "Kein zweiter Stunden-/Billable-Aggregator und kein stiller Demo-Fallback"
+      - "Cross-Systemhouse/Customer/IDOR, E2E und Accessibility PASS"
   - id: "BSF-03B"
     title: "Teamlead-Leistungsnachweis V1"
     status: "planned"
     priority: "high"
     goal: "Kundenbezogenen Leistungsnachweis mit kontrollierter Finalisierung und Audit umsetzen."
     dependencies:
-      - "BSF-03A"
+      - "BSF-KIOSK-02"
     exitCriteria:
       - "Finaler unveränderbarer Snapshot"
       - "Doppelabrechnungsschutz und Audit serverseitig"
@@ -716,7 +730,7 @@ releaseManagement:
     - "docs/CODEX-GIT-CI-RULE.md"
     - "docs/ADR/0029-systemhouse-customer-scope.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
-  nextReleaseTarget: "BSF-03A Finalabnahme und BSF-KIOSK-02"
+  nextReleaseTarget: "BSF-KIOSK-02 interner Read-Provider"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"

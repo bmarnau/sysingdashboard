@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-09-18  
+Stand: 2026-09-19  
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
@@ -46,28 +46,21 @@ Der Goldene Datensatz V1 ist die versionierte, vollständig synthetische und det
 
 Golden-Validator und unabhängige Project-Controlling-Expected-Results sind im BSF-03A-Gate PASS.
 
-### BSF-03A / #106 — IMPLEMENTATION COMPLETE / EXACT-HEAD GREEN / LOVABLE PREVIEW OFFEN
+### BSF-03A / #106 — DONE
 
-Aktiver Draft-PR: #144, Branch `feat/bsf-03a-project-controlling`.
+PR #144 ist auf `main` integriert. Finaler Feature-Head `763cf874b9f5bb8fadbd2875d7e11f0bd7165361`; Merge-Commit `b9aef5aa9b3174f2abd022e11d492190102933a4`.
 
-Code-tragender Exact Head vor der Abschlussdokumentation: `ffc28901c3017d9459c89a9fe68c030da0f07386`.
+- finale Lovable-/Exact-Tree-Abnahme: **PASS**,
+- Golden Dataset und gezielte 66 Project-Controlling-Tests: **PASS**,
+- 1920×1080 / 1366×768, Runtime/Network/read-only UI: **PASS**,
+- Post-Merge Security #990: **PASS**,
+- Post-Merge CI #996 / Technical Report & Quality Gate: **PASS**,
+- Issue #106: **CLOSED / COMPLETED**.
 
-- Security #956: **PASS**
-- CI #962: **PASS**
-- Unit/Components: **917 PASS / 4 TODO**
-- E2E: **91/91 PASS**
-- Accessibility: **7/7 PASS**
-- BSF-02C T01–T30: **PASS**
-- BSF-03A DB T01–T20d: **PASS**
-- Schema-/Types-Drift: **NONE**
-- Technical Report v17 / Quality Gate: **0 Blocker**
-- offizieller Security Advisor: **keine neuen BSF-03A-Findings**, nur SEC-01-Baseline.
+### BSF-KIOSK-02 / #136 — CURRENT
 
-Noch offen ist der branch-genaue Lovable-Preview-/Driftcheck. Der Precheck fand einen Lovable-Head-Drift; ein erneuter Read-only-Recheck war wegen ausgeschöpfter Credits nicht möglich. Deshalb kein FINAL DONE, kein Merge und kein Deploy.
+KIOSK-02 bindet den bestehenden Kiosk ohne UI-Neubau an den internen, serverseitig abgesicherten BSF-03A-Read-/Controlling-Vertrag an. Der Implementierungsvertrag ist geprüft; Umsetzung startet TDD-first auf aktuellem `main`.
 
-### BSF-KIOSK-02 / #136 — NEXT NACH BSF-03A-FINALABNAHME
-
-KIOSK-02 bindet den bestehenden Kiosk ohne UI-Neubau an den internen, serverseitig abgesicherten BSF-03A-Read-/Controlling-Vertrag an.
 
 ## Kiosk-first- und Golden-Dataset-Regel
 
@@ -105,8 +98,8 @@ Golden-Dataset-Grundregeln:
 2. **BSF-03 — DONE**
 3. **BSF-03D / #103 — DONE**
 4. **BSF-KIOSK-01 / #135 — DONE**
-5. **BSF-03A / #106 — IMPLEMENTATION COMPLETE / EXACT-HEAD GREEN / LOVABLE PREVIEW OFFEN**
-6. **BSF-KIOSK-02 / #136 — NEXT NACH BSF-03A-FINALABNAHME**
+5. **BSF-03A / #106 — DONE**
+6. **BSF-KIOSK-02 / #136 — CURRENT**
 7. **BSF-03B / #107 — GEPLANT; Golden Expected Result Leistungsnachweis ergänzen**
 8. **BSF-03E / #63 — GEPLANT**
 9. **BSF-07 / #140 — VORGEZOGEN / GEPLANT**
@@ -273,4 +266,4 @@ Der Golden Dataset verwendet dieselbe fachliche Identitätslogik, aber ausschlie
 
 ## Fachlicher roter Faden
 
-`BSF-03D DONE → KIOSK-01 DONE → BSF-03A EXACT-HEAD GREEN / LOVABLE PREVIEW → KIOSK-02 → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL + Golden-Regression → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
+`BSF-03D DONE → KIOSK-01 DONE → BSF-03A DONE → KIOSK-02 CURRENT → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL + Golden-Regression → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
