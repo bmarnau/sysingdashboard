@@ -194,6 +194,7 @@ function baseData(): FakeTableData {
         customer_id: "customer-1",
         source_id: "project-1",
         name: "Projekt Eins",
+        published_at: "2026-09-01T07:00:00.000Z",
         is_active: true,
       },
       {
@@ -201,6 +202,7 @@ function baseData(): FakeTableData {
         customer_id: "customer-rogue",
         source_id: "project-rogue",
         name: "Fremdes Projekt",
+        published_at: "2026-09-30T07:00:00.000Z",
         is_active: true,
       },
     ],
@@ -213,6 +215,7 @@ function baseData(): FakeTableData {
         title: "Bekannt",
         category_key: "cat-known",
         category_observed: true,
+        published_at: "2026-09-01T08:00:00.000Z",
         is_active: true,
       },
       {
@@ -223,6 +226,7 @@ function baseData(): FakeTableData {
         title: "Inaktiv",
         category_key: "cat-old",
         category_observed: true,
+        published_at: "2026-09-02T08:00:00.000Z",
         is_active: true,
       },
       {
@@ -233,6 +237,7 @@ function baseData(): FakeTableData {
         title: "Unbekannt",
         category_key: "cat-missing",
         category_observed: true,
+        published_at: "2026-09-03T08:00:00.000Z",
         is_active: true,
       },
       {
@@ -243,6 +248,7 @@ function baseData(): FakeTableData {
         title: "Ohne Kategorie",
         category_key: null,
         category_observed: true,
+        published_at: "2026-09-04T08:00:00.000Z",
         is_active: true,
       },
       {
@@ -253,6 +259,7 @@ function baseData(): FakeTableData {
         title: "Legacy",
         category_key: null,
         category_observed: false,
+        published_at: "2026-09-05T08:00:00.000Z",
         is_active: true,
       },
       {
@@ -263,6 +270,7 @@ function baseData(): FakeTableData {
         title: "Fremdes Arbeitspaket",
         category_key: "cat-known",
         category_observed: true,
+        published_at: "2026-09-30T08:00:00.000Z",
         is_active: true,
       },
     ],
@@ -277,6 +285,7 @@ function baseData(): FakeTableData {
         billable: true,
         billing_status: "offen",
         work_package_source_id: "wp-known",
+        published_at: "2026-09-01T09:00:00.000Z",
         is_active: true,
       },
       {
@@ -289,6 +298,7 @@ function baseData(): FakeTableData {
         billable: true,
         billing_status: "offen",
         work_package_source_id: "wp-inactive",
+        published_at: "2026-09-02T09:00:00.000Z",
         is_active: true,
       },
       {
@@ -301,6 +311,7 @@ function baseData(): FakeTableData {
         billable: false,
         billing_status: "offen",
         work_package_source_id: "wp-unknown",
+        published_at: "2026-09-03T09:00:00.000Z",
         is_active: true,
       },
       {
@@ -313,6 +324,7 @@ function baseData(): FakeTableData {
         billable: false,
         billing_status: "offen",
         work_package_source_id: "wp-none",
+        published_at: "2026-09-04T09:00:00.000Z",
         is_active: true,
       },
       {
@@ -325,6 +337,7 @@ function baseData(): FakeTableData {
         billable: true,
         billing_status: "offen",
         work_package_source_id: "wp-unobserved",
+        published_at: "2026-09-05T09:00:00.000Z",
         is_active: true,
       },
       {
@@ -337,6 +350,7 @@ function baseData(): FakeTableData {
         billable: true,
         billing_status: "offen",
         work_package_source_id: "wp-rogue",
+        published_at: "2026-09-30T09:00:00.000Z",
         is_active: true,
       },
     ],
@@ -398,6 +412,9 @@ describe("BSF-03A Supabase project controlling adapter", () => {
       categoryKey: "cat-known",
       categoryLabel: "Regelbetrieb",
       categoryState: "known",
+      projectPublishedAt: "2026-09-01T07:00:00.000Z",
+      workPackagePublishedAt: "2026-09-01T08:00:00.000Z",
+      activityPublishedAt: "2026-09-01T09:00:00.000Z",
     });
     expect(byId.get("activity-inactive")).toMatchObject({
       categoryKey: "cat-old",
