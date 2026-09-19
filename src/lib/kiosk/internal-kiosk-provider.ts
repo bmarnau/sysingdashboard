@@ -101,6 +101,7 @@ export function createInternalReadKioskDataProvider({
         datasetVersion: "sysing.kiosk.hybrid.v1",
         generatedAt,
         observedAt: internalObservedAt ?? demoObservedAt ?? generatedAt,
+        period: internalOutcome.ok ? internalOutcome.value.period : undefined,
         domains: [...internalDomains, ...demoDomains],
       };
     },
