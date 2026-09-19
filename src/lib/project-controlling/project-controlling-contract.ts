@@ -87,11 +87,6 @@ export interface ProjectControllingCompleteness {
   rowsWithoutWorkPackage: number;
 }
 
-export interface ProjectControllingFreshness {
-  oldestPublishedAt: string | null;
-  latestPublishedAt: string | null;
-  observedRows: number;
-}
 
 export interface ProjectControllingResult {
   filters: ProjectControllingFilters;
@@ -102,7 +97,6 @@ export interface ProjectControllingResult {
   scopeOptions: ProjectControllingScopeOption[];
   rows: ProjectControllingRow[];
   completeness: ProjectControllingCompleteness;
-  freshness: ProjectControllingFreshness;
 }
 
 export interface ProjectControllingRepository {
