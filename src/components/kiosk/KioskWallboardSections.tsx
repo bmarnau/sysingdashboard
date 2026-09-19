@@ -378,7 +378,9 @@ function PanelHeader({
       </div>
       {singleSource ? (
         <span
-          className={`ml-auto rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${SOURCE_CLASS[singleSource]}`}
+          className={`ml-auto rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${
+            SOURCE_CLASS[singleSource]
+          }`}
         >
           {SOURCE_LABEL[singleSource]}
         </span>
