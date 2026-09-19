@@ -52,6 +52,10 @@ export interface KioskSnapshot {
   datasetVersion: string;
   generatedAt: string;
   observedAt: string;
+  period?: {
+    from: string;
+    to: string;
+  };
   domains: KioskDomainSnapshot[];
 }
 
