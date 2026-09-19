@@ -23,6 +23,8 @@ describe("DemoKioskDataProvider", () => {
     expect(snapshot.datasetVersion).toBe("1.0.0");
     expect(snapshot.generatedAt).toBe(NOW.toISOString());
     expect(snapshot.domains).toHaveLength(6);
+    expect(snapshot.domains.every((domain) => domain.sourceKind === "demo")).toBe(true);
+    expect(snapshot.domains.every((domain) => domain.observedAt === NOW.toISOString())).toBe(true);
     const supportTrend = snapshot.domains
       .find((domain) => domain.id === "support")
       ?.metrics.find((metric) => metric.label === "Heute")?.trend;
