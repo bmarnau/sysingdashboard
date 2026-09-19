@@ -131,9 +131,7 @@ function OperationalDomain({ domain }: { domain: KioskDomainSnapshot }) {
               className="flex min-h-24 flex-col justify-between rounded-lg border border-kiosk-border bg-kiosk-muted px-4 py-3 2xl:min-h-20 2xl:py-2"
             >
               <p className="text-sm font-semibold text-kiosk-subtle">{metric.label}</p>
-              <p className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">
-                {value(metric)}
-              </p>
+              <p className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">{value(metric)}</p>
             </div>
           ))}
         </div>
@@ -316,9 +314,7 @@ function Support({ domain }: { domain: KioskDomainSnapshot }) {
           >
             <div className="min-w-0" data-emphasis={emphasis ?? "neutral"}>
               <p className="text-sm font-semibold text-kiosk-subtle">{metric.label}</p>
-              <p className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">
-                {value(metric)}
-              </p>
+              <p className="mt-1 text-4xl font-bold tabular-nums text-kiosk-ink">{value(metric)}</p>
               <p className="mt-1 text-xs text-kiosk-subtle">Mengenentwicklung, 7 Demo-Stände</p>
             </div>
             <TrendBars label={metric.label} values={metric.trend} />
@@ -379,9 +375,7 @@ function PanelHeader({
         <p className="text-sm font-medium text-kiosk-subtle">{panelSourceDescription(domains)}</p>
       </div>
       {singleSource ? (
-        <span
-          className={`${SOURCE_BADGE_CLASS} ml-auto ${SOURCE_CLASS[singleSource]}`}
-        >
+        <span className={`${SOURCE_BADGE_CLASS} ml-auto ${SOURCE_CLASS[singleSource]}`}>
           {SOURCE_LABEL[singleSource]}
         </span>
       ) : null}
