@@ -19,6 +19,8 @@ const SOURCE_CLASS: Record<KioskSourceKind, string> = {
   unavailable: "border-kiosk-border bg-kiosk-muted text-kiosk-subtle",
 };
 
+const SOURCE_BADGE_CLASS = "rounded-full border px-2.5 py-1 text-xs font-bold uppercase";
+
 function domainSourceKind(domain: KioskDomainSnapshot): KioskSourceKind {
   return domain.sourceKind ?? "demo";
 }
@@ -378,9 +380,7 @@ function PanelHeader({
       </div>
       {singleSource ? (
         <span
-          className={`ml-auto rounded-full border px-2.5 py-1 text-xs font-bold uppercase ${
-            SOURCE_CLASS[singleSource]
-          }`}
+          className={`${SOURCE_BADGE_CLASS} ml-auto ${SOURCE_CLASS[singleSource]}`}
         >
           {SOURCE_LABEL[singleSource]}
         </span>
