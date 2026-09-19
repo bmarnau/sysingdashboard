@@ -83,3 +83,19 @@ jobs:
           test "$(git rev-list -n 1 "$TAG_164")" = "$SHA_164"
           gh release view "$TAG_163" --json tagName,isDraft,isPrerelease
           gh release view "$TAG_164" --json tagName,isDraft,isPrerelease
+
+      - name: Write verification marker
+        run: |
+          mkdir -p .github
+          {
+            echo "v1.63.0=published"
+            echo "v1.64.0=published"
+            echo "verified_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > .github/release-backfill-verified.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/release-backfill-verified.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(release): verify published backfill [skip ci]"
+            git push origin HEAD:diag/version-release-backfill-2026-09-19
+          fi
