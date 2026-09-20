@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-09-19"
+lastUpdated: "2026-09-20"
 
 project:
   name: "Sysing Dashboard"
@@ -61,11 +61,11 @@ versions:
 currentState:
   currentSprint: "BSF-KIOSK-02"
   currentSprintTitle: "Info-Kiosk interner Read-Provider"
-  currentSprintStatus: "in-progress"
+  currentSprintStatus: "accepted"
   nextSprint: "BSF-03B"
   previousSprint: "BSF-03A"
   previousSprintStatus: "completed"
-  releaseReadiness: "blocked"
+  releaseReadiness: "passed"
   testsPassing: 949
   qualityGates:
     typecheck: "passed"
@@ -78,12 +78,6 @@ currentState:
     e2e: "passed"
     technicalReportQualityGate: "passed"
   knownVerificationLimits:
-    - id: "bsf-kiosk-02-lovable-exact-head-preview"
-      status: "open"
-      severity: "medium"
-      description: "BSF-KIOSK-02 ist auf dem code-tragenden GitHub-Head vollständig gegatet; der gezielte K02-L1 Exact-Tree-/Responsive-Preview 1920x1080 und 1366x768 ist vorbereitet, konnte wegen ausgeschöpfter Lovable-Credits aber noch nicht ausgeführt werden."
-      reference: "BSF-KIOSK-02"
-      targetSprint: "BSF-KIOSK-02"
     - id: "session-server-enforcement"
       status: "open"
       severity: "medium"
@@ -186,7 +180,7 @@ phases:
       - "BSF-03D Arbeitspaket-Kategorien vollständig abgeschlossen und auf main integriert"
       - "BSF-KIOSK-01 vollständig abgeschlossen und auf main integriert"
       - "BSF-03A vollständig abgenommen und auf main integriert"
-      - "BSF-KIOSK-02 interner Read-/Hybrid-Provider technisch vollständig gegatet; Lovable Exact-Tree-/Responsive-Preview noch offen"
+      - "BSF-KIOSK-02 FINAL DONE; Exact-Tree-/Responsive-Abnahme mit 3x INTERN / 3x DEMO, Freshness, Datenminimierung und Fail-closed PASS"
 
 completedSprints:
   - id: "BSF-03A"
@@ -387,7 +381,7 @@ roadmap:
       - "Cross-Systemhaus- und Cross-Customer-Negativtests vorhanden"
   - id: "BSF-KIOSK-02"
     title: "Info-Kiosk interner Read-Provider"
-    status: "in-progress"
+    status: "accepted"
     priority: "high"
     goal: "Bestehenden Info-Kiosk ohne zweite Fachlogik an den serverseitig abgesicherten Projektcontrolling-Read-Vertrag anbinden."
     dependencies:
@@ -703,7 +697,7 @@ quality:
 releaseManagement:
   currentRelease: "1.65.0"
   stage: "preview"
-  status: "blocked"
+  status: "passed"
   releaseEvidence:
     - "CHANGELOG.md"
     - "docs/PROJECT-GOVERNANCE.md"
@@ -728,7 +722,7 @@ releaseManagement:
     - "docs/CODEX-GIT-CI-RULE.md"
     - "docs/ADR/0029-systemhouse-customer-scope.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
-  nextReleaseTarget: "BSF-KIOSK-02 Finalabnahme und BSF-03B"
+  nextReleaseTarget: "BSF-KIOSK-02 Merge/Release und BSF-03B"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"
