@@ -499,7 +499,9 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
             )}
             <Row
               label="Key Vault URL"
-              value={kvOk ? "konfiguriert — Provider noch nicht aktiv" : "optional / nicht konfiguriert"}
+              value={
+                kvOk ? "konfiguriert — Provider noch nicht aktiv" : "optional / nicht konfiguriert"
+              }
             />
           </Section>
 
@@ -512,10 +514,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
               value={localStorageAvailable ? "schreibbar — Laufzeitprobe PASS" : "nicht schreibbar"}
               ok={localStorageAvailable}
             />
-            <Row
-              label="Last auto-backup marker"
-              value={fmtDate(lastBackup)}
-            />
+            <Row label="Last auto-backup marker" value={fmtDate(lastBackup)} />
             <Row label="Last sync run" value={fmtDate(p.data?.lastSyncAt)} />
             <Row
               label="Azure export/import evidence"
@@ -525,15 +524,15 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
 
           {/* 7) Documentation */}
           <Section icon={<BookOpen className="size-4 shrink-0" />} title="7. Documentation">
-            <Row label="User manual artifact" value={`im Build enthalten — v${DOCUMENTATION_VERSION}`} />
+            <Row
+              label="User manual artifact"
+              value={`im Build enthalten — v${DOCUMENTATION_VERSION}`}
+            />
             <Row
               label="Management overview artifact"
               value="Repository-Vertrag: docs/MANAGEMENT_OVERVIEW.md"
             />
-            <Row
-              label="Latest help-topic date (editorial)"
-              value={lastUpdated || NOT_CONFIGURED}
-            />
+            <Row label="Latest help-topic date (editorial)" value={lastUpdated || NOT_CONFIGURED} />
           </Section>
 
           {/* Backend health / Security scan info */}
@@ -602,8 +601,14 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
               value=".github/workflows/security.yml"
               href={`${PROJECT_INFO.github.url}/actions/workflows/security.yml`}
             />
-            <Row label="Trigger contract" value="Push & PR (main/develop) · wöchentlich Mo 03:00 UTC" />
-            <Row label="Report-Artefakt contract" value="security-report/findings.{md,json} (30 d)" />
+            <Row
+              label="Trigger contract"
+              value="Push & PR (main/develop) · wöchentlich Mo 03:00 UTC"
+            />
+            <Row
+              label="Report-Artefakt contract"
+              value="security-report/findings.{md,json} (30 d)"
+            />
             <Row
               label="Latest Security-Scan result"
               value="hier nicht live abgefragt — GitHub Actions / Technischer Prüfbericht ist maßgeblich"
