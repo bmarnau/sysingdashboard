@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-20 · Dashboard-Version 1.65.0
+Stand: 2026-09-20 · Dashboard-Version 1.65.1
 
 ## Vision
 
@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | Version 1.65.0 als BSF-KIOSK-02-Release-Kandidat; MVP-Baseline CLOSED/PASS; KIOSK-02 ist FINAL DONE und Exact-Tree-/Responsive-abgenommen; PR #147 wartet nur noch auf Merge-Freigabe. |
+| Aktueller Stand     | v1.65.0 veröffentlicht; KIOSK-02 FINAL DONE. Patch 1.65.1 ergänzt die sichtbare Versionsanzeige. BSF-03B ist gestartet und befindet sich nach read-only Live-Precheck im TDD-/Vertragsaufbau. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | Dokumentations-Head grün bestätigen → PR #147 nach separater Freigabe mergen und v1.65.0 taggen → BSF-03B Teamlead-Leistungsnachweis V1 starten. |
+| Nächster Nutzen     | Patch 1.65.1 sauber releasen → BSF-03B Permission-/Snapshot-/Review-Vertrag repository-seitig umsetzen → danach DB-Migration und L2-UI. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -50,6 +50,10 @@ Qualitätssicherung gewachsen. Nach der formalen MVP-Baseline verschiebt sich de
 Schwerpunkt auf das **Betriebsfähige Systemhaus-Fundament (BSF)**: belastbare
 Kundenbeziehungen, rollenübergreifende Leistungssichten, Dokumentationsqualität,
 Betreiberhoheit und spätere Integrationen.
+
+## Patch 1.65.1 — sichtbare Versionsanzeige (2026-09-20)
+
+Landing-/Anmeldeseite, Auth-Seite und das angemeldete Dashboard erhalten eine kompakte Anzeige der aktuellen Produktversion mit Versionsdatum. Version und Datum stammen aus dem obersten `CHANGELOG.md`-Eintrag; es gibt keine zweite hartcodierte Versionsquelle.
 
 ## BSF-KIOSK-02 — interner Read-/Hybrid-Provider (2026-09-19)
 
