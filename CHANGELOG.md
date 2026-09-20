@@ -13,6 +13,11 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.65.1 - 2026-09-20
+
+- **Versionsanzeige**: Landing-/Anmeldeseite, Auth-Seite und angemeldetes Dashboard zeigen die aktuelle Dashboard-Version mit Versionsdatum aus der zentralen CHANGELOG-Quelle an.
+- **Single Source of Truth**: Version und Datum werden nicht in den Seiten hartcodiert, sondern aus dem obersten CHANGELOG-Eintrag abgeleitet.
+
 ## 1.65.0 - 2026-09-19
 
 - **Info-Kiosk interner Read-Provider (BSF-KIOSK-02, Issue #136)**: Der bestehende Kiosk unterstützt neben dem unveränderten Demo-Pfad einen expliziten internen Hybridmodus für berechtigte Leitungs-Sessions. Projekte, Arbeitspakete und Tätigkeiten werden aus dem vorhandenen BSF-03A-Controlling-Vertrag abgeleitet; Verfügbarkeit, Infrastruktur und Support bleiben eindeutig gekennzeichnete synthetische Demo-Domänen.
