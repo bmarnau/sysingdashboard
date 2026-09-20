@@ -59,6 +59,7 @@ export interface SystemStatusPayload {
     keyVault?: { configured?: boolean } | null;
   };
   data?: {
+    lastSyncAt?: string | null;
     lastAzureExportAt?: string | null;
     lastAzureImportAt?: string | null;
   };
