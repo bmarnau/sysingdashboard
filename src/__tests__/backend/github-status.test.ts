@@ -13,8 +13,8 @@ afterEach(() => {
 describe("backend/githubStatus", () => {
   it("returns the live public main SHA without credentials", async () => {
     const calls: Array<{ url: string; init?: RequestInit }> = [];
-    const fetchImpl = async (url: string, init?: RequestInit) => {
-      calls.push({ url, init });
+    const fetchImpl: typeof fetch = async (input, init) => {
+      calls.push({ url: String(input), init });
       return new Response(JSON.stringify({ object: { sha: MAIN_SHA } }), { status: 200 });
     };
 
