@@ -12,6 +12,7 @@
  */
 
 import type { UserRole } from "@/lib/user-management";
+import { DASHBOARD_VERSION as CURRENT_DASHBOARD_VERSION } from "@/lib/app-version";
 // Zentrale Änderungshistorie wird zur Build-Zeit eingelesen.
 // Vite stellt den Rohinhalt der Datei als String bereit.
 import changelogSource from "../../CHANGELOG.md?raw";
@@ -84,8 +85,8 @@ export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
 export const DOCUMENTATION_VERSION = "1.23.0";
-/** Aktuelle Dashboard-Version. Wird automatisch aus dem obersten CHANGELOG-Eintrag übernommen. */
-export const DASHBOARD_VERSION = CHANGELOG[0]?.version ?? "0.0.0";
+/** Aktuelle Dashboard-Version. Wird zentral aus dem obersten CHANGELOG-Eintrag übernommen. */
+export const DASHBOARD_VERSION = CURRENT_DASHBOARD_VERSION;
 /** Anzeigename des Dashboards für Handbuch-Footer. */
 export const DASHBOARD_VERSION_HINT = `Engineer Console ${DASHBOARD_VERSION}`;
 
