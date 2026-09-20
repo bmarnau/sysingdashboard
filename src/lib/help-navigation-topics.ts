@@ -64,7 +64,7 @@ Das **Fragezeichen** öffnet die Hilfe und das Benutzerhandbuch. Das **Zahnrad**
       "Projektbericht",
       "Stift",
     ],
-    lastUpdated: "2026-08-22",
+    lastUpdated: "2026-09-20",
     content: `## Projektübersicht
 Über den Tab **Projekte** gelangt man in die Projektübersicht.
 
@@ -266,7 +266,9 @@ KIOSK-02 führt keine produktive Microsoft-Graph-, SharePoint-, Exchange-, PRTG-
 ## GitHub
 Die Repository-URL ist die kanonische öffentliche Projektadresse **https://github.com/bmarnau/sysingdashboard**. Interne Git-Remotes einer Hosting-Plattform werden nicht als Repository-URL übernommen.
 
-Branch und Commit werden nur angezeigt, wenn Build- oder Hosting-Umgebung diese Information verlässlich bereitstellen. Fehlt der Commit in einer Lovable-Runtime, erscheint **„vom Hosting nicht bereitgestellt“**. Das bedeutet nicht, dass GitHub falsch konfiguriert ist; für einen reproduzierbaren Freigabenachweis ist weiterhin der in GitHub geprüfte Merge-Commit maßgeblich.
+Der Systemstatus trennt jetzt ausdrücklich **Build branch / Build commit** von **GitHub main HEAD**. Beim Öffnen beziehungsweise mit **Jetzt prüfen** wird der öffentliche `main`-Ref serverseitig read-only abgefragt. Nur wenn ein tatsächlich bekannter Build-/Runtime-Commit mit diesem live gelesenen `main`-Commit übereinstimmt, erscheint **SYNCHRON**.
+
+**ABWEICHEND** bedeutet: beide Commits sind bekannt, aber verschieden. **NICHT PRÜFBAR** bedeutet: GitHub war nicht erreichbar oder Build-/Commit-Metadaten fehlen. Ein unbekannter Branch wird nicht mehr ersatzweise als `main` ausgegeben. Der Dialog zeigt zusätzlich den Zeitpunkt **Zuletzt gegen GitHub geprüft**.
 
 ## Supabase als MVP-Plattform
 Im Bereich **Data** wird **Supabase** als aktuelle MVP-Daten- und Authentifizierungsplattform ausgewiesen. Die Anzeige **Auth-Konfiguration** prüft nur, ob die erforderliche Client-Konfiguration plausibel vorhanden ist. Sie zeigt weder URL noch Publishable Key an.
