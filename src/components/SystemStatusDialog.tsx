@@ -38,6 +38,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { can } from "@/lib/rbac/permissions";
 import { getAuthConfigurationStatus } from "@/integrations/supabase/config";
 import { getAuthBackendStatus } from "@/lib/admin/auth-accounts.functions";
+import { resolveGitSyncState } from "@/lib/git-sync-status";
 
 interface SystemStatusDialogProps {
   open: boolean;
@@ -206,11 +207,27 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
   const ghRepoLabel = repoLabel();
   const ghBranch = p.github?.branch || BUILD_INFO.branch;
   const ghCommit = p.github?.commit || (commitOk ? BUILD_INFO.commit : null);
+  const ghMainBranch = p.github?.mainBranch || PROJECT_INFO.github.defaultBranch;
+  const ghMainCommit = p.github?.mainCommit ?? null;
+  const ghCheckedAt = p.github?.checkedAt ?? null;
+  const ghSourceReachable = p.github?.sourceOfTruthReachable ?? null;
+  const ghSyncState = resolveGitSyncState(ghCommit, ghMainCommit);
+  const ghSyncLabel =
+    ghSyncState === "synchronized"
+      ? "SYNCHRON — Build entspricht GitHub main"
+      : ghSyncState === "different"
+        ? "ABWEICHEND — Build entspricht nicht GitHub main"
+        : ghSourceReachable === false
+          ? "NICHT PRÜFBAR — GitHub main nicht erreichbar"
+          : "NICHT PRÜFBAR — Build- oder main-Commit fehlt";
   const ghCommitHref = ghCommit
     ? `${ghRepoUrl.replace(/\/$/, "")}/commit/${ghCommit}`
     : commitOk
       ? commitUrl()
       : null;
+  const ghMainCommitHref = ghMainCommit
+    ? `${ghRepoUrl.replace(/\/$/, "")}/commit/${ghMainCommit}`
+    : null;
 
   // Lovable — Publish-URL darf auf feste Projektmetadaten zurückfallen. Ein
   // Deploymentstatus wird dagegen nur angezeigt, wenn das Hosting ihn liefert.
@@ -316,15 +333,16 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
           <Section icon={<Github className="size-4 shrink-0" />} title="2. GitHub">
             <Row label="Repository URL" value={ghRepoLabel} href={ghRepoUrl} ok />
             <Row
-              label="Current branch"
+              label="Build branch"
               value={
                 <span className="inline-flex items-center gap-1">
-                  <GitBranch className="size-3 shrink-0" /> {fmtText(ghBranch)}
+                  <GitBranch className="size-3 shrink-0" />{" "}
+                  {ghBranch && ghBranch !== "unknown" ? ghBranch : HOSTING_METADATA_UNAVAILABLE}
                 </span>
               }
             />
             <Row
-              label="Commit hash"
+              label="Build commit"
               ok={ghCommit ? true : undefined}
               mono
               value={
@@ -340,6 +358,25 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
               }
               href={ghCommitHref}
             />
+            <Row label="Source-of-Truth branch" value={ghMainBranch} mono />
+            <Row
+              label="GitHub main HEAD"
+              value={ghMainCommit ? ghMainCommit.slice(0, 12) : "nicht prüfbar"}
+              href={ghMainCommitHref}
+              mono
+            />
+            <Row
+              label="Synchronisationsstatus"
+              value={ghSyncLabel}
+              ok={
+                ghSyncState === "synchronized"
+                  ? true
+                  : ghSyncState === "different"
+                    ? false
+                    : undefined
+              }
+            />
+            <Row label="Zuletzt gegen GitHub geprüft" value={fmtDate(ghCheckedAt)} />
           </Section>
 
           {/* 3) Lovable */}
