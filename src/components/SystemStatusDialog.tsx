@@ -59,6 +59,18 @@ function fmtText(value: string | null | undefined): string {
   return value && value.length > 0 ? value : NOT_CONFIGURED;
 }
 
+function probeLocalStorage(): boolean {
+  if (typeof window === "undefined") return false;
+  const key = "__sysing_status_probe__";
+  try {
+    window.localStorage.setItem(key, "1");
+    window.localStorage.removeItem(key);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function BoolBadge({
   ok,
   labelOk = "configured",
@@ -285,6 +297,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
   const sectionsWrapper = expanded ? "grid gap-3 lg:grid-cols-2" : "flex flex-col gap-3";
 
   const runtimeMode = p.application?.mode ?? health.mode ?? null;
+  const localStorageAvailable = probeLocalStorage();
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -316,17 +329,10 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
         <div className={sectionsWrapper}>
           {/* 1) Application */}
           <Section icon={<AppWindow className="size-4 shrink-0" />} title="1. Application">
-            <Row
-              label="Application name"
-              value={fmtText(p.application?.name) || "Engineer Console"}
-            />
+            <Row label="Application name" value={fmtText(p.application?.name)} />
             <Row label="Version" value={DASHBOARD_VERSION} mono />
             <Row label="Build date" value={builtAt.toLocaleString("de-DE")} />
-            <Row
-              label="Runtime mode"
-              value={runtimeMode ?? NOT_CONFIGURED}
-              ok={runtimeMode === "production"}
-            />
+            <Row label="Runtime mode (NODE_ENV)" value={runtimeMode ?? NOT_CONFIGURED} />
           </Section>
 
           {/* 2) GitHub */}
@@ -382,26 +388,22 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
           {/* 3) Lovable */}
           <Section icon={<Cloud className="size-4 shrink-0" />} title="3. Lovable">
             <Row
-              label="Current publish URL"
+              label="Configured publish URL"
               value={lvPublished ? lvPublished.replace(/^https?:\/\//, "") : NOT_CONFIGURED}
               href={lvPublished}
-              ok={Boolean(lvPublished)}
             />
             <Row
-              label="Deployment status"
+              label="Hosting publish metadata"
               value={
                 lvStatus === "configured"
-                  ? "configured"
+                  ? "vorhanden — kein Live-Health-Nachweis"
                   : lvStatus === "not_configured"
                     ? NOT_CONFIGURED
                     : HOSTING_METADATA_UNAVAILABLE
               }
-              ok={
-                lvStatus === "configured" ? true : lvStatus === "not_configured" ? false : undefined
-              }
             />
             <Row
-              label="Last deployment"
+              label="Hosting deployment timestamp"
               value={lvDeployAt ? fmtDate(lvDeployAt) : HOSTING_METADATA_UNAVAILABLE}
             />
           </Section>
@@ -409,33 +411,45 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
           {/* 4) Azure */}
           <Section icon={<Cloud className="size-4 shrink-0" />} title="4. Azure">
             <Row
-              label="Azure access"
+              label="Azure runtime policy"
               value={
                 azAllowed === null
                   ? NOT_CONFIGURED
                   : azAllowed
-                    ? "allowed (production)"
-                    : "blocked (development)"
+                    ? "Freigabe durch NODE_ENV=production"
+                    : "blockiert durch Development-Modus"
               }
-              ok={azAllowed ?? undefined}
             />
-            <Row label="Azure SQL" value={<BoolBadge ok={azSql} />} />
-            <Row label="Azure Table Storage" value={<BoolBadge ok={azTable} />} />
-            <Row label="Azure Blob/SAS" value={<BoolBadge ok={azStorage} />} />
+            <Row label="Azure SQL ENV" value={<BoolBadge ok={azSql} />} />
+            <Row label="Azure Table Storage ENV" value={<BoolBadge ok={azTable} />} />
+            <Row label="Azure Blob/SAS ENV" value={<BoolBadge ok={azStorage} />} />
             <Row
-              label="Azure auth mode"
-              value={azAuthMode === "none" ? "optional" : azAuthMode}
-              ok={azAuthMode !== "none" && azAuthMode !== NOT_CONFIGURED ? true : undefined}
+              label="Azure auth metadata"
+              value={
+                azAuthMode === "managed-identity"
+                  ? "Managed-Identity-Flag gesetzt"
+                  : azAuthMode === "service-principal-metadata"
+                    ? "Client-/Tenant-ID vorhanden — kein Credential-Nachweis"
+                    : azAuthMode === "none"
+                      ? "optional / nicht vorbereitet"
+                      : azAuthMode
+              }
             />
-            <Row label="Last connection test" value={fmtDate(az.lastConnectionTestAt)} />
             <Row
-              label="Azure ENV readiness"
+              label="Azure connectivity test"
+              value={
+                az.lastConnectionTestAt
+                  ? fmtDate(az.lastConnectionTestAt)
+                  : "noch nicht ausgeführt / implementiert"
+              }
+            />
+            <Row
+              label="Known Azure ENV presence"
               value={
                 azMissingCount === 0
-                  ? "all known Azure ENVs present"
-                  : `optional target — ${azMissingCount} not configured`
+                  ? "alle bekannten Azure-ENV-Namen vorhanden — keine Verbindungsprüfung"
+                  : `optionales Ziel — ${azMissingCount} bekannte ENV nicht gesetzt`
               }
-              ok={azMissingCount === 0 ? true : undefined}
             />
             {azMissing.length > 0 && (
               <Row label="Missing Azure ENV (names only)" value={<EnvChips names={azMissing} />} />
@@ -444,29 +458,27 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
 
           {/* 5) Security */}
           <Section icon={<ShieldCheck className="size-4 shrink-0" />} title="5. Security" span2>
+            <Row label="Configured auth provider" value={fmtText(sec.authMode)} />
             <Row
-              label="Authentication mode"
-              value={fmtText(sec.authMode)}
-              ok={Boolean(sec.authMode)}
-            />
-            <Row
-              label="Auth-Konfiguration"
-              value={authConfigLabel}
+              label="Supabase Client-Konfiguration"
+              value={`${authConfigLabel} — Format/Presence, keine Connectivity`}
               ok={authConfig.status === "configured"}
             />
             <Row
-              label="RBAC status"
-              ok={Boolean(sec.rbac?.enabled)}
+              label="RBAC code contract"
               value={
                 sec.rbac?.enabled
-                  ? `enabled — ${rbacRoles ?? "?"} roles · ${rbacPerms ?? "?"} permissions`
+                  ? `geladen — ${rbacRoles ?? "?"} Rollen · ${rbacPerms ?? "?"} Permissions; Live-Matrix separat testen`
                   : NOT_CONFIGURED
               }
             />
             <Row
-              label="Secret management"
-              ok={Boolean(sec.secretManager?.enabled)}
-              value={sec.secretManager?.enabled ? "enabled (secretManager.mjs)" : NOT_CONFIGURED}
+              label="Secret-handling module"
+              value={
+                sec.secretManager?.enabled
+                  ? "geladen (secretManager.mjs) — kein externer Secret-Store-Nachweis"
+                  : NOT_CONFIGURED
+              }
             />
             <Row
               label="Runtime ENV (aktive Plattform)"
@@ -486,9 +498,8 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
               />
             )}
             <Row
-              label="Key Vault readiness"
-              value={kvOk ? "configured" : "optional"}
-              ok={kvOk ? true : undefined}
+              label="Key Vault URL"
+              value={kvOk ? "konfiguriert — Provider noch nicht aktiv" : "optional / nicht konfiguriert"}
             />
           </Section>
 
@@ -496,17 +507,33 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
           <Section icon={<Database className="size-4 shrink-0" />} title="6. Data">
             <Row label="MVP-Datenplattform" value="Supabase" ok />
             <Row label="Backend-Verbindung" value={backendStatusLabel} ok={backendStatusOk} />
-            <Row label="Local storage" value="active" ok />
-            <Row label="Last local backup" value={fmtDate(lastBackup)} />
-            <Row label="Last Azure export" value={fmtDate(p.data?.lastAzureExportAt)} />
-            <Row label="Last Azure import" value={fmtDate(p.data?.lastAzureImportAt)} />
+            <Row
+              label="Browser Local Storage"
+              value={localStorageAvailable ? "schreibbar — Laufzeitprobe PASS" : "nicht schreibbar"}
+              ok={localStorageAvailable}
+            />
+            <Row
+              label="Last auto-backup marker"
+              value={fmtDate(lastBackup)}
+            />
+            <Row label="Last sync run" value={fmtDate(p.data?.lastSyncAt)} />
+            <Row
+              label="Azure export/import evidence"
+              value="noch nicht getrennt gemessen — kein Betriebsnachweis"
+            />
           </Section>
 
           {/* 7) Documentation */}
           <Section icon={<BookOpen className="size-4 shrink-0" />} title="7. Documentation">
-            <Row label="User manual" value={`available — v${DOCUMENTATION_VERSION}`} ok />
-            <Row label="Management overview" value="available — docs/MANAGEMENT_OVERVIEW.md" ok />
-            <Row label="Last documentation update" value={lastUpdated || NOT_CONFIGURED} />
+            <Row label="User manual artifact" value={`im Build enthalten — v${DOCUMENTATION_VERSION}`} />
+            <Row
+              label="Management overview artifact"
+              value="Repository-Vertrag: docs/MANAGEMENT_OVERVIEW.md"
+            />
+            <Row
+              label="Latest help-topic date (editorial)"
+              value={lastUpdated || NOT_CONFIGURED}
+            />
           </Section>
 
           {/* Backend health / Security scan info */}
@@ -526,9 +553,8 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
             />
             <Row label="Zuletzt geprüft" value={fmtDate(health.checkedAt)} />
             <Row
-              label="Correlation-ID-Middleware"
-              ok
-              value="aktiv — Header X-Correlation-Id auf allen aktiven Routen"
+              label="Correlation-ID contract"
+              value="Middleware konfiguriert — vollständige Routenabdeckung wird durch CI/Tech-Debt-Vertrag geprüft"
             />
             <Row
               label="Referenz-ID (letzte Antwort)"
@@ -567,19 +593,21 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
 
           <Section icon={<ShieldCheck className="size-4 shrink-0" />} title="Security-Scan" span2>
             <Row
-              label="Custom-Scanner"
-              ok
+              label="Custom-Scanner configured"
               value="scripts/security-check.mjs (bun run security:check)"
             />
-            <Row label="Sekundär" ok value="gitleaks (.gitleaks.toml)" />
+            <Row label="Gitleaks configured" value=".gitleaks.toml" />
             <Row
-              label="CI-Workflow"
-              ok
+              label="Security workflow configured"
               value=".github/workflows/security.yml"
               href={`${PROJECT_INFO.github.url}/actions/workflows/security.yml`}
             />
-            <Row label="Trigger" value="Push & PR (main/develop) · wöchentlich Mo 03:00 UTC" />
-            <Row label="Report-Artefakt" value="security-report/findings.{md,json} (30 d)" />
+            <Row label="Trigger contract" value="Push & PR (main/develop) · wöchentlich Mo 03:00 UTC" />
+            <Row label="Report-Artefakt contract" value="security-report/findings.{md,json} (30 d)" />
+            <Row
+              label="Latest Security-Scan result"
+              value="hier nicht live abgefragt — GitHub Actions / Technischer Prüfbericht ist maßgeblich"
+            />
           </Section>
         </div>
 
