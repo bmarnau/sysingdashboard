@@ -259,14 +259,14 @@ KIOSK-02 führt keine produktive Microsoft-Graph-, SharePoint-, Exchange-, PRTG-
       "Authentifizierung",
       "Health",
     ],
-    lastUpdated: "2026-08-22",
+    lastUpdated: "2026-09-20",
     content: `## Was zeigt der Systemstatus?
 **Service → Systemstatus…** zeigt ausschließlich Statusinformationen und nicht-sensible Metadaten. Verbindungsadressen, Schlüssel, Tokens, Passwörter und Connection Strings werden dort nicht ausgegeben.
 
 ## GitHub
 Die Repository-URL ist die kanonische öffentliche Projektadresse **https://github.com/bmarnau/sysingdashboard**. Interne Git-Remotes einer Hosting-Plattform werden nicht als Repository-URL übernommen.
 
-Der Systemstatus trennt jetzt ausdrücklich **Build branch / Build commit** von **GitHub main HEAD**. Beim Öffnen beziehungsweise mit **Jetzt prüfen** wird der öffentliche `main`-Ref serverseitig read-only abgefragt. Nur wenn ein tatsächlich bekannter Build-/Runtime-Commit mit diesem live gelesenen `main`-Commit übereinstimmt, erscheint **SYNCHRON**.
+Der Systemstatus trennt jetzt ausdrücklich **Build branch / Build commit** von **GitHub main HEAD**. Beim Öffnen wird der öffentliche `main`-Ref serverseitig read-only abgefragt; **Jetzt prüfen** erzwingt einen frischen Read und umgeht den kurzen Startcheck-Cache. Nur wenn ein tatsächlich bekannter Build-/Runtime-Commit mit diesem live gelesenen `main`-Commit übereinstimmt, erscheint **SYNCHRON**.
 
 **ABWEICHEND** bedeutet: beide Commits sind bekannt, aber verschieden. **NICHT PRÜFBAR** bedeutet: GitHub war nicht erreichbar oder Build-/Commit-Metadaten fehlen. Ein unbekannter Branch wird nicht mehr ersatzweise als `main` ausgegeben. Der Dialog zeigt zusätzlich den Zeitpunkt **Zuletzt gegen GitHub geprüft**.
 
