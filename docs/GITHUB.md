@@ -18,7 +18,7 @@ Lovable werden gepusht, Pushes auf GitHub werden in Lovable übernommen.
 
 ## 2. Was nach dem Connect automatisch greift
 
-- `Service → Systemstatus…` zeigt Repository, Branch und Commit-SHA.
+- `Service → Systemstatus…` trennt Build-Branch/Build-Commit vom live gelesenen GitHub-`main`-HEAD und bewertet `SYNCHRON` nur bei tatsächlichem SHA-Match. Fehlende Evidenz bleibt `NICHT PRÜFBAR`.
 - `.github/workflows/ci.yml` läuft bei jedem Push/PR (Lint, Docs-Check,
   Build).
 - `docs/CONTRIBUTING.md` beschreibt Branch- und Commit-Konventionen.
