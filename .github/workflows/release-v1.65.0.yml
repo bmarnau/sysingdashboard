@@ -1,0 +1,114 @@
+name: Release v1.65.0 after post-merge gates
+
+on:
+  push:
+    branches:
+      - release/v1.65.0
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_SHA: d822046c367241868bb9f1d7e2810b3a55a3660e
+      TAG: v1.65.0
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Wait for main push gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS+900))
+          while true; do
+            json="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${TARGET_SHA}&event=push&per_page=100")"
+            ci_status="$(printf '%s' "$json" | jq -r '.workflow_runs[] | select(.name=="CI") | .status' | head -1)"
+            ci_conclusion="$(printf '%s' "$json" | jq -r '.workflow_runs[] | select(.name=="CI") | .conclusion' | head -1)"
+            ci_id="$(printf '%s' "$json" | jq -r '.workflow_runs[] | select(.name=="CI") | .id' | head -1)"
+            sec_status="$(printf '%s' "$json" | jq -r '.workflow_runs[] | select(.name=="Security") | .status' | head -1)"
+            sec_conclusion="$(printf '%s' "$json" | jq -r '.workflow_runs[] | select(.name=="Security") | .conclusion' | head -1)"
+            sec_id="$(printf '%s' "$json" | jq -r '.workflow_runs[] | select(.name=="Security") | .id' | head -1)"
+
+            echo "CI: status=$ci_status conclusion=$ci_conclusion id=$ci_id"
+            echo "Security: status=$sec_status conclusion=$sec_conclusion id=$sec_id"
+
+            if [ "$ci_status" = "completed" ] && [ "$sec_status" = "completed" ]; then
+              test "$ci_conclusion" = "success"
+              test "$sec_conclusion" = "success"
+              {
+                echo "CI_RUN_ID=$ci_id"
+                echo "SECURITY_RUN_ID=$sec_id"
+              } >> "$GITHUB_ENV"
+              break
+            fi
+
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "Timed out waiting for post-merge gates." >&2
+              exit 1
+            fi
+            sleep 20
+          done
+
+      - name: Verify release commit content
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$TARGET_SHA^{commit}"
+          git show "$TARGET_SHA:CHANGELOG.md" | grep -q '^## 1.65.0 - 2026-09-19$'
+
+      - name: Create annotated tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            actual="$(git rev-list -n 1 "$TAG")"
+            test "$actual" = "$TARGET_SHA"
+          else
+            git tag -a "$TAG" "$TARGET_SHA" -m "Sysing Dashboard v1.65.0 - BSF-KIOSK-02 interner Read-Provider"
+            git push origin "refs/tags/$TAG"
+          fi
+
+      - name: Publish GitHub release
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "$TAG release already exists."
+          else
+            gh release create "$TAG" \
+              --verify-tag \
+              --title "Sysing Dashboard v1.65.0 - BSF-KIOSK-02" \
+              --notes "Freigegebener Stand von BSF-KIOSK-02 / PR #147. Interner Hybrid-Read-Provider auf Basis des BSF-03A-Controlling-Vertrags; Projekte, Arbeitspakete und Tätigkeiten INTERN, Verfügbarkeit/Infrastruktur/Support klar als DEMO; Source-Freshness, Datenminimierung, Fail-closed ohne stillen Demo-Fallback. K02-L1 Exact-Tree-/Responsive-Abnahme PASS. Post-Merge CI und Security PASS." \
+              --latest
+          fi
+
+      - name: Write release verification marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "tag=$TAG"
+            echo "target_sha=$TARGET_SHA"
+            echo "ci_run_id=$CI_RUN_ID"
+            echo "security_run_id=$SECURITY_RUN_ID"
+            echo "post_merge_gates=success"
+            echo "release=published"
+            echo "verified_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > .github/release-v1.65.0-verified.txt
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/release-v1.65.0-verified.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(release): verify v1.65.0 publication [skip ci]"
+            git push origin HEAD:release/v1.65.0
+          fi
