@@ -1,7 +1,6 @@
 const PUBLIC_REPOSITORY = "bmarnau/sysingdashboard";
 const MAIN_BRANCH = "main";
-const MAIN_REF_URL =
-  `https://api.github.com/repos/${PUBLIC_REPOSITORY}/git/ref/heads/${MAIN_BRANCH}`;
+const MAIN_REF_URL = `https://api.github.com/repos/${PUBLIC_REPOSITORY}/git/ref/heads/${MAIN_BRANCH}`;
 const DEFAULT_CACHE_TTL_MS = 60_000;
 const DEFAULT_TIMEOUT_MS = 1_500;
 
