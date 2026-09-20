@@ -26,6 +26,10 @@ export interface SystemStatusPayload {
     repositoryUrl?: string | null;
     branch?: string | null;
     commit?: string | null;
+    mainBranch?: string | null;
+    mainCommit?: string | null;
+    checkedAt?: string | null;
+    sourceOfTruthReachable?: boolean | null;
   };
   lovable?: {
     publishedUrl?: string | null;
