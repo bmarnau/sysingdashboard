@@ -1,0 +1,7 @@
+tag=v1.65.0
+target_sha=d822046c367241868bb9f1d7e2810b3a55a3660e
+ci_run_id=35487527484
+security_run_id=35487527508
+post_merge_gates=success
+release=published
+verified_at=2026-09-20T03:58:03Z
