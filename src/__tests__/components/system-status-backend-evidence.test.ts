@@ -35,6 +35,16 @@ describe("Systemstatus — Backend-Evidenz", () => {
     expect(DIALOG).toContain("vom Hosting nicht bereitgestellt");
   });
 
+  it("should_distinguishBuildMetadata_fromLiveGithubMain", () => {
+    expect(DIALOG).toContain('label="Build branch"');
+    expect(DIALOG).toContain('label="Build commit"');
+    expect(DIALOG).toContain('label="GitHub main HEAD"');
+    expect(DIALOG).toContain('label="Synchronisationsstatus"');
+    expect(DIALOG).toContain('label="Zuletzt gegen GitHub geprüft"');
+    expect(DIALOG).toContain('resolveGitSyncState(ghCommit, ghMainCommit)');
+    expect(DIALOG).toContain("NICHT PRÜFBAR");
+  });
+
   it("should_reportSupabaseAsMvpAuthProvider_whenNoOverrideExists", () => {
     expect(STATUS_SERVICE).toContain("function resolveAuthProvider()");
     expect(STATUS_SERVICE).toContain('envOrNull("AUTH_PROVIDER") || "supabase"');
