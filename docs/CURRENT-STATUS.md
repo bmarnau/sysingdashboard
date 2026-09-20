@@ -21,7 +21,7 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 
 1. `docs/BSF-CURRENT-PRIORITIES.md` — operative Reihenfolge und aktueller Wiederanlaufpunkt,
 2. `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` — verbindliche interne Kiosk-first-Reihenfolge,
-3. Issue #136 und Draft-PR #147 — aktiver BSF-KIOSK-02-Abnahmepfad,
+3. Issue #136 und PR #147 — BSF-KIOSK-02 FINAL DONE, Merge noch ausstehend,
 4. `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` — laufender KIOSK-02-Abschlussnachweis,
 5. `docs/BSF-03A-CLOSURE-2026-09-14.md` — abgeschlossener BSF-03A-Nachweis,
 6. `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` — abgeschlossener KIOSK-01-Nachweis,
@@ -108,7 +108,7 @@ Finaler Kandidaten-Head `763cf874b9f5bb8fadbd2875d7e11f0bd7165361`:
 
 Die produktive Lovable-Codebasis war wegen historischer Drift nicht Prüfobjekt; die Abnahme erfolgte gegen einen frischen temporären Checkout des exakten GitHub-Kandidaten. Keine versionierte Datei und keine DB-/Auth-/RBAC-/RLS-/Providerlogik wurde durch die Finalabnahme verändert. Abschlussnachweis: `docs/BSF-03A-CLOSURE-2026-09-14.md`.
 
-### BSF-KIOSK-02 — IMPLEMENTATION COMPLETE / GITHUB EXACT-HEAD GREEN / LOVABLE PREVIEW BLOCKED / Issue #136
+### BSF-KIOSK-02 — FINAL DONE / READY FOR MERGE / Issue #136
 
 KIOSK-02 bindet den bestehenden Info-Kiosk an den serverseitig abgesicherten BSF-03A-Read-/Controlling-Vertrag an. Der Demo-Pfad bleibt unverändert erhalten; im expliziten internen Modus entsteht eine **Hybrid-Sicht**:
 
@@ -118,26 +118,30 @@ KIOSK-02 bindet den bestehenden Info-Kiosk an den serverseitig abgesicherten BSF
 
 Der technische Kiosk-Account bleibt ausschließlich auf `kiosk.view` begrenzt. Interne Leistungsdaten erfordern serverseitig `project.controlling.view` sowie die bestehenden Membership-, Customer-Access- und RLS-Grenzen. Es wurde keine neue Permission, Tabelle, Migration oder Kiosk-spezifische Aggregationslogik eingeführt.
 
-Code-tragender Implementierungs-Head vor dem Dokumentationsnachlauf:
+Finaler Lovable-Funktionskandidat:
 
-`8c69ccac189f00d1d61e93674a61ebb7cbc64fc4`
+`528b5bc8373a51b7c3e946241b07467bd3245dd9`
 
-Nachweise auf diesem Head:
+Nachweise:
 
-- Security #1075 / Run `35426390840`: **PASS**,
-- CI #1081 / Run `35426390795`: **PASS**,
-- Static, Unit/Components, Database Schema Drift, Backend, API, RBAC & Security, Import/Export, Backup/Restore und Production Build: **PASS**,
-- Playwright E2E: **98/98 PASS**,
-- Accessibility: **PASS**,
-- Technical Debt: **PASS**,
-- Technical Report & Quality Gate: **PASS**,
-- Golden-Dataset-Kioskdefinition: Bestandteil der bestehenden Regression.
+- Git tree EXPECTED = ACTUAL = `ab0a5655485c50f9b7be5f3c8fa0a36166aeb949`,
+- Tree Match: **JA**,
+- targeted Vitest: **11 Dateien / 69 Tests PASS**,
+- Golden Dataset V1: **PASS**,
+- Kiosk Demo/Internal/Security E2E: **PASS**, zusammen **9/9**,
+- 1920×1080 und 1366×768: **PASS**,
+- exakt **3× INTERN** und **3× DEMO**,
+- Zeitraum und echte Source-Freshness sichtbar,
+- Datenminimierung, Read-only UI, Runtime Console und Network: **PASS**,
+- Fail-closed / kein Demo-Fallback: **PASS**,
+- `client.ts` Drift: **NEIN**,
+- `previewAuthStorage.ts` im Kandidaten: **NEIN**,
+- Migration oder DB-/Auth-/RBAC-/RLS-Änderung: **NEIN**,
+- versionierte Dateien im Prüfobjekt verändert: **NEIN**.
 
-Der letzte E2E-Befund war ausschließlich ein Test-Locator-Problem: die Teiltextsuche nach `INTERN` zählte zusätzlich „INTERNE DATEN“ und „Interner Datenstand“. Der Test prüft nun exakt drei `INTERN`- und drei `DEMO`-Badges; die UI-Fachlogik musste dafür nicht geändert werden.
+Der vorherige GitHub-Code-/Dokumentationskandidat war bereits mit Security #1092 und CI #1098 vollständig grün. Die abschließenden Statusdokumente laufen vor Merge erneut durch die normalen Required Checks.
 
-Offen bleibt der gezielte K02-L1 Exact-Tree-/Responsive-Preview bei 1920×1080 und 1366×768. Der Auftrag ist vorbereitet, konnte am 19.09.2026 aber nicht gestartet werden, weil der Lovable-Workspace keine Credits mehr verfügbar hatte. Das ist ein Abnahme-/Werkzeugblocker, kein Code- oder Security-Fehler.
-
-PR #147 bleibt daher Draft. Kein Merge und kein Deploy. Laufender Abschlussnachweis: `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md`.
+BSF-KIOSK-02 gilt damit als **FINAL DONE**. PR #147 wird nach grünem Dokumentations-Head merge-ready gestellt. Merge und Deploy erfolgen weiterhin nicht ohne separate Freigabe. Abschlussnachweis: `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md`.
 
 ## F-11
 
