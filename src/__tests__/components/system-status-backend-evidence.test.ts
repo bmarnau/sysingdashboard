@@ -27,7 +27,9 @@ describe("Systemstatus — Backend-Evidenz", () => {
   });
 
   it("should_showSecretFreeSupabaseEvidence_withoutPretendingCommitConfiguration", () => {
-    expect(DIALOG).toContain('label="MVP-Datenplattform" value="Supabase"');
+    expect(DIALOG).toContain(
+      'label="MVP-Datenplattform" value="Supabase — Architektur-/Betriebsmodell"',
+    );
     expect(DIALOG).toContain('label="Supabase Client-Konfiguration"');
     expect(DIALOG).toContain('label="Backend-Verbindung"');
     expect(DIALOG).toContain("erreichbar — geschützte Admin-Prüfung");
