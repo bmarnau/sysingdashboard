@@ -58,7 +58,7 @@ BSF-03A ist vollständig abgenommen und mit PR #144 auf `main` integriert. Aktiv
 
 ---
 
-## BSF-KIOSK-02 (#136) interner Read-Provider — AKTIV
+## BSF-KIOSK-02 (#136) interner Read-Provider — FINAL DONE / MERGE PENDING
 
 - [x] Kiosk-Vertrag additiv um `mode`, `sourceKind` und `observedAt` erweitert
 - [x] BSF-03A-Freshness für internen Kiosk-Snapshot übernommen
@@ -71,8 +71,9 @@ BSF-03A ist vollständig abgenommen und mit PR #144 auf `main` integriert. Aktiv
 - [x] Scope-/IDOR-/BOLA-, Component-, A11y- und E2E-Verträge
 - [x] Code-Head `8c69cca`: Security #1075 und CI #1081 vollständig PASS; E2E 98/98
 - [x] Benutzerhandbuch und kontextsensitive Hilfe auf Hybridbetrieb fortgeschrieben
-- [ ] K02-L1 Exact-Tree-/Responsive-Preview 1920×1080 + 1366×768 — derzeit durch fehlende Lovable-Credits blockiert
-- [ ] Abschluss-/Driftnachweis finalisieren und PR #147 nach separater Freigabe mergen
+- [x] K02-L1 Exact-Tree-/Responsive-Preview 1920×1080 + 1366×768 — PASS auf Kandidat `528b5bc`, Tree Match JA
+- [x] Abschluss-/Driftnachweis FINAL DONE; PR #147 nach grünem Dokumentations-Head merge-ready
+- [ ] PR #147 nach separater Freigabe mergen und `v1.65.0` auf dem main-Merge-Commit veröffentlichen
 
 ### Danach
 
