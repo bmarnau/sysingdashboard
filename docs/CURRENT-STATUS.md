@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-09-19
+Stand: 2026-09-20
 
 ## Zweck
 
@@ -21,7 +21,7 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 
 1. `docs/BSF-CURRENT-PRIORITIES.md` — operative Reihenfolge und aktueller Wiederanlaufpunkt,
 2. `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` — verbindliche interne Kiosk-first-Reihenfolge,
-3. Issue #136 und PR #147 — BSF-KIOSK-02 FINAL DONE, Merge noch ausstehend,
+3. Issue #107 — aktiver BSF-03B-Sprint „Teamlead-Leistungsnachweis V1“,
 4. `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` — laufender KIOSK-02-Abschlussnachweis,
 5. `docs/BSF-03A-CLOSURE-2026-09-14.md` — abgeschlossener BSF-03A-Nachweis,
 6. `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` — abgeschlossener KIOSK-01-Nachweis,
@@ -40,7 +40,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.65.0` (BSF-KIOSK-02 Feature-/Release-Kandidat; `main` steht auf 1.64.0)
+- Dashboard-Version: `1.65.1` als Patch-Kandidat; `v1.65.0` ist veröffentlicht und enthält den abgeschlossenen BSF-KIOSK-02-Stand.
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
@@ -49,6 +49,12 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 - Fachlogik, Authentifizierung, Datenzugriff und provider-spezifische Implementierungen bleiben getrennte Verantwortungsbereiche
 - Docker-/Container-Portabilität sowie Azure-/Entra-Migrationsfähigkeit bleiben verbindliche Architekturziele
 - MVP bleibt **100 % / BASELINE READY**; der aktive Entwicklungshorizont ist **BSF — Betriebsfähiges Systemhaus-Fundament**.
+
+## Aktueller Arbeitsstand 20.09.2026
+
+- BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
+- BSF-03B / Issue #107 ist der aktive Sprint. Der Live-Precheck war read-only erfolgreich; die Lovable-Branchbindung für Schreibphasen ist noch nicht nutzbar, daher wurden dort keine DB- oder Codeänderungen vorgenommen.
+- Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe auf Landing, Auth und Dashboard aus einer gemeinsamen CHANGELOG-Quelle.
 
 ## Aktueller BSF-Stand
 
