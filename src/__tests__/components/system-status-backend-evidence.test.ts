@@ -28,7 +28,7 @@ describe("Systemstatus — Backend-Evidenz", () => {
 
   it("should_showSecretFreeSupabaseEvidence_withoutPretendingCommitConfiguration", () => {
     expect(DIALOG).toContain('label="MVP-Datenplattform" value="Supabase"');
-    expect(DIALOG).toContain('label="Auth-Konfiguration"');
+    expect(DIALOG).toContain('label="Supabase Client-Konfiguration"');
     expect(DIALOG).toContain('label="Backend-Verbindung"');
     expect(DIALOG).toContain("erreichbar — geschützte Admin-Prüfung");
     expect(DIALOG).toContain("nicht geprüft — users.manage erforderlich");
@@ -43,6 +43,16 @@ describe("Systemstatus — Backend-Evidenz", () => {
     expect(DIALOG).toContain('label="Zuletzt gegen GitHub geprüft"');
     expect(DIALOG).toContain('resolveGitSyncState(ghCommit, ghMainCommit)');
     expect(DIALOG).toContain("NICHT PRÜFBAR");
+  });
+
+  it("should_notPresentConfigurationAsOperationalProof", () => {
+    expect(DIALOG).toContain("kein Live-Health-Nachweis");
+    expect(DIALOG).toContain("kein Credential-Nachweis");
+    expect(DIALOG).toContain("keine Verbindungsprüfung");
+    expect(DIALOG).toContain("kein externer Secret-Store-Nachweis");
+    expect(DIALOG).toContain("kein Betriebsnachweis");
+    expect(DIALOG).toContain("hier nicht live abgefragt");
+    expect(DIALOG).toContain("Laufzeitprobe PASS");
   });
 
   it("should_reportSupabaseAsMvpAuthProvider_whenNoOverrideExists", () => {
