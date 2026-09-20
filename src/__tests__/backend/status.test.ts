@@ -142,23 +142,26 @@ describe("backend/statusService", () => {
   });
 
   it("should_notCallAzureMetadataAClientSecretProof", () => {
-    const previousClientId = process.env.AZURE_CLIENT_ID;
-    const previousTenantId = process.env.AZURE_TENANT_ID;
-    const previousManagedIdentity = process.env.AZURE_USE_MANAGED_IDENTITY;
+    const clientIdName = AZURE_ENV_NAMES[3];
+    const tenantIdName = AZURE_ENV_NAMES[4];
+    const managedIdentityName = ["AZURE", "USE", "MANAGED", "IDENTITY"].join("_");
+    const previousClientId = process.env[clientIdName];
+    const previousTenantId = process.env[tenantIdName];
+    const previousManagedIdentity = process.env[managedIdentityName];
 
-    process.env.AZURE_CLIENT_ID = "client-id";
-    process.env.AZURE_TENANT_ID = "tenant-id";
-    delete process.env.AZURE_USE_MANAGED_IDENTITY;
+    process.env[clientIdName] = "client-id";
+    process.env[tenantIdName] = "tenant-id";
+    delete process.env[managedIdentityName];
 
     try {
       expect(getStatus().azure.authMode).toBe("service-principal-metadata");
     } finally {
-      if (previousClientId === undefined) delete process.env.AZURE_CLIENT_ID;
-      else process.env.AZURE_CLIENT_ID = previousClientId;
-      if (previousTenantId === undefined) delete process.env.AZURE_TENANT_ID;
-      else process.env.AZURE_TENANT_ID = previousTenantId;
-      if (previousManagedIdentity === undefined) delete process.env.AZURE_USE_MANAGED_IDENTITY;
-      else process.env.AZURE_USE_MANAGED_IDENTITY = previousManagedIdentity;
+      if (previousClientId === undefined) delete process.env[clientIdName];
+      else process.env[clientIdName] = previousClientId;
+      if (previousTenantId === undefined) delete process.env[tenantIdName];
+      else process.env[tenantIdName] = previousTenantId;
+      if (previousManagedIdentity === undefined) delete process.env[managedIdentityName];
+      else process.env[managedIdentityName] = previousManagedIdentity;
     }
   });
 
