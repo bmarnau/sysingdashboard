@@ -1,7 +1,7 @@
 # Sysing Dashboard — Lovable-Promptplan BSF-KIOSK-02
 
-Stand: 2026-09-19
-Status: K02-L1 VORBEREITET / AUSFÜHRUNG DURCH FEHLENDE LOVABLE-CREDITS BLOCKIERT
+Stand: 2026-09-20
+Status: K02-L1 AUSGEFÜHRT / EXACT-TREE UND RESPONSIVE PREVIEW PASS
 Issue: #136
 Design: `docs/BSF-KIOSK-02-DESIGN.md`
 Implementation Plan: `docs/superpowers/plans/2026-09-14-bsf-kiosk-02-internal-read.md`
