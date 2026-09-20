@@ -49,7 +49,7 @@ architecturePrinciples:
     rule: "Kundenidentität und Kundenscope sind providerneutral an das Systemhaus gebunden und nicht an einen Microsoft-Tenant oder anderen Provider."
 
 versions:
-  dashboard: "1.65.0"
+  dashboard: "1.65.1"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 17
@@ -59,11 +59,11 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "BSF-KIOSK-02"
-  currentSprintTitle: "Info-Kiosk interner Read-Provider"
-  currentSprintStatus: "accepted"
-  nextSprint: "BSF-03B"
-  previousSprint: "BSF-03A"
+  currentSprint: "BSF-03B"
+  currentSprintTitle: "Teamlead-Leistungsnachweis V1"
+  currentSprintStatus: "in-progress"
+  nextSprint: "BSF-03E"
+  previousSprint: "BSF-KIOSK-02"
   previousSprintStatus: "completed"
   releaseReadiness: "passed"
   testsPassing: 949
@@ -695,7 +695,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release; volatile report details remain CI artifacts."
 
 releaseManagement:
-  currentRelease: "1.65.0"
+  currentRelease: "1.65.1"
   stage: "preview"
   status: "passed"
   releaseEvidence:
@@ -722,7 +722,7 @@ releaseManagement:
     - "docs/CODEX-GIT-CI-RULE.md"
     - "docs/ADR/0029-systemhouse-customer-scope.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
-  nextReleaseTarget: "BSF-KIOSK-02 Merge/Release und BSF-03B"
+  nextReleaseTarget: "Version 1.65.1 Versionsanzeige und BSF-03B"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"
