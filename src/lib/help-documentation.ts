@@ -1619,7 +1619,7 @@ Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Ma
       "Preview",
       "Health",
     ],
-    lastUpdated: "2026-07-24",
+    lastUpdated: "2026-09-20",
     content: `## Was zeigt der Systemstatus?
 Der Dialog "Service → Systemstatus…" ist in **sieben Sektionen** gegliedert und zeigt ausschließlich Booleans, Status und ENV-Variablen­**namen**. Werte, Secrets, Connection Strings und SAS-Tokens werden **niemals** angezeigt.
 
