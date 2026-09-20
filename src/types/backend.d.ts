@@ -15,6 +15,21 @@ declare module "*/backend/services/syncService.mjs" {
   };
 }
 
+declare module "*/backend/services/githubStatus.mjs" {
+  export function getGithubMainStatus(options?: {
+    fetchImpl?: typeof fetch;
+    now?: () => number;
+    cacheTtlMs?: number;
+    timeoutMs?: number;
+  }): Promise<{
+    branch: string;
+    mainCommit: string | null;
+    checkedAt: string;
+    reachable: boolean;
+  }>;
+  export function resetGithubMainStatusCacheForTests(): void;
+}
+
 declare module "*/backend/services/statusService.mjs" {
   export function getStatus(): {
     application: {
