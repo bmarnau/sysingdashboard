@@ -1,7 +1,7 @@
 # BSF-KIOSK-02 — Abschluss- und Abnahmenachweis interner Read-Provider
 
-Stand: 2026-09-19  
-Status: **IMPLEMENTATION COMPLETE / GITHUB EXACT-HEAD PASS / LOVABLE K02-L1 PREVIEW BLOCKED**  
+Stand: 2026-09-20  
+Status: **FINAL DONE / K02-L1 EXACT-TREE PASS / MERGE PENDING**  
 Version: 1.65.0  
 Issue: #136  
 Pull Request: #147  
@@ -165,51 +165,79 @@ Fortgeschrieben wurden beziehungsweise werden im KIOSK-02-Abschluss:
 - Benutzerhandbuch,
 - dieser Abschlussnachweis.
 
-## 10. Noch offener K02-L1 Preview
+## 10. K02-L1 Exact-Tree-/Responsive-Abnahme
 
-Der vorgesehene Lovable K02-L1-Lauf ist vorbereitet und prüft read-only gegen einen frischen temporären Checkout des exakten GitHub-Baums:
+Die finale Lovable-Abnahme wurde am 20.09.2026 in der isolierten, nicht veröffentlichten Validierungsumgebung gegen einen frischen temporären Checkout des exakten GitHub-Kandidaten durchgeführt.
 
-- 1920×1080,
-- 1366×768,
-- Hybridheader,
-- exakt drei INTERN- und drei DEMO-Badges,
-- Zeitraum und Freshness,
-- Datenminimierung,
-- kein Overflow/Clipping,
-- Runtime Console / Network,
-- Demo-Regression,
-- Fail-closed / kein Demo-Fallback,
-- keine Code-/DB-/Auth-Drift.
+Geprüfter Kandidat:
 
-Der Lauf konnte am 19.09.2026 nicht gestartet werden, weil der Lovable-Workspace keine verfügbaren Credits meldete.
+`528b5bc8373a51b7c3e946241b07467bd3245dd9`
 
-Dies ist ein **Werkzeug-/Abnahmeblocker**, kein reproduzierter Code-, Security- oder Datenbankfehler.
+Tree-Nachweis:
+
+- EXPECTED TREE: `ab0a5655485c50f9b7be5f3c8fa0a36166aeb949`,
+- ACTUAL TREE: `ab0a5655485c50f9b7be5f3c8fa0a36166aeb949`,
+- TREE MATCH: **JA**.
+
+Ergebnisse:
+
+- targeted Vitest: **11 Dateien / 69 Tests PASS**,
+- Golden Dataset V1: **PASS**,
+- KIOSK Demo E2E: **PASS**,
+- KIOSK Internal E2E: **PASS**,
+- KIOSK Security E2E: **PASS**; zusammen **9/9 Kiosk-Specs PASS**,
+- Preview 1920×1080: **PASS**,
+- Preview 1366×768: **PASS**,
+- Hybridheader **HYBRID — INTERNE DATEN + DEMO-DATEN**: **PASS**,
+- exakt **3× INTERN** und **3× DEMO**: **PASS**,
+- Zeitraum **01.09.2026 – 19.09.2026** sichtbar,
+- interner Datenstand **18.09.2026 10:00** sichtbar und von der Renderzeit getrennt,
+- Link **Projektcontrolling öffnen**: **PASS**,
+- Datenminimierung: **PASS**,
+- Read-only UI: **PASS**,
+- Runtime Console / Page Errors: **PASS**,
+- Network: **PASS**,
+- Fail-closed / kein Demo-Fallback: **PASS**.
+
+Drift-/Governance-Nachweis:
+
+- `client.ts` Drift: **NEIN**,
+- `previewAuthStorage.ts` im geprüften Kandidaten: **NEIN**,
+- Migration oder DB-Änderung: **NEIN**,
+- versionierte Dateien im Prüfobjekt geändert: **NEIN**,
+- `/dev-server` als Prüfobjekt oder Produktworkspace verändert: **NEIN**,
+- Commit / Merge / Deploy / Publish durch Lovable: **NEIN**.
 
 ## 11. Definition of Done
 
-Aktueller Stand:
+Alle KIOSK-02-Abnahmekriterien sind erfüllt:
 
 - Demo-Provider Regression: **PASS**,
 - Internal Provider: **PASS**,
 - Hybrid-Quellenstatus: **PASS**,
 - Permission/Scope: **PASS**,
 - IDOR/BOLA: **PASS**,
+- Golden Dataset / gemeinsame Fachdefinition: **PASS**,
 - A11y/E2E: **PASS**,
 - Security/CI/Quality Gate: **PASS**,
-- Dokumentation: **fortgeschrieben**,
-- Lovable Exact-Tree-/Responsive-Preview: **BLOCKED — keine Credits**.
+- K02-L1 Exact-Tree-/Responsive-Preview: **PASS**,
+- Dokumentation: **fortgeschrieben**.
 
-Damit gilt BSF-KIOSK-02 derzeit als **IMPLEMENTATION COMPLETE**, aber noch nicht als **FINAL DONE**.
+Damit gilt BSF-KIOSK-02 fachlich und technisch als **FINAL DONE**.
+
+Der nachfolgende Dokumentations-Head muss vor Merge weiterhin die normalen GitHub Required Checks bestehen. Dies ist kein neuer Funktionsscope.
 
 ## 12. Nächster Schritt
 
-1. Lovable-Credits verfügbar machen und den vorbereiteten K02-L1 Exact-Tree-/Responsive-Preview ausführen.
-2. Bei PASS den Abschlussnachweis auf FINAL DONE setzen und PR #147 final freigeben.
+1. Dokumentations-Head durch Security und vollständige CI bestätigen.
+2. PR #147 auf **READY FOR MERGE** setzen.
 3. Merge nur nach separater Freigabe.
-4. Danach BSF-03B / Issue #107 starten.
+4. Nach Merge Version `v1.65.0` auf dem tatsächlichen `main`-Merge-Commit taggen und als GitHub Release veröffentlichen.
+5. Danach BSF-03B / Issue #107 starten.
 
 ```text
-MERGE = NEIN
+FINAL_DONE = JA
+MERGE = NOCH NEIN
 DEPLOY = NEIN
 NÄCHSTER SPRINT = BSF-03B / #107
 ```
