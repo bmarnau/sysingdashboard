@@ -41,7 +41,6 @@ Tokens.
 - `500` nur bei unerwartetem Handler-Fehler; fehlende optionale Azure-ENV wird
   im Payload als Status gemeldet und blockiert Health nicht.
 
-
 ### GitHub-Source-of-Truth-Evidenz
 
 Der Statuspayload enthält zusätzlich zur Build-/Runtime-Identität die read-only gelesene Source-of-Truth-Identität:
