@@ -3,6 +3,7 @@ import {
   PROJECT_CONTROLLING_MAX_DAYS,
   type ProjectControllingCompleteness,
   type ProjectControllingFilters,
+  type ProjectControllingFreshness,
   type ProjectControllingOutcome,
   type ProjectControllingRepository,
   type ProjectControllingRow,
@@ -135,6 +136,49 @@ function buildDailyTrend(
   return trend;
 }
 
+function normalizedPublishedAt(value: string | null | undefined): string | null {
+  return typeof value === "string" && value.length > 0 ? value : null;
+}
+
+function freshnessKey(kind: string, identity: string, publishedAt: string | null): string {
+  return `${kind}:${identity}:${publishedAt ?? "unknown"}`;
+}
+
+function measureFreshness(rows: readonly ProjectControllingRow[]): ProjectControllingFreshness {
+  const observed = new Map<string, string | null>();
+
+  for (const row of rows) {
+    if (row.projectSourceId) {
+      const identity = `${row.systemhouseId}:${row.customerId}:${row.projectSourceId}`;
+      const publishedAt = normalizedPublishedAt(row.projectPublishedAt);
+      observed.set(freshnessKey("project", identity, publishedAt), publishedAt);
+    }
+
+    if (row.workPackageSourceId) {
+      const identity = `${row.systemhouseId}:${row.customerId}:${row.workPackageSourceId}`;
+      const publishedAt = normalizedPublishedAt(row.workPackagePublishedAt);
+      observed.set(freshnessKey("work-package", identity, publishedAt), publishedAt);
+    }
+
+    const activityIdentity = `${row.systemhouseId}:${row.customerId}:${row.activityId}`;
+    const activityPublishedAt = normalizedPublishedAt(row.activityPublishedAt);
+    observed.set(
+      freshnessKey("activity", activityIdentity, activityPublishedAt),
+      activityPublishedAt,
+    );
+  }
+
+  const timestamps = [...observed.values()]
+    .filter((value): value is string => value !== null)
+    .sort((left, right) => left.localeCompare(right));
+
+  return {
+    oldestPublishedAt: timestamps[0] ?? null,
+    latestPublishedAt: timestamps[timestamps.length - 1] ?? null,
+    observedRows: observed.size,
+  };
+}
+
 function measureCompleteness(
   rows: readonly ProjectControllingRow[],
 ): ProjectControllingCompleteness {
@@ -176,10 +220,13 @@ export class ProjectControllingService {
       return { ok: false, error: "PROJECT_CONTROLLING_TOO_MANY_ACTIVITIES" };
     }
 
+    const freshness = measureFreshness(rows);
+
     return {
       ok: true,
       value: {
         filters: { ...filters },
+        freshness,
         summary: summarize(rows),
         trend: buildDailyTrend(rows, fromDay, toDay),
         scopeOptions: [...repositoryScopeOptions],

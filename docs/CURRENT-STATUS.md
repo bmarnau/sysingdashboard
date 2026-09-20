@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-09-18
+Stand: 2026-09-19
 
 ## Zweck
 
@@ -21,17 +21,18 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 
 1. `docs/BSF-CURRENT-PRIORITIES.md` — operative Reihenfolge und aktueller Wiederanlaufpunkt,
 2. `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` — verbindliche interne Kiosk-first-Reihenfolge,
-3. Issue #106 und Draft-PR #144 — aktiver BSF-03A-Abnahmepfad,
-4. `docs/BSF-03A-CLOSURE-2026-09-14.md` — BSF-03A-Abschluss- und Abnahmenachweis,
-5. `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` — abgeschlossener KIOSK-01-Nachweis,
-6. `docs/SPRINT-PLAN-MVP-BSF.md` — operative Sprintfolge,
-7. `docs/BSF-01-ARCHITECTURE-BASELINE.md` — Architektur-Baseline,
-8. `docs/ADR/0029-systemhouse-customer-scope.md` — kanonischer Systemhaus-/Customer-Scope,
-9. `docs/BSF-CONCEPT-REGISTER.md` — gesicherte fachliche Entscheidungen,
-10. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
-11. `docs/BSF-03-CLOSURE-2026-09-13.md` — Abschluss Kundenverantwortung/Kundensicht,
-12. `docs/BSF-03D-CLOSURE-2026-09-13.md` — Abschluss Arbeitspaket-Kategorien,
-13. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
+3. Issue #136 und PR #147 — BSF-KIOSK-02 FINAL DONE, Merge noch ausstehend,
+4. `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` — laufender KIOSK-02-Abschlussnachweis,
+5. `docs/BSF-03A-CLOSURE-2026-09-14.md` — abgeschlossener BSF-03A-Nachweis,
+6. `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` — abgeschlossener KIOSK-01-Nachweis,
+7. `docs/SPRINT-PLAN-MVP-BSF.md` — operative Sprintfolge,
+8. `docs/BSF-01-ARCHITECTURE-BASELINE.md` — Architektur-Baseline,
+9. `docs/ADR/0029-systemhouse-customer-scope.md` — kanonischer Systemhaus-/Customer-Scope,
+10. `docs/BSF-CONCEPT-REGISTER.md` — gesicherte fachliche Entscheidungen,
+11. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
+12. `docs/BSF-03-CLOSURE-2026-09-13.md` — Abschluss Kundenverantwortung/Kundensicht,
+13. `docs/BSF-03D-CLOSURE-2026-09-13.md` — Abschluss Arbeitspaket-Kategorien,
+14. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
 
 Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und werden durch die oben genannten laufenden Quellen fortgeschrieben.
 
@@ -39,7 +40,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.64.0` (Feature-/Release-Kandidat; `main` bleibt bis Merge auf 1.63.0)
+- Dashboard-Version: `1.65.0` (BSF-KIOSK-02 Feature-/Release-Kandidat; `main` steht auf 1.64.0)
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
@@ -89,33 +90,58 @@ Abschlussnachweis:
 
 Der Info-Kiosk-Demo-Pilot wurde mit PR #141 am 2026-09-17 nach `main` integriert. Merge-Commit: `91adefa97054aa3cbc6ad03e4cb2a58b868e4e75`. Post-Merge Security #849 und CI #855 sind PASS. Der Kiosk bleibt read-only, nutzt in KIOSK-01 ausschließlich synthetische Demo-Daten und besitzt keine produktive Graph-/SharePoint-/Exchange-/PRTG-/MCP-/Agenten-Anbindung. Abschlussnachweis: `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md`.
 
-### BSF-03A — IMPLEMENTATION COMPLETE / EXACT-HEAD GATES PASS / LOVABLE PREVIEW PENDING / Issue #106
+### BSF-03A — DONE / Issue #106
 
-BSF-03A liefert die read-only Projektmanager-Leistungssicht `/projektcontrolling` mit Zeitraum, Systemhaus, Kunde, Projekt, Arbeitspaket, AP-Kategorie und Billable-Filter. Die Fachaggregation ist providerneutral; der Supabase-Adapter arbeitet mit User-JWT. Die Autorisierung bleibt serverseitig und verwendet `project.controlling.view`, aktive Systemhouse Membership, Customer Access und die bestehende Shared-Projection-RLS.
+BSF-03A ist am 19.09.2026 nach vollständiger Finalabnahme mit PR #144 nach `main` integriert worden. Merge-Commit: `b9aef5aa9b3174f2abd022e11d492190102933a4`.
 
-Letzter vollständig grüner GitHub-Exact-Head vor diesem Dokumentations-/Handbuch-Nachlauf:
+Finaler Kandidaten-Head `763cf874b9f5bb8fadbd2875d7e11f0bd7165361`:
 
-`d9b1645a6529aeec2cadd7bc6223f36e7bc71b71`
+- Security #989: **PASS**,
+- CI #995: **PASS**,
+- Quality Gate: **PASS / 0 Blocker**,
+- Golden Dataset V1: **PASS**,
+- targeted Vitest: **11 Dateien / 66 Tests PASS**,
+- Project-Controlling E2E und Scope-Security E2E: **PASS**,
+- isolierter Lovable-Exact-Tree-Nachweis: **TREE_MATCH JA**,
+- 1920×1080 und 1366×768: **PASS**,
+- Filterhierarchie, KPI/Trend/Drill-down, Read-only UI, Runtime Console und Network/ServerFn: **PASS**.
 
-Nachweise auf exakt diesem Head:
+Die produktive Lovable-Codebasis war wegen historischer Drift nicht Prüfobjekt; die Abnahme erfolgte gegen einen frischen temporären Checkout des exakten GitHub-Kandidaten. Keine versionierte Datei und keine DB-/Auth-/RBAC-/RLS-/Providerlogik wurde durch die Finalabnahme verändert. Abschlussnachweis: `docs/BSF-03A-CLOSURE-2026-09-14.md`.
 
-- Security #963 / Run `35317863838`: **PASS**,
-- CI #969 / Run `35317863829`: **PASS**,
-- Unit & Components: **131 Testdateien / 917 PASS / 4 TODO**,
-- Playwright E2E: **91/91 PASS**,
-- Accessibility: **7/7 PASS**,
-- Database Schema Drift: **PASS**, `DATABASE_SCHEMA_DRIFT: NONE`, `DATABASE_TYPES_DRIFT: NONE`,
-- BSF-02C SQL-Regression T01–T30: **PASS**,
-- BSF-03A SQL-Vertrag T01–T20d: **PASS**,
-- Technical Report **v17**, Status `passed-with-findings`, Quality Gate **0 Blocker**,
-- Golden Dataset V1 und unabhängige Project-Controlling-Expected-Results: **PASS**.
-- Benutzerhandbuch / kontextsensitive Hilfe für `/projektcontrolling`: im Dokumentationsnachlauf ergänzt; Handbuchversion **1.22.0**.
+### BSF-KIOSK-02 — FINAL DONE / READY FOR MERGE / Issue #136
 
-Der offizielle Supabase Security Advisor wurde read-only im verifizierten Sysingdashboard-Kontext ausgeführt: 0 ERROR, 0 CRITICAL und exakt die zwei bekannten SEC-01-WARN vom Typ `0029_authenticated_security_definer_function_executable` für `public.avkk_can_write(_subject uuid)` und `public.avkk_people_directory()`; **keine neuen BSF-03A-Findings**. `public.has_permission(uuid,text)` und `public.bsf02c_publish_shared_projection_snapshot` bleiben `SECURITY INVOKER`.
+KIOSK-02 bindet den bestehenden Info-Kiosk an den serverseitig abgesicherten BSF-03A-Read-/Controlling-Vertrag an. Der Demo-Pfad bleibt unverändert erhalten; im expliziten internen Modus entsteht eine **Hybrid-Sicht**:
 
-Offen ist ausschließlich der branch-genaue Lovable-L2/L3-Preview-/Drift-Nachweis auf dem aktuellen PR-Head. Ein Analyse-Precheck zeigte einen abweichenden erreichbaren Lovable-Stand; der spätere Reachability-Recheck war wegen ausgeschöpfter Lovable-Credits nicht ausführbar. Deshalb werden keine Lovable-Änderungen in PR #144 übernommen und BSF-03A noch nicht als FINAL DONE markiert.
+- INTERN: Projekte, Arbeitspakete und Tätigkeiten,
+- DEMO: Verfügbarkeit, Infrastruktur und Support,
+- bei internem Fehler: **NICHT VERFÜGBAR**, kein stiller Demo-Fallback.
 
-Kein Merge und kein Deploy. Abschlussnachweis: `docs/BSF-03A-CLOSURE-2026-09-14.md`.
+Der technische Kiosk-Account bleibt ausschließlich auf `kiosk.view` begrenzt. Interne Leistungsdaten erfordern serverseitig `project.controlling.view` sowie die bestehenden Membership-, Customer-Access- und RLS-Grenzen. Es wurde keine neue Permission, Tabelle, Migration oder Kiosk-spezifische Aggregationslogik eingeführt.
+
+Finaler Lovable-Funktionskandidat:
+
+`528b5bc8373a51b7c3e946241b07467bd3245dd9`
+
+Nachweise:
+
+- Git tree EXPECTED = ACTUAL = `ab0a5655485c50f9b7be5f3c8fa0a36166aeb949`,
+- Tree Match: **JA**,
+- targeted Vitest: **11 Dateien / 69 Tests PASS**,
+- Golden Dataset V1: **PASS**,
+- Kiosk Demo/Internal/Security E2E: **PASS**, zusammen **9/9**,
+- 1920×1080 und 1366×768: **PASS**,
+- exakt **3× INTERN** und **3× DEMO**,
+- Zeitraum und echte Source-Freshness sichtbar,
+- Datenminimierung, Read-only UI, Runtime Console und Network: **PASS**,
+- Fail-closed / kein Demo-Fallback: **PASS**,
+- `client.ts` Drift: **NEIN**,
+- `previewAuthStorage.ts` im Kandidaten: **NEIN**,
+- Migration oder DB-/Auth-/RBAC-/RLS-Änderung: **NEIN**,
+- versionierte Dateien im Prüfobjekt verändert: **NEIN**.
+
+Der vorherige GitHub-Code-/Dokumentationskandidat war bereits mit Security #1092 und CI #1098 vollständig grün. Die abschließenden Statusdokumente laufen vor Merge erneut durch die normalen Required Checks.
+
+BSF-KIOSK-02 gilt damit als **FINAL DONE**. PR #147 wird nach grünem Dokumentations-Head merge-ready gestellt. Merge und Deploy erfolgen weiterhin nicht ohne separate Freigabe. Abschlussnachweis: `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md`.
 
 ## F-11
 
@@ -302,8 +328,8 @@ Die kanonische Kundenidentität bleibt `(systemhouseId, customerId)`; `systemhou
 - `docs/ENTWICKLUNGSTAGEBUCH.md` ist bis zum BSF-03A-Dokumentations-/Handbuch-Audit vom 2026-09-18 fortgeschrieben.
 - `docs/PROJECT-STATUS.yaml`, `docs/BSF-CURRENT-PRIORITIES.md`, `roadmap.md` und dieses Dokument bilden gemeinsam den aktuellen BSF-03A-Finalverifikationsstand ab.
 - `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` dokumentiert den abgeschlossenen KIOSK-01-Sprint; PR #141 ist auf `main`.
-- `docs/BSF-03A-CLOSURE-2026-09-14.md` ist der zentrale BSF-03A-Abnahmebericht. Offen bleibt ausschließlich der branch-genaue Lovable-Exact-Head-Preview.
-- Benutzerhandbuch und kontextsensitive Hilfe stehen auf Version **1.22.0**; Projektcontrolling, aktuelle RBAC-/Kiosk-Rechte, Kundenverantwortung und der heutige Supabase-MVP-Betriebsmodus sind synchronisiert.
+- `docs/BSF-03A-CLOSURE-2026-09-14.md` dokumentiert den vollständig abgenommenen und gemergten BSF-03A-Sprint; `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` ist der laufende KIOSK-02-Abnahmenachweis.
+- Benutzerhandbuch und kontextsensitive Hilfe stehen auf Version **1.23.0**; Projektcontrolling, KIOSK-02 Hybrid-/Quellenstatus, aktuelle RBAC-/Kiosk-Rechte, Kundenverantwortung und der heutige Supabase-MVP-Betriebsmodus sind synchronisiert.
 - `SYSING-001` existiert als Living Document `docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md` mit gemeinsamer Markdown-Quelle für PDF/Word.
 - SYSING-001 wird in BSF-DOC-02 kontrolliert aktualisiert und TDF-konform abgenommen; es wird keine zweite Dokumentquelle erzeugt.
 - BSF-DOC-03 macht die freigegebene SYSING-001-Fassung read-only aus dem Board erreichbar.

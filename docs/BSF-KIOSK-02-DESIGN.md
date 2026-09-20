@@ -1,7 +1,7 @@
 # BSF-KIOSK-02 — Info-Kiosk mit internem Read-Provider
 
-Stand: 2026-09-18
-Status: READY NACH BSF-03A-FINALABNAHME / IMPLEMENTIERUNGSVERTRAG
+Stand: 2026-09-20
+Status: FINAL DONE / K02-L1 EXACT-TREE PASS / MERGE PENDING
 Issue: #136
 Vorgänger: BSF-03A / #106
 Nachfolger: BSF-03B / #107

@@ -26,6 +26,51 @@ describe("kiosk session policy", () => {
     });
   });
 
+  it("allows a normal management session on explicit internal kiosk mode", () => {
+    expect(
+      resolveKioskSessionPolicy({
+        pathname: "/kiosk",
+        hasKioskView: false,
+        internalModeRequested: true,
+        hasProjectControllingView: true,
+      }),
+    ).toEqual({
+      kioskMode: false,
+      redirectTo: null,
+      idleLogoutEnabled: true,
+    });
+  });
+
+  it("keeps internal kiosk fail-closed without project.controlling.view", () => {
+    expect(
+      resolveKioskSessionPolicy({
+        pathname: "/kiosk",
+        hasKioskView: false,
+        internalModeRequested: true,
+        hasProjectControllingView: false,
+      }),
+    ).toEqual({
+      kioskMode: false,
+      redirectTo: "/dashboard",
+      idleLogoutEnabled: true,
+    });
+  });
+
+  it("keeps technical kiosk sessions kiosk-scoped even with manipulated internal mode", () => {
+    expect(
+      resolveKioskSessionPolicy({
+        pathname: "/kiosk",
+        hasKioskView: true,
+        internalModeRequested: true,
+        hasProjectControllingView: false,
+      }),
+    ).toEqual({
+      kioskMode: true,
+      redirectTo: null,
+      idleLogoutEnabled: false,
+    });
+  });
+
   it("keeps normal protected sessions unchanged", () => {
     expect(resolveKioskSessionPolicy({ pathname: "/dashboard", hasKioskView: false })).toEqual({
       kioskMode: false,

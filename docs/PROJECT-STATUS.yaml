@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-09-18"
+lastUpdated: "2026-09-20"
 
 project:
   name: "Sysing Dashboard"
@@ -49,7 +49,7 @@ architecturePrinciples:
     rule: "Kundenidentität und Kundenscope sind providerneutral an das Systemhaus gebunden und nicht an einen Microsoft-Tenant oder anderen Provider."
 
 versions:
-  dashboard: "1.64.0"
+  dashboard: "1.65.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 17
@@ -59,14 +59,14 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "BSF-03A"
-  currentSprintTitle: "Projektmanager-Leistungssicht und Controlling"
-  currentSprintStatus: "in-progress"
-  nextSprint: "BSF-KIOSK-02"
-  previousSprint: "BSF-KIOSK-01"
+  currentSprint: "BSF-KIOSK-02"
+  currentSprintTitle: "Info-Kiosk interner Read-Provider"
+  currentSprintStatus: "accepted"
+  nextSprint: "BSF-03B"
+  previousSprint: "BSF-03A"
   previousSprintStatus: "completed"
-  releaseReadiness: "blocked"
-  testsPassing: 917
+  releaseReadiness: "passed"
+  testsPassing: 949
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
@@ -78,12 +78,6 @@ currentState:
     e2e: "passed"
     technicalReportQualityGate: "passed"
   knownVerificationLimits:
-    - id: "bsf03a-lovable-exact-head-preview"
-      status: "open"
-      severity: "medium"
-      description: "BSF-03A ist auf dem code-tragenden Exact Head vollständig gegatet; der branch-genaue Lovable-L2/L3-Preview-/Driftnachweis auf dem aktuellen PR-Head ist wegen Head-Drift und anschließend ausgeschöpfter Lovable-Credits noch offen."
-      reference: "BSF-03A"
-      targetSprint: "BSF-03A"
     - id: "session-server-enforcement"
       status: "open"
       severity: "medium"
@@ -185,9 +179,19 @@ phases:
       - "BSF-03 Kundenverantwortung und Kundensicht vollständig abgeschlossen"
       - "BSF-03D Arbeitspaket-Kategorien vollständig abgeschlossen und auf main integriert"
       - "BSF-KIOSK-01 vollständig abgeschlossen und auf main integriert"
-      - "BSF-03A technisch vollständig gegatet; branch-genauer Lovable-Preview-/Driftnachweis noch offen"
+      - "BSF-03A vollständig abgenommen und auf main integriert"
+      - "BSF-KIOSK-02 FINAL DONE; Exact-Tree-/Responsive-Abnahme mit 3x INTERN / 3x DEMO, Freshness, Datenminimierung und Fail-closed PASS"
 
 completedSprints:
+  - id: "BSF-03A"
+    title: "Projektmanager-Leistungssicht und Controlling"
+    version: "1.64.0"
+    status: "completed"
+    summary: >-
+      Read-only Projektcontrolling mit serverseitigem Systemhouse-/Customer-Scope,
+      Golden Dataset V1, reproduzierbaren Stunden-/Billable-KPIs, Tagestrend und
+      Drill-down abgeschlossen; Security, CI, Quality Gate und isolierte
+      Lovable-Exact-Tree-/Responsive-Abnahme PASS; PR #144 auf main integriert.
   - id: "BSF-KIOSK-01"
     title: "Info-Kiosk Demo-Pilot"
     version: "1.63.0"
@@ -375,24 +379,25 @@ roadmap:
       - "Bestehende lokale Daten bleiben kompatibel bzw. kontrolliert migrierbar"
       - "Minimaler gemeinsamer Read-/Datenpfad serverseitig geschützt"
       - "Cross-Systemhaus- und Cross-Customer-Negativtests vorhanden"
-  - id: "BSF-03A"
-    title: "Projektmanager-Leistungssicht und Controlling"
-    status: "in-progress"
+  - id: "BSF-KIOSK-02"
+    title: "Info-Kiosk interner Read-Provider"
+    status: "accepted"
     priority: "high"
-    goal: "Read-only-Leistungssicht nach Zeitraum, Kunde, Projekt und Tätigkeiten bereitstellen."
+    goal: "Bestehenden Info-Kiosk ohne zweite Fachlogik an den serverseitig abgesicherten Projektcontrolling-Read-Vertrag anbinden."
     dependencies:
-      - "BSF-KIOSK-01"
+      - "BSF-03A"
     exitCriteria:
-      - "Summen und Drill-down im zulässigen Projekt-/Verantwortungsscope"
-      - "Keine Teamlead-Finalisierungsrechte"
-      - "Serverseitige Scope-Negativtests PASS"
+      - "Interne Leistungsdomänen verwenden denselben BSF-03A-/Golden-KPI-Vertrag"
+      - "Demo-, Internal- und Unavailable-Quellen sind sichtbar getrennt"
+      - "Kein stiller Demo-Fallback und keine neue DB-/Permission-Grenze"
+      - "E2E, Accessibility, Security, vollständige CI und Exact-Tree-Preview PASS"
   - id: "BSF-03B"
     title: "Teamlead-Leistungsnachweis V1"
     status: "planned"
     priority: "high"
     goal: "Kundenbezogenen Leistungsnachweis mit kontrollierter Finalisierung und Audit umsetzen."
     dependencies:
-      - "BSF-03A"
+      - "BSF-KIOSK-02"
     exitCriteria:
       - "Finaler unveränderbarer Snapshot"
       - "Doppelabrechnungsschutz und Audit serverseitig"
@@ -666,7 +671,7 @@ adrs:
 
 quality:
   tests:
-    passing: 704
+    passing: 949
     failing: 0
     skipped: 4
     coverage: "recorded-in-ci-artifact"
@@ -690,9 +695,9 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release; volatile report details remain CI artifacts."
 
 releaseManagement:
-  currentRelease: "1.64.0"
+  currentRelease: "1.65.0"
   stage: "preview"
-  status: "blocked"
+  status: "passed"
   releaseEvidence:
     - "CHANGELOG.md"
     - "docs/PROJECT-GOVERNANCE.md"
@@ -712,11 +717,12 @@ releaseManagement:
     - "docs/BSF-03D-VERIFICATION-2026-09-13.md"
     - "docs/BSF-03D-CLOSURE-2026-09-13.md"
     - "docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md"
+    - "docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md"
     - "docs/BSF-03A-CLOSURE-2026-09-14.md"
     - "docs/CODEX-GIT-CI-RULE.md"
     - "docs/ADR/0029-systemhouse-customer-scope.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
-  nextReleaseTarget: "BSF-03A Finalabnahme und BSF-KIOSK-02"
+  nextReleaseTarget: "BSF-KIOSK-02 Merge/Release und BSF-03B"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"

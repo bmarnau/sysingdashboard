@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { KioskWallboardSections } from "@/components/kiosk/KioskWallboardSections";
@@ -9,6 +10,8 @@ export interface KioskViewProps {
   state: KioskSnapshotState;
   securityStatus: KioskSessionWatchdogStatus;
   onLogout: () => void;
+  showControllingLink?: boolean;
+  requestedMode?: "demo" | "internal";
 }
 
 function formatTimestamp(value: string | null): string {
@@ -24,6 +27,15 @@ function greetingFor(value: Date): string {
   return "Guten Abend";
 }
 
+function formatPeriod(value: { from: string; to: string } | undefined): string | null {
+  if (!value) return null;
+  const format = (date: string) => {
+    const [year, month, day] = date.split("-");
+    return year && month && day ? `${day}.${month}.${year}` : date;
+  };
+  return `${format(value.from)} – ${format(value.to)}`;
+}
+
 function formatDayDate(value: Date): string {
   return value.toLocaleDateString("de-DE", {
     weekday: "long",
@@ -33,10 +45,24 @@ function formatDayDate(value: Date): string {
   });
 }
 
-export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
+export function KioskView({
+  state,
+  securityStatus,
+  onLogout,
+  showControllingLink = false,
+  requestedMode = "demo",
+}: KioskViewProps) {
   const securityBlocked = securityStatus !== "valid";
   const now = new Date();
+  const mode = state.snapshot?.mode ?? requestedMode;
+  const period = formatPeriod(state.snapshot?.period);
   const domains = new Map((state.snapshot?.domains ?? []).map((domain) => [domain.id, domain]));
+  const banner =
+    mode === "hybrid"
+      ? "HYBRID — INTERNE DATEN + DEMO-DATEN"
+      : mode === "internal"
+        ? "INTERNE DATEN"
+        : "DEMO-DATEN — KEINE LIVE-DATEN";
 
   return (
     <main className="min-h-dvh bg-kiosk-canvas p-3 text-kiosk-ink sm:p-4 2xl:p-2">
@@ -54,8 +80,14 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
 
             <div className="grid shrink-0 justify-items-start gap-2 lg:justify-items-end 2xl:gap-1">
               <div className="flex flex-wrap items-center justify-end gap-3">
-                <div className="rounded-md border border-kiosk-warning-border bg-kiosk-warning-soft px-3 py-2 text-sm font-bold text-kiosk-warning 2xl:py-1.5">
-                  DEMO-DATEN — KEINE LIVE-DATEN
+                <div
+                  className={
+                    mode === "demo"
+                      ? "rounded-md border border-kiosk-warning-border bg-kiosk-warning-soft px-3 py-2 text-sm font-bold text-kiosk-warning 2xl:py-1.5"
+                      : "rounded-md border border-kiosk-accent bg-kiosk-accent-soft px-3 py-2 text-sm font-bold text-kiosk-accent 2xl:py-1.5"
+                  }
+                >
+                  {banner}
                 </div>
                 <Button
                   variant="outline"
@@ -67,8 +99,12 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
                 </Button>
               </div>
               <div className="grid grid-cols-1 gap-x-4 gap-y-0.5 text-left text-xs font-medium text-kiosk-subtle sm:grid-cols-2 lg:text-right">
-                <span>Datenstand: {formatTimestamp(state.snapshot?.observedAt ?? null)}</span>
+                <span>
+                  {mode === "demo" ? "Datenstand" : "Interner Datenstand"}:{" "}
+                  {formatTimestamp(state.snapshot?.observedAt ?? null)}
+                </span>
                 <span>Datensatz: {state.snapshot?.datasetVersion ?? "—"}</span>
+                {period ? <span>Zeitraum: {period}</span> : null}
                 <span>Automatischer Refresh: {KIOSK_REFRESH_MS / 1000} s</span>
                 {state.refreshError ? (
                   <span role="status" className="font-semibold text-kiosk-critical">
@@ -83,9 +119,19 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
 
           <div className="mt-3 border-t border-kiosk-border pt-3 2xl:mt-2 2xl:pt-2">
             <h2 className="text-2xl font-bold sm:text-3xl">Operative Steuerungsübersicht</h2>
-            <p className="text-sm font-medium text-kiosk-subtle">
-              Read-only | Auto-Refresh | Systemhaus
-            </p>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <p className="text-sm font-medium text-kiosk-subtle">
+                Read-only | Auto-Refresh | Systemhaus
+              </p>
+              {showControllingLink ? (
+                <Link
+                  to="/projektcontrolling"
+                  className="text-sm font-semibold text-kiosk-accent underline-offset-4 hover:underline"
+                >
+                  Projektcontrolling öffnen
+                </Link>
+              ) : null}
+            </div>
           </div>
         </header>
 
@@ -113,9 +159,7 @@ export function KioskView({ state, securityStatus, onLogout }: KioskViewProps) {
           >
             <div>
               <h2 className="text-2xl font-semibold">Kiosk-Daten konnten nicht geladen werden</h2>
-              <p className="mt-3 text-kiosk-subtle">
-                Bitte den Demo-Datensatz und den lokalen Zustand prüfen.
-              </p>
+              <p className="mt-3 text-kiosk-subtle">Bitte Sitzung und Datenquelle prüfen.</p>
             </div>
           </section>
         ) : state.snapshot.datasetState === "not_loaded" ? (

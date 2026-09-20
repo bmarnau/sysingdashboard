@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.65.0 - 2026-09-19
+
+- **Info-Kiosk interner Read-Provider (BSF-KIOSK-02, Issue #136)**: Der bestehende Kiosk unterstützt neben dem unveränderten Demo-Pfad einen expliziten internen Hybridmodus für berechtigte Leitungs-Sessions. Projekte, Arbeitspakete und Tätigkeiten werden aus dem vorhandenen BSF-03A-Controlling-Vertrag abgeleitet; Verfügbarkeit, Infrastruktur und Support bleiben eindeutig gekennzeichnete synthetische Demo-Domänen.
+- **Quellen- und Freshness-Vertrag**: Jede Kiosk-Domäne kennzeichnet ihre Quelle als INTERN, DEMO oder NICHT VERFÜGBAR. Zeitraum und interner Datenstand stammen aus dem fachlichen Read-/Projection-Vertrag; ein Fehler interner Leistungsdaten fällt nicht still auf Demo-Werte zurück.
+- **Security und Datenschutz**: Der technische Kiosk-Account bleibt exklusiv auf `kiosk.view` begrenzt. Interne Leistungsdaten erfordern serverseitig `project.controlling.view` sowie die bestehenden Systemhouse-/Customer-/RLS-Grenzen. Die Großbildsicht zeigt nur Aggregate und keine Tätigkeitstitel, Personennamen, Engineer-IDs, internen IDs oder Eurobeträge.
+- **Golden Dataset und Regression**: Vergleichbare Leistungskennzahlen verwenden dieselbe Golden-Dataset-Fachdefinition wie das Projektcontrolling. Der Code-Head `8c69cca` ist mit Security #1075 und CI #1081 vollständig PASS, einschließlich 98/98 E2E, Accessibility, Database Schema Drift, Technical Debt und Quality Gate.
+- **Handbuch**: Kontextsensitive Hilfe und Benutzerhandbuch Version 1.23.0 beschreiben Demo- und Hybridmodus, Quellenkennzeichnung, Berechtigungsgrenzen, Freshness und den read-only Übergang zum Projektcontrolling.
+- **Finalabnahme**: K02-L1 wurde am 20.09.2026 read-only gegen den exakten GitHub-Kandidaten `528b5bc` ausgeführt: Tree-Match JA, 11 targeted Vitest-Dateien / 69 Tests PASS, 9/9 Kiosk-E2E/Security-Specs PASS sowie 1920×1080 und 1366×768 PASS. Exakt 3× INTERN und 3× DEMO, Source-Freshness, Datenminimierung, Read-only, Console/Network und Fail-closed PASS; keine DB-/Auth-/RBAC-/RLS-Änderung.
+
 ## 1.64.0 - 2026-09-18
 
 - **Dokumentations-/Handbuch-Audit**: Benutzerhandbuch auf v1.22.0 aktualisiert; Projektcontrolling kontextsensitiv dokumentiert, Kundenverantwortung nicht mehr als „noch nicht in der Oberfläche“ bezeichnet, RBAC auf acht Rollen/23 atomare Rechte fortgeschrieben und der Betrieb ohne Azure klar vom heutigen Supabase-MVP-Betriebsmodell getrennt.

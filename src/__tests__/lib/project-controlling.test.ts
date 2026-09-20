@@ -25,6 +25,9 @@ function makeRow(overrides: Partial<ProjectControllingRow> = {}): ProjectControl
     categoryKey: "regelbetrieb",
     categoryLabel: "Regelbetrieb",
     categoryState: "known",
+    projectPublishedAt: "2026-09-01T08:00:00.000Z",
+    workPackagePublishedAt: "2026-09-01T09:00:00.000Z",
+    activityPublishedAt: "2026-09-01T10:00:00.000Z",
     ...overrides,
   };
 }
@@ -258,6 +261,127 @@ describe("BSF-03A provider-neutral project controlling", () => {
 
     expect(forward.ok && forward.value.summary).toEqual(expectedSummary);
     expect(reverse.ok && reverse.value.summary).toEqual(expectedSummary);
+  });
+
+  it("derives source freshness from the actually used projection rows", async () => {
+    const service = new ProjectControllingService(
+      makeRepository([
+        makeRow({
+          activityId: "freshness-a",
+          projectPublishedAt: "2026-09-01T07:00:00.000Z",
+          workPackagePublishedAt: "2026-09-01T08:00:00.000Z",
+          activityPublishedAt: "2026-09-01T09:00:00.000Z",
+        }),
+        makeRow({
+          activityId: "freshness-b",
+          projectPublishedAt: "2026-09-02T07:00:00.000Z",
+          workPackagePublishedAt: null,
+          activityPublishedAt: "2026-09-02T11:00:00.000Z",
+        }),
+      ]),
+    );
+
+    const result = await service.get(BASE_FILTERS);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.freshness).toEqual({
+      oldestPublishedAt: "2026-09-01T07:00:00.000Z",
+      latestPublishedAt: "2026-09-02T11:00:00.000Z",
+      observedRows: 6,
+    });
+  });
+
+  it("deduplicates shared parent projections and ignores filtered-out freshness", async () => {
+    const service = new ProjectControllingService(
+      makeRepository([
+        makeRow({
+          activityId: "included-a",
+          activityDate: "2026-09-01",
+          projectPublishedAt: "2026-09-01T07:00:00.000Z",
+          workPackagePublishedAt: "2026-09-01T08:00:00.000Z",
+          activityPublishedAt: "2026-09-01T09:00:00.000Z",
+        }),
+        makeRow({
+          activityId: "included-b",
+          activityDate: "2026-09-02",
+          projectPublishedAt: "2026-09-01T07:00:00.000Z",
+          workPackagePublishedAt: "2026-09-01T08:00:00.000Z",
+          activityPublishedAt: "2026-09-02T10:00:00.000Z",
+        }),
+        makeRow({
+          activityId: "filtered-out",
+          activityDate: "2026-09-06",
+          projectPublishedAt: "2026-09-06T07:00:00.000Z",
+          workPackagePublishedAt: "2026-09-06T08:00:00.000Z",
+          activityPublishedAt: "2026-09-06T12:00:00.000Z",
+        }),
+      ]),
+    );
+
+    const result = await service.get(BASE_FILTERS);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.freshness).toEqual({
+      oldestPublishedAt: "2026-09-01T07:00:00.000Z",
+      latestPublishedAt: "2026-09-02T10:00:00.000Z",
+      observedRows: 4,
+    });
+  });
+
+  it("reports unknown freshness for an empty result without a now fallback", async () => {
+    const result = await new ProjectControllingService(makeRepository([])).get(BASE_FILTERS);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.freshness).toEqual({
+      oldestPublishedAt: null,
+      latestPublishedAt: null,
+      observedRows: 0,
+    });
+  });
+
+  it("derives freshness only from projection timestamps of the filtered rows", async () => {
+    const service = new ProjectControllingService(
+      makeRepository([
+        makeRow({
+          activityId: "a",
+          projectPublishedAt: "2026-09-02T08:00:00.000Z",
+          workPackagePublishedAt: "2026-09-03T08:00:00.000Z",
+          activityPublishedAt: "2026-09-04T08:00:00.000Z",
+        }),
+        makeRow({
+          activityId: "b",
+          projectPublishedAt: "2026-09-01T08:00:00.000Z",
+          workPackagePublishedAt: null,
+          activityPublishedAt: "2026-09-05T08:00:00.000Z",
+        }),
+        makeRow({
+          activityId: "outside",
+          activityDate: "2026-09-06",
+          projectPublishedAt: "2020-01-01T00:00:00.000Z",
+          workPackagePublishedAt: "2030-01-01T00:00:00.000Z",
+          activityPublishedAt: "2030-01-02T00:00:00.000Z",
+        }),
+      ]),
+    );
+
+    const result = await service.get(BASE_FILTERS);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.freshness.oldestPublishedAt).toBe("2026-09-01T08:00:00.000Z");
+    expect(result.value.freshness.latestPublishedAt).toBe("2026-09-05T08:00:00.000Z");
+  });
+
+  it("returns null freshness for an empty filtered result", async () => {
+    const result = await new ProjectControllingService(makeRepository([])).get(BASE_FILTERS);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.freshness.oldestPublishedAt).toBeNull();
+    expect(result.value.freshness.latestPublishedAt).toBeNull();
   });
 
   it("builds a daily trend from the filtered rows and fills empty days with zero", async () => {

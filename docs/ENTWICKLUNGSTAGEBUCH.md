@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-18 · Dashboard-Version 1.64.0
+Stand: 2026-09-20 · Dashboard-Version 1.65.0
 
 ## Vision
 
@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | Version 1.64.0 als BSF-03A-Release-Kandidat; MVP-Baseline CLOSED/PASS; BSF-03, BSF-03D und KIOSK-01 abgeschlossen; BSF-03A technisch vollständig grün, Lovable-Exact-Head-Preview noch offen. |
+| Aktueller Stand     | Version 1.65.0 als BSF-KIOSK-02-Release-Kandidat; MVP-Baseline CLOSED/PASS; KIOSK-02 ist FINAL DONE und Exact-Tree-/Responsive-abgenommen; PR #147 wartet nur noch auf Merge-Freigabe. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | BSF-03A per Lovable-Exact-Head-Preview final abnehmen → PR #144 mergen → KIOSK-02 an den bestehenden internen Read-/Controlling-Vertrag anbinden. |
+| Nächster Nutzen     | Dokumentations-Head grün bestätigen → PR #147 nach separater Freigabe mergen und v1.65.0 taggen → BSF-03B Teamlead-Leistungsnachweis V1 starten. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -50,6 +50,28 @@ Qualitätssicherung gewachsen. Nach der formalen MVP-Baseline verschiebt sich de
 Schwerpunkt auf das **Betriebsfähige Systemhaus-Fundament (BSF)**: belastbare
 Kundenbeziehungen, rollenübergreifende Leistungssichten, Dokumentationsqualität,
 Betreiberhoheit und spätere Integrationen.
+
+## BSF-KIOSK-02 — interner Read-/Hybrid-Provider (2026-09-19)
+
+BSF-03A wurde mit PR #144 vollständig abgenommen und nach `main` integriert. Darauf aufbauend bindet BSF-KIOSK-02 den vorhandenen Info-Kiosk an denselben serverseitig abgesicherten Projektcontrolling-Vertrag an, ohne zweite KPI-/Stundenlogik und ohne neue Datenbank- oder Permission-Grenze.
+
+Umgesetzt sind:
+
+- `mode=demo|hybrid|internal` sowie `sourceKind=demo|internal|unavailable`,
+- interne Projekte, Arbeitspakete und Tätigkeiten aus dem BSF-03A-Read-Vertrag,
+- weiterhin synthetische Demo-Domänen für Verfügbarkeit, Infrastruktur und Support,
+- sichtbare Quellenbadges INTERN/DEMO/NICHT VERFÜGBAR,
+- Source-Freshness statt Renderzeit als interner Datenstand,
+- serverseitige `project.controlling.view`-/Systemhouse-/Customer-/RLS-Grenze,
+- kein stiller Demo-Fallback bei Ausfall interner Leistungsdaten,
+- datenminimierte Großbildsicht ohne Tätigkeitstitel, Personennamen, Engineer-IDs oder Eurobeträge.
+
+Der zunächst verbleibende E2E-Fehler war ein Test-Harness-Befund: `getByText("INTERN")` zählte als Teiltext zusätzlich „INTERNE DATEN“ und „Interner Datenstand“. Der Locator wurde auf exakte Badge-Texte gehärtet und prüft zusätzlich drei DEMO-Badges. Produktive Fachlogik wurde dafür nicht verändert.
+
+Code-tragender Implementierungs-Head `8c69ccac189f00d1d61e93674a61ebb7cbc64fc4`:
+Security #1075 **PASS**, CI #1081 **PASS**, Unit/Components **135 Dateien / 949 PASS / 4 TODO**, E2E **98/98 PASS**, Database Schema Drift, Backend, API, RBAC/Security, Import/Export, Backup/Restore, Production Build, Accessibility, Technical Debt und Quality Gate **PASS**.
+
+Die finale K02-L1-Abnahme wurde am 20.09.2026 gegen den exakten Kandidaten `528b5bc8373a51b7c3e946241b07467bd3245dd9` durchgeführt. Git tree EXPECTED und ACTUAL stimmen mit `ab0a5655485c50f9b7be5f3c8fa0a36166aeb949` überein. 11 targeted Vitest-Dateien / 69 Tests, Golden Dataset V1, 9/9 Kiosk-E2E/Security-Specs sowie die Responsive-Previews 1920×1080 und 1366×768 sind PASS. Exakt drei INTERN- und drei DEMO-Badges, Zeitraum, Source-Freshness, Datenminimierung, Read-only UI, Console/Network und Fail-closed sind bestätigt. Keine versionierte Datei, DB-, Auth-, RBAC- oder RLS-Grenze wurde verändert. KIOSK-02 ist damit **FINAL DONE**; PR #147 wartet nur noch auf den final grünen Dokumentations-Head und separate Merge-Freigabe.
 
 ## Zeitstrahl: Idee → Prototyp → MVP → Betriebsreife → BSF
 

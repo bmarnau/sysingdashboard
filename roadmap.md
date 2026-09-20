@@ -38,11 +38,11 @@ Die Kiosk-Migrationen wurden kontrolliert auf der maßgeblichen Sysingdashboard-
 
 ### Nächster interner Schritt nach KIOSK-01
 
-BSF-03A ist technisch implementation-complete; offen ist nur der branch-genaue Lovable-Exact-Head-Preview vor FINAL DONE. Danach folgt KIOSK-02 / #136.
+BSF-03A ist vollständig abgenommen und mit PR #144 auf `main` integriert. Aktiver interner Schritt ist BSF-KIOSK-02 / #136.
 
 ---
 
-## BSF-03A (#106) Projektmanager-Leistungssicht / Controlling — FINALVERIFIKATION
+## BSF-03A (#106) Projektmanager-Leistungssicht / Controlling — DONE
 
 - [x] Golden Dataset V1 als deterministische Referenzbasis
 - [x] atomare Permission `project.controlling.view`
@@ -50,20 +50,34 @@ BSF-03A ist technisch implementation-complete; offen ist nur der branch-genaue L
 - [x] User-JWT-Supabase-Adapter; kein Service-Role-Normalpfad
 - [x] serverseitige Systemhouse-/Customer-/IDOR-/BOLA-Grenzen
 - [x] Kategoriebrücke `category_key` / `category_observed` in der Shared Projection
-- [x] Zeitraum max. 366 Tage, identitätsbasierte abhängige Filter, Billable-Filter
-- [x] deterministische Summen, Tagestrend und Drill-down
-- [x] 5.000-Zeilen-Grenze; 5.001 fail-closed statt stiller Kürzung
+- [x] deterministische Summen, Tagestrend, Drill-down und 5.000-Zeilen-Fail-closed-Grenze
 - [x] Route `/projektcontrolling` read-only
-- [x] E2E 91/91 und Accessibility 7/7 auf dem vollständig grünen GitHub-Head `d9b1645`
-- [x] Security #963 und CI #969 vollständig PASS; Quality Gate 0 Blocker
-- [x] offizieller Security Advisor ohne neue BSF-03A-Findings
-- [x] Benutzerhandbuch, kontextsensitive Hilfe, Architektur-/Schema-/API-Doku und Entwicklungstagebuch synchronisiert
-- [ ] Lovable auf exakt aktuellen PR-Head synchronisieren und read-only Responsive-/Runtime-Preview abnehmen
-- [ ] FINAL DONE / PR #144 Review und Merge nach separater Freigabe
+- [x] Security #989 / CI #995 / Quality Gate PASS
+- [x] isolierte Lovable Exact-Tree-Abnahme, 1920×1080 und 1366×768 PASS
+- [x] PR #144 am 19.09.2026 auf `main` gemergt; Issue #106 geschlossen
+
+---
+
+## BSF-KIOSK-02 (#136) interner Read-Provider — FINAL DONE / MERGE PENDING
+
+- [x] Kiosk-Vertrag additiv um `mode`, `sourceKind` und `observedAt` erweitert
+- [x] BSF-03A-Freshness für internen Kiosk-Snapshot übernommen
+- [x] interne Server Function mit `project.controlling.view` und Systemhouse-Scope
+- [x] InternalReadKioskDataProvider / Hybrid-Provider
+- [x] bestehende Wallboard-UI für Demo/Internal/Unavailable erweitert
+- [x] genau drei interne Leistungsdomänen und drei eindeutig markierte Demo-Domänen
+- [x] kein zweiter Stunden-/Billable-Aggregator
+- [x] kein stiller Demo-Fallback bei internem Fehler
+- [x] Scope-/IDOR-/BOLA-, Component-, A11y- und E2E-Verträge
+- [x] Code-Head `8c69cca`: Security #1075 und CI #1081 vollständig PASS; E2E 98/98
+- [x] Benutzerhandbuch und kontextsensitive Hilfe auf Hybridbetrieb fortgeschrieben
+- [x] K02-L1 Exact-Tree-/Responsive-Preview 1920×1080 + 1366×768 — PASS auf Kandidat `528b5bc`, Tree Match JA
+- [x] Abschluss-/Driftnachweis FINAL DONE; PR #147 nach grünem Dokumentations-Head merge-ready
+- [ ] PR #147 nach separater Freigabe mergen und `v1.65.0` auf dem main-Merge-Commit veröffentlichen
 
 ### Danach
 
-`BSF-KIOSK-02 (#136) → BSF-03B → BSF-03E → BSF-07`
+`BSF-03B (#107) → BSF-03E (#63) → BSF-07 (#140) → BSF-KIOSK-03 (#137)`
 
 ---
 
