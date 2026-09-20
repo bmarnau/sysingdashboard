@@ -7,8 +7,8 @@ const DEFAULT_TIMEOUT_MS = 1_500;
 let cached = null;
 let cacheExpiresAt = 0;
 
-function isoNow(now) {
-  return new Date(now()).toISOString();
+function isoNow(epochMs) {
+  return new Date(epochMs).toISOString();
 }
 
 export async function getGithubMainStatus({
