@@ -462,7 +462,6 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
             <Row
               label="Supabase Client-Konfiguration"
               value={`${authConfigLabel} — Format/Presence, keine Connectivity`}
-              ok={authConfig.status === "configured"}
             />
             <Row
               label="RBAC code contract"
@@ -507,7 +506,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
 
           {/* 6) Data */}
           <Section icon={<Database className="size-4 shrink-0" />} title="6. Data">
-            <Row label="MVP-Datenplattform" value="Supabase" ok />
+            <Row label="MVP-Datenplattform" value="Supabase — Architektur-/Betriebsmodell" />
             <Row label="Backend-Verbindung" value={backendStatusLabel} ok={backendStatusOk} />
             <Row
               label="Browser Local Storage"
