@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-19 · Dashboard-Version 1.65.0
+Stand: 2026-09-20 · Dashboard-Version 1.65.0
 
 ## Vision
 
@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | Version 1.65.0 als BSF-KIOSK-02-Release-Kandidat; MVP-Baseline CLOSED/PASS; BSF-03A ist gemergt; KIOSK-02 ist technisch vollständig grün, der Exact-Tree-Lovable-Preview ist wegen fehlender Credits noch offen. |
+| Aktueller Stand     | Version 1.65.0 als BSF-KIOSK-02-Release-Kandidat; MVP-Baseline CLOSED/PASS; KIOSK-02 ist FINAL DONE und Exact-Tree-/Responsive-abgenommen; PR #147 wartet nur noch auf Merge-Freigabe. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | KIOSK-02 Exact-Tree-/Responsive-Preview nachholen → PR #147 final abnehmen → BSF-03B Teamlead-Leistungsnachweis V1 starten. |
+| Nächster Nutzen     | Dokumentations-Head grün bestätigen → PR #147 nach separater Freigabe mergen und v1.65.0 taggen → BSF-03B Teamlead-Leistungsnachweis V1 starten. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -71,7 +71,7 @@ Der zunächst verbleibende E2E-Fehler war ein Test-Harness-Befund: `getByText("I
 Code-tragender Implementierungs-Head `8c69ccac189f00d1d61e93674a61ebb7cbc64fc4`:
 Security #1075 **PASS**, CI #1081 **PASS**, Unit/Components **135 Dateien / 949 PASS / 4 TODO**, E2E **98/98 PASS**, Database Schema Drift, Backend, API, RBAC/Security, Import/Export, Backup/Restore, Production Build, Accessibility, Technical Debt und Quality Gate **PASS**.
 
-Der K02-L1 Exact-Tree-/Responsive-Preview für 1920×1080 und 1366×768 ist vollständig vorbereitet. Der Lovable-Workspace meldete beim Start jedoch keine verfügbaren Credits. Deshalb bleibt PR #147 Draft und der Sprint bis zum nachgeholten Preview **IMPLEMENTATION COMPLETE / FINAL ACCEPTANCE BLOCKED BY TOOL CREDITS**. Kein Merge, kein Deploy.
+Die finale K02-L1-Abnahme wurde am 20.09.2026 gegen den exakten Kandidaten `528b5bc8373a51b7c3e946241b07467bd3245dd9` durchgeführt. Git tree EXPECTED und ACTUAL stimmen mit `ab0a5655485c50f9b7be5f3c8fa0a36166aeb949` überein. 11 targeted Vitest-Dateien / 69 Tests, Golden Dataset V1, 9/9 Kiosk-E2E/Security-Specs sowie die Responsive-Previews 1920×1080 und 1366×768 sind PASS. Exakt drei INTERN- und drei DEMO-Badges, Zeitraum, Source-Freshness, Datenminimierung, Read-only UI, Console/Network und Fail-closed sind bestätigt. Keine versionierte Datei, DB-, Auth-, RBAC- oder RLS-Grenze wurde verändert. KIOSK-02 ist damit **FINAL DONE**; PR #147 wartet nur noch auf den final grünen Dokumentations-Head und separate Merge-Freigabe.
 
 ## Zeitstrahl: Idee → Prototyp → MVP → Betriebsreife → BSF
 
