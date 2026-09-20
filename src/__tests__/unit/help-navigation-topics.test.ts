@@ -76,11 +76,17 @@ describe("Dashboard-Navigation im Benutzerhandbuch", () => {
   it("überschreibt die historische Systemstatus-Hilfe mit dem aktuellen Betriebsmodell", () => {
     const topic = HelpDocumentationService.getTopicById("system-status");
 
-    expect(topic?.lastUpdated).toBe("2026-08-22");
+    expect(topic?.lastUpdated).toBe("2026-09-20");
     expect(topic?.content).toContain("https://github.com/bmarnau/sysingdashboard");
     expect(topic?.content).toContain("Supabase");
     expect(topic?.content).toContain("vom Hosting nicht bereitgestellt");
     expect(topic?.content).toContain("nicht geprüft — users.manage erforderlich");
+    expect(topic?.content).toContain("GitHub main HEAD");
+    expect(topic?.content).toContain("SYNCHRON");
+    expect(topic?.content).toContain("ABWEICHEND");
+    expect(topic?.content).toContain("NICHT PRÜFBAR");
+    expect(topic?.content).toContain("Zuletzt gegen GitHub geprüft");
+    expect(topic?.content).toContain("erzwingt einen frischen Read");
     expect(topic?.content).toContain(
       "allgemeine **/api/status** bleibt ein secret-freier Health-Endpunkt",
     );
