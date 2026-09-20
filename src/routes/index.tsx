@@ -4,6 +4,7 @@ import { trySupabase } from "@/integrations/supabase/safe-client";
 import { loadAuthConfig } from "@/integrations/supabase/runtime-config";
 import type { AuthConfiguration } from "@/integrations/supabase/config";
 import { Button } from "@/components/ui/button";
+import { AppVersionStamp } from "@/components/AppVersionStamp";
 
 /**
  * Öffentliche Landing-Seite.
@@ -118,6 +119,7 @@ function LandingPage() {
             <Link to="/auth">{state.kind === "checking" ? "Anmelden…" : "Anmelden"}</Link>
           </Button>
         </div>
+        <AppVersionStamp className="mt-4" />
       </div>
     </div>
   );
