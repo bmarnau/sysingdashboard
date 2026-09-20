@@ -13,12 +13,15 @@ export const endpointMeta = {
 export const Route = createFileRoute("/api/status")({
   server: {
     handlers: {
-      GET: withCorrelation(async () => {
+      GET: withCorrelation(async ({ request }) => {
         // Health darf nicht an optionaler Azure-/Live-Sync-Konfiguration scheitern.
         // `getStatus()` fängt die ENV-Validierung intern ab und liefert nur
         // secret-freie Namen/Booleans, keine Werte.
         const status = getStatus();
-        const githubMain = await getGithubMainStatus();
+        const forceGithubRefresh = new URL(request.url).searchParams.get("refresh") === "1";
+        const githubMain = await getGithubMainStatus({
+          cacheTtlMs: forceGithubRefresh ? 0 : undefined,
+        });
         const payload = {
           ...status,
           github: {
