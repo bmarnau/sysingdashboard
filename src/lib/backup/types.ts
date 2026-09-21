@@ -6,6 +6,7 @@
  */
 
 import type { AvkkBackupPayload } from "./avkk-payload";
+import type { PerformanceStatementBackupPayload } from "./performance-statement-payload";
 
 export type BackupCheckStatus = "ok" | "warning" | "failed";
 
@@ -102,6 +103,12 @@ export interface Snapshot {
   avkk: AvkkBackupPayload | null;
   /** Gründe, warum Cloud-Nutzdaten fehlen. */
   avkkWarnings: string[];
+  /**
+   * BSF-03B Cloud-Nutzdaten. Wie AVKK werden sie vollständig gesichert und
+   * geprüft, aber nie durch den Browser-Restore in die Datenbank geschrieben.
+   */
+  performanceStatements: PerformanceStatementBackupPayload | null;
+  performanceStatementWarnings: string[];
   archive: Array<{
     id: string;
     fileName: string;
@@ -161,6 +168,21 @@ export interface AvkkRestoreReport {
   messages: string[];
 }
 
+export interface PerformanceStatementRestoreReport {
+  present: boolean;
+  validated: boolean;
+  counts: {
+    overrides: number;
+    requests: number;
+    statements: number;
+    items: number;
+    claims: number;
+  };
+  activeClaims: Array<{ activitySourceId: string; statementId: string }>;
+  snapshotHashes: Record<string, string>;
+  messages: string[];
+}
+
 export interface RestoreResult {
   ok: boolean;
   runId: string;
@@ -176,6 +198,8 @@ export interface RestoreResult {
   rollback: boolean;
   /** Prüfbericht der mitgelieferten AVKK-Daten (kein DB-Schreibvorgang). */
   avkk: AvkkRestoreReport;
+  /** Prüfbericht der BSF-03B Cloud-Nutzdaten (kein DB-Schreibvorgang). */
+  performanceStatements: PerformanceStatementRestoreReport;
 }
 
 export interface RestoreSnapshot {
