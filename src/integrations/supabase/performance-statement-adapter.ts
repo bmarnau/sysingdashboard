@@ -221,6 +221,12 @@ async function requestStatement(
     return { statementId: inserted.data.result_statement_id };
   }
 
+  if (inserted.error?.code === "40001") {
+    throw new Error("PERFORMANCE_STATEMENT_STALE_REVIEW");
+  }
+  if (inserted.error?.code === "55000") {
+    throw new Error("PERFORMANCE_STATEMENT_CLAIM_CONFLICT");
+  }
   if (inserted.error?.code !== "23505") {
     fail(action === "replace" ? "Ersatz anfordern" : "Finalisierung anfordern");
   }
