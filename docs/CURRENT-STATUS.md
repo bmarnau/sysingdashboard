@@ -40,7 +40,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.65.1` als Patch-Kandidat; `v1.65.0` ist veröffentlicht und enthält den abgeschlossenen BSF-KIOSK-02-Stand.
+- Dashboard-Version: `1.65.1` als vollständig abgenommener Patch-Kandidat; `v1.65.0` ist veröffentlicht und enthält den abgeschlossenen BSF-KIOSK-02-Stand.
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
@@ -54,7 +54,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
 - BSF-03B / Issue #107 ist der aktive Sprint. Der Live-Precheck war read-only erfolgreich; die Lovable-Branchbindung für Schreibphasen ist noch nicht nutzbar, daher wurden dort keine DB- oder Codeänderungen vorgenommen.
-- Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus. Der Release-Kandidat bleibt bis zum korrigierten read-only Lovable-Exact-Head-Fresh-Refresh-Retest blockiert; commitbezogene CI-/Security-Aussagen werden ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
+- Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus und ist vollständig abgenommen. Der korrigierte read-only Lovable-Exact-Head-Retest bestätigt Fresh-Refresh, Fail-closed-Verhalten, beide Zielauflösungen und Tree-Integrität; der frühere Fresh-Refresh-FAIL war ein Harness-False-Negative. Commitbezogene CI-/Security-Aussagen werden weiterhin ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
 
 ## Aktueller BSF-Stand
 

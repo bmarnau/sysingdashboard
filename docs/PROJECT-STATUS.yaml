@@ -65,8 +65,8 @@ currentState:
   nextSprint: "BSF-03E"
   previousSprint: "BSF-KIOSK-02"
   previousSprintStatus: "completed"
-  releaseReadiness: "blocked"
-  testsPassing: 949
+  releaseReadiness: "passed"
+  testsPassing: 963
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
@@ -82,14 +82,6 @@ currentState:
     Für den Status eines konkreten aktuellen Commits sind ausschließlich die
     zugehörigen GitHub-Actions-Runs maßgeblich.
   knownVerificationLimits:
-    - id: "patch-1.65.1-lovable-exact-head-retest"
-      status: "open"
-      severity: "medium"
-      description: >-
-        Der korrigierte read-only Lovable-Exact-Head-Retest für den manuellen
-        Fresh-Refresh ist noch ausstehend. Release 1.65.1 bleibt bis zu diesem
-        Nachweis blockiert; ein früherer Visual-PASS wird nicht als aktueller
-        Exact-Head-Nachweis fortgeschrieben.
     - id: "session-server-enforcement"
       status: "open"
       severity: "medium"
@@ -683,7 +675,7 @@ adrs:
 
 quality:
   tests:
-    passing: 949
+    passing: 963
     failing: 0
     skipped: 4
     coverage: "recorded-in-ci-artifact"
@@ -709,12 +701,13 @@ quality:
 releaseManagement:
   currentRelease: "1.65.1"
   stage: "preview"
-  status: "blocked"
+  status: "passed"
   statusBasis: >-
-    Release-Kandidat 1.65.1 ist bis zum korrigierten Lovable-Exact-Head-
-    Fresh-Refresh-Retest blockiert. Commit-bezogene CI-/Security-Aussagen
-    werden live aus GitHub Actions bezogen und nicht als aktueller PASS
-    in diesem versionierten Manifest behauptet.
+    Release-Kandidat 1.65.1 hat die korrigierte read-only Lovable-Exact-Head-
+    Fresh-Refresh-Abnahme und die vollständigen GitHub-Gates erfolgreich
+    durchlaufen. Commit-bezogene CI-/Security-Aussagen werden weiterhin
+    live aus GitHub Actions bezogen und nicht als aktueller PASS in diesem
+    versionierten Manifest behauptet.
   releaseEvidence:
     - "CHANGELOG.md"
     - "docs/PROJECT-GOVERNANCE.md"

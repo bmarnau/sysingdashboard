@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | v1.65.0 veröffentlicht; KIOSK-02 FINAL DONE. Patch 1.65.1 ergänzt die sichtbare Versionsanzeige. BSF-03B ist gestartet und befindet sich nach read-only Live-Precheck im TDD-/Vertragsaufbau. |
+| Aktueller Stand     | v1.65.0 veröffentlicht; KIOSK-02 FINAL DONE. Patch 1.65.1 mit Versionsanzeige und evidenzkalibriertem Systemstatus ist vollständig abgenommen und wartet auf Merge/Release. BSF-03B ist gestartet und befindet sich nach read-only Live-Precheck im TDD-/Vertragsaufbau. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | Patch 1.65.1 sauber releasen → BSF-03B Permission-/Snapshot-/Review-Vertrag repository-seitig umsetzen → danach DB-Migration und L2-UI. |
+| Nächster Nutzen     | Patch 1.65.1 mergen und releasen → BSF-03B Permission-/Snapshot-/Review-Vertrag repository-seitig umsetzen → danach DB-Migration und L2-UI. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -57,7 +57,7 @@ Landing-/Anmeldeseite, Auth-Seite und das angemeldete Dashboard erhalten eine ko
 
 Der anschließende AQGS-Systemstatus-Audit trennt Konfiguration, Erreichbarkeit, funktionale Prüfung und aktuelle Synchronität. Ein früherer erfolgreicher Git-SHA-Vergleich bleibt bei einem fehlgeschlagenen aktuellen Status-API-Check nur historische Evidenz und wird nicht weiter als `SYNCHRON` angezeigt. Repository-URL und Build-Commit sind neutrale Metadaten; ein grüner Git-Status entsteht ausschließlich aus dem aktuellen SHA-Vergleich. Lovable-, Azure-, Security-, Backup-, Local-Storage- und RBAC-Aussagen wurden auf ihre tatsächlich vorhandene Evidenzstufe geprüft.
 
-Die erste Lovable-Exact-Tree-Abnahme meldete `FRESH_REFRESH = FAIL`. Die Root-Cause-Analyse zeigte, dass der synthetische Test nur `**/api/status` interceptete, während `Jetzt prüfen` korrekt `/api/status?refresh=1` aufruft. Der ursprüngliche FAIL ist daher ein wahrscheinlicher Harness-False-Negative; ein korrigierter read-only Retest bleibt erforderlich. Zusätzlich wurde der echte Fail-closed-Randfall bei komplett nicht erreichbarer Status-API korrigiert.
+Die erste Lovable-Exact-Tree-Abnahme meldete `FRESH_REFRESH = FAIL`. Die Root-Cause-Analyse zeigte, dass der synthetische Test nur `**/api/status` interceptete, während `Jetzt prüfen` korrekt `/api/status?refresh=1` aufruft. Der korrigierte read-only Exact-Head-Retest mit `**/api/status*` bestätigt die tatsächliche Sequenz `/api/status → /api/status?refresh=1 → /api/status?refresh=1` sowie `SYNCHRON → ABWEICHEND → NICHT PRÜFBAR`. Der frühere FAIL ist damit als Harness-False-Negative bestätigt. Auch der echte Fail-closed-Randfall bei komplett nicht erreichbarer Status-API ist erfolgreich verifiziert.
 
 Handbuch und kontextsensitive Hilfe stehen danach auf Version **1.23.1**. DB-, Auth-, RBAC- und RLS-Grenzen wurden durch diese Änderungen nicht verändert.
 
