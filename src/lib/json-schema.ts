@@ -1,5 +1,8 @@
 /**
- * JSON-Schnittstellen-Schema v1.2.0
+ * JSON-Schnittstellen-Schema v1.3.0
+ *
+ * 1.3.0 ergänzt den optionalen administrativen Block `performanceStatements`
+ * für BSF-03B-Cloud-Nutzdaten. Der Block ist nicht die Kundenausgabe.
  *
  * 1.2.0 ergänzt am Arbeitspaket das optionale Feld `categoryKey` (BSF-03D):
  * stabiler Schlüssel des systemhausweiten Katalogs `workpackage.category`.
@@ -21,8 +24,12 @@
  */
 
 import { z } from "zod";
+import {
+  validatePerformanceStatementBackupPayload,
+  type PerformanceStatementBackupPayload,
+} from "@/lib/backup/performance-statement-payload";
 
-export const JSON_SCHEMA_VERSION = "1.2.0";
+export const JSON_SCHEMA_VERSION = "1.3.0";
 
 /* ----------------------------- Primitive Schemas ---------------------------- */
 
@@ -226,6 +233,12 @@ export const AvkkExportSchema = z.object({
 });
 export type AvkkExport = z.infer<typeof AvkkExportSchema>;
 
+export const PerformanceStatementExportSchema = z.custom<PerformanceStatementBackupPayload>(
+  (value) => validatePerformanceStatementBackupPayload(value).ok,
+  "Ungültiger BSF-03B-Leistungsnachweis-Datensatz.",
+);
+export type PerformanceStatementExport = PerformanceStatementBackupPayload;
+
 /* --------------------------------- Envelope --------------------------------- */
 
 export const ExportTypeSchema = z.enum(["full", "partial"]);
@@ -241,6 +254,7 @@ export const ExportScopeSchema = z.enum([
   "settings",
   "targettime",
   "avkk",
+  "performance-statements",
 ]);
 export type ExportScope = z.infer<typeof ExportScopeSchema>;
 
@@ -261,6 +275,7 @@ export const DashboardJsonExportSchema = z.object({
   targetTimeModels: z.array(TargetTimeModelSchema).optional(),
   settings: z.array(DashboardSettingsSchema).optional(),
   avkk: AvkkExportSchema.optional(),
+  performanceStatements: PerformanceStatementExportSchema.optional(),
 
   manualMeta: z
     .object({
