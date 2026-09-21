@@ -153,7 +153,7 @@ SELECT pg_temp.assert(
 --        duration_hours|billing_status|effective_billable
 -- Sortiert nach activity_source_id, verbunden mit \n, SHA-256, lowercase hex.
 CREATE OR REPLACE FUNCTION pg_temp.review_fingerprint(
-  _sh uuid, _cust uuid, _from date, _to date)
+  _sh uuid, _cust uuid, _from date, _to date, _replace_statement_id uuid DEFAULT NULL)
 RETURNS text LANGUAGE sql STABLE AS $$
   SELECT encode(sha256(convert_to(coalesce(string_agg(line, E'\n' ORDER BY src), ''), 'UTF8')), 'hex')
   FROM (
@@ -181,6 +181,7 @@ RETURNS text LANGUAGE sql STABLE AS $$
         WHERE c.systemhouse_id = a.systemhouse_id
           AND c.customer_id = a.customer_id
           AND c.activity_source_id = a.source_id
+          AND (_replace_statement_id IS NULL OR c.statement_id <> _replace_statement_id)
       )
   ) rows;
 $$;
@@ -423,7 +424,7 @@ SELECT pg_temp.assert((
 SELECT pg_temp.assert((
   SELECT bool_and(
       (p.prosecdef = false)
-   OR (p.proconfig @> ARRAY['search_path=']
+   OR (p.proconfig @> ARRAY['search_path=""']
        AND NOT has_function_privilege('public', p.oid, 'EXECUTE')
        AND NOT has_function_privilege('anon', p.oid, 'EXECUTE')
        AND NOT has_function_privilege('authenticated', p.oid, 'EXECUTE')))
@@ -612,7 +613,7 @@ SELECT '00000000-0000-0000-0000-00000000f004',
        '2026-08-01','2026-08-31','replace', s.id,
        pg_temp.review_fingerprint('00000000-0000-0000-0000-0000000ab301',
                                   '00000000-0000-0000-0000-0000000bb301',
-                                  '2026-08-01','2026-08-31')
+                                  '2026-08-01','2026-08-31', s.id)
 FROM public.customer_performance_statement s
 WHERE s.customer_id = '00000000-0000-0000-0000-0000000bb301'
   AND s.status = 'finalized';
@@ -682,22 +683,27 @@ ROLLBACK;
 -- Residuum sichtbar sein. pg_temp bleibt sitzungsweit gueltig; die
 -- Nachpruefung ist read-only und startet keine zweite Transaktion.
 -- ---------------------------------------------------------------------------
-SELECT pg_temp.assert(
-      NOT EXISTS (SELECT 1 FROM public.systemhouse
-                  WHERE id IN ('00000000-0000-0000-0000-0000000ab301',
-                               '00000000-0000-0000-0000-0000000ab302'))
-  AND NOT EXISTS (SELECT 1 FROM public.customer
-                  WHERE id IN ('00000000-0000-0000-0000-0000000bb301',
-                               '00000000-0000-0000-0000-0000000bb302',
-                               '00000000-0000-0000-0000-0000000bb303'))
-  AND NOT EXISTS (SELECT 1 FROM auth.users WHERE email LIKE 'bsf03b-%@example.invalid')
-  AND NOT EXISTS (SELECT 1 FROM public.shared_activity_projection
-                  WHERE source_id LIKE 'BSF03B-%')
-  AND NOT EXISTS (SELECT 1 FROM public.shared_work_package_projection
-                  WHERE source_id LIKE 'BSF03B-%')
-  AND NOT EXISTS (SELECT 1 FROM public.shared_project_projection
-                  WHERE source_id LIKE 'BSF03B-%')
-  AND NOT EXISTS (SELECT 1 FROM public.audit_log
-                  WHERE action LIKE 'performance_statement.%'
-                    AND actor_id = '00000000-0000-0000-0000-00000000b303'),
-  'T30 no synthetic residue after outer rollback');
+DO $t30$
+BEGIN
+  IF EXISTS (SELECT 1 FROM public.systemhouse
+             WHERE id IN ('00000000-0000-0000-0000-0000000ab301',
+                          '00000000-0000-0000-0000-0000000ab302'))
+     OR EXISTS (SELECT 1 FROM public.customer
+                WHERE id IN ('00000000-0000-0000-0000-0000000bb301',
+                             '00000000-0000-0000-0000-0000000bb302',
+                             '00000000-0000-0000-0000-0000000bb303'))
+     OR EXISTS (SELECT 1 FROM auth.users WHERE email LIKE 'bsf03b-%@example.invalid')
+     OR EXISTS (SELECT 1 FROM public.shared_activity_projection
+                WHERE source_id LIKE 'BSF03B-%')
+     OR EXISTS (SELECT 1 FROM public.shared_work_package_projection
+                WHERE source_id LIKE 'BSF03B-%')
+     OR EXISTS (SELECT 1 FROM public.shared_project_projection
+                WHERE source_id LIKE 'BSF03B-%')
+     OR EXISTS (SELECT 1 FROM public.audit_log
+                WHERE action LIKE 'performance_statement.%'
+                  AND actor_id = '00000000-0000-0000-0000-00000000b303') THEN
+    RAISE EXCEPTION 'FAIL T30 no synthetic residue after outer rollback';
+  END IF;
+  RAISE NOTICE 'PASS T30 no synthetic residue after outer rollback';
+END
+$t30$;
