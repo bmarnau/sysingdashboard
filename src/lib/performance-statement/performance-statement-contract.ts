@@ -1,9 +1,6 @@
 export const PERFORMANCE_STATEMENT_MAX_DAYS = 366;
 
-export type PerformanceReviewState =
-  | "reviewable"
-  | "legacy_finalized"
-  | "claimed_by_statement";
+export type PerformanceReviewState = "reviewable" | "legacy_finalized" | "claimed_by_statement";
 
 export interface PerformanceStatementReviewRow {
   activitySourceId: string;
