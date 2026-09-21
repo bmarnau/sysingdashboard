@@ -215,4 +215,45 @@ describe("BSF-03B PerformanceStatementView", () => {
     expect(screen.getByRole("button", { name: "Version 2 ersetzen" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Version 1 ersetzen" })).not.toBeInTheDocument();
   });
+
+  it("requires explicit review confirmation before finalization", () => {
+    const onFinalize = vi.fn();
+
+    render(
+      <PerformanceStatementView
+        scopes={scopes}
+        selection={selection}
+        review={review}
+        history={[]}
+        loading={false}
+        busy={false}
+        error={null}
+        onSelectionChange={vi.fn()}
+        onOverride={vi.fn()}
+        onFinalize={onFinalize}
+        onReplace={vi.fn()}
+        onExport={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Leistungsnachweis finalisieren" }));
+
+    expect(screen.getByText("Kunde Alpha")).toBeInTheDocument();
+    expect(screen.getByText("2026-09-01 bis 2026-09-30")).toBeInTheDocument();
+    expect(screen.getByText("Leistungsnachweis, keine Rechnung.")).toBeInTheDocument();
+
+    const finalize = screen.getByRole("button", { name: "Jetzt finalisieren" });
+    expect(finalize).toBeDisabled();
+
+    fireEvent.click(
+      screen.getByRole("checkbox", {
+        name: "Ich bestätige, dass ich den angezeigten Datenstand geprüft habe.",
+      }),
+    );
+
+    expect(finalize).toBeEnabled();
+    fireEvent.click(finalize);
+    expect(onFinalize).toHaveBeenCalledTimes(1);
+  });
+
 });
