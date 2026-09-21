@@ -142,6 +142,8 @@ CREATE TABLE public.customer_performance_statement (
   status                      text NOT NULL CHECK (status IN ('finalized','superseded')),
   finalized_by                uuid NOT NULL REFERENCES auth.users(id),
   finalized_at                timestamptz NOT NULL DEFAULT now(),
+  source_oldest_published_at  timestamptz,
+  source_latest_published_at  timestamptz,
   review_fingerprint          text NOT NULL CHECK (review_fingerprint ~ '^[0-9a-f]{64}$'),
   snapshot_hash               text NOT NULL DEFAULT repeat('0',64)
                                 CHECK (snapshot_hash ~ '^[0-9a-f]{64}$'),
@@ -183,13 +185,14 @@ CREATE TABLE public.customer_performance_statement_item (
   activity_source_id     text NOT NULL,
   source_revision        integer NOT NULL,
   source_hash            text NOT NULL,
+  source_published_at     timestamptz NOT NULL,
+  source_engineer_id      uuid,
   activity_date          date NOT NULL,
   title_snapshot         text NOT NULL,
   duration_hours         numeric(12,2) NOT NULL CHECK (duration_hours >= 0),
   source_billable        boolean NOT NULL,
   effective_billable     boolean NOT NULL,
   billing_status_snapshot text NOT NULL DEFAULT '',
-  engineer_id            uuid,
   work_package_source_id text,
   work_package_title_snapshot text NOT NULL DEFAULT '',
   project_source_id      text,
@@ -513,9 +516,9 @@ BEGIN
   -- Reviewmenge: aktive Quellzeilen im Scope/Zeitraum, Legacy 'abgerechnet'
   -- ausgeschlossen, ohne Claim eines anderen aktiven Statements.
   CREATE TEMP TABLE bsf03b_review ON COMMIT DROP AS
-  SELECT a.source_id, a.source_revision, a.source_hash, a.activity_date,
-         a.title, a.duration_hours, a.billable, a.billing_status, a.engineer_id,
-         a.work_package_source_id, a.work_package_ref,
+  SELECT a.source_id, a.source_revision, a.source_hash, a.published_at,
+         a.activity_date, a.title, a.duration_hours, a.billable, a.billing_status,
+         a.engineer_id, a.work_package_source_id, a.work_package_ref,
          COALESCE(o.effective_billable, a.billable) AS effective_billable
   FROM public.shared_activity_projection a
   LEFT JOIN public.customer_activity_billable_override o
@@ -593,16 +596,17 @@ BEGIN
 
   INSERT INTO public.customer_performance_statement_item (
     statement_id, "position", activity_source_id, source_revision, source_hash,
+    source_published_at, source_engineer_id,
     activity_date, title_snapshot, duration_hours, source_billable, effective_billable,
-    billing_status_snapshot, engineer_id, work_package_source_id,
+    billing_status_snapshot, work_package_source_id,
     work_package_title_snapshot, project_source_id, project_name_snapshot,
     category_key_snapshot, category_label_snapshot
   )
   SELECT v_new_id,
          row_number() OVER (ORDER BY r.source_id),
-         r.source_id, r.source_revision, r.source_hash, r.activity_date,
-         r.title, r.duration_hours, r.billable, r.effective_billable,
-         r.billing_status, r.engineer_id, r.work_package_source_id,
+         r.source_id, r.source_revision, r.source_hash, r.published_at, r.engineer_id,
+         r.activity_date, r.title, r.duration_hours, r.billable, r.effective_billable,
+         r.billing_status, r.work_package_source_id,
          COALESCE(w.title, ''), p.source_id, COALESCE(p.name, ''),
          CASE WHEN w.category_observed THEN w.category_key ELSE NULL END,
          COALESCE(rv.label, '')
@@ -655,6 +659,8 @@ BEGIN
     SELECT i."position" AS pos,
            i."position"::text || '|' || i.activity_source_id || '|'
              || i.source_revision::text || '|' || i.source_hash || '|'
+             || to_char(i.source_published_at, 'YYYY-MM-DD"T"HH24:MI:SS.USOF') || '|'
+             || COALESCE(i.source_engineer_id::text, '') || '|'
              || to_char(i.activity_date, 'YYYY-MM-DD') || '|'
              || trim(to_char(i.duration_hours, 'FM9999999990.00')) || '|'
              || CASE WHEN i.effective_billable THEN 'true' ELSE 'false' END AS line
@@ -664,12 +670,16 @@ BEGIN
 
   UPDATE public.customer_performance_statement s
      SET snapshot_hash = v_hash,
+         source_oldest_published_at = agg.oldest_published,
+         source_latest_published_at = agg.latest_published,
          item_count = agg.cnt,
          billable_item_count = agg.bcnt,
          billable_hours = agg.bh,
          non_billable_hours = agg.nbh
     FROM (
-      SELECT count(*)::int AS cnt,
+      SELECT min(i.source_published_at) AS oldest_published,
+             max(i.source_published_at) AS latest_published,
+             count(*)::int AS cnt,
              count(*) FILTER (WHERE i.effective_billable)::int AS bcnt,
              COALESCE(sum(i.duration_hours) FILTER (WHERE i.effective_billable), 0) AS bh,
              COALESCE(sum(i.duration_hours) FILTER (WHERE NOT i.effective_billable), 0) AS nbh

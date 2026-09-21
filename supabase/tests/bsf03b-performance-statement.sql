@@ -17,7 +17,7 @@
 --   T20      finalize PASS, result_statement_id gesetzt
 --   T21      stale Review-Fingerprint -> vollstaendiger Rollback
 --   T22      doppelter aktiver Claim -> vollstaendiger Rollback
---   T23      non-billable reviewable Item ist Snapshot- und Claimbestandteil
+--   T23      non-billable Item + Source-Provenienz/Freshness im Snapshot
 --   T24      billable_hours / non_billable_hours korrekt
 --   T25      snapshot_hash = 64 Zeichen lowercase hex
 --   T26      Idempotency-Key erzeugt keinen zweiten Snapshot
@@ -499,6 +499,14 @@ SELECT pg_temp.assert((
     AND i.activity_source_id IN ('BSF03B-ACT-2','BSF03B-ACT-3')
 ), 'T23b overridden and source non-billable rows stay in snapshot');
 
+SELECT pg_temp.assert((
+  SELECT bool_and(i.source_published_at IS NOT NULL)
+     AND bool_and(i.source_engineer_id IS NOT NULL)
+  FROM public.customer_performance_statement_item i
+  JOIN public.customer_performance_statement_request r ON r.result_statement_id = i.statement_id
+  WHERE r.id = '00000000-0000-0000-0000-00000000f001'
+), 'T23c item source provenance persisted');
+
 SELECT pg_temp.assert(
       NOT EXISTS (
         SELECT 1 FROM public.customer_performance_statement_item i
@@ -507,7 +515,16 @@ SELECT pg_temp.assert(
           AND i.activity_source_id = 'BSF03B-ACT-4')
   AND (SELECT count(*) = 3 FROM public.customer_performance_activity_claim
        WHERE customer_id = '00000000-0000-0000-0000-0000000bb301'),
-  'T23c legacy_finalized excluded, all snapshot items claimed');
+  'T23d legacy_finalized excluded, all snapshot items claimed');
+
+SELECT pg_temp.assert((
+  SELECT s.source_oldest_published_at IS NOT NULL
+     AND s.source_latest_published_at IS NOT NULL
+     AND s.source_oldest_published_at <= s.source_latest_published_at
+  FROM public.customer_performance_statement s
+  JOIN public.customer_performance_statement_request r ON r.result_statement_id = s.id
+  WHERE r.id = '00000000-0000-0000-0000-00000000f001'
+), 'T23e header freshness range persisted');
 
 -- T24: Summen exakt aus den gespeicherten Items.
 SELECT pg_temp.assert((
