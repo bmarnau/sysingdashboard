@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { PerformanceStatementView } from "@/components/performance-statement/PerformanceStatementView";
 import type {
@@ -238,11 +238,12 @@ describe("BSF-03B PerformanceStatementView", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Leistungsnachweis finalisieren" }));
 
-    expect(screen.getByText("Kunde Alpha")).toBeInTheDocument();
-    expect(screen.getByText("2026-09-01 bis 2026-09-30")).toBeInTheDocument();
-    expect(screen.getByText("Leistungsnachweis, keine Rechnung.")).toBeInTheDocument();
+    const dialog = screen.getByRole("alertdialog");
+    expect(within(dialog).getByText("Kunde Alpha")).toBeInTheDocument();
+    expect(within(dialog).getByText("2026-09-01 bis 2026-09-30")).toBeInTheDocument();
+    expect(within(dialog).getByText("Leistungsnachweis, keine Rechnung.")).toBeInTheDocument();
 
-    const finalize = screen.getByRole("button", { name: "Jetzt finalisieren" });
+    const finalize = within(dialog).getByRole("button", { name: "Jetzt finalisieren" });
     expect(finalize).toBeDisabled();
 
     fireEvent.click(
