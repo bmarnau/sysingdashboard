@@ -8,6 +8,7 @@ import type {
   FinalizeInput,
   PerformanceStatementRepository,
   PerformanceStatementReview,
+  PerformanceStatementScopeOption,
   PerformanceStatementSnapshot,
   ReplaceInput,
   ReviewInput,
@@ -199,6 +200,20 @@ export async function requirePerformanceStatementAccess(
   if (scope) await requireScopeAccess(supabase, userId, scope);
 }
 
+export async function executeListPerformanceStatementScopes(
+  supabase: UserSupabaseClient,
+  userId: string,
+  repository: PerformanceStatementRepository,
+): Promise<PerformanceStatementScopeOption[]> {
+  await requirePerformanceStatementAccess(supabase, userId);
+
+  try {
+    return await repository.listScopes();
+  } catch {
+    throw new Error(PERFORMANCE_STATEMENT_OPERATION_FAILED);
+  }
+}
+
 export async function executeGetPerformanceStatementReview(
   supabase: UserSupabaseClient,
   userId: string,
@@ -339,6 +354,14 @@ async function createRepository(
     await import("@/integrations/supabase/performance-statement-adapter");
   return createSupabasePerformanceStatementRepository(supabase);
 }
+
+export const listPerformanceStatementScopesFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<PerformanceStatementScopeOption[]> => {
+    const supabase = context.supabase as UserSupabaseClient;
+    const repository = await createRepository(supabase);
+    return executeListPerformanceStatementScopes(supabase, context.userId, repository);
+  });
 
 export const getPerformanceStatementReviewFn = createServerFn({ method: "POST" })
   .validator((input: unknown) => parsePerformanceReviewInput(input))
