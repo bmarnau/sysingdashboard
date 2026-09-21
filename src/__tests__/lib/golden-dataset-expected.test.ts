@@ -203,7 +203,6 @@ describe("GDS-01 Golden Dataset V1 expected business results", () => {
     expect(buildDrillDown(activities)).toEqual(expected.drillDown);
   });
 
-
   it("matches the fixed BSF-03B review, override and customer-output results", async () => {
     const [{ activities }, expected] = await Promise.all([
       readJson<{ activities: Activity[] }>("activities.json"),
@@ -280,9 +279,9 @@ describe("GDS-01 Golden Dataset V1 expected business results", () => {
     expect(customerARows.map((row) => row.activitySourceId).sort()).toEqual(
       [...customerA.activityIds].sort(),
     );
-    expect(
-      customerARows.filter((row) => row.reviewState === "legacy_finalized"),
-    ).toHaveLength(customerA.legacyFinalizedCount);
+    expect(customerARows.filter((row) => row.reviewState === "legacy_finalized")).toHaveLength(
+      customerA.legacyFinalizedCount,
+    );
     expect(summarizePerformanceReviewRows(customerARows)).toEqual({
       billableHours: customerA.billableHours,
       nonBillableHours: customerA.nonBillableHours,
@@ -311,9 +310,7 @@ describe("GDS-01 Golden Dataset V1 expected business results", () => {
     );
     expect(
       overrideRows
-        .filter(
-          (row) => row.reviewState === "reviewable" && row.effectiveBillable,
-        )
+        .filter((row) => row.reviewState === "reviewable" && row.effectiveBillable)
         .map((row) => row.activitySourceId)
         .sort(),
     ).toEqual([...overrideCase.customerOutputActivityIds].sort());
@@ -335,9 +332,9 @@ describe("GDS-01 Golden Dataset V1 expected business results", () => {
         .map((row) => row.activitySourceId)
         .sort(),
     ).toEqual([...legacyCase.legacyFinalizedActivityIds].sort());
-    expect(
-      legacyRows.filter((row) => row.reviewState === "legacy_finalized"),
-    ).toHaveLength(legacyCase.legacyFinalizedCount);
+    expect(legacyRows.filter((row) => row.reviewState === "legacy_finalized")).toHaveLength(
+      legacyCase.legacyFinalizedCount,
+    );
     expect(summarizePerformanceReviewRows(legacyRows)).toEqual({
       billableHours: legacyCase.billableHours,
       nonBillableHours: legacyCase.nonBillableHours,
@@ -345,9 +342,7 @@ describe("GDS-01 Golden Dataset V1 expected business results", () => {
     });
     expect(
       legacyRows
-        .filter(
-          (row) => row.reviewState === "reviewable" && row.effectiveBillable,
-        )
+        .filter((row) => row.reviewState === "reviewable" && row.effectiveBillable)
         .map((row) => row.activitySourceId)
         .sort(),
     ).toEqual([...legacyCase.customerOutputActivityIds].sort());

@@ -47,20 +47,13 @@
     "customerBLegacy": {
       "systemhouseId": "golden-systemhouse-01",
       "customerId": "golden-customer-b",
-      "reviewableActivityIds": [
-        "golden-act-05",
-        "golden-act-06"
-      ],
-      "legacyFinalizedActivityIds": [
-        "golden-act-07"
-      ],
+      "reviewableActivityIds": ["golden-act-05", "golden-act-06"],
+      "legacyFinalizedActivityIds": ["golden-act-07"],
       "reviewableCount": 2,
       "legacyFinalizedCount": 1,
       "billableHours": 5,
       "nonBillableHours": 2,
-      "customerOutputActivityIds": [
-        "golden-act-05"
-      ]
+      "customerOutputActivityIds": ["golden-act-05"]
     }
   }
 }
