@@ -1,0 +1,34 @@
+name: BSF03B Final Docs Format
+
+on:
+  push:
+    branches:
+      - feat/bsf-03b-performance-statement
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf-03b-performance-statement
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Format exact remaining files
+        run: |
+          bunx prettier --write             docs/LOVABLE-PROMPT-PLAN-BSF-03B.md             docs/SPRINT-PLAN-MVP-BSF.md
+      - name: Commit formatting if needed
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/LOVABLE-PROMPT-PLAN-BSF-03B.md docs/SPRINT-PLAN-MVP-BSF.md
+          git commit -m "style(bsf03b): finale Statusdokumente formatieren"
+          git push origin HEAD:feat/bsf-03b-performance-statement
