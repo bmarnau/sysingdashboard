@@ -189,9 +189,7 @@ function mapSnapshot(
     nonBillableHours: row.non_billable_hours,
     replacesStatementId: row.replaces_statement_id,
     supersededByStatementId: row.superseded_by_statement_id,
-    items: [...items]
-      .sort((left, right) => left.position - right.position)
-      .map(mapSnapshotItem),
+    items: [...items].sort((left, right) => left.position - right.position).map(mapSnapshotItem),
   };
 }
 
