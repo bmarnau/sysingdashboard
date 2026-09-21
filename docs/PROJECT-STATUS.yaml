@@ -49,7 +49,7 @@ architecturePrinciples:
     rule: "Kundenidentität und Kundenscope sind providerneutral an das Systemhaus gebunden und nicht an einen Microsoft-Tenant oder anderen Provider."
 
 versions:
-  dashboard: "1.65.1"
+  dashboard: "1.66.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 17
@@ -59,14 +59,14 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "BSF-03B"
-  currentSprintTitle: "Teamlead-Leistungsnachweis V1"
-  currentSprintStatus: "in-progress"
-  nextSprint: "BSF-03E"
-  previousSprint: "BSF-KIOSK-02"
+  currentSprint: "BSF-03E"
+  currentSprintTitle: "Vertretungs- und Personensicht"
+  currentSprintStatus: "planned"
+  nextSprint: "BSF-07"
+  previousSprint: "BSF-03B"
   previousSprintStatus: "completed"
   releaseReadiness: "passed"
-  testsPassing: 975
+  testsPassing: 1009
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"
@@ -185,6 +185,7 @@ phases:
       - "BSF-KIOSK-01 vollständig abgeschlossen und auf main integriert"
       - "BSF-03A vollständig abgenommen und auf main integriert"
       - "BSF-KIOSK-02 FINAL DONE; Exact-Tree-/Responsive-Abnahme mit 3x INTERN / 3x DEMO, Freshness, Datenminimierung und Fail-closed PASS"
+      - "BSF-03B Teamlead-Leistungsnachweis FINAL DONE; immutable Snapshots, Claims, Replacement, PDF/CSV/JSON, Backup/Restore und vollständige Required Gates PASS; Lovable Exact-Head-Visualprüfung als Plattformgrenze NOT EVIDENCED"
 
 completedSprints:
   - id: "BSF-03A"
@@ -699,7 +700,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release; volatile report details remain CI artifacts."
 
 releaseManagement:
-  currentRelease: "1.65.1"
+  currentRelease: "1.66.0"
   stage: "preview"
   status: "passed"
   statusBasis: >-
