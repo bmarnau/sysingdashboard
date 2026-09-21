@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { PerformanceStatementReviewRow } from "@/lib/performance-statement/performance-statement-contract";
+import type {\n  PerformanceStatementReviewRow,\n} from "@/lib/performance-statement/performance-statement-contract";
 import {
   classifyRow,
   summarizePerformanceReviewRows,
