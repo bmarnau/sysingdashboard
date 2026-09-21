@@ -1,5 +1,5 @@
 name: Temporary BSF-03B targeted E2E
-# full-targeted-verification
+# full-targeted-verification-2
 
 on:
   push:
