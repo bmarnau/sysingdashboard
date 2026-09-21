@@ -86,7 +86,8 @@ describe("Dashboard-Navigation im Benutzerhandbuch", () => {
     expect(topic?.content).toContain("ABWEICHEND");
     expect(topic?.content).toContain("NICHT PRÜFBAR");
     expect(topic?.content).toContain("zuletzt bekannte");
-    expect(topic?.content).toContain("früherer SHA-Match");
+    expect(topic?.content).toContain("SHA-Match");
+    expect(topic?.content).toContain("nicht weiter als **SYNCHRON**");
     expect(topic?.content).toContain("Connectivity-Nachweis");
     expect(topic?.content).toContain("funktional geprüft");
     expect(topic?.content).toContain("erzwingt einen frischen Read");
