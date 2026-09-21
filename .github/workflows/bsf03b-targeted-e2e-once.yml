@@ -1,5 +1,5 @@
 name: Temporary BSF-03B targeted E2E
-# diagnostic-run
+# diagnostic-run-2
 
 on:
   push:
