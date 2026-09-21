@@ -2,7 +2,8 @@
  * BSF-03B — Accessibility-Vertrag für den Leistungsnachweis.
  */
 /// <reference types="vitest-axe/extend-expect" />
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { axe } from "vitest-axe";
 import { describe, expect, it, vi } from "vitest";
 import { PerformanceStatementView } from "@/components/performance-statement/PerformanceStatementView";
@@ -131,6 +132,29 @@ describe("BSF-03B Leistungsnachweis – Accessibility", () => {
     );
 
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("Finalisierungsdialog inklusive Bestätigung bleibt zugänglich", async () => {
+    const user = userEvent.setup();
+    render(
+      <PerformanceStatementView
+        scopes={scopes}
+        selection={selection}
+        review={review}
+        history={[snapshot]}
+        loading={false}
+        busy={false}
+        error={null}
+        {...callbacks}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Leistungsnachweis finalisieren" }));
+    expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Ich bestätige, dass ich den angezeigten Datenstand geprüft habe."),
+    ).toBeInTheDocument();
+    expect(await axe(document.body)).toHaveNoViolations();
   });
 
   it("Loading-, Fehler- und Empty-State bleiben zugänglich", async () => {
