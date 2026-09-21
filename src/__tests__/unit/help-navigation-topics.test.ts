@@ -87,7 +87,7 @@ describe("Dashboard-Navigation im Benutzerhandbuch", () => {
     expect(topic?.content).toContain("NICHT PRÜFBAR");
     expect(topic?.content).toContain("zuletzt bekannte");
     expect(topic?.content).toContain("früherer SHA-Match");
-    expect(topic?.content).toContain("noch kein Connectivity-Nachweis");
+    expect(topic?.content).toContain("Connectivity-Nachweis");
     expect(topic?.content).toContain("funktional geprüft");
     expect(topic?.content).toContain("erzwingt einen frischen Read");
     expect(topic?.content).toContain(

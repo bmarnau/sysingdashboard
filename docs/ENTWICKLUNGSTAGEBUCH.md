@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-20 · Dashboard-Version 1.65.1
+Stand: 2026-09-21 · Dashboard-Version 1.65.1
 
 ## Vision
 
@@ -51,9 +51,15 @@ Schwerpunkt auf das **Betriebsfähige Systemhaus-Fundament (BSF)**: belastbare
 Kundenbeziehungen, rollenübergreifende Leistungssichten, Dokumentationsqualität,
 Betreiberhoheit und spätere Integrationen.
 
-## Patch 1.65.1 — sichtbare Versionsanzeige (2026-09-20)
+## Patch 1.65.1 — Versionsanzeige und evidenzkalibrierter Systemstatus (2026-09-20/21)
 
 Landing-/Anmeldeseite, Auth-Seite und das angemeldete Dashboard erhalten eine kompakte Anzeige der aktuellen Produktversion mit Versionsdatum. Version und Datum stammen aus dem obersten `CHANGELOG.md`-Eintrag; es gibt keine zweite hartcodierte Versionsquelle.
+
+Der anschließende AQGS-Systemstatus-Audit trennt Konfiguration, Erreichbarkeit, funktionale Prüfung und aktuelle Synchronität. Ein früherer erfolgreicher Git-SHA-Vergleich bleibt bei einem fehlgeschlagenen aktuellen Status-API-Check nur historische Evidenz und wird nicht weiter als `SYNCHRON` angezeigt. Repository-URL und Build-Commit sind neutrale Metadaten; ein grüner Git-Status entsteht ausschließlich aus dem aktuellen SHA-Vergleich. Lovable-, Azure-, Security-, Backup-, Local-Storage- und RBAC-Aussagen wurden auf ihre tatsächlich vorhandene Evidenzstufe geprüft.
+
+Die erste Lovable-Exact-Tree-Abnahme meldete `FRESH_REFRESH = FAIL`. Die Root-Cause-Analyse zeigte, dass der synthetische Test nur `**/api/status` interceptete, während `Jetzt prüfen` korrekt `/api/status?refresh=1` aufruft. Der ursprüngliche FAIL ist daher ein wahrscheinlicher Harness-False-Negative; ein korrigierter read-only Retest bleibt erforderlich. Zusätzlich wurde der echte Fail-closed-Randfall bei komplett nicht erreichbarer Status-API korrigiert.
+
+Handbuch und kontextsensitive Hilfe stehen danach auf Version **1.23.1**. DB-, Auth-, RBAC- und RLS-Grenzen wurden durch diese Änderungen nicht verändert.
 
 ## BSF-KIOSK-02 — interner Read-/Hybrid-Provider (2026-09-19)
 
