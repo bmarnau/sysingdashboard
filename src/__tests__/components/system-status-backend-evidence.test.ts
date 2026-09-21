@@ -42,8 +42,13 @@ describe("Systemstatus — Backend-Evidenz", () => {
     expect(DIALOG).toContain('label="Build commit"');
     expect(DIALOG).toContain('label="GitHub main HEAD"');
     expect(DIALOG).toContain('label="Synchronisationsstatus"');
-    expect(DIALOG).toContain('label="Zuletzt gegen GitHub geprüft"');
-    expect(DIALOG).toContain("resolveGitSyncState(ghCommit, ghMainCommit)");
+    expect(DIALOG).toContain('"Zuletzt gegen GitHub geprüft"');
+    expect(DIALOG).toContain('"Letzter erfolgreicher GitHub-Nachweis"');
+    expect(DIALOG).toContain(
+      "resolveGitSyncState(ghCommit, ghMainCommit, ghEvidenceCurrent)",
+    );
+    expect(DIALOG).toContain("NICHT PRÜFBAR — Status-API nicht erreichbar");
+    expect(DIALOG).toContain("zuletzt bekannt:");
     expect(DIALOG).toContain("NICHT PRÜFBAR");
   });
 

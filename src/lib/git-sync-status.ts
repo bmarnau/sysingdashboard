@@ -19,7 +19,9 @@ export function commitsMatch(
 export function resolveGitSyncState(
   currentCommit: string | null | undefined,
   mainCommit: string | null | undefined,
+  evidenceCurrent = true,
 ): GitSyncState {
+  if (!evidenceCurrent) return "unknown";
   const match = commitsMatch(currentCommit, mainCommit);
   if (match === null) return "unknown";
   return match ? "synchronized" : "different";

@@ -223,15 +223,30 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
   const ghMainCommit = p.github?.mainCommit ?? null;
   const ghCheckedAt = p.github?.checkedAt ?? null;
   const ghSourceReachable = p.github?.sourceOfTruthReachable ?? null;
-  const ghSyncState = resolveGitSyncState(ghCommit, ghMainCommit);
+  const ghEvidenceCurrent = health.apiReachable !== false;
+  const ghSyncState = resolveGitSyncState(ghCommit, ghMainCommit, ghEvidenceCurrent);
   const ghSyncLabel =
-    ghSyncState === "synchronized"
-      ? "SYNCHRON — Build entspricht GitHub main"
-      : ghSyncState === "different"
-        ? "ABWEICHEND — Build entspricht nicht GitHub main"
-        : ghSourceReachable === false
-          ? "NICHT PRÜFBAR — GitHub main nicht erreichbar"
-          : "NICHT PRÜFBAR — Build- oder main-Commit fehlt";
+    health.apiReachable === false
+      ? "NICHT PRÜFBAR — Status-API nicht erreichbar; vorhandene Werte sind nicht aktuell verifiziert"
+      : ghSyncState === "synchronized"
+        ? "SYNCHRON — Build entspricht GitHub main"
+        : ghSyncState === "different"
+          ? "ABWEICHEND — Build entspricht nicht GitHub main"
+          : ghSourceReachable === false
+            ? "NICHT PRÜFBAR — GitHub main nicht erreichbar"
+            : "NICHT PRÜFBAR — Build- oder main-Commit fehlt";
+  const ghMainCommitDisplay =
+    health.apiReachable === false
+      ? ghMainCommit
+        ? `zuletzt bekannt: ${ghMainCommit.slice(0, 12)}`
+        : "nicht prüfbar"
+      : ghMainCommit
+        ? ghMainCommit.slice(0, 12)
+        : "nicht prüfbar";
+  const ghCheckedAtLabel =
+    health.apiReachable === false
+      ? "Letzter erfolgreicher GitHub-Nachweis"
+      : "Zuletzt gegen GitHub geprüft";
   const ghCommitHref = ghCommit
     ? `${ghRepoUrl.replace(/\/$/, "")}/commit/${ghCommit}`
     : commitOk
@@ -367,7 +382,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
             <Row label="Source-of-Truth branch" value={ghMainBranch} mono />
             <Row
               label="GitHub main HEAD"
-              value={ghMainCommit ? ghMainCommit.slice(0, 12) : "nicht prüfbar"}
+              value={ghMainCommitDisplay}
               href={ghMainCommitHref}
               mono
             />
@@ -382,7 +397,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
                     : undefined
               }
             />
-            <Row label="Zuletzt gegen GitHub geprüft" value={fmtDate(ghCheckedAt)} />
+            <Row label={ghCheckedAtLabel} value={fmtDate(ghCheckedAt)} />
           </Section>
 
           {/* 3) Lovable */}

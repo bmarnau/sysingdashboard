@@ -19,6 +19,7 @@ Format pro Eintrag:
 - **Single Source of Truth**: Version und Datum werden nicht in den Seiten hartcodiert, sondern aus dem obersten CHANGELOG-Eintrag abgeleitet.
 - **Systemstatus nach AQGS-08**: Git-Synchronisation wird nur noch über einen echten SHA-Vergleich mit dem live gelesenen GitHub-`main` bewertet; Konfiguration, Erreichbarkeit und Betriebsnachweis werden in Lovable-, Azure-, Security-, Data- und Security-Scan-Sektionen semantisch getrennt.
 - **Freshness**: `Jetzt prüfen` erzwingt einen frischen GitHub-`main`-Read; der Zeitpunkt der letzten Prüfung wird angezeigt. Fehlende Evidenz bleibt neutral als „NICHT PRÜFBAR“ statt als positiver Status.
+- **Fail-closed bei Refresh-Fehlern**: Ist der aktuelle Status-API-Check nicht erreichbar, wird ein früherer SHA-Match nicht weiter als aktuelles „SYNCHRON“ gewertet. Ein zuletzt bekannter `main`-SHA und Prüfzeitpunkt bleiben nur ausdrücklich als historische Evidenz sichtbar.
 
 ## 1.65.0 - 2026-09-19
 
