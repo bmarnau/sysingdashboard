@@ -2,7 +2,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import {\n  createSupabasePerformanceStatementRepository,\n} from "@/integrations/supabase/performance-statement-adapter";
+import {
+  createSupabasePerformanceStatementRepository,
+} from "@/integrations/supabase/performance-statement-adapter";
 import type { Database } from "@/integrations/supabase/types";
 import { createPerformanceReviewFingerprint } from "@/lib/performance-statement/review-fingerprint";
 
