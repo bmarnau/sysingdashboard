@@ -50,11 +50,11 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 - Docker-/Container-Portabilität sowie Azure-/Entra-Migrationsfähigkeit bleiben verbindliche Architekturziele
 - MVP bleibt **100 % / BASELINE READY**; der aktive Entwicklungshorizont ist **BSF — Betriebsfähiges Systemhaus-Fundament**.
 
-## Aktueller Arbeitsstand 20.09.2026
+## Aktueller Arbeitsstand 21.09.2026
 
 - BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
 - BSF-03B / Issue #107 ist der aktive Sprint. Der Live-Precheck war read-only erfolgreich; die Lovable-Branchbindung für Schreibphasen ist noch nicht nutzbar, daher wurden dort keine DB- oder Codeänderungen vorgenommen.
-- Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe auf Landing, Auth und Dashboard aus einer gemeinsamen CHANGELOG-Quelle.
+- Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus. Der Release-Kandidat bleibt bis zum korrigierten read-only Lovable-Exact-Head-Fresh-Refresh-Retest blockiert; commitbezogene CI-/Security-Aussagen werden ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
 
 ## Aktueller BSF-Stand
 

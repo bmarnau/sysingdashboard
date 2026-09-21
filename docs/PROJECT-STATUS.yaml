@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-09-20"
+lastUpdated: "2026-09-21"
 
 project:
   name: "Sysing Dashboard"
@@ -65,7 +65,7 @@ currentState:
   nextSprint: "BSF-03E"
   previousSprint: "BSF-KIOSK-02"
   previousSprintStatus: "completed"
-  releaseReadiness: "passed"
+  releaseReadiness: "blocked"
   testsPassing: 949
   qualityGates:
     typecheck: "passed"
@@ -77,7 +77,21 @@ currentState:
     security: "passed"
     e2e: "passed"
     technicalReportQualityGate: "passed"
+  qualityGateEvidenceScope: >-
+    Versionierte Baseline-Evidenz des letzten vollständig abgeschlossenen Gate-Laufs.
+    Für den Status eines konkreten aktuellen Commits sind ausschließlich die
+    zugehörigen GitHub-Actions-Runs maßgeblich.
   knownVerificationLimits:
+    - id: "patch-1.65.1-lovable-exact-head-retest"
+      status: "open"
+      severity: "medium"
+      description: >-
+        Der korrigierte read-only Lovable-Exact-Head-Retest für den manuellen
+        Fresh-Refresh ist noch ausstehend. Release 1.65.1 bleibt bis zu diesem
+        Nachweis blockiert; ein früherer Visual-PASS wird nicht als aktueller
+        Exact-Head-Nachweis fortgeschrieben.
+      reference: "PR-148"
+      targetSprint: "PATCH-1.65.1"
     - id: "session-server-enforcement"
       status: "open"
       severity: "medium"
@@ -697,7 +711,12 @@ quality:
 releaseManagement:
   currentRelease: "1.65.1"
   stage: "preview"
-  status: "passed"
+  status: "blocked"
+  statusBasis: >-
+    Release-Kandidat 1.65.1 ist bis zum korrigierten Lovable-Exact-Head-
+    Fresh-Refresh-Retest blockiert. Commit-bezogene CI-/Security-Aussagen
+    werden live aus GitHub Actions bezogen und nicht als aktueller PASS
+    in diesem versionierten Manifest behauptet.
   releaseEvidence:
     - "CHANGELOG.md"
     - "docs/PROJECT-GOVERNANCE.md"

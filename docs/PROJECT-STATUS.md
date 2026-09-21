@@ -96,6 +96,14 @@ Pflichtaktualisierung **nach jedem Sprint** — mindestens:
 - `quality.tests` und `quality.gates`
 - `currentState.knownVerificationLimits`
 
+**Evidenzregel:** Versionierte Gate-Werte sind Baseline-Evidenz. Der Live-Status
+eines konkreten Commits wird nicht in das Manifest zurückgeschrieben, weil jede
+solche Änderung selbst einen neuen Commit erzeugen würde. Für aktuelle
+Commit-Gates sind die zugehörigen GitHub-Actions-Runs maßgeblich.
+`releaseReadiness` und `releaseManagement.status` dürfen nur den belastbaren
+Release-Stand behaupten; offene Exact-Head-Abnahmen bleiben `blocked` oder
+`not-assessed`.
+
 Ablauf:
 
 ```bash
