@@ -397,7 +397,7 @@ roadmap:
       - "E2E, Accessibility, Security, vollständige CI und Exact-Tree-Preview PASS"
   - id: "BSF-03B"
     title: "Teamlead-Leistungsnachweis V1"
-    status: "planned"
+    status: "in-progress"
     priority: "high"
     goal: "Kundenbezogenen Leistungsnachweis mit kontrollierter Finalisierung und Audit umsetzen."
     dependencies:
@@ -729,10 +729,13 @@ releaseManagement:
     - "docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md"
     - "docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md"
     - "docs/BSF-03A-CLOSURE-2026-09-14.md"
+    - "docs/BSF-03B-VERIFICATION-2026-09-21.md"
+    - "supabase/migrations/20260921095742_bsf03b_performance_statement.sql"
+    - "supabase/tests/bsf03b-performance-statement.sql"
     - "docs/CODEX-GIT-CI-RULE.md"
     - "docs/ADR/0029-systemhouse-customer-scope.md"
     - "docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md"
-  nextReleaseTarget: "Version 1.65.1 Versionsanzeige und BSF-03B"
+  nextReleaseTarget: "BSF-03B nach vollständigem Adapter-/Runtime-/UI-/Export-/Regression-Gate; Versionierung erst aus finalem Release-Stand ableiten"
 
 risks:
   - id: "RISK-AUTH-ENV-MISMATCH"
