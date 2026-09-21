@@ -96,7 +96,7 @@ test.describe("BSF-03B Leistungsnachweis – Teamlead", () => {
     await expect(page.getByRole("region", { name: "Review-Zusammenfassung" })).toContainText(
       "2,00 h",
     );
-    await expect(page.getByRole("region", { name: "Review" })).toContainText("Patch-Analyse");
+    await expect(page.getByRole("region", { name: "Review", exact: true })).toContainText("Patch-Analyse");
     await expect(page.getByText("Veraltete Review-Entscheidung")).toBeVisible();
 
     const documentationBillable = page.getByLabel("Abrechenbar: Dokumentation");
