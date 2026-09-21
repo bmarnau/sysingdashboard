@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { PerformanceStatementBackupPayload } from "@/lib/backup/performance-statement-payload";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -421,4 +422,19 @@ export const listPerformanceStatementsFn = createServerFn({ method: "POST" })
     const supabase = context.supabase as UserSupabaseClient;
     const repository = await createRepository(supabase);
     return executeListPerformanceStatements(supabase, context.userId, data, repository);
+  });
+
+
+/**
+ * Administrativer Sicherungspfad: liefert ausschließlich RLS-sichtbare
+ * BSF-03B-Daten im Benutzerkontext. Kein privilegierter Backup-Client.
+ */
+export const exportPerformanceStatementBackupFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<PerformanceStatementBackupPayload> => {
+    const supabase = context.supabase as UserSupabaseClient;
+    await requirePerformanceStatementAccess(supabase, context.userId);
+    const { readSupabasePerformanceStatementBackup } =
+      await import("@/integrations/supabase/performance-statement-backup-adapter");
+    return readSupabasePerformanceStatementBackup(supabase);
   });
