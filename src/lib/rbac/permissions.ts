@@ -45,6 +45,7 @@ export type Permission =
   | "referencedata.manage"
   | "customer.responsibility.manage"
   | "project.controlling.view"
+  | "performance.statement.manage"
   | "kiosk.view";
 
 export const ALL_PERMISSIONS: readonly Permission[] = [
@@ -70,6 +71,7 @@ export const ALL_PERMISSIONS: readonly Permission[] = [
   "referencedata.manage",
   "customer.responsibility.manage",
   "project.controlling.view",
+  "performance.statement.manage",
   "kiosk.view",
 ] as const;
 
@@ -96,6 +98,7 @@ export const PERMISSION_LABEL: Record<Permission, string> = {
   "referencedata.manage": "Kataloge pflegen",
   "customer.responsibility.manage": "Kundenverantwortung verwalten",
   "project.controlling.view": "Projektcontrolling ansehen",
+  "performance.statement.manage": "Leistungsnachweise prüfen und finalisieren",
   "kiosk.view": "Info-Kiosk ansehen",
 };
 
@@ -108,6 +111,7 @@ export const PERMISSION_LABEL: Record<Permission, string> = {
  *  - `roles.manage` ⊆ {systemadministrator}
  *  - `viewer` hat keine *.edit / azure.* / *.manage / backup.* Permission
  *  - `customer` hat zusätzlich keine systemstatus.view
+ *  - `performance.statement.manage` ⊆ {systemadministrator, teamlead}
  */
 export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
   systemadministrator: [
@@ -133,6 +137,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "referencedata.manage",
     "customer.responsibility.manage",
     "project.controlling.view",
+    "performance.statement.manage",
   ],
   administrator: [
     "dashboard.view",
@@ -171,6 +176,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "referencedata.view",
     "customer.responsibility.manage",
     "project.controlling.view",
+    "performance.statement.manage",
   ],
   projectmanager: [
     "dashboard.view",

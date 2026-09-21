@@ -11,7 +11,7 @@ Groups, Assignments) beschreibt ADR-0007.
 | --------------------- | ---------------------------------------------------------------------------------------------------- |
 | `systemadministrator` | Höchste administrative Rolle inkl. Rollenverwaltung und Azure-DB-Aufbau.                             |
 | `administrator`       | Administrativer Betrieb inkl. Benutzer, Audit, Backup, Referenzdaten und Kundenverantwortung.        |
-| `teamlead`            | Operative Führung, AVKK-Führung, Kundenverantwortung und Projektcontrolling.                         |
+| `teamlead`            | Operative Führung, AVKK-Führung, Kundenverantwortung, Projektcontrolling und Leistungsnachweis.      |
 | `projectmanager`      | Projekt-/Leistungssteuerung inkl. AVKK-Führung und Projektcontrolling, ohne Benutzerverwaltung.      |
 | `engineer`            | Arbeitspakete/Tätigkeiten (eigene) und AVKK; kein Projektcontrolling.                                |
 | `customer`            | Stark begrenzte Lesesicht; keine Admin-, Systemstatus- oder AVKK-Führungssicht.                      |
@@ -46,6 +46,7 @@ Legende: ● erlaubt · ○ verboten
 | `referencedata.manage`           |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
 | `customer.responsibility.manage` |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |   ○   |
 | `project.controlling.view`       |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `performance.statement.manage`   |    ●     |   ○   |    ●     |    ○    |    ○     |    ○     |   ○    |   ○   |
 | `kiosk.view`                     |    ○     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ●   |
 
 ### Fachregel Delegation
@@ -73,6 +74,7 @@ Invarianten aus `scripts/check-rbac.mjs`:
 - `teamlead` und `projectmanager` mit `avkk.responsibility.assign`
 - `customer.responsibility.manage` nur für systemadministrator, administrator und teamlead
 - `project.controlling.view` nur für systemadministrator, administrator, teamlead und projectmanager
+- `performance.statement.manage` nur für systemadministrator und teamlead
 - `kiosk` besitzt ausschließlich `kiosk.view`; keine andere Rolle besitzt `kiosk.view`
 
 ### Projektcontrolling (BSF-03A, Issue #106)
@@ -80,6 +82,20 @@ Invarianten aus `scripts/check-rbac.mjs`:
 `project.controlling.view` ist eine eigenständige read-only Permission für Systemadministrator, Administrator, Teamlead und Projektmanager. Engineer, Customer und Viewer bleiben DENY; die technische Kiosk-Rolle erhält die Permission ebenfalls nicht.
 
 Die Permission allein erweitert keinen Datenscope. Serverseitig gilt zusätzlich die Schnittmenge aus aktivem Konto, aktiver Systemhaus-Zugehörigkeit, Customer Access mindestens `read` und bestehender Shared-Projection-RLS. Projekt-, Arbeitspaket- und Kategorie-IDs verengen nur einen bereits zulässigen Customer-Scope. Namen, Labels und das Legacy-Feld `Project.lead` sind keine Sicherheitsidentitäten.
+
+### Leistungsnachweis (BSF-03B, Issue #107)
+
+`performance.statement.manage` ist die atomare Fachpermission für Prüfung,
+Billable-Review, Finalisierung, Ersatzversion und Export eines
+Leistungsnachweises. Der reguläre Fachträger ist `teamlead`.
+`systemadministrator` besitzt die Permission ausschließlich als technischer
+Break-glass-Pfad des bestehenden All-Permissions-Modells. Administrator,
+Projektmanager, Engineer, Customer, Viewer und Kiosk bleiben DENY.
+
+Die Permission erweitert keinen Customer- oder Systemhouse-Scope und erlaubt
+insbesondere keine Mutation fremder `shared_activity_projection`-Zeilen.
+Serverseitige Membership-, Customer-Access-, RLS- und Snapshot-Grenzen bleiben
+zusätzliche Pflichtprüfungen.
 
 ### Arbeitspaket-Kategorien (BSF-03D, Issue #103)
 

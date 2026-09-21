@@ -41,6 +41,7 @@ export const ALL_PERMISSIONS = Object.freeze([
   "referencedata.manage",
   "customer.responsibility.manage",
   "project.controlling.view",
+  "performance.statement.manage",
   "kiosk.view",
 ]);
 
@@ -68,6 +69,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
     "referencedata.manage",
     "customer.responsibility.manage",
     "project.controlling.view",
+    "performance.statement.manage",
   ],
   administrator: [
     "dashboard.view",
@@ -106,6 +108,7 @@ export const ROLE_PERMISSIONS = Object.freeze({
     "referencedata.view",
     "customer.responsibility.manage",
     "project.controlling.view",
+    "performance.statement.manage",
   ],
   projectmanager: [
     "dashboard.view",
