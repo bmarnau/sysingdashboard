@@ -101,7 +101,7 @@ test.describe("BSF-03B Leistungsnachweis – Teamlead", () => {
 
     const documentationBillable = page.getByLabel("Abrechenbar: Dokumentation");
     await expect(documentationBillable).not.toBeChecked();
-    await documentationBillable.check();
+    await documentationBillable.click();
 
     await expect.poll(() => overrideCalls.length).toBe(1);
     expect(overrideCalls[0]).toMatchObject({
