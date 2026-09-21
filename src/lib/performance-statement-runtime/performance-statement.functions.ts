@@ -352,7 +352,7 @@ async function createRepository(
   return createSupabasePerformanceStatementRepository(supabase);
 }
 
-export const listPerformanceStatementScopesFn = createServerFn({ method: "GET" })
+export const listPerformanceStatementScopesFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<PerformanceStatementScopeOption[]> => {
     const supabase = context.supabase as UserSupabaseClient;
