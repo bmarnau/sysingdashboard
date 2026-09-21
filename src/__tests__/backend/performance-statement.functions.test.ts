@@ -240,15 +240,12 @@ describe("BSF-03B server authorization", () => {
     );
   });
 
-  it.each([
-    [
-      { permission: false },
-      "administrator/projectmanager/engineer/viewer/customer permission deny",
-    ],
-    [{ active: false }, "inactive account"],
-    [{ membership: false }, "foreign systemhouse"],
-    [{ access: false }, "foreign customer"],
-  ] as const)("denies %s without revealing entity existence", async (options) => {
+  it.each<FakeAuthOptions>([
+    { permission: false },
+    { active: false },
+    { membership: false },
+    { access: false },
+  ])("denies %s without revealing entity existence", async (options) => {
     const { client } = fakeAuthClient(options);
     await expect(
       requirePerformanceStatementAccess(client, USER_ID, {
