@@ -70,6 +70,8 @@ jobs:
         run: bun run docs:check
       - name: Project manifest check
         run: bun run project-status:check
+      - name: Golden Dataset contract
+        run: bun run golden-dataset:check
 
   # DB-SOT – Rebuild / Snapshot / Types / Drift ----------------------------
   db_schema:
