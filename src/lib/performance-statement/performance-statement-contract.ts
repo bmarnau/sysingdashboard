@@ -96,6 +96,13 @@ export interface StatementScope {
   periodEnd?: string;
 }
 
+export interface PerformanceStatementScopeOption {
+  systemhouseId: string;
+  systemhouseName: string;
+  customerId: string;
+  customerName: string;
+}
+
 export interface PerformanceStatementSnapshotItem {
   position: number;
   activitySourceId: string;
@@ -151,6 +158,7 @@ export interface PerformanceStatementSnapshot {
 }
 
 export interface PerformanceStatementRepository {
+  listScopes(): Promise<PerformanceStatementScopeOption[]>;
   getReview(input: ReviewInput): Promise<PerformanceStatementReview>;
   setBillableOverride(input: BillableOverrideInput): Promise<void>;
   finalize(input: FinalizeInput): Promise<{ statementId: string }>;
