@@ -38,7 +38,7 @@ Die Kiosk-Migrationen wurden kontrolliert auf der maßgeblichen Sysingdashboard-
 
 ### Aktueller interner Schritt
 
-BSF-03A und BSF-KIOSK-02 sind vollständig abgenommen und auf `main` integriert. Aktiver Sprint ist **BSF-03B / #107 — Teamlead-Leistungsnachweis V1**. Tasks 1–4 sind GREEN; aktueller Implementierungsschritt ist Task 5, der Supabase Review-/Snapshot-Adapter.
+BSF-03A und BSF-KIOSK-02 sind vollständig abgenommen und auf `main` integriert. **BSF-03B / #107 — Teamlead-Leistungsnachweis V1** ist FINAL DONE. Funktionaler Abschluss-Head `ffbf3641c`: Security #1247 und CI #1252 vollständig PASS; Security Advisor BASELINE_ONLY ohne neue BSF-03B-Findings. Die Lovable Exact-Head Visual Preview bleibt transparent als Plattformgrenze NOT EVIDENCED. Nächster Sprint ist **BSF-03E / #63**.
 
 ---
 
@@ -76,21 +76,31 @@ BSF-03A und BSF-KIOSK-02 sind vollständig abgenommen und auf `main` integriert.
 - [x] PR #147 auf `main` gemergt
 - [x] `v1.65.0` veröffentlicht
 
-## BSF-03B (#107) Teamlead-Leistungsnachweis V1 — AKTIV
+## BSF-03B (#107) Teamlead-Leistungsnachweis V1 — FINAL DONE
 
 - [x] Task 1: atomare Permission `performance.statement.manage`
 - [x] Task 2: providerneutraler Review-/Snapshot-Vertrag
 - [x] Task 3: deterministischer SHA-256-Review-Fingerprint
 - [x] Task 4: DB-Vertrag, Migration, RLS/ACL, Audit, Finalize/Replace und Regression
-- [x] Security #1148 / CI #1153 vollständig PASS
+- [x] Task 5: Supabase Review-/Snapshot-Adapter TDD
+- [x] Task 6: abgesicherte Server Functions
+- [x] Task 7: SYSING-104 ReportDefinition und PDF/CSV/JSON
+- [x] Task 8: Teamlead-UI mit Review, Finalisierung, Historie und Replacement
+- [x] Task 9: Backup/Restore und administrativer JSON-Export
+- [x] Task 10: Component-, A11y-, E2E- und Security-E2E-Abdeckung
+- [x] Task 11: Lovable-L2 ausgeführt; Exact-Head-Bindung technisch nicht möglich, daher Visual Preview korrekt als NOT EVIDENCED dokumentiert
+- [x] Task 12: Closure, Statusflächen, Version 1.66.0 und vollständige Gates
+- [x] Funktionaler Abschluss-Head `ffbf3641c2187a738b853fb050aa4e5f1b6541a0`
+- [x] Security #1247 / CI #1252 vollständig PASS
+- [x] Golden Dataset Required Gate PASS
 - [x] BSF-02C T01–T30 / BSF-03A T01–T20 / BSF-03B T01–T30 PASS
-- [x] `DATABASE_SCHEMA_DRIFT: NONE` / `DATABASE_TYPES_DRIFT: NONE`
-- [x] offizieller Supabase Security Advisor: BASELINE_ONLY, keine neuen BSF-03B-Findings
-- [ ] Task 5: Supabase Review-/Snapshot-Adapter TDD
+- [x] Schema Drift PASS
+- [x] offizieller Supabase Security Advisor BASELINE_ONLY, keine neuen BSF-03B-Findings
+- [x] Abschlussnachweis `docs/BSF-03B-CLOSURE-2026-09-21.md`
 
 ### Danach
 
-`BSF-03E (#63) → BSF-07 (#140) → BSF-KIOSK-03 (#137)`
+**BSF-03E / #63 — NÄCHSTER SPRINT** → BSF-07 / #140 → BSF-KIOSK-03 / #137
 
 ---
 
