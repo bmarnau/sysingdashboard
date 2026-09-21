@@ -133,11 +133,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
-function requireArray(
-  root: Record<string, unknown>,
-  key: string,
-  errors: string[],
-): unknown[] {
+function requireArray(root: Record<string, unknown>, key: string, errors: string[]): unknown[] {
   const value = root[key];
   if (!Array.isArray(value)) {
     errors.push(`Leistungsnachweis-Backup: '${key}' muss eine Liste sein.`);
@@ -215,12 +211,7 @@ function requireIsoDate(value: string, field: string, where: string, errors: str
   }
 }
 
-function checkUniqueId(
-  id: string,
-  seen: Set<string>,
-  where: string,
-  errors: string[],
-): void {
+function checkUniqueId(id: string, seen: Set<string>, where: string, errors: string[]): void {
   if (!id) return;
   if (seen.has(id)) errors.push(`${where}: doppelte ID '${id}'.`);
   seen.add(id);
@@ -298,12 +289,7 @@ export function validatePerformanceStatementBackupPayload(
     const version = requireNumber(candidate, "version", where, errors);
     const systemhouseId = requireString(candidate, "systemhouseId", where, errors);
     const customerId = requireString(candidate, "customerId", where, errors);
-    const customerNameSnapshot = requireString(
-      candidate,
-      "customerNameSnapshot",
-      where,
-      errors,
-    );
+    const customerNameSnapshot = requireString(candidate, "customerNameSnapshot", where, errors);
     const periodStart = requireString(candidate, "periodStart", where, errors);
     const periodEnd = requireString(candidate, "periodEnd", where, errors);
     requireIsoDate(periodStart, "periodStart", where, errors);
@@ -418,36 +404,16 @@ export function validatePerformanceStatementBackupPayload(
     const sourceRevision = requireNumber(candidate, "sourceRevision", where, errors);
     const sourceHash = requireString(candidate, "sourceHash", where, errors);
     const sourcePublishedAt = requireString(candidate, "sourcePublishedAt", where, errors);
-    const sourceEngineerId = requireNullableString(
-      candidate,
-      "sourceEngineerId",
-      where,
-      errors,
-    );
+    const sourceEngineerId = requireNullableString(candidate, "sourceEngineerId", where, errors);
     const activityDate = requireString(candidate, "activityDate", where, errors);
     requireIsoDate(activityDate, "activityDate", where, errors);
     const titleSnapshot = requireString(candidate, "titleSnapshot", where, errors);
     const durationHours = requireNumber(candidate, "durationHours", where, errors);
     const sourceBillable = requireBoolean(candidate, "sourceBillable", where, errors);
     const effectiveBillable = requireBoolean(candidate, "effectiveBillable", where, errors);
-    const billingStatusSnapshot = requireString(
-      candidate,
-      "billingStatusSnapshot",
-      where,
-      errors,
-    );
-    const projectSourceId = requireNullableString(
-      candidate,
-      "projectSourceId",
-      where,
-      errors,
-    );
-    const projectNameSnapshot = requireString(
-      candidate,
-      "projectNameSnapshot",
-      where,
-      errors,
-    );
+    const billingStatusSnapshot = requireString(candidate, "billingStatusSnapshot", where, errors);
+    const projectSourceId = requireNullableString(candidate, "projectSourceId", where, errors);
+    const projectNameSnapshot = requireString(candidate, "projectNameSnapshot", where, errors);
     const workPackageSourceId = requireNullableString(
       candidate,
       "workPackageSourceId",
@@ -466,12 +432,7 @@ export function validatePerformanceStatementBackupPayload(
       where,
       errors,
     );
-    const categoryLabelSnapshot = requireString(
-      candidate,
-      "categoryLabelSnapshot",
-      where,
-      errors,
-    );
+    const categoryLabelSnapshot = requireString(candidate, "categoryLabelSnapshot", where, errors);
     const createdAt = requireString(candidate, "createdAt", where, errors);
 
     if (!Number.isInteger(position) || position < 1) {
@@ -599,10 +560,7 @@ export function validatePerformanceStatementBackupPayload(
     const statement = statementById.get(statementId);
     if (!statement) {
       errors.push(`${where}: Claim verweist auf unbekanntes Statement '${statementId}'.`);
-    } else if (
-      statement.status !== "finalized" ||
-      statement.supersededByStatementId !== null
-    ) {
+    } else if (statement.status !== "finalized" || statement.supersededByStatementId !== null) {
       errors.push(
         `${where}: Claim darf nur auf die aktive finalisierte Statement-Version verweisen.`,
       );
@@ -637,20 +595,10 @@ export function validatePerformanceStatementBackupPayload(
       where,
       errors,
     );
-    requireSha256(
-      expectedReviewFingerprint,
-      "expectedReviewFingerprint",
-      where,
-      errors,
-    );
+    requireSha256(expectedReviewFingerprint, "expectedReviewFingerprint", where, errors);
     requireString(candidate, "requestedBy", where, errors);
     requireString(candidate, "requestedAt", where, errors);
-    const resultStatementId = requireNullableString(
-      candidate,
-      "resultStatementId",
-      where,
-      errors,
-    );
+    const resultStatementId = requireNullableString(candidate, "resultStatementId", where, errors);
 
     if (action !== "finalize" && action !== "replace") {
       errors.push(`${where}: action '${action}' ist ungültig.`);
@@ -664,9 +612,7 @@ export function validatePerformanceStatementBackupPayload(
     if (resultStatementId) {
       const result = statementById.get(resultStatementId);
       if (!result) {
-        errors.push(
-          `${where}: resultStatementId '${resultStatementId}' existiert nicht.`,
-        );
+        errors.push(`${where}: resultStatementId '${resultStatementId}' existiert nicht.`);
       } else if (
         result.systemhouseId !== systemhouseId ||
         result.customerId !== customerId ||
@@ -714,9 +660,7 @@ export function validatePerformanceStatementBackupPayload(
     errors,
     warnings,
     counts,
-    activeClaims: activeClaims.sort((a, b) =>
-      a.activitySourceId.localeCompare(b.activitySourceId),
-    ),
+    activeClaims: activeClaims.sort((a, b) => a.activitySourceId.localeCompare(b.activitySourceId)),
     snapshotHashes,
   };
 }

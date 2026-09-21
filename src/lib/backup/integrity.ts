@@ -162,9 +162,7 @@ export function checkPerformanceStatementArchive(
     return {
       present: true,
       validation: null,
-      errors: [
-        `Leistungsnachweis-Nutzdaten sind kein gültiges JSON: ${(error as Error).message}`,
-      ],
+      errors: [`Leistungsnachweis-Nutzdaten sind kein gültiges JSON: ${(error as Error).message}`],
     };
   }
 

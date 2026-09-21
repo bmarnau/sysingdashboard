@@ -241,7 +241,10 @@ describe("BSF-03B server authorization", () => {
   });
 
   it.each([
-    [{ permission: false }, "administrator/projectmanager/engineer/viewer/customer permission deny"],
+    [
+      { permission: false },
+      "administrator/projectmanager/engineer/viewer/customer permission deny",
+    ],
     [{ active: false }, "inactive account"],
     [{ membership: false }, "foreign systemhouse"],
     [{ access: false }, "foreign customer"],

@@ -20,8 +20,7 @@ import { validatePerformancePeriod } from "@/lib/performance-statement/performan
 type UserSupabaseClient = SupabaseClient<Database>;
 
 export const PERFORMANCE_STATEMENT_PERMISSION = "performance.statement.manage";
-export const PERFORMANCE_STATEMENT_DENIED =
-  "Leistungsnachweis für diesen Scope nicht zulässig.";
+export const PERFORMANCE_STATEMENT_DENIED = "Leistungsnachweis für diesen Scope nicht zulässig.";
 export const PERFORMANCE_STATEMENT_AUTHORIZATION_FAILED =
   "Leistungsnachweis-Autorisierung konnte nicht geprüft werden.";
 export const PERFORMANCE_STATEMENT_OPERATION_FAILED =
@@ -137,10 +136,7 @@ export function parsePerformanceStatementScope(input: unknown): StatementScope {
   return value;
 }
 
-async function requireBaseAccess(
-  supabase: UserSupabaseClient,
-  userId: string,
-): Promise<void> {
+async function requireBaseAccess(supabase: UserSupabaseClient, userId: string): Promise<void> {
   const [active, permission] = await Promise.all([
     supabase.rpc("is_account_active", { _user_id: userId }),
     supabase.rpc("has_permission", {
@@ -407,12 +403,7 @@ export const getPerformanceStatementFn = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<PerformanceStatementSnapshot | null> => {
     const supabase = context.supabase as UserSupabaseClient;
     const repository = await createRepository(supabase);
-    return executeGetPerformanceStatement(
-      supabase,
-      context.userId,
-      data.statementId,
-      repository,
-    );
+    return executeGetPerformanceStatement(supabase, context.userId, data.statementId, repository);
   });
 
 export const listPerformanceStatementsFn = createServerFn({ method: "POST" })
@@ -423,7 +414,6 @@ export const listPerformanceStatementsFn = createServerFn({ method: "POST" })
     const repository = await createRepository(supabase);
     return executeListPerformanceStatements(supabase, context.userId, data, repository);
   });
-
 
 /**
  * Administrativer Sicherungspfad: liefert ausschließlich RLS-sichtbare

@@ -180,7 +180,10 @@ export function PerformanceStatementView({
       )}
 
       {error && (
-        <p role="alert" className="rounded-md border border-destructive/30 p-3 text-sm text-destructive">
+        <p
+          role="alert"
+          className="rounded-md border border-destructive/30 p-3 text-sm text-destructive"
+        >
           {error}
         </p>
       )}
@@ -372,7 +375,10 @@ export function PerformanceStatementView({
             const active =
               statement.status === "finalized" && statement.supersededByStatementId === null;
             return (
-              <article key={statement.id} className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center">
+              <article
+                key={statement.id}
+                className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center"
+              >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="font-semibold">Version {statement.version}</h3>

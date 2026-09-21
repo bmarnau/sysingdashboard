@@ -238,10 +238,7 @@ function PerformanceStatementPage() {
     }
   };
 
-  const handleExport = async (
-    statement: PerformanceStatementSnapshot,
-    format: ReportFormat,
-  ) => {
+  const handleExport = async (statement: PerformanceStatementSnapshot, format: ReportFormat) => {
     setBusy(true);
     setError(null);
     try {

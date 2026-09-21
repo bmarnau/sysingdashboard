@@ -52,8 +52,9 @@ export async function collectSnapshot(): Promise<Snapshot> {
 
   // Cloud-Nutzdaten (AVKK + Reference Data). Fehler brechen das Backup NICHT
   // ab, werden aber ausdrücklich im Manifest/Protokoll ausgewiesen.
-  const [{ payload: avkk, warnings: avkkWarnings }, performanceStatementResult] =
-    await Promise.all([collectAvkkPayload(), collectPerformanceStatementBackupPayload()]);
+  const [{ payload: avkk, warnings: avkkWarnings }, performanceStatementResult] = await Promise.all(
+    [collectAvkkPayload(), collectPerformanceStatementBackupPayload()],
+  );
 
   return {
     manifest: {

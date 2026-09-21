@@ -255,5 +255,4 @@ describe("BSF-03B PerformanceStatementView", () => {
     fireEvent.click(finalize);
     expect(onFinalize).toHaveBeenCalledTimes(1);
   });
-
 });

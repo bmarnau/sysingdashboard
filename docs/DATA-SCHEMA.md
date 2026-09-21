@@ -220,13 +220,13 @@ noch nicht sämtliche lokalen CRUD-Persistenzpfade; diese Konsolidierung bleibt 
 
 ### BSF-03B Leistungsnachweis
 
-| Tabelle | Zweck |
-| --- | --- |
-| `customer_activity_billable_override` | revisionsgebundene Teamlead-Entscheidung zur effektiven Abrechenbarkeit; Shared Activity bleibt unverändert |
-| `customer_performance_statement_request` | idempotenter Finalize-/Replace-Request im User-JWT-Kontext |
-| `customer_performance_statement` | unveränderbarer Header mit Serie/Version, Review-Fingerprint, Snapshot-Hash und Summen |
-| `customer_performance_statement_item` | unveränderbare Snapshot-Positionen einschließlich interner Provenienz |
-| `customer_performance_activity_claim` | aktive Exklusivitäts-Claims gegen Doppelverwendung einer Activity |
+| Tabelle                                  | Zweck                                                                                                       |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `customer_activity_billable_override`    | revisionsgebundene Teamlead-Entscheidung zur effektiven Abrechenbarkeit; Shared Activity bleibt unverändert |
+| `customer_performance_statement_request` | idempotenter Finalize-/Replace-Request im User-JWT-Kontext                                                  |
+| `customer_performance_statement`         | unveränderbarer Header mit Serie/Version, Review-Fingerprint, Snapshot-Hash und Summen                      |
+| `customer_performance_statement_item`    | unveränderbare Snapshot-Positionen einschließlich interner Provenienz                                       |
+| `customer_performance_activity_claim`    | aktive Exklusivitäts-Claims gegen Doppelverwendung einer Activity                                           |
 
 `performance.statement.manage` ist die atomare Permission. Regulär besitzt sie
 `teamlead`; `systemadministrator` bleibt technischer Break-glass. Zusätzlich

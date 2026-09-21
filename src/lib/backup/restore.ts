@@ -182,9 +182,7 @@ export async function restoreFromZip(
   const performanceCheck = checkPerformanceStatementArchive(manifest, entries);
   performanceStatementReport.present = performanceCheck.present;
   if (performanceCheck.errors.length > 0) {
-    return fail(
-      `Leistungsnachweis-Prüfung fehlgeschlagen: ${performanceCheck.errors.join("; ")}`,
-    );
+    return fail(`Leistungsnachweis-Prüfung fehlgeschlagen: ${performanceCheck.errors.join("; ")}`);
   }
   if (performanceCheck.validation) {
     performanceStatementReport.validated = true;
