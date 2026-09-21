@@ -1,0 +1,29 @@
+name: Temporary BSF-03B targeted E2E
+
+on:
+  push:
+    branches:
+      - feat/bsf-03b-performance-statement
+    paths:
+      - ".github/workflows/bsf03b-targeted-e2e-once.yml"
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      E2E_AUTH_MODE: synthetic
+      VITE_SUPABASE_URL: http://e2e.supabase.local
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_e2e-synthetic-not-a-real-key
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf-03b-performance-statement
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - name: BSF-03B targeted Playwright
+        run: >
+          bunx playwright test
+          e2e/specs/performance-statement/performance-statement.spec.ts
+          e2e/specs/security/performance-statement-scope.spec.ts
+          --project=chromium
