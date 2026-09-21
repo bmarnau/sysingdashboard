@@ -1,7 +1,7 @@
 # Sysing Dashboard — Operative Sprintplanung MVP → BSF → Integration
 
-Stand: 2026-09-20  
-Status: **verbindliche operative Kiosk-first-Planung; BSF-KIOSK-02 FINAL DONE / Merge pending; BSF-03B NEXT**  
+Stand: 2026-09-21  
+Status: **verbindliche operative Kiosk-first-Planung; BSF-03B FINAL DONE; BSF-03E NEXT**  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
 Tagesfokus: `docs/BSF-CURRENT-PRIORITIES.md`  
@@ -51,16 +51,17 @@ BSF-03D wurde über PR #134 auf `main` integriert. Post-Merge Security sowie vol
 ### Jetzt
 
 - **BSF-03A / #106 — DONE / PR #144 gemergt**
-- **BSF-KIOSK-02 / #136 — FINAL DONE / MERGE PENDING**
-- **BSF-03B / #107 — NEXT nach KIOSK-02-Merge**
+- **BSF-KIOSK-02 / #136 — DONE / PR #147 gemergt / v1.65.0 veröffentlicht**
+- **BSF-03B / #107 — FINAL DONE / PR #149 ungemergt**
+- **BSF-03E / #63 — NEXT**
 
 ## 4. Verbindliche operative Reihenfolge
 
 ```text
 BSF-03A / #106 — DONE
-→ BSF-KIOSK-02 / #136 — FINAL DONE / MERGE PENDING
-→ BSF-03B / #107 — NEXT NACH MERGE
-→ BSF-03E / #63
+→ BSF-KIOSK-02 / #136 — DONE / MERGED
+→ BSF-03B / #107 — FINAL DONE
+→ BSF-03E / #63 — NEXT
 → BSF-07 Managementcockpit 2
 → BSF-KIOSK-03 / #137
 → BSF-03C / #98
@@ -168,7 +169,7 @@ Gezielt für Filter, Tabellen, Summen, Drill-down und Rollen-Preview.
 
 ## 7. BSF-KIOSK-02 — interner Read-Provider (#136)
 
-**Status 20.09.2026:** FINAL DONE. Lovable K02-L1 gegen Kandidat `528b5bc` mit exaktem Tree-Match, 11 targeted Vitest-Dateien / 69 Tests, Golden Dataset V1, 9/9 Kiosk-E2E/Security-Specs sowie 1920×1080 und 1366×768 vollständig PASS. Quellenbadges 3× INTERN / 3× DEMO, Zeitraum, Source-Freshness, Datenminimierung, Read-only, Console/Network und Fail-closed PASS. Keine DB-/Auth-/RBAC-/RLS-Drift. PR #147 wartet nur noch auf den final grünen Dokumentations-Head und separate Merge-Freigabe.
+**Status 20.09.2026:** FINAL DONE und auf `main` integriert. Lovable K02-L1 gegen Kandidat `528b5bc` mit exaktem Tree-Match, 11 targeted Vitest-Dateien / 69 Tests, Golden Dataset V1, 9/9 Kiosk-E2E/Security-Specs sowie 1920×1080 und 1366×768 vollständig PASS. Quellenbadges 3× INTERN / 3× DEMO, Zeitraum, Source-Freshness, Datenminimierung, Read-only, Console/Network und Fail-closed PASS. Keine DB-/Auth-/RBAC-/RLS-Drift. PR #147 ist gemergt; `v1.65.0` ist veröffentlicht.
 
 ### Ziel
 
@@ -196,6 +197,17 @@ Kiosk UI
 Interne Daten und Demodaten können über dieselbe UI angezeigt werden; Cross-Scope-/IDOR-Negativtests, Security, E2E und vollständige CI PASS.
 
 ## 8. BSF-03B — Leistungsnachweis Teamlead V1 (#107)
+
+**Status 21.09.2026: FINAL DONE.** Funktionaler Abschluss-Head
+`ffbf3641c2187a738b853fb050aa4e5f1b6541a0`; Security #1247 und CI #1252
+vollständig PASS einschließlich Golden Dataset, DB-Regression, Backup/Restore,
+Playwright E2E, Accessibility und Quality Gate. Security Advisor BASELINE_ONLY
+ohne neue BSF-03B-Findings. Lovable Exact-Head Visual Preview ist wegen fehlender
+identitätsgebundener Head-Bindung NOT EVIDENCED und als Plattformgrenze
+dokumentiert. Abschluss:
+`docs/BSF-03B-CLOSURE-2026-09-21.md`. PR #149 bleibt ohne separate Freigabe
+ungemergt; kein Deploy.
+
 
 - Leistungsnachweis, ausdrücklich keine kaufmännische Rechnung,
 - Kunde + fester Zeitraum,
