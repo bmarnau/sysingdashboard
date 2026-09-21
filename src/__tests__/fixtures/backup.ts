@@ -445,8 +445,8 @@ export async function buildValidBackupZipV2(
     meta.push({ logicalName: "reference-data", storageKey: null, path: "reference-data.json" });
   }
 
-  if (opts.performanceStatements !== null) {
-    const payload = opts.performanceStatements ?? performanceStatementFixture();
+  if (opts.performanceStatements !== undefined && opts.performanceStatements !== null) {
+    const payload = opts.performanceStatements;
     files["performance-statements.json"] = strToU8(JSON.stringify(payload, null, 2));
     meta.push({
       logicalName: "performance-statement-dataset",
