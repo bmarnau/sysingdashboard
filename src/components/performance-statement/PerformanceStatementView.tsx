@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -77,6 +78,8 @@ export function PerformanceStatementView({
   onReplace,
   onExport,
 }: Props) {
+  const [finalizeDialogOpen, setFinalizeDialogOpen] = useState(false);
+  const [reviewConfirmed, setReviewConfirmed] = useState(false);
   const systemhouses = uniqueSystemhouses(scopes);
   const customers = selection
     ? scopes.filter((scope) => scope.systemhouseId === selection.systemhouseId)
@@ -273,7 +276,13 @@ export function PerformanceStatementView({
           </section>
 
           <div className="flex justify-end">
-            <AlertDialog>
+            <AlertDialog
+              open={finalizeDialogOpen}
+              onOpenChange={(open) => {
+                setFinalizeDialogOpen(open);
+                if (!open) setReviewConfirmed(false);
+              }}
+            >
               <AlertDialogTrigger asChild>
                 <Button disabled={busy || review.summary.reviewableCount === 0}>
                   Leistungsnachweis finalisieren
@@ -287,9 +296,58 @@ export function PerformanceStatementView({
                     Spätere Korrekturen erfolgen ausschließlich über eine neue Ersatzversion.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
+                <dl className="grid gap-2 rounded-md border bg-muted/20 p-3 text-sm sm:grid-cols-2">
+                  <div>
+                    <dt className="text-muted-foreground">Kunde</dt>
+                    <dd className="font-medium">{review.customerName}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Zeitraum</dt>
+                    <dd className="font-medium">
+                      {review.periodStart} bis {review.periodEnd}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Datenstand</dt>
+                    <dd className="font-medium">
+                      {review.freshness.latestPublishedAt ?? "Kein Veröffentlichungszeitpunkt"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Prüfbare Tätigkeiten</dt>
+                    <dd className="font-medium">{review.summary.reviewableCount}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Abrechenbare Stunden</dt>
+                    <dd className="font-medium">{formatHours(review.summary.billableHours)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Nicht abrechenbare Stunden</dt>
+                    <dd className="font-medium">{formatHours(review.summary.nonBillableHours)}</dd>
+                  </div>
+                </dl>
+                <p className="text-sm font-medium">Leistungsnachweis, keine Rechnung.</p>
+                <label className="flex items-start gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={reviewConfirmed}
+                    onChange={(event) => setReviewConfirmed(event.target.checked)}
+                    className="mt-0.5 size-4 rounded border-input"
+                  />
+                  <span>Ich bestätige, dass ich den angezeigten Datenstand geprüft habe.</span>
+                </label>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Abbrechen</AlertDialogCancel>
-                  <AlertDialogAction onClick={onFinalize}>Jetzt finalisieren</AlertDialogAction>
+                  <AlertDialogAction
+                    disabled={!reviewConfirmed || busy}
+                    onClick={() => {
+                      setFinalizeDialogOpen(false);
+                      setReviewConfirmed(false);
+                      onFinalize();
+                    }}
+                  >
+                    Jetzt finalisieren
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
