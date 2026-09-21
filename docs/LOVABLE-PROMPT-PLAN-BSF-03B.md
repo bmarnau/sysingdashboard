@@ -1,7 +1,7 @@
 # Sysing Dashboard — Lovable-Promptplan BSF-03B
 
 Stand: 2026-09-21
-Status: L1 ABGESCHLOSSEN · REGRESSION CI PASS · TASK 5 NÄCHSTER SCHRITT · L2 NACH RUNTIME
+Status: FINAL DONE · L1 LIVE/SECURITY VERIFIZIERT · L2 EXACT-HEAD PREVIEW NOT EVIDENCED (PLATTFORMGRENZE)
 Issue: #107
 Design: `docs/BSF-03B-DESIGN.md`
 Implementation Plan: `docs/superpowers/plans/2026-09-14-bsf-03b-performance-statement.md`
@@ -147,9 +147,9 @@ ABSCHLUSSBERICHT
 - DEPLOY = NEIN
 ```
 
-## 4. Prompt 03B-L2 — Teamlead UI / Preview — NÄCHSTER LOVABLE-SCHRITT NACH RUNTIME
+## 4. Prompt 03B-L2 — Teamlead UI / Preview — DURCHGEFÜHRT / EXACT-HEAD BINDING BLOCKED
 
-L1 hat Migration, RLS/ACL, Definer-Hardening, Residuenfreiheit und Security-Advisor bestätigt. Der kombinierte BSF-02C/03A/03B-Regressionslauf bleibt wegen der eingeschränkten `sandbox_exec`-Rolle offen und muss in CI/Owner-fähiger Postgres-Umgebung erfolgen. L2 wird erst verwendet, wenn Domain, Adapter, Server Functions, DB und targeted Tests repository-seitig vorhanden sind.
+L1, Runtime und der Owner-fähige BSF-02C/03A/03B-Regressionslauf sind abgeschlossen. L2 wurde anschließend read-only gegen die aktuellen GitHub-Kandidaten gestartet. Die Zielcommits waren öffentlich erreichbar, die verwaltete Lovable-Arbeitsfläche blieb jedoch auf einem abweichenden Tree und ließ sich nicht sicher auf den GitHub-Exact-Head umschalten. Deshalb wurden keine BSF-03B-UI-Dateien verändert und keine 1920x1080-/1366x768-, Console- oder Network-Evidenz als PASS behauptet. Die exakte GitHub-Version ist durch CI #1252 mit Production Build, Component-, Accessibility-, Playwright- und Security-E2E-Gates geprüft. Die Lovable-Lücke ist eine dokumentierte Tool-/Plattformgrenze und keine fachliche Laufzeitabhängigkeit.
 
 ```text
 SYSING DASHBOARD — BSF-03B / L2
@@ -247,7 +247,7 @@ ABSCHLUSSBERICHT
 - DEPLOY = NEIN
 ```
 
-## 5. Prompt 03B-L3 — Abschluss-/Driftprüfung
+## 5. Prompt 03B-L3 — Abschluss-/Driftprüfung — ABGESCHLOSSEN
 
 ```text
 SYSING DASHBOARD — BSF-03B / L3 ABSCHLUSSPRÜFUNG
@@ -309,3 +309,18 @@ Lovable meldet BLOCKED statt zu erweitern, wenn scheinbar benötigt werden:
 - externe Provider,
 - automatische Finalisierung,
 - Hard Delete finaler Snapshots.
+
+
+## 8. Abschlussstand
+
+BSF-03B / Issue #107 ist **FINAL DONE**. Funktionaler Abschluss-Head:
+`ffbf3641c2187a738b853fb050aa4e5f1b6541a0`. Security #1247 und CI #1252
+sind vollständig PASS; der offizielle Supabase Security Advisor ist
+BASELINE_ONLY ohne neue BSF-03B-Findings.
+
+Die Lovable Exact-Head Visual Preview bleibt ausdrücklich **NOT EVIDENCED**,
+weil die verwaltete Lovable-Arbeitsfläche nicht identitätsgebunden auf den
+GitHub-Kandidaten geschaltet werden konnte. Details:
+`docs/BSF-03B-CLOSURE-2026-09-21.md`.
+
+PR #149 bleibt bis zu einer separaten Freigabe ungemergt; kein Deploy.
