@@ -621,6 +621,16 @@ SELECT pg_temp.assert_denied(
      WHERE s.customer_id = '00000000-0000-0000-0000-0000000bb301'$$,
   '42501', 'T28 replacement cross-customer denied');
 
+-- Vor dem Ersatz faellt ACT-3 aus dem aktuellen Satz. v1 muss unveraendert
+-- bleiben, der aktive Claim von ACT-3 muss beim Replacement freigegeben werden.
+SELECT pg_temp.act_reset();
+UPDATE public.shared_activity_projection
+   SET is_active = false, withdrawn_at = now(), updated_at = now()
+ WHERE systemhouse_id = '00000000-0000-0000-0000-0000000ab301'
+   AND customer_id = '00000000-0000-0000-0000-0000000bb301'
+   AND source_id = 'BSF03B-ACT-3';
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000b303');
+
 -- T27: gueltiger Ersatz im selben Scope und Zeitraum.
 INSERT INTO public.customer_performance_statement_request
   (id, systemhouse_id, customer_id, period_start, period_end, action,
@@ -654,6 +664,15 @@ SELECT pg_temp.assert((
   FROM public.customer_performance_activity_claim c
   WHERE c.customer_id = '00000000-0000-0000-0000-0000000bb301'
 ), 'T27b active claims atomically re-pointed to v2');
+
+SELECT pg_temp.assert(
+      NOT EXISTS (
+        SELECT 1 FROM public.customer_performance_activity_claim
+        WHERE customer_id = '00000000-0000-0000-0000-0000000bb301'
+          AND activity_source_id = 'BSF03B-ACT-3')
+  AND (SELECT count(*) = 2 FROM public.customer_performance_activity_claim
+       WHERE customer_id = '00000000-0000-0000-0000-0000000bb301'),
+  'T27c removed activity claim released during replacement');
 
 -- T29: alter Snapshot bleibt inhaltlich unveraendert, Header wird superseded.
 SELECT pg_temp.assert((

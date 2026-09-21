@@ -630,9 +630,19 @@ BEGIN
    AND w.category_observed
    AND w.category_key IS NOT NULL;
 
-  -- Claims: bestehende Anspruchszeilen des Vorgaengers atomar umhaengen,
-  -- fehlende neu anlegen. Unique-Key verhindert Doppelnutzung.
+  -- Claims: beim Ersatz wird der aktive Satz exakt neu aufgebaut.
+  -- Weggefallene/inaktive Activities duerfen nicht am supersedierten
+  -- Vorgaenger geclaimt bleiben; verbleibende Claims werden atomar auf v2
+  -- umgehaengt. Der Unique-Key verhindert Doppelnutzung.
   IF NEW.replaces_statement_id IS NOT NULL THEN
+    DELETE FROM public.customer_performance_activity_claim c
+     WHERE c.statement_id = NEW.replaces_statement_id
+       AND c.systemhouse_id = NEW.systemhouse_id
+       AND c.customer_id = NEW.customer_id
+       AND NOT EXISTS (
+         SELECT 1 FROM bsf03b_review r WHERE r.source_id = c.activity_source_id
+       );
+
     UPDATE public.customer_performance_activity_claim c
        SET statement_id = v_new_id, claimed_at = now()
      WHERE c.statement_id = NEW.replaces_statement_id
