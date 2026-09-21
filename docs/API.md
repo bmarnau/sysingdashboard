@@ -50,7 +50,7 @@ Der Statuspayload enthält zusätzlich zur Build-/Runtime-Identität die read-on
 - `github.checkedAt`,
 - `github.sourceOfTruthReachable`.
 
-Ein positiver Synchronisationsstatus wird **nicht** serverseitig behauptet. Die UI vergleicht Build-/Runtime-Commit und `github.mainCommit` deterministisch. Bei fehlender oder nicht erreichbarer Evidenz bleibt der Zustand neutral **NICHT PRÜFBAR**. `GET /api/status?refresh=1` umgeht den kurzen GitHub-Cache für die manuelle Aktion **Jetzt prüfen**.
+Ein positiver Synchronisationsstatus wird **nicht** serverseitig behauptet. Die UI vergleicht Build-/Runtime-Commit und `github.mainCommit` deterministisch. Bei fehlender oder nicht erreichbarer Evidenz bleibt der Zustand neutral **NICHT PRÜFBAR**. `GET /api/status?refresh=1` umgeht den kurzen GitHub-Cache für die manuelle Aktion **Jetzt prüfen**. Schlägt der aktuelle Status-API-Request selbst fehl, darf ein zuvor erfolgreicher SHA-Vergleich nicht als aktueller **SYNCHRON**-Nachweis weitergeführt werden; vorhandene Werte gelten dann nur als historische Evidenz.
 
 Diese Semantik folgt AQGS-08 „Evidence-calibrated status reporting“.
 

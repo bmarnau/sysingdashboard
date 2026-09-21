@@ -21,6 +21,7 @@ Format pro Eintrag:
 - **Freshness**: `Jetzt prüfen` erzwingt einen frischen GitHub-`main`-Read; der Zeitpunkt der letzten Prüfung wird angezeigt. Fehlende Evidenz bleibt neutral als „NICHT PRÜFBAR“ statt als positiver Status.
 - **Fail-closed bei Refresh-Fehlern**: Ist der aktuelle Status-API-Check nicht erreichbar, wird ein früherer SHA-Match nicht weiter als aktuelles „SYNCHRON“ gewertet. Ein zuletzt bekannter `main`-SHA und Prüfzeitpunkt bleiben nur ausdrücklich als historische Evidenz sichtbar.
 - **Neutrale Git-Metadaten**: Repository-URL und Build-Commit werden ohne grüne Erfolgsmarkierung dargestellt; ein positiver Git-Status entsteht ausschließlich aus dem aktuellen SHA-Vergleich.
+- **Handbuch 1.23.1**: Systemstatus-Hilfe, API-Dokumentation und CONTRIBUTING trennen Konfiguration, Erreichbarkeit, funktionale Prüfung und Synchronität konsistent; historische Evidenz wird nicht als aktueller PASS beschrieben.
 
 ## 1.65.0 - 2026-09-19
 

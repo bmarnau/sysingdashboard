@@ -84,7 +84,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.23.0";
+export const DOCUMENTATION_VERSION = "1.23.1";
 /** Aktuelle Dashboard-Version. Wird zentral aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CURRENT_DASHBOARD_VERSION;
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -1619,38 +1619,66 @@ Die Ablage liegt lokal im Browser (IndexedDB) und verlässt das Gerät nicht. Ma
       "Preview",
       "Health",
     ],
-    lastUpdated: "2026-09-20",
+    lastUpdated: "2026-09-21",
     content: `## Was zeigt der Systemstatus?
-Der Dialog "Service → Systemstatus…" ist in **sieben Sektionen** gegliedert und zeigt ausschließlich Booleans, Status und ENV-Variablen­**namen**. Werte, Secrets, Connection Strings und SAS-Tokens werden **niemals** angezeigt.
+Der Dialog **Service → Systemstatus…** zeigt ausschließlich nicht-sensible Statusinformationen
+und Metadaten. Secrets, Tokens, Passwörter, Connection Strings und SAS-Tokens werden niemals
+ausgegeben.
+
+## Evidenzprinzip
+Der Systemstatus trennt vier Aussagearten bewusst voneinander:
+- **konfiguriert** — erforderliche Konfiguration oder Metadaten sind vorhanden;
+- **erreichbar** — eine tatsächliche Laufzeitprüfung war erfolgreich;
+- **funktional geprüft** — die konkrete Funktion wurde erfolgreich ausgeführt;
+- **synchron / aktuell** — zwei aktuelle, prüfbare Zustände wurden miteinander verglichen.
+
+Eine schwächere Evidenzstufe wird nicht als stärkere dargestellt. Ein früherer PASS bleibt
+historische Evidenz und wird bei einem fehlgeschlagenen aktuellen Check nicht weiter als
+aktueller PASS angezeigt.
 
 ## 1. Application
-Application-Name, Version (\`DASHBOARD_VERSION\` aus \`CHANGELOG.md\`), Build-Date und Runtime-Mode (\`development\`/\`production\` vom Backend).
+Application-Name, Dashboard-Version aus \`CHANGELOG.md\`, Build-Zeit und Runtime-Mode.
 
 ## 2. GitHub
-Repository-URL (Single Source \`src/lib/project-info.ts\`, in CI über \`GITHUB_REPOSITORY\` überschreibbar), Current Branch und Commit-Hash. Fehlt der Commit (z. B. in der Lovable-Sandbox ohne \`git\`), erscheint "Not configured".
+Die kanonische Repository-URL und der Build-Commit sind Metadaten und erhalten allein keinen
+grünen Erfolgsstatus. **SYNCHRON** erscheint nur, wenn ein tatsächlich bekannter Build-/Runtime-
+Commit mit dem frisch gelesenen GitHub-\`main\`-HEAD übereinstimmt. **ABWEICHEND** bedeutet:
+beide SHAs sind bekannt, aber verschieden. **NICHT PRÜFBAR** bedeutet: der aktuelle Nachweis
+fehlt oder ist nicht erreichbar.
+
+**Jetzt prüfen** ruft \`/api/status?refresh=1\` auf und umgeht den kurzen GitHub-Cache. Schlägt
+der aktuelle Status-API-Check fehl, wird ein früherer SHA-Match nicht weiter als **SYNCHRON**
+angezeigt. Ein vorhandener SHA und Prüfzeitpunkt erscheinen dann nur als zuletzt bekannte,
+historische Evidenz.
 
 ## 3. Lovable
-Current Publish URL, Deployment-Status, Last Deployment, Project-ID. Ohne ENV-Konfiguration: "Not configured".
+Eine konfigurierte Publish-URL oder Hosting-Metadaten belegen keinen Live-Health-Status. Fehlen
+Hosting-Metadaten, wird dies neutral als **vom Hosting nicht bereitgestellt** ausgewiesen.
 
 ## 4. Azure
-Azure-Access (allowed/blocked), SQL/Table/Storage je als configured-Badge, Auth-Mode (managed-identity / client-secret / none), Last Connection Test und **Missing ENV Variables** als reine Namensliste. Quelle: \`secretManager.has()\` und \`validate()\` — niemals \`consume()\`.
+SQL-, Table-, Storage- und Auth-Angaben beschreiben Konfigurationsbereitschaft. Erst ein eigener
+Connectivity-Test wäre ein Erreichbarkeitsnachweis. Solange dieser nicht implementiert oder
+ausgeführt wurde, wird kein positiver Verbindungsstatus behauptet.
 
 ## 5. Security
-Authentication-Mode, RBAC-Status (Anzahl Rollen × Permissions), Secret-Manager-Status, ENV-Validation (ok/failed plus fehlende Namen) und Key-Vault-Readiness (\`config/keyVault.isKeyVaultConfigured()\`).
+RBAC-Rollen und Permissions sind ein geladener Codevertrag, kein Live-Autorisierungsnachweis.
+Scanner- und Workflow-Konfiguration sind ebenfalls kein aktueller Security-PASS. Maßgeblich für
+einen aktuellen Security-PASS sind die jeweiligen GitHub-Actions-/Prüfbericht-Nachweise.
 
 ## 6. Data
-Local Storage (immer aktiv), Last Local Backup (\`BackupService.lastAuto\`), Last Azure Export/Import. Fehlende Werte → "Not configured".
+Supabase ist die MVP-Daten- und Authentifizierungsplattform. Berechtigte Administratoren können
+zusätzlich eine geschützte Backend-Erreichbarkeitsprüfung ausführen. Browser Local Storage wird
+nur nach einer echten Schreib-/Löschprobe positiv angezeigt. Ein Backup-Zeitstempel ist kein
+Restore-Nachweis.
 
 ## 7. Documentation
-User-Manual-Version, Management-Overview-Status, Last Documentation Update.
+Das Vorhandensein eines Dokumentationsartefakts ist getrennt von Aktualität und Freigabe zu
+bewerten. Der Systemstatus zeigt daher nur die konkret vorhandene Metadaten-Evidenz.
 
-## Startvalidierung
-Beim Laden des Dashboards triggert \`bootstrapSystemStatusCheck()\` einmalig einen Fetch auf \`/api/status\` (Timeout 3 s). Der Endpoint ist bewusst Health-only: fehlende optionale Azure-Konfiguration wird im Payload als Status gemeldet, erzeugt aber keinen 500-Startfehler. Zusätzlich prüft \`runStartupEnvCheck()\` im Browser, ob \`VITE_SUPABASE_URL\`, \`VITE_SUPABASE_PUBLISHABLE_KEY\` und \`VITE_SUPABASE_PROJECT_ID\` im aktuellen Bundle vorhanden sind. Frontend rendert defensiv: fehlt eine Antwort, bleiben lokale Werte (Version, Build, Backup) sichtbar und alle Server-Felder erscheinen als "Not configured".
-
-## Sicherheitsregeln
-- Frontend importiert weder \`secretManager\` noch \`envValidator\`/\`keyVault\`.
-- \`/api/status\`-Payload enthält ausschließlich Booleans, Variablennamen und Metadaten.
-- Fehlende Werte brechen die Anzeige nie — pro Feld Fallback "Not configured".`,
+## Backend health
+\`/api/status\` wird mit Zeitstempel und Fehlerzustand angezeigt. Ist die Status-API nicht
+erreichbar, bleiben lokale bzw. zuletzt bekannte Informationen sichtbar, werden aber nicht als
+aktuell verifizierter positiver Zustand ausgegeben.`,
   },
 
   {

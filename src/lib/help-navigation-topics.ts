@@ -259,36 +259,58 @@ KIOSK-02 führt keine produktive Microsoft-Graph-, SharePoint-, Exchange-, PRTG-
       "Authentifizierung",
       "Health",
     ],
-    lastUpdated: "2026-09-20",
+    lastUpdated: "2026-09-21",
     content: `## Was zeigt der Systemstatus?
-**Service → Systemstatus…** zeigt ausschließlich Statusinformationen und nicht-sensible Metadaten. Verbindungsadressen, Schlüssel, Tokens, Passwörter und Connection Strings werden dort nicht ausgegeben.
+**Service → Systemstatus…** zeigt ausschließlich Statusinformationen und nicht-sensible
+Metadaten. Verbindungsadressen, Schlüssel, Tokens, Passwörter und Connection Strings werden
+dort nicht ausgegeben.
 
 ## GitHub
-Die Repository-URL ist die kanonische öffentliche Projektadresse **https://github.com/bmarnau/sysingdashboard**. Interne Git-Remotes einer Hosting-Plattform werden nicht als Repository-URL übernommen.
+Die Repository-URL ist die kanonische öffentliche Projektadresse
+**https://github.com/bmarnau/sysingdashboard**. Interne Git-Remotes einer Hosting-Plattform
+werden nicht als Repository-URL übernommen.
 
-Der Systemstatus trennt jetzt ausdrücklich **Build branch / Build commit** von **GitHub main HEAD**. Beim Öffnen wird der öffentliche \`main\`-Ref serverseitig read-only abgefragt; **Jetzt prüfen** erzwingt einen frischen Read und umgeht den kurzen Startcheck-Cache. Nur wenn ein tatsächlich bekannter Build-/Runtime-Commit mit diesem live gelesenen \`main\`-Commit übereinstimmt, erscheint **SYNCHRON**.
+Der Systemstatus trennt **Build branch / Build commit** von **GitHub main HEAD**.
+**Jetzt prüfen** erzwingt einen frischen Read und umgeht den kurzen Startcheck-Cache.
+Nur wenn ein tatsächlich bekannter Build-/Runtime-Commit mit dem aktuell gelesenen
+\`main\`-Commit übereinstimmt, erscheint **SYNCHRON**.
 
-**ABWEICHEND** bedeutet: beide Commits sind bekannt, aber verschieden. **NICHT PRÜFBAR** bedeutet: GitHub war nicht erreichbar oder Build-/Commit-Metadaten fehlen. Ein unbekannter Branch wird nicht mehr ersatzweise als \`main\` ausgegeben. Der Dialog zeigt zusätzlich den Zeitpunkt **Zuletzt gegen GitHub geprüft**.
+**ABWEICHEND** bedeutet: beide Commits sind bekannt, aber verschieden.
+**NICHT PRÜFBAR** bedeutet: GitHub oder die Status-API war nicht erreichbar oder die nötige
+Build-/Commit-Evidenz fehlt. Schlägt ein aktueller Status-API-Check fehl, wird ein früherer
+SHA-Match nicht weiter als **SYNCHRON** angezeigt. SHA und Prüfzeitpunkt bleiben dann nur als
+**zuletzt bekannte** historische Evidenz sichtbar.
 
 ## Supabase als MVP-Plattform
-Im Bereich **Data** wird **Supabase** als aktuelle MVP-Daten- und Authentifizierungsplattform ausgewiesen. Die Anzeige **Supabase Client-Konfiguration** prüft nur, ob die erforderliche Client-Konfiguration plausibel vorhanden ist. Sie zeigt weder URL noch Publishable Key an.
+Im Bereich **Data** wird **Supabase** als aktuelle MVP-Daten- und Authentifizierungsplattform
+ausgewiesen. **Supabase Client-Konfiguration** prüft nur die plausible Präsenz der nötigen
+Client-Konfiguration; sie ist kein Connectivity-Nachweis.
 
 ## Geschützter Backend-Nachweis
-System-Administrator und Administrator besitzen **users.manage**. Nur für diese Rollen führt der Systemstatus beim Öffnen oder mit **Jetzt prüfen** zusätzlich einen geschützten Backend-Nachweis aus. Der Server prüft zuerst Anmeldung und Berechtigung und bestätigt anschließend nur **Provider: Supabase** und **Backend-Verbindung: erreichbar**.
+System-Administrator und Administrator besitzen **users.manage**. Nur für diese Rollen führt
+der Systemstatus beim Öffnen oder mit **Jetzt prüfen** zusätzlich einen geschützten
+Backend-Nachweis aus. Der Server bestätigt dabei nur **Provider: Supabase** und
+**Backend-Verbindung: erreichbar**.
 
-Ein Teamleiter darf den allgemeinen Systemstatus sehen, besitzt aber kein **users.manage**. Deshalb wird für ihn dieser Admin-Nachweis nicht ausgelöst und als **„nicht geprüft — users.manage erforderlich“** gekennzeichnet. Das ist beabsichtigtes Least-Privilege-Verhalten und kein Verbindungsfehler.
+Ein Teamleiter besitzt kein **users.manage**. Deshalb wird dieser Admin-Nachweis für ihn nicht
+ausgelöst und als **nicht geprüft — users.manage erforderlich** gekennzeichnet.
 
 ## Öffentlicher Health-Status
-Der allgemeine **/api/status** bleibt ein secret-freier Health-Endpunkt. Er enthält keine Supabase-Verbindungsadresse, keine Projektkennung und keine Zugangsdaten. Ein administrativer Backend-Nachweis wird bewusst nicht in diesen öffentlichen Endpoint verschoben.
-
-## Weitere Bereiche
-Der Dialog zeigt außerdem Application-/Buildinformationen, Lovable-Status, Azure-Readiness, Security/RBAC, lokale Backup-/Dateninformationen, Dokumentationsstand, Backend-Health und Security-Scan-Hinweise.
+Der allgemeine **/api/status** bleibt ein secret-freier Health-Endpunkt. Er enthält keine
+Supabase-Verbindungsadresse, keine Projektkennung und keine Zugangsdaten.
 
 ## Interpretation
-- **configured / erreichbar**: der jeweilige technische Nachweis ist positiv.
-- **Not configured**: die betreffende optionale Funktion ist nicht konfiguriert.
-- **vom Hosting nicht bereitgestellt**: die Hosting-Runtime liefert die Metadaten nicht; dies ist kein Konfigurationsfehler.
-- **nicht geprüft — users.manage erforderlich**: der Benutzer darf den geschützten Admin-Nachweis nicht ausführen.`,
+- **konfiguriert**: Konfiguration oder Metadaten sind vorhanden; das ist noch kein
+  Connectivity-Nachweis.
+- **erreichbar**: eine konkrete Laufzeitprüfung war erfolgreich.
+- **funktional geprüft**: die betreffende Funktion wurde tatsächlich erfolgreich ausgeführt.
+- **SYNCHRON**: aktueller Build-/Runtime-Commit und aktuell gelesener GitHub-\`main\`-HEAD
+  stimmen überein.
+- **NICHT PRÜFBAR**: für eine aktuelle Aussage fehlt belastbare Evidenz.
+- **vom Hosting nicht bereitgestellt**: die Hosting-Runtime liefert die Metadaten nicht; dies
+  ist kein Konfigurationsfehler.
+- **nicht geprüft — users.manage erforderlich**: der Benutzer darf den geschützten
+  Admin-Nachweis nicht ausführen.`,
     relatedTopics: [
       "rbac-rollen-berechtigungen",
       "security-principles",
