@@ -1,5 +1,7 @@
 # BSF — Kundenabrechnungssicht für Teamleiter
 
+> **Historische Einordnung nach BSF-03B (21.09.2026):** Dieses Dokument beschreibt eine ältere Planung der „Kundenabrechnung“. Der umgesetzte BSF-03B-Stand ist bewusst enger und revisionssicherer: **Leistungsnachweis, keine Rechnung**, keine Preise/Stundensätze/Euro-/Steuerlogik, keine direkte Änderung fremder Shared Activities. Verbindlich sind `docs/BSF-03B-DESIGN.md`, der Implementation Plan und `docs/BSF-03B-CLOSURE-2026-09-21.md`. Widersprechende Aussagen in diesem historischen Dokument gelten als durch BSF-03B superseded.
+
 Stand: 2026-08-20  
 Status: verbindliche fachliche Konkretisierung der BSF-Roadmap  
 Geltungsbereich: Kundenmodell, Kundenverantwortung, Abrechnung und kundenbezogenes Reporting
