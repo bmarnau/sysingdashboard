@@ -1,7 +1,7 @@
 # Sysing Dashboard — Lovable-Promptplan BSF-03B
 
-Stand: 2026-09-14
-Status: PLANUNG / NICHT AUSGEFÜHRT
+Stand: 2026-09-21
+Status: L1 DB-/SECURITY-TEIL AUSGEFÜHRT · REGRESSION BLOCKED · L2 NACH RUNTIME
 Issue: #107
 Design: `docs/BSF-03B-DESIGN.md`
 Implementation Plan: `docs/superpowers/plans/2026-09-14-bsf-03b-performance-statement.md`
@@ -37,7 +37,7 @@ Jeder Prompt muss einhalten:
 - kein Merge,
 - kein Deploy.
 
-## 3. Prompt 03B-L1 — Live-Precheck und Persistenz-/Trigger-Vertrag
+## 3. Prompt 03B-L1 — Live-Precheck und Persistenz-/Trigger-Vertrag — AUSGEFÜHRT / REGRESSION OFFEN
 
 ```text
 SYSING DASHBOARD — BSF-03B / L1
@@ -147,9 +147,9 @@ ABSCHLUSSBERICHT
 - DEPLOY = NEIN
 ```
 
-## 4. Prompt 03B-L2 — Teamlead UI / Preview
+## 4. Prompt 03B-L2 — Teamlead UI / Preview — NÄCHSTER LOVABLE-SCHRITT NACH RUNTIME
 
-Diesen Prompt erst verwenden, wenn Domain, Adapter, Server Functions, DB und targeted Tests repository-seitig vorhanden sind.
+L1 hat Migration, RLS/ACL, Definer-Hardening, Residuenfreiheit und Security-Advisor bestätigt. Der kombinierte BSF-02C/03A/03B-Regressionslauf bleibt wegen der eingeschränkten `sandbox_exec`-Rolle offen und muss in CI/Owner-fähiger Postgres-Umgebung erfolgen. L2 wird erst verwendet, wenn Domain, Adapter, Server Functions, DB und targeted Tests repository-seitig vorhanden sind.
 
 ```text
 SYSING DASHBOARD — BSF-03B / L2
