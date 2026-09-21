@@ -77,7 +77,6 @@ describe("RBAC matrix invariants", () => {
       expect(ROLE_PERMISSIONS[role]).not.toContain("performance.statement.manage");
     }
   });
-
 });
 
 describe("canAny / canAll / requirePermission", () => {
