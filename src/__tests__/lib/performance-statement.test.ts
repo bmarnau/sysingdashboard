@@ -45,12 +45,8 @@ describe("BSF-03B provider-neutral performance statement domain", () => {
   });
 
   it("classifies review rows according to billing status and active claim", () => {
-    expect(classifyRow({ billingStatus: "abgerechnet", claimed: false })).toBe(
-      "legacy_finalized",
-    );
-    expect(classifyRow({ billingStatus: "offen", claimed: true })).toBe(
-      "claimed_by_statement",
-    );
+    expect(classifyRow({ billingStatus: "abgerechnet", claimed: false })).toBe("legacy_finalized");
+    expect(classifyRow({ billingStatus: "offen", claimed: true })).toBe("claimed_by_statement");
     expect(classifyRow({ billingStatus: "offen", claimed: false })).toBe("reviewable");
   });
 
