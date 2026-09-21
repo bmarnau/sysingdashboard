@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -22,6 +23,22 @@ describe("database schema source-of-truth", () => {
       "supabase gen types --lang typescript --local --schema public > src/integrations/supabase/types.generated.ts",
     );
     expect(pkg.scripts?.["db:schema:check"]).toBe("node scripts/database-schema/check-drift.mjs");
+  });
+
+  it("normalizes empty boundary lines but preserves internal blank lines", () => {
+    const script = `
+import { normalizeGeneratedText } from "./scripts/database-schema/normalize-generated-text.mjs";
+process.stdout.write(
+  JSON.stringify(normalizeGeneratedText("\\n\\nSET a = 1;\\n\\nSET b = 2;\\n\\n")),
+);
+`;
+
+    const output = execFileSync(process.execPath, ["--input-type=module", "--eval", script], {
+      cwd: root,
+      encoding: "utf8",
+    });
+
+    expect(JSON.parse(output)).toBe("SET a = 1;\n\nSET b = 2;\n");
   });
 
   it("gates CI on a local migration rebuild and schema drift check", () => {
