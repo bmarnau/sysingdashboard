@@ -136,19 +136,20 @@ export function ImportExportDialog({
     return payload ?? undefined;
   };
 
-  const loadPerformanceStatements =
-    async (): Promise<PerformanceStatementBackupPayload | undefined> => {
-      if (!canManagePerformanceStatements) return undefined;
-      if (scope !== "full" && scope !== "performance-statements") return undefined;
+  const loadPerformanceStatements = async (): Promise<
+    PerformanceStatementBackupPayload | undefined
+  > => {
+    if (!canManagePerformanceStatements) return undefined;
+    if (scope !== "full" && scope !== "performance-statements") return undefined;
 
-      const { payload, warnings } = await collectPerformanceStatementBackupPayload();
-      if (!payload && warnings.length > 0) {
-        toast.warning("Leistungsnachweis-Daten nicht im Export enthalten", {
-          description: warnings.join(" "),
-        });
-      }
-      return payload ?? undefined;
-    };
+    const { payload, warnings } = await collectPerformanceStatementBackupPayload();
+    if (!payload && warnings.length > 0) {
+      toast.warning("Leistungsnachweis-Daten nicht im Export enthalten", {
+        description: warnings.join(" "),
+      });
+    }
+    return payload ?? undefined;
+  };
 
   const buildExport = async () => {
     const [avkk, performanceStatements] = await Promise.all([
@@ -256,17 +257,16 @@ export function ImportExportDialog({
                   >
                     {(Object.keys(SCOPE_LABELS) as ScopeChoice[])
                       .filter(
-                        (k) =>
-                          k !== "performance-statements" || canManagePerformanceStatements,
+                        (k) => k !== "performance-statements" || canManagePerformanceStatements,
                       )
                       .map((k) => (
-                      <div key={k} className="flex items-center gap-2">
-                        <RadioGroupItem id={`scope-${k}`} value={k} />
-                        <Label htmlFor={`scope-${k}`} className="font-normal">
-                          {SCOPE_LABELS[k]}
-                        </Label>
-                      </div>
-                    ))}
+                        <div key={k} className="flex items-center gap-2">
+                          <RadioGroupItem id={`scope-${k}`} value={k} />
+                          <Label htmlFor={`scope-${k}`} className="font-normal">
+                            {SCOPE_LABELS[k]}
+                          </Label>
+                        </div>
+                      ))}
                   </RadioGroup>
                 </div>
 
