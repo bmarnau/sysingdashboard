@@ -108,7 +108,6 @@ test.describe("BSF-03B Leistungsnachweis – Teamlead", () => {
       systemhouseId: SH_A,
       customerId: CUSTOMER_A,
       activitySourceId: "activity-doc",
-      effectiveBillable: true,
     });
     await expect(documentationBillable).toBeChecked();
     await expect(page.getByRole("region", { name: "Review-Zusammenfassung" })).toContainText(
