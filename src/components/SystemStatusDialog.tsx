@@ -352,7 +352,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
 
           {/* 2) GitHub */}
           <Section icon={<Github className="size-4 shrink-0" />} title="2. GitHub">
-            <Row label="Repository URL" value={ghRepoLabel} href={ghRepoUrl} ok />
+            <Row label="Configured repository URL" value={ghRepoLabel} href={ghRepoUrl} />
             <Row
               label="Build branch"
               value={
@@ -364,7 +364,6 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
             />
             <Row
               label="Build commit"
-              ok={ghCommit ? true : undefined}
               mono
               value={
                 ghCommit ? (

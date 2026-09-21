@@ -38,8 +38,11 @@ describe("Systemstatus — Backend-Evidenz", () => {
   });
 
   it("should_distinguishBuildMetadata_fromLiveGithubMain", () => {
+    expect(DIALOG).toContain('label="Configured repository URL"');
     expect(DIALOG).toContain('label="Build branch"');
     expect(DIALOG).toContain('label="Build commit"');
+    expect(DIALOG).not.toContain('label="Repository URL" value={ghRepoLabel} href={ghRepoUrl} ok');
+    expect(DIALOG).not.toContain("ok={ghCommit ? true : undefined}");
     expect(DIALOG).toContain('label="GitHub main HEAD"');
     expect(DIALOG).toContain('label="Synchronisationsstatus"');
     expect(DIALOG).toContain('"Zuletzt gegen GitHub geprüft"');
