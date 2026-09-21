@@ -32,7 +32,8 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 11. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
 12. `docs/BSF-03-CLOSURE-2026-09-13.md` — Abschluss Kundenverantwortung/Kundensicht,
 13. `docs/BSF-03D-CLOSURE-2026-09-13.md` — Abschluss Arbeitspaket-Kategorien,
-14. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
+14. `docs/BSF-03B-VERIFICATION-2026-09-21.md` — aktueller DB-/Security-Nachweis mit offenem Regressionsblocker,
+15. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
 
 Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und werden durch die oben genannten laufenden Quellen fortgeschrieben.
 
@@ -53,7 +54,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 ## Aktueller Arbeitsstand 21.09.2026
 
 - BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
-- BSF-03B / Issue #107 ist der aktive Sprint. Tasks 1–4 sind GREEN. Die versionierte Migration `20260921095742_bsf03b_performance_statement` wurde kontrolliert über Lovable auf die eindeutig verifizierte Sysingdashboard-Supabase-DB angewandt; Live-T01–T30, RLS/Grants, Residuenprüfung und offizieller Security Advisor sind PASS/BASELINE_ONLY. Task 5 (Supabase Review-/Snapshot-Adapter) ist der aktuelle Implementierungsschritt.
+- BSF-03B / Issue #107 ist der aktive Sprint. Domain-, Fingerprint- und DB-Vertrag sind implementiert; die Migration `20260921095742_bsf03b_performance_statement` ist live aufgezeichnet. BSF-03B T01–T30, RLS/ACL, Residuenprüfung und offizieller Security Advisor sind PASS/BASELINE_ONLY. Der erneute kombinierte Regressionslauf BSF-02C/03A/03B ist in der aktuell verfügbaren `sandbox_exec`-Umgebung technisch BLOCKED und muss unverändert in einer Owner-fähigen Postgres-/CI-Umgebung nachgeholt werden. Task 5 (Supabase Review-/Snapshot-Adapter) ist der aktuelle Implementierungsschritt.
 - Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus und ist vollständig abgenommen. Der korrigierte read-only Lovable-Exact-Head-Retest bestätigt Fresh-Refresh, Fail-closed-Verhalten, beide Zielauflösungen und Tree-Integrität; der frühere Fresh-Refresh-FAIL war ein Harness-False-Negative. Commitbezogene CI-/Security-Aussagen werden weiterhin ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
 
 ## Aktueller BSF-Stand
@@ -167,7 +168,8 @@ Live-Nachweis über den kontrollierten Lovable-Supabase-Pfad:
 - `DATABASE_TYPES_DRIFT: NONE`,
 - Security #1148: **PASS**,
 - CI #1153: **PASS** einschließlich Technical Report & Quality Gate,
-- offizieller Supabase Security Advisor: **BASELINE_ONLY**; ausschließlich die zwei bekannten AVKK-WARNs, keine neuen BSF-03B-Findings.
+- offizieller Supabase Security Advisor: **BASELINE_ONLY**; ausschließlich die zwei bekannten AVKK-WARNs, keine neuen BSF-03B-Findings,
+- erneuter kombinierter BSF-02C/03A/03B-Regressionslauf: **BLOCKED** in der aktuellen `sandbox_exec`-Umgebung; keine Assertions wurden abgeschwächt. Nachweis: `docs/BSF-03B-VERIFICATION-2026-09-21.md`.
 
 Die produktive Lovable-Code-Arbeitskopie enthält weiterhin nicht nach GitHub übernommene Lovable-Overlay-Änderungen und ist daher **keine Code-Source-of-Truth**. Für BSF-03B wurde Lovable ausschließlich als kontrollierter Datenbankkanal verwendet; GitHub bleibt maßgeblich.
 
