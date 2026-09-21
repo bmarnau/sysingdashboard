@@ -23,6 +23,7 @@ const GOLDEN_V1_FILES = [
   "kiosk.json",
   "expected/project-controlling.json",
   "expected/kiosk-summary.json",
+  "expected/performance-statement.json",
 ];
 
 type GoldenActivityRelation = GoldenRelationDataset["activities"][number];
@@ -52,7 +53,7 @@ async function loadPositiveRelations(): Promise<GoldenRelationDataset> {
 describe("GDS-01 Golden Dataset V1 contract", () => {
   it("exposes the fixed Golden V1 constants", () => {
     expect(GOLDEN_SCHEMA_VERSION).toBe("sysing.golden.v1");
-    expect(GOLDEN_DATASET_VERSION).toBe("1.0.0");
+    expect(GOLDEN_DATASET_VERSION).toBe("1.1.0");
     expect(GOLDEN_REFERENCE_TIME).toBe("2026-09-14T00:00:00Z");
   });
 
@@ -91,7 +92,7 @@ describe("GDS-01 Golden Dataset V1 contract", () => {
 
   it.each([
     ["schemaVersion", "sysing.golden.v2", "golden_schema_version_mismatch"],
-    ["datasetVersion", "1.1.0", "golden_dataset_version_mismatch"],
+    ["datasetVersion", "1.0.0", "golden_dataset_version_mismatch"],
     ["referenceTime", "2026-09-17T00:00:00Z", "golden_reference_time_mismatch"],
   ] as const)("rejects an invalid %s", (field, value, error) => {
     const manifest = {
