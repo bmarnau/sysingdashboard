@@ -21,7 +21,7 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 
 1. `docs/BSF-CURRENT-PRIORITIES.md` — operative Reihenfolge und aktueller Wiederanlaufpunkt,
 2. `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` — verbindliche interne Kiosk-first-Reihenfolge,
-3. Issue #107 — aktiver BSF-03B-Sprint „Teamlead-Leistungsnachweis V1“,
+3. `docs/BSF-03B-CLOSURE-2026-09-21.md` — Abschluss BSF-03B „Teamlead-Leistungsnachweis V1“,
 4. `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` — abgeschlossener KIOSK-02-Nachweis,
 5. `docs/BSF-03A-CLOSURE-2026-09-14.md` — abgeschlossener BSF-03A-Nachweis,
 6. `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` — abgeschlossener KIOSK-01-Nachweis,
@@ -32,7 +32,7 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 11. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
 12. `docs/BSF-03-CLOSURE-2026-09-13.md` — Abschluss Kundenverantwortung/Kundensicht,
 13. `docs/BSF-03D-CLOSURE-2026-09-13.md` — Abschluss Arbeitspaket-Kategorien,
-14. `docs/BSF-03B-VERIFICATION-2026-09-21.md` — aktueller DB-/Security-/Regressionsnachweis für Tasks 1–4,
+14. `docs/BSF-03B-VERIFICATION-2026-09-21.md` — DB-/Security-/Regressionsnachweis für BSF-03B,
 15. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
 
 Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und werden durch die oben genannten laufenden Quellen fortgeschrieben.
@@ -41,7 +41,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.65.1` liegt auf GitHub `main` und ist vollständig abgenommen; der separate GitHub-Tag/Release `v1.65.1` ist noch nicht veröffentlicht.
+- Dashboard-Version: `1.66.0` ist der BSF-03B-Release-Kandidat auf PR #149; `1.65.1` bleibt bis Merge/Release der Stand auf `main`.
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
@@ -54,7 +54,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 ## Aktueller Arbeitsstand 21.09.2026
 
 - BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
-- BSF-03B / Issue #107 ist der aktive Sprint. Domain-, Fingerprint- und DB-Vertrag sind implementiert; die Migration `20260921095742_bsf03b_performance_statement` ist live aufgezeichnet. Security #1148 und CI #1153 sind auf Kandidat `798b7000e168aac4030986f12059c05536c810db` vollständig PASS. Der Owner-fähige CI-Lauf bestätigt BSF-02C T01–T30, BSF-03A T01–T20 und BSF-03B T01–T30 sowie `DATABASE_SCHEMA_DRIFT: NONE` und `DATABASE_TYPES_DRIFT: NONE`. Der offizielle Supabase Security Advisor bleibt BASELINE_ONLY ohne neue BSF-03B-Findings. Die Lovable-`sandbox_exec`-Rolle kann diese Owner-Level-Regression nicht identisch wiederholen; das ist eine Umgebungsgrenze und kein offener Produktblocker. Task 5 (Supabase Review-/Snapshot-Adapter) ist der aktuelle Implementierungsschritt.
+- BSF-03B / Issue #107 ist **FINAL DONE**. Funktionaler Abschluss-Head `ffbf3641c2187a738b853fb050aa4e5f1b6541a0`: Security #1247 PASS und CI #1252 vollständig PASS einschließlich Golden Dataset Required Gate, 147 Testdateien / 1009 PASS + 4 TODO, BSF-02C/03A/03B-DB-Regression, Schema Drift, Backend/API/RBAC-Security, Import/Export, Backup/Restore, Production Build, Playwright E2E, Accessibility, Technical Debt und Quality Gate. Live-Security-Advisor BASELINE_ONLY ohne neue BSF-03B-Findings. Lovable konnte nicht auf den GitHub-Exact-Head gebunden werden; die visuelle Preview bleibt deshalb ausdrücklich NOT EVIDENCED und ist als Plattformgrenze im Closure-Dokument festgehalten. Nächster Sprint: BSF-03E / #63.
 - Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus und ist vollständig abgenommen. Der korrigierte read-only Lovable-Exact-Head-Retest bestätigt Fresh-Refresh, Fail-closed-Verhalten, beide Zielauflösungen und Tree-Integrität; der frühere Fresh-Refresh-FAIL war ein Harness-False-Negative. Commitbezogene CI-/Security-Aussagen werden weiterhin ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
 
 ## Aktueller BSF-Stand
@@ -150,30 +150,23 @@ Der vorherige GitHub-Code-/Dokumentationskandidat war bereits mit Security #1092
 
 BSF-KIOSK-02 gilt damit als **FINAL DONE**. PR #147 ist auf `main` gemergt; Release `v1.65.0` ist veröffentlicht. Abschlussnachweis: `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md`.
 
-### BSF-03B — IN PROGRESS / Issue #107
+### BSF-03B — FINAL DONE / Issue #107
 
-Der Teamlead-Leistungsnachweis V1 ist in Umsetzung. Tasks 1–4 sind abgeschlossen:
+Der Teamlead-Leistungsnachweis V1 ist abgeschlossen. Er trennt die operative Shared Activity vom revisionsgebundenen Billable-Review, finalisiert atomar in unveränderbare Snapshots, verhindert Doppelverwendung über Claims und unterstützt Replacement-Versionen sowie PDF/CSV/JSON aus dem finalen Snapshot.
 
-- atomare Permission `performance.statement.manage`: GREEN,
-- providerneutraler Review-/Snapshot-Vertrag: GREEN,
-- deterministischer SHA-256-Review-Fingerprint gegen TOCTOU: GREEN,
-- Datenbankvertrag mit fünf BSF-03B-Tabellen, revisionsgebundenen Billable-Overrides, unveränderbaren Snapshots, Claims, Replacement und Audit: GREEN.
+Abschlussnachweise:
 
-Live-Nachweis über den kontrollierten Lovable-Supabase-Pfad:
+- Permission `performance.statement.manage`: Teamlead regulär, Systemadministrator Break-glass; übrige Fachrollen DENY,
+- Migration `20260921095742_bsf03b_performance_statement` live,
+- RLS auf allen fünf BSF-03B-Tabellen; kein anon/PUBLIC-DML,
+- interne SECURITY-DEFINER-Funktionen mit `search_path=""` und ohne direktes authenticated/anon/PUBLIC-EXECUTE,
+- Security #1247 PASS,
+- CI #1252 PASS einschließlich Golden Dataset, vollständiger BSF-02C/03A/03B-Regression, E2E, A11y, Backup/Restore und Quality Gate,
+- offizieller Supabase Security Advisor BASELINE_ONLY, keine neuen BSF-03B-Findings,
+- Lovable Exact-Head Visual Preview: NOT EVIDENCED wegen fehlender identitätsgebundener GitHub-Head-Bindung; nicht als PASS umgedeutet,
+- Abschluss: `docs/BSF-03B-CLOSURE-2026-09-21.md`.
 
-- Migration `20260921095742_bsf03b_performance_statement`: angewandt und in `supabase_migrations.schema_migrations` registriert,
-- SQL-Vertrag T01–T30: **PASS**, vollständig transaktional mit Rollback synthetischer Daten,
-- synthetische Residuen nach Test: **0**,
-- `DATABASE_SCHEMA_DRIFT: NONE`,
-- `DATABASE_TYPES_DRIFT: NONE`,
-- Security #1148: **PASS**,
-- CI #1153: **PASS** einschließlich Technical Report & Quality Gate,
-- offizieller Supabase Security Advisor: **BASELINE_ONLY**; ausschließlich die zwei bekannten AVKK-WARNs, keine neuen BSF-03B-Findings,
-- kombinierter BSF-02C/03A/03B-Regressionslauf auf Exact Head `798b7000e168aac4030986f12059c05536c810db`: **PASS** in CI #1153 mit Owner-fähiger lokaler Supabase/Postgres-17-Instanz; alle synthetischen Fixtures wurden zurückgerollt. Die produktive Lovable-`sandbox_exec`-Rolle kann den Owner-Level-Lauf nicht identisch wiederholen, ohne Assertions abzuschwächen. Nachweis: `docs/BSF-03B-VERIFICATION-2026-09-21.md`.
-
-Die produktive Lovable-Code-Arbeitskopie enthält weiterhin nicht nach GitHub übernommene Lovable-Overlay-Änderungen und ist daher **keine Code-Source-of-Truth**. Für BSF-03B wurde Lovable ausschließlich als kontrollierter Datenbankkanal verwendet; GitHub bleibt maßgeblich.
-
-Aktueller nächster Schritt: **Task 5 — Supabase Review-/Snapshot-Adapter TDD**.
+PR #149 bleibt ohne separate Freigabe ungemergt und undeployed.
 
 ## F-11
 
@@ -351,7 +344,7 @@ Branch Protection ist eine letzte technische Sicherheitsgrenze und ersetzt nicht
 
 Die operative Reihenfolge ist in `docs/BSF-CURRENT-PRIORITIES.md`, `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` und `docs/SPRINT-PLAN-MVP-BSF.md` festgeschrieben:
 
-`BSF-03D DONE → KIOSK-01 DONE → BSF-03A EXACT-HEAD GREEN / LOVABLE PREVIEW OFFEN → KIOSK-02 → BSF-03B → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
+`BSF-03D DONE → KIOSK-01 DONE → BSF-03A DONE → KIOSK-02 DONE → BSF-03B DONE → BSF-03E → BSF-07 → KIOSK-03 → BSF-03C → DOC-01/02/03 → BSF-04 → BSF-04A → BSF-05A → BSF-06 → BSF-09 → BSF-FINAL-INTERNAL → INTEGRATION-READINESS → externe Integrationen/MCP/Agenten`
 
 Die kanonische Kundenidentität bleibt `(systemhouseId, customerId)`; `systemhouseId` ist providerneutral und nicht gleich Microsoft Entra Tenant ID. Kundenverantwortung bleibt Scope/Beziehung, keine globale Rolle. Der vollständige Datenhaltungsumbau bleibt BSF-04.
 
