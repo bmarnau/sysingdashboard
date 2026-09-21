@@ -109,8 +109,8 @@ Golden-Dataset-Grundregeln:
 4. **BSF-KIOSK-01 / #135 — DONE**
 5. **BSF-03A / #106 — DONE**
 6. **BSF-KIOSK-02 / #136 — DONE / MERGED**
-7. **BSF-03B / #107 — AKTIV; Tasks 1–4 GREEN, Task 5 Adapter TDD**
-8. **BSF-03E / #63 — GEPLANT**
+7. **BSF-03B / #107 — FINAL DONE**
+8. **BSF-03E / #63 — NÄCHSTER SPRINT**
 9. **BSF-07 / #140 — VORGEZOGEN / GEPLANT**
 10. **BSF-KIOSK-03 / #137 — GEPLANT**
 11. **BSF-03C / #98 — GEPLANT**
