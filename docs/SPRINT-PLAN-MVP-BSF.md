@@ -208,7 +208,6 @@ dokumentiert. Abschluss:
 `docs/BSF-03B-CLOSURE-2026-09-21.md`. PR #149 bleibt ohne separate Freigabe
 ungemergt; kein Deploy.
 
-
 - Leistungsnachweis, ausdrücklich keine kaufmännische Rechnung,
 - Kunde + fester Zeitraum,
 - billable und non-billable gemeinsam sichtbar,

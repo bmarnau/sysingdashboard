@@ -310,7 +310,6 @@ Lovable meldet BLOCKED statt zu erweitern, wenn scheinbar benötigt werden:
 - automatische Finalisierung,
 - Hard Delete finaler Snapshots.
 
-
 ## 8. Abschlussstand
 
 BSF-03B / Issue #107 ist **FINAL DONE**. Funktionaler Abschluss-Head:
