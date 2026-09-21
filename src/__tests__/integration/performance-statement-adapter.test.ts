@@ -2,9 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import {
-  createSupabasePerformanceStatementRepository,
-} from "@/integrations/supabase/performance-statement-adapter";
+import { createSupabasePerformanceStatementRepository } from "@/integrations/supabase/performance-statement-adapter";
 import type { Database } from "@/integrations/supabase/types";
 import { createPerformanceReviewFingerprint } from "@/lib/performance-statement/review-fingerprint";
 
@@ -346,11 +344,7 @@ describe("BSF-03B Supabase performance statement adapter", () => {
     });
 
     expect(result).toEqual({ statementId: "statement-final" });
-    const requestInsert = callsFor(
-      calls,
-      "customer_performance_statement_request",
-      "insert",
-    )[0];
+    const requestInsert = callsFor(calls, "customer_performance_statement_request", "insert")[0];
     expect(requestInsert).toBeTruthy();
     expect(requestInsert?.args[0]).toMatchObject({
       id: "request-1",
