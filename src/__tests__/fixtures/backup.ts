@@ -6,6 +6,7 @@
  * absichtlich kaputte ZIPs zu bauen.
  */
 import { strToU8, zipSync, unzipSync, strFromU8 } from "fflate";
+import type { PerformanceStatementBackupPayload } from "@/lib/backup/performance-statement-payload";
 
 export interface BackupFixtureOptions {
   projectName?: string;
@@ -217,11 +218,203 @@ export function avkkFixture(): {
   };
 }
 
+/** Deterministische BSF-03B-Serie: v1 ersetzt durch v2, Claims zeigen nur auf v2. */
+export function performanceStatementFixture(): PerformanceStatementBackupPayload {
+  const capturedAt = "2026-09-30T12:00:00.000Z";
+  const fingerprint = "a".repeat(64);
+  const commonItem = {
+    sourceRevision: 2,
+    sourcePublishedAt: "2026-09-29T09:00:00.000Z",
+    sourceEngineerId: "engineer-internal",
+    activityDate: "2026-09-15",
+    projectSourceId: "project-1",
+    projectNameSnapshot: "Projekt Alpha",
+    workPackageSourceId: "wp-1",
+    workPackageTitleSnapshot: "Analyse",
+    categoryKeySnapshot: "regelbetrieb",
+    categoryLabelSnapshot: "Regelbetrieb",
+    createdAt: capturedAt,
+  };
+
+  return {
+    payloadVersion: 1,
+    capturedAt,
+    overrides: [
+      {
+        id: "override-1",
+        systemhouseId: "systemhouse-1",
+        customerId: "customer-1",
+        activitySourceId: "ACT-2",
+        sourceRevision: 2,
+        sourceHash: "source-hash-2",
+        sourceBillable: true,
+        effectiveBillable: false,
+        note: "Teamlead Review",
+        changedBy: "teamlead-1",
+        changedAt: capturedAt,
+        createdAt: capturedAt,
+        updatedAt: capturedAt,
+      },
+    ],
+    requests: [
+      {
+        id: "request-v1",
+        systemhouseId: "systemhouse-1",
+        customerId: "customer-1",
+        periodStart: "2026-09-01",
+        periodEnd: "2026-09-30",
+        action: "finalize",
+        replacesStatementId: null,
+        expectedReviewFingerprint: fingerprint,
+        requestedBy: "teamlead-1",
+        requestedAt: "2026-09-30T10:00:00.000Z",
+        resultStatementId: "statement-v1",
+      },
+      {
+        id: "request-v2",
+        systemhouseId: "systemhouse-1",
+        customerId: "customer-1",
+        periodStart: "2026-09-01",
+        periodEnd: "2026-09-30",
+        action: "replace",
+        replacesStatementId: "statement-v1",
+        expectedReviewFingerprint: fingerprint,
+        requestedBy: "teamlead-1",
+        requestedAt: capturedAt,
+        resultStatementId: "statement-v2",
+      },
+    ],
+    statements: [
+      {
+        id: "statement-v1",
+        seriesId: "series-1",
+        version: 1,
+        systemhouseId: "systemhouse-1",
+        customerId: "customer-1",
+        customerNameSnapshot: "Kunde Alpha",
+        periodStart: "2026-09-01",
+        periodEnd: "2026-09-30",
+        status: "superseded",
+        finalizedBy: "teamlead-1",
+        finalizedAt: "2026-09-30T10:00:00.000Z",
+        sourceOldestPublishedAt: "2026-09-01T08:00:00.000Z",
+        sourceLatestPublishedAt: "2026-09-29T09:00:00.000Z",
+        reviewFingerprint: fingerprint,
+        snapshotHash: "1".repeat(64),
+        itemCount: 2,
+        billableItemCount: 2,
+        billableHours: 3,
+        nonBillableHours: 0,
+        replacesStatementId: null,
+        supersededByStatementId: "statement-v2",
+        createdAt: "2026-09-30T10:00:00.000Z",
+      },
+      {
+        id: "statement-v2",
+        seriesId: "series-1",
+        version: 2,
+        systemhouseId: "systemhouse-1",
+        customerId: "customer-1",
+        customerNameSnapshot: "Kunde Alpha",
+        periodStart: "2026-09-01",
+        periodEnd: "2026-09-30",
+        status: "finalized",
+        finalizedBy: "teamlead-1",
+        finalizedAt: capturedAt,
+        sourceOldestPublishedAt: "2026-09-01T08:00:00.000Z",
+        sourceLatestPublishedAt: "2026-09-29T09:00:00.000Z",
+        reviewFingerprint: fingerprint,
+        snapshotHash: "2".repeat(64),
+        itemCount: 2,
+        billableItemCount: 1,
+        billableHours: 2,
+        nonBillableHours: 1,
+        replacesStatementId: "statement-v1",
+        supersededByStatementId: null,
+        createdAt: capturedAt,
+      },
+    ],
+    items: [
+      {
+        id: "item-v1-1",
+        statementId: "statement-v1",
+        position: 1,
+        activitySourceId: "ACT-1",
+        sourceHash: "source-hash-1",
+        titleSnapshot: "Analyse",
+        durationHours: 2,
+        sourceBillable: true,
+        effectiveBillable: true,
+        billingStatusSnapshot: "offen",
+        ...commonItem,
+      },
+      {
+        id: "item-v1-2",
+        statementId: "statement-v1",
+        position: 2,
+        activitySourceId: "ACT-2",
+        sourceHash: "source-hash-2",
+        titleSnapshot: "Dokumentation",
+        durationHours: 1,
+        sourceBillable: true,
+        effectiveBillable: true,
+        billingStatusSnapshot: "offen",
+        ...commonItem,
+      },
+      {
+        id: "item-v2-1",
+        statementId: "statement-v2",
+        position: 1,
+        activitySourceId: "ACT-1",
+        sourceHash: "source-hash-1",
+        titleSnapshot: "Analyse",
+        durationHours: 2,
+        sourceBillable: true,
+        effectiveBillable: true,
+        billingStatusSnapshot: "offen",
+        ...commonItem,
+      },
+      {
+        id: "item-v2-2",
+        statementId: "statement-v2",
+        position: 2,
+        activitySourceId: "ACT-2",
+        sourceHash: "source-hash-2",
+        titleSnapshot: "Dokumentation",
+        durationHours: 1,
+        sourceBillable: true,
+        effectiveBillable: false,
+        billingStatusSnapshot: "offen",
+        ...commonItem,
+      },
+    ],
+    claims: [
+      {
+        id: "claim-1",
+        systemhouseId: "systemhouse-1",
+        customerId: "customer-1",
+        activitySourceId: "ACT-1",
+        statementId: "statement-v2",
+        claimedAt: capturedAt,
+      },
+      {
+        id: "claim-2",
+        systemhouseId: "systemhouse-1",
+        customerId: "customer-1",
+        activitySourceId: "ACT-2",
+        statementId: "statement-v2",
+        claimedAt: capturedAt,
+      },
+    ],
+  };
+}
+
 /** Erzeugt ein Archiv im Format 2.0 mit gültiger Zuordnungstabelle. */
 export async function buildValidBackupZipV2(
   opts: BackupFixtureOptions & {
     storagePaths?: Record<string, string>;
     avkk?: { avkk: unknown; referenceData: unknown } | null;
+    performanceStatements?: PerformanceStatementBackupPayload | null;
   } = {},
 ): Promise<Uint8Array> {
   const createdAt = opts.createdAt ?? "2026-01-01T00:00:00.000Z";
@@ -250,6 +443,16 @@ export async function buildValidBackupZipV2(
     files["reference-data.json"] = strToU8(JSON.stringify(payload.referenceData, null, 2));
     meta.push({ logicalName: "avkk-dataset", storageKey: null, path: "avkk.json" });
     meta.push({ logicalName: "reference-data", storageKey: null, path: "reference-data.json" });
+  }
+
+  if (opts.performanceStatements !== null) {
+    const payload = opts.performanceStatements ?? performanceStatementFixture();
+    files["performance-statements.json"] = strToU8(JSON.stringify(payload, null, 2));
+    meta.push({
+      logicalName: "performance-statement-dataset",
+      storageKey: null,
+      path: "performance-statements.json",
+    });
   }
 
   let i = 0;
