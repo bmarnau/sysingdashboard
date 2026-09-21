@@ -128,6 +128,7 @@ function fakeAuthClient(options: FakeAuthOptions = {}): {
 function fakeRepository(overrides: Partial<PerformanceStatementRepository> = {}): {
   repository: PerformanceStatementRepository;
   spies: {
+    listScopes: ReturnType<typeof vi.fn>;
     getReview: ReturnType<typeof vi.fn>;
     setBillableOverride: ReturnType<typeof vi.fn>;
     finalize: ReturnType<typeof vi.fn>;
@@ -137,6 +138,14 @@ function fakeRepository(overrides: Partial<PerformanceStatementRepository> = {})
   };
 } {
   const spies = {
+    listScopes: vi.fn(async () => [
+      {
+        systemhouseId: SYSTEMHOUSE_ID,
+        systemhouseName: "Systemhaus Eins",
+        customerId: CUSTOMER_ID,
+        customerName: "Kunde Eins",
+      },
+    ]),
     getReview: vi.fn(async () => REVIEW),
     setBillableOverride: vi.fn(async () => undefined),
     finalize: vi.fn(async () => ({ statementId: STATEMENT_ID })),
@@ -147,6 +156,7 @@ function fakeRepository(overrides: Partial<PerformanceStatementRepository> = {})
 
   return {
     repository: {
+      listScopes: overrides.listScopes ?? spies.listScopes,
       getReview: overrides.getReview ?? spies.getReview,
       setBillableOverride: overrides.setBillableOverride ?? spies.setBillableOverride,
       finalize: overrides.finalize ?? spies.finalize,
