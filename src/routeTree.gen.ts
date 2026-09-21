@@ -121,6 +121,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kiosk': typeof AuthenticatedKioskRoute
   '/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
+  '/leistungsnachweis': typeof AuthenticatedLeistungsnachweisRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -169,6 +170,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/kiosk'
     | '/projektcontrolling'
+    | '/leistungsnachweis'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
