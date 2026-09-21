@@ -198,7 +198,8 @@ async function requestStatement(
   input: FinalizeInput | ReplaceInput,
   action: "finalize" | "replace",
 ): Promise<{ statementId: string }> {
-  const replacesStatementId = action === "replace" ? input.replacesStatementId : null;
+  const replacesStatementId =
+    action === "replace" && "replacesStatementId" in input ? input.replacesStatementId : null;
   const payload = {
     id: input.requestId,
     systemhouse_id: input.systemhouseId,
