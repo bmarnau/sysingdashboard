@@ -1,6 +1,7 @@
 /** Registrierung aller verfügbaren Berichte (ADR-0028). */
 
 import { avkkReportDefinitions } from "./definitions/avkk";
+import { performanceStatementReport } from "./definitions/performance-statement";
 import type { ReportDefinition } from "./types";
 
 const registry = new Map<string, ReportDefinition<never>>();
@@ -20,3 +21,5 @@ export function listReports(): ReportDefinition<never>[] {
 for (const definition of avkkReportDefinitions) {
   registerReport(definition);
 }
+
+registerReport(performanceStatementReport);
