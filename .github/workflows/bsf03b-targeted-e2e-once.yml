@@ -1,5 +1,5 @@
 name: Temporary BSF-03B targeted E2E
-# diagnostic-run-3
+# verification-run-5
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: feat/bsf-03b-performance-statement
+          ref: ${{ github.sha }}
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bunx playwright install --with-deps chromium
