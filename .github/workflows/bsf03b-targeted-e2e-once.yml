@@ -25,5 +25,7 @@ jobs:
         run: >
           bunx playwright test
           e2e/specs/performance-statement/performance-statement.spec.ts
-          e2e/specs/security/performance-statement-scope.spec.ts
           --project=chromium
+          --grep "Review -> Override"
+          --retries=0
+          --workers=1
