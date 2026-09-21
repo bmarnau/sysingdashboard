@@ -1,0 +1,37 @@
+name: Temporary BSF-03B E2E formatter
+
+on:
+  push:
+    branches:
+      - feat/bsf-03b-performance-statement
+    paths:
+      - ".github/workflows/bsf03b-e2e-format-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf-03b-performance-statement
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Format BSF-03B E2E files
+        run: |
+          bunx prettier --write \
+            e2e/fixtures/performance-statement-e2e.ts \
+            e2e/specs/security/performance-statement-scope.spec.ts
+      - name: Commit formatting only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            e2e/fixtures/performance-statement-e2e.ts \
+            e2e/specs/security/performance-statement-scope.spec.ts
+          git diff --cached --quiet && exit 0
+          git commit -m "style(bsf03b): E2E-Dateien formatieren"
+          git push origin HEAD:feat/bsf-03b-performance-statement
