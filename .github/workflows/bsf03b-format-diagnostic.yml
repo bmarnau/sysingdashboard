@@ -1,9 +1,9 @@
 name: BSF03B Format Diagnostic
 
 on:
-  push:
+  pull_request:
     branches:
-      - feat/bsf-03b-performance-statement
+      - main
 
 permissions:
   contents: read
