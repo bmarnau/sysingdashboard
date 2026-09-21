@@ -15,11 +15,11 @@
 - Task 1 RBAC-Vertrag: **GREEN**
 - Task 2 providerneutraler Review-/Snapshot-Vertrag: **GREEN**
 - Task 3 Review-Fingerprint / TOCTOU-Schutz: **GREEN**
-- Task 4 Datenbankvertrag, Live-Migration, T01–T30, Drift-Guard und offizieller Security Advisor: **GREEN / BASELINE_ONLY**
+- Task 4 Datenbankvertrag, Live-Migration, T01–T30, Drift-Guard und offizieller Security Advisor: **GREEN / BASELINE_ONLY**; kombinierte BSF-02C/03A/03B-Regression: **BLOCKED** bis Owner-fähige Testumgebung
 - Task 5 Supabase Review-/Snapshot-Adapter: **ACTIVE**
 - PR #149 bleibt **DRAFT**; kein Merge/Deploy vor vollständiger BSF-03B-Abnahme.
 
-Task-4-Evidenz: Migration `20260921095742_bsf03b_performance_statement` kontrolliert über Lovable angewandt; Live-T01–T30 PASS; keine synthetischen Residuen; `DATABASE_SCHEMA_DRIFT: NONE`; `DATABASE_TYPES_DRIFT: NONE`; Security #1148 PASS; CI #1153 PASS; keine neuen BSF-03B-Security-Advisor-Findings.
+Task-4-Evidenz: Migration `20260921095742_bsf03b_performance_statement` kontrolliert über Lovable angewandt; Live-T01–T30 PASS; keine synthetischen Residuen; `DATABASE_SCHEMA_DRIFT: NONE`; `DATABASE_TYPES_DRIFT: NONE`; Security #1148 PASS; CI #1153 PASS; keine neuen BSF-03B-Security-Advisor-Findings. Der erneute kombinierte Regressionslauf ist in der verfügbaren `sandbox_exec`-Umgebung nicht reproduzierbar und bleibt ohne Abschwächung BLOCKED; siehe `docs/BSF-03B-VERIFICATION-2026-09-21.md`.
 
 ## Global Constraints
 
@@ -419,9 +419,9 @@ Kanonische Stringbildung muss exakt Task 3 entsprechen.
 
 BEGIN/ROLLBACK für synthetische Fixtures, keine echten Kundendaten.
 
-- [x] **Step 8: BSF-02C/03A Regression ausführen**
+- [ ] **Step 8: BSF-02C/03A/03B Regression in Owner-fähiger Postgres-/CI-Umgebung ausführen**
 
-Shared-Projection-RLS und Publisher-Ownership dürfen nicht gelockert werden.
+Shared-Projection-RLS und Publisher-Ownership dürfen nicht gelockert werden. Aktueller Versuch in `sandbox_exec` ist technisch BLOCKED (`SET ROLE authenticated`, `auth`-Schema und `has_permission` nicht verfügbar); keine Ersatzassertionen zulassen.
 
 - [x] **Step 9: Security Advisor read-only ausführen**
 
