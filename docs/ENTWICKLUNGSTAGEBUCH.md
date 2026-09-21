@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | v1.65.0 veröffentlicht; KIOSK-02 FINAL DONE. Patch 1.65.1 mit Versionsanzeige und evidenzkalibriertem Systemstatus ist vollständig abgenommen und wartet auf Merge/Release. BSF-03B ist gestartet und befindet sich nach read-only Live-Precheck im TDD-/Vertragsaufbau. |
+| Aktueller Stand     | v1.65.0 veröffentlicht; Patch 1.65.1 ist auf `main`. BSF-03B ist aktiv: Domain/Fingerprint und DB-Vertrag sind umgesetzt, Migration 20260921095742 ist live; Security Advisor BASELINE_ONLY. Der kombinierte BSF-02C/03A/03B-Regressionslauf ist in der aktuellen `sandbox_exec`-Umgebung technisch BLOCKED. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | Patch 1.65.1 mergen und releasen → BSF-03B Permission-/Snapshot-/Review-Vertrag repository-seitig umsetzen → danach DB-Migration und L2-UI. |
+| Nächster Nutzen     | BSF-03B Task 5 Adapter TDD → Server Functions/Reporting/UI → vollständige Regression in Owner-fähiger Postgres-/CI-Umgebung → Abschlussgates. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -60,6 +60,12 @@ Der anschließende AQGS-Systemstatus-Audit trennt Konfiguration, Erreichbarkeit,
 Die erste Lovable-Exact-Tree-Abnahme meldete `FRESH_REFRESH = FAIL`. Die Root-Cause-Analyse zeigte, dass der synthetische Test nur `**/api/status` interceptete, während `Jetzt prüfen` korrekt `/api/status?refresh=1` aufruft. Der korrigierte read-only Exact-Head-Retest mit `**/api/status*` bestätigt die tatsächliche Sequenz `/api/status → /api/status?refresh=1 → /api/status?refresh=1` sowie `SYNCHRON → ABWEICHEND → NICHT PRÜFBAR`. Der frühere FAIL ist damit als Harness-False-Negative bestätigt. Auch der echte Fail-closed-Randfall bei komplett nicht erreichbarer Status-API ist erfolgreich verifiziert.
 
 Handbuch und kontextsensitive Hilfe stehen danach auf Version **1.23.1**. DB-, Auth-, RBAC- und RLS-Grenzen wurden durch diese Änderungen nicht verändert.
+
+## BSF-03B — DB-Vertrag live, Regression gezielt offen (2026-09-21)
+
+Die Migration `20260921095742_bsf03b_performance_statement` ist live aufgezeichnet. RLS/ACL der fünf BSF-03B-Tabellen, die nicht direkt ausführbaren SECURITY-DEFINER-Triggerfunktionen sowie der offizielle Supabase Security Advisor sind geprüft; der Advisor zeigt ausschließlich die bekannte AVKK-Baseline und keine neuen BSF-03B-Findings. Der frühere BSF-03B-Vertragslauf T01–T30 bleibt PASS-Evidenz.
+
+Ein erneuter kombinierter Regressionslauf BSF-02C/BSF-03A/BSF-03B konnte in der aktuell verfügbaren `sandbox_exec`-Umgebung nicht unverändert ausgeführt werden: Rollenwechsel auf `authenticated`, Zugriff auf `auth` und die benötigten Helper-Rechte fehlen. Eine schwächere Ersatzprüfung wurde bewusst nicht verwendet. Der Regressionspunkt bleibt deshalb BLOCKED, bis er in CI oder einer Owner-fähigen lokalen PostgreSQL-/Supabase-Instanz reproduziert wurde. Details: `docs/BSF-03B-VERIFICATION-2026-09-21.md`.
 
 ## BSF-KIOSK-02 — interner Read-/Hybrid-Provider (2026-09-19)
 
