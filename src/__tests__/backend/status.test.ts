@@ -81,13 +81,17 @@ describe("backend/statusService", () => {
     }
   });
 
-  it("should_notFailSupabaseRuntimeWhenOptionalAzureEnvIsMissing", () => {
+  it("should_validateSupabaseRuntimeEnv_independentlyFromOptionalAzure", () => {
     const previousAuthProvider = process.env.AUTH_PROVIDER;
+    const previousSupabaseUrl = process.env.SUPABASE_URL;
+    const previousSupabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
     const previousAzureEnv = Object.fromEntries(
       AZURE_ENV_NAMES.map((name) => [name, process.env[name]]),
     ) as Record<(typeof AZURE_ENV_NAMES)[number], string | undefined>;
 
     delete process.env.AUTH_PROVIDER;
+    process.env.SUPABASE_URL = "https://example.supabase.co";
+    process.env.SUPABASE_PUBLISHABLE_KEY = "sb_publishable_test";
     for (const name of AZURE_ENV_NAMES) delete process.env[name];
 
     try {
@@ -100,11 +104,64 @@ describe("backend/statusService", () => {
     } finally {
       if (previousAuthProvider === undefined) delete process.env.AUTH_PROVIDER;
       else process.env.AUTH_PROVIDER = previousAuthProvider;
+      if (previousSupabaseUrl === undefined) delete process.env.SUPABASE_URL;
+      else process.env.SUPABASE_URL = previousSupabaseUrl;
+      if (previousSupabaseKey === undefined) delete process.env.SUPABASE_PUBLISHABLE_KEY;
+      else process.env.SUPABASE_PUBLISHABLE_KEY = previousSupabaseKey;
       for (const name of AZURE_ENV_NAMES) {
         const previous = previousAzureEnv[name];
         if (previous === undefined) delete process.env[name];
         else process.env[name] = previous;
       }
+    }
+  });
+
+  it("should_reportMissingSupabaseBackendEnv_insteadOfOptimisticOk", () => {
+    const previousAuthProvider = process.env.AUTH_PROVIDER;
+    const previousSupabaseUrl = process.env.SUPABASE_URL;
+    const previousSupabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+
+    delete process.env.AUTH_PROVIDER;
+    delete process.env.SUPABASE_URL;
+    delete process.env.SUPABASE_PUBLISHABLE_KEY;
+
+    try {
+      const status = getStatus();
+      expect(status.security.authMode).toBe("supabase");
+      expect(status.security.envValidation.scope).toBe("supabase");
+      expect(status.security.envValidation.ok).toBe(false);
+      expect(status.security.envValidation.missingCount).toBe(2);
+    } finally {
+      if (previousAuthProvider === undefined) delete process.env.AUTH_PROVIDER;
+      else process.env.AUTH_PROVIDER = previousAuthProvider;
+      if (previousSupabaseUrl === undefined) delete process.env.SUPABASE_URL;
+      else process.env.SUPABASE_URL = previousSupabaseUrl;
+      if (previousSupabaseKey === undefined) delete process.env.SUPABASE_PUBLISHABLE_KEY;
+      else process.env.SUPABASE_PUBLISHABLE_KEY = previousSupabaseKey;
+    }
+  });
+
+  it("should_notCallAzureMetadataAClientSecretProof", () => {
+    const clientIdName = AZURE_ENV_NAMES[3];
+    const tenantIdName = AZURE_ENV_NAMES[4];
+    const managedIdentityName = ["AZURE", "USE", "MANAGED", "IDENTITY"].join("_");
+    const previousClientId = process.env[clientIdName];
+    const previousTenantId = process.env[tenantIdName];
+    const previousManagedIdentity = process.env[managedIdentityName];
+
+    process.env[clientIdName] = "client-id";
+    process.env[tenantIdName] = "tenant-id";
+    delete process.env[managedIdentityName];
+
+    try {
+      expect(getStatus().azure.authMode).toBe("service-principal-metadata");
+    } finally {
+      if (previousClientId === undefined) delete process.env[clientIdName];
+      else process.env[clientIdName] = previousClientId;
+      if (previousTenantId === undefined) delete process.env[tenantIdName];
+      else process.env[tenantIdName] = previousTenantId;
+      if (previousManagedIdentity === undefined) delete process.env[managedIdentityName];
+      else process.env[managedIdentityName] = previousManagedIdentity;
     }
   });
 

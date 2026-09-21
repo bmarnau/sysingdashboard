@@ -26,6 +26,10 @@ export interface SystemStatusPayload {
     repositoryUrl?: string | null;
     branch?: string | null;
     commit?: string | null;
+    mainBranch?: string | null;
+    mainCommit?: string | null;
+    checkedAt?: string | null;
+    sourceOfTruthReachable?: boolean | null;
   };
   lovable?: {
     publishedUrl?: string | null;
@@ -55,6 +59,7 @@ export interface SystemStatusPayload {
     keyVault?: { configured?: boolean } | null;
   };
   data?: {
+    lastSyncAt?: string | null;
     lastAzureExportAt?: string | null;
     lastAzureImportAt?: string | null;
   };
@@ -107,14 +112,15 @@ function getServerSnapshot() {
   return initial;
 }
 
-export async function runSystemStatusCheck(): Promise<void> {
+export async function runSystemStatusCheck(forceGithubRefresh = false): Promise<void> {
   if (typeof window === "undefined") return;
   if (state.inFlight) return;
   setState({ inFlight: true });
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 3000);
   try {
-    const res = await fetch("/api/status", { signal: ctrl.signal });
+    const endpoint = forceGithubRefresh ? "/api/status?refresh=1" : "/api/status";
+    const res = await fetch(endpoint, { signal: ctrl.signal });
     const correlationId = res.headers.get("X-Correlation-Id");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = (await res.json()) as SystemStatusPayload & { correlationId?: string };
@@ -152,7 +158,7 @@ export function bootstrapSystemStatusCheck(): void {
 export function useSystemStatusHealth() {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const refresh = useCallback(() => {
-    void runSystemStatusCheck();
+    void runSystemStatusCheck(true);
   }, []);
   useEffect(() => {
     if (snapshot.checkedAt === null && !snapshot.inFlight) {

@@ -27,12 +27,40 @@ describe("Systemstatus — Backend-Evidenz", () => {
   });
 
   it("should_showSecretFreeSupabaseEvidence_withoutPretendingCommitConfiguration", () => {
-    expect(DIALOG).toContain('label="MVP-Datenplattform" value="Supabase"');
-    expect(DIALOG).toContain('label="Auth-Konfiguration"');
+    expect(DIALOG).toContain(
+      'label="MVP-Datenplattform" value="Supabase — Architektur-/Betriebsmodell"',
+    );
+    expect(DIALOG).toContain('label="Supabase Client-Konfiguration"');
     expect(DIALOG).toContain('label="Backend-Verbindung"');
     expect(DIALOG).toContain("erreichbar — geschützte Admin-Prüfung");
     expect(DIALOG).toContain("nicht geprüft — users.manage erforderlich");
     expect(DIALOG).toContain("vom Hosting nicht bereitgestellt");
+  });
+
+  it("should_distinguishBuildMetadata_fromLiveGithubMain", () => {
+    expect(DIALOG).toContain('label="Configured repository URL"');
+    expect(DIALOG).toContain('label="Build branch"');
+    expect(DIALOG).toContain('label="Build commit"');
+    expect(DIALOG).not.toContain('label="Repository URL" value={ghRepoLabel} href={ghRepoUrl} ok');
+    expect(DIALOG).not.toContain("ok={ghCommit ? true : undefined}");
+    expect(DIALOG).toContain('label="GitHub main HEAD"');
+    expect(DIALOG).toContain('label="Synchronisationsstatus"');
+    expect(DIALOG).toContain('"Zuletzt gegen GitHub geprüft"');
+    expect(DIALOG).toContain('"Letzter erfolgreicher GitHub-Nachweis"');
+    expect(DIALOG).toContain("resolveGitSyncState(ghCommit, ghMainCommit, ghEvidenceCurrent)");
+    expect(DIALOG).toContain("NICHT PRÜFBAR — Status-API nicht erreichbar");
+    expect(DIALOG).toContain("zuletzt bekannt:");
+    expect(DIALOG).toContain("NICHT PRÜFBAR");
+  });
+
+  it("should_notPresentConfigurationAsOperationalProof", () => {
+    expect(DIALOG).toContain("kein Live-Health-Nachweis");
+    expect(DIALOG).toContain("kein Credential-Nachweis");
+    expect(DIALOG).toContain("keine Verbindungsprüfung");
+    expect(DIALOG).toContain("kein externer Secret-Store-Nachweis");
+    expect(DIALOG).toContain("kein Betriebsnachweis");
+    expect(DIALOG).toContain("hier nicht live abgefragt");
+    expect(DIALOG).toContain("Laufzeitprobe PASS");
   });
 
   it("should_reportSupabaseAsMvpAuthProvider_whenNoOverrideExists", () => {

@@ -13,6 +13,16 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.65.1 - 2026-09-20
+
+- **Versionsanzeige**: Landing-/Anmeldeseite, Auth-Seite und angemeldetes Dashboard zeigen die aktuelle Dashboard-Version mit Versionsdatum aus der zentralen CHANGELOG-Quelle an.
+- **Single Source of Truth**: Version und Datum werden nicht in den Seiten hartcodiert, sondern aus dem obersten CHANGELOG-Eintrag abgeleitet.
+- **Systemstatus nach AQGS-08**: Git-Synchronisation wird nur noch über einen echten SHA-Vergleich mit dem live gelesenen GitHub-`main` bewertet; Konfiguration, Erreichbarkeit und Betriebsnachweis werden in Lovable-, Azure-, Security-, Data- und Security-Scan-Sektionen semantisch getrennt.
+- **Freshness**: `Jetzt prüfen` erzwingt einen frischen GitHub-`main`-Read; der Zeitpunkt der letzten Prüfung wird angezeigt. Fehlende Evidenz bleibt neutral als „NICHT PRÜFBAR“ statt als positiver Status.
+- **Fail-closed bei Refresh-Fehlern**: Ist der aktuelle Status-API-Check nicht erreichbar, wird ein früherer SHA-Match nicht weiter als aktuelles „SYNCHRON“ gewertet. Ein zuletzt bekannter `main`-SHA und Prüfzeitpunkt bleiben nur ausdrücklich als historische Evidenz sichtbar.
+- **Neutrale Git-Metadaten**: Repository-URL und Build-Commit werden ohne grüne Erfolgsmarkierung dargestellt; ein positiver Git-Status entsteht ausschließlich aus dem aktuellen SHA-Vergleich.
+- **Handbuch 1.23.1**: Systemstatus-Hilfe, API-Dokumentation und CONTRIBUTING trennen Konfiguration, Erreichbarkeit, funktionale Prüfung und Synchronität konsistent; historische Evidenz wird nicht als aktueller PASS beschrieben.
+
 ## 1.65.0 - 2026-09-19
 
 - **Info-Kiosk interner Read-Provider (BSF-KIOSK-02, Issue #136)**: Der bestehende Kiosk unterstützt neben dem unveränderten Demo-Pfad einen expliziten internen Hybridmodus für berechtigte Leitungs-Sessions. Projekte, Arbeitspakete und Tätigkeiten werden aus dem vorhandenen BSF-03A-Controlling-Vertrag abgeleitet; Verfügbarkeit, Infrastruktur und Support bleiben eindeutig gekennzeichnete synthetische Demo-Domänen.

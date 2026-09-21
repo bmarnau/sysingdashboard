@@ -141,6 +141,7 @@ import { ProjectDialog } from "@/components/dashboard/dialogs/ProjectDialog";
 import { WorkPackageDialog } from "@/components/dashboard/dialogs/WorkPackageDialog";
 import { useWorkPackageCategories } from "@/hooks/useWorkPackageCategories";
 import { ActivityDialog } from "@/components/dashboard/dialogs/ActivityDialog";
+import { AppVersionStamp } from "@/components/AppVersionStamp";
 import { EngineerDialog } from "@/components/dashboard/dialogs/EngineerDialog";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -634,6 +635,7 @@ function Dashboard() {
               {activeProjects} aktive Projekte · {openWPs} offene Arbeitspakete ·{" "}
               {activities.length} Tätigkeiten
             </p>
+            <AppVersionStamp className="mt-2" />
           </div>
           <div className="flex items-center gap-2 no-print">
             <div

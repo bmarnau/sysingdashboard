@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-09-19
+Stand: 2026-09-20
 
 ## Zweck
 
@@ -21,7 +21,7 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 
 1. `docs/BSF-CURRENT-PRIORITIES.md` — operative Reihenfolge und aktueller Wiederanlaufpunkt,
 2. `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` — verbindliche interne Kiosk-first-Reihenfolge,
-3. Issue #136 und PR #147 — BSF-KIOSK-02 FINAL DONE, Merge noch ausstehend,
+3. Issue #107 — aktiver BSF-03B-Sprint „Teamlead-Leistungsnachweis V1“,
 4. `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` — laufender KIOSK-02-Abschlussnachweis,
 5. `docs/BSF-03A-CLOSURE-2026-09-14.md` — abgeschlossener BSF-03A-Nachweis,
 6. `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` — abgeschlossener KIOSK-01-Nachweis,
@@ -40,7 +40,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.65.0` (BSF-KIOSK-02 Feature-/Release-Kandidat; `main` steht auf 1.64.0)
+- Dashboard-Version: `1.65.1` als vollständig abgenommener Patch-Kandidat; `v1.65.0` ist veröffentlicht und enthält den abgeschlossenen BSF-KIOSK-02-Stand.
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
@@ -49,6 +49,12 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 - Fachlogik, Authentifizierung, Datenzugriff und provider-spezifische Implementierungen bleiben getrennte Verantwortungsbereiche
 - Docker-/Container-Portabilität sowie Azure-/Entra-Migrationsfähigkeit bleiben verbindliche Architekturziele
 - MVP bleibt **100 % / BASELINE READY**; der aktive Entwicklungshorizont ist **BSF — Betriebsfähiges Systemhaus-Fundament**.
+
+## Aktueller Arbeitsstand 21.09.2026
+
+- BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
+- BSF-03B / Issue #107 ist der aktive Sprint. Der Live-Precheck war read-only erfolgreich; die Lovable-Branchbindung für Schreibphasen ist noch nicht nutzbar, daher wurden dort keine DB- oder Codeänderungen vorgenommen.
+- Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus und ist vollständig abgenommen. Der korrigierte read-only Lovable-Exact-Head-Retest bestätigt Fresh-Refresh, Fail-closed-Verhalten, beide Zielauflösungen und Tree-Integrität; der frühere Fresh-Refresh-FAIL war ein Harness-False-Negative. Commitbezogene CI-/Security-Aussagen werden weiterhin ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
 
 ## Aktueller BSF-Stand
 
@@ -329,7 +335,7 @@ Die kanonische Kundenidentität bleibt `(systemhouseId, customerId)`; `systemhou
 - `docs/PROJECT-STATUS.yaml`, `docs/BSF-CURRENT-PRIORITIES.md`, `roadmap.md` und dieses Dokument bilden gemeinsam den aktuellen BSF-03A-Finalverifikationsstand ab.
 - `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` dokumentiert den abgeschlossenen KIOSK-01-Sprint; PR #141 ist auf `main`.
 - `docs/BSF-03A-CLOSURE-2026-09-14.md` dokumentiert den vollständig abgenommenen und gemergten BSF-03A-Sprint; `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` ist der laufende KIOSK-02-Abnahmenachweis.
-- Benutzerhandbuch und kontextsensitive Hilfe stehen auf Version **1.23.0**; Projektcontrolling, KIOSK-02 Hybrid-/Quellenstatus, aktuelle RBAC-/Kiosk-Rechte, Kundenverantwortung und der heutige Supabase-MVP-Betriebsmodus sind synchronisiert.
+- Benutzerhandbuch und kontextsensitive Hilfe stehen auf Version **1.23.1**; Projektcontrolling, KIOSK-02 Hybrid-/Quellenstatus, aktuelle RBAC-/Kiosk-Rechte, Kundenverantwortung, der heutige Supabase-MVP-Betriebsmodus und die AQGS-konforme Systemstatus-Evidenzlogik sind synchronisiert.
 - `SYSING-001` existiert als Living Document `docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md` mit gemeinsamer Markdown-Quelle für PDF/Word.
 - SYSING-001 wird in BSF-DOC-02 kontrolliert aktualisiert und TDF-konform abgenommen; es wird keine zweite Dokumentquelle erzeugt.
 - BSF-DOC-03 macht die freigegebene SYSING-001-Fassung read-only aus dem Board erreichbar.

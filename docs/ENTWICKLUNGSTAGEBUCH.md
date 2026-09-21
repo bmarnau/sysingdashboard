@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-20 · Dashboard-Version 1.65.0
+Stand: 2026-09-21 · Dashboard-Version 1.65.1
 
 ## Vision
 
@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | Version 1.65.0 als BSF-KIOSK-02-Release-Kandidat; MVP-Baseline CLOSED/PASS; KIOSK-02 ist FINAL DONE und Exact-Tree-/Responsive-abgenommen; PR #147 wartet nur noch auf Merge-Freigabe. |
+| Aktueller Stand     | v1.65.0 veröffentlicht; KIOSK-02 FINAL DONE. Patch 1.65.1 mit Versionsanzeige und evidenzkalibriertem Systemstatus ist vollständig abgenommen und wartet auf Merge/Release. BSF-03B ist gestartet und befindet sich nach read-only Live-Precheck im TDD-/Vertragsaufbau. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | Dokumentations-Head grün bestätigen → PR #147 nach separater Freigabe mergen und v1.65.0 taggen → BSF-03B Teamlead-Leistungsnachweis V1 starten. |
+| Nächster Nutzen     | Patch 1.65.1 mergen und releasen → BSF-03B Permission-/Snapshot-/Review-Vertrag repository-seitig umsetzen → danach DB-Migration und L2-UI. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -50,6 +50,16 @@ Qualitätssicherung gewachsen. Nach der formalen MVP-Baseline verschiebt sich de
 Schwerpunkt auf das **Betriebsfähige Systemhaus-Fundament (BSF)**: belastbare
 Kundenbeziehungen, rollenübergreifende Leistungssichten, Dokumentationsqualität,
 Betreiberhoheit und spätere Integrationen.
+
+## Patch 1.65.1 — Versionsanzeige und evidenzkalibrierter Systemstatus (2026-09-20/21)
+
+Landing-/Anmeldeseite, Auth-Seite und das angemeldete Dashboard erhalten eine kompakte Anzeige der aktuellen Produktversion mit Versionsdatum. Version und Datum stammen aus dem obersten `CHANGELOG.md`-Eintrag; es gibt keine zweite hartcodierte Versionsquelle.
+
+Der anschließende AQGS-Systemstatus-Audit trennt Konfiguration, Erreichbarkeit, funktionale Prüfung und aktuelle Synchronität. Ein früherer erfolgreicher Git-SHA-Vergleich bleibt bei einem fehlgeschlagenen aktuellen Status-API-Check nur historische Evidenz und wird nicht weiter als `SYNCHRON` angezeigt. Repository-URL und Build-Commit sind neutrale Metadaten; ein grüner Git-Status entsteht ausschließlich aus dem aktuellen SHA-Vergleich. Lovable-, Azure-, Security-, Backup-, Local-Storage- und RBAC-Aussagen wurden auf ihre tatsächlich vorhandene Evidenzstufe geprüft.
+
+Die erste Lovable-Exact-Tree-Abnahme meldete `FRESH_REFRESH = FAIL`. Die Root-Cause-Analyse zeigte, dass der synthetische Test nur `**/api/status` interceptete, während `Jetzt prüfen` korrekt `/api/status?refresh=1` aufruft. Der korrigierte read-only Exact-Head-Retest mit `**/api/status*` bestätigt die tatsächliche Sequenz `/api/status → /api/status?refresh=1 → /api/status?refresh=1` sowie `SYNCHRON → ABWEICHEND → NICHT PRÜFBAR`. Der frühere FAIL ist damit als Harness-False-Negative bestätigt. Auch der echte Fail-closed-Randfall bei komplett nicht erreichbarer Status-API ist erfolgreich verifiziert.
+
+Handbuch und kontextsensitive Hilfe stehen danach auf Version **1.23.1**. DB-, Auth-, RBAC- und RLS-Grenzen wurden durch diese Änderungen nicht verändert.
 
 ## BSF-KIOSK-02 — interner Read-/Hybrid-Provider (2026-09-19)
 

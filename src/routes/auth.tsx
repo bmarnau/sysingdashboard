@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { AppVersionStamp } from "@/components/AppVersionStamp";
 import { loadIdleTimeoutConfig, DEFAULT_IDLE_TIMEOUT_MINUTES } from "@/lib/session/idle-config";
 
 /**
@@ -309,6 +310,7 @@ function AuthPage() {
           <div className="mt-4 text-center text-xs text-muted-foreground">
             <Link to="/">Zurück zur Startseite</Link>
           </div>
+          <AppVersionStamp className="mt-3 text-center" />
         </CardContent>
       </Card>
     </div>

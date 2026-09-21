@@ -20,7 +20,7 @@ declare const __BUILD_INFO__: BuildInfo;
 const fallback: BuildInfo = {
   commit: "unknown",
   commitFull: "unknown",
-  branch: PROJECT_INFO.github.defaultBranch,
+  branch: "unknown",
   builtAt: new Date().toISOString(),
   packageVersion: "0.0.0",
   repoRemote: PROJECT_INFO.github.url,
@@ -34,10 +34,7 @@ const rawInfo: BuildInfo = typeof __BUILD_INFO__ !== "undefined" ? __BUILD_INFO_
 // credential-bearing internal clone URLs.
 export const BUILD_INFO: BuildInfo = {
   ...rawInfo,
-  branch:
-    !rawInfo.branch || rawInfo.branch === "unknown"
-      ? PROJECT_INFO.github.defaultBranch
-      : rawInfo.branch,
+  branch: rawInfo.branch || "unknown",
   repoRemote: PROJECT_INFO.github.url,
 };
 

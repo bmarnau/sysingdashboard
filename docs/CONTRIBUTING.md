@@ -80,16 +80,19 @@ Schlägt ein Schritt fehl, ist der PR blockiert.
 
 ## 6. Systemstatus im Dashboard
 
-`Service → Systemstatus…` zeigt zur Laufzeit:
+`Service → Systemstatus…` folgt dem AQGS-Evidenzprinzip. Die Anzeige trennt
+Konfiguration, Erreichbarkeit, funktionale Prüfung und Synchronität.
 
-- GitHub-Repository, Branch, letzten Commit (Build-Zeit injiziert via
-  `vite.config.ts` über `__BUILD_INFO__`)
-- Dashboard- und Handbuch-Version
-- Letztes automatisches Backup
+Für Git werden Build-/Runtime-Commit und der read-only gelesene GitHub-`main`-HEAD
+getrennt angezeigt. `SYNCHRON` ist nur zulässig, wenn beide aktuell prüfbaren SHAs
+übereinstimmen. `Jetzt prüfen` nutzt `/api/status?refresh=1` und umgeht den kurzen
+GitHub-Cache. Schlägt der aktuelle Status-API-Check fehl, wird ein früherer Match
+nicht weiter als aktueller positiver Zustand dargestellt.
 
-Ist `git` zur Build-Zeit nicht verfügbar (z. B. reine Lovable-Sandbox ohne
-Repository-Anbindung), zeigt der Dialog einen entsprechenden Hinweis an und
-fordert zur Verbindung über das Lovable-Plus-Menü auf.
+Repository-URL, Build-Commit, Publish-URL, ENV-Präsenz, Scanner-Konfiguration oder
+Backup-Zeitstempel sind Metadaten bzw. Konfigurationsnachweise und dürfen nicht
+automatisch als Live-Health-, Connectivity-, Security-PASS- oder Restore-Nachweis
+interpretiert werden.
 
 ## 7. Sensible Daten
 

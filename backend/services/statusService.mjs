@@ -27,12 +27,11 @@ function envOrNull(name) {
 }
 
 function resolveAzureAuthMode() {
-  if (has("AZURE_CLIENT_ID") && has("AZURE_TENANT_ID")) {
-    // Klassisches Service-Principal-Setup; Managed Identity wäre ENV-frei.
-    return "client-secret";
-  }
   if (envOrNull("AZURE_USE_MANAGED_IDENTITY") === "1") {
     return "managed-identity";
+  }
+  if (has("AZURE_CLIENT_ID") && has("AZURE_TENANT_ID")) {
+    return "service-principal-metadata";
   }
   return "none";
 }
@@ -53,8 +52,12 @@ function resolveAuthProvider() {
 function getActiveProviderEnvStatus(authProvider) {
   const required = ENTRA_PROVIDER_NAMES.has(authProvider)
     ? ["AZURE_CLIENT_ID", "AZURE_TENANT_ID"]
-    : [];
-  const missing = required.filter((name) => !has(name));
+    : authProvider === "supabase"
+      ? ["SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY"]
+      : [];
+  const missing = required.filter((name) =>
+    name.startsWith("SUPABASE_") ? !envOrNull(name) : !has(name),
+  );
 
   return {
     scope: authProvider,
@@ -75,7 +78,7 @@ export function getStatus() {
 
   return {
     application: {
-      name: "Engineer Console",
+      name: "SysIng Dashboard",
       mode: getMode(),
       startedAt: BOOT_AT,
     },
@@ -134,7 +137,8 @@ export function getStatus() {
       },
     },
     data: {
-      lastAzureExportAt: sync.lastRun, // letzter Sync-Lauf gilt als Export-Indikator
+      lastSyncAt: sync.lastRun,
+      lastAzureExportAt: null,
       lastAzureImportAt: null,
     },
     sync,
