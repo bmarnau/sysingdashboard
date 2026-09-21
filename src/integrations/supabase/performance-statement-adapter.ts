@@ -6,6 +6,7 @@ import {
   type PerformanceStatementCategoryState,
   type PerformanceStatementRepository,
   type PerformanceStatementReview,
+  type PerformanceStatementScopeOption,
   type PerformanceStatementReviewRow,
   type PerformanceStatementSnapshot,
   type PerformanceStatementSnapshotItem,
@@ -28,6 +29,12 @@ type StatementItemRow = Tables["customer_performance_statement_item"]["Row"];
 interface CustomerRow {
   id: string;
   systemhouse_id: string;
+  name: string;
+  status: string;
+}
+
+interface SystemhouseRow {
+  id: string;
   name: string;
   status: string;
 }
@@ -262,6 +269,41 @@ export function createSupabasePerformanceStatementRepository(
   client: UserSupabaseClient,
 ): PerformanceStatementRepository {
   return {
+    async listScopes(): Promise<PerformanceStatementScopeOption[]> {
+      const [customerResult, systemhouseResult] = await Promise.all([
+        client
+          .from("customer")
+          .select("id, systemhouse_id, name, status")
+          .eq("status", "active")
+          .order("name", { ascending: true }),
+        client
+          .from("systemhouse")
+          .select("id, name, status")
+          .eq("status", "active")
+          .order("name", { ascending: true }),
+      ]);
+
+      if (customerResult.error) fail("Kundenscopes lesen");
+      if (systemhouseResult.error) fail("Systemhausscopes lesen");
+
+      const systemhouseById = new Map(
+        ((systemhouseResult.data ?? []) as SystemhouseRow[]).map((row) => [row.id, row]),
+      );
+
+      return ((customerResult.data ?? []) as CustomerRow[])
+        .map((customer) => {
+          const systemhouse = systemhouseById.get(customer.systemhouse_id);
+          if (!systemhouse) return null;
+          return {
+            systemhouseId: customer.systemhouse_id,
+            systemhouseName: systemhouse.name,
+            customerId: customer.id,
+            customerName: customer.name,
+          };
+        })
+        .filter((row): row is PerformanceStatementScopeOption => row !== null);
+    },
+
     async getReview(input: ReviewInput): Promise<PerformanceStatementReview> {
       validatePerformancePeriod(input.periodStart, input.periodEnd);
 
