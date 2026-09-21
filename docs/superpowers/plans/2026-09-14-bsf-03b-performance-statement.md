@@ -24,7 +24,6 @@
 
 Abschlussnachweis: `docs/BSF-03B-CLOSURE-2026-09-21.md`.
 
-
 ## Global Constraints
 
 - Umsetzung erst nach BSF-KIOSK-02-Abnahme und auf dann aktuellem `main`.

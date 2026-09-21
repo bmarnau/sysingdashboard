@@ -101,7 +101,6 @@ Die beiden neuen BSF-03B-SECURITY-DEFINER-Funktionen sind für
 - Abschlussnachweis: `docs/BSF-03B-CLOSURE-2026-09-21.md`
 - nächster Sprint: **BSF-03E / #63**
 
-
 ## Vollständige Repo-Abnahme
 
 CI #1252 bestätigt zusätzlich zum DB-Vertrag: Golden Dataset Required Gate,

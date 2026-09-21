@@ -133,27 +133,27 @@ abgeleitet.
 
 ## 7. Abnahme
 
-| Prüfpunkt | Ergebnis |
-| --- | --- |
-| Permission/RBAC | PASS |
-| RLS/ACL/Scope | PASS |
-| Override revisionsgebunden | PASS |
-| Review-Fingerprint | PASS |
-| Atomare Finalisierung | PASS |
-| Trigger Direct Execute Deny | PASS |
-| Snapshot-Unveränderlichkeit | PASS |
-| Claim/Doppelverwendung | PASS |
-| Replacement v1→v2 | PASS |
-| Kunden-Redaction | PASS |
-| PDF/CSV/JSON | PASS |
-| Backup/Restore | PASS |
-| IDOR/BOLA / Cross-Scope | PASS |
-| DB Regression BSF-02C/03A/03B | PASS |
-| Security Advisor | BASELINE_ONLY |
-| Golden Dataset Required Gate | PASS |
-| E2E / Security-E2E | PASS |
-| Accessibility | PASS |
-| Technical Report / Quality Gate | PASS |
+| Prüfpunkt                         | Ergebnis                                     |
+| --------------------------------- | -------------------------------------------- |
+| Permission/RBAC                   | PASS                                         |
+| RLS/ACL/Scope                     | PASS                                         |
+| Override revisionsgebunden        | PASS                                         |
+| Review-Fingerprint                | PASS                                         |
+| Atomare Finalisierung             | PASS                                         |
+| Trigger Direct Execute Deny       | PASS                                         |
+| Snapshot-Unveränderlichkeit       | PASS                                         |
+| Claim/Doppelverwendung            | PASS                                         |
+| Replacement v1→v2                 | PASS                                         |
+| Kunden-Redaction                  | PASS                                         |
+| PDF/CSV/JSON                      | PASS                                         |
+| Backup/Restore                    | PASS                                         |
+| IDOR/BOLA / Cross-Scope           | PASS                                         |
+| DB Regression BSF-02C/03A/03B     | PASS                                         |
+| Security Advisor                  | BASELINE_ONLY                                |
+| Golden Dataset Required Gate      | PASS                                         |
+| E2E / Security-E2E                | PASS                                         |
+| Accessibility                     | PASS                                         |
+| Technical Report / Quality Gate   | PASS                                         |
 | Lovable Exact-Head Visual Preview | NOT EVIDENCED — Plattformgrenze dokumentiert |
 
 ## 8. Abschlussstatus
