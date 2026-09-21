@@ -149,7 +149,6 @@ Der vorherige GitHub-Code-/Dokumentationskandidat war bereits mit Security #1092
 
 BSF-KIOSK-02 gilt damit als **FINAL DONE**. PR #147 wird nach grünem Dokumentations-Head merge-ready gestellt. Merge und Deploy erfolgen weiterhin nicht ohne separate Freigabe. Abschlussnachweis: `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md`.
 
-
 ### BSF-03B — IN PROGRESS / Issue #107
 
 Der Teamlead-Leistungsnachweis V1 ist in Umsetzung. Tasks 1–4 sind abgeschlossen:
