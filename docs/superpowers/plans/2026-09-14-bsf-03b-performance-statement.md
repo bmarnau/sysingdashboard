@@ -10,6 +10,19 @@
 
 **Spec:** `docs/BSF-03B-DESIGN.md`, Issue #107.
 
+
+## Execution Status — 2026-09-21
+
+- Task 1 RBAC-Vertrag: **GREEN**
+- Task 2 providerneutraler Review-/Snapshot-Vertrag: **GREEN**
+- Task 3 Review-Fingerprint / TOCTOU-Schutz: **GREEN**
+- Task 4 Datenbankvertrag, Live-Migration, T01–T30, Drift-Guard und offizieller Security Advisor: **GREEN / BASELINE_ONLY**
+- Task 5 Supabase Review-/Snapshot-Adapter: **ACTIVE**
+- PR #149 bleibt **DRAFT**; kein Merge/Deploy vor vollständiger BSF-03B-Abnahme.
+
+Task-4-Evidenz: Migration `20260921095742_bsf03b_performance_statement` kontrolliert über Lovable angewandt; Live-T01–T30 PASS; keine synthetischen Residuen; `DATABASE_SCHEMA_DRIFT: NONE`; `DATABASE_TYPES_DRIFT: NONE`; Security #1148 PASS; CI #1153 PASS; keine neuen BSF-03B-Security-Advisor-Findings.
+
+
 ## Global Constraints
 
 - Umsetzung erst nach BSF-KIOSK-02-Abnahme und auf dann aktuellem `main`.
@@ -76,7 +89,7 @@
 
 ---
 
-### Task 1: RBAC-Vertrag `performance.statement.manage`
+### Task 1: RBAC-Vertrag `performance.statement.manage` — GREEN
 
 **Files:**
 
@@ -92,7 +105,7 @@
 - Allowed: `teamlead`, plus `systemadministrator` durch bestehendes All-Permissions-Modell.
 - Denied: `administrator`, `projectmanager`, `engineer`, `viewer`, `customer`.
 
-- [ ] **Step 1: Roten RBAC-Test schreiben**
+- [x] **Step 1: Roten RBAC-Test schreiben**
 
 ```ts
 expect(hasPermission(teamlead, "performance.statement.manage")).toBe(true);
@@ -103,7 +116,7 @@ expect(hasPermission(viewer, "performance.statement.manage")).toBe(false);
 expect(hasPermission(customer, "performance.statement.manage")).toBe(false);
 ```
 
-- [ ] **Step 2: Test RED ausführen**
+- [x] **Step 2: Test RED ausführen**
 
 ```bash
 bun run rbac:check
@@ -112,15 +125,15 @@ bunx vitest run src/__tests__/security --reporter=default
 
 Expected: FAIL, Permission unbekannt beziehungsweise Matrix nicht synchron.
 
-- [ ] **Step 3: Frontend-/Backend-Permission minimal ergänzen**
+- [x] **Step 3: Frontend-/Backend-Permission minimal ergänzen**
 
 `teamlead` erhält die Permission. `administrator` und `projectmanager` erhalten sie ausdrücklich nicht. `systemadministrator` bleibt über `allPermissions` technisch berechtigt.
 
-- [ ] **Step 4: RBAC-Dokumentation aktualisieren**
+- [x] **Step 4: RBAC-Dokumentation aktualisieren**
 
 Fachregel dokumentieren: Teamlead normal, Sysadmin Break-glass.
 
-- [ ] **Step 5: Targeted Checks GREEN**
+- [x] **Step 5: Targeted Checks GREEN**
 
 ```bash
 bun run rbac:check
@@ -129,7 +142,7 @@ bunx vitest run src/__tests__/security --reporter=default
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/lib/rbac/permissions.ts backend/services/rbac.mjs docs/RBAC-MATRIX.md src/__tests__
@@ -138,7 +151,7 @@ git commit -m "feat(rbac): Leistungsnachweis-Teamlead-Permission ergänzen"
 
 ---
 
-### Task 2: Providerneutraler Review-/Snapshot-Vertrag TDD
+### Task 2: Providerneutraler Review-/Snapshot-Vertrag TDD — GREEN
 
 **Files:**
 
@@ -184,7 +197,7 @@ export interface PerformanceStatementReview {
 }
 ```
 
-- [ ] **Step 1: Roten Test für Periodenregeln schreiben**
+- [x] **Step 1: Roten Test für Periodenregeln schreiben**
 
 ```ts
 expect(() => validatePerformancePeriod("2026-09-01", "2026-09-30")).not.toThrow();
@@ -193,7 +206,7 @@ expect(() => validatePerformancePeriod("2026-10-01", "2026-09-01")).toThrow();
 
 Zusätzlich Zeitraum > 366 Tage => Fehler.
 
-- [ ] **Step 2: Roten Test für Review-Status schreiben**
+- [x] **Step 2: Roten Test für Review-Status schreiben**
 
 ```ts
 expect(classifyRow({ billingStatus: "abgerechnet", claimed: false })).toBe("legacy_finalized");
@@ -201,11 +214,11 @@ expect(classifyRow({ billingStatus: "offen", claimed: true })).toBe("claimed_by_
 expect(classifyRow({ billingStatus: "offen", claimed: false })).toBe("reviewable");
 ```
 
-- [ ] **Step 3: Roten Test für Summen schreiben**
+- [x] **Step 3: Roten Test für Summen schreiben**
 
 Non-billable bleibt enthalten, aber getrennt summiert.
 
-- [ ] **Step 4: Tests RED ausführen**
+- [x] **Step 4: Tests RED ausführen**
 
 ```bash
 bunx vitest run src/__tests__/lib/performance-statement.test.ts
@@ -213,11 +226,11 @@ bunx vitest run src/__tests__/lib/performance-statement.test.ts
 
 Expected: FAIL, Module fehlen.
 
-- [ ] **Step 5: Minimalen Domain-Service implementieren**
+- [x] **Step 5: Minimalen Domain-Service implementieren**
 
 Keine Supabase-/React-Importe.
 
-- [ ] **Step 6: Tests GREEN**
+- [x] **Step 6: Tests GREEN**
 
 ```bash
 bunx vitest run src/__tests__/lib/performance-statement.test.ts
@@ -225,7 +238,7 @@ bunx vitest run src/__tests__/lib/performance-statement.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/lib/performance-statement src/__tests__/lib/performance-statement.test.ts
@@ -234,7 +247,7 @@ git commit -m "feat(bsf03b): providerneutralen Leistungsnachweis-Vertrag definie
 
 ---
 
-### Task 3: Review-Fingerprint TDD
+### Task 3: Review-Fingerprint TDD — GREEN
 
 **Files:**
 
@@ -258,7 +271,7 @@ activitySourceId|sourceRevision|sourceHash|date|durationHours(2 decimals)|billin
 
 Sortierung: `activitySourceId` aufsteigend. Separator zwischen Zeilen: `\n`.
 
-- [ ] **Step 1: Roten Determinismus-Test schreiben**
+- [x] **Step 1: Roten Determinismus-Test schreiben**
 
 ```ts
 expect(await createPerformanceReviewFingerprint([rowB, rowA])).toBe(
@@ -266,27 +279,27 @@ expect(await createPerformanceReviewFingerprint([rowB, rowA])).toBe(
 );
 ```
 
-- [ ] **Step 2: Roten Änderungs-Test schreiben**
+- [x] **Step 2: Roten Änderungs-Test schreiben**
 
 Revision, Hash, Dauer oder `effectiveBillable` ändern => anderer Fingerprint.
 
-- [ ] **Step 3: RED ausführen**
+- [x] **Step 3: RED ausführen**
 
 ```bash
 bunx vitest run src/__tests__/lib/review-fingerprint.test.ts
 ```
 
-- [ ] **Step 4: Kanonisierung + SHA-256 minimal implementieren**
+- [x] **Step 4: Kanonisierung + SHA-256 minimal implementieren**
 
 Nutze Web Crypto/Node-kompatiblen SHA-256 ohne neue Dependency.
 
-- [ ] **Step 5: GREEN ausführen**
+- [x] **Step 5: GREEN ausführen**
 
 ```bash
 bunx vitest run src/__tests__/lib/review-fingerprint.test.ts
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/lib/performance-statement/review-fingerprint.ts src/__tests__/lib/review-fingerprint.test.ts
@@ -295,7 +308,7 @@ git commit -m "feat(bsf03b): Review-Fingerprint gegen Datenänderungen ergänzen
 
 ---
 
-### Task 4: Datenbankvertrag, Audit und atomarer Request-Trigger
+### Task 4: Datenbankvertrag, Audit und atomarer Request-Trigger — GREEN
 
 **Files:**
 
@@ -313,7 +326,7 @@ customer_performance_statement_item
 customer_performance_activity_claim
 ```
 
-- [ ] **Step 1: Live-Precheck read-only**
+- [x] **Step 1: Live-Precheck read-only**
 
 Prüfen:
 
@@ -329,7 +342,7 @@ bestehende Security-Definer Advisor Baseline
 
 Bei Drift: BLOCKED dokumentieren, keine alte Migration editieren.
 
-- [ ] **Step 2: SQL-Testartefakt zuerst anlegen**
+- [x] **Step 2: SQL-Testartefakt zuerst anlegen**
 
 Mindestens T01–T30 vorsehen:
 
@@ -366,13 +379,13 @@ T29 alter Snapshot unverändert + superseded
 T30 Null-Residuen nach Rollback/Testcleanup
 ```
 
-- [ ] **Step 3: Schema minimal implementieren**
+- [x] **Step 3: Schema minimal implementieren**
 
 Statement-/Item-/Claim-Tabellen erhalten keine authenticated Write-Grants.
 
 Override-/Request-Tabellen erhalten nur die im Design beschriebenen DML-Rechte + RLS.
 
-- [ ] **Step 4: Audit-Trigger für Overrides implementieren**
+- [x] **Step 4: Audit-Trigger für Overrides implementieren**
 
 Audit-Actions exakt:
 
@@ -381,7 +394,7 @@ performance_statement.billable_override.insert
 performance_statement.billable_override.update
 ```
 
-- [ ] **Step 5: interne Request-Triggerfunktion implementieren**
+- [x] **Step 5: interne Request-Triggerfunktion implementieren**
 
 Wenn `SECURITY DEFINER`:
 
@@ -400,25 +413,25 @@ REVOKE ALL ON FUNCTION public.<internal_trigger_function>(...) FROM PUBLIC, anon
 
 Die Funktion wird ausschließlich per Trigger gebunden.
 
-- [ ] **Step 6: Finalize-/Replace-Algorithmus und Fingerprint DB-seitig implementieren**
+- [x] **Step 6: Finalize-/Replace-Algorithmus und Fingerprint DB-seitig implementieren**
 
 Kanonische Stringbildung muss exakt Task 3 entsprechen.
 
-- [ ] **Step 7: SQL-Test vollständig real/fail-fast ausführen**
+- [x] **Step 7: SQL-Test vollständig real/fail-fast ausführen**
 
 BEGIN/ROLLBACK für synthetische Fixtures, keine echten Kundendaten.
 
-- [ ] **Step 8: BSF-02C/03A Regression ausführen**
+- [x] **Step 8: BSF-02C/03A Regression ausführen**
 
 Shared-Projection-RLS und Publisher-Ownership dürfen nicht gelockert werden.
 
-- [ ] **Step 9: Security Advisor read-only ausführen**
+- [x] **Step 9: Security Advisor read-only ausführen**
 
 Keine neue unerklärte `authenticated_security_definer_function_executable`-Warnung akzeptieren.
 
-- [ ] **Step 10: Generated Types aktualisieren, falls Schema real bestätigt**
+- [x] **Step 10: Generated Types aktualisieren, falls Schema real bestätigt**
 
-- [ ] **Step 11: Commit**
+- [x] **Step 11: Commit**
 
 ```bash
 git add supabase/migrations supabase/tests src/integrations/supabase/types.ts
@@ -427,7 +440,7 @@ git commit -m "feat(bsf03b): Leistungsnachweis-Snapshot und atomare Finalisierun
 
 ---
 
-### Task 5: Supabase Review-/Snapshot-Adapter TDD
+### Task 5: Supabase Review-/Snapshot-Adapter TDD — ACTIVE
 
 **Files:**
 

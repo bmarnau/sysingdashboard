@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-09-20
+Stand: 2026-09-21
 
 ## Zweck
 
@@ -22,7 +22,7 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 1. `docs/BSF-CURRENT-PRIORITIES.md` — operative Reihenfolge und aktueller Wiederanlaufpunkt,
 2. `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md` — verbindliche interne Kiosk-first-Reihenfolge,
 3. Issue #107 — aktiver BSF-03B-Sprint „Teamlead-Leistungsnachweis V1“,
-4. `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` — laufender KIOSK-02-Abschlussnachweis,
+4. `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` — abgeschlossener KIOSK-02-Nachweis,
 5. `docs/BSF-03A-CLOSURE-2026-09-14.md` — abgeschlossener BSF-03A-Nachweis,
 6. `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` — abgeschlossener KIOSK-01-Nachweis,
 7. `docs/SPRINT-PLAN-MVP-BSF.md` — operative Sprintfolge,
@@ -40,7 +40,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.65.1` als vollständig abgenommener Patch-Kandidat; `v1.65.0` ist veröffentlicht und enthält den abgeschlossenen BSF-KIOSK-02-Stand.
+- Dashboard-Version: `1.65.1` liegt auf GitHub `main` und ist vollständig abgenommen; der separate GitHub-Tag/Release `v1.65.1` ist noch nicht veröffentlicht.
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
@@ -53,7 +53,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 ## Aktueller Arbeitsstand 21.09.2026
 
 - BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
-- BSF-03B / Issue #107 ist der aktive Sprint. Der Live-Precheck war read-only erfolgreich; die Lovable-Branchbindung für Schreibphasen ist noch nicht nutzbar, daher wurden dort keine DB- oder Codeänderungen vorgenommen.
+- BSF-03B / Issue #107 ist der aktive Sprint. Tasks 1–4 sind GREEN. Die versionierte Migration `20260921095742_bsf03b_performance_statement` wurde kontrolliert über Lovable auf die eindeutig verifizierte Sysingdashboard-Supabase-DB angewandt; Live-T01–T30, RLS/Grants, Residuenprüfung und offizieller Security Advisor sind PASS/BASELINE_ONLY. Task 5 (Supabase Review-/Snapshot-Adapter) ist der aktuelle Implementierungsschritt.
 - Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus und ist vollständig abgenommen. Der korrigierte read-only Lovable-Exact-Head-Retest bestätigt Fresh-Refresh, Fail-closed-Verhalten, beide Zielauflösungen und Tree-Integrität; der frühere Fresh-Refresh-FAIL war ein Harness-False-Negative. Commitbezogene CI-/Security-Aussagen werden weiterhin ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
 
 ## Aktueller BSF-Stand
@@ -148,6 +148,31 @@ Nachweise:
 Der vorherige GitHub-Code-/Dokumentationskandidat war bereits mit Security #1092 und CI #1098 vollständig grün. Die abschließenden Statusdokumente laufen vor Merge erneut durch die normalen Required Checks.
 
 BSF-KIOSK-02 gilt damit als **FINAL DONE**. PR #147 wird nach grünem Dokumentations-Head merge-ready gestellt. Merge und Deploy erfolgen weiterhin nicht ohne separate Freigabe. Abschlussnachweis: `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md`.
+
+
+### BSF-03B — IN PROGRESS / Issue #107
+
+Der Teamlead-Leistungsnachweis V1 ist in Umsetzung. Tasks 1–4 sind abgeschlossen:
+
+- atomare Permission `performance.statement.manage`: GREEN,
+- providerneutraler Review-/Snapshot-Vertrag: GREEN,
+- deterministischer SHA-256-Review-Fingerprint gegen TOCTOU: GREEN,
+- Datenbankvertrag mit fünf BSF-03B-Tabellen, revisionsgebundenen Billable-Overrides, unveränderbaren Snapshots, Claims, Replacement und Audit: GREEN.
+
+Live-Nachweis über den kontrollierten Lovable-Supabase-Pfad:
+
+- Migration `20260921095742_bsf03b_performance_statement`: angewandt und in `supabase_migrations.schema_migrations` registriert,
+- SQL-Vertrag T01–T30: **PASS**, vollständig transaktional mit Rollback synthetischer Daten,
+- synthetische Residuen nach Test: **0**,
+- `DATABASE_SCHEMA_DRIFT: NONE`,
+- `DATABASE_TYPES_DRIFT: NONE`,
+- Security #1148: **PASS**,
+- CI #1153: **PASS** einschließlich Technical Report & Quality Gate,
+- offizieller Supabase Security Advisor: **BASELINE_ONLY**; ausschließlich die zwei bekannten AVKK-WARNs, keine neuen BSF-03B-Findings.
+
+Die produktive Lovable-Code-Arbeitskopie enthält weiterhin nicht nach GitHub übernommene Lovable-Overlay-Änderungen und ist daher **keine Code-Source-of-Truth**. Für BSF-03B wurde Lovable ausschließlich als kontrollierter Datenbankkanal verwendet; GitHub bleibt maßgeblich.
+
+Aktueller nächster Schritt: **Task 5 — Supabase Review-/Snapshot-Adapter TDD**.
 
 ## F-11
 
