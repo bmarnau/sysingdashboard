@@ -1,7 +1,7 @@
 # BSF-03B — Verifikationsnachweis 2026-09-21
 
 Stand: 2026-09-21  
-Status: DB-VERTRAG LIVE / REGRESSION PASS / SECURITY BASELINE_ONLY  
+Status: FINAL VERIFIED / FULL CI PASS / SECURITY BASELINE_ONLY  
 Issue: #107  
 PR: #149
 
@@ -33,19 +33,19 @@ als Umgebungsgrenze dokumentiert, nicht als offener Produktblocker.
 
 ## Exact-Head Regression
 
-Verbindlicher Kandidat für den kombinierten DB-Regressionsnachweis:
+Funktionaler Abschlusskandidat:
 
-`798b7000e168aac4030986f12059c05536c810db`
+`ffbf3641c2187a738b853fb050aa4e5f1b6541a0`
 
 GitHub Actions:
 
-- Security #1148: **PASS**
-- CI #1153: **PASS**
-- Unit & Components: **140/140 Testdateien**, **975 PASS**, **4 TODO**
+- Security #1247: **PASS**
+- CI #1252: **PASS**
+- Unit & Components: **147/147 Testdateien**, **1009 PASS**, **4 TODO**
 - Database Schema Drift: **PASS**
 - Technical Report & Quality Gate: **PASS**
 
-Owner-fähiger lokaler Supabase/PostgreSQL-17-Lauf innerhalb CI #1153:
+Owner-fähiger lokaler Supabase/PostgreSQL-17-Lauf innerhalb CI #1252:
 
 - BSF-02C: **T01–T30 PASS**, synthetische Daten zurückgerollt.
 - BSF-03A: **T01–T20 PASS** einschließlich Atomic-Rollback- und
@@ -71,8 +71,7 @@ Die produktive Lovable-Code-Sandbox arbeitet mit der eingeschränkten DB-Rolle
 - `public.has_permission(...)` direkt ausführen.
 
 Darum kann sie die Owner-Level-SQL-Suiten nicht identisch wiederholen. Eine
-abgeschwächte Ersatzprüfung wurde bewusst nicht verwendet. Diese
-Umgebungsgrenze ändert den PASS-Nachweis aus CI #1153 nicht.
+abgeschwächte Ersatzprüfung wurde bewusst nicht verwendet. Diese Umgebungsgrenze ändert den PASS-Nachweis aus CI #1252 nicht.
 
 ## Security Advisor
 
@@ -97,4 +96,18 @@ Die beiden neuen BSF-03B-SECURITY-DEFINER-Funktionen sind für
 - persistente Testdatenänderung: **NEIN**
 - Security-Assertions abgeschwächt: **NEIN**
 - Deploy/Publish durch Verifikation: **NEIN**
-- nächster Implementierungsschritt: **Task 5 — Supabase Review-/Snapshot-Adapter TDD**
+- vollständige Repo-Gates: **PASS**
+- Lovable Exact-Head Visual Preview: **NOT EVIDENCED** wegen fehlender identitätsgebundener Head-Bindung; siehe Closure
+- Abschlussnachweis: `docs/BSF-03B-CLOSURE-2026-09-21.md`
+- nächster Sprint: **BSF-03E / #63**
+
+
+## Vollständige Repo-Abnahme
+
+CI #1252 bestätigt zusätzlich zum DB-Vertrag: Golden Dataset Required Gate,
+Backend, API, RBAC/Security, Import/Export, Backup/Restore, Production Build,
+Playwright E2E einschließlich BSF-03B-/Scope-Security-Specs, Accessibility,
+Technical Debt sowie Technical Report & Quality Gate jeweils PASS.
+
+Damit ist der frühere Tasks-1–4-Nachweis zum vollständigen BSF-03B-Sprintnachweis
+fortgeschrieben.
