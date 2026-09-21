@@ -90,8 +90,6 @@ currentState:
         Fresh-Refresh ist noch ausstehend. Release 1.65.1 bleibt bis zu diesem
         Nachweis blockiert; ein früherer Visual-PASS wird nicht als aktueller
         Exact-Head-Nachweis fortgeschrieben.
-      reference: "PR-148"
-      targetSprint: "PATCH-1.65.1"
     - id: "session-server-enforcement"
       status: "open"
       severity: "medium"
