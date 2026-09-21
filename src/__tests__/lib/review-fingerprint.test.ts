@@ -39,10 +39,9 @@ describe("BSF-03B review fingerprint", () => {
     const rowA = makeRow("a", { durationHours: 1 });
 
     expect(canonicalizePerformanceReviewRows([rowB, rowA])).toBe(
-      [
-        "a|1|hash-a|2026-09-01|1.00|offen|true",
-        "b|2|hash-b|2026-09-01|0.20|offen|false",
-      ].join("\n"),
+      ["a|1|hash-a|2026-09-01|1.00|offen|true", "b|2|hash-b|2026-09-01|0.20|offen|false"].join(
+        "\n",
+      ),
     );
   });
 
