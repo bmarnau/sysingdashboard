@@ -1557,7 +1557,7 @@ Datensätze, deren Aufgabe im lokalen Bestand fehlt, erscheinen im Restore-Beric
 Konnten AVKK-Daten beim Sichern nicht geladen werden (offline, fehlende Berechtigung), bleibt das Backup gültig — der Grund steht als Warnung im Backup-Protokoll.
 
 ## JSON-Komplett-Export (zusätzlich)
-Im Bereich „Service → Import / Export → Backup" steht zusätzlich ein JSON-Komplett-Export bereit (Dateiname \`dashboard-backup_YYYY-MM-DD_HHMMSS.json\`). Er nutzt Schema v1.1.0 (zusätzlicher optionaler Block \`avkk\` mit Führungsdaten und Katalogwerten, nur für Benutzer mit \`avkk.view\`) und erscheint im Downloadbereich. Das tägliche automatische ZIP-Backup bleibt unverändert der Standard.`,
+Im Bereich „Service → Import / Export → Backup" steht zusätzlich ein JSON-Komplett-Export bereit (Dateiname \`dashboard-backup_YYYY-MM-DD_HHMMSS.json\`). Er nutzt Schema v1.3.0. Der optionale Block \`avkk\` enthält Führungsdaten und Katalogwerte nur für Benutzer mit \`avkk.view\`. Für Benutzer mit \`performance.statement.manage\` kann der administrative Export zusätzlich den internen Block \`performanceStatements\` mit revisionsgebundenen Overrides, Finalisierungsrequests, unveränderbaren Statement-Snapshots, Items und Claims enthalten. Dieser Block ist ausschließlich Sicherungs-/Administrationsdaten und nicht die Kundenausgabe des Leistungsnachweises. Kann der Cloud-Block nicht gelesen werden, bleibt der übrige Export gültig und weist die fehlende Cloud-Sicherung ausdrücklich aus. Das tägliche automatische ZIP-Backup bleibt unverändert der Standard.`,
   },
   {
     id: "downloads",
