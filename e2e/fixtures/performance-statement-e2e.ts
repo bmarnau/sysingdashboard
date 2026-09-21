@@ -306,6 +306,13 @@ export async function installPerformanceStatementServerFnMock(
     async (route) => {
       const request = route.request();
       const exportName = serverFnExport(request.url());
+      console.log(
+        "[BSF03B-E2E-SERVERFN]",
+        request.method(),
+        exportName || "<unparsed>",
+        request.url(),
+        (request.postData() ?? "").slice(0, 500),
+      );
       if (!HANDLED_EXPORTS.has(exportName)) {
         await route.fallback();
         return;
