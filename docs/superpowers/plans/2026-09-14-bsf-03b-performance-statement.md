@@ -10,7 +10,6 @@
 
 **Spec:** `docs/BSF-03B-DESIGN.md`, Issue #107.
 
-
 ## Execution Status — 2026-09-21
 
 - Task 1 RBAC-Vertrag: **GREEN**
@@ -21,7 +20,6 @@
 - PR #149 bleibt **DRAFT**; kein Merge/Deploy vor vollständiger BSF-03B-Abnahme.
 
 Task-4-Evidenz: Migration `20260921095742_bsf03b_performance_statement` kontrolliert über Lovable angewandt; Live-T01–T30 PASS; keine synthetischen Residuen; `DATABASE_SCHEMA_DRIFT: NONE`; `DATABASE_TYPES_DRIFT: NONE`; Security #1148 PASS; CI #1153 PASS; keine neuen BSF-03B-Security-Advisor-Findings.
-
 
 ## Global Constraints
 
