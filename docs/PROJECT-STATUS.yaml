@@ -66,7 +66,7 @@ currentState:
   previousSprint: "BSF-KIOSK-02"
   previousSprintStatus: "completed"
   releaseReadiness: "passed"
-  testsPassing: 963
+  testsPassing: 975
   qualityGates:
     typecheck: "passed"
     docsCheck: "passed"

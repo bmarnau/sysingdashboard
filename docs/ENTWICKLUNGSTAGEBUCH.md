@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | v1.65.0 veröffentlicht; Patch 1.65.1 ist auf `main`. BSF-03B ist aktiv: Domain/Fingerprint und DB-Vertrag sind umgesetzt, Migration 20260921095742 ist live; Security Advisor BASELINE_ONLY. Der kombinierte BSF-02C/03A/03B-Regressionslauf ist in der aktuellen `sandbox_exec`-Umgebung technisch BLOCKED. |
+| Aktueller Stand     | v1.65.0 veröffentlicht; Patch 1.65.1 ist auf `main`. BSF-03B ist aktiv: Domain/Fingerprint und DB-Vertrag sind umgesetzt, Migration 20260921095742 ist live; Security Advisor BASELINE_ONLY. Security #1148 und CI #1153 sind vollständig PASS; BSF-02C T01–T30, BSF-03A T01–T20 und BSF-03B T01–T30 sind auf dem Exact Head grün. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | BSF-03B Task 5 Adapter TDD → Server Functions/Reporting/UI → vollständige Regression in Owner-fähiger Postgres-/CI-Umgebung → Abschlussgates. |
+| Nächster Nutzen     | BSF-03B Task 5 Adapter TDD → Server Functions → Reporting/Export → Teamlead-UI/Preview → Abschlussgates. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -61,11 +61,11 @@ Die erste Lovable-Exact-Tree-Abnahme meldete `FRESH_REFRESH = FAIL`. Die Root-Ca
 
 Handbuch und kontextsensitive Hilfe stehen danach auf Version **1.23.1**. DB-, Auth-, RBAC- und RLS-Grenzen wurden durch diese Änderungen nicht verändert.
 
-## BSF-03B — DB-Vertrag live, Regression gezielt offen (2026-09-21)
+## BSF-03B — DB-Vertrag live, Regression PASS (2026-09-21)
 
 Die Migration `20260921095742_bsf03b_performance_statement` ist live aufgezeichnet. RLS/ACL der fünf BSF-03B-Tabellen, die nicht direkt ausführbaren SECURITY-DEFINER-Triggerfunktionen sowie der offizielle Supabase Security Advisor sind geprüft; der Advisor zeigt ausschließlich die bekannte AVKK-Baseline und keine neuen BSF-03B-Findings. Der frühere BSF-03B-Vertragslauf T01–T30 bleibt PASS-Evidenz.
 
-Ein erneuter kombinierter Regressionslauf BSF-02C/BSF-03A/BSF-03B konnte in der aktuell verfügbaren `sandbox_exec`-Umgebung nicht unverändert ausgeführt werden: Rollenwechsel auf `authenticated`, Zugriff auf `auth` und die benötigten Helper-Rechte fehlen. Eine schwächere Ersatzprüfung wurde bewusst nicht verwendet. Der Regressionspunkt bleibt deshalb BLOCKED, bis er in CI oder einer Owner-fähigen lokalen PostgreSQL-/Supabase-Instanz reproduziert wurde. Details: `docs/BSF-03B-VERIFICATION-2026-09-21.md`.
+Der kombinierte Regressionslauf ist inzwischen auf Exact Head `798b7000e168aac4030986f12059c05536c810db` in der Owner-fähigen CI-Supabase/PostgreSQL-17-Instanz reproduziert: BSF-02C T01–T30, BSF-03A T01–T20 und BSF-03B T01–T30 PASS; `DATABASE_SCHEMA_DRIFT: NONE`, `DATABASE_TYPES_DRIFT: NONE`, Security #1148 und CI #1153 vollständig PASS. Die produktive Lovable-`sandbox_exec`-Rolle kann denselben Owner-Level-Lauf technisch nicht identisch wiederholen; diese Umgebungsgrenze wird nicht als Produktblocker gewertet. Details: `docs/BSF-03B-VERIFICATION-2026-09-21.md`.
 
 ## BSF-KIOSK-02 — interner Read-/Hybrid-Provider (2026-09-19)
 

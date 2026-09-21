@@ -1,7 +1,7 @@
 # Sysing Dashboard — Lovable-Promptplan BSF-03B
 
 Stand: 2026-09-21
-Status: L1 DB-/SECURITY-TEIL AUSGEFÜHRT · REGRESSION BLOCKED · L2 NACH RUNTIME
+Status: L1 ABGESCHLOSSEN · REGRESSION CI PASS · TASK 5 NÄCHSTER SCHRITT · L2 NACH RUNTIME
 Issue: #107
 Design: `docs/BSF-03B-DESIGN.md`
 Implementation Plan: `docs/superpowers/plans/2026-09-14-bsf-03b-performance-statement.md`
@@ -37,7 +37,7 @@ Jeder Prompt muss einhalten:
 - kein Merge,
 - kein Deploy.
 
-## 3. Prompt 03B-L1 — Live-Precheck und Persistenz-/Trigger-Vertrag — AUSGEFÜHRT / REGRESSION OFFEN
+## 3. Prompt 03B-L1 — Live-Precheck und Persistenz-/Trigger-Vertrag — ABGESCHLOSSEN / REGRESSION PASS
 
 ```text
 SYSING DASHBOARD — BSF-03B / L1

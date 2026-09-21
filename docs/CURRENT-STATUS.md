@@ -32,7 +32,7 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 11. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
 12. `docs/BSF-03-CLOSURE-2026-09-13.md` — Abschluss Kundenverantwortung/Kundensicht,
 13. `docs/BSF-03D-CLOSURE-2026-09-13.md` — Abschluss Arbeitspaket-Kategorien,
-14. `docs/BSF-03B-VERIFICATION-2026-09-21.md` — aktueller DB-/Security-Nachweis mit offenem Regressionsblocker,
+14. `docs/BSF-03B-VERIFICATION-2026-09-21.md` — aktueller DB-/Security-/Regressionsnachweis für Tasks 1–4,
 15. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
 
 Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und werden durch die oben genannten laufenden Quellen fortgeschrieben.
@@ -54,7 +54,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 ## Aktueller Arbeitsstand 21.09.2026
 
 - BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
-- BSF-03B / Issue #107 ist der aktive Sprint. Domain-, Fingerprint- und DB-Vertrag sind implementiert; die Migration `20260921095742_bsf03b_performance_statement` ist live aufgezeichnet. BSF-03B T01–T30, RLS/ACL, Residuenprüfung und offizieller Security Advisor sind PASS/BASELINE_ONLY. Der erneute kombinierte Regressionslauf BSF-02C/03A/03B ist in der aktuell verfügbaren `sandbox_exec`-Umgebung technisch BLOCKED und muss unverändert in einer Owner-fähigen Postgres-/CI-Umgebung nachgeholt werden. Task 5 (Supabase Review-/Snapshot-Adapter) ist der aktuelle Implementierungsschritt.
+- BSF-03B / Issue #107 ist der aktive Sprint. Domain-, Fingerprint- und DB-Vertrag sind implementiert; die Migration `20260921095742_bsf03b_performance_statement` ist live aufgezeichnet. Security #1148 und CI #1153 sind auf Kandidat `798b7000e168aac4030986f12059c05536c810db` vollständig PASS. Der Owner-fähige CI-Lauf bestätigt BSF-02C T01–T30, BSF-03A T01–T20 und BSF-03B T01–T30 sowie `DATABASE_SCHEMA_DRIFT: NONE` und `DATABASE_TYPES_DRIFT: NONE`. Der offizielle Supabase Security Advisor bleibt BASELINE_ONLY ohne neue BSF-03B-Findings. Die Lovable-`sandbox_exec`-Rolle kann diese Owner-Level-Regression nicht identisch wiederholen; das ist eine Umgebungsgrenze und kein offener Produktblocker. Task 5 (Supabase Review-/Snapshot-Adapter) ist der aktuelle Implementierungsschritt.
 - Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus und ist vollständig abgenommen. Der korrigierte read-only Lovable-Exact-Head-Retest bestätigt Fresh-Refresh, Fail-closed-Verhalten, beide Zielauflösungen und Tree-Integrität; der frühere Fresh-Refresh-FAIL war ein Harness-False-Negative. Commitbezogene CI-/Security-Aussagen werden weiterhin ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
 
 ## Aktueller BSF-Stand
@@ -148,7 +148,7 @@ Nachweise:
 
 Der vorherige GitHub-Code-/Dokumentationskandidat war bereits mit Security #1092 und CI #1098 vollständig grün. Die abschließenden Statusdokumente laufen vor Merge erneut durch die normalen Required Checks.
 
-BSF-KIOSK-02 gilt damit als **FINAL DONE**. PR #147 wird nach grünem Dokumentations-Head merge-ready gestellt. Merge und Deploy erfolgen weiterhin nicht ohne separate Freigabe. Abschlussnachweis: `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md`.
+BSF-KIOSK-02 gilt damit als **FINAL DONE**. PR #147 ist auf `main` gemergt; Release `v1.65.0` ist veröffentlicht. Abschlussnachweis: `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md`.
 
 ### BSF-03B — IN PROGRESS / Issue #107
 
@@ -169,7 +169,7 @@ Live-Nachweis über den kontrollierten Lovable-Supabase-Pfad:
 - Security #1148: **PASS**,
 - CI #1153: **PASS** einschließlich Technical Report & Quality Gate,
 - offizieller Supabase Security Advisor: **BASELINE_ONLY**; ausschließlich die zwei bekannten AVKK-WARNs, keine neuen BSF-03B-Findings,
-- erneuter kombinierter BSF-02C/03A/03B-Regressionslauf: **BLOCKED** in der aktuellen `sandbox_exec`-Umgebung; keine Assertions wurden abgeschwächt. Nachweis: `docs/BSF-03B-VERIFICATION-2026-09-21.md`.
+- kombinierter BSF-02C/03A/03B-Regressionslauf auf Exact Head `798b7000e168aac4030986f12059c05536c810db`: **PASS** in CI #1153 mit Owner-fähiger lokaler Supabase/Postgres-17-Instanz; alle synthetischen Fixtures wurden zurückgerollt. Die produktive Lovable-`sandbox_exec`-Rolle kann den Owner-Level-Lauf nicht identisch wiederholen, ohne Assertions abzuschwächen. Nachweis: `docs/BSF-03B-VERIFICATION-2026-09-21.md`.
 
 Die produktive Lovable-Code-Arbeitskopie enthält weiterhin nicht nach GitHub übernommene Lovable-Overlay-Änderungen und ist daher **keine Code-Source-of-Truth**. Für BSF-03B wurde Lovable ausschließlich als kontrollierter Datenbankkanal verwendet; GitHub bleibt maßgeblich.
 

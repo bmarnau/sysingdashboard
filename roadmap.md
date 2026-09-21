@@ -36,9 +36,9 @@ KIOSK-01 enthält ausschließlich synthetische, lokale Demo-Daten. Der allgemein
 
 Die Kiosk-Migrationen wurden kontrolliert auf der maßgeblichen Sysingdashboard-Zielumgebung angewendet. Der offizielle Post-Migration-Security-Advisor zeigte keine neuen Findings gegenüber der dokumentierten SEC-01-Baseline. PR #141 ist seit 2026-09-17 auf `main`.
 
-### Nächster interner Schritt nach KIOSK-01
+### Aktueller interner Schritt
 
-BSF-03A ist vollständig abgenommen und mit PR #144 auf `main` integriert. Aktiver interner Schritt ist BSF-KIOSK-02 / #136.
+BSF-03A und BSF-KIOSK-02 sind vollständig abgenommen und auf `main` integriert. Aktiver Sprint ist **BSF-03B / #107 — Teamlead-Leistungsnachweis V1**. Tasks 1–4 sind GREEN; aktueller Implementierungsschritt ist Task 5, der Supabase Review-/Snapshot-Adapter.
 
 ---
 
@@ -58,7 +58,7 @@ BSF-03A ist vollständig abgenommen und mit PR #144 auf `main` integriert. Aktiv
 
 ---
 
-## BSF-KIOSK-02 (#136) interner Read-Provider — FINAL DONE / MERGE PENDING
+## BSF-KIOSK-02 (#136) interner Read-Provider — DONE / MERGED
 
 - [x] Kiosk-Vertrag additiv um `mode`, `sourceKind` und `observedAt` erweitert
 - [x] BSF-03A-Freshness für internen Kiosk-Snapshot übernommen
@@ -72,12 +72,25 @@ BSF-03A ist vollständig abgenommen und mit PR #144 auf `main` integriert. Aktiv
 - [x] Code-Head `8c69cca`: Security #1075 und CI #1081 vollständig PASS; E2E 98/98
 - [x] Benutzerhandbuch und kontextsensitive Hilfe auf Hybridbetrieb fortgeschrieben
 - [x] K02-L1 Exact-Tree-/Responsive-Preview 1920×1080 + 1366×768 — PASS auf Kandidat `528b5bc`, Tree Match JA
-- [x] Abschluss-/Driftnachweis FINAL DONE; PR #147 nach grünem Dokumentations-Head merge-ready
-- [ ] PR #147 nach separater Freigabe mergen und `v1.65.0` auf dem main-Merge-Commit veröffentlichen
+- [x] Abschluss-/Driftnachweis FINAL DONE
+- [x] PR #147 auf `main` gemergt
+- [x] `v1.65.0` veröffentlicht
+
+## BSF-03B (#107) Teamlead-Leistungsnachweis V1 — AKTIV
+
+- [x] Task 1: atomare Permission `performance.statement.manage`
+- [x] Task 2: providerneutraler Review-/Snapshot-Vertrag
+- [x] Task 3: deterministischer SHA-256-Review-Fingerprint
+- [x] Task 4: DB-Vertrag, Migration, RLS/ACL, Audit, Finalize/Replace und Regression
+- [x] Security #1148 / CI #1153 vollständig PASS
+- [x] BSF-02C T01–T30 / BSF-03A T01–T20 / BSF-03B T01–T30 PASS
+- [x] `DATABASE_SCHEMA_DRIFT: NONE` / `DATABASE_TYPES_DRIFT: NONE`
+- [x] offizieller Supabase Security Advisor: BASELINE_ONLY, keine neuen BSF-03B-Findings
+- [ ] Task 5: Supabase Review-/Snapshot-Adapter TDD
 
 ### Danach
 
-`BSF-03B (#107) → BSF-03E (#63) → BSF-07 (#140) → BSF-KIOSK-03 (#137)`
+`BSF-03E (#63) → BSF-07 (#140) → BSF-KIOSK-03 (#137)`
 
 ---
 
