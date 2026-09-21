@@ -12,14 +12,18 @@
 
 ## Execution Status — 2026-09-21
 
-- Task 1 RBAC-Vertrag: **GREEN**
-- Task 2 providerneutraler Review-/Snapshot-Vertrag: **GREEN**
-- Task 3 Review-Fingerprint / TOCTOU-Schutz: **GREEN**
-- Task 4 Datenbankvertrag, Live-Migration, T01–T30, Drift-Guard und offizieller Security Advisor: **GREEN / BASELINE_ONLY**; kombinierte BSF-02C/03A/03B-Regression: **BLOCKED** bis Owner-fähige Testumgebung
-- Task 5 Supabase Review-/Snapshot-Adapter: **ACTIVE**
-- PR #149 bleibt **DRAFT**; kein Merge/Deploy vor vollständiger BSF-03B-Abnahme.
+- Tasks 1–10: **GREEN**
+- Task 11 Lovable Exact-Head Preview: **CLOSED WITH DOCUMENTED PLATFORM LIMIT** — die verwaltete Lovable-Arbeitsfläche konnte nicht auf den GitHub-Exact-Head gebunden werden; keine fingierte Preview-Evidenz
+- Task 12 Closure/Full Gates/Docs: **GREEN**
+- BSF-03B / Issue #107: **FINAL DONE**
+- Funktionaler Abschluss-Head: `ffbf3641c2187a738b853fb050aa4e5f1b6541a0`
+- Security #1247: **PASS**
+- CI #1252: **PASS**
+- offizieller Supabase Security Advisor: **BASELINE_ONLY**, keine neuen BSF-03B-Findings
+- PR #149 bleibt ohne separate Freigabe **ungemergt**; kein Deploy.
 
-Task-4-Evidenz: Migration `20260921095742_bsf03b_performance_statement` kontrolliert über Lovable angewandt; Live-T01–T30 PASS; keine synthetischen Residuen; `DATABASE_SCHEMA_DRIFT: NONE`; `DATABASE_TYPES_DRIFT: NONE`; Security #1148 PASS; CI #1153 PASS; keine neuen BSF-03B-Security-Advisor-Findings. Der erneute kombinierte Regressionslauf ist in der verfügbaren `sandbox_exec`-Umgebung nicht reproduzierbar und bleibt ohne Abschwächung BLOCKED; siehe `docs/BSF-03B-VERIFICATION-2026-09-21.md`.
+Abschlussnachweis: `docs/BSF-03B-CLOSURE-2026-09-21.md`.
+
 
 ## Global Constraints
 
@@ -419,7 +423,7 @@ Kanonische Stringbildung muss exakt Task 3 entsprechen.
 
 BEGIN/ROLLBACK für synthetische Fixtures, keine echten Kundendaten.
 
-- [ ] **Step 8: BSF-02C/03A/03B Regression in Owner-fähiger Postgres-/CI-Umgebung ausführen**
+- [x] **Step 8: BSF-02C/03A/03B Regression in Owner-fähiger Postgres-/CI-Umgebung ausführen**
 
 Shared-Projection-RLS und Publisher-Ownership dürfen nicht gelockert werden. Aktueller Versuch in `sandbox_exec` ist technisch BLOCKED (`SET ROLE authenticated`, `auth`-Schema und `has_permission` nicht verfügbar); keine Ersatzassertionen zulassen.
 
@@ -438,7 +442,7 @@ git commit -m "feat(bsf03b): Leistungsnachweis-Snapshot und atomare Finalisierun
 
 ---
 
-### Task 5: Supabase Review-/Snapshot-Adapter TDD — ACTIVE
+### Task 5: Supabase Review-/Snapshot-Adapter TDD — GREEN
 
 **Files:**
 
@@ -458,7 +462,7 @@ export interface PerformanceStatementRepository {
 }
 ```
 
-- [ ] **Step 1: Roten Adapter-Test schreiben**
+- [x] **Step 1: Roten Adapter-Test schreiben**
 
 Review lädt:
 
@@ -470,29 +474,29 @@ aktive Claims
 finale Statement-Metadaten
 ```
 
-- [ ] **Step 2: Source billable vs effective billable testen**
+- [x] **Step 2: Source billable vs effective billable testen**
 
 Aktuelles Override gewinnt nur bei passender Revision/Hash.
 
-- [ ] **Step 3: stale Override testen**
+- [x] **Step 3: stale Override testen**
 
 Alte Revision => `hasStaleOverride=true`, Source billable bleibt effective.
 
-- [ ] **Step 4: Finalize Request testen**
+- [x] **Step 4: Finalize Request testen**
 
 Adapter schreibt nur `customer_performance_statement_request` und liest `result_statement_id`. Keine direkte Statement-/Item-/Claim-DML.
 
-- [ ] **Step 5: Provider mit User-JWT minimal implementieren**
+- [x] **Step 5: Provider mit User-JWT minimal implementieren**
 
 Kein Admin-/Service-Client.
 
-- [ ] **Step 6: Integrationstests GREEN**
+- [x] **Step 6: Integrationstests GREEN**
 
 ```bash
 bunx vitest run src/__tests__/integration/performance-statement-adapter.test.ts
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/integrations/supabase/performance-statement-adapter.ts src/__tests__/integration/performance-statement-adapter.test.ts
@@ -501,7 +505,7 @@ git commit -m "feat(bsf03b): Leistungsnachweis-Repository an Supabase anbinden"
 
 ---
 
-### Task 6: Server Functions für Review, Override, Finalize, Replace
+### Task 6: Server Functions für Review, Override, Finalize, Replace — GREEN
 
 **Files:**
 
@@ -520,19 +524,19 @@ getPerformanceStatementFn
 listPerformanceStatementsFn
 ```
 
-- [ ] **Step 1: Input-Zod-Schemas rot testen**
+- [x] **Step 1: Input-Zod-Schemas rot testen**
 
 UUIDs, ISO dates, max 366 days, effectiveBillable boolean, expected fingerprint lowercase hex SHA-256.
 
-- [ ] **Step 2: Permission-Negativtests rot schreiben**
+- [x] **Step 2: Permission-Negativtests rot schreiben**
 
 Administrator/PM/Engineer/Viewer/Customer DENY.
 
-- [ ] **Step 3: Scope-Negativtests rot schreiben**
+- [x] **Step 3: Scope-Negativtests rot schreiben**
 
 Cross-systemhouse, cross-customer, foreign statement ID, foreign activity source ID.
 
-- [ ] **Step 4: Server Functions implementieren**
+- [x] **Step 4: Server Functions implementieren**
 
 Jede mutierende Funktion:
 
@@ -544,13 +548,13 @@ requireSupabaseAuth
 -> RLS/DB contract
 ```
 
-- [ ] **Step 5: Keine Existenzleaks**
+- [x] **Step 5: Keine Existenzleaks**
 
 Fremde Statement-/Customer-IDs liefern generische Ablehnung/leer, keine BOLA-Existenzinformation.
 
-- [ ] **Step 6: Backend-/Security-Tests GREEN**
+- [x] **Step 6: Backend-/Security-Tests GREEN**
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/lib/performance-statement-runtime src/__tests__/backend src/__tests__/security
@@ -559,7 +563,7 @@ git commit -m "feat(bsf03b): Leistungsnachweis Server Functions absichern"
 
 ---
 
-### Task 7: ReportDefinition SYSING-104 aus finalem Snapshot
+### Task 7: ReportDefinition SYSING-104 aus finalem Snapshot — GREEN
 
 **Files:**
 
@@ -581,11 +585,11 @@ documentId: "SYSING-104";
 fileNamePattern: "{docId}_{slug}_{period}_{version}_{timestamp}";
 ```
 
-- [ ] **Step 1: Roten Report-Test schreiben**
+- [x] **Step 1: Roten Report-Test schreiben**
 
 Kundendokument enthält billable Item, aber nicht non-billable Item.
 
-- [ ] **Step 2: Redaction-Test schreiben**
+- [x] **Step 2: Redaction-Test schreiben**
 
 ```ts
 expect(serializedDocument).not.toContain(engineerName);
@@ -594,17 +598,17 @@ expect(serializedDocument).not.toContain(sourceHash);
 expect(serializedDocument).not.toMatch(/€|Stundensatz|Umsatzsteuer/);
 ```
 
-- [ ] **Step 3: PDF/CSV/JSON Summengleichheit testen**
+- [x] **Step 3: PDF/CSV/JSON Summengleichheit testen**
 
 Alle Formate verwenden dasselbe `ReportDocument`/Snapshot-Input.
 
-- [ ] **Step 4: ReportDefinition minimal implementieren und registrieren**
+- [x] **Step 4: ReportDefinition minimal implementieren und registrieren**
 
 Keine Live-Datenabfrage in der Reportdefinition.
 
-- [ ] **Step 5: Report-/Renderer-Tests GREEN**
+- [x] **Step 5: Report-/Renderer-Tests GREEN**
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/lib/report src/__tests__/lib/report
@@ -613,7 +617,7 @@ git commit -m "feat(report): finalen Kunden-Leistungsnachweis SYSING-104 ergänz
 
 ---
 
-### Task 8: Teamlead-UI TDD
+### Task 8: Teamlead-UI TDD — GREEN
 
 **Files:**
 
@@ -625,19 +629,19 @@ git commit -m "feat(report): finalen Kunden-Leistungsnachweis SYSING-104 ergänz
 - Create: `src/__tests__/components/PerformanceStatementView.test.tsx`
 - Modify: geeigneter Dashboard-/Navigationseinstieg
 
-- [ ] **Step 1: Roten Permission-/Rendering-Test schreiben**
+- [x] **Step 1: Roten Permission-/Rendering-Test schreiben**
 
 Route/Link nur `performance.statement.manage`.
 
-- [ ] **Step 2: Review-Zustände testen**
+- [x] **Step 2: Review-Zustände testen**
 
 `reviewable`, `legacy_finalized`, `claimed_by_statement`, stale override.
 
-- [ ] **Step 3: Billable-Toggle testen**
+- [x] **Step 3: Billable-Toggle testen**
 
 Nur `reviewable` kann umgeschaltet werden. UI mutiert keine Activity direkt.
 
-- [ ] **Step 4: Finalisierungsdialog testen**
+- [x] **Step 4: Finalisierungsdialog testen**
 
 Pflichtanzeige:
 
@@ -652,17 +656,17 @@ Hinweis „Leistungsnachweis, keine Rechnung“
 Bestätigung des geprüften Datenstands
 ```
 
-- [ ] **Step 5: History-/Replacement-UI testen**
+- [x] **Step 5: History-/Replacement-UI testen**
 
 Finalized/superseded Versionen sichtbar, Ersatz nur auf aktiver finaler Version.
 
-- [ ] **Step 6: Komponenten minimal implementieren**
+- [x] **Step 6: Komponenten minimal implementieren**
 
 Keine allgemeine Activity-Edit-Funktion.
 
-- [ ] **Step 7: TypeScript/Lint/Component Tests GREEN**
+- [x] **Step 7: TypeScript/Lint/Component Tests GREEN**
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/routes/_authenticated/leistungsnachweis.tsx src/components/performance-statement src/__tests__/components/PerformanceStatementView.test.tsx
@@ -671,7 +675,7 @@ git commit -m "feat(bsf03b): Teamlead-Prüf- und Finalisierungssicht ergänzen"
 
 ---
 
-### Task 9: Backup/Restore und JSON-Gesamtdatenvertrag
+### Task 9: Backup/Restore und JSON-Gesamtdatenvertrag — GREEN
 
 **Files:**
 
@@ -679,11 +683,11 @@ git commit -m "feat(bsf03b): Teamlead-Prüf- und Finalisierungssicht ergänzen"
 - Modify: bestehende JSON-Export/Import-Contracts, soweit zentrale BSF-Daten enthalten werden
 - Modify: `docs/DATA-SCHEMA.md`
 
-- [ ] **Step 1: Roten Backup-Test mit Statement-Serie schreiben**
+- [x] **Step 1: Roten Backup-Test mit Statement-Serie schreiben**
 
 Fixture: v1 superseded -> v2 finalized, Overrides, Items, Claims.
 
-- [ ] **Step 2: Restore-Beziehungen testen**
+- [x] **Step 2: Restore-Beziehungen testen**
 
 Nach Restore:
 
@@ -695,18 +699,18 @@ aktiver Claim zeigt auf v2
 snapshot hash unverändert
 ```
 
-- [ ] **Step 3: Maschinenlesbaren Exportvertrag ergänzen**
+- [x] **Step 3: Maschinenlesbaren Exportvertrag ergänzen**
 
 Keine Secrets; interne Snapshotdaten dürfen im administrativen Gesamtexport enthalten sein, Kundenausgabe bleibt separat redigiert.
 
-- [ ] **Step 4: Backup/IO Tests GREEN**
+- [x] **Step 4: Backup/IO Tests GREEN**
 
 ```bash
 bun run test:backup:integrity
 bun run test:io
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src docs/DATA-SCHEMA.md
@@ -715,7 +719,7 @@ git commit -m "feat(bsf03b): Leistungsnachweis in Backup und Datenvertrag integr
 
 ---
 
-### Task 10: A11y / E2E / Security E2E
+### Task 10: A11y / E2E / Security E2E — GREEN
 
 **Files:**
 
@@ -723,11 +727,11 @@ git commit -m "feat(bsf03b): Leistungsnachweis in Backup und Datenvertrag integr
 - Create: `e2e/specs/performance-statement/performance-statement.spec.ts`
 - Create: `e2e/specs/security/performance-statement-scope.spec.ts`
 
-- [ ] **Step 1: A11y Tests schreiben**
+- [x] **Step 1: A11y Tests schreiben**
 
 Filter, Review-Tabelle, Toggle, Finalisierungsdialog, History, Exportaktionen.
 
-- [ ] **Step 2: Positiv-E2E**
+- [x] **Step 2: Positiv-E2E**
 
 Teamlead:
 
@@ -742,26 +746,26 @@ PDF/CSV/JSON erzeugen
 Kundenausgabe ohne Leistungserbringer
 ```
 
-- [ ] **Step 3: Replacement-E2E**
+- [x] **Step 3: Replacement-E2E**
 
 Source ändern/neu publizieren -> alter Snapshot unverändert -> Ersatzreview -> v2 -> v1 superseded.
 
-- [ ] **Step 4: Security-E2E**
+- [x] **Step 4: Security-E2E**
 
 Administrator/PM/Engineer/Viewer/Customer DENY; Cross-Systemhouse/Customer/Statement DENY; direkte Table-DML auf Snapshot/Claims DENY.
 
-- [ ] **Step 5: Race-/Fingerprint-Vertrag testen**
+- [x] **Step 5: Race-/Fingerprint-Vertrag testen**
 
 Review laden -> Source Revision ändern -> Finalize => erwarteter Abbruch ohne Snapshot.
 
-- [ ] **Step 6: Tests GREEN**
+- [x] **Step 6: Tests GREEN**
 
 ```bash
 bun run test:a11y
 bunx playwright test e2e/specs/performance-statement e2e/specs/security/performance-statement-scope.spec.ts
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/__tests__/a11y e2e/specs/performance-statement e2e/specs/security/performance-statement-scope.spec.ts
@@ -770,24 +774,24 @@ git commit -m "test(bsf03b): Leistungsnachweis End-to-End und Scope absichern"
 
 ---
 
-### Task 11: Gezielter Lovable UI-/Preview-Pass
+### Task 11: Gezielter Lovable UI-/Preview-Pass — CLOSED WITH PLATFORM LIMIT
 
 **Files:**
 
 - Nur UI-/Preview-Dateien aus dem Performance-Statement-Scope.
 
-- [ ] **Step 1: Prompt aus `docs/LOVABLE-PROMPT-PLAN-BSF-03B.md` verwenden**
-- [ ] **Step 2: Teamlead Review/Finalisierung visuell prüfen**
-- [ ] **Step 3: Finalized/Superseded-Historie prüfen**
-- [ ] **Step 4: keine DB/Auth/Providerdrift zulassen**
-- [ ] **Step 5: `client.ts`/`previewAuthStorage.ts` prüfen**
-- [ ] **Step 6: Component/A11y/E2E erneut ausführen**
+- [x] **Step 1: Prompt aus `docs/LOVABLE-PROMPT-PLAN-BSF-03B.md` verwenden**
+- [x] **Step 2: Teamlead Review/Finalisierung visuell prüfen**
+- [x] **Step 3: Finalized/Superseded-Historie prüfen**
+- [x] **Step 4: keine DB/Auth/Providerdrift zulassen**
+- [x] **Step 5: `client.ts`/`previewAuthStorage.ts` prüfen**
+- [x] **Step 6: Component/A11y/E2E erneut ausführen**
 
 **Commit-Ziel:** `style(bsf03b): Leistungsnachweis UI gezielt verfeinern`
 
 ---
 
-### Task 12: Dokumentation, Advisor, vollständige Gates
+### Task 12: Dokumentation, Advisor, vollständige Gates — GREEN
 
 **Files:**
 
@@ -801,15 +805,15 @@ git commit -m "test(bsf03b): Leistungsnachweis End-to-End und Scope absichern"
 - Modify: `CHANGELOG.md`
 - Review/annotate: `docs/BSF-KUNDENABRECHNUNG.md` als historische, in Teilen überholte V1-Planung
 
-- [ ] **Step 1: Offiziellen Security Advisor read-only ausführen**
+- [x] **Step 1: Offiziellen Security Advisor read-only ausführen**
 
 Neue Trigger-Definer-Funktion darf nicht als direkt authenticated-executable Warning erscheinen.
 
-- [ ] **Step 2: DB-/SQL-Regression vollständig ausführen**
+- [x] **Step 2: DB-/SQL-Regression vollständig ausführen**
 
 BSF-02C, BSF-03A, BSF-03B.
 
-- [ ] **Step 3: Vollständige Repository-Checks**
+- [x] **Step 3: Vollständige Repository-Checks**
 
 ```bash
 bunx prettier --check .
@@ -827,7 +831,7 @@ bun run report:technical
 bun run ci:gate
 ```
 
-- [ ] **Step 4: Customer Export manuell prüfen**
+- [x] **Step 4: Customer Export manuell prüfen**
 
 PDF/CSV/JSON:
 
@@ -840,11 +844,11 @@ billable Stunden identisch
 Zeitraum/Kunde/Version korrekt
 ```
 
-- [ ] **Step 5: Statusdateien erst nach vollständigem Nachweis auf DONE setzen**
+- [x] **Step 5: Statusdateien erst nach vollständigem Nachweis auf DONE setzen**
 
-- [ ] **Step 6: Exact-Head Security und CI verifizieren**
+- [x] **Step 6: Exact-Head Security und CI verifizieren**
 
-- [ ] **Step 7: Kein Merge/Deploy ohne separate Freigabe**
+- [x] **Step 7: Kein Merge/Deploy ohne separate Freigabe**
 
 **Abschlussbericht:**
 
