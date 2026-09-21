@@ -24,13 +24,13 @@ for (const role of ["administrator", "projectmanager", "engineer", "viewer", "cu
 
       await page.goto("/leistungsnachweis");
 
-      await expect(
-        page.getByRole("heading", { name: "Leistungsnachweis", level: 1 }),
-      ).toHaveCount(0);
-      await expect(page.getByRole("region", { name: "Review" })).toHaveCount(0);
-      await expect(page.getByRole("button", { name: "Leistungsnachweis finalisieren" })).toHaveCount(
+      await expect(page.getByRole("heading", { name: "Leistungsnachweis", level: 1 })).toHaveCount(
         0,
       );
+      await expect(page.getByRole("region", { name: "Review" })).toHaveCount(0);
+      await expect(
+        page.getByRole("button", { name: "Leistungsnachweis finalisieren" }),
+      ).toHaveCount(0);
     });
   });
 }
@@ -136,7 +136,9 @@ test.describe("BSF-03B Leistungsnachweis – Scope/IDOR/BOLA", () => {
           case "listPerformanceStatementScopesFn":
             return {
               kind: "ok",
-              value: performanceStatementScopes().filter((scope) => scope.customerId === CUSTOMER_A),
+              value: performanceStatementScopes().filter(
+                (scope) => scope.customerId === CUSTOMER_A,
+              ),
             };
           case "getPerformanceStatementReviewFn":
             return { kind: "ok", value: performanceStatementReview() };
@@ -190,7 +192,9 @@ test.describe("BSF-03B Leistungsnachweis – Scope/IDOR/BOLA", () => {
           case "listPerformanceStatementScopesFn":
             return {
               kind: "ok",
-              value: performanceStatementScopes().filter((scope) => scope.customerId === CUSTOMER_A),
+              value: performanceStatementScopes().filter(
+                (scope) => scope.customerId === CUSTOMER_A,
+              ),
             };
           case "getPerformanceStatementReviewFn":
             return { kind: "ok", value: review };

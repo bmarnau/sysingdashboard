@@ -140,8 +140,7 @@ export function performanceStatementSnapshot(
       oldestPublishedAt: "2026-09-18T08:00:00.000Z",
       latestPublishedAt: "2026-09-21T06:30:00.000Z",
     },
-    reviewFingerprint:
-      version === 1 ? REVIEW_FINGERPRINT_AFTER_OVERRIDE : "c".repeat(64),
+    reviewFingerprint: version === 1 ? REVIEW_FINGERPRINT_AFTER_OVERRIDE : "c".repeat(64),
     snapshotHash: version === 1 ? "d".repeat(64) : "e".repeat(64),
     itemCount: 2,
     billableItemCount: version === 1 ? 2 : 1,
@@ -172,8 +171,7 @@ export function performanceStatementSnapshot(
         activitySourceId: "activity-doc",
         sourceRevision: version === 1 ? 4 : 5,
         sourceHash: version === 1 ? "source-hash-doc" : "source-hash-doc-v2",
-        sourcePublishedAt:
-          version === 1 ? "2026-09-21T06:15:00.000Z" : "2026-09-21T07:20:00.000Z",
+        sourcePublishedAt: version === 1 ? "2026-09-21T06:15:00.000Z" : "2026-09-21T07:20:00.000Z",
         sourceEngineerId: "e2e-engineer-internal",
         date: "2026-09-20",
         title: "Dokumentation",
