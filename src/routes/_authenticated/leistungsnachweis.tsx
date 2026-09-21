@@ -71,13 +71,13 @@ function PerformanceStatementPage() {
   const [history, setHistory] = useState<PerformanceStatementSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [readError, setReadError] = useState<string | null>(null);\n  const [actionError, setActionError] = useState<string | null>(null);
   const [refreshGeneration, setRefreshGeneration] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    setError(null);
+    setReadError(null);
 
     listPerformanceStatementScopesFn()
       .then((visibleScopes) => {
@@ -108,7 +108,7 @@ function PerformanceStatementPage() {
           message: String((cause as Error)?.message ?? cause).slice(0, 200),
         });
         if (!cancelled) {
-          setError("Zulässige Kunden-Scopes konnten nicht geladen werden.");
+          setReadError("Zulässige Kunden-Scopes konnten nicht geladen werden.");
           setLoading(false);
         }
       });
@@ -123,7 +123,7 @@ function PerformanceStatementPage() {
 
     let cancelled = false;
     setLoading(true);
-    setError(null);
+    setReadError(null);
 
     Promise.all([
       getPerformanceStatementReviewFn({ data: selection }),
@@ -155,7 +155,7 @@ function PerformanceStatementPage() {
         if (!cancelled) {
           setReview(null);
           setHistory([]);
-          setError(userMessage(cause));
+          setActionError(userMessage(cause));
           setLoading(false);
         }
       });
@@ -173,7 +173,7 @@ function PerformanceStatementPage() {
   ) => {
     if (!selection) return;
     setBusy(true);
-    setError(null);
+    setReadError(null);
     try {
       await setPerformanceBillableOverrideFn({
         data: {
@@ -189,7 +189,7 @@ function PerformanceStatementPage() {
       });
       refresh();
     } catch (cause) {
-      setError(userMessage(cause));
+      setActionError(userMessage(cause));
     } finally {
       setBusy(false);
     }
@@ -198,7 +198,7 @@ function PerformanceStatementPage() {
   const handleFinalize = async () => {
     if (!selection || !review) return;
     setBusy(true);
-    setError(null);
+    setReadError(null);
     try {
       await finalizePerformanceStatementFn({
         data: {
@@ -209,7 +209,7 @@ function PerformanceStatementPage() {
       });
       refresh();
     } catch (cause) {
-      setError(userMessage(cause));
+      setActionError(userMessage(cause));
       refresh();
     } finally {
       setBusy(false);
@@ -219,7 +219,7 @@ function PerformanceStatementPage() {
   const handleReplace = async (statement: PerformanceStatementSnapshot) => {
     if (!selection || !review) return;
     setBusy(true);
-    setError(null);
+    setReadError(null);
     try {
       await replacePerformanceStatementFn({
         data: {
@@ -231,7 +231,7 @@ function PerformanceStatementPage() {
       });
       refresh();
     } catch (cause) {
-      setError(userMessage(cause));
+      setActionError(userMessage(cause));
       refresh();
     } finally {
       setBusy(false);
@@ -240,7 +240,7 @@ function PerformanceStatementPage() {
 
   const handleExport = async (statement: PerformanceStatementSnapshot, format: ReportFormat) => {
     setBusy(true);
-    setError(null);
+    setReadError(null);
     try {
       const result = await renderReport({
         reportId: "performance-statement",
@@ -270,7 +270,7 @@ function PerformanceStatementPage() {
       logger.warn("performance-statement.export.failed", {
         message: String((cause as Error)?.message ?? cause).slice(0, 200),
       });
-      setError("Leistungsnachweis-Export konnte nicht erstellt werden.");
+      setActionError("Leistungsnachweis-Export konnte nicht erstellt werden.");
     } finally {
       setBusy(false);
     }
