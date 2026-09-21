@@ -1,0 +1,31 @@
+name: Temporary BSF-03B final formatter
+
+on:
+  push:
+    branches:
+      - feat/bsf-03b-performance-statement
+    paths:
+      - ".github/workflows/bsf03b-final-format-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/bsf-03b-performance-statement
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx prettier --write e2e/specs/performance-statement/performance-statement.spec.ts
+      - name: Commit formatting only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add e2e/specs/performance-statement/performance-statement.spec.ts
+          git diff --cached --quiet && exit 0
+          git commit -m "style(bsf03b): finalen E2E-Test formatieren"
+          git push origin HEAD:feat/bsf-03b-performance-statement
