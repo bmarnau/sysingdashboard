@@ -71,7 +71,8 @@ function PerformanceStatementPage() {
   const [history, setHistory] = useState<PerformanceStatementSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
-  const [readError, setReadError] = useState<string | null>(null);\n  const [actionError, setActionError] = useState<string | null>(null);
+  const [readError, setReadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [refreshGeneration, setRefreshGeneration] = useState(0);
 
   useEffect(() => {
@@ -155,7 +156,7 @@ function PerformanceStatementPage() {
         if (!cancelled) {
           setReview(null);
           setHistory([]);
-          setActionError(userMessage(cause));
+          setReadError(userMessage(cause));
           setLoading(false);
         }
       });
@@ -173,7 +174,7 @@ function PerformanceStatementPage() {
   ) => {
     if (!selection) return;
     setBusy(true);
-    setReadError(null);
+    setActionError(null);
     try {
       await setPerformanceBillableOverrideFn({
         data: {
@@ -198,7 +199,7 @@ function PerformanceStatementPage() {
   const handleFinalize = async () => {
     if (!selection || !review) return;
     setBusy(true);
-    setReadError(null);
+    setActionError(null);
     try {
       await finalizePerformanceStatementFn({
         data: {
@@ -219,7 +220,7 @@ function PerformanceStatementPage() {
   const handleReplace = async (statement: PerformanceStatementSnapshot) => {
     if (!selection || !review) return;
     setBusy(true);
-    setReadError(null);
+    setActionError(null);
     try {
       await replacePerformanceStatementFn({
         data: {
@@ -240,7 +241,7 @@ function PerformanceStatementPage() {
 
   const handleExport = async (statement: PerformanceStatementSnapshot, format: ReportFormat) => {
     setBusy(true);
-    setReadError(null);
+    setActionError(null);
     try {
       const result = await renderReport({
         reportId: "performance-statement",
@@ -286,8 +287,11 @@ function PerformanceStatementPage() {
           history={history}
           loading={loading}
           busy={busy}
-          error={error}
-          onSelectionChange={setSelection}
+          error={actionError ?? readError}
+          onSelectionChange={(nextSelection) => {
+            setActionError(null);
+            setSelection(nextSelection);
+          }}
           onOverride={handleOverride}
           onFinalize={handleFinalize}
           onReplace={handleReplace}
