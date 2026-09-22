@@ -28,6 +28,17 @@ export const DEFAULT_PERIOD = {
   periodEnd: "2026-09-21",
 } as const;
 
+/**
+ * Fixiert ausschließlich die synthetische BSF-03B-E2E-Zeitbasis.
+ *
+ * Die produktive Route verwendet bewusst "aktueller Monat bis heute". Ohne
+ * feste Browserzeit driftet dieser Default nach dem 21.09.2026 vom
+ * versionierten Fixture-Zeitraum ab und filtert korrekt erzeugte Snapshots
+ * aus der Test-Historie. Der Produkttest soll deshalb gegen dieselbe
+ * Referenzzeit laufen wie seine synthetischen Review-/Snapshot-Daten.
+ */
+export const PERFORMANCE_STATEMENT_REFERENCE_NOW = "2026-09-21T12:00:00.000Z";
+
 export function performanceStatementScopes(): PerformanceStatementScopeOption[] {
   return [
     {
@@ -303,6 +314,8 @@ export async function installPerformanceStatementServerFnMock(
   page: Page,
   behaviour: PerformanceStatementServerBehaviour,
 ): Promise<void> {
+  await page.clock.setFixedTime(new Date(PERFORMANCE_STATEMENT_REFERENCE_NOW));
+
   await page.route(
     (url) => url.pathname.includes("_serverFn"),
     async (route) => {
