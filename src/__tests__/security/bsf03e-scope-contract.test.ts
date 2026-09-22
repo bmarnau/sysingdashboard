@@ -16,17 +16,25 @@ describe("BSF-03E P0 — AVKK Scope-Hardening source contract", () => {
   const sql = migrations();
 
   it("should_addSystemhouseAndCustomerScope_when_p0MigrationExists", () => {
-    expect(sql).toMatch(/ALTER TABLE\s+public\.avkk_subject[\s\S]*ADD COLUMN[^;]*systemhouse_id\s+uuid/i);
-    expect(sql).toMatch(/ALTER TABLE\s+public\.avkk_subject[\s\S]*ADD COLUMN[^;]*customer_id\s+uuid/i);
+    expect(sql).toMatch(
+      /ALTER TABLE\s+public\.avkk_subject[\s\S]*ADD COLUMN[^;]*systemhouse_id\s+uuid/i,
+    );
+    expect(sql).toMatch(
+      /ALTER TABLE\s+public\.avkk_subject[\s\S]*ADD COLUMN[^;]*customer_id\s+uuid/i,
+    );
   });
 
   it("should_scopeSubjectIdentity_when_p0MigrationExists", () => {
-    expect(sql).toMatch(/UNIQUE[\s\S]*systemhouse_id[\s\S]*subject_type[\s\S]*subject_id/i);
+    expect(sql).toMatch(
+      /UNIQUE[\s\S]*systemhouse_id[\s\S]*subject_type[\s\S]*subject_id/i,
+    );
   });
 
   it("should_hardenAvkkPoliciesAgainstFlatPermissionOnlyAccess_when_p0MigrationExists", () => {
     expect(sql).toMatch(/avkk_subject[\s\S]*systemhouse_id[\s\S]*customer_id/i);
-    expect(sql).toMatch(/avkk_responsibility[\s\S]*systemhouse_id|avkk_responsibility[\s\S]*customer_id/i);
+    expect(sql).toMatch(
+      /avkk_responsibility[\s\S]*systemhouse_id|avkk_responsibility[\s\S]*customer_id/i,
+    );
     expect(sql).toMatch(/has_active_systemhouse_membership|systemhouse_membership/i);
     expect(sql).toMatch(/has_customer_access|customer_access/i);
   });
