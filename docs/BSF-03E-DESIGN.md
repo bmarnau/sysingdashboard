@@ -237,7 +237,13 @@ Nicht enthalten:
 - Krankheits-/Abwesenheitsgründe,
 - E-Mail, Telefon, MFA oder vollständige Profildaten.
 
-Für Namensauflösung bleibt der datensparsame Directory-Vertrag maßgeblich; technische UUIDs werden nicht als Anzeigenamen dargestellt.
+Für Namensauflösung bleibt das Prinzip des datensparsamen Directory-Vertrags maßgeblich; technische UUIDs werden nicht als Anzeigenamen dargestellt.
+
+### Kandidatenverzeichnis
+
+Das bestehende `public.avkk_people_directory()` ist für die allgemeine AVKK-Anzeige weiterhin zulässig, aber **nicht unverändert als BSF-03E-Kandidatenquelle**: Bei `avkk.responsibility.assign` liefert es derzeit aktive Personen ohne Systemhouse-Parameter.
+
+BSF-03E benötigt deshalb einen serverseitig gescopten Kandidatenvertrag, der mindestens aktive Membership im tatsächlichen `systemhouse_id` prüft und nur die minimal nötigen Felder liefert (stabile User-ID + Anzeigename; ggf. zulässige fachliche Rolle). Ein Client-Filter über das globale Verzeichnis ist keine Sicherheitsgrenze.
 
 ## 11. Audit und Historie
 
@@ -260,7 +266,9 @@ Abnahmeziel:
 - `TO authenticated` allein ist nie ausreichend,
 - Cross-Systemhouse und Cross-Customer sind serverseitig DENY,
 - ungescopte/mehrdeutige Subjects sind für BSF-03E fail-closed,
-- direkte Mutation darf den transaktionalen Lifecycle nicht umgehen,
+- die bestehende allgemeine AVKK-Arbeitsfläche darf durch P0 nicht unbeabsichtigt zerstört werden: Legacy-Zeilen können über den bisherigen Legacy-Vertrag weiter lesbar bleiben, werden aber von allen neuen BSF-03E-Read-/Mutation-Pfaden ausgeschlossen,
+- für **gescopte** Subjects müssen direkte AVKK-DML-Policies zusätzlich Membership + realen Customer Access prüfen,
+- direkte Mutation darf den transaktionalen BSF-03E-Lifecycle nicht umgehen,
 - PUBLIC/anon erhalten keine zusätzlichen Rechte,
 - neue SECURITY-DEFINER-Helfer nur bei begründeter Fremdlese-Notwendigkeit, mit leerem `search_path`, explizitem `auth.uid()`-/Permission-Check und minimalen EXECUTE-Rechten,
 - bestehende SEC-01-WARN-Baseline (`avkk_can_write`, `avkk_people_directory`) darf nicht um neue Advisor-Findings erweitert werden.
@@ -286,6 +294,8 @@ Mindestens:
 - E15 Cross-Systemhouse-Zielperson → DENY,
 - E16 fehlender Customer Write Access → Mutation DENY,
 - E17 fehlender Customer Read Access → Personensicht liefert keine fremden Daten,
+- E17a gescoptes Kandidatenverzeichnis liefert keine Person aus fremdem Systemhouse,
+- E17b globales `avkk_people_directory()` wird im BSF-03E-Mutationspfad nicht als clientseitig gefilterte Kandidatenquelle verwendet,
 - E18 kein Gesundheitsfeld in Schema/API/UI/Export,
 - E19 Audit für jede relevante Mutation vorhanden,
 - E20 Partial Failure bei Responsibility Types → vollständiger Rollback,
