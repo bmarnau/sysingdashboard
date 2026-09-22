@@ -91,11 +91,6 @@ jobs:
           version: 2.117.0
       - name: Start local Supabase
         run: supabase start
-      - name: Generate BSF-03E migration filename (temporary TDD bootstrap)
-        if: ${{ github.event_name == 'pull_request' && github.head_ref == 'feat/bsf-03e-responsibility-delegation' }}
-        run: |
-          supabase migration new bsf03e_avkk_scope_hardening
-          find supabase/migrations -maxdepth 1 -type f -name '*_bsf03e_avkk_scope_hardening.sql' -print
       - name: Rebuild database from migrations
         run: bun run db:schema:rebuild
       - name: Kiosk database contract
