@@ -116,6 +116,8 @@ Keine Supabase-Imports in der Fachlogik.
 
 Read liefert nur minimal erforderliche Daten.
 
+Zusätzlich entsteht ein **serverseitig gescoptes Kandidatenverzeichnis** für Responsibility-Ziele. Das bestehende `avkk_people_directory()` darf wegen seines fehlenden Systemhouse-Parameters nicht clientseitig gefiltert als BSF-03E-Kandidatenquelle verwendet werden. Der neue Vertrag liefert nur aktive Personen mit aktiver Membership im tatsächlichen Systemhaus und ausschließlich die minimal nötigen Felder.
+
 Kein Zugriff auf:
 
 - E-Mail,
@@ -132,6 +134,8 @@ Mindestens:
 - leere Sicht,
 - fremder Customer leer/DENY,
 - fremdes Systemhouse leer/DENY,
+- Kandidaten aus fremdem Systemhouse nie geliefert,
+- globale AVKK-Personenliste nicht als BSF-03E-Clientfilter missbraucht,
 - historische Verantwortung nicht als aktiv,
 - technische UUID nie als Anzeigename.
 
