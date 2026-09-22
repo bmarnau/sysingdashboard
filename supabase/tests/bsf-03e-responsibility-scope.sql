@@ -357,7 +357,7 @@ SELECT pg_temp.assert(
   'T19a cross-customer AVKK read denied'
 );
 SELECT pg_temp.assert_denied(
- $SELECT * FROM public.bsf03e_avkk_responsibility_candidates('00000000-0000-0000-0000-0000000ee501')$,
+ $$SELECT * FROM public.bsf03e_avkk_responsibility_candidates('00000000-0000-0000-0000-0000000ee501')$$,
  'T19b cross-customer candidate lookup denied'
 );
 UPDATE public.avkk_responsibility
