@@ -321,12 +321,22 @@ SELECT pg_temp.assert_denied(
  $$SELECT * FROM public.bsf03e_avkk_responsibility_candidates('00000000-0000-0000-0000-0000000ee501')$$,
  'T21 cross-systemhouse candidate lookup denied'
 );
-SELECT pg_temp.assert_denied(
- $$UPDATE public.avkk_responsibility
-      SET valid_to=now(),updated_by=auth.uid()
-    WHERE id='00000000-0000-0000-0000-0000000fe501'$$,
- 'T22 cross-systemhouse responsibility mutation denied'
+SELECT pg_temp.assert(
+  NOT EXISTS (
+    SELECT 1 FROM public.avkk_responsibility
+    WHERE id='00000000-0000-0000-0000-0000000fe501'
+  ),
+  'T22a cross-systemhouse responsibility is not visible'
 );
+UPDATE public.avkk_responsibility
+   SET valid_to=now(),updated_by=auth.uid()
+ WHERE id='00000000-0000-0000-0000-0000000fe501';
 SELECT pg_temp.act_reset();
+SELECT pg_temp.assert(
+  (SELECT valid_to IS NULL
+     FROM public.avkk_responsibility
+    WHERE id='00000000-0000-0000-0000-0000000fe501'),
+  'T22 cross-systemhouse responsibility mutation changes zero rows'
+);
 
 ROLLBACK;
