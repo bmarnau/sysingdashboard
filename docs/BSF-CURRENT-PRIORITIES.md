@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-09-21  
+Stand: 2026-09-22  
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
@@ -54,22 +54,26 @@ PR #144 ist am 19.09.2026 nach vollständiger GitHub- und Exact-Tree-Lovable-Abn
 
 PR #147 ist nach vollständiger Abnahme auf `main` gemergt. Release `v1.65.0` ist veröffentlicht. KIOSK-02 bleibt der abgeschlossene Vorgänger von BSF-03B.
 
-### AKTUELLER SPRINT — BSF-03B / #107
+### BSF-03B / #107 — DONE / MERGED
 
-Der Teamlead-Leistungsnachweis V1 ist aktiv in PR #149.
+PR #149 ist als signierter Squash-Commit `12b37be8ce8e5e8e3668d6622ace13872a7f3c48` auf `main` integriert. Der nach dem Merge sichtbar gewordene kalendertagsabhängige E2E-Harness-Escape wurde mit PR #152 rein testseitig behoben; der Fix liegt als signierter Commit `1ca8f0937a7217de74050061ae39c9c3f028784c` auf `main`. Der Hotfix-PR bestätigte 110/110 Playwright-Tests.
 
-Aktueller Sprintstand:
+### AKTUELLER SPRINT — BSF-03E / #63
 
-- Task 1 RBAC-Vertrag: **GREEN**,
-- Task 2 providerneutraler Review-/Snapshot-Vertrag: **GREEN**,
-- Task 3 Review-Fingerprint / TOCTOU-Schutz: **GREEN**,
-- Task 4 Datenbankvertrag, Live-Migration, T01–T30 und Security Advisor: **GREEN / BASELINE_ONLY**,
-- Task 5 Supabase Review-/Snapshot-Adapter: **AKTIV**.
+Ziel: mandantensichere Vertretungs- und Personensicht für Project-/WorkPackage-Verantwortungen ohne neue konkurrierende Responsibility-Domäne.
 
-Git-/CI-Evidenz des Task-4-Abschlussstands:
-Security #1148 **PASS**, CI #1153 **PASS**, `DATABASE_SCHEMA_DRIFT: NONE`, `DATABASE_TYPES_DRIFT: NONE`.
+Verbindlicher Ablauf:
 
-Nächster Sprint nach Abschluss von BSF-03B bleibt **BSF-03E / #63**.
+1. **P0 Scope-Hardening** — AVKK-Subject-Scope serverseitig an Systemhouse/Customer binden; Cross-Systemhouse/Cross-Customer/IDOR fail-closed.
+2. **P1 Person Read Model** — ausschließlich autorisierte Project-/WorkPackage-Verantwortungen.
+3. **P2 atomare Mutationen** — Owner transfer, Deputy add/end, Historie/Audit.
+4. **P3 UI/E2E** — Personensicht, Einzelaktionen, Scope-/Rollen-Negativtests.
+5. **P4 Bulk optional**, erst nach vollständig grünem P0–P3.
+6. **P5 Abschluss** — Full CI, Security Advisor, Schema Drift, Backup/Restore, Doku/Prüfbericht.
+
+Live-P0-Befund: `avkk_subject` besitzt aktuell keinen Systemhouse-/Customer-Scope; der Legacy-Bestand (4 Project + 5 WorkPackage) hat 0/9 eindeutige `subject_id/source_id`-Matches zur Shared Projection. Daher kein geratener Backfill; Legacy bleibt für BSF-03E bis zu belastbarer Zuordnung fail-closed.
+
+Kanonischer Design-/Planungs-PR: **#151**.
 
 ## Kiosk-first- und Golden-Dataset-Regel
 
@@ -110,7 +114,7 @@ Golden-Dataset-Grundregeln:
 5. **BSF-03A / #106 — DONE**
 6. **BSF-KIOSK-02 / #136 — DONE / MERGED**
 7. **BSF-03B / #107 — FINAL DONE**
-8. **BSF-03E / #63 — NÄCHSTER SPRINT**
+8. **BSF-03E / #63 — AKTUELLER SPRINT / P0**
 9. **BSF-07 / #140 — VORGEZOGEN / GEPLANT**
 10. **BSF-KIOSK-03 / #137 — GEPLANT**
 11. **BSF-03C / #98 — GEPLANT**

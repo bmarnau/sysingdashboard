@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-09-21
+Stand: 2026-09-22
 
 ## Zweck
 
@@ -41,7 +41,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.66.0` ist der BSF-03B-Release-Kandidat auf PR #149; `1.65.1` bleibt bis Merge/Release der Stand auf `main`.
+- Dashboard-Version: `1.66.0` ist auf `main` integriert. Der veröffentlichte GitHub-Release bleibt bis zur separaten Release-Veröffentlichung `v1.65.0`.
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
@@ -51,10 +51,12 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 - Docker-/Container-Portabilität sowie Azure-/Entra-Migrationsfähigkeit bleiben verbindliche Architekturziele
 - MVP bleibt **100 % / BASELINE READY**; der aktive Entwicklungshorizont ist **BSF — Betriebsfähiges Systemhaus-Fundament**.
 
-## Aktueller Arbeitsstand 21.09.2026
+## Aktueller Arbeitsstand 22.09.2026
 
 - BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
-- BSF-03B / Issue #107 ist **FINAL DONE**. Funktionaler Abschluss-Head `ffbf3641c2187a738b853fb050aa4e5f1b6541a0`: Security #1247 PASS und CI #1252 vollständig PASS einschließlich Golden Dataset Required Gate, 147 Testdateien / 1009 PASS + 4 TODO, BSF-02C/03A/03B-DB-Regression, Schema Drift, Backend/API/RBAC-Security, Import/Export, Backup/Restore, Production Build, Playwright E2E, Accessibility, Technical Debt und Quality Gate. Live-Security-Advisor BASELINE_ONLY ohne neue BSF-03B-Findings. Lovable konnte nicht auf den GitHub-Exact-Head gebunden werden; die visuelle Preview bleibt deshalb ausdrücklich NOT EVIDENCED und ist als Plattformgrenze im Closure-Dokument festgehalten. Nächster Sprint: BSF-03E / #63.
+- BSF-03B / Issue #107 ist **FINAL DONE und gemergt**. PR #149 wurde als GitHub-signierter Squash-Commit `12b37be8ce8e5e8e3668d6622ace13872a7f3c48` nach `main` integriert. Der zuvor vollständig grüne Exact-Head und der Merge-Commit besitzen denselben Git-Tree `25ae707e08726f6d357c940a983afc14552d5b03`.
+- Der erste Post-Merge-CI am 22.09. deckte einen **kalendertagsabhängigen E2E-Harness-Escape** auf: die BSF-03B-Fixtures endeten fest am 21.09., während der Produktdefault korrekt „aktueller Monat bis heute“ verwendete. Dadurch wurden am 22.09. korrekt erzeugte Fixture-Snapshots beim Test-Refresh aus der Historie gefiltert. PR #152 korrigierte ausschließlich die Test-Referenzzeit; Produktlogik, Assertions, Expected Results, DB, RBAC und RLS blieben unverändert. Der Fix ist als GitHub-signierter Commit `1ca8f0937a7217de74050061ae39c9c3f028784c` auf `main`; der PR-Gate-Lauf bestätigte **110/110 Playwright PASS**.
+- Aktueller Sprint ist **BSF-03E / #63 — Vertretungs- und Personensicht**. P0 beginnt mit Scope-Hardening der AVKK-Project-/WorkPackage-Verantwortung; Personensicht und Mutationen folgen erst nach der serverseitigen Mandanten-/Customer-Scope-Absicherung.
 - Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus und ist vollständig abgenommen. Der korrigierte read-only Lovable-Exact-Head-Retest bestätigt Fresh-Refresh, Fail-closed-Verhalten, beide Zielauflösungen und Tree-Integrität; der frühere Fresh-Refresh-FAIL war ein Harness-False-Negative. Commitbezogene CI-/Security-Aussagen werden weiterhin ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
 
 ## Aktueller BSF-Stand
@@ -166,7 +168,7 @@ Abschlussnachweise:
 - Lovable Exact-Head Visual Preview: NOT EVIDENCED wegen fehlender identitätsgebundener GitHub-Head-Bindung; nicht als PASS umgedeutet,
 - Abschluss: `docs/BSF-03B-CLOSURE-2026-09-21.md`.
 
-PR #149 bleibt ohne separate Freigabe ungemergt und undeployed.
+PR #149 ist nach vollständiger Exact-Head-Abnahme nach `main` gemergt. Der nachgelagerte E2E-Harness-Escape und seine rein testseitige Korrektur sind in Issue #107 und PR #152 dokumentiert.
 
 ## F-11
 
