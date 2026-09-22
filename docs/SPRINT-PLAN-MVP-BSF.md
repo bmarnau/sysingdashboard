@@ -1,7 +1,7 @@
 # Sysing Dashboard — Operative Sprintplanung MVP → BSF → Integration
 
-Stand: 2026-09-21  
-Status: **verbindliche operative Kiosk-first-Planung; BSF-03B FINAL DONE; BSF-03E NEXT**  
+Stand: 2026-09-22  
+Status: **verbindliche operative Kiosk-first-Planung; BSF-03B DONE/MERGED; BSF-03E AKTUELL / P0**  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
 Tagesfokus: `docs/BSF-CURRENT-PRIORITIES.md`  
@@ -52,8 +52,8 @@ BSF-03D wurde über PR #134 auf `main` integriert. Post-Merge Security sowie vol
 
 - **BSF-03A / #106 — DONE / PR #144 gemergt**
 - **BSF-KIOSK-02 / #136 — DONE / PR #147 gemergt / v1.65.0 veröffentlicht**
-- **BSF-03B / #107 — FINAL DONE / PR #149 ungemergt**
-- **BSF-03E / #63 — NEXT**
+- **BSF-03B / #107 — FINAL DONE / PR #149 gemergt; deterministischer E2E-Harness-Hotfix #152 gemergt**
+- **BSF-03E / #63 — AKTUELL / P0 Scope-Hardening**
 
 ## 4. Verbindliche operative Reihenfolge
 
@@ -61,7 +61,7 @@ BSF-03D wurde über PR #134 auf `main` integriert. Post-Merge Security sowie vol
 BSF-03A / #106 — DONE
 → BSF-KIOSK-02 / #136 — DONE / MERGED
 → BSF-03B / #107 — FINAL DONE
-→ BSF-03E / #63 — NEXT
+→ BSF-03E / #63 — AKTUELL / P0
 → BSF-07 Managementcockpit 2
 → BSF-KIOSK-03 / #137
 → BSF-03C / #98
