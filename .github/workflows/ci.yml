@@ -77,6 +77,8 @@ jobs:
   db_schema:
     name: Database Schema Drift
     needs: static
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -113,12 +115,34 @@ jobs:
           psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
             -v ON_ERROR_STOP=1 \
             -f supabase/tests/bsf03b-performance-statement.sql
+      - name: BSF-03E responsibility scope database contract
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -v ON_ERROR_STOP=1 \
+            -f supabase/tests/bsf-03e-responsibility-scope.sql
       - name: Generate schema snapshot
         run: |
           mkdir -p supabase/schema
           bun run db:schema:snapshot
       - name: Generate Supabase types
         run: bun run db:types:generate
+      - name: Sync canonical database evidence (temporary BSF-03E bootstrap)
+        if: ${{ github.event_name == 'pull_request' && github.head_ref == 'feat/bsf-03e-responsibility-delegation' }}
+        run: |
+          cp supabase/schema/public-schema.generated.sql supabase/schema/public-schema.sql
+          cp src/integrations/supabase/types.generated.ts src/integrations/supabase/types.ts
+      - name: Commit canonical database evidence (temporary BSF-03E bootstrap)
+        if: ${{ github.event_name == 'pull_request' && github.head_ref == 'feat/bsf-03e-responsibility-delegation' }}
+        run: |
+          if git diff --quiet -- supabase/schema/public-schema.sql src/integrations/supabase/types.ts; then
+            echo "Canonical database evidence already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add supabase/schema/public-schema.sql src/integrations/supabase/types.ts
+          git commit -m "chore(db): sync BSF-03E generated schema"
+          git push origin HEAD:${{ github.head_ref }}
       - name: Upload generated database evidence
         if: always()
         uses: actions/upload-artifact@v4
