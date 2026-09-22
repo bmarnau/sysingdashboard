@@ -350,11 +350,13 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string | null
+          customer_id: string | null
           id: string
           status: string
           subject_id: string
           subject_title_snapshot: string
           subject_type: string
+          systemhouse_id: string | null
           updated_at: string
           updated_by: string | null
           version: number
@@ -362,11 +364,13 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by?: string | null
+          customer_id?: string | null
           id?: string
           status?: string
           subject_id: string
           subject_title_snapshot?: string
           subject_type: string
+          systemhouse_id?: string | null
           updated_at?: string
           updated_by?: string | null
           version?: number
@@ -374,16 +378,26 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string | null
+          customer_id?: string | null
           id?: string
           status?: string
           subject_id?: string
           subject_title_snapshot?: string
           subject_type?: string
+          systemhouse_id?: string | null
           updated_at?: string
           updated_by?: string | null
           version?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "avkk_subject_customer_scope_fk"
+            columns: ["customer_id", "systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "customer"
+            referencedColumns: ["id", "systemhouse_id"]
+          },
+        ]
       }
       customer: {
         Row: {
@@ -1493,6 +1507,13 @@ export type Database = {
         }
         Returns: Json
       }
+      bsf03e_avkk_responsibility_candidates: {
+        Args: { _subject: string }
+        Returns: {
+          display_name: string
+          user_id: string
+        }[]
+      }
       can_manage_customer_responsibility: {
         Args: { _systemhouse_id: string; _user_id: string }
         Returns: boolean
@@ -1733,3 +1754,4 @@ export const Constants = {
     },
   },
 } as const
+
