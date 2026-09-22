@@ -118,12 +118,14 @@ FROM (VALUES
   ('00000000-0000-0000-0000-00000000e503'::uuid,'bsf03e-engineer@example.invalid'),
   ('00000000-0000-0000-0000-00000000e504'::uuid,'bsf03e-viewer@example.invalid'),
   ('00000000-0000-0000-0000-00000000e505'::uuid,'bsf03e-other-sh@example.invalid'),
-  ('00000000-0000-0000-0000-00000000e506'::uuid,'bsf03e-readonly@example.invalid')
+  ('00000000-0000-0000-0000-00000000e506'::uuid,'bsf03e-readonly@example.invalid'),
+  ('00000000-0000-0000-0000-00000000e507'::uuid,'bsf03e-no-access-engineer@example.invalid'),
+  ('00000000-0000-0000-0000-00000000e508'::uuid,'bsf03e-other-customer@example.invalid')
 ) u(id,email);
 
 DELETE FROM public.user_roles
 WHERE user_id BETWEEN '00000000-0000-0000-0000-00000000e501'::uuid
-                  AND '00000000-0000-0000-0000-00000000e506'::uuid;
+                  AND '00000000-0000-0000-0000-00000000e508'::uuid;
 
 INSERT INTO public.user_roles(user_id,role) VALUES
  ('00000000-0000-0000-0000-00000000e501','teamlead'),
@@ -131,7 +133,9 @@ INSERT INTO public.user_roles(user_id,role) VALUES
  ('00000000-0000-0000-0000-00000000e503','engineer'),
  ('00000000-0000-0000-0000-00000000e504','viewer'),
  ('00000000-0000-0000-0000-00000000e505','teamlead'),
- ('00000000-0000-0000-0000-00000000e506','projectmanager');
+ ('00000000-0000-0000-0000-00000000e506','projectmanager'),
+ ('00000000-0000-0000-0000-00000000e507','engineer'),
+ ('00000000-0000-0000-0000-00000000e508','teamlead');
 
 UPDATE public.profiles
 SET status='active',
@@ -141,10 +145,12 @@ SET status='active',
       WHEN '00000000-0000-0000-0000-00000000e503' THEN 'E3 Engineer'
       WHEN '00000000-0000-0000-0000-00000000e504' THEN 'E3 Viewer'
       WHEN '00000000-0000-0000-0000-00000000e505' THEN 'E3 Fremd SH'
-      ELSE 'E3 Readonly PM'
+      WHEN '00000000-0000-0000-0000-00000000e506' THEN 'E3 Readonly PM'
+      WHEN '00000000-0000-0000-0000-00000000e507' THEN 'E3 Engineer ohne Access'
+      ELSE 'E3 Fremder Customer'
     END
 WHERE id BETWEEN '00000000-0000-0000-0000-00000000e501'::uuid
-             AND '00000000-0000-0000-0000-00000000e506'::uuid;
+             AND '00000000-0000-0000-0000-00000000e508'::uuid;
 
 INSERT INTO public.systemhouse(id,name,status) VALUES
  ('00000000-0000-0000-0000-0000000ae501','E3 SH1','active'),
@@ -161,7 +167,9 @@ INSERT INTO public.systemhouse_membership(systemhouse_id,user_id,status) VALUES
  ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-00000000e503','active'),
  ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-00000000e504','active'),
  ('00000000-0000-0000-0000-0000000ae502','00000000-0000-0000-0000-00000000e505','active'),
- ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-00000000e506','active');
+ ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-00000000e506','active'),
+ ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-00000000e507','active'),
+ ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-00000000e508','active');
 
 INSERT INTO public.customer_access(systemhouse_id,customer_id,user_id,access_level,status) VALUES
  ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-0000000be501','00000000-0000-0000-0000-00000000e501','write','active'),
@@ -169,7 +177,8 @@ INSERT INTO public.customer_access(systemhouse_id,customer_id,user_id,access_lev
  ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-0000000be501','00000000-0000-0000-0000-00000000e503','write','active'),
  ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-0000000be501','00000000-0000-0000-0000-00000000e504','read','active'),
  ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-0000000be501','00000000-0000-0000-0000-00000000e506','read','active'),
- ('00000000-0000-0000-0000-0000000ae502','00000000-0000-0000-0000-0000000be503','00000000-0000-0000-0000-00000000e505','write','active');
+ ('00000000-0000-0000-0000-0000000ae502','00000000-0000-0000-0000-0000000be503','00000000-0000-0000-0000-00000000e505','write','active'),
+ ('00000000-0000-0000-0000-0000000ae501','00000000-0000-0000-0000-0000000be502','00000000-0000-0000-0000-00000000e508','write','active');
 
 -- Seed authoritative shared projections under owner context.
 INSERT INTO public.shared_project_projection
@@ -263,6 +272,33 @@ SELECT pg_temp.assert(
   EXISTS (SELECT 1 FROM public.avkk_responsibility WHERE id='00000000-0000-0000-0000-0000000fe501'),
   'T14 scoped direct mutation allowed only in authorized scope'
 );
+
+-- Responsibility alone must never create operational Customer access.
+INSERT INTO public.avkk_responsibility
+ (id,avkk_subject_id,person_id,role_value_id,role_key_snapshot,role_label_snapshot,
+  note,created_by,updated_by)
+SELECT
+ '00000000-0000-0000-0000-0000000fe502',
+ '00000000-0000-0000-0000-0000000ee501',
+ '00000000-0000-0000-0000-00000000e507',
+ rv.id,rv.key,rv.label,'',auth.uid(),auth.uid()
+FROM public.reference_value rv
+JOIN public.reference_catalog rc ON rc.id=rv.catalog_id
+WHERE rc.key='avkk.responsibility_role' AND rv.key='deputy';
+SELECT pg_temp.act_reset();
+
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000e507');
+SELECT pg_temp.assert(
+  NOT public.avkk_can_write('00000000-0000-0000-0000-0000000ee501'),
+  'T14a responsibility without Customer Access grants no AVKK write'
+);
+SELECT pg_temp.assert(
+  NOT EXISTS (
+    SELECT 1 FROM public.avkk_subject
+    WHERE id='00000000-0000-0000-0000-0000000ee501'
+  ),
+  'T14b responsibility without Customer Access grants no AVKK read'
+);
 SELECT pg_temp.act_reset();
 
 -- Read-only PM: may read, may not assign despite avkk.responsibility.assign because no write access.
@@ -310,6 +346,30 @@ SELECT pg_temp.assert_denied(
  'T19 viewer cannot use management candidate RPC'
 );
 SELECT pg_temp.act_reset();
+
+-- Same Systemhouse, but only another Customer: still fail-closed.
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000e508');
+SELECT pg_temp.assert(
+  NOT EXISTS (
+    SELECT 1 FROM public.avkk_subject
+    WHERE id='00000000-0000-0000-0000-0000000ee501'
+  ),
+  'T19a cross-customer AVKK read denied'
+);
+SELECT pg_temp.assert_denied(
+ $SELECT * FROM public.bsf03e_avkk_responsibility_candidates('00000000-0000-0000-0000-0000000ee501')$,
+ 'T19b cross-customer candidate lookup denied'
+);
+UPDATE public.avkk_responsibility
+   SET valid_to=now(),updated_by=auth.uid()
+ WHERE id='00000000-0000-0000-0000-0000000fe501';
+SELECT pg_temp.act_reset();
+SELECT pg_temp.assert(
+  (SELECT valid_to IS NULL
+     FROM public.avkk_responsibility
+    WHERE id='00000000-0000-0000-0000-0000000fe501'),
+  'T19c cross-customer responsibility mutation changes zero rows'
+);
 
 -- Foreign systemhouse manager: no read / no candidates / no direct mutation.
 SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000e505');
