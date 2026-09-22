@@ -1,0 +1,59 @@
+{
+  "contractVersion": "bsf03b.performance-statement.golden.v1",
+  "period": {
+    "start": "2026-09-01",
+    "end": "2026-09-05"
+  },
+  "cases": {
+    "customerAReview": {
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "activityIds": [
+        "golden-act-01",
+        "golden-act-02",
+        "golden-act-03",
+        "golden-act-04",
+        "golden-act-08"
+      ],
+      "reviewableCount": 5,
+      "legacyFinalizedCount": 0,
+      "billableHours": 12,
+      "nonBillableHours": 3
+    },
+    "customerAOverrideAct02Billable": {
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-a",
+      "override": {
+        "activityId": "golden-act-02",
+        "effectiveBillable": true
+      },
+      "reviewableCount": 5,
+      "billableHours": 14,
+      "nonBillableHours": 1,
+      "snapshotActivityIds": [
+        "golden-act-01",
+        "golden-act-02",
+        "golden-act-03",
+        "golden-act-04",
+        "golden-act-08"
+      ],
+      "customerOutputActivityIds": [
+        "golden-act-01",
+        "golden-act-02",
+        "golden-act-03",
+        "golden-act-08"
+      ]
+    },
+    "customerBLegacy": {
+      "systemhouseId": "golden-systemhouse-01",
+      "customerId": "golden-customer-b",
+      "reviewableActivityIds": ["golden-act-05", "golden-act-06"],
+      "legacyFinalizedActivityIds": ["golden-act-07"],
+      "reviewableCount": 2,
+      "legacyFinalizedCount": 1,
+      "billableHours": 5,
+      "nonBillableHours": 2,
+      "customerOutputActivityIds": ["golden-act-05"]
+    }
+  }
+}

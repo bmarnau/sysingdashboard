@@ -1,6 +1,12 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import type { PerformanceStatementReviewRow } from "@/lib/performance-statement/performance-statement-contract";
+import {
+  classifyRow,
+  summarizePerformanceReviewRows,
+  validatePerformancePeriod,
+} from "@/lib/performance-statement/performance-statement";
 
 const GOLDEN_ROOT = resolve("docs/examples/golden-dataset/v1");
 
@@ -13,6 +19,7 @@ type Activity = {
   date: string;
   durationHours: number;
   billable: boolean;
+  billingStatus: string;
 };
 
 type WorkPackage = {
@@ -194,6 +201,151 @@ describe("GDS-01 Golden Dataset V1 expected business results", () => {
       })),
     ).toEqual(expected.trend);
     expect(buildDrillDown(activities)).toEqual(expected.drillDown);
+  });
+
+  it("matches the fixed BSF-03B review, override and customer-output results", async () => {
+    const [{ activities }, expected] = await Promise.all([
+      readJson<{ activities: Activity[] }>("activities.json"),
+      readJson<{
+        period: { start: string; end: string };
+        cases: {
+          customerAReview: {
+            customerId: string;
+            activityIds: string[];
+            reviewableCount: number;
+            legacyFinalizedCount: number;
+            billableHours: number;
+            nonBillableHours: number;
+          };
+          customerAOverrideAct02Billable: {
+            customerId: string;
+            override: { activityId: string; effectiveBillable: boolean };
+            reviewableCount: number;
+            billableHours: number;
+            nonBillableHours: number;
+            snapshotActivityIds: string[];
+            customerOutputActivityIds: string[];
+          };
+          customerBLegacy: {
+            customerId: string;
+            reviewableActivityIds: string[];
+            legacyFinalizedActivityIds: string[];
+            reviewableCount: number;
+            legacyFinalizedCount: number;
+            billableHours: number;
+            nonBillableHours: number;
+            customerOutputActivityIds: string[];
+          };
+        };
+      }>("expected/performance-statement.json"),
+    ]);
+
+    expect(() =>
+      validatePerformancePeriod(expected.period.start, expected.period.end),
+    ).not.toThrow();
+
+    const toReviewRow = (
+      activity: Activity,
+      effectiveBillable = activity.billable,
+    ): PerformanceStatementReviewRow => ({
+      activitySourceId: activity.id,
+      sourceRevision: 1,
+      sourceHash: `golden-hash-${activity.id}`,
+      sourcePublishedAt: "2026-09-14T00:00:00.000Z",
+      date: activity.date,
+      title: activity.id,
+      durationHours: activity.durationHours,
+      sourceBillable: activity.billable,
+      effectiveBillable,
+      billingStatus: activity.billingStatus,
+      reviewState: classifyRow({
+        billingStatus: activity.billingStatus,
+        claimed: false,
+      }),
+      hasStaleOverride: false,
+      project: { sourceId: activity.projectId, name: activity.projectId },
+      workPackage: {
+        sourceId: activity.workPackageId,
+        title: activity.workPackageId,
+      },
+      category: { key: null, label: null, state: "unobserved" },
+    });
+
+    const customerA = expected.cases.customerAReview;
+    const customerARows = activities
+      .filter((activity) => activity.customerId === customerA.customerId)
+      .map((activity) => toReviewRow(activity));
+
+    expect(customerARows.map((row) => row.activitySourceId).sort()).toEqual(
+      [...customerA.activityIds].sort(),
+    );
+    expect(customerARows.filter((row) => row.reviewState === "legacy_finalized")).toHaveLength(
+      customerA.legacyFinalizedCount,
+    );
+    expect(summarizePerformanceReviewRows(customerARows)).toEqual({
+      billableHours: customerA.billableHours,
+      nonBillableHours: customerA.nonBillableHours,
+      reviewableCount: customerA.reviewableCount,
+    });
+
+    const overrideCase = expected.cases.customerAOverrideAct02Billable;
+    const overrideRows = activities
+      .filter((activity) => activity.customerId === overrideCase.customerId)
+      .map((activity) =>
+        toReviewRow(
+          activity,
+          activity.id === overrideCase.override.activityId
+            ? overrideCase.override.effectiveBillable
+            : activity.billable,
+        ),
+      );
+
+    expect(summarizePerformanceReviewRows(overrideRows)).toEqual({
+      billableHours: overrideCase.billableHours,
+      nonBillableHours: overrideCase.nonBillableHours,
+      reviewableCount: overrideCase.reviewableCount,
+    });
+    expect(overrideRows.map((row) => row.activitySourceId).sort()).toEqual(
+      [...overrideCase.snapshotActivityIds].sort(),
+    );
+    expect(
+      overrideRows
+        .filter((row) => row.reviewState === "reviewable" && row.effectiveBillable)
+        .map((row) => row.activitySourceId)
+        .sort(),
+    ).toEqual([...overrideCase.customerOutputActivityIds].sort());
+
+    const legacyCase = expected.cases.customerBLegacy;
+    const legacyRows = activities
+      .filter((activity) => activity.customerId === legacyCase.customerId)
+      .map((activity) => toReviewRow(activity));
+
+    expect(
+      legacyRows
+        .filter((row) => row.reviewState === "reviewable")
+        .map((row) => row.activitySourceId)
+        .sort(),
+    ).toEqual([...legacyCase.reviewableActivityIds].sort());
+    expect(
+      legacyRows
+        .filter((row) => row.reviewState === "legacy_finalized")
+        .map((row) => row.activitySourceId)
+        .sort(),
+    ).toEqual([...legacyCase.legacyFinalizedActivityIds].sort());
+    expect(legacyRows.filter((row) => row.reviewState === "legacy_finalized")).toHaveLength(
+      legacyCase.legacyFinalizedCount,
+    );
+    expect(summarizePerformanceReviewRows(legacyRows)).toEqual({
+      billableHours: legacyCase.billableHours,
+      nonBillableHours: legacyCase.nonBillableHours,
+      reviewableCount: legacyCase.reviewableCount,
+    });
+    expect(
+      legacyRows
+        .filter((row) => row.reviewState === "reviewable" && row.effectiveBillable)
+        .map((row) => row.activitySourceId)
+        .sort(),
+    ).toEqual([...legacyCase.customerOutputActivityIds].sort());
   });
 
   it("keeps the comparable kiosk metrics on the same business definition", async () => {

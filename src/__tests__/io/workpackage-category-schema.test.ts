@@ -1,5 +1,5 @@
 /**
- * BSF-03D (#103) — JSON-Schema 1.2.0: optionales `categoryKey` am Arbeitspaket.
+ * BSF-03D (#103) — `categoryKey` bleibt im aktuellen JSON-Schema rückwärtskompatibel.
  * Rückwärtskompatibel: fehlend/null = keine Kategorie, ältere Schemaversionen
  * bleiben importierbar (nur Hinweis, kein Fehler).
  */
@@ -20,8 +20,8 @@ const envelope = {
 };
 
 describe("JSON-Schema — categoryKey", () => {
-  it("should_beVersion_1_2_0", () => {
-    expect(JSON_SCHEMA_VERSION).toBe("1.2.0");
+  it("should_keepCategoryContract_inCurrentSchemaVersion", () => {
+    expect(JSON_SCHEMA_VERSION).toBe("1.3.0");
   });
 
   it("should_acceptMissingNullAndString", () => {

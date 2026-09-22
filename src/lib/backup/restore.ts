@@ -12,12 +12,21 @@ import { logger } from "../logger";
 import { BackupError } from "../errors";
 import { writeRestoreLog } from "./audit";
 import { EXPECTED_MANIFEST_MAJOR, PROJECT_NAME, looksSensitive } from "./constants";
-import { checkAvkkArchive, validateManifestEntries } from "./integrity";
+import {
+  checkAvkkArchive,
+  checkPerformanceStatementArchive,
+  validateManifestEntries,
+} from "./integrity";
 import { loadManifest, type LoadedManifest } from "./manifest";
 import { checkWorkPackageCategories } from "./category-check";
 import { applyRestoreEntries, collectTouchedKeys, type DesiredEntry } from "./merge";
 import { listCurrentAppKeys, registerSnapshot, rollbackSnapshot, takeSnapshotOf } from "./rollback";
-import type { AvkkRestoreReport, RestoreOptions, RestoreResult } from "./types";
+import type {
+  AvkkRestoreReport,
+  PerformanceStatementRestoreReport,
+  RestoreOptions,
+  RestoreResult,
+} from "./types";
 
 function parseSemverMajor(v: string): number {
   const m = /^(\d+)/.exec(v);
@@ -53,6 +62,14 @@ export async function restoreFromZip(
     quarantine: [],
     messages: [],
   };
+  const performanceStatementReport: PerformanceStatementRestoreReport = {
+    present: false,
+    validated: false,
+    counts: { overrides: 0, requests: 0, statements: 0, items: 0, claims: 0 },
+    activeClaims: [],
+    snapshotHashes: {},
+    messages: [],
+  };
 
   const fail = (msg: string, extra: Partial<RestoreResult> = {}): RestoreResult => {
     errors.push(msg);
@@ -70,6 +87,7 @@ export async function restoreFromZip(
       errors,
       rollback: false,
       avkk: avkkReport,
+      performanceStatements: performanceStatementReport,
       ...extra,
     };
     writeRestoreLog(res);
@@ -159,7 +177,26 @@ export async function restoreFromZip(
     }
   }
 
-  // 4c. BSF-03D: Arbeitspaket-Kategorien fail-safe gegen den Katalog im Archiv
+  // 4c. BSF-03B Cloud-Nutzdaten vollständig prüfen. Wie AVKK werden sie
+  //     bewusst NICHT aus dem Browser in die Datenbank zurückgeschrieben.
+  const performanceCheck = checkPerformanceStatementArchive(manifest, entries);
+  performanceStatementReport.present = performanceCheck.present;
+  if (performanceCheck.errors.length > 0) {
+    return fail(`Leistungsnachweis-Prüfung fehlgeschlagen: ${performanceCheck.errors.join("; ")}`);
+  }
+  if (performanceCheck.validation) {
+    performanceStatementReport.validated = true;
+    performanceStatementReport.counts = performanceCheck.validation.counts;
+    performanceStatementReport.activeClaims = performanceCheck.validation.activeClaims;
+    performanceStatementReport.snapshotHashes = performanceCheck.validation.snapshotHashes;
+    performanceStatementReport.messages = [
+      ...performanceCheck.validation.warnings,
+      "Leistungsnachweis-Daten wurden geprüft, aber nicht in die Datenbank zurückgeschrieben.",
+    ];
+    warnings.push(...performanceCheck.validation.warnings);
+  }
+
+  // 4d. BSF-03D: Arbeitspaket-Kategorien fail-safe gegen den Katalog im Archiv
   //     prüfen — nur Warnungen, kein Abbruch, keine Umdeutung.
   warnings.push(...checkWorkPackageCategories(manifest, entries).warnings);
 
@@ -220,6 +257,7 @@ export async function restoreFromZip(
       errors,
       rollback: true,
       avkk: avkkReport,
+      performanceStatements: performanceStatementReport,
     };
     writeRestoreLog(res);
     logger.error("Restore rolled back", err, { actor: opts.actor, mode: opts.mode });
@@ -241,6 +279,7 @@ export async function restoreFromZip(
     errors,
     rollback: false,
     avkk: avkkReport,
+    performanceStatements: performanceStatementReport,
   };
   writeRestoreLog(result);
   logger.info("Restore applied", {

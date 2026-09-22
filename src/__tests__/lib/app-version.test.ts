@@ -10,10 +10,10 @@ import {
 
 describe("app version", () => {
   it("uses the newest CHANGELOG entry as current release", () => {
-    expect(DASHBOARD_VERSION).toBe("1.65.1");
-    expect(DASHBOARD_RELEASE_DATE).toBe("2026-09-20");
-    expect(DASHBOARD_RELEASE_DATE_DE).toBe("20.09.2026");
-    expect(DASHBOARD_VERSION_LABEL).toBe("Version 1.65.1 · 20.09.2026");
+    expect(DASHBOARD_VERSION).toBe("1.66.0");
+    expect(DASHBOARD_RELEASE_DATE).toBe("2026-09-21");
+    expect(DASHBOARD_RELEASE_DATE_DE).toBe("21.09.2026");
+    expect(DASHBOARD_VERSION_LABEL).toBe("Version 1.66.0 · 21.09.2026");
   });
 
   it("parses and formats a release header deterministically", () => {

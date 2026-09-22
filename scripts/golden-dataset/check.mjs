@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 const GOLDEN_ROOT = resolve("docs/examples/golden-dataset/v1");
 const GOLDEN_SCHEMA_VERSION = "sysing.golden.v1";
-const GOLDEN_DATASET_VERSION = "1.0.0";
+const GOLDEN_DATASET_VERSION = "1.1.0";
 const GOLDEN_REFERENCE_TIME = "2026-09-14T00:00:00Z";
 const EXPECTED_UNKNOWN_CATEGORY = "unknown-golden-category";
 const CANONICAL_FILES = [
@@ -16,6 +16,7 @@ const CANONICAL_FILES = [
   "kiosk.json",
   "expected/project-controlling.json",
   "expected/kiosk-summary.json",
+  "expected/performance-statement.json",
 ];
 
 function fail(code, detail) {

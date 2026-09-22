@@ -1,6 +1,3 @@
-
-
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -585,6 +582,367 @@ COMMENT ON FUNCTION "public"."bsf02c_publish_shared_projection_snapshot"("p_syst
 
 
 
+CREATE OR REPLACE FUNCTION "public"."bsf03b_billable_override_audit"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+BEGIN
+  INSERT INTO public.audit_log (action, target, actor_id, payload)
+  VALUES (
+    'performance_statement.billable_override.' || lower(TG_OP),
+    NEW.id::text,
+    auth.uid(),
+    jsonb_build_object(
+      'systemhouse_id', NEW.systemhouse_id,
+      'customer_id', NEW.customer_id,
+      'activity_source_id', NEW.activity_source_id,
+      'source_revision', NEW.source_revision,
+      'source_hash', NEW.source_hash,
+      'source_billable', NEW.source_billable,
+      'effective_billable', NEW.effective_billable
+    )
+  );
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."bsf03b_billable_override_audit"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."bsf03b_billable_override_guard"() RETURNS "trigger"
+    LANGUAGE "plpgsql"
+    SET "search_path" TO ''
+    AS $$
+BEGIN
+  IF NEW.systemhouse_id IS DISTINCT FROM OLD.systemhouse_id
+     OR NEW.customer_id IS DISTINCT FROM OLD.customer_id
+     OR NEW.activity_source_id IS DISTINCT FROM OLD.activity_source_id
+     OR NEW.source_revision IS DISTINCT FROM OLD.source_revision
+     OR NEW.source_hash IS DISTINCT FROM OLD.source_hash
+     OR NEW.source_billable IS DISTINCT FROM OLD.source_billable THEN
+    RAISE EXCEPTION 'bsf03b_override_identity_immutable'
+      USING ERRCODE = '42501';
+  END IF;
+  NEW.changed_by := auth.uid();
+  NEW.changed_at := now();
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."bsf03b_billable_override_guard"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."bsf03b_process_statement_request"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+DECLARE
+  v_actor        uuid := auth.uid();
+  v_prev         public.customer_performance_statement%ROWTYPE;
+  v_series       uuid;
+  v_version      integer;
+  v_new_id       uuid := gen_random_uuid();
+  v_fingerprint  text;
+  v_items        integer;
+  v_cust_name    text;
+  v_hash         text;
+BEGIN
+  IF v_actor IS NULL THEN
+    RAISE EXCEPTION 'bsf03b_denied: no authenticated actor' USING ERRCODE = '42501';
+  END IF;
+  IF NEW.requested_by IS DISTINCT FROM v_actor THEN
+    RAISE EXCEPTION 'bsf03b_denied: requested_by must be the acting user' USING ERRCODE = '42501';
+  END IF;
+  IF NOT public.is_account_active(v_actor) THEN
+    RAISE EXCEPTION 'bsf03b_denied: account not active' USING ERRCODE = '42501';
+  END IF;
+  IF NOT public.has_permission(v_actor, 'performance.statement.manage') THEN
+    RAISE EXCEPTION 'bsf03b_denied: performance.statement.manage required' USING ERRCODE = '42501';
+  END IF;
+  IF NOT public.has_active_systemhouse_membership(v_actor, NEW.systemhouse_id) THEN
+    RAISE EXCEPTION 'bsf03b_denied: no active systemhouse membership' USING ERRCODE = '42501';
+  END IF;
+  IF NOT public.has_customer_access(v_actor, NEW.systemhouse_id, NEW.customer_id, 'read') THEN
+    RAISE EXCEPTION 'bsf03b_denied: no customer access' USING ERRCODE = '42501';
+  END IF;
+
+  SELECT c.name INTO v_cust_name
+  FROM public.customer c
+  WHERE c.id = NEW.customer_id
+    AND c.systemhouse_id = NEW.systemhouse_id
+    AND c.status = 'active';
+  IF v_cust_name IS NULL THEN
+    RAISE EXCEPTION 'bsf03b_denied: customer does not belong to systemhouse' USING ERRCODE = '42501';
+  END IF;
+
+  IF NEW.period_end < NEW.period_start
+     OR (NEW.period_end - NEW.period_start) > 365 THEN
+    RAISE EXCEPTION 'bsf03b_invalid: period must be valid and at most 366 days'
+      USING ERRCODE = '22023';
+  END IF;
+
+  -- BEFORE INSERT precedes the PK check. For an existing idempotency key,
+  -- do not execute finalization again; let the PK emit deterministic 23505.
+  IF EXISTS (
+    SELECT 1
+    FROM public.customer_performance_statement_request r
+    WHERE r.id = NEW.id
+  ) THEN
+    RETURN NEW;
+  END IF;
+
+  IF NEW.action = 'finalize' THEN
+    IF NEW.replaces_statement_id IS NOT NULL THEN
+      RAISE EXCEPTION 'bsf03b_invalid: finalize must not reference a predecessor'
+        USING ERRCODE = '22023';
+    END IF;
+    v_series := gen_random_uuid();
+    v_version := 1;
+  ELSE
+    IF NEW.replaces_statement_id IS NULL THEN
+      RAISE EXCEPTION 'bsf03b_invalid: replace requires replaces_statement_id'
+        USING ERRCODE = '22023';
+    END IF;
+    SELECT * INTO v_prev
+    FROM public.customer_performance_statement s
+    WHERE s.id = NEW.replaces_statement_id
+    FOR UPDATE;
+    IF NOT FOUND
+       OR v_prev.systemhouse_id <> NEW.systemhouse_id
+       OR v_prev.customer_id   <> NEW.customer_id
+       OR v_prev.period_start  <> NEW.period_start
+       OR v_prev.period_end    <> NEW.period_end
+       OR v_prev.status        <> 'finalized' THEN
+      RAISE EXCEPTION 'bsf03b_denied: predecessor not replaceable in this scope/period'
+        USING ERRCODE = '42501';
+    END IF;
+    v_series := v_prev.series_id;
+    v_version := v_prev.version + 1;
+  END IF;
+
+  -- Reviewmenge: aktive Quellzeilen im Scope/Zeitraum, Legacy 'abgerechnet'
+  -- ausgeschlossen, ohne Claim eines anderen aktiven Statements.
+  CREATE TEMP TABLE bsf03b_review ON COMMIT DROP AS
+  SELECT a.source_id, a.source_revision, a.source_hash, a.published_at,
+         a.activity_date, a.title, a.duration_hours, a.billable, a.billing_status,
+         a.engineer_id, a.work_package_source_id, a.work_package_ref,
+         COALESCE(o.effective_billable, a.billable) AS effective_billable
+  FROM public.shared_activity_projection a
+  LEFT JOIN public.customer_activity_billable_override o
+    ON o.systemhouse_id = a.systemhouse_id
+   AND o.customer_id = a.customer_id
+   AND o.activity_source_id = a.source_id
+   AND o.source_revision = a.source_revision
+   AND o.source_hash = a.source_hash
+  WHERE a.systemhouse_id = NEW.systemhouse_id
+    AND a.customer_id = NEW.customer_id
+    AND a.is_active
+    AND a.activity_date BETWEEN NEW.period_start AND NEW.period_end
+    AND a.billing_status <> 'abgerechnet'
+    AND NOT EXISTS (
+      SELECT 1 FROM public.customer_performance_activity_claim c
+      WHERE c.systemhouse_id = a.systemhouse_id
+        AND c.customer_id = a.customer_id
+        AND c.activity_source_id = a.source_id
+        AND (NEW.replaces_statement_id IS NULL
+             OR c.statement_id <> NEW.replaces_statement_id)
+    );
+
+  -- Fail-closed: jede reviewfaehige Zeile, die ein fremdes aktives Statement
+  -- beansprucht, bricht den Vorgang ab (keine stille Teilfinalisierung).
+  IF EXISTS (
+    SELECT 1
+    FROM public.shared_activity_projection a
+    JOIN public.customer_performance_activity_claim c
+      ON c.systemhouse_id = a.systemhouse_id
+     AND c.customer_id = a.customer_id
+     AND c.activity_source_id = a.source_id
+    WHERE a.systemhouse_id = NEW.systemhouse_id
+      AND a.customer_id = NEW.customer_id
+      AND a.is_active
+      AND a.activity_date BETWEEN NEW.period_start AND NEW.period_end
+      AND a.billing_status <> 'abgerechnet'
+      AND (NEW.replaces_statement_id IS NULL
+           OR c.statement_id <> NEW.replaces_statement_id)
+  ) THEN
+    RAISE EXCEPTION 'bsf03b_conflict: activity already claimed by another statement'
+      USING ERRCODE = '55000';
+  END IF;
+
+  SELECT count(*) INTO v_items FROM bsf03b_review;
+  IF v_items < 1 THEN
+    RAISE EXCEPTION 'bsf03b_invalid: review set is empty' USING ERRCODE = '22023';
+  END IF;
+
+  SELECT encode(pg_catalog.sha256(convert_to(
+           COALESCE(string_agg(line, E'\n' ORDER BY src), ''), 'UTF8')), 'hex')
+    INTO v_fingerprint
+  FROM (
+    SELECT r.source_id AS src,
+           r.source_id || '|' || r.source_revision::text || '|' || r.source_hash || '|'
+             || to_char(r.activity_date, 'YYYY-MM-DD') || '|'
+             || trim(to_char(r.duration_hours, 'FM9999999990.00')) || '|'
+             || r.billing_status || '|'
+             || CASE WHEN r.effective_billable THEN 'true' ELSE 'false' END AS line
+    FROM bsf03b_review r
+  ) x;
+
+  IF v_fingerprint IS DISTINCT FROM NEW.expected_review_fingerprint THEN
+    RAISE EXCEPTION 'bsf03b_conflict: stale review fingerprint' USING ERRCODE = '40001';
+  END IF;
+
+  INSERT INTO public.customer_performance_statement (
+    id, series_id, version, systemhouse_id, customer_id, customer_name_snapshot,
+    period_start, period_end, status, finalized_by, finalized_at,
+    review_fingerprint, replaces_statement_id
+  ) VALUES (
+    v_new_id, v_series, v_version, NEW.systemhouse_id, NEW.customer_id, v_cust_name,
+    NEW.period_start, NEW.period_end, 'finalized', v_actor, now(),
+    v_fingerprint, NEW.replaces_statement_id
+  );
+
+  INSERT INTO public.customer_performance_statement_item (
+    statement_id, "position", activity_source_id, source_revision, source_hash,
+    source_published_at, source_engineer_id,
+    activity_date, title_snapshot, duration_hours, source_billable, effective_billable,
+    billing_status_snapshot, work_package_source_id,
+    work_package_title_snapshot, project_source_id, project_name_snapshot,
+    category_key_snapshot, category_label_snapshot
+  )
+  SELECT v_new_id,
+         row_number() OVER (ORDER BY r.source_id),
+         r.source_id, r.source_revision, r.source_hash, r.published_at, r.engineer_id,
+         r.activity_date, r.title, r.duration_hours, r.billable, r.effective_billable,
+         r.billing_status, r.work_package_source_id,
+         COALESCE(w.title, ''), p.source_id, COALESCE(p.name, ''),
+         CASE WHEN w.category_observed THEN w.category_key ELSE NULL END,
+         COALESCE(rv.label, '')
+  FROM bsf03b_review r
+  LEFT JOIN public.shared_work_package_projection w
+    ON w.id = r.work_package_ref
+   AND w.systemhouse_id = NEW.systemhouse_id
+   AND w.customer_id = NEW.customer_id
+  LEFT JOIN public.shared_project_projection p
+    ON p.id = w.project_ref
+   AND p.systemhouse_id = NEW.systemhouse_id
+   AND p.customer_id = NEW.customer_id
+  LEFT JOIN public.reference_catalog rc ON rc.key = 'workpackage.category'
+  LEFT JOIN public.reference_value rv
+    ON rv.catalog_id = rc.id
+   AND rv.systemhouse_id = NEW.systemhouse_id
+   AND rv.key = w.category_key
+   AND rv.is_active
+   AND (rv.valid_from IS NULL OR rv.valid_from <= now())
+   AND (rv.valid_to IS NULL OR rv.valid_to > now())
+   AND w.category_observed
+   AND w.category_key IS NOT NULL;
+
+  -- Claims: beim Ersatz wird der aktive Satz exakt neu aufgebaut.
+  -- Weggefallene/inaktive Activities duerfen nicht am supersedierten
+  -- Vorgaenger geclaimt bleiben; verbleibende Claims werden atomar auf v2
+  -- umgehaengt. Der Unique-Key verhindert Doppelnutzung.
+  IF NEW.replaces_statement_id IS NOT NULL THEN
+    DELETE FROM public.customer_performance_activity_claim c
+     WHERE c.statement_id = NEW.replaces_statement_id
+       AND c.systemhouse_id = NEW.systemhouse_id
+       AND c.customer_id = NEW.customer_id
+       AND NOT EXISTS (
+         SELECT 1 FROM bsf03b_review r WHERE r.source_id = c.activity_source_id
+       );
+
+    UPDATE public.customer_performance_activity_claim c
+       SET statement_id = v_new_id, claimed_at = now()
+     WHERE c.statement_id = NEW.replaces_statement_id
+       AND c.systemhouse_id = NEW.systemhouse_id
+       AND c.customer_id = NEW.customer_id
+       AND EXISTS (SELECT 1 FROM bsf03b_review r WHERE r.source_id = c.activity_source_id);
+  END IF;
+
+  INSERT INTO public.customer_performance_activity_claim
+    (systemhouse_id, customer_id, activity_source_id, statement_id)
+  SELECT NEW.systemhouse_id, NEW.customer_id, r.source_id, v_new_id
+  FROM bsf03b_review r
+  WHERE NOT EXISTS (
+    SELECT 1 FROM public.customer_performance_activity_claim c
+    WHERE c.systemhouse_id = NEW.systemhouse_id
+      AND c.customer_id = NEW.customer_id
+      AND c.activity_source_id = r.source_id
+  );
+
+  SELECT encode(pg_catalog.sha256(convert_to(
+           COALESCE(string_agg(line, E'\n' ORDER BY pos), ''), 'UTF8')), 'hex')
+    INTO v_hash
+  FROM (
+    SELECT i."position" AS pos,
+           i."position"::text || '|' || i.activity_source_id || '|'
+             || i.source_revision::text || '|' || i.source_hash || '|'
+             || to_char(i.source_published_at, 'YYYY-MM-DD"T"HH24:MI:SS.USOF') || '|'
+             || COALESCE(i.source_engineer_id::text, '') || '|'
+             || to_char(i.activity_date, 'YYYY-MM-DD') || '|'
+             || trim(to_char(i.duration_hours, 'FM9999999990.00')) || '|'
+             || CASE WHEN i.effective_billable THEN 'true' ELSE 'false' END AS line
+    FROM public.customer_performance_statement_item i
+    WHERE i.statement_id = v_new_id
+  ) y;
+
+  UPDATE public.customer_performance_statement s
+     SET snapshot_hash = v_hash,
+         source_oldest_published_at = agg.oldest_published,
+         source_latest_published_at = agg.latest_published,
+         item_count = agg.cnt,
+         billable_item_count = agg.bcnt,
+         billable_hours = agg.bh,
+         non_billable_hours = agg.nbh
+    FROM (
+      SELECT min(i.source_published_at) AS oldest_published,
+             max(i.source_published_at) AS latest_published,
+             count(*)::int AS cnt,
+             count(*) FILTER (WHERE i.effective_billable)::int AS bcnt,
+             COALESCE(sum(i.duration_hours) FILTER (WHERE i.effective_billable), 0) AS bh,
+             COALESCE(sum(i.duration_hours) FILTER (WHERE NOT i.effective_billable), 0) AS nbh
+      FROM public.customer_performance_statement_item i
+      WHERE i.statement_id = v_new_id
+    ) agg
+   WHERE s.id = v_new_id;
+
+  IF NEW.replaces_statement_id IS NOT NULL THEN
+    UPDATE public.customer_performance_statement
+       SET status = 'superseded',
+           superseded_by_statement_id = v_new_id
+     WHERE id = NEW.replaces_statement_id;
+  END IF;
+
+  INSERT INTO public.audit_log (action, target, actor_id, payload)
+  VALUES (
+    'performance_statement.' || NEW.action,
+    v_new_id::text,
+    v_actor,
+    jsonb_build_object(
+      'systemhouse_id', NEW.systemhouse_id,
+      'customer_id', NEW.customer_id,
+      'period_start', NEW.period_start,
+      'period_end', NEW.period_end,
+      'series_id', v_series,
+      'version', v_version,
+      'replaces_statement_id', NEW.replaces_statement_id,
+      'request_id', NEW.id,
+      'snapshot_hash', v_hash,
+      'review_fingerprint', v_fingerprint
+    )
+  );
+
+  DROP TABLE bsf03b_review;
+  NEW.result_statement_id := v_new_id;
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."bsf03b_process_statement_request"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."can_manage_customer_responsibility"("_user_id" "uuid", "_systemhouse_id" "uuid") RETURNS boolean
     LANGUAGE "sql" STABLE
     SET "search_path" TO 'public'
@@ -978,7 +1336,8 @@ CREATE OR REPLACE FUNCTION "public"."has_permission"("_user_id" "uuid", "_perm" 
           'project.edit','workpackage.edit','activity.edit','azure.export',
           'avkk.view','avkk.edit','avkk.responsibility.assign',
           'avkk.management.view','referencedata.view',
-          'customer.responsibility.manage','project.controlling.view'
+          'customer.responsibility.manage','project.controlling.view',
+          'performance.statement.manage'
         )) OR
         (ur.role = 'projectmanager' AND _perm IN (
           'dashboard.view','documentation.view',
@@ -1447,6 +1806,128 @@ CREATE TABLE IF NOT EXISTS "public"."customer_access" (
 ALTER TABLE "public"."customer_access" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."customer_activity_billable_override" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "systemhouse_id" "uuid" NOT NULL,
+    "customer_id" "uuid" NOT NULL,
+    "activity_source_id" "text" NOT NULL,
+    "source_revision" integer NOT NULL,
+    "source_hash" "text" NOT NULL,
+    "source_billable" boolean NOT NULL,
+    "effective_billable" boolean NOT NULL,
+    "note" "text" DEFAULT ''::"text" NOT NULL,
+    "changed_by" "uuid" DEFAULT "auth"."uid"() NOT NULL,
+    "changed_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."customer_activity_billable_override" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."customer_performance_activity_claim" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "systemhouse_id" "uuid" NOT NULL,
+    "customer_id" "uuid" NOT NULL,
+    "activity_source_id" "text" NOT NULL,
+    "statement_id" "uuid" NOT NULL,
+    "claimed_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."customer_performance_activity_claim" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."customer_performance_statement" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "series_id" "uuid" NOT NULL,
+    "version" integer NOT NULL,
+    "systemhouse_id" "uuid" NOT NULL,
+    "customer_id" "uuid" NOT NULL,
+    "customer_name_snapshot" "text" NOT NULL,
+    "period_start" "date" NOT NULL,
+    "period_end" "date" NOT NULL,
+    "status" "text" NOT NULL,
+    "finalized_by" "uuid" NOT NULL,
+    "finalized_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "source_oldest_published_at" timestamp with time zone,
+    "source_latest_published_at" timestamp with time zone,
+    "review_fingerprint" "text" NOT NULL,
+    "snapshot_hash" "text" DEFAULT "repeat"('0'::"text", 64) NOT NULL,
+    "item_count" integer DEFAULT 0 NOT NULL,
+    "billable_item_count" integer DEFAULT 0 NOT NULL,
+    "billable_hours" numeric(12,2) DEFAULT 0 NOT NULL,
+    "non_billable_hours" numeric(12,2) DEFAULT 0 NOT NULL,
+    "replaces_statement_id" "uuid",
+    "superseded_by_statement_id" "uuid",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "customer_performance_statement_counts_ck" CHECK ((("item_count" >= 0) AND ("billable_item_count" >= 0) AND ("billable_item_count" <= "item_count"))),
+    CONSTRAINT "customer_performance_statement_hours_ck" CHECK ((("billable_hours" >= (0)::numeric) AND ("non_billable_hours" >= (0)::numeric))),
+    CONSTRAINT "customer_performance_statement_period_ck" CHECK (("period_end" >= "period_start")),
+    CONSTRAINT "customer_performance_statement_review_fingerprint_check" CHECK (("review_fingerprint" ~ '^[0-9a-f]{64}$'::"text")),
+    CONSTRAINT "customer_performance_statement_snapshot_hash_check" CHECK (("snapshot_hash" ~ '^[0-9a-f]{64}$'::"text")),
+    CONSTRAINT "customer_performance_statement_status_check" CHECK (("status" = ANY (ARRAY['finalized'::"text", 'superseded'::"text"]))),
+    CONSTRAINT "customer_performance_statement_status_link_ck" CHECK (((("status" = 'finalized'::"text") AND ("superseded_by_statement_id" IS NULL)) OR (("status" = 'superseded'::"text") AND ("superseded_by_statement_id" IS NOT NULL)))),
+    CONSTRAINT "customer_performance_statement_version_check" CHECK (("version" >= 1))
+);
+
+
+ALTER TABLE "public"."customer_performance_statement" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."customer_performance_statement_item" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "statement_id" "uuid" NOT NULL,
+    "position" integer NOT NULL,
+    "activity_source_id" "text" NOT NULL,
+    "source_revision" integer NOT NULL,
+    "source_hash" "text" NOT NULL,
+    "source_published_at" timestamp with time zone NOT NULL,
+    "source_engineer_id" "uuid",
+    "activity_date" "date" NOT NULL,
+    "title_snapshot" "text" NOT NULL,
+    "duration_hours" numeric(12,2) NOT NULL,
+    "source_billable" boolean NOT NULL,
+    "effective_billable" boolean NOT NULL,
+    "billing_status_snapshot" "text" DEFAULT ''::"text" NOT NULL,
+    "work_package_source_id" "text",
+    "work_package_title_snapshot" "text" DEFAULT ''::"text" NOT NULL,
+    "project_source_id" "text",
+    "project_name_snapshot" "text" DEFAULT ''::"text" NOT NULL,
+    "category_key_snapshot" "text",
+    "category_label_snapshot" "text" DEFAULT ''::"text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "customer_performance_statement_item_duration_hours_check" CHECK (("duration_hours" >= (0)::numeric)),
+    CONSTRAINT "customer_performance_statement_item_position_check" CHECK (("position" >= 1))
+);
+
+
+ALTER TABLE "public"."customer_performance_statement_item" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."customer_performance_statement_request" (
+    "id" "uuid" NOT NULL,
+    "systemhouse_id" "uuid" NOT NULL,
+    "customer_id" "uuid" NOT NULL,
+    "period_start" "date" NOT NULL,
+    "period_end" "date" NOT NULL,
+    "action" "text" NOT NULL,
+    "replaces_statement_id" "uuid",
+    "expected_review_fingerprint" "text" NOT NULL,
+    "requested_by" "uuid" DEFAULT "auth"."uid"() NOT NULL,
+    "requested_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "result_statement_id" "uuid",
+    CONSTRAINT "customer_performance_statemen_expected_review_fingerprint_check" CHECK (("expected_review_fingerprint" ~ '^[0-9a-f]{64}$'::"text")),
+    CONSTRAINT "customer_performance_statement_request_action_check" CHECK (("action" = ANY (ARRAY['finalize'::"text", 'replace'::"text"]))),
+    CONSTRAINT "customer_performance_statement_request_action_ck" CHECK (((("action" = 'finalize'::"text") AND ("replaces_statement_id" IS NULL)) OR (("action" = 'replace'::"text") AND ("replaces_statement_id" IS NOT NULL)))),
+    CONSTRAINT "customer_performance_statement_request_period_ck" CHECK (("period_end" >= "period_start"))
+);
+
+
+ALTER TABLE "public"."customer_performance_statement_request" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."customer_responsibility" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "systemhouse_id" "uuid" NOT NULL,
@@ -1733,8 +2214,63 @@ ALTER TABLE ONLY "public"."customer_access"
 
 
 
+ALTER TABLE ONLY "public"."customer_activity_billable_override"
+    ADD CONSTRAINT "customer_activity_billable_override_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_activity_billable_override"
+    ADD CONSTRAINT "customer_activity_billable_override_unique" UNIQUE ("systemhouse_id", "customer_id", "activity_source_id", "source_revision");
+
+
+
 ALTER TABLE ONLY "public"."customer"
     ADD CONSTRAINT "customer_id_systemhouse_unique" UNIQUE ("id", "systemhouse_id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_activity_claim"
+    ADD CONSTRAINT "customer_performance_activity_claim_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_activity_claim"
+    ADD CONSTRAINT "customer_performance_activity_claim_unique" UNIQUE ("systemhouse_id", "customer_id", "activity_source_id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement_item"
+    ADD CONSTRAINT "customer_performance_statement_item_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement_item"
+    ADD CONSTRAINT "customer_performance_statement_item_position_uq" UNIQUE ("statement_id", "position");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement_item"
+    ADD CONSTRAINT "customer_performance_statement_item_source_uq" UNIQUE ("statement_id", "activity_source_id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement"
+    ADD CONSTRAINT "customer_performance_statement_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement_request"
+    ADD CONSTRAINT "customer_performance_statement_request_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement"
+    ADD CONSTRAINT "customer_performance_statement_scope_uq" UNIQUE ("id", "systemhouse_id", "customer_id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement"
+    ADD CONSTRAINT "customer_performance_statement_series_version_uq" UNIQUE ("series_id", "version");
 
 
 
@@ -1882,6 +2418,22 @@ CREATE INDEX "customer_access_user_idx" ON "public"."customer_access" USING "btr
 
 
 
+CREATE INDEX "customer_activity_billable_override_scope_idx" ON "public"."customer_activity_billable_override" USING "btree" ("systemhouse_id", "customer_id", "activity_source_id");
+
+
+
+CREATE INDEX "customer_performance_activity_claim_statement_idx" ON "public"."customer_performance_activity_claim" USING "btree" ("statement_id");
+
+
+
+CREATE INDEX "customer_performance_statement_item_statement_idx" ON "public"."customer_performance_statement_item" USING "btree" ("statement_id");
+
+
+
+CREATE INDEX "customer_performance_statement_scope_idx" ON "public"."customer_performance_statement" USING "btree" ("systemhouse_id", "customer_id", "period_start", "period_end");
+
+
+
 CREATE UNIQUE INDEX "customer_responsibility_one_active_uidx" ON "public"."customer_responsibility" USING "btree" ("systemhouse_id", "customer_id") WHERE (("status" = 'active'::"text") AND ("valid_to" IS NULL));
 
 
@@ -1987,6 +2539,22 @@ CREATE OR REPLACE TRIGGER "avkk_subject_set_updated_at" BEFORE UPDATE ON "public
 
 
 CREATE OR REPLACE TRIGGER "customer_access_set_updated_at" BEFORE UPDATE ON "public"."customer_access" FOR EACH ROW EXECUTE FUNCTION "public"."set_updated_at"();
+
+
+
+CREATE OR REPLACE TRIGGER "customer_activity_billable_override_audit" AFTER INSERT OR UPDATE ON "public"."customer_activity_billable_override" FOR EACH ROW EXECUTE FUNCTION "public"."bsf03b_billable_override_audit"();
+
+
+
+CREATE OR REPLACE TRIGGER "customer_activity_billable_override_guard" BEFORE UPDATE ON "public"."customer_activity_billable_override" FOR EACH ROW EXECUTE FUNCTION "public"."bsf03b_billable_override_guard"();
+
+
+
+CREATE OR REPLACE TRIGGER "customer_activity_billable_override_set_updated_at" BEFORE UPDATE ON "public"."customer_activity_billable_override" FOR EACH ROW EXECUTE FUNCTION "public"."set_updated_at"();
+
+
+
+CREATE OR REPLACE TRIGGER "customer_performance_statement_request_process" BEFORE INSERT ON "public"."customer_performance_statement_request" FOR EACH ROW EXECUTE FUNCTION "public"."bsf03b_process_statement_request"();
 
 
 
@@ -2200,6 +2768,91 @@ ALTER TABLE ONLY "public"."customer_access"
 
 ALTER TABLE ONLY "public"."customer_access"
     ADD CONSTRAINT "customer_access_user_fk" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."customer_activity_billable_override"
+    ADD CONSTRAINT "customer_activity_billable_override_changed_by_fkey" FOREIGN KEY ("changed_by") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_activity_billable_override"
+    ADD CONSTRAINT "customer_activity_billable_override_customer_fk" FOREIGN KEY ("customer_id", "systemhouse_id") REFERENCES "public"."customer"("id", "systemhouse_id") ON DELETE RESTRICT;
+
+
+
+ALTER TABLE ONLY "public"."customer_activity_billable_override"
+    ADD CONSTRAINT "customer_activity_billable_override_systemhouse_id_fkey" FOREIGN KEY ("systemhouse_id") REFERENCES "public"."systemhouse"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_activity_claim"
+    ADD CONSTRAINT "customer_performance_activity_claim_customer_fk" FOREIGN KEY ("customer_id", "systemhouse_id") REFERENCES "public"."customer"("id", "systemhouse_id") ON DELETE RESTRICT;
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_activity_claim"
+    ADD CONSTRAINT "customer_performance_activity_claim_statement_fk" FOREIGN KEY ("statement_id", "systemhouse_id", "customer_id") REFERENCES "public"."customer_performance_statement"("id", "systemhouse_id", "customer_id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_activity_claim"
+    ADD CONSTRAINT "customer_performance_activity_claim_systemhouse_id_fkey" FOREIGN KEY ("systemhouse_id") REFERENCES "public"."systemhouse"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement"
+    ADD CONSTRAINT "customer_performance_statement_customer_fk" FOREIGN KEY ("customer_id", "systemhouse_id") REFERENCES "public"."customer"("id", "systemhouse_id") ON DELETE RESTRICT;
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement"
+    ADD CONSTRAINT "customer_performance_statement_finalized_by_fkey" FOREIGN KEY ("finalized_by") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement_item"
+    ADD CONSTRAINT "customer_performance_statement_item_statement_id_fkey" FOREIGN KEY ("statement_id") REFERENCES "public"."customer_performance_statement"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement"
+    ADD CONSTRAINT "customer_performance_statement_replaces_statement_id_fkey" FOREIGN KEY ("replaces_statement_id") REFERENCES "public"."customer_performance_statement"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement_request"
+    ADD CONSTRAINT "customer_performance_statement_reque_replaces_statement_id_fkey" FOREIGN KEY ("replaces_statement_id") REFERENCES "public"."customer_performance_statement"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement_request"
+    ADD CONSTRAINT "customer_performance_statement_request_customer_fk" FOREIGN KEY ("customer_id", "systemhouse_id") REFERENCES "public"."customer"("id", "systemhouse_id") ON DELETE RESTRICT;
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement_request"
+    ADD CONSTRAINT "customer_performance_statement_request_requested_by_fkey" FOREIGN KEY ("requested_by") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement_request"
+    ADD CONSTRAINT "customer_performance_statement_request_result_statement_id_fkey" FOREIGN KEY ("result_statement_id") REFERENCES "public"."customer_performance_statement"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement_request"
+    ADD CONSTRAINT "customer_performance_statement_request_systemhouse_id_fkey" FOREIGN KEY ("systemhouse_id") REFERENCES "public"."systemhouse"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement"
+    ADD CONSTRAINT "customer_performance_statement_superseded_by_statement_id_fkey" FOREIGN KEY ("superseded_by_statement_id") REFERENCES "public"."customer_performance_statement"("id");
+
+
+
+ALTER TABLE ONLY "public"."customer_performance_statement"
+    ADD CONSTRAINT "customer_performance_statement_systemhouse_id_fkey" FOREIGN KEY ("systemhouse_id") REFERENCES "public"."systemhouse"("id");
 
 
 
@@ -2432,6 +3085,59 @@ CREATE POLICY "customer_access_select_own" ON "public"."customer_access" FOR SEL
 
 
 
+ALTER TABLE "public"."customer_activity_billable_override" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "customer_activity_billable_override_insert" ON "public"."customer_activity_billable_override" FOR INSERT TO "authenticated" WITH CHECK (("public"."is_account_active"("auth"."uid"()) AND "public"."has_permission"("auth"."uid"(), 'performance.statement.manage'::"text") AND "public"."has_active_systemhouse_membership"("auth"."uid"(), "systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "systemhouse_id", "customer_id", 'read'::"text") AND ("changed_by" = "auth"."uid"()) AND (EXISTS ( SELECT 1
+   FROM "public"."shared_activity_projection" "a"
+  WHERE (("a"."systemhouse_id" = "customer_activity_billable_override"."systemhouse_id") AND ("a"."customer_id" = "customer_activity_billable_override"."customer_id") AND ("a"."source_id" = "customer_activity_billable_override"."activity_source_id") AND ("a"."source_revision" = "customer_activity_billable_override"."source_revision") AND ("a"."source_hash" = "customer_activity_billable_override"."source_hash") AND ("a"."billable" = "customer_activity_billable_override"."source_billable") AND "a"."is_active")))));
+
+
+
+CREATE POLICY "customer_activity_billable_override_read" ON "public"."customer_activity_billable_override" FOR SELECT TO "authenticated" USING (("public"."is_account_active"("auth"."uid"()) AND "public"."has_permission"("auth"."uid"(), 'performance.statement.manage'::"text") AND "public"."has_active_systemhouse_membership"("auth"."uid"(), "systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "systemhouse_id", "customer_id", 'read'::"text")));
+
+
+
+CREATE POLICY "customer_activity_billable_override_update" ON "public"."customer_activity_billable_override" FOR UPDATE TO "authenticated" USING (("public"."is_account_active"("auth"."uid"()) AND "public"."has_permission"("auth"."uid"(), 'performance.statement.manage'::"text") AND "public"."has_active_systemhouse_membership"("auth"."uid"(), "systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "systemhouse_id", "customer_id", 'read'::"text"))) WITH CHECK (("public"."is_account_active"("auth"."uid"()) AND "public"."has_permission"("auth"."uid"(), 'performance.statement.manage'::"text") AND "public"."has_active_systemhouse_membership"("auth"."uid"(), "systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "systemhouse_id", "customer_id", 'read'::"text") AND ("changed_by" = "auth"."uid"()) AND (EXISTS ( SELECT 1
+   FROM "public"."shared_activity_projection" "a"
+  WHERE (("a"."systemhouse_id" = "customer_activity_billable_override"."systemhouse_id") AND ("a"."customer_id" = "customer_activity_billable_override"."customer_id") AND ("a"."source_id" = "customer_activity_billable_override"."activity_source_id") AND ("a"."source_revision" = "customer_activity_billable_override"."source_revision") AND ("a"."source_hash" = "customer_activity_billable_override"."source_hash") AND ("a"."billable" = "customer_activity_billable_override"."source_billable") AND "a"."is_active")))));
+
+
+
+ALTER TABLE "public"."customer_performance_activity_claim" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "customer_performance_activity_claim_read" ON "public"."customer_performance_activity_claim" FOR SELECT TO "authenticated" USING (("public"."is_account_active"("auth"."uid"()) AND "public"."has_permission"("auth"."uid"(), 'performance.statement.manage'::"text") AND "public"."has_active_systemhouse_membership"("auth"."uid"(), "systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "systemhouse_id", "customer_id", 'read'::"text")));
+
+
+
+ALTER TABLE "public"."customer_performance_statement" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."customer_performance_statement_item" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "customer_performance_statement_item_read" ON "public"."customer_performance_statement_item" FOR SELECT TO "authenticated" USING ((EXISTS ( SELECT 1
+   FROM "public"."customer_performance_statement" "s"
+  WHERE (("s"."id" = "customer_performance_statement_item"."statement_id") AND "public"."is_account_active"("auth"."uid"()) AND "public"."has_permission"("auth"."uid"(), 'performance.statement.manage'::"text") AND "public"."has_active_systemhouse_membership"("auth"."uid"(), "s"."systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "s"."systemhouse_id", "s"."customer_id", 'read'::"text")))));
+
+
+
+CREATE POLICY "customer_performance_statement_read" ON "public"."customer_performance_statement" FOR SELECT TO "authenticated" USING (("public"."is_account_active"("auth"."uid"()) AND "public"."has_permission"("auth"."uid"(), 'performance.statement.manage'::"text") AND "public"."has_active_systemhouse_membership"("auth"."uid"(), "systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "systemhouse_id", "customer_id", 'read'::"text")));
+
+
+
+ALTER TABLE "public"."customer_performance_statement_request" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "customer_performance_statement_request_insert" ON "public"."customer_performance_statement_request" FOR INSERT TO "authenticated" WITH CHECK (("public"."is_account_active"("auth"."uid"()) AND "public"."has_permission"("auth"."uid"(), 'performance.statement.manage'::"text") AND "public"."has_active_systemhouse_membership"("auth"."uid"(), "systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "systemhouse_id", "customer_id", 'read'::"text") AND ("requested_by" = "auth"."uid"())));
+
+
+
+CREATE POLICY "customer_performance_statement_request_read" ON "public"."customer_performance_statement_request" FOR SELECT TO "authenticated" USING (("public"."is_account_active"("auth"."uid"()) AND "public"."has_permission"("auth"."uid"(), 'performance.statement.manage'::"text") AND "public"."has_active_systemhouse_membership"("auth"."uid"(), "systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "systemhouse_id", "customer_id", 'read'::"text")));
+
+
+
 ALTER TABLE "public"."customer_responsibility" ENABLE ROW LEVEL SECURITY;
 
 
@@ -2647,6 +3353,21 @@ GRANT ALL ON FUNCTION "public"."bsf02c_publish_shared_projection_snapshot"("p_sy
 
 
 
+REVOKE ALL ON FUNCTION "public"."bsf03b_billable_override_audit"() FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."bsf03b_billable_override_audit"() TO "service_role";
+
+
+
+REVOKE ALL ON FUNCTION "public"."bsf03b_billable_override_guard"() FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."bsf03b_billable_override_guard"() TO "service_role";
+
+
+
+REVOKE ALL ON FUNCTION "public"."bsf03b_process_statement_request"() FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."bsf03b_process_statement_request"() TO "service_role";
+
+
+
 REVOKE ALL ON FUNCTION "public"."can_manage_customer_responsibility"("_user_id" "uuid", "_systemhouse_id" "uuid") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."can_manage_customer_responsibility"("_user_id" "uuid", "_systemhouse_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."can_manage_customer_responsibility"("_user_id" "uuid", "_systemhouse_id" "uuid") TO "service_role";
@@ -2835,6 +3556,31 @@ GRANT SELECT ON TABLE "public"."customer_access" TO "authenticated";
 
 
 
+GRANT ALL ON TABLE "public"."customer_activity_billable_override" TO "service_role";
+GRANT SELECT,INSERT,UPDATE ON TABLE "public"."customer_activity_billable_override" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."customer_performance_activity_claim" TO "service_role";
+GRANT SELECT ON TABLE "public"."customer_performance_activity_claim" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."customer_performance_statement" TO "service_role";
+GRANT SELECT ON TABLE "public"."customer_performance_statement" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."customer_performance_statement_item" TO "service_role";
+GRANT SELECT ON TABLE "public"."customer_performance_statement_item" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."customer_performance_statement_request" TO "service_role";
+GRANT SELECT,INSERT ON TABLE "public"."customer_performance_statement_request" TO "authenticated";
+
+
+
 GRANT ALL ON TABLE "public"."customer_responsibility" TO "service_role";
 GRANT SELECT,INSERT,UPDATE ON TABLE "public"."customer_responsibility" TO "authenticated";
 
@@ -2916,10 +3662,3 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "service_role";
-
-
-
-
-
-
-

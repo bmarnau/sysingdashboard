@@ -4,6 +4,7 @@ export function normalizeGeneratedText(input) {
     .split("\n")
     .map((line) => line.replace(/[ \t]+$/g, ""))
     .join("\n")
+    .replace(/^\n+/g, "")
     .replace(/\n+$/g, "");
 
   return `${normalized}\n`;

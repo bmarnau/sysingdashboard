@@ -70,6 +70,8 @@ jobs:
         run: bun run docs:check
       - name: Project manifest check
         run: bun run project-status:check
+      - name: Golden Dataset contract
+        run: bun run golden-dataset:check
 
   # DB-SOT – Rebuild / Snapshot / Types / Drift ----------------------------
   db_schema:
@@ -106,6 +108,11 @@ jobs:
           psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
             -v ON_ERROR_STOP=1 \
             -f supabase/tests/bsf03a-project-controlling.sql
+      - name: BSF-03B performance statement database contract
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -v ON_ERROR_STOP=1 \
+            -f supabase/tests/bsf03b-performance-statement.sql
       - name: Generate schema snapshot
         run: |
           mkdir -p supabase/schema

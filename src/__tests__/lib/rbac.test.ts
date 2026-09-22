@@ -61,6 +61,22 @@ describe("RBAC matrix invariants", () => {
       }
     }
   });
+
+  it("should_allowPerformanceStatementManage_onlyForTeamleadAndSysadmin", () => {
+    expect(ROLE_PERMISSIONS.systemadministrator).toContain("performance.statement.manage");
+    expect(ROLE_PERMISSIONS.teamlead).toContain("performance.statement.manage");
+
+    for (const role of [
+      "administrator",
+      "projectmanager",
+      "engineer",
+      "viewer",
+      "customer",
+      "kiosk",
+    ] as const) {
+      expect(ROLE_PERMISSIONS[role]).not.toContain("performance.statement.manage");
+    }
+  });
 });
 
 describe("canAny / canAll / requirePermission", () => {

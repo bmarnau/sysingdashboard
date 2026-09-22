@@ -65,7 +65,8 @@
     "report:technical": "node scripts/technical-report/build.mjs",
     "report:technical:ci": "node scripts/technical-report/build.mjs",
     "ci:gate": "node scripts/ci/quality-gate.mjs",
-    "test:ci-gate": "vitest run src/__tests__/ci"
+    "test:ci-gate": "vitest run src/__tests__/ci",
+    "golden-dataset:check": "node scripts/golden-dataset/check.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "1.53.1",

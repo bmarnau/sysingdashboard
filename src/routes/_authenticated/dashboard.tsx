@@ -871,6 +871,15 @@ function Dashboard() {
               Projektcontrolling
             </Link>
           </PermissionGate>
+          <PermissionGate permission="performance.statement.manage">
+            <Link
+              to="/leistungsnachweis"
+              className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <CheckCircle2 className="size-4" />
+              Leistungsnachweis
+            </Link>
+          </PermissionGate>
           <PermissionGate permission="customer.responsibility.manage">
             <Link
               to="/kundenverantwortung"

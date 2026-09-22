@@ -96,12 +96,24 @@ export async function buildZip(snapshot: Snapshot): Promise<Uint8Array> {
     });
   }
 
+  if (snapshot.performanceStatements) {
+    pending.push({
+      logicalName: "performance-statement-dataset",
+      storageKey: null,
+      path: "performance-statements.json",
+      bytes: strToU8(JSON.stringify(snapshot.performanceStatements, null, 2)),
+      description:
+        "BSF-03B-Leistungsnachweise inkl. Versionsketten/Claims (Prüfdaten, kein Browser-Restore-Ziel)",
+    });
+  }
+
   // Kanonische `dashboard.json` (Schema v1) zusätzlich einbetten. Fehler hier
   // brechen das Archiv NICHT — der Backup-Pfad bleibt funktionsfähig.
   try {
     const res = JsonExportService.exportFullJson({
       exportedBy: "backup-service",
       avkk: snapshot.avkk ?? undefined,
+      performanceStatements: snapshot.performanceStatements ?? undefined,
     });
     pending.push({
       logicalName: "dashboard-export",

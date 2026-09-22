@@ -1,7 +1,7 @@
 # BSF-03B — Teamlead-Leistungsnachweis V1
 
-Stand: 2026-09-14
-Status: PLANUNG / IMPLEMENTIERUNGSVERTRAG
+Stand: 2026-09-21
+Status: IMPLEMENTIERUNGSVERTRAG · DB-TEIL UMGESETZT
 Issue: #107
 Vorgänger: BSF-KIOSK-02 / #136
 Nachfolger: BSF-03E / #63
@@ -221,9 +221,15 @@ Mismatch:
 Daten haben sich seit der Prüfung geändert. Prüfsicht neu laden.
 ```
 
-Kein Snapshot wird erzeugt.
+Kein Snapshot wird erzeugt. Die DB-Implementierung signalisiert diesen Konflikt normativ mit SQLSTATE `40001`.
 
-Damit finalisiert der Teamlead exakt den Stand, den er geprüft hat.
+Damit finalisiert der Teamlead exakt den Stand, den er geprüft hat. Ein Claim-Konflikt gegen Doppelverwendung wird normativ mit SQLSTATE `55000` signalisiert.
+
+### 9.1 Kanonisierung und Implementierungsbindung
+
+Die TypeScript- und DB-Seite müssen bitgenau dieselbe Review-Kanonisierung verwenden: UTF-8, Sortierung nach `activity_source_id`, `duration_hours` mit zwei Dezimalstellen, boolesches `effective_billable` und `\n` als Zeilentrenner. Änderungen an dieser Regel sind Vertragsänderungen und müssen TS- und SQL-Tests gemeinsam aktualisieren.
+
+Der Snapshot-Hash ist ebenfalls deterministisch aus den final gespeicherten Snapshotdaten zu bilden; er darf nicht aus Live-Daten nachträglich rekonstruiert werden.
 
 ## 10. Persistenzmodell finaler Leistungsnachweise
 

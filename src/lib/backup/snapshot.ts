@@ -4,6 +4,7 @@
 
 import { ExportArchive } from "../export-archive";
 import { collectAvkkPayload } from "./avkk-payload";
+import { collectPerformanceStatementBackupPayload } from "./performance-statement-collector";
 import { MANIFEST_VERSION, PROJECT_NAME, isAppKey, looksSensitive } from "./constants";
 import type { Snapshot } from "./types";
 
@@ -51,7 +52,9 @@ export async function collectSnapshot(): Promise<Snapshot> {
 
   // Cloud-Nutzdaten (AVKK + Reference Data). Fehler brechen das Backup NICHT
   // ab, werden aber ausdrücklich im Manifest/Protokoll ausgewiesen.
-  const { payload: avkk, warnings: avkkWarnings } = await collectAvkkPayload();
+  const [{ payload: avkk, warnings: avkkWarnings }, performanceStatementResult] = await Promise.all(
+    [collectAvkkPayload(), collectPerformanceStatementBackupPayload()],
+  );
 
   return {
     manifest: {
@@ -69,5 +72,7 @@ export async function collectSnapshot(): Promise<Snapshot> {
     archive,
     avkk,
     avkkWarnings,
+    performanceStatements: performanceStatementResult.payload,
+    performanceStatementWarnings: performanceStatementResult.warnings,
   };
 }

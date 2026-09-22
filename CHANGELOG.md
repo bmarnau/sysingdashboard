@@ -13,6 +13,16 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.66.0 - 2026-09-21
+
+- **Teamlead-Leistungsnachweis V1 (BSF-03B / Issue #107)**: Neue geschützte Teamlead-Sicht für Kunde + Zeitraum mit revisionsgebundenem Billable-Review, Freshness, getrennten billable/non-billable Summen, bewusster Finalisierung und versionsierter Historie.
+- **Unveränderbare Nachweise**: Finalisierung erzeugt atomar einen Snapshot mit Review-Fingerprint, Snapshot-Hash und exklusiven Activity-Claims; Replacement erzeugt eine neue Version und lässt den alten Snapshot unverändert.
+- **Kundenexport**: PDF, CSV und JSON werden aus dem finalen Snapshot erzeugt und sind ausdrücklich „Leistungsnachweis, keine Rechnung“; keine automatische Leistungserbringer-/Engineer-ID, keine Source-Hashes und keine Euro-/Fakturalogik.
+- **RBAC/RLS/Security**: `performance.statement.manage` ist regulär Teamlead vorbehalten; fünf BSF-03B-Tabellen sind RLS-geschützt, interne SECURITY-DEFINER-Triggerfunktionen sind nicht direkt durch authenticated/anon/PUBLIC ausführbar. Der offizielle Supabase Security Advisor bleibt BASELINE_ONLY ohne neue BSF-03B-Findings.
+- **Backup/Restore und administrativer JSON-Export**: BSF-03B-Cloud-Daten sind im Schema 1.3.0 enthalten; fehlende Cloud-Daten lassen den übrigen Export mit Warnung gültig.
+- **Qualität**: Funktionaler Abschluss-Head `ffbf3641c` mit Security #1247 und CI #1252 vollständig PASS: Golden Dataset Required Gate, 147 Testdateien / 1009 Tests PASS (+4 TODO), DB-Regression BSF-02C/03A/03B, Schema Drift, Backend, API, Security, Import/Export, Backup, Build, Playwright E2E, Accessibility, Technical Debt und Quality Gate.
+- **Lovable-Evidenzgrenze**: Die verwaltete Lovable-Arbeitsfläche konnte nicht identitätsgebunden auf den GitHub-Exact-Head geschaltet werden; deshalb wird keine visuelle Exact-Head-Preview als PASS behauptet. Diese Toolgrenze ist im BSF-03B-Abschlussnachweis dokumentiert.
+
 ## 1.65.1 - 2026-09-20
 
 - **Versionsanzeige**: Landing-/Anmeldeseite, Auth-Seite und angemeldetes Dashboard zeigen die aktuelle Dashboard-Version mit Versionsdatum aus der zentralen CHANGELOG-Quelle an.

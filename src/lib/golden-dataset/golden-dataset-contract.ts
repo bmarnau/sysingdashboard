@@ -1,5 +1,5 @@
 export const GOLDEN_SCHEMA_VERSION = "sysing.golden.v1" as const;
-export const GOLDEN_DATASET_VERSION = "1.0.0" as const;
+export const GOLDEN_DATASET_VERSION = "1.1.0" as const;
 export const GOLDEN_REFERENCE_TIME = "2026-09-14T00:00:00Z" as const;
 
 export interface GoldenManifest {

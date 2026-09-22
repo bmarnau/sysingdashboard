@@ -37,6 +37,8 @@ import { ImportPreviewDialog } from "@/components/ImportPreviewDialog";
 import { ImportLogService, type ImportLogEntry } from "@/lib/import-log-service";
 import { JsonImportService } from "@/lib/json-import-service";
 import { collectAvkkPayload, type AvkkBackupPayload } from "@/lib/backup/avkk-payload";
+import { collectPerformanceStatementBackupPayload } from "@/lib/backup/performance-statement-collector";
+import type { PerformanceStatementBackupPayload } from "@/lib/backup/performance-statement-payload";
 import { usePermission } from "@/hooks/usePermission";
 
 export type ImportExportTab = "export" | "import" | "examples" | "log" | "backup" | "docs";
@@ -61,6 +63,7 @@ const SCOPE_LABELS: Record<ScopeChoice, string> = {
   settings: "Nur Einstellungen",
   targettime: "Nur Arbeitszeitmodelle",
   avkk: "Nur AVKK-Führungsdaten",
+  "performance-statements": "Nur Leistungsnachweis-Cloud-Daten",
 };
 
 function triggerBrowserDownload(blob: Blob, fileName: string) {
@@ -82,9 +85,12 @@ export function ImportExportDialog({
 }: ImportExportDialogProps) {
   const currentUser = useCurrentUser();
   const canViewAvkk = usePermission("avkk.view");
+  const canManagePerformanceStatements = usePermission("performance.statement.manage");
   const [tab, setTab] = useState<ImportExportTab>(initialTab);
   const [scope, setScope] = useState<ScopeChoice>("full");
-  const [opts, setOpts] = useState<Required<Omit<ExportOptions, "exportedBy" | "avkk">>>({
+  const [opts, setOpts] = useState<
+    Required<Omit<ExportOptions, "exportedBy" | "avkk" | "performanceStatements">>
+  >({
     includeUsers: true,
     includeSettings: true,
     includeTimeEntries: true,
@@ -130,11 +136,30 @@ export function ImportExportDialog({
     return payload ?? undefined;
   };
 
+  const loadPerformanceStatements = async (): Promise<
+    PerformanceStatementBackupPayload | undefined
+  > => {
+    if (!canManagePerformanceStatements) return undefined;
+    if (scope !== "full" && scope !== "performance-statements") return undefined;
+
+    const { payload, warnings } = await collectPerformanceStatementBackupPayload();
+    if (!payload && warnings.length > 0) {
+      toast.warning("Leistungsnachweis-Daten nicht im Export enthalten", {
+        description: warnings.join(" "),
+      });
+    }
+    return payload ?? undefined;
+  };
+
   const buildExport = async () => {
-    const avkk = await loadAvkk();
+    const [avkk, performanceStatements] = await Promise.all([
+      loadAvkk(),
+      loadPerformanceStatements(),
+    ]);
+    const options = { ...opts, exportedBy, avkk, performanceStatements };
     return scope === "full"
-      ? JsonExportService.exportFullJson({ ...opts, exportedBy, avkk })
-      : JsonExportService.exportPartialJson(scope, { ...opts, exportedBy, avkk });
+      ? JsonExportService.exportFullJson(options)
+      : JsonExportService.exportPartialJson(scope, options);
   };
 
   const handleCheck = async () => {
@@ -230,14 +255,18 @@ export function ImportExportDialog({
                     onValueChange={(v) => setScope(v as ScopeChoice)}
                     className="mt-2 space-y-1"
                   >
-                    {(Object.keys(SCOPE_LABELS) as ScopeChoice[]).map((k) => (
-                      <div key={k} className="flex items-center gap-2">
-                        <RadioGroupItem id={`scope-${k}`} value={k} />
-                        <Label htmlFor={`scope-${k}`} className="font-normal">
-                          {SCOPE_LABELS[k]}
-                        </Label>
-                      </div>
-                    ))}
+                    {(Object.keys(SCOPE_LABELS) as ScopeChoice[])
+                      .filter(
+                        (k) => k !== "performance-statements" || canManagePerformanceStatements,
+                      )
+                      .map((k) => (
+                        <div key={k} className="flex items-center gap-2">
+                          <RadioGroupItem id={`scope-${k}`} value={k} />
+                          <Label htmlFor={`scope-${k}`} className="font-normal">
+                            {SCOPE_LABELS[k]}
+                          </Label>
+                        </div>
+                      ))}
                   </RadioGroup>
                 </div>
 

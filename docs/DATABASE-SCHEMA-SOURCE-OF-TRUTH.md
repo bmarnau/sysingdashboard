@@ -125,8 +125,11 @@ Der Drift-Check normalisiert ausschließlich technisch irrelevante Unterschiede:
 
 - CRLF/CR -> LF,
 - nachgestellte Leerzeichen/Tabs,
-- leere Zeilen am Dateiende,
+- leere Zeilen am Dateianfang und Dateiende,
 - genau eine abschließende Newline.
+
+Damit werden ausschließlich semantisch bedeutungslose Randzeilen neutralisiert, die der
+Schema-Generator vor dem ersten SQL-Statement oder am Dateiende erzeugen kann.
 
 Er entfernt **keine** SQL-Statements, Policies, Grants, Trigger, Funktionen, Kommentare mit Projektbedeutung oder Objektdefinitionen.
 

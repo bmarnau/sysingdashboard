@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-21 · Dashboard-Version 1.65.1
+Stand: 2026-09-21 · Dashboard-Version 1.66.0
 
 ## Vision
 
@@ -40,9 +40,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | v1.65.0 veröffentlicht; KIOSK-02 FINAL DONE. Patch 1.65.1 mit Versionsanzeige und evidenzkalibriertem Systemstatus ist vollständig abgenommen und wartet auf Merge/Release. BSF-03B ist gestartet und befindet sich nach read-only Live-Precheck im TDD-/Vertragsaufbau. |
+| Aktueller Stand     | BSF-03B Teamlead-Leistungsnachweis ist FINAL DONE; Release-Kandidat 1.66.0. Security #1247 und CI #1252 vollständig PASS, Security Advisor BASELINE_ONLY ohne neue BSF-03B-Findings. Lovable Exact-Head-Visualprüfung bleibt transparent als Plattformgrenze NOT EVIDENCED. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | Patch 1.65.1 mergen und releasen → BSF-03B Permission-/Snapshot-/Review-Vertrag repository-seitig umsetzen → danach DB-Migration und L2-UI. |
+| Nächster Nutzen     | BSF-03E / #63: Vertretungs- und Personensicht auf Basis der vorhandenen Responsibility-/Scope-Verträge. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -50,6 +50,20 @@ Qualitätssicherung gewachsen. Nach der formalen MVP-Baseline verschiebt sich de
 Schwerpunkt auf das **Betriebsfähige Systemhaus-Fundament (BSF)**: belastbare
 Kundenbeziehungen, rollenübergreifende Leistungssichten, Dokumentationsqualität,
 Betreiberhoheit und spätere Integrationen.
+
+## BSF-03B — Teamlead-Leistungsnachweis FINAL DONE (2026-09-21)
+
+BSF-03B / Issue #107 ist fachlich und technisch abgeschlossen. Die neue Teamlead-Sicht trennt die operative Shared Activity vom revisionsgebundenen Billable-Review. Finalisierung erzeugt atomar unveränderbare Statement-/Item-Snapshots und Activity-Claims; Replacement legt eine neue Version an und lässt den Vorgänger unverändert.
+
+Die Kundenfassung ist ausdrücklich ein **Leistungsnachweis, keine Rechnung**. PDF, CSV und JSON werden aus demselben finalen Snapshot erzeugt und enthalten keine automatische Leistungserbringer-/Engineer-ID, keine Source-Hashes und keine Euro-/Fakturalogik. Backup/Restore und administrativer JSON-Export wurden um die BSF-03B-Cloud-Daten erweitert.
+
+Funktionaler Abschluss-Head `ffbf3641c2187a738b853fb050aa4e5f1b6541a0`: Security #1247 PASS und CI #1252 vollständig PASS, darunter Golden Dataset Required Gate, 147 Testdateien / 1009 PASS + 4 TODO, BSF-02C/03A/03B-Datenbankregression, Schema Drift, Backend, API, RBAC/Security, Import/Export, Backup/Restore, Production Build, Playwright E2E, Accessibility, Technical Debt und Quality Gate.
+
+Der offizielle Supabase Security Advisor ist BASELINE_ONLY: 0 ERROR, 0 CRITICAL, zwei bekannte AVKK-Warnungen und keine neuen BSF-03B-Findings. Beide BSF-03B-SECURITY-DEFINER-Funktionen verwenden `search_path=""` und sind für authenticated/anon/PUBLIC nicht direkt ausführbar; RLS ist auf allen fünf BSF-03B-Tabellen aktiv.
+
+Die Lovable-Arbeitsfläche konnte nicht identitätsgebunden auf den GitHub-Exact-Head geschaltet werden. Deshalb wird keine visuelle Exact-Head-Preview als PASS behauptet. Diese Tool-/Plattformgrenze ist im Abschlussnachweis dokumentiert und wird nicht zur fachlichen Laufzeitabhängigkeit erhoben.
+
+Abschlussnachweis: `docs/BSF-03B-CLOSURE-2026-09-21.md`. PR #149 bleibt bis zur separaten Freigabe ungemergt; kein Deploy. Nächster Sprint: BSF-03E / #63.
 
 ## Patch 1.65.1 — Versionsanzeige und evidenzkalibrierter Systemstatus (2026-09-20/21)
 
@@ -60,6 +74,12 @@ Der anschließende AQGS-Systemstatus-Audit trennt Konfiguration, Erreichbarkeit,
 Die erste Lovable-Exact-Tree-Abnahme meldete `FRESH_REFRESH = FAIL`. Die Root-Cause-Analyse zeigte, dass der synthetische Test nur `**/api/status` interceptete, während `Jetzt prüfen` korrekt `/api/status?refresh=1` aufruft. Der korrigierte read-only Exact-Head-Retest mit `**/api/status*` bestätigt die tatsächliche Sequenz `/api/status → /api/status?refresh=1 → /api/status?refresh=1` sowie `SYNCHRON → ABWEICHEND → NICHT PRÜFBAR`. Der frühere FAIL ist damit als Harness-False-Negative bestätigt. Auch der echte Fail-closed-Randfall bei komplett nicht erreichbarer Status-API ist erfolgreich verifiziert.
 
 Handbuch und kontextsensitive Hilfe stehen danach auf Version **1.23.1**. DB-, Auth-, RBAC- und RLS-Grenzen wurden durch diese Änderungen nicht verändert.
+
+## BSF-03B — DB-Vertrag live, Regression PASS (2026-09-21)
+
+Die Migration `20260921095742_bsf03b_performance_statement` ist live aufgezeichnet. RLS/ACL der fünf BSF-03B-Tabellen, die nicht direkt ausführbaren SECURITY-DEFINER-Triggerfunktionen sowie der offizielle Supabase Security Advisor sind geprüft; der Advisor zeigt ausschließlich die bekannte AVKK-Baseline und keine neuen BSF-03B-Findings. Der frühere BSF-03B-Vertragslauf T01–T30 bleibt PASS-Evidenz.
+
+Der kombinierte Regressionslauf ist inzwischen auf Exact Head `798b7000e168aac4030986f12059c05536c810db` in der Owner-fähigen CI-Supabase/PostgreSQL-17-Instanz reproduziert: BSF-02C T01–T30, BSF-03A T01–T20 und BSF-03B T01–T30 PASS; `DATABASE_SCHEMA_DRIFT: NONE`, `DATABASE_TYPES_DRIFT: NONE`, Security #1148 und CI #1153 vollständig PASS. Die produktive Lovable-`sandbox_exec`-Rolle kann denselben Owner-Level-Lauf technisch nicht identisch wiederholen; diese Umgebungsgrenze wird nicht als Produktblocker gewertet. Details: `docs/BSF-03B-VERIFICATION-2026-09-21.md`.
 
 ## BSF-KIOSK-02 — interner Read-/Hybrid-Provider (2026-09-19)
 

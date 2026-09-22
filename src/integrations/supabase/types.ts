@@ -474,6 +474,373 @@ export type Database = {
           },
         ]
       }
+      customer_activity_billable_override: {
+        Row: {
+          activity_source_id: string
+          changed_at: string
+          changed_by: string
+          created_at: string
+          customer_id: string
+          effective_billable: boolean
+          id: string
+          note: string
+          source_billable: boolean
+          source_hash: string
+          source_revision: number
+          systemhouse_id: string
+          updated_at: string
+        }
+        Insert: {
+          activity_source_id: string
+          changed_at?: string
+          changed_by?: string
+          created_at?: string
+          customer_id: string
+          effective_billable: boolean
+          id?: string
+          note?: string
+          source_billable: boolean
+          source_hash: string
+          source_revision: number
+          systemhouse_id: string
+          updated_at?: string
+        }
+        Update: {
+          activity_source_id?: string
+          changed_at?: string
+          changed_by?: string
+          created_at?: string
+          customer_id?: string
+          effective_billable?: boolean
+          id?: string
+          note?: string
+          source_billable?: boolean
+          source_hash?: string
+          source_revision?: number
+          systemhouse_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_activity_billable_override_customer_fk"
+            columns: ["customer_id", "systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "customer"
+            referencedColumns: ["id", "systemhouse_id"]
+          },
+          {
+            foreignKeyName: "customer_activity_billable_override_systemhouse_id_fkey"
+            columns: ["systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "systemhouse"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_performance_activity_claim: {
+        Row: {
+          activity_source_id: string
+          claimed_at: string
+          customer_id: string
+          id: string
+          statement_id: string
+          systemhouse_id: string
+        }
+        Insert: {
+          activity_source_id: string
+          claimed_at?: string
+          customer_id: string
+          id?: string
+          statement_id: string
+          systemhouse_id: string
+        }
+        Update: {
+          activity_source_id?: string
+          claimed_at?: string
+          customer_id?: string
+          id?: string
+          statement_id?: string
+          systemhouse_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_performance_activity_claim_customer_fk"
+            columns: ["customer_id", "systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "customer"
+            referencedColumns: ["id", "systemhouse_id"]
+          },
+          {
+            foreignKeyName: "customer_performance_activity_claim_statement_fk"
+            columns: ["statement_id", "systemhouse_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customer_performance_statement"
+            referencedColumns: ["id", "systemhouse_id", "customer_id"]
+          },
+          {
+            foreignKeyName: "customer_performance_activity_claim_systemhouse_id_fkey"
+            columns: ["systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "systemhouse"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_performance_statement: {
+        Row: {
+          billable_hours: number
+          billable_item_count: number
+          created_at: string
+          customer_id: string
+          customer_name_snapshot: string
+          finalized_at: string
+          finalized_by: string
+          id: string
+          item_count: number
+          non_billable_hours: number
+          period_end: string
+          period_start: string
+          replaces_statement_id: string | null
+          review_fingerprint: string
+          series_id: string
+          snapshot_hash: string
+          source_latest_published_at: string | null
+          source_oldest_published_at: string | null
+          status: string
+          superseded_by_statement_id: string | null
+          systemhouse_id: string
+          version: number
+        }
+        Insert: {
+          billable_hours?: number
+          billable_item_count?: number
+          created_at?: string
+          customer_id: string
+          customer_name_snapshot: string
+          finalized_at?: string
+          finalized_by: string
+          id?: string
+          item_count?: number
+          non_billable_hours?: number
+          period_end: string
+          period_start: string
+          replaces_statement_id?: string | null
+          review_fingerprint: string
+          series_id: string
+          snapshot_hash?: string
+          source_latest_published_at?: string | null
+          source_oldest_published_at?: string | null
+          status: string
+          superseded_by_statement_id?: string | null
+          systemhouse_id: string
+          version: number
+        }
+        Update: {
+          billable_hours?: number
+          billable_item_count?: number
+          created_at?: string
+          customer_id?: string
+          customer_name_snapshot?: string
+          finalized_at?: string
+          finalized_by?: string
+          id?: string
+          item_count?: number
+          non_billable_hours?: number
+          period_end?: string
+          period_start?: string
+          replaces_statement_id?: string | null
+          review_fingerprint?: string
+          series_id?: string
+          snapshot_hash?: string
+          source_latest_published_at?: string | null
+          source_oldest_published_at?: string | null
+          status?: string
+          superseded_by_statement_id?: string | null
+          systemhouse_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_performance_statement_customer_fk"
+            columns: ["customer_id", "systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "customer"
+            referencedColumns: ["id", "systemhouse_id"]
+          },
+          {
+            foreignKeyName: "customer_performance_statement_replaces_statement_id_fkey"
+            columns: ["replaces_statement_id"]
+            isOneToOne: false
+            referencedRelation: "customer_performance_statement"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_performance_statement_superseded_by_statement_id_fkey"
+            columns: ["superseded_by_statement_id"]
+            isOneToOne: false
+            referencedRelation: "customer_performance_statement"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_performance_statement_systemhouse_id_fkey"
+            columns: ["systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "systemhouse"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_performance_statement_item: {
+        Row: {
+          activity_date: string
+          activity_source_id: string
+          billing_status_snapshot: string
+          category_key_snapshot: string | null
+          category_label_snapshot: string
+          created_at: string
+          duration_hours: number
+          effective_billable: boolean
+          id: string
+          position: number
+          project_name_snapshot: string
+          project_source_id: string | null
+          source_billable: boolean
+          source_engineer_id: string | null
+          source_hash: string
+          source_published_at: string
+          source_revision: number
+          statement_id: string
+          title_snapshot: string
+          work_package_source_id: string | null
+          work_package_title_snapshot: string
+        }
+        Insert: {
+          activity_date: string
+          activity_source_id: string
+          billing_status_snapshot?: string
+          category_key_snapshot?: string | null
+          category_label_snapshot?: string
+          created_at?: string
+          duration_hours: number
+          effective_billable: boolean
+          id?: string
+          position: number
+          project_name_snapshot?: string
+          project_source_id?: string | null
+          source_billable: boolean
+          source_engineer_id?: string | null
+          source_hash: string
+          source_published_at: string
+          source_revision: number
+          statement_id: string
+          title_snapshot: string
+          work_package_source_id?: string | null
+          work_package_title_snapshot?: string
+        }
+        Update: {
+          activity_date?: string
+          activity_source_id?: string
+          billing_status_snapshot?: string
+          category_key_snapshot?: string | null
+          category_label_snapshot?: string
+          created_at?: string
+          duration_hours?: number
+          effective_billable?: boolean
+          id?: string
+          position?: number
+          project_name_snapshot?: string
+          project_source_id?: string | null
+          source_billable?: boolean
+          source_engineer_id?: string | null
+          source_hash?: string
+          source_published_at?: string
+          source_revision?: number
+          statement_id?: string
+          title_snapshot?: string
+          work_package_source_id?: string | null
+          work_package_title_snapshot?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_performance_statement_item_statement_id_fkey"
+            columns: ["statement_id"]
+            isOneToOne: false
+            referencedRelation: "customer_performance_statement"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_performance_statement_request: {
+        Row: {
+          action: string
+          customer_id: string
+          expected_review_fingerprint: string
+          id: string
+          period_end: string
+          period_start: string
+          replaces_statement_id: string | null
+          requested_at: string
+          requested_by: string
+          result_statement_id: string | null
+          systemhouse_id: string
+        }
+        Insert: {
+          action: string
+          customer_id: string
+          expected_review_fingerprint: string
+          id: string
+          period_end: string
+          period_start: string
+          replaces_statement_id?: string | null
+          requested_at?: string
+          requested_by?: string
+          result_statement_id?: string | null
+          systemhouse_id: string
+        }
+        Update: {
+          action?: string
+          customer_id?: string
+          expected_review_fingerprint?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          replaces_statement_id?: string | null
+          requested_at?: string
+          requested_by?: string
+          result_statement_id?: string | null
+          systemhouse_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_performance_statement_reque_replaces_statement_id_fkey"
+            columns: ["replaces_statement_id"]
+            isOneToOne: false
+            referencedRelation: "customer_performance_statement"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_performance_statement_request_customer_fk"
+            columns: ["customer_id", "systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "customer"
+            referencedColumns: ["id", "systemhouse_id"]
+          },
+          {
+            foreignKeyName: "customer_performance_statement_request_result_statement_id_fkey"
+            columns: ["result_statement_id"]
+            isOneToOne: false
+            referencedRelation: "customer_performance_statement"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_performance_statement_request_systemhouse_id_fkey"
+            columns: ["systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "systemhouse"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_responsibility: {
         Row: {
           created_at: string
@@ -1366,4 +1733,3 @@ export const Constants = {
     },
   },
 } as const
-

@@ -59,6 +59,31 @@ Jede neue Migration:
 2. Testcase in `src/__tests__/integration/import.test.ts`.
 3. Handbuch-Kapitel `changelog` mit Import-Kompatibilitätsnotiz.
 
+## Schema 1.3.0 — BSF-03B `performanceStatements`
+
+Schema 1.3.0 ergänzt den optionalen administrativen Block
+`performanceStatements` (MINOR-Bump, abwärtskompatibel). Er enthält die
+RLS-sichtbaren zentralen Geschäftsdaten des Teamlead-Leistungsnachweises:
+
+- revisionsgebundene Billable-Overrides,
+- Finalize-/Replace-Requests,
+- unveränderbare Statement-Header und Snapshot-Items,
+- aktive Activity-Claims,
+- Serien-/Versionsbeziehungen sowie Review- und Snapshot-Hashes.
+
+Der Block ist **nicht** die Kundenfassung. Er darf interne Provenienz wie
+`sourceRevision`, `sourceHash` und `sourceEngineerId` enthalten, weil er
+dem administrativen Backup/Disaster-Recovery-Nachweis dient. SYSING-104
+(PDF/CSV/JSON für Kunden) wird separat aus demselben finalen Snapshot erzeugt
+und entfernt diese internen Felder sowie non-billable Positionen.
+
+Der Browser-Restore validiert `performanceStatements` vollständig
+(Versionsketten, inverse Ersetzungszeiger, Item-Zahlen/-Summen, aktive Claims
+und gespeicherte Hashes), schreibt den Block jedoch **nicht** nach Supabase
+zurück. Ein Wiederanlauf zentraler Cloud-Daten erfolgt über den
+Datenbank-/Provider-Restorepfad. Es gibt keinen Service-Role-Restore im
+Frontend.
+
 ## Schema 1.2.0 — `WorkPackage.categoryKey` (BSF-03D)
 
 Schema 1.2.0 ergänzt am Arbeitspaket das optionale Feld
@@ -129,12 +154,20 @@ Regeln:
 - Abweichende Prüfsumme, Größe oder Dateityp bricht den Restore ab.
 - Archive ohne `entries[]` (Format 1) werden beim Lesen migriert und mit einer
   Warnung im Restore-Protokoll versehen; sie werden nicht umgeschrieben.
+- Sind BSF-03B-Cloud-Daten verfügbar, enthält das Archiv zusätzlich
+  `performance-statements.json` als Manifest-Eintrag
+  `performance-statement-dataset` mit `storageKey: null`. Der Inhalt wird
+  beim Restore geprüft und berichtet, aber nicht aus dem Browser in die
+  Datenbank zurückgeschrieben.
+- Kann der angemeldete Benutzer die Cloud-Daten wegen Berechtigung oder
+  Verbindung nicht lesen, bleibt das lokale Backup gültig, trägt aber eine
+  ausdrückliche Warnung; Vollständigkeit wird nicht behauptet.
 
 ---
 
 # Supabase-Datenbankstand
 
-Stand: 2026-09-18 / Dashboard 1.64.0 Release-Kandidat. Dieser Abschnitt beschreibt den
+Stand: 2026-09-21 / BSF-03B Implementierungsstand. Dieser Abschnitt beschreibt den
 durch versionierte Git-Migrationen und den kanonischen Schema-Snapshot belegten Zustand.
 Geplante, aber nicht angelegte Tabellen sind hier nicht aufgeführt. Für den jeweils
 exakten DDL-Vertrag gelten `supabase/migrations/*` und
@@ -184,6 +217,23 @@ dürfen einen bereits erlaubten Customer-Scope nur verengen.
 
 Die Shared Projection ist derzeit ein kontrollierter Mehrbenutzer-Read-Pfad. Sie ersetzt
 noch nicht sämtliche lokalen CRUD-Persistenzpfade; diese Konsolidierung bleibt BSF-04.
+
+### BSF-03B Leistungsnachweis
+
+| Tabelle                                  | Zweck                                                                                                       |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `customer_activity_billable_override`    | revisionsgebundene Teamlead-Entscheidung zur effektiven Abrechenbarkeit; Shared Activity bleibt unverändert |
+| `customer_performance_statement_request` | idempotenter Finalize-/Replace-Request im User-JWT-Kontext                                                  |
+| `customer_performance_statement`         | unveränderbarer Header mit Serie/Version, Review-Fingerprint, Snapshot-Hash und Summen                      |
+| `customer_performance_statement_item`    | unveränderbare Snapshot-Positionen einschließlich interner Provenienz                                       |
+| `customer_performance_activity_claim`    | aktive Exklusivitäts-Claims gegen Doppelverwendung einer Activity                                           |
+
+`performance.statement.manage` ist die atomare Permission. Regulär besitzt sie
+`teamlead`; `systemadministrator` bleibt technischer Break-glass. Zusätzlich
+gelten aktives Konto, aktive Systemhaus-Membership, Customer Access mindestens
+`read` und RLS. Finalisierung schreibt aus der Anwendung nur in die
+Request-Tabelle; der interne DB-Trigger erzeugt Header, Items und Claims
+atomar. Snapshot-Tabellen sind für `authenticated` nicht direkt schreibbar.
 
 ## 2. Reference Data
 

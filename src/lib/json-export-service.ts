@@ -30,6 +30,7 @@ import {
   type TimeEntryExport,
 } from "@/lib/json-schema";
 import type { AvkkBackupPayload } from "@/lib/backup/avkk-payload";
+import type { PerformanceStatementBackupPayload } from "@/lib/backup/performance-statement-payload";
 import { UserManagementService, type UserProfile } from "@/lib/user-management";
 import { EngineerTargetTimeService } from "@/lib/engineer-target-time";
 import { dashboardData, type Activity, type Project, type WorkPackage } from "@/lib/dashboard-data";
@@ -54,9 +55,14 @@ export interface ExportOptions {
    * dem Backend stammen und der Export synchron arbeitet.
    */
   avkk?: AvkkBackupPayload;
+  /**
+   * Interne BSF-03B-Cloud-Nutzdaten für administrativen Gesamtexport.
+   * Nicht für die Kundenfassung SYSING-104 verwenden.
+   */
+  performanceStatements?: PerformanceStatementBackupPayload;
 }
 
-type ResolvedOptions = Required<Omit<ExportOptions, "avkk">>;
+type ResolvedOptions = Required<Omit<ExportOptions, "avkk" | "performanceStatements">>;
 
 const DEFAULT_OPTIONS: ResolvedOptions = {
   exportedBy: "system",
@@ -309,6 +315,7 @@ export const JsonExportService = {
       targetTimeModels: targetTimeModels as DashboardJsonExport["targetTimeModels"],
       settings,
       avkk: options.avkk ? buildAvkkBlock(options.avkk) : undefined,
+      performanceStatements: options.performanceStatements,
     };
 
     return finalizeExport(doc, "full");
@@ -356,6 +363,11 @@ export const JsonExportService = {
         break;
       case "avkk":
         if (options.avkk) doc.avkk = buildAvkkBlock(options.avkk);
+        break;
+      case "performance-statements":
+        if (options.performanceStatements) {
+          doc.performanceStatements = options.performanceStatements;
+        }
         break;
     }
 

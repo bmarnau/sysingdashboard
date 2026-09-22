@@ -14,6 +14,10 @@ import {
 } from "./constants";
 import { loadManifest } from "./manifest";
 import { validateAvkkPayload, type AvkkValidation } from "./avkk-payload";
+import {
+  validatePerformanceStatementBackupPayload,
+  type PerformanceStatementBackupValidation,
+} from "./performance-statement-payload";
 import type { BackupCheckResult, BackupCheckStatus, BackupManifestV2, Snapshot } from "./types";
 
 /**
@@ -124,6 +128,49 @@ export function checkAvkkArchive(
   return { present: true, validation, errors };
 }
 
+/**
+ * Liest den BSF-03B-Leistungsnachweis-Datensatz aus dem Archiv und prüft
+ * Versionsketten, Items, Claims und Hash-Metadaten vollständig.
+ */
+export function checkPerformanceStatementArchive(
+  manifest: BackupManifestV2,
+  zip: Record<string, Uint8Array>,
+): {
+  present: boolean;
+  validation: PerformanceStatementBackupValidation | null;
+  errors: string[];
+} {
+  const errors: string[] = [];
+  const entry = manifest.entries.find(
+    (candidate) => candidate.logicalName === "performance-statement-dataset",
+  );
+  if (!entry) return { present: false, validation: null, errors };
+
+  const bytes = zip[entry.path];
+  if (!bytes) {
+    return {
+      present: true,
+      validation: null,
+      errors: ["Leistungsnachweis-Nutzdaten fehlen trotz Manifest-Eintrag."],
+    };
+  }
+
+  let raw: unknown;
+  try {
+    raw = JSON.parse(strFromU8(bytes));
+  } catch (error) {
+    return {
+      present: true,
+      validation: null,
+      errors: [`Leistungsnachweis-Nutzdaten sind kein gültiges JSON: ${(error as Error).message}`],
+    };
+  }
+
+  const validation = validatePerformanceStatementBackupPayload(raw);
+  errors.push(...validation.errors);
+  return { present: true, validation, errors };
+}
+
 export function runConsistencyCheck(snapshot: Snapshot): BackupCheckResult {
   const msgs: string[] = [];
   let status: BackupCheckStatus = "ok";
@@ -156,6 +203,11 @@ export function runConsistencyCheck(snapshot: Snapshot): BackupCheckResult {
   }
 
   for (const w of snapshot.avkkWarnings) {
+    msgs.push(w);
+    if (status === "ok") status = "warning";
+  }
+
+  for (const w of snapshot.performanceStatementWarnings) {
     msgs.push(w);
     if (status === "ok") status = "warning";
   }
@@ -236,6 +288,18 @@ export async function validateZip(
     }
     if (snapshot.avkk && !avkkCheck.present) {
       msgs.push("AVKK-Nutzdaten fehlen im Archiv, obwohl sie gesichert werden sollten.");
+      status = "failed";
+    }
+
+    const performanceCheck = checkPerformanceStatementArchive(manifest, entries);
+    if (performanceCheck.errors.length > 0) {
+      msgs.push(...performanceCheck.errors);
+      status = "failed";
+    }
+    if (snapshot.performanceStatements && !performanceCheck.present) {
+      msgs.push(
+        "Leistungsnachweis-Nutzdaten fehlen im Archiv, obwohl sie gesichert werden sollten.",
+      );
       status = "failed";
     }
 

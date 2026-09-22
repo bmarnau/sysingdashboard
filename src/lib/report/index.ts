@@ -12,3 +12,5 @@ export {
   avkkManagementReport,
   avkkReportDefinitions,
 } from "./definitions/avkk";
+
+export { performanceStatementReport } from "./definitions/performance-statement";

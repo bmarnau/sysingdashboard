@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSyncRouteImport } from './routes/api/sync'
 import { Route as ApiStatusRouteImport } from './routes/api/status'
 import { Route as AuthenticatedProjektcontrollingRouteImport } from './routes/_authenticated/projektcontrolling'
+import { Route as AuthenticatedLeistungsnachweisRouteImport } from './routes/_authenticated/leistungsnachweis'
 import { Route as AuthenticatedKioskRouteImport } from './routes/_authenticated/kiosk'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMeineKundenIndexRouteImport } from './routes/_authenticated/meine-kunden/index'
@@ -56,6 +57,12 @@ const AuthenticatedProjektcontrollingRoute =
   AuthenticatedProjektcontrollingRouteImport.update({
     id: '/projektcontrolling',
     path: '/projektcontrolling',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLeistungsnachweisRoute =
+  AuthenticatedLeistungsnachweisRouteImport.update({
+    id: '/leistungsnachweis',
+    path: '/leistungsnachweis',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedKioskRoute = AuthenticatedKioskRouteImport.update({
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kiosk': typeof AuthenticatedKioskRoute
   '/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
+  '/leistungsnachweis': typeof AuthenticatedLeistungsnachweisRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -113,6 +121,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kiosk': typeof AuthenticatedKioskRoute
   '/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
+  '/leistungsnachweis': typeof AuthenticatedLeistungsnachweisRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -129,6 +138,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/kiosk': typeof AuthenticatedKioskRoute
   '/_authenticated/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
+  '/_authenticated/leistungsnachweis': typeof AuthenticatedLeistungsnachweisRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/kiosk'
     | '/projektcontrolling'
+    | '/leistungsnachweis'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/kiosk'
     | '/projektcontrolling'
+    | '/leistungsnachweis'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -174,6 +186,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/kiosk'
     | '/_authenticated/projektcontrolling'
+    | '/_authenticated/leistungsnachweis'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -243,6 +256,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjektcontrollingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/leistungsnachweis': {
+      id: '/_authenticated/leistungsnachweis'
+      path: '/leistungsnachweis'
+      fullPath: '/leistungsnachweis'
+      preLoaderRoute: typeof AuthenticatedLeistungsnachweisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/kiosk': {
       id: '/_authenticated/kiosk'
       path: '/kiosk'
@@ -292,6 +312,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKioskRoute: typeof AuthenticatedKioskRoute
   AuthenticatedProjektcontrollingRoute: typeof AuthenticatedProjektcontrollingRoute
+  AuthenticatedLeistungsnachweisRoute: typeof AuthenticatedLeistungsnachweisRoute
   AuthenticatedKundenverantwortungIndexRoute: typeof AuthenticatedKundenverantwortungIndexRoute
   AuthenticatedMeineKundenIndexRoute: typeof AuthenticatedMeineKundenIndexRoute
   AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute: typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
@@ -301,6 +322,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKioskRoute: AuthenticatedKioskRoute,
   AuthenticatedProjektcontrollingRoute: AuthenticatedProjektcontrollingRoute,
+  AuthenticatedLeistungsnachweisRoute: AuthenticatedLeistungsnachweisRoute,
   AuthenticatedKundenverantwortungIndexRoute:
     AuthenticatedKundenverantwortungIndexRoute,
   AuthenticatedMeineKundenIndexRoute: AuthenticatedMeineKundenIndexRoute,

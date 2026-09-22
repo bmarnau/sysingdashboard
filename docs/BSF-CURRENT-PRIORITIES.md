@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-09-20  
+Stand: 2026-09-21  
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
@@ -50,28 +50,26 @@ Golden-Validator und unabhängige Project-Controlling-Expected-Results sind im B
 
 PR #144 ist am 19.09.2026 nach vollständiger GitHub- und Exact-Tree-Lovable-Abnahme auf `main` gemergt. Finaler Kandidat `763cf874b9f5bb8fadbd2875d7e11f0bd7165361`; Security #989, CI #995 und Quality Gate PASS. Merge-Commit: `b9aef5aa9b3174f2abd022e11d492190102933a4`.
 
-### BSF-KIOSK-02 / #136 — FINAL DONE / MERGE PENDING
+### BSF-KIOSK-02 / #136 — DONE / MERGED
 
-PR #147 hat die vollständige fachliche und technische Endabnahme bestanden.
+PR #147 ist nach vollständiger Abnahme auf `main` gemergt. Release `v1.65.0` ist veröffentlicht. KIOSK-02 bleibt der abgeschlossene Vorgänger von BSF-03B.
 
-Finaler Lovable-Funktionskandidat: `528b5bc8373a51b7c3e946241b07467bd3245dd9`.
+### AKTUELLER SPRINT — BSF-03B / #107
 
-- Exact Tree Match: **JA** (`ab0a5655485c50f9b7be5f3c8fa0a36166aeb949`),
-- targeted Vitest: **11 Dateien / 69 Tests PASS**,
-- Golden Dataset V1: **PASS**,
-- Kiosk Demo/Internal/Security E2E: **9/9 PASS**,
-- 1920×1080 und 1366×768: **PASS**,
-- genau 3× INTERN / 3× DEMO: **PASS**,
-- Zeitraum / Freshness / Projektcontrolling-Link: **PASS**,
-- Datenminimierung / Read-only / Console / Network: **PASS**,
-- Fail-closed ohne Demo-Fallback: **PASS**,
-- keine DB-/Migration-/Auth-/RBAC-/RLS-/Providerdrift.
+Der Teamlead-Leistungsnachweis V1 ist aktiv in PR #149.
 
-Der abschließende Dokumentations-Head läuft vor Merge erneut durch Security und vollständige CI. Danach ist PR #147 merge-ready. Merge bleibt separat freizugeben; anschließend wird `v1.65.0` auf dem tatsächlichen `main`-Merge-Commit veröffentlicht.
+Aktueller Sprintstand:
 
-### NÄCHSTER SPRINT — BSF-03B / #107
+- Task 1 RBAC-Vertrag: **GREEN**,
+- Task 2 providerneutraler Review-/Snapshot-Vertrag: **GREEN**,
+- Task 3 Review-Fingerprint / TOCTOU-Schutz: **GREEN**,
+- Task 4 Datenbankvertrag, Live-Migration, T01–T30 und Security Advisor: **GREEN / BASELINE_ONLY**,
+- Task 5 Supabase Review-/Snapshot-Adapter: **AKTIV**.
 
-Nach KIOSK-02-Abnahme folgt der Teamlead-Leistungsnachweis V1. Verbindliche Planung und Lovable-Prompts L1/L2/L3 liegen bereits im Repository.
+Git-/CI-Evidenz des Task-4-Abschlussstands:
+Security #1148 **PASS**, CI #1153 **PASS**, `DATABASE_SCHEMA_DRIFT: NONE`, `DATABASE_TYPES_DRIFT: NONE`.
+
+Nächster Sprint nach Abschluss von BSF-03B bleibt **BSF-03E / #63**.
 
 ## Kiosk-first- und Golden-Dataset-Regel
 
@@ -110,9 +108,9 @@ Golden-Dataset-Grundregeln:
 3. **BSF-03D / #103 — DONE**
 4. **BSF-KIOSK-01 / #135 — DONE**
 5. **BSF-03A / #106 — DONE**
-6. **BSF-KIOSK-02 / #136 — FINAL DONE / MERGE PENDING**
-7. **BSF-03B / #107 — NEXT NACH KIOSK-02-MERGE; Golden Expected Result Leistungsnachweis ergänzen**
-8. **BSF-03E / #63 — GEPLANT**
+6. **BSF-KIOSK-02 / #136 — DONE / MERGED**
+7. **BSF-03B / #107 — FINAL DONE**
+8. **BSF-03E / #63 — NÄCHSTER SPRINT**
 9. **BSF-07 / #140 — VORGEZOGEN / GEPLANT**
 10. **BSF-KIOSK-03 / #137 — GEPLANT**
 11. **BSF-03C / #98 — GEPLANT**
