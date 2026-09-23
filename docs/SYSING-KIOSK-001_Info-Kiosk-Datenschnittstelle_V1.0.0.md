@@ -278,6 +278,10 @@ Verbindliche Referenzdatei:
 
 `docs/examples/kiosk-demo-dataset-v1.json`
 
+Anwenderanleitung für eigene synthetische Importdateien mit vollständigem Copy-&-Paste-Beispiel:
+
+`docs/examples/README-KIOSK-IMPORT.md`
+
 Sie ist gleichzeitig:
 
 - Default-Demoquelle,
