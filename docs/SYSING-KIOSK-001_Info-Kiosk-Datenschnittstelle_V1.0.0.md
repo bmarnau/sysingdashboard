@@ -90,14 +90,14 @@ Die UI kennt nur den `KioskDataProvider`. Datenquellen, Autorisierung und Datenz
 
 ### 3.2 Trennung der Verantwortungen
 
-| Schicht                       | Verantwortung                       | Darf nicht                                     |
-| ----------------------------- | ----------------------------------- | ---------------------------------------------- |
-| KioskView                     | Darstellung, Status, Refresh        | eigene SQL-/Supabase-Logik ausführen           |
-| KioskDataProvider             | Snapshot liefern                    | UI-Zustände oder Rendering steuern             |
-| DemoKioskDataProvider         | synthetische Demoquelle lesen       | produktive Daten behaupten                     |
-| Internal Read Provider        | interne Aggregate projizieren       | RLS/RBAC umgehen                               |
-| Read-Services                 | fachliche serverseitige Aggregation | Service-Role im normalen Browserpfad verwenden |
-| Supabase/RLS                  | Daten- und Scopegrenze              | durch UI-Filter ersetzt werden                 |
+| Schicht                | Verantwortung                       | Darf nicht                                     |
+| ---------------------- | ----------------------------------- | ---------------------------------------------- |
+| KioskView              | Darstellung, Status, Refresh        | eigene SQL-/Supabase-Logik ausführen           |
+| KioskDataProvider      | Snapshot liefern                    | UI-Zustände oder Rendering steuern             |
+| DemoKioskDataProvider  | synthetische Demoquelle lesen       | produktive Daten behaupten                     |
+| Internal Read Provider | interne Aggregate projizieren       | RLS/RBAC umgehen                               |
+| Read-Services          | fachliche serverseitige Aggregation | Service-Role im normalen Browserpfad verwenden |
+| Supabase/RLS           | Daten- und Scopegrenze              | durch UI-Filter ersetzt werden                 |
 
 ## 4. Runtime-Vertrag
 
@@ -523,18 +523,18 @@ Damit bleibt der Kiosk mit dem Projektziel kompatibel:
 
 SYSING-KIOSK-001 V1.0.0 ist als TDF-Baseline freigabefähig, wenn:
 
-| Nr. | Kriterium |
-| --- | --- |
-| 1 | Dokument-ID, Version, Datum und Geltungsbereich eindeutig sind. |
-| 2 | Runtime-Provider, Demo-JSON und spätere externe Provider getrennt beschrieben sind. |
-| 3 | `KioskDataProvider` und `KioskSnapshot` dem aktuellen Code entsprechen. |
-| 4 | alle sechs Domain-IDs korrekt dokumentiert sind. |
-| 5 | `sysing.kiosk.demo.v1` und `datasetVersion=1.0.0` mit der Referenzdatei übereinstimmen. |
-| 6 | der Referenzdatensatz unverändert führende Demoquelle bleibt. |
-| 7 | Security-/Datenschutz-/Resilience-Grenzen dokumentiert sind. |
-| 8 | keine produktive externe API als umgesetzt dargestellt wird. |
-| 9 | ein automatisierter Dokument-Code-Dataset-Check PASS ist. |
-| 10 | Word und PDF aus derselben Markdown-Quelle erzeugbar und visuell geprüft sind. |
+| Nr. | Kriterium                                                                               |
+| --- | --------------------------------------------------------------------------------------- |
+| 1   | Dokument-ID, Version, Datum und Geltungsbereich eindeutig sind.                         |
+| 2   | Runtime-Provider, Demo-JSON und spätere externe Provider getrennt beschrieben sind.     |
+| 3   | `KioskDataProvider` und `KioskSnapshot` dem aktuellen Code entsprechen.                 |
+| 4   | alle sechs Domain-IDs korrekt dokumentiert sind.                                        |
+| 5   | `sysing.kiosk.demo.v1` und `datasetVersion=1.0.0` mit der Referenzdatei übereinstimmen. |
+| 6   | der Referenzdatensatz unverändert führende Demoquelle bleibt.                           |
+| 7   | Security-/Datenschutz-/Resilience-Grenzen dokumentiert sind.                            |
+| 8   | keine produktive externe API als umgesetzt dargestellt wird.                            |
+| 9   | ein automatisierter Dokument-Code-Dataset-Check PASS ist.                               |
+| 10  | Word und PDF aus derselben Markdown-Quelle erzeugbar und visuell geprüft sind.          |
 
 ## 21. Glossar
 
@@ -555,8 +555,8 @@ SYSING-KIOSK-001 V1.0.0 ist als TDF-Baseline freigabefähig, wenn:
 
 ## 22. Versionshistorie
 
-| Version / Datum | Änderung |
-| --- | --- |
+| Version / Datum    | Änderung                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------- |
 | 1.0.0 · 2026-09-23 | Erste eigenständige TDF-Baseline für Kiosk-Providervertrag, Demo-JSON und Referenzdatensatz |
 
 ## 23. Freigabeentscheidung
