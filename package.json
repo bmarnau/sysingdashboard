@@ -67,7 +67,8 @@
     "ci:gate": "node scripts/ci/quality-gate.mjs",
     "test:ci-gate": "vitest run src/__tests__/ci",
     "golden-dataset:check": "node scripts/golden-dataset/check.mjs",
-    "docs:kiosk:check": "node scripts/docs/check-sysing-kiosk-001.mjs"
+    "docs:kiosk:check": "node scripts/docs/check-sysing-kiosk-001.mjs",
+    "docs:kiosk": "node scripts/docs/build-sysing-kiosk-001.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "1.53.1",
