@@ -70,15 +70,15 @@ Jede Importdatei hat diese Struktur:
 
 ### Pflichtfelder
 
-| Feld | Typ | Vorgabe |
-| --- | --- | --- |
-| `schemaVersion` | String | exakt `sysing.kiosk.demo.v1` |
-| `synthetic` | Boolean | exakt `true` |
-| `snapshot.mode` | String | exakt `demo` |
-| `snapshot.datasetVersion` | String | exakt `1.0.0` |
-| `snapshot.generatedAt` | Zeitstempel | gültiger ISO-/RFC-3339-Wert |
-| `snapshot.observedAt` | Zeitstempel | gültiger ISO-/RFC-3339-Wert |
-| `snapshot.domains` | Array | maximal sechs bekannte Domänen |
+| Feld                      | Typ         | Vorgabe                        |
+| ------------------------- | ----------- | ------------------------------ |
+| `schemaVersion`           | String      | exakt `sysing.kiosk.demo.v1`   |
+| `synthetic`               | Boolean     | exakt `true`                   |
+| `snapshot.mode`           | String      | exakt `demo`                   |
+| `snapshot.datasetVersion` | String      | exakt `1.0.0`                  |
+| `snapshot.generatedAt`    | Zeitstempel | gültiger ISO-/RFC-3339-Wert    |
+| `snapshot.observedAt`     | Zeitstempel | gültiger ISO-/RFC-3339-Wert    |
+| `snapshot.domains`        | Array       | maximal sechs bekannte Domänen |
 
 Die maximale Dateigröße beträgt **256 KiB**.
 
@@ -86,14 +86,14 @@ Die maximale Dateigröße beträgt **256 KiB**.
 
 Es sind ausschließlich diese Domain-IDs zulässig:
 
-| ID | Bedeutung |
-| --- | --- |
-| `projects` | Projekte |
-| `workPackages` | Arbeitspakete |
-| `activities` | Tätigkeiten |
-| `availability` | Urlaub / Verfügbarkeit |
-| `infrastructure` | Infrastruktur |
-| `support` | Support-Postfach |
+| ID               | Bedeutung              |
+| ---------------- | ---------------------- |
+| `projects`       | Projekte               |
+| `workPackages`   | Arbeitspakete          |
+| `activities`     | Tätigkeiten            |
+| `availability`   | Urlaub / Verfügbarkeit |
+| `infrastructure` | Infrastruktur          |
+| `support`        | Support-Postfach       |
 
 Eine Domain-ID darf innerhalb einer Importdatei nur einmal vorkommen.
 
@@ -119,14 +119,14 @@ Eine Domain hat folgende Struktur:
 
 ### Domain-Felder
 
-| Feld | Pflicht | Typ / Grenze | Bedeutung |
-| --- | --- | --- | --- |
-| `id` | ja | bekannte Domain-ID | technische Domäne |
-| `title` | ja | String, 1–120 Zeichen | sichtbarer Titel |
-| `level` | ja | `ok`, `warning`, `critical`, `unknown` | Gesamtstatus |
-| `metrics` | ja | Array, max. 50 | Kennzahlen |
-| `note` | nein | String, max. 500 Zeichen | Zusatzhinweis |
-| `rows` | nein | Array, max. 20 | Statusmatrix, z. B. Infrastruktur |
+| Feld      | Pflicht | Typ / Grenze                           | Bedeutung                         |
+| --------- | ------- | -------------------------------------- | --------------------------------- |
+| `id`      | ja      | bekannte Domain-ID                     | technische Domäne                 |
+| `title`   | ja      | String, 1–120 Zeichen                  | sichtbarer Titel                  |
+| `level`   | ja      | `ok`, `warning`, `critical`, `unknown` | Gesamtstatus                      |
+| `metrics` | ja      | Array, max. 50                         | Kennzahlen                        |
+| `note`    | nein    | String, max. 500 Zeichen               | Zusatzhinweis                     |
+| `rows`    | nein    | Array, max. 20                         | Statusmatrix, z. B. Infrastruktur |
 
 ## 6. Aufbau einer Metrik
 
@@ -142,13 +142,13 @@ Eine Domain hat folgende Struktur:
 
 ### Metric-Felder
 
-| Feld | Pflicht | Typ / Grenze | Bedeutung |
-| --- | --- | --- | --- |
-| `value` | ja | Zahl oder `null` | Kennzahl; `null` bedeutet unbekannt |
-| `label` | ja | String, 1–120 Zeichen | sichtbare Bezeichnung |
-| `level` | ja | gültiger Level | Status der Kennzahl |
-| `unit` | nein | String, 1–12 Zeichen | z. B. `%`, `h`, `Stk` |
-| `trend` | nein | 2–14 nichtnegative Zahlen | Verlauf für kleine Trenddarstellung |
+| Feld    | Pflicht | Typ / Grenze              | Bedeutung                           |
+| ------- | ------- | ------------------------- | ----------------------------------- |
+| `value` | ja      | Zahl oder `null`          | Kennzahl; `null` bedeutet unbekannt |
+| `label` | ja      | String, 1–120 Zeichen     | sichtbare Bezeichnung               |
+| `level` | ja      | gültiger Level            | Status der Kennzahl                 |
+| `unit`  | nein    | String, 1–12 Zeichen      | z. B. `%`, `h`, `Stk`               |
+| `trend` | nein    | 2–14 nichtnegative Zahlen | Verlauf für kleine Trenddarstellung |
 
 Ein unbekannter Wert wird als `null` angegeben. Verwende **nicht** `0`, wenn der Wert tatsächlich unbekannt ist.
 
@@ -471,14 +471,14 @@ Bei einem Fehler:
 
 ## 14. Referenzen
 
-| Zweck | Datei |
-| --- | --- |
-| Offizielle Importvorlage | `docs/examples/kiosk-demo-dataset-v1.json` |
-| Anwenderanleitung | `docs/examples/README-KIOSK-IMPORT.md` |
+| Zweck                      | Datei                                                           |
+| -------------------------- | --------------------------------------------------------------- |
+| Offizielle Importvorlage   | `docs/examples/kiosk-demo-dataset-v1.json`                      |
+| Anwenderanleitung          | `docs/examples/README-KIOSK-IMPORT.md`                          |
 | TDF-Schnittstellenreferenz | `docs/SYSING-KIOSK-001_Info-Kiosk-Datenschnittstelle_V1.0.0.md` |
-| Import-Schema | `src/lib/kiosk/kiosk-demo-import.ts` |
-| Runtime-Vertrag | `src/lib/kiosk/kiosk-contract.ts` |
-| Default-Demodaten | `src/lib/kiosk/kiosk-demo-dataset.ts` |
+| Import-Schema              | `src/lib/kiosk/kiosk-demo-import.ts`                            |
+| Runtime-Vertrag            | `src/lib/kiosk/kiosk-contract.ts`                               |
+| Default-Demodaten          | `src/lib/kiosk/kiosk-demo-dataset.ts`                           |
 
 ## 15. Kurzcheck vor dem Import
 
