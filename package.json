@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "docs:check": "node scripts/check-docs-sync.mjs",
+    "docs:check": "node scripts/check-docs-sync.mjs && node scripts/docs/check-sysing-kiosk-001.mjs",
     "docs:sysing": "node scripts/docs/build-sysing-001.mjs",
     "project-status:check": "node scripts/project-status/check.mjs",
     "db:schema:rebuild": "supabase db reset --local --no-seed",
@@ -66,7 +66,9 @@
     "report:technical:ci": "node scripts/technical-report/build.mjs",
     "ci:gate": "node scripts/ci/quality-gate.mjs",
     "test:ci-gate": "vitest run src/__tests__/ci",
-    "golden-dataset:check": "node scripts/golden-dataset/check.mjs"
+    "golden-dataset:check": "node scripts/golden-dataset/check.mjs",
+    "docs:kiosk:check": "node scripts/docs/check-sysing-kiosk-001.mjs",
+    "docs:kiosk": "node scripts/docs/build-sysing-kiosk-001.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "1.53.1",
