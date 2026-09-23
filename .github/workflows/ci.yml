@@ -68,6 +68,11 @@ jobs:
         run: bun run lint:no-console
       - name: Docs sync check
         run: bun run docs:check
+      - name: Kiosk TDF build smoke
+        run: |
+          rm -rf /tmp/sysing-kiosk-tdf
+          bun run docs:kiosk -- --out /tmp/sysing-kiosk-tdf
+          test -s /tmp/sysing-kiosk-tdf/SYSING-KIOSK-001_Info-Kiosk-Datenschnittstelle_V1.0.0.docx
       - name: Project manifest check
         run: bun run project-status:check
       - name: Golden Dataset contract
