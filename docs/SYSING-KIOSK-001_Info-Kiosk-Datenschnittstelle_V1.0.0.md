@@ -21,11 +21,11 @@
 
 Dieses Dokument trennt den implementierten Ist-Zustand bewusst vom späteren Integrationszielbild.
 
-| Kennzeichnung | Bedeutung |
-| --- | --- |
-| UMGESETZT | Im aktuellen Repository als Produkt- oder Dokumentationsvertrag vorhanden |
-| ZIELBILD | Geplante Erweiterungsrichtung, noch kein produktiver Schnittstellenpfad |
-| BEKANNTE GRENZE | Bewusste Einschränkung des aktuellen Stands |
+| Kennzeichnung   | Bedeutung                                                                 |
+| --------------- | ------------------------------------------------------------------------- |
+| UMGESETZT       | Im aktuellen Repository als Produkt- oder Dokumentationsvertrag vorhanden |
+| ZIELBILD        | Geplante Erweiterungsrichtung, noch kein produktiver Schnittstellenpfad   |
+| BEKANNTE GRENZE | Bewusste Einschränkung des aktuellen Stands                               |
 
 **Wichtig:** Der Info-Kiosk besitzt heute **keine produktive externe HTTP-API**. Implementiert sind ein providerneutraler Runtime-Vertrag innerhalb der Anwendung, ein interner Read-Provider und ein strikt synthetischer Demo-JSON-Import. Eine spätere externe Datenquelle muss über einen Adapter an denselben Runtime-Vertrag angebunden werden.
 
@@ -90,14 +90,14 @@ Die UI kennt nur den `KioskDataProvider`. Datenquellen, Autorisierung und Datenz
 
 ### 3.2 Trennung der Verantwortungen
 
-| Schicht | Verantwortung | Darf nicht |
-| --- | --- | --- |
-| KioskView | Darstellung, Status, Refresh | eigene SQL-/Supabase-Logik ausführen |
-| KioskDataProvider | Snapshot liefern | UI-Zustände oder Rendering steuern |
-| DemoKioskDataProvider | synthetische Demoquelle lesen | produktive Daten behaupten |
-| InternalReadKioskDataProvider | interne Aggregate projizieren | RLS/RBAC umgehen |
-| Read-Services | fachliche serverseitige Aggregation | Service-Role im normalen Browserpfad verwenden |
-| Supabase/RLS | Daten- und Scopegrenze | durch UI-Filter ersetzt werden |
+| Schicht                       | Verantwortung                       | Darf nicht                                     |
+| ----------------------------- | ----------------------------------- | ---------------------------------------------- |
+| KioskView                     | Darstellung, Status, Refresh        | eigene SQL-/Supabase-Logik ausführen           |
+| KioskDataProvider             | Snapshot liefern                    | UI-Zustände oder Rendering steuern             |
+| DemoKioskDataProvider         | synthetische Demoquelle lesen       | produktive Daten behaupten                     |
+| InternalReadKioskDataProvider | interne Aggregate projizieren       | RLS/RBAC umgehen                               |
+| Read-Services                 | fachliche serverseitige Aggregation | Service-Role im normalen Browserpfad verwenden |
+| Supabase/RLS                  | Daten- und Scopegrenze              | durch UI-Filter ersetzt werden                 |
 
 ## 4. Runtime-Vertrag
 
@@ -132,15 +132,15 @@ export interface KioskSnapshot {
 }
 ```
 
-| Feld | Bedeutung |
-| --- | --- |
-| `mode` | Gesamtmodus des Snapshots |
-| `datasetState` | Datensatz geladen oder nicht geladen |
+| Feld             | Bedeutung                                        |
+| ---------------- | ------------------------------------------------ |
+| `mode`           | Gesamtmodus des Snapshots                        |
+| `datasetState`   | Datensatz geladen oder nicht geladen             |
 | `datasetVersion` | Version des zugrunde liegenden Kiosk-Datensatzes |
-| `generatedAt` | Zeitpunkt der Snapshot-Erzeugung |
-| `observedAt` | fachlicher Datenstand, nicht bloße Renderzeit |
-| `period` | optionaler fachlicher Betrachtungszeitraum |
-| `domains` | Kiosk-Domänen mit Quelle, Status und Metriken |
+| `generatedAt`    | Zeitpunkt der Snapshot-Erzeugung                 |
+| `observedAt`     | fachlicher Datenstand, nicht bloße Renderzeit    |
+| `period`         | optionaler fachlicher Betrachtungszeitraum       |
+| `domains`        | Kiosk-Domänen mit Quelle, Status und Metriken    |
 
 ### 4.3 KioskDomainSnapshot
 
@@ -175,14 +175,14 @@ export interface KioskMetric {
 
 Der Kiosk V1 kennt exakt sechs Domain-IDs:
 
-| Domain-ID | Anzeige | KIOSK-02-Quelle | Zweck |
-| --- | --- | --- | --- |
-| `projects` | Projekte | intern | Projektaggregate |
-| `workPackages` | Arbeitspakete | intern | AP-Aggregate und Datenqualität |
-| `activities` | Tätigkeiten | intern | Anzahl, Stunden, billable/non-billable |
-| `availability` | Urlaub / Verfügbarkeit | Demo | aggregierte Abwesenheitsmenge ohne Gründe |
-| `infrastructure` | Infrastruktur | Demo | aggregierte Statuswerte |
-| `support` | Support-Postfach | Demo | Mengen und Alter, keine Mailinhalte |
+| Domain-ID        | Anzeige                | KIOSK-02-Quelle | Zweck                                     |
+| ---------------- | ---------------------- | --------------- | ----------------------------------------- |
+| `projects`       | Projekte               | intern          | Projektaggregate                          |
+| `workPackages`   | Arbeitspakete          | intern          | AP-Aggregate und Datenqualität            |
+| `activities`     | Tätigkeiten            | intern          | Anzahl, Stunden, billable/non-billable    |
+| `availability`   | Urlaub / Verfügbarkeit | Demo            | aggregierte Abwesenheitsmenge ohne Gründe |
+| `infrastructure` | Infrastruktur          | Demo            | aggregierte Statuswerte                   |
+| `support`        | Support-Postfach       | Demo            | Mengen und Alter, keine Mailinhalte       |
 
 Im Hybridmodus sind damit drei Domänen `internal` und drei Domänen `demo`. Fällt eine interne Quelle aus, wird sie `unavailable`; sie wird **nicht** still durch Demo-Daten ersetzt.
 
@@ -190,30 +190,30 @@ Im Hybridmodus sind damit drei Domänen `internal` und drei Domänen `demo`. Fä
 
 ### 6.1 Level
 
-| Level | Bedeutung |
-| --- | --- |
-| `ok` | fachlich unauffällig |
-| `warning` | Aufmerksamkeit erforderlich |
-| `critical` | kritischer Zustand |
-| `unknown` | keine belastbare Aussage möglich |
+| Level      | Bedeutung                        |
+| ---------- | -------------------------------- |
+| `ok`       | fachlich unauffällig             |
+| `warning`  | Aufmerksamkeit erforderlich      |
+| `critical` | kritischer Zustand               |
+| `unknown`  | keine belastbare Aussage möglich |
 
 Ein Level ist keine Personenbewertung. Es beschreibt ausschließlich den Zustand der jeweiligen aggregierten Domäne oder Metrik.
 
 ### 6.2 SourceKind
 
-| sourceKind | Bedeutung | UI-Kennzeichnung |
-| --- | --- | --- |
-| `demo` | synthetische Daten | DEMO |
-| `internal` | intern autorisiert gelesene Daten | INTERN |
-| `unavailable` | interne Quelle nicht belastbar lesbar | NICHT VERFÜGBAR |
+| sourceKind    | Bedeutung                             | UI-Kennzeichnung |
+| ------------- | ------------------------------------- | ---------------- |
+| `demo`        | synthetische Daten                    | DEMO             |
+| `internal`    | intern autorisiert gelesene Daten     | INTERN           |
+| `unavailable` | interne Quelle nicht belastbar lesbar | NICHT VERFÜGBAR  |
 
 ### 6.3 Mode
 
-| mode | Bedeutung |
-| --- | --- |
-| `demo` | ausschließlich synthetische Demo-Daten |
-| `hybrid` | Kombination aus internen und Demo-Domänen |
-| `internal` | ausschließlich interne Providerdaten |
+| mode       | Bedeutung                                 |
+| ---------- | ----------------------------------------- |
+| `demo`     | ausschließlich synthetische Demo-Daten    |
+| `hybrid`   | Kombination aus internen und Demo-Domänen |
+| `internal` | ausschließlich interne Providerdaten      |
 
 ## 7. Freshness und Refresh
 
@@ -494,30 +494,30 @@ Damit bleibt der Kiosk mit dem Projektziel kompatibel:
 
 ## 18. TDF-Prüfklassen
 
-| Prüfklasse | Anwendung auf SYSING-KIOSK-001 |
-| --- | --- |
-| TDF-TRACE | Jede Kernbehauptung verweist auf Code, Design oder Closure-Evidenz |
-| TDF-SCHEMA | `sysing.kiosk.demo.v1`, Dataset-Version und Pflichtfelder dokumentiert |
-| TDF-IMPORT | Größe, Strict Validation, Atomizität und Last-good beschrieben |
-| TDF-SOURCE | Demo/Internal/Unavailable, observedAt und Source of Truth beschrieben |
-| TDF-SEC | RBAC, RLS, Service-Role-Grenze, Secrets und Datenminimierung beschrieben |
-| TDF-RESILIENCE | unknown, unavailable, not_loaded und Last-good beschrieben |
-| TDF-RELEASE | UMGESETZT, ZIELBILD und BEKANNTE GRENZE getrennt |
+| Prüfklasse     | Anwendung auf SYSING-KIOSK-001                                           |
+| -------------- | ------------------------------------------------------------------------ |
+| TDF-TRACE      | Jede Kernbehauptung verweist auf Code, Design oder Closure-Evidenz       |
+| TDF-SCHEMA     | `sysing.kiosk.demo.v1`, Dataset-Version und Pflichtfelder dokumentiert   |
+| TDF-IMPORT     | Größe, Strict Validation, Atomizität und Last-good beschrieben           |
+| TDF-SOURCE     | Demo/Internal/Unavailable, observedAt und Source of Truth beschrieben    |
+| TDF-SEC        | RBAC, RLS, Service-Role-Grenze, Secrets und Datenminimierung beschrieben |
+| TDF-RESILIENCE | unknown, unavailable, not_loaded und Last-good beschrieben               |
+| TDF-RELEASE    | UMGESETZT, ZIELBILD und BEKANNTE GRENZE getrennt                         |
 
 ## 19. Traceability
 
-| Aussage | Primärquelle |
-| --- | --- |
-| Runtime-Providervertrag | `src/lib/kiosk/kiosk-contract.ts` |
-| Demo-Schemavertrag | `src/lib/kiosk/kiosk-demo-import.ts` |
-| Default-Demodaten | `src/lib/kiosk/kiosk-demo-dataset.ts` |
-| Referenz-JSON | `docs/examples/kiosk-demo-dataset-v1.json` |
-| KIOSK-01 Architektur | `docs/BSF-KIOSK-01-DESIGN.md` |
-| Demoimport | `docs/BSF-KIOSK-01-JSON-DEMO-IMPORT.md` |
-| KIOSK-01 Abnahme | `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` |
-| Interner Read-Provider | `docs/BSF-KIOSK-02-DESIGN.md` |
-| KIOSK-02 Abnahme | `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` |
-| Golden-Dataset-Bezug | `docs/GOLDEN-DATASET-STRATEGY.md` |
+| Aussage                 | Primärquelle                               |
+| ----------------------- | ------------------------------------------ |
+| Runtime-Providervertrag | `src/lib/kiosk/kiosk-contract.ts`          |
+| Demo-Schemavertrag      | `src/lib/kiosk/kiosk-demo-import.ts`       |
+| Default-Demodaten       | `src/lib/kiosk/kiosk-demo-dataset.ts`      |
+| Referenz-JSON           | `docs/examples/kiosk-demo-dataset-v1.json` |
+| KIOSK-01 Architektur    | `docs/BSF-KIOSK-01-DESIGN.md`              |
+| Demoimport              | `docs/BSF-KIOSK-01-JSON-DEMO-IMPORT.md`    |
+| KIOSK-01 Abnahme        | `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md`  |
+| Interner Read-Provider  | `docs/BSF-KIOSK-02-DESIGN.md`              |
+| KIOSK-02 Abnahme        | `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md`  |
+| Golden-Dataset-Bezug    | `docs/GOLDEN-DATASET-STRATEGY.md`          |
 
 ## 20. Abnahmekriterien
 
@@ -536,26 +536,26 @@ SYSING-KIOSK-001 V1.0.0 ist als TDF-Baseline freigabefähig, wenn:
 
 ## 21. Glossar
 
-| Begriff | Bedeutung |
-| --- | --- |
-| Kiosk | Read-only Steuerungsübersicht / Wallboard |
-| Provider | Adapter, der einen `KioskSnapshot` liefert |
-| Snapshot | vollständiger Kiosk-Datenstand für einen Refresh |
-| Domain | fachlicher Kiosk-Bereich, z. B. Projekte oder Infrastruktur |
-| Demo | vollständig synthetische Daten |
-| Internal | intern autorisiert gelesene Daten |
-| Unavailable | interne Datenquelle nicht belastbar verfügbar |
-| observedAt | fachlicher Datenstand |
-| generatedAt | Erzeugungszeit des Snapshots |
-| Last-good | letzter erfolgreich validierter Demo-Datensatz |
-| RLS | Row Level Security in PostgreSQL/Supabase |
-| TDF | Technical Documentation Framework |
+| Begriff     | Bedeutung                                                   |
+| ----------- | ----------------------------------------------------------- |
+| Kiosk       | Read-only Steuerungsübersicht / Wallboard                   |
+| Provider    | Adapter, der einen `KioskSnapshot` liefert                  |
+| Snapshot    | vollständiger Kiosk-Datenstand für einen Refresh            |
+| Domain      | fachlicher Kiosk-Bereich, z. B. Projekte oder Infrastruktur |
+| Demo        | vollständig synthetische Daten                              |
+| Internal    | intern autorisiert gelesene Daten                           |
+| Unavailable | interne Datenquelle nicht belastbar verfügbar               |
+| observedAt  | fachlicher Datenstand                                       |
+| generatedAt | Erzeugungszeit des Snapshots                                |
+| Last-good   | letzter erfolgreich validierter Demo-Datensatz              |
+| RLS         | Row Level Security in PostgreSQL/Supabase                   |
+| TDF         | Technical Documentation Framework                           |
 
 ## 22. Versionshistorie
 
-| Version | Datum | Änderung |
-| --- | --- | --- |
-| 1.0.0 | 2026-09-23 | Erste eigenständige TDF-Baseline für Kiosk-Providervertrag, Demo-JSON und Referenzdatensatz |
+| Version | Datum      | Änderung                                                                                    |
+| ------- | ---------- | ------------------------------------------------------------------------------------------- |
+| 1.0.0   | 2026-09-23 | Erste eigenständige TDF-Baseline für Kiosk-Providervertrag, Demo-JSON und Referenzdatensatz |
 
 ## 23. Freigabeentscheidung
 
