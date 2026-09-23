@@ -37,12 +37,14 @@
 ### Task 1: TDF-Quelldokument erstellen
 
 **Files:**
+
 - Create: `docs/SYSING-KIOSK-001_Info-Kiosk-Datenschnittstelle_V1.0.0.md`
 - Read-only reference: `src/lib/kiosk/kiosk-contract.ts`
 - Read-only reference: `src/lib/kiosk/kiosk-demo-import.ts`
 - Read-only reference: `docs/examples/kiosk-demo-dataset-v1.json`
 
 **Interfaces:**
+
 - Consumes: `KioskDataProvider.getSnapshot(): Promise<KioskSnapshot>`, `sysing.kiosk.demo.v1`.
 - Produces: dokumentierte TDF-Baseline `SYSING-KIOSK-001 V1.0.0`.
 
@@ -72,6 +74,7 @@ Explizit festhalten: keine direkte Supabase-Abhängigkeit der Kiosk-UI und keine
 - [ ] **Step 3: Datenvertrag vollständig beschreiben**
 
 Dokumentieren:
+
 - `KioskSnapshot`,
 - `KioskDomainSnapshot`,
 - `KioskMetric`,
@@ -92,6 +95,7 @@ Referenzdatei:
 - [ ] **Step 5: Security, Datenschutz, Resilience und Erweiterbarkeit dokumentieren**
 
 Mindestens:
+
 - read-only Kiosk,
 - RBAC/RLS bleiben Security Boundary,
 - kein Service-Role-Pfad im Browser,
@@ -115,6 +119,7 @@ Commit message:
 ### Task 2: Dokument-Code-Dataset-Driftcheck erstellen
 
 **Files:**
+
 - Create: `scripts/docs/check-sysing-kiosk-001.mjs`
 - Modify: `package.json`
 - Test input: `docs/SYSING-KIOSK-001_Info-Kiosk-Datenschnittstelle_V1.0.0.md`
@@ -124,12 +129,14 @@ Commit message:
 - Test input: `src/lib/kiosk/kiosk-demo-dataset.ts`
 
 **Interfaces:**
+
 - Consumes: versionierte Text-/JSON-Quellen.
 - Produces: CLI `bun run docs:kiosk:check`, Exit 0 bei Konsistenz, Exit 1 bei Drift.
 
 - [ ] **Step 1: RED-Prüfung definieren**
 
 Der Check muss fehlschlagen, wenn eine dieser Bedingungen verletzt ist:
+
 - nicht genau eine `SYSING-KIOSK-001_*.md`-Quelle,
 - falsche `document_id`,
 - Dokumentversion ungleich `1.0.0`,
@@ -175,16 +182,19 @@ Commit message:
 ### Task 3: Reproduzierbaren Word-Build ergänzen
 
 **Files:**
+
 - Create: `scripts/docs/build-sysing-kiosk-001.mjs`
 - Modify: `package.json`
 
 **Interfaces:**
+
 - Consumes: genau eine `docs/SYSING-KIOSK-001_*.md`-Quelle.
 - Produces: `SYSING-KIOSK-001_Info-Kiosk-Datenschnittstelle_V1.0.0.docx` in einem per `--out` wählbaren Verzeichnis.
 
 - [ ] **Step 1: Bestehenden SYSING-001-Builder als Layoutreferenz verwenden**
 
 Layoutanforderungen:
+
 - A4,
 - Arial,
 - TDF-Farbton wie SYSING-001,
@@ -219,17 +229,20 @@ Commit message:
 ### Task 4: PDF und visuelle TDF-Abnahme
 
 **Files:**
+
 - Generated artifact: `SYSING-KIOSK-001_Info-Kiosk-Datenschnittstelle_V1.0.0.docx`
 - Generated artifact: `SYSING-KIOSK-001_Info-Kiosk-Datenschnittstelle_V1.0.0.pdf`
 - No generated binary becomes a second editorial source.
 
 **Interfaces:**
+
 - Consumes: DOCX aus Task 3.
 - Produces: geprüfte PDF-Fassung derselben Quelle.
 
 - [ ] **Step 1: DOCX rendern und Seiten als PNG prüfen**
 
 Prüfen:
+
 - keine leeren Seiten,
 - keine abgeschnittenen Tabellen,
 - keine überlaufenden Codeblöcke,
@@ -254,6 +267,7 @@ Repository behält Markdown als redaktionelle Source of Truth; DOCX/PDF sind rep
 ### Task 5: Projekt-Dokumentation und Abschlussgate synchronisieren
 
 **Files:**
+
 - Modify: `docs/DEMO-DATA.md`
 - Modify: `docs/BSF-CURRENT-PRIORITIES.md` nur soweit Dokumentationsstatus betroffen
 - Modify: `docs/ENTWICKLUNGSTAGEBUCH.md`
@@ -261,12 +275,14 @@ Repository behält Markdown als redaktionelle Source of Truth; DOCX/PDF sind rep
 - PR description / evidence
 
 **Interfaces:**
+
 - Consumes: freigegebene TDF-Baseline und Driftcheck.
 - Produces: nachvollziehbarer Projektstatus ohne Chatabhängigkeit.
 
 - [ ] **Step 1: DEMO-DATA um TDF-Referenz ergänzen**
 
 Verlinken:
+
 - `SYSING-KIOSK-001`,
 - `kiosk-demo-dataset-v1.json`,
 - klare Aussage: Demoimport ist keine produktive externe API.
@@ -278,6 +294,7 @@ Datum 2026-09-23; Inhalt: TDF-Baseline, vorhandener Providervertrag, Referenzdat
 - [ ] **Step 3: Vollständige relevante Checks ausführen**
 
 Mindestens:
+
 - `bun run docs:kiosk:check`
 - `bun run docs:check`
 - `bun run format --check` oder bestehender Prettier-Check
@@ -288,6 +305,7 @@ Mindestens:
 - [ ] **Step 4: Review auf Scope-Drift**
 
 Bestätigen:
+
 - keine Produktcodeänderung am Kiosk-Verhalten,
 - kein Supabase-Schema-/RLS-Change,
 - keine Auth-/RBAC-Änderung,
@@ -300,6 +318,7 @@ PR-Titel:
 `docs(kiosk): SYSING-KIOSK-001 als TDF-Schnittstellendokument`.
 
 PR enthält:
+
 - Source-of-Truth-Pfade,
 - generierte Artefakte,
 - Prüfergebnisse,
