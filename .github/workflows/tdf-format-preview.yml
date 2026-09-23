@@ -1,0 +1,37 @@
+name: TDF Format Preview
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  format_preview:
+    name: TDF format preview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - name: Format TDF documentation and print payloads
+        run: |
+          bunx prettier --write \
+            docs/SYSING-KIOSK-001_Info-Kiosk-Datenschnittstelle_V1.0.0.md \
+            docs/DEMO-DATA.md \
+            docs/ENTWICKLUNGSTAGEBUCH.md
+          echo "TDF_BASE64_BEGIN"
+          base64 -w 0 docs/SYSING-KIOSK-001_Info-Kiosk-Datenschnittstelle_V1.0.0.md
+          echo
+          echo "TDF_BASE64_END"
+          echo "DEMO_BASE64_BEGIN"
+          base64 -w 0 docs/DEMO-DATA.md
+          echo
+          echo "DEMO_BASE64_END"
+          echo "DIARY_BASE64_BEGIN"
+          base64 -w 0 docs/ENTWICKLUNGSTAGEBUCH.md
+          echo
+          echo "DIARY_BASE64_END"
