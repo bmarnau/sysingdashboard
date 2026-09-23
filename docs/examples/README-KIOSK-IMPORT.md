@@ -36,6 +36,20 @@ Vorgehen:
 5. Datei als JSON speichern.
 6. Über den Kiosk-Demoimport laden.
 
+### Bedienweg in der Anwendung
+
+1. Mit einem Konto anmelden, das `users.manage` besitzt.
+2. **Servicemenü** öffnen.
+3. **Demo-Datensatz…** wählen.
+4. Zum Abschnitt **Kiosk-Demodatensatz** gehen.
+5. Bei **Kiosk-Demo-JSON auswählen** die vorbereitete `.json`-Datei auswählen.
+6. Auf die Rückmeldung **Kiosk-Demo-JSON importiert.** achten.
+7. Die angezeigte Dataset-Version kontrollieren.
+
+Alternativ lädt **Beispieldatensatz laden** den fest eingebauten Referenz-Demostand.
+
+Das technische Kiosk-Konto selbst darf den Demo-Datensatz nicht verwalten. Laden, Importieren und Entfernen sind administrativ und erfordern `users.manage`.
+
 ## 3. Verbindliche Top-Level-Struktur
 
 Jede Importdatei hat diese Struktur:
