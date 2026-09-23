@@ -94,7 +94,7 @@ Die UI kennt nur den `KioskDataProvider`. Datenquellen, Autorisierung und Datenz
 | ---------------------- | ----------------------------------- | ---------------------------------------------- |
 | KioskView              | Darstellung, Status, Refresh        | eigene SQL-/Supabase-Logik ausführen           |
 | KioskDataProvider      | Snapshot liefern                    | UI-Zustände oder Rendering steuern             |
-| DemoKioskDataProvider  | synthetische Demoquelle lesen       | produktive Daten behaupten                     |
+| Demo Provider           | synthetische Demoquelle lesen       | produktive Daten behaupten                     |
 | Internal Read Provider | interne Aggregate projizieren       | RLS/RBAC umgehen                               |
 | Read-Services          | fachliche serverseitige Aggregation | Service-Role im normalen Browserpfad verwenden |
 | Supabase/RLS           | Daten- und Scopegrenze              | durch UI-Filter ersetzt werden                 |
