@@ -120,7 +120,7 @@ export function createSupabaseResponsibilityPersonViewRepository(
         ...new Set(subjects.map((row) => row.customer_id).filter((id): id is string => !!id)),
       ];
 
-      const peoplePromise = supabase.rpc("avkk_people_directory");
+      const peoplePromise = supabase.rpc("avkk_people_directory" as never);
       const customerPromise =
         customerIds.length > 0
           ? supabase.from("customer").select("id,systemhouse_id,name").in("id", customerIds)
