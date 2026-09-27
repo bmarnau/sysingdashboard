@@ -1,16 +1,13 @@
--- BSF-03E P2 - atomic responsibility lifecycle
+-- BSF-03E P2 — atomic responsibility lifecycle
 -- Issue #63
--- Public RPCs stay SECURITY INVOKER. Hardened private implementations perform
--- the scoped lifecycle under validated caller identity and scope.
--- Direct authenticated DML remains available only for legacy unscoped AVKK.
-
-CREATE SCHEMA IF NOT EXISTS private;
-REVOKE ALL ON SCHEMA private FROM PUBLIC, anon;
-GRANT USAGE ON SCHEMA private TO authenticated;
+--
+-- Public API stays SECURITY INVOKER. The actual transaction runs behind the
+-- non-exposed private schema and reuses the P0 scope/candidate contract.
+-- Scoped BSF-03E rows can no longer be mutated directly through Data API
+-- table DML; legacy unscoped AVKK keeps its existing compatibility path.
 
 -- ---------------------------------------------------------------------------
--- 1. Direct scoped responsibility DML is no longer a lifecycle path.
---    Legacy AVKK stays compatible.
+-- 1. Direct DML: scoped rows are lifecycle-RPC only
 -- ---------------------------------------------------------------------------
 
 DROP POLICY IF EXISTS avkk_responsibility_insert
@@ -23,10 +20,10 @@ CREATE POLICY avkk_responsibility_insert
     AND created_by = auth.uid()
     AND EXISTS (
       SELECT 1
-      FROM public.avkk_subject s
-      WHERE s.id = avkk_subject_id
-        AND s.systemhouse_id IS NULL
-        AND s.customer_id IS NULL
+        FROM public.avkk_subject s
+       WHERE s.id = avkk_subject_id
+         AND s.systemhouse_id IS NULL
+         AND s.customer_id IS NULL
     )
   );
 
@@ -39,20 +36,20 @@ CREATE POLICY avkk_responsibility_update
     public.has_permission(auth.uid(), 'avkk.responsibility.assign')
     AND EXISTS (
       SELECT 1
-      FROM public.avkk_subject s
-      WHERE s.id = avkk_subject_id
-        AND s.systemhouse_id IS NULL
-        AND s.customer_id IS NULL
+        FROM public.avkk_subject s
+       WHERE s.id = avkk_subject_id
+         AND s.systemhouse_id IS NULL
+         AND s.customer_id IS NULL
     )
   )
   WITH CHECK (
     public.has_permission(auth.uid(), 'avkk.responsibility.assign')
     AND EXISTS (
       SELECT 1
-      FROM public.avkk_subject s
-      WHERE s.id = avkk_subject_id
-        AND s.systemhouse_id IS NULL
-        AND s.customer_id IS NULL
+        FROM public.avkk_subject s
+       WHERE s.id = avkk_subject_id
+         AND s.systemhouse_id IS NULL
+         AND s.customer_id IS NULL
     )
   );
 
@@ -65,203 +62,102 @@ CREATE POLICY avkk_responsibility_type_insert
     public.has_permission(auth.uid(), 'avkk.responsibility.assign')
     AND EXISTS (
       SELECT 1
-      FROM public.avkk_responsibility r
-      JOIN public.avkk_subject s ON s.id = r.avkk_subject_id
-      WHERE r.id = responsibility_id
-        AND s.systemhouse_id IS NULL
-        AND s.customer_id IS NULL
+        FROM public.avkk_responsibility r
+        JOIN public.avkk_subject s
+          ON s.id = r.avkk_subject_id
+       WHERE r.id = responsibility_id
+         AND s.systemhouse_id IS NULL
+         AND s.customer_id IS NULL
     )
   );
 
-DROP POLICY IF EXISTS avkk_responsibility_type_delete
-  ON public.avkk_responsibility_type;
-CREATE POLICY avkk_responsibility_type_delete
-  ON public.avkk_responsibility_type
-  FOR DELETE TO authenticated
-  USING (
-    public.has_permission(auth.uid(), 'avkk.responsibility.assign')
-    AND EXISTS (
-      SELECT 1
-      FROM public.avkk_responsibility r
-      JOIN public.avkk_subject s ON s.id = r.avkk_subject_id
-      WHERE r.id = responsibility_id
-        AND s.systemhouse_id IS NULL
-        AND s.customer_id IS NULL
-    )
-  );
+-- DELETE policies from P0 already restrict scoped rows to history via valid_to.
 
 -- ---------------------------------------------------------------------------
--- 2. Shared authorization helper.
--- ---------------------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION private.bsf03e_assert_mutation_scope(
-  _subject uuid
-)
-RETURNS void
-LANGUAGE plpgsql
-STABLE
-SECURITY DEFINER
-SET search_path TO ''
-AS $function$
-DECLARE
-  v_systemhouse uuid;
-  v_customer uuid;
-  v_subject_type text;
-  v_source_id text;
-BEGIN
-  SELECT s.systemhouse_id, s.customer_id, s.subject_type, s.subject_id
-    INTO v_systemhouse, v_customer, v_subject_type, v_source_id
-  FROM public.avkk_subject s
-  WHERE s.id = _subject
-    AND s.systemhouse_id IS NOT NULL
-    AND s.customer_id IS NOT NULL
-    AND s.subject_type IN ('project','workpackage')
-    AND s.status = 'active';
-
-  IF v_systemhouse IS NULL
-     OR v_customer IS NULL
-     OR auth.uid() IS NULL
-     OR NOT public.is_account_active(auth.uid())
-     OR NOT public.has_permission(auth.uid(), 'avkk.responsibility.assign')
-     OR NOT public.has_active_systemhouse_membership(auth.uid(), v_systemhouse)
-     OR NOT public.has_customer_access(
-       auth.uid(), v_systemhouse, v_customer, 'write'
-     ) THEN
-    RAISE EXCEPTION 'bsf03e_responsibility_scope_denied'
-      USING ERRCODE = '42501';
-  END IF;
-
-  IF v_subject_type = 'project' THEN
-    IF NOT EXISTS (
-      SELECT 1
-      FROM public.shared_project_projection p
-      WHERE p.systemhouse_id = v_systemhouse
-        AND p.customer_id = v_customer
-        AND p.source_id = v_source_id
-        AND p.is_active
-    ) THEN
-      RAISE EXCEPTION 'bsf03e_responsibility_scope_denied'
-        USING ERRCODE = '42501';
-    END IF;
-  ELSE
-    IF NOT EXISTS (
-      SELECT 1
-      FROM public.shared_work_package_projection w
-      WHERE w.systemhouse_id = v_systemhouse
-        AND w.customer_id = v_customer
-        AND w.source_id = v_source_id
-        AND w.is_active
-    ) THEN
-      RAISE EXCEPTION 'bsf03e_responsibility_scope_denied'
-        USING ERRCODE = '42501';
-    END IF;
-  END IF;
-END;
-$function$;
-
-REVOKE ALL ON FUNCTION private.bsf03e_assert_mutation_scope(uuid)
-  FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION private.bsf03e_assert_mutation_scope(uuid)
-  TO authenticated;
-
--- ---------------------------------------------------------------------------
--- 3. Owner transfer.
+-- 2. Private transaction: owner transfer
 -- ---------------------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION private.bsf03e_transfer_owner(
-  _responsibility uuid,
-  _new_person uuid
+  _responsibility_id uuid,
+  _target_user_id uuid
 )
 RETURNS uuid
 LANGUAGE plpgsql
+VOLATILE
 SECURITY DEFINER
 SET search_path TO ''
 AS $function$
 DECLARE
-  v_source public.avkk_responsibility%ROWTYPE;
-  v_subject public.avkk_subject%ROWTYPE;
-  v_new_id uuid;
+  actor uuid := auth.uid();
+  source_row public.avkk_responsibility%ROWTYPE;
+  new_id uuid;
+  active_owner_count integer;
 BEGIN
-  SELECT r.*
-    INTO v_source
-  FROM public.avkk_responsibility r
-  WHERE r.id = _responsibility
-  FOR UPDATE;
-
-  IF v_source.id IS NULL
-     OR v_source.valid_to IS NOT NULL
-     OR v_source.role_key_snapshot <> 'owner' THEN
-    RAISE EXCEPTION 'bsf03e_owner_source_invalid'
+  IF actor IS NULL THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_mutation_denied'
       USING ERRCODE = '42501';
   END IF;
 
-  SELECT s.*
-    INTO v_subject
-  FROM public.avkk_subject s
-  WHERE s.id = v_source.avkk_subject_id
-  FOR UPDATE;
-
-  PERFORM private.bsf03e_assert_mutation_scope(v_source.avkk_subject_id);
-
-  IF EXISTS (
-    SELECT 1
+  SELECT r.*
+    INTO source_row
     FROM public.avkk_responsibility r
-    WHERE r.avkk_subject_id = v_source.avkk_subject_id
-      AND r.role_key_snapshot = 'owner'
-      AND r.valid_to IS NULL
-      AND r.id <> v_source.id
-  ) THEN
-    RAISE EXCEPTION 'bsf03e_owner_cardinality_invalid'
-      USING ERRCODE = '23514';
+    JOIN public.avkk_subject s
+      ON s.id = r.avkk_subject_id
+   WHERE r.id = _responsibility_id
+     AND r.valid_to IS NULL
+     AND r.role_key_snapshot = 'owner'
+     AND s.systemhouse_id IS NOT NULL
+     AND s.customer_id IS NOT NULL
+     AND s.subject_type IN ('project','workpackage')
+     AND s.status = 'active'
+   FOR UPDATE OF r, s;
+
+  IF source_row.id IS NULL THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_mutation_invalid'
+      USING ERRCODE = '22023';
   END IF;
 
-  -- Validate the target through the same rule as table writes before touching
-  -- the old owner, so an invalid target leaves the state unchanged.
+  -- Reuses the P0 defense-in-depth scope, active projection and target rules.
   IF NOT EXISTS (
     SELECT 1
-    FROM public.profiles p
-    WHERE p.id = _new_person
-      AND p.status = 'active'::public.user_status
-  )
-  OR NOT EXISTS (
-    SELECT 1
-    FROM public.systemhouse_membership m
-    WHERE m.user_id = _new_person
-      AND m.systemhouse_id = v_subject.systemhouse_id
-      AND m.status = 'active'
-      AND (m.valid_from IS NULL OR m.valid_from <= now())
-      AND (m.valid_to IS NULL OR m.valid_to > now())
-  )
-  OR NOT EXISTS (
-    SELECT 1
-    FROM public.user_roles ur
-    WHERE ur.user_id = _new_person
-      AND ur.role IN (
-        'systemadministrator'::public.app_role,
-        'administrator'::public.app_role,
-        'teamlead'::public.app_role,
-        'projectmanager'::public.app_role,
-        'engineer'::public.app_role
-      )
-  )
-  OR EXISTS (
-    SELECT 1
-    FROM public.user_roles ur
-    WHERE ur.user_id = _new_person
-      AND ur.role IN (
-        'viewer'::public.app_role,
-        'customer'::public.app_role,
-        'kiosk'::public.app_role
-      )
+      FROM private.bsf03e_avkk_responsibility_candidates(
+        source_row.avkk_subject_id
+      ) c
+     WHERE c.user_id = _target_user_id
   ) THEN
-    RAISE EXCEPTION 'bsf03e_responsibility_target_invalid'
+    RAISE EXCEPTION 'bsf03e_responsibility_target_denied'
       USING ERRCODE = '42501';
+  END IF;
+
+  IF source_row.person_id = _target_user_id THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_target_already_owner'
+      USING ERRCODE = '23505';
+  END IF;
+
+  -- Serialize every active owner decision on the same subject.
+  PERFORM 1
+    FROM public.avkk_responsibility r
+   WHERE r.avkk_subject_id = source_row.avkk_subject_id
+     AND r.role_key_snapshot = 'owner'
+     AND r.valid_to IS NULL
+   FOR UPDATE;
+
+  SELECT count(*)
+    INTO active_owner_count
+    FROM public.avkk_responsibility r
+   WHERE r.avkk_subject_id = source_row.avkk_subject_id
+     AND r.role_key_snapshot = 'owner'
+     AND r.valid_to IS NULL;
+
+  IF active_owner_count <> 1 THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_owner_conflict'
+      USING ERRCODE = '23505';
   END IF;
 
   UPDATE public.avkk_responsibility
      SET valid_to = now(),
-         updated_by = auth.uid()
-   WHERE id = v_source.id;
+         updated_by = actor
+   WHERE id = source_row.id;
 
   INSERT INTO public.avkk_responsibility (
     avkk_subject_id,
@@ -271,20 +167,23 @@ BEGIN
     role_label_snapshot,
     note,
     valid_from,
+    valid_to,
     created_by,
     updated_by
-  ) VALUES (
-    v_source.avkk_subject_id,
-    _new_person,
-    v_source.role_value_id,
-    v_source.role_key_snapshot,
-    v_source.role_label_snapshot,
-    v_source.note,
-    now(),
-    auth.uid(),
-    auth.uid()
   )
-  RETURNING id INTO v_new_id;
+  VALUES (
+    source_row.avkk_subject_id,
+    _target_user_id,
+    source_row.role_value_id,
+    source_row.role_key_snapshot,
+    source_row.role_label_snapshot,
+    source_row.note,
+    now(),
+    NULL,
+    actor,
+    actor
+  )
+  RETURNING id INTO new_id;
 
   INSERT INTO public.avkk_responsibility_type (
     responsibility_id,
@@ -294,145 +193,111 @@ BEGIN
     created_by
   )
   SELECT
-    v_new_id,
+    new_id,
     t.type_value_id,
     t.type_key_snapshot,
     t.type_label_snapshot,
-    auth.uid()
+    actor
   FROM public.avkk_responsibility_type t
-  WHERE t.responsibility_id = v_source.id;
+  WHERE t.responsibility_id = source_row.id;
 
-  RETURN v_new_id;
+  RETURN new_id;
 END;
 $function$;
 
-REVOKE ALL ON FUNCTION private.bsf03e_transfer_owner(uuid,uuid)
+REVOKE EXECUTE ON FUNCTION private.bsf03e_transfer_owner(uuid,uuid)
   FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION private.bsf03e_transfer_owner(uuid,uuid)
   TO authenticated;
 
-CREATE OR REPLACE FUNCTION public.bsf03e_transfer_owner(
-  _responsibility uuid,
-  _new_person uuid
-)
-RETURNS uuid
-LANGUAGE sql
-SECURITY INVOKER
-SET search_path TO ''
-AS $function$
-  SELECT private.bsf03e_transfer_owner(_responsibility, _new_person);
-$function$;
-
-REVOKE ALL ON FUNCTION public.bsf03e_transfer_owner(uuid,uuid)
-  FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.bsf03e_transfer_owner(uuid,uuid)
-  TO authenticated;
-
 -- ---------------------------------------------------------------------------
--- 4. Add deputy.
+-- 3. Private transaction: add deputy
 -- ---------------------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION private.bsf03e_add_deputy(
-  _source_responsibility uuid,
-  _new_person uuid
+  _source_responsibility_id uuid,
+  _target_user_id uuid
 )
 RETURNS uuid
 LANGUAGE plpgsql
+VOLATILE
 SECURITY DEFINER
 SET search_path TO ''
 AS $function$
 DECLARE
-  v_source public.avkk_responsibility%ROWTYPE;
-  v_subject public.avkk_subject%ROWTYPE;
-  v_role public.reference_value%ROWTYPE;
-  v_new_id uuid;
+  actor uuid := auth.uid();
+  source_row public.avkk_responsibility%ROWTYPE;
+  deputy_role_id uuid;
+  deputy_role_key text;
+  deputy_role_label text;
+  new_id uuid;
 BEGIN
-  SELECT r.*
-    INTO v_source
-  FROM public.avkk_responsibility r
-  WHERE r.id = _source_responsibility
-  FOR UPDATE;
-
-  IF v_source.id IS NULL
-     OR v_source.valid_to IS NOT NULL
-     OR v_source.role_key_snapshot <> 'owner' THEN
-    RAISE EXCEPTION 'bsf03e_deputy_source_invalid'
+  IF actor IS NULL THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_mutation_denied'
       USING ERRCODE = '42501';
   END IF;
 
-  SELECT s.*
-    INTO v_subject
-  FROM public.avkk_subject s
-  WHERE s.id = v_source.avkk_subject_id
-  FOR UPDATE;
+  SELECT r.*
+    INTO source_row
+    FROM public.avkk_responsibility r
+    JOIN public.avkk_subject s
+      ON s.id = r.avkk_subject_id
+   WHERE r.id = _source_responsibility_id
+     AND r.valid_to IS NULL
+     AND r.role_key_snapshot = 'owner'
+     AND s.systemhouse_id IS NOT NULL
+     AND s.customer_id IS NOT NULL
+     AND s.subject_type IN ('project','workpackage')
+     AND s.status = 'active'
+   FOR UPDATE OF r, s;
 
-  PERFORM private.bsf03e_assert_mutation_scope(v_source.avkk_subject_id);
+  IF source_row.id IS NULL THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_mutation_invalid'
+      USING ERRCODE = '22023';
+  END IF;
 
   IF NOT EXISTS (
     SELECT 1
-    FROM public.profiles p
-    WHERE p.id = _new_person
-      AND p.status = 'active'::public.user_status
-  )
-  OR NOT EXISTS (
-    SELECT 1
-    FROM public.systemhouse_membership m
-    WHERE m.user_id = _new_person
-      AND m.systemhouse_id = v_subject.systemhouse_id
-      AND m.status = 'active'
-      AND (m.valid_from IS NULL OR m.valid_from <= now())
-      AND (m.valid_to IS NULL OR m.valid_to > now())
-  )
-  OR NOT EXISTS (
-    SELECT 1
-    FROM public.user_roles ur
-    WHERE ur.user_id = _new_person
-      AND ur.role IN (
-        'systemadministrator'::public.app_role,
-        'administrator'::public.app_role,
-        'teamlead'::public.app_role,
-        'projectmanager'::public.app_role,
-        'engineer'::public.app_role
-      )
-  )
-  OR EXISTS (
-    SELECT 1
-    FROM public.user_roles ur
-    WHERE ur.user_id = _new_person
-      AND ur.role IN (
-        'viewer'::public.app_role,
-        'customer'::public.app_role,
-        'kiosk'::public.app_role
-      )
+      FROM private.bsf03e_avkk_responsibility_candidates(
+        source_row.avkk_subject_id
+      ) c
+     WHERE c.user_id = _target_user_id
   ) THEN
-    RAISE EXCEPTION 'bsf03e_responsibility_target_invalid'
+    RAISE EXCEPTION 'bsf03e_responsibility_target_denied'
       USING ERRCODE = '42501';
   END IF;
 
+  -- Serialize duplicate/dual-role decisions for this subject.
+  PERFORM 1
+    FROM public.avkk_responsibility r
+   WHERE r.avkk_subject_id = source_row.avkk_subject_id
+     AND r.valid_to IS NULL
+   FOR UPDATE;
+
   IF EXISTS (
     SELECT 1
-    FROM public.avkk_responsibility r
-    WHERE r.avkk_subject_id = v_source.avkk_subject_id
-      AND r.role_key_snapshot = 'deputy'
-      AND r.person_id = _new_person
-      AND r.valid_to IS NULL
+      FROM public.avkk_responsibility r
+     WHERE r.avkk_subject_id = source_row.avkk_subject_id
+       AND r.person_id = _target_user_id
+       AND r.valid_to IS NULL
+       AND r.role_key_snapshot IN ('owner','deputy')
   ) THEN
-    RAISE EXCEPTION 'bsf03e_deputy_already_active'
+    RAISE EXCEPTION 'bsf03e_responsibility_target_already_assigned'
       USING ERRCODE = '23505';
   END IF;
 
-  SELECT rv.*
-    INTO v_role
-  FROM public.reference_value rv
-  JOIN public.reference_catalog rc ON rc.id = rv.catalog_id
-  WHERE rc.key = 'avkk.responsibility_role'
-    AND rv.key = 'deputy'
-    AND rv.is_active
-  ORDER BY rv.created_at
-  LIMIT 1;
+  SELECT rv.id, rv.key, rv.label
+    INTO deputy_role_id, deputy_role_key, deputy_role_label
+    FROM public.reference_value rv
+    JOIN public.reference_catalog rc
+      ON rc.id = rv.catalog_id
+   WHERE rc.key = 'avkk.responsibility_role'
+     AND rv.key = 'deputy'
+     AND rv.is_active
+   LIMIT 1;
 
-  IF v_role.id IS NULL THEN
-    RAISE EXCEPTION 'bsf03e_deputy_role_missing'
+  IF deputy_role_id IS NULL THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_reference_missing'
       USING ERRCODE = '23503';
   END IF;
 
@@ -444,20 +309,23 @@ BEGIN
     role_label_snapshot,
     note,
     valid_from,
+    valid_to,
     created_by,
     updated_by
-  ) VALUES (
-    v_source.avkk_subject_id,
-    _new_person,
-    v_role.id,
-    v_role.key,
-    v_role.label,
-    v_source.note,
-    now(),
-    auth.uid(),
-    auth.uid()
   )
-  RETURNING id INTO v_new_id;
+  VALUES (
+    source_row.avkk_subject_id,
+    _target_user_id,
+    deputy_role_id,
+    deputy_role_key,
+    deputy_role_label,
+    '',
+    now(),
+    NULL,
+    actor,
+    actor
+  )
+  RETURNING id INTO new_id;
 
   INSERT INTO public.avkk_responsibility_type (
     responsibility_id,
@@ -467,104 +335,143 @@ BEGIN
     created_by
   )
   SELECT
-    v_new_id,
+    new_id,
     t.type_value_id,
     t.type_key_snapshot,
     t.type_label_snapshot,
-    auth.uid()
+    actor
   FROM public.avkk_responsibility_type t
-  WHERE t.responsibility_id = v_source.id;
+  WHERE t.responsibility_id = source_row.id;
 
-  RETURN v_new_id;
+  RETURN new_id;
 END;
 $function$;
 
-REVOKE ALL ON FUNCTION private.bsf03e_add_deputy(uuid,uuid)
+REVOKE EXECUTE ON FUNCTION private.bsf03e_add_deputy(uuid,uuid)
   FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION private.bsf03e_add_deputy(uuid,uuid)
   TO authenticated;
 
-CREATE OR REPLACE FUNCTION public.bsf03e_add_deputy(
-  _source_responsibility uuid,
-  _new_person uuid
-)
-RETURNS uuid
-LANGUAGE sql
-SECURITY INVOKER
-SET search_path TO ''
-AS $function$
-  SELECT private.bsf03e_add_deputy(_source_responsibility, _new_person);
-$function$;
-
-REVOKE ALL ON FUNCTION public.bsf03e_add_deputy(uuid,uuid)
-  FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.bsf03e_add_deputy(uuid,uuid)
-  TO authenticated;
-
 -- ---------------------------------------------------------------------------
--- 5. End deputy responsibility by historizing it.
+-- 4. Private transaction: end an active responsibility
 -- ---------------------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION private.bsf03e_end_responsibility(
-  _responsibility uuid
+  _responsibility_id uuid
 )
-RETURNS void
+RETURNS boolean
 LANGUAGE plpgsql
+VOLATILE
 SECURITY DEFINER
 SET search_path TO ''
 AS $function$
 DECLARE
-  v_source public.avkk_responsibility%ROWTYPE;
-  v_subject public.avkk_subject%ROWTYPE;
+  actor uuid := auth.uid();
+  source_row public.avkk_responsibility%ROWTYPE;
 BEGIN
-  SELECT r.*
-    INTO v_source
-  FROM public.avkk_responsibility r
-  WHERE r.id = _responsibility
-  FOR UPDATE;
-
-  IF v_source.id IS NULL OR v_source.valid_to IS NOT NULL THEN
-    RAISE EXCEPTION 'bsf03e_responsibility_invalid'
+  IF actor IS NULL THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_mutation_denied'
       USING ERRCODE = '42501';
   END IF;
 
-  SELECT s.*
-    INTO v_subject
-  FROM public.avkk_subject s
-  WHERE s.id = v_source.avkk_subject_id
-  FOR UPDATE;
+  SELECT r.*
+    INTO source_row
+    FROM public.avkk_responsibility r
+    JOIN public.avkk_subject s
+      ON s.id = r.avkk_subject_id
+   WHERE r.id = _responsibility_id
+     AND r.valid_to IS NULL
+     AND r.role_key_snapshot IN ('owner','deputy')
+     AND s.systemhouse_id IS NOT NULL
+     AND s.customer_id IS NOT NULL
+     AND s.subject_type IN ('project','workpackage')
+     AND s.status = 'active'
+   FOR UPDATE OF r, s;
 
-  PERFORM private.bsf03e_assert_mutation_scope(v_source.avkk_subject_id);
-
-  IF v_source.role_key_snapshot = 'owner' THEN
-    RAISE EXCEPTION 'bsf03e_owner_requires_transfer'
-      USING ERRCODE = '23514';
+  IF source_row.id IS NULL THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_mutation_invalid'
+      USING ERRCODE = '22023';
   END IF;
+
+  -- Calling the P0 candidate contract validates actor, scope and projection.
+  PERFORM 1
+    FROM private.bsf03e_avkk_responsibility_candidates(
+      source_row.avkk_subject_id
+    )
+   LIMIT 1;
 
   UPDATE public.avkk_responsibility
      SET valid_to = now(),
-         updated_by = auth.uid()
-   WHERE id = v_source.id;
+         updated_by = actor
+   WHERE id = source_row.id;
+
+  RETURN true;
 END;
 $function$;
 
-REVOKE ALL ON FUNCTION private.bsf03e_end_responsibility(uuid)
+REVOKE EXECUTE ON FUNCTION private.bsf03e_end_responsibility(uuid)
   FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION private.bsf03e_end_responsibility(uuid)
   TO authenticated;
 
-CREATE OR REPLACE FUNCTION public.bsf03e_end_responsibility(
-  _responsibility uuid
+-- ---------------------------------------------------------------------------
+-- 5. Public SECURITY-INVOKER API
+-- ---------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION public.bsf03e_transfer_owner(
+  _responsibility_id uuid,
+  _target_user_id uuid
 )
-RETURNS void
+RETURNS uuid
 LANGUAGE sql
+VOLATILE
 SECURITY INVOKER
 SET search_path TO ''
 AS $function$
-  SELECT private.bsf03e_end_responsibility(_responsibility);
+  SELECT private.bsf03e_transfer_owner(
+    _responsibility_id,
+    _target_user_id
+  );
 $function$;
 
-REVOKE ALL ON FUNCTION public.bsf03e_end_responsibility(uuid)
+CREATE OR REPLACE FUNCTION public.bsf03e_add_deputy(
+  _source_responsibility_id uuid,
+  _target_user_id uuid
+)
+RETURNS uuid
+LANGUAGE sql
+VOLATILE
+SECURITY INVOKER
+SET search_path TO ''
+AS $function$
+  SELECT private.bsf03e_add_deputy(
+    _source_responsibility_id,
+    _target_user_id
+  );
+$function$;
+
+CREATE OR REPLACE FUNCTION public.bsf03e_end_responsibility(
+  _responsibility_id uuid
+)
+RETURNS boolean
+LANGUAGE sql
+VOLATILE
+SECURITY INVOKER
+SET search_path TO ''
+AS $function$
+  SELECT private.bsf03e_end_responsibility(_responsibility_id);
+$function$;
+
+REVOKE EXECUTE ON FUNCTION public.bsf03e_transfer_owner(uuid,uuid)
   FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.bsf03e_add_deputy(uuid,uuid)
+  FROM PUBLIC, anon;
+REVOKE EXECUTE ON FUNCTION public.bsf03e_end_responsibility(uuid)
+  FROM PUBLIC, anon;
+
+GRANT EXECUTE ON FUNCTION public.bsf03e_transfer_owner(uuid,uuid)
+  TO authenticated;
+GRANT EXECUTE ON FUNCTION public.bsf03e_add_deputy(uuid,uuid)
+  TO authenticated;
 GRANT EXECUTE ON FUNCTION public.bsf03e_end_responsibility(uuid)
   TO authenticated;
