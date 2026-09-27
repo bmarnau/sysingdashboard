@@ -2,14 +2,16 @@ name: BSF03E P2 Create Migration
 
 on:
   push:
-    branches: [feat/bsf-03e-responsibility-mutations]
+    branches:
+      - feat/bsf-03e-responsibility-mutations
+    paths:
+      - .github/workflows/bsf03e-p2-migration-new.yml
 
 permissions:
   contents: write
 
 jobs:
   create_migration:
-    if: github.event.head_commit.message == 'ci(bsf03e): P2 migration canonical erzeugen'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
