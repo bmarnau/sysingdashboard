@@ -179,8 +179,7 @@ export function createSupabaseResponsibilityPersonViewRepository(
         if (!subject || !subject.systemhouse_id || !subject.customer_id) continue;
 
         const customer = customers.find(
-          (row) =>
-            row.id === subject.customer_id && row.systemhouse_id === subject.systemhouse_id,
+          (row) => row.id === subject.customer_id && row.systemhouse_id === subject.systemhouse_id,
         );
         if (!customer) continue;
 
@@ -220,12 +219,10 @@ export function createSupabaseResponsibilityPersonViewRepository(
           customerName: customer.name,
           status: projection.status,
           due: null,
-          missingCount: subjectCompetences.filter(
-            (row) => row.rating_key_snapshot === "missing",
-          ).length,
-          partialCount: subjectCompetences.filter(
-            (row) => row.rating_key_snapshot === "partial",
-          ).length,
+          missingCount: subjectCompetences.filter((row) => row.rating_key_snapshot === "missing")
+            .length,
+          partialCount: subjectCompetences.filter((row) => row.rating_key_snapshot === "partial")
+            .length,
           supportNeeded: subjectCompetences.some((row) => row.support_needed),
           validFrom: responsibility.valid_from,
           validTo: responsibility.valid_to,
