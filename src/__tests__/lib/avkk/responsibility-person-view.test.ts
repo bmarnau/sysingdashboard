@@ -45,54 +45,57 @@ function repository(
 }
 
 describe("BSF-03E P1 responsibility person view", () => {
-  it("returns only active project/workpackage responsibilities and derives AVKK risk", async () => {
-    const service = new ResponsibilityPersonViewService(
-      repository([
-        row({
-          missingCount: 1,
-          supportNeeded: true,
-        }),
-        row({
-          responsibilityId: "66666666-6666-4666-8666-666666666666",
-          subjectRef: "77777777-7777-4777-8777-777777777777",
-          role: "deputy",
-          subjectType: "workpackage",
-          subjectId: "WP-10",
-          title: "Pilotbetrieb",
-          status: "open",
-          partialCount: 2,
-        }),
-        row({
-          responsibilityId: "88888888-8888-4888-8888-888888888888",
-          validTo: "2026-09-20T00:00:00Z",
-        }),
-        row({
-          responsibilityId: "99999999-9999-4999-8999-999999999999",
-          subjectType: "activity" as never,
-          subjectId: "A-1",
-        }),
-      ]),
-    );
+  it(
+    "returns only active project/workpackage responsibilities and derives AVKK risk",
+    async () => {
+      const service = new ResponsibilityPersonViewService(
+        repository([
+          row({
+            missingCount: 1,
+            supportNeeded: true,
+          }),
+          row({
+            responsibilityId: "66666666-6666-4666-8666-666666666666",
+            subjectRef: "77777777-7777-4777-8777-777777777777",
+            role: "deputy",
+            subjectType: "workpackage",
+            subjectId: "WP-10",
+            title: "Pilotbetrieb",
+            status: "open",
+            partialCount: 2,
+          }),
+          row({
+            responsibilityId: "88888888-8888-4888-8888-888888888888",
+            validTo: "2026-09-20T00:00:00Z",
+          }),
+          row({
+            responsibilityId: "99999999-9999-4999-8999-999999999999",
+            subjectType: "activity" as never,
+            subjectId: "A-1",
+          }),
+        ]),
+      );
 
-    const result = await service.listByPerson(PERSON);
+      const result = await service.listByPerson(PERSON);
 
-    expect(result).toHaveLength(2);
-    expect(result[0]).toMatchObject({
-      role: "owner",
-      subjectType: "project",
-      atRisk: true,
-      riskReasons: [
-        "1 Kompetenzdimension(en) nicht vorhanden",
-        "Unterstützungsbedarf gemeldet",
-      ],
-    });
-    expect(result[1]).toMatchObject({
-      role: "deputy",
-      subjectType: "workpackage",
-      atRisk: true,
-      riskReasons: ["2 Kompetenzdimension(en) nur teilweise vorhanden"],
-    });
-  });
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject({
+        role: "owner",
+        subjectType: "project",
+        atRisk: true,
+        riskReasons: [
+          "1 Kompetenzdimension(en) nicht vorhanden",
+          "Unterstützungsbedarf gemeldet",
+        ],
+      });
+      expect(result[1]).toMatchObject({
+        role: "deputy",
+        subjectType: "workpackage",
+        atRisk: true,
+        riskReasons: ["2 Kompetenzdimension(en) nur teilweise vorhanden"],
+      });
+    },
+  );
 
   it("never exposes a technical UUID as display name", async () => {
     const service = new ResponsibilityPersonViewService(
