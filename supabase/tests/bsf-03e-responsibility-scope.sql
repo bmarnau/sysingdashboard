@@ -257,7 +257,7 @@ SELECT pg_temp.assert_denied(
 
 -- Since P2, scoped responsibility writes are lifecycle-RPC only.
 SELECT pg_temp.assert_denied(
- $INSERT INTO public.avkk_responsibility
+ $stmt$INSERT INTO public.avkk_responsibility
    (avkk_subject_id,person_id,role_value_id,role_key_snapshot,role_label_snapshot,
     note,created_by,updated_by)
    SELECT '00000000-0000-0000-0000-0000000ee501',
@@ -265,7 +265,7 @@ SELECT pg_temp.assert_denied(
           rv.id,rv.key,rv.label,'',auth.uid(),auth.uid()
    FROM public.reference_value rv
    JOIN public.reference_catalog rc ON rc.id=rv.catalog_id
-   WHERE rc.key='avkk.responsibility_role' AND rv.key='owner'$,
+   WHERE rc.key='avkk.responsibility_role' AND rv.key='owner'$stmt$,
  'T14 scoped direct mutation denied; lifecycle RPC required'
 );
 SELECT pg_temp.act_reset();
