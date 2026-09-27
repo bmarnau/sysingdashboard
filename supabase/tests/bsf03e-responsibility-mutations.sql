@@ -410,11 +410,11 @@ SELECT pg_temp.assert((
 -- Owner lifecycle is transfer-only; generic end must never orphan a subject.
 SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000e601');
 SELECT pg_temp.assert_denied(
- $SELECT public.bsf03e_end_responsibility(
+ $stmt$SELECT public.bsf03e_end_responsibility(
    (SELECT id FROM public.avkk_responsibility
      WHERE avkk_subject_id='00000000-0000-0000-0000-0000000ee601'
        AND role_key_snapshot='owner' AND valid_to IS NULL)
- )$,
+ )$stmt$,
  'T25 active owner cannot be ended; transfer_owner is required'
 );
 SELECT pg_temp.act_reset();
