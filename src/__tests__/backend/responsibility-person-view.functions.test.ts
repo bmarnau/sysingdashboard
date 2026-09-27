@@ -19,7 +19,9 @@ interface RpcCall {
   args: Record<string, unknown>;
 }
 
-function fakeAuthClient(options: { active?: boolean; permission?: boolean; error?: boolean } = {}): {
+function fakeAuthClient(
+  options: { active?: boolean; permission?: boolean; error?: boolean } = {},
+): {
   client: SupabaseClient<Database>;
   calls: RpcCall[];
 } {
@@ -68,7 +70,9 @@ function repository(): ResponsibilityPersonViewRepository {
 
 describe("BSF-03E P1 person-view request validation", () => {
   it("accepts only a UUID personId", () => {
-    expect(parseResponsibilityPersonViewRequest({ personId: PERSON })).toEqual({ personId: PERSON });
+    expect(parseResponsibilityPersonViewRequest({ personId: PERSON })).toEqual({
+      personId: PERSON,
+    });
     expect(() => parseResponsibilityPersonViewRequest({ personId: "not-a-uuid" })).toThrow();
     expect(() =>
       parseResponsibilityPersonViewRequest({ personId: PERSON, systemhouseId: USER }),
