@@ -280,7 +280,7 @@ BEGIN
      WHERE r.avkk_subject_id = source_row.avkk_subject_id
        AND r.person_id = _target_user_id
        AND r.valid_to IS NULL
-       AND r.role_key_snapshot IN ('owner','deputy')
+       AND r.role_key_snapshot = 'deputy'
   ) THEN
     RAISE EXCEPTION 'bsf03e_responsibility_target_already_assigned'
       USING ERRCODE = '23505';

@@ -1,4 +1,4 @@
--- BSF-03E P2 — Atomic Responsibility Mutations (T01-T24)
+-- BSF-03E P2 — Atomic Responsibility Mutations (T01-T25)
 -- Issue #63. TDD contract: before P2 implementation intentionally RED.
 -- Transactional, fail-fast, synthetic IDs only.
 \set ON_ERROR_STOP on
@@ -406,5 +406,24 @@ SELECT pg_temp.assert((
   WHERE avkk_subject_id='00000000-0000-0000-0000-0000000ee601'
     AND role_key_snapshot='owner' AND valid_to IS NULL
 ), 'T24 exactly one active owner remains');
+
+-- Owner lifecycle is transfer-only; generic end must never orphan a subject.
+SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000e601');
+SELECT pg_temp.assert_denied(
+ $SELECT public.bsf03e_end_responsibility(
+   (SELECT id FROM public.avkk_responsibility
+     WHERE avkk_subject_id='00000000-0000-0000-0000-0000000ee601'
+       AND role_key_snapshot='owner' AND valid_to IS NULL)
+ )$,
+ 'T25 active owner cannot be ended; transfer_owner is required'
+);
+SELECT pg_temp.act_reset();
+
+SELECT pg_temp.assert((
+  SELECT count(*)=1
+  FROM public.avkk_responsibility
+  WHERE avkk_subject_id='00000000-0000-0000-0000-0000000ee601'
+    AND role_key_snapshot='owner' AND valid_to IS NULL
+), 'T25 owner remains active after denied end');
 
 ROLLBACK;
