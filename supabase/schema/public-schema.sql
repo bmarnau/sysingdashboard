@@ -1,3 +1,6 @@
+
+
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -129,18 +132,34 @@ CREATE OR REPLACE FUNCTION "public"."avkk_can_write"("_subject" "uuid") RETURNS 
     LANGUAGE "sql" STABLE SECURITY DEFINER
     SET "search_path" TO ''
     AS $$
-  SELECT public.has_permission(auth.uid(), 'avkk.edit')
-     AND (
-       NOT public.has_role(auth.uid(), 'engineer'::public.app_role)
-       OR EXISTS (
-         SELECT 1 FROM public.avkk_subject s
-          WHERE s.id = _subject AND s.created_by = auth.uid()
+  SELECT EXISTS (
+    SELECT 1
+      FROM public.avkk_subject s
+     WHERE s.id = _subject
+       AND public.has_permission(auth.uid(), 'avkk.edit')
+       AND (
+         (s.systemhouse_id IS NULL AND s.customer_id IS NULL)
+         OR (
+           s.systemhouse_id IS NOT NULL
+           AND s.customer_id IS NOT NULL
+           AND public.has_active_systemhouse_membership(auth.uid(), s.systemhouse_id)
+           AND public.has_customer_access(
+             auth.uid(), s.systemhouse_id, s.customer_id, 'write'
+           )
+         )
        )
-       OR EXISTS (
-         SELECT 1 FROM public.avkk_responsibility r
-          WHERE r.avkk_subject_id = _subject AND r.person_id = auth.uid()
+       AND (
+         NOT public.has_role(auth.uid(), 'engineer'::public.app_role)
+         OR s.created_by = auth.uid()
+         OR EXISTS (
+           SELECT 1
+             FROM public.avkk_responsibility r
+            WHERE r.avkk_subject_id = s.id
+              AND r.person_id = auth.uid()
+              AND r.valid_to IS NULL
+         )
        )
-     );
+  );
 $$;
 
 
@@ -941,6 +960,168 @@ $$;
 
 
 ALTER FUNCTION "public"."bsf03b_process_statement_request"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."bsf03e_avkk_responsibility_candidates"("_subject" "uuid") RETURNS TABLE("user_id" "uuid", "display_name" "text")
+    LANGUAGE "sql" STABLE
+    SET "search_path" TO ''
+    AS $$
+  SELECT *
+    FROM private.bsf03e_avkk_responsibility_candidates(_subject);
+$$;
+
+
+ALTER FUNCTION "public"."bsf03e_avkk_responsibility_candidates"("_subject" "uuid") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."bsf03e_avkk_responsibility_target_guard"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+DECLARE
+  target_systemhouse uuid;
+  target_customer uuid;
+BEGIN
+  SELECT s.systemhouse_id, s.customer_id
+    INTO target_systemhouse, target_customer
+    FROM public.avkk_subject s
+   WHERE s.id = NEW.avkk_subject_id;
+
+  -- Legacy-Verhalten bleibt fuer ungescopte AVKK-Saetze bestehen.
+  IF target_systemhouse IS NULL OR target_customer IS NULL THEN
+    RETURN NEW;
+  END IF;
+
+  -- Historisches Beenden einer Zuordnung darf nicht daran scheitern, dass eine
+  -- fruehere Zielperson inzwischen deaktiviert wurde.
+  IF NEW.valid_to IS NOT NULL THEN
+    RETURN NEW;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+      FROM public.profiles p
+     WHERE p.id = NEW.person_id
+       AND p.status = 'active'::public.user_status
+  ) THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_target_invalid'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+      FROM public.user_roles ur
+     WHERE ur.user_id = NEW.person_id
+       AND ur.role IN (
+         'systemadministrator'::public.app_role,
+         'administrator'::public.app_role,
+         'teamlead'::public.app_role,
+         'projectmanager'::public.app_role,
+         'engineer'::public.app_role
+       )
+  ) THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_target_invalid'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+      FROM public.user_roles ur
+     WHERE ur.user_id = NEW.person_id
+       AND ur.role IN (
+         'viewer'::public.app_role,
+         'customer'::public.app_role,
+         'kiosk'::public.app_role
+       )
+  ) THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_target_invalid'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+      FROM public.systemhouse_membership m
+     WHERE m.user_id = NEW.person_id
+       AND m.systemhouse_id = target_systemhouse
+       AND m.status = 'active'
+       AND (m.valid_from IS NULL OR m.valid_from <= now())
+       AND (m.valid_to IS NULL OR m.valid_to > now())
+  ) THEN
+    RAISE EXCEPTION 'bsf03e_responsibility_target_invalid'
+      USING ERRCODE = '42501';
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."bsf03e_avkk_responsibility_target_guard"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."bsf03e_avkk_subject_scope_guard"() RETURNS "trigger"
+    LANGUAGE "plpgsql"
+    SET "search_path" TO ''
+    AS $$
+BEGIN
+  -- Legacy bleibt erlaubt, darf aber nicht aus einem bereits gescopten Subject
+  -- durch Rueckwaertsmutation entstehen.
+  IF NEW.systemhouse_id IS NULL AND NEW.customer_id IS NULL THEN
+    IF TG_OP = 'UPDATE'
+       AND (OLD.systemhouse_id IS NOT NULL OR OLD.customer_id IS NOT NULL) THEN
+      RAISE EXCEPTION 'bsf03e_scope_immutable'
+        USING ERRCODE = '42501';
+    END IF;
+    RETURN NEW;
+  END IF;
+
+  IF TG_OP = 'UPDATE'
+     AND OLD.systemhouse_id IS NOT NULL
+     AND (
+       NEW.systemhouse_id IS DISTINCT FROM OLD.systemhouse_id
+       OR NEW.customer_id IS DISTINCT FROM OLD.customer_id
+       OR NEW.subject_type IS DISTINCT FROM OLD.subject_type
+       OR NEW.subject_id IS DISTINCT FROM OLD.subject_id
+     ) THEN
+    RAISE EXCEPTION 'bsf03e_scope_immutable'
+      USING ERRCODE = '42501';
+  END IF;
+
+  IF NEW.subject_type = 'project' THEN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM public.shared_project_projection p
+      WHERE p.systemhouse_id = NEW.systemhouse_id
+        AND p.customer_id = NEW.customer_id
+        AND p.source_id = NEW.subject_id
+        AND p.is_active
+    ) THEN
+      RAISE EXCEPTION 'bsf03e_scope_projection_mismatch'
+        USING ERRCODE = '23503';
+    END IF;
+  ELSIF NEW.subject_type = 'workpackage' THEN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM public.shared_work_package_projection w
+      WHERE w.systemhouse_id = NEW.systemhouse_id
+        AND w.customer_id = NEW.customer_id
+        AND w.source_id = NEW.subject_id
+        AND w.is_active
+    ) THEN
+      RAISE EXCEPTION 'bsf03e_scope_projection_mismatch'
+        USING ERRCODE = '23503';
+    END IF;
+  ELSE
+    RAISE EXCEPTION 'bsf03e_scope_subject_type_invalid'
+      USING ERRCODE = '23514';
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."bsf03e_avkk_subject_scope_guard"() OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."can_manage_customer_responsibility"("_user_id" "uuid", "_systemhouse_id" "uuid") RETURNS boolean
@@ -1764,6 +1945,10 @@ CREATE TABLE IF NOT EXISTS "public"."avkk_subject" (
     "updated_by" "uuid",
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "systemhouse_id" "uuid",
+    "customer_id" "uuid",
+    CONSTRAINT "avkk_subject_scope_pair_check" CHECK (((("systemhouse_id" IS NULL) AND ("customer_id" IS NULL)) OR (("systemhouse_id" IS NOT NULL) AND ("customer_id" IS NOT NULL)))),
+    CONSTRAINT "avkk_subject_scoped_type_check" CHECK ((("systemhouse_id" IS NULL) OR ("subject_type" = ANY (ARRAY['project'::"text", 'workpackage'::"text"])))),
     CONSTRAINT "avkk_subject_status_check" CHECK (("status" = ANY (ARRAY['draft'::"text", 'active'::"text", 'closed'::"text"]))),
     CONSTRAINT "avkk_subject_subject_type_check" CHECK (("subject_type" = ANY (ARRAY['project'::"text", 'workpackage'::"text", 'activity'::"text", 'measure'::"text"])))
 );
@@ -2199,11 +2384,6 @@ ALTER TABLE ONLY "public"."avkk_subject"
 
 
 
-ALTER TABLE ONLY "public"."avkk_subject"
-    ADD CONSTRAINT "avkk_subject_subject_type_subject_id_key" UNIQUE ("subject_type", "subject_id");
-
-
-
 ALTER TABLE ONLY "public"."customer_access"
     ADD CONSTRAINT "customer_access_pkey" PRIMARY KEY ("id");
 
@@ -2410,6 +2590,18 @@ CREATE INDEX "avkk_responsibility_subject_idx" ON "public"."avkk_responsibility"
 
 
 
+CREATE UNIQUE INDEX "avkk_subject_legacy_identity_unique" ON "public"."avkk_subject" USING "btree" ("subject_type", "subject_id") WHERE (("systemhouse_id" IS NULL) AND ("customer_id" IS NULL));
+
+
+
+CREATE INDEX "avkk_subject_scope_idx" ON "public"."avkk_subject" USING "btree" ("systemhouse_id", "customer_id", "subject_type") WHERE (("systemhouse_id" IS NOT NULL) AND ("customer_id" IS NOT NULL));
+
+
+
+CREATE UNIQUE INDEX "avkk_subject_scoped_identity_unique" ON "public"."avkk_subject" USING "btree" ("systemhouse_id", "subject_type", "subject_id") WHERE (("systemhouse_id" IS NOT NULL) AND ("customer_id" IS NOT NULL));
+
+
+
 CREATE INDEX "customer_access_scope_idx" ON "public"."customer_access" USING "btree" ("systemhouse_id", "customer_id");
 
 
@@ -2535,6 +2727,14 @@ CREATE OR REPLACE TRIGGER "avkk_subject_audit" AFTER INSERT OR UPDATE ON "public
 
 
 CREATE OR REPLACE TRIGGER "avkk_subject_set_updated_at" BEFORE UPDATE ON "public"."avkk_subject" FOR EACH ROW EXECUTE FUNCTION "public"."set_updated_at"();
+
+
+
+CREATE OR REPLACE TRIGGER "bsf03e_avkk_responsibility_target_guard" BEFORE INSERT OR UPDATE OF "avkk_subject_id", "person_id", "valid_to" ON "public"."avkk_responsibility" FOR EACH ROW EXECUTE FUNCTION "public"."bsf03e_avkk_responsibility_target_guard"();
+
+
+
+CREATE OR REPLACE TRIGGER "bsf03e_avkk_subject_scope_guard" BEFORE INSERT OR UPDATE OF "systemhouse_id", "customer_id", "subject_type", "subject_id" ON "public"."avkk_subject" FOR EACH ROW EXECUTE FUNCTION "public"."bsf03e_avkk_subject_scope_guard"();
 
 
 
@@ -2753,6 +2953,11 @@ ALTER TABLE ONLY "public"."avkk_responsibility"
 
 ALTER TABLE ONLY "public"."avkk_subject"
     ADD CONSTRAINT "avkk_subject_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."avkk_subject"
+    ADD CONSTRAINT "avkk_subject_customer_scope_fk" FOREIGN KEY ("customer_id", "systemhouse_id") REFERENCES "public"."customer"("id", "systemhouse_id") ON DELETE RESTRICT;
 
 
 
@@ -3003,7 +3208,9 @@ CREATE POLICY "avkk_competence_insert" ON "public"."avkk_competence" FOR INSERT 
 
 
 
-CREATE POLICY "avkk_competence_read" ON "public"."avkk_competence" FOR SELECT TO "authenticated" USING ("public"."has_permission"("auth"."uid"(), 'avkk.view'::"text"));
+CREATE POLICY "avkk_competence_read" ON "public"."avkk_competence" FOR SELECT TO "authenticated" USING (("public"."has_permission"("auth"."uid"(), 'avkk.view'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."avkk_subject" "s"
+  WHERE ("s"."id" = "avkk_competence"."avkk_subject_id")))));
 
 
 
@@ -3018,7 +3225,9 @@ CREATE POLICY "avkk_consequence_insert" ON "public"."avkk_consequence" FOR INSER
 
 
 
-CREATE POLICY "avkk_consequence_read" ON "public"."avkk_consequence" FOR SELECT TO "authenticated" USING ("public"."has_permission"("auth"."uid"(), 'avkk.view'::"text"));
+CREATE POLICY "avkk_consequence_read" ON "public"."avkk_consequence" FOR SELECT TO "authenticated" USING (("public"."has_permission"("auth"."uid"(), 'avkk.view'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."avkk_subject" "s"
+  WHERE ("s"."id" = "avkk_consequence"."avkk_subject_id")))));
 
 
 
@@ -3029,45 +3238,63 @@ CREATE POLICY "avkk_consequence_update" ON "public"."avkk_consequence" FOR UPDAT
 ALTER TABLE "public"."avkk_responsibility" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "avkk_responsibility_delete" ON "public"."avkk_responsibility" FOR DELETE TO "authenticated" USING ("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text"));
+CREATE POLICY "avkk_responsibility_delete" ON "public"."avkk_responsibility" FOR DELETE TO "authenticated" USING (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."avkk_subject" "s"
+  WHERE (("s"."id" = "avkk_responsibility"."avkk_subject_id") AND ("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL))))));
 
 
 
-CREATE POLICY "avkk_responsibility_insert" ON "public"."avkk_responsibility" FOR INSERT TO "authenticated" WITH CHECK (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND ("created_by" = "auth"."uid"())));
+CREATE POLICY "avkk_responsibility_insert" ON "public"."avkk_responsibility" FOR INSERT TO "authenticated" WITH CHECK (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND ("created_by" = "auth"."uid"()) AND (EXISTS ( SELECT 1
+   FROM "public"."avkk_subject" "s"
+  WHERE (("s"."id" = "avkk_responsibility"."avkk_subject_id") AND ((("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL)) OR ("public"."has_active_systemhouse_membership"("auth"."uid"(), "s"."systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "s"."systemhouse_id", "s"."customer_id", 'write'::"text"))))))));
 
 
 
-CREATE POLICY "avkk_responsibility_read" ON "public"."avkk_responsibility" FOR SELECT TO "authenticated" USING ("public"."has_permission"("auth"."uid"(), 'avkk.view'::"text"));
+CREATE POLICY "avkk_responsibility_read" ON "public"."avkk_responsibility" FOR SELECT TO "authenticated" USING (("public"."has_permission"("auth"."uid"(), 'avkk.view'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."avkk_subject" "s"
+  WHERE ("s"."id" = "avkk_responsibility"."avkk_subject_id")))));
 
 
 
 ALTER TABLE "public"."avkk_responsibility_type" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "avkk_responsibility_type_delete" ON "public"."avkk_responsibility_type" FOR DELETE TO "authenticated" USING ("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text"));
+CREATE POLICY "avkk_responsibility_type_delete" ON "public"."avkk_responsibility_type" FOR DELETE TO "authenticated" USING (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND (EXISTS ( SELECT 1
+   FROM ("public"."avkk_responsibility" "r"
+     JOIN "public"."avkk_subject" "s" ON (("s"."id" = "r"."avkk_subject_id")))
+  WHERE (("r"."id" = "avkk_responsibility_type"."responsibility_id") AND ("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL))))));
 
 
 
-CREATE POLICY "avkk_responsibility_type_insert" ON "public"."avkk_responsibility_type" FOR INSERT TO "authenticated" WITH CHECK ("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text"));
+CREATE POLICY "avkk_responsibility_type_insert" ON "public"."avkk_responsibility_type" FOR INSERT TO "authenticated" WITH CHECK (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND (EXISTS ( SELECT 1
+   FROM ("public"."avkk_responsibility" "r"
+     JOIN "public"."avkk_subject" "s" ON (("s"."id" = "r"."avkk_subject_id")))
+  WHERE (("r"."id" = "avkk_responsibility_type"."responsibility_id") AND ((("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL)) OR ("public"."has_active_systemhouse_membership"("auth"."uid"(), "s"."systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "s"."systemhouse_id", "s"."customer_id", 'write'::"text"))))))));
 
 
 
-CREATE POLICY "avkk_responsibility_type_read" ON "public"."avkk_responsibility_type" FOR SELECT TO "authenticated" USING ("public"."has_permission"("auth"."uid"(), 'avkk.view'::"text"));
+CREATE POLICY "avkk_responsibility_type_read" ON "public"."avkk_responsibility_type" FOR SELECT TO "authenticated" USING (("public"."has_permission"("auth"."uid"(), 'avkk.view'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."avkk_responsibility" "r"
+  WHERE ("r"."id" = "avkk_responsibility_type"."responsibility_id")))));
 
 
 
-CREATE POLICY "avkk_responsibility_update" ON "public"."avkk_responsibility" FOR UPDATE TO "authenticated" USING ("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text")) WITH CHECK ("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text"));
+CREATE POLICY "avkk_responsibility_update" ON "public"."avkk_responsibility" FOR UPDATE TO "authenticated" USING (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."avkk_subject" "s"
+  WHERE (("s"."id" = "avkk_responsibility"."avkk_subject_id") AND ((("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL)) OR ("public"."has_active_systemhouse_membership"("auth"."uid"(), "s"."systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "s"."systemhouse_id", "s"."customer_id", 'write'::"text")))))))) WITH CHECK (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."avkk_subject" "s"
+  WHERE (("s"."id" = "avkk_responsibility"."avkk_subject_id") AND ((("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL)) OR ("public"."has_active_systemhouse_membership"("auth"."uid"(), "s"."systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "s"."systemhouse_id", "s"."customer_id", 'write'::"text"))))))));
 
 
 
 ALTER TABLE "public"."avkk_subject" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "avkk_subject_insert" ON "public"."avkk_subject" FOR INSERT TO "authenticated" WITH CHECK (("public"."has_permission"("auth"."uid"(), 'avkk.edit'::"text") AND ("created_by" = "auth"."uid"())));
+CREATE POLICY "avkk_subject_insert" ON "public"."avkk_subject" FOR INSERT TO "authenticated" WITH CHECK (("public"."has_permission"("auth"."uid"(), 'avkk.edit'::"text") AND ("created_by" = "auth"."uid"()) AND ((("systemhouse_id" IS NULL) AND ("customer_id" IS NULL)) OR ("public"."has_active_systemhouse_membership"("auth"."uid"(), "systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "systemhouse_id", "customer_id", 'write'::"text")))));
 
 
 
-CREATE POLICY "avkk_subject_read" ON "public"."avkk_subject" FOR SELECT TO "authenticated" USING ("public"."has_permission"("auth"."uid"(), 'avkk.view'::"text"));
+CREATE POLICY "avkk_subject_read" ON "public"."avkk_subject" FOR SELECT TO "authenticated" USING (("public"."has_permission"("auth"."uid"(), 'avkk.view'::"text") AND ((("systemhouse_id" IS NULL) AND ("customer_id" IS NULL)) OR ("public"."has_active_systemhouse_membership"("auth"."uid"(), "systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "systemhouse_id", "customer_id", 'read'::"text")))));
 
 
 
@@ -3368,6 +3595,22 @@ GRANT ALL ON FUNCTION "public"."bsf03b_process_statement_request"() TO "service_
 
 
 
+REVOKE ALL ON FUNCTION "public"."bsf03e_avkk_responsibility_candidates"("_subject" "uuid") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."bsf03e_avkk_responsibility_candidates"("_subject" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."bsf03e_avkk_responsibility_candidates"("_subject" "uuid") TO "service_role";
+
+
+
+REVOKE ALL ON FUNCTION "public"."bsf03e_avkk_responsibility_target_guard"() FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."bsf03e_avkk_responsibility_target_guard"() TO "service_role";
+
+
+
+REVOKE ALL ON FUNCTION "public"."bsf03e_avkk_subject_scope_guard"() FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."bsf03e_avkk_subject_scope_guard"() TO "service_role";
+
+
+
 REVOKE ALL ON FUNCTION "public"."can_manage_customer_responsibility"("_user_id" "uuid", "_systemhouse_id" "uuid") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."can_manage_customer_responsibility"("_user_id" "uuid", "_systemhouse_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."can_manage_customer_responsibility"("_user_id" "uuid", "_systemhouse_id" "uuid") TO "service_role";
@@ -3662,3 +3905,10 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "service_role";
+
+
+
+
+
+
+
