@@ -1507,12 +1507,24 @@ export type Database = {
         }
         Returns: Json
       }
+      bsf03e_add_deputy: {
+        Args: { _source_responsibility_id: string; _target_user_id: string }
+        Returns: string
+      }
       bsf03e_avkk_responsibility_candidates: {
         Args: { _subject: string }
         Returns: {
           display_name: string
           user_id: string
         }[]
+      }
+      bsf03e_end_responsibility: {
+        Args: { _responsibility_id: string }
+        Returns: boolean
+      }
+      bsf03e_transfer_owner: {
+        Args: { _responsibility_id: string; _target_user_id: string }
+        Returns: string
       }
       can_manage_customer_responsibility: {
         Args: { _systemhouse_id: string; _user_id: string }

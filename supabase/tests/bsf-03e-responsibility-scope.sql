@@ -255,7 +255,23 @@ SELECT pg_temp.assert_denied(
  'T13 legacy subject is not a BSF-03E candidate scope'
 );
 
--- Direct responsibility mutation in scoped subject: manager + write PASS.
+-- Since P2, scoped responsibility writes are lifecycle-RPC only.
+SELECT pg_temp.assert_denied(
+ $stmt$INSERT INTO public.avkk_responsibility
+   (avkk_subject_id,person_id,role_value_id,role_key_snapshot,role_label_snapshot,
+    note,created_by,updated_by)
+   SELECT '00000000-0000-0000-0000-0000000ee501',
+          '00000000-0000-0000-0000-00000000e503',
+          rv.id,rv.key,rv.label,'',auth.uid(),auth.uid()
+   FROM public.reference_value rv
+   JOIN public.reference_catalog rc ON rc.id=rv.catalog_id
+   WHERE rc.key='avkk.responsibility_role' AND rv.key='owner'$stmt$,
+ 'T14 scoped direct mutation denied; lifecycle RPC required'
+);
+SELECT pg_temp.act_reset();
+
+-- Fixture rows are seeded under the privileged test owner so the remaining
+-- RLS assertions can prove that responsibility alone grants no data access.
 INSERT INTO public.avkk_responsibility
  (id,avkk_subject_id,person_id,role_value_id,role_key_snapshot,role_label_snapshot,
   note,created_by,updated_by)
@@ -263,17 +279,13 @@ SELECT
  '00000000-0000-0000-0000-0000000fe501',
  '00000000-0000-0000-0000-0000000ee501',
  '00000000-0000-0000-0000-00000000e503',
- rv.id,rv.key,rv.label,'',auth.uid(),auth.uid()
+ rv.id,rv.key,rv.label,'',
+ '00000000-0000-0000-0000-00000000e501',
+ '00000000-0000-0000-0000-00000000e501'
 FROM public.reference_value rv
 JOIN public.reference_catalog rc ON rc.id=rv.catalog_id
 WHERE rc.key='avkk.responsibility_role' AND rv.key='owner';
 
-SELECT pg_temp.assert(
-  EXISTS (SELECT 1 FROM public.avkk_responsibility WHERE id='00000000-0000-0000-0000-0000000fe501'),
-  'T14 scoped direct mutation allowed only in authorized scope'
-);
-
--- Responsibility alone must never create operational Customer access.
 INSERT INTO public.avkk_responsibility
  (id,avkk_subject_id,person_id,role_value_id,role_key_snapshot,role_label_snapshot,
   note,created_by,updated_by)
@@ -281,11 +293,12 @@ SELECT
  '00000000-0000-0000-0000-0000000fe502',
  '00000000-0000-0000-0000-0000000ee501',
  '00000000-0000-0000-0000-00000000e507',
- rv.id,rv.key,rv.label,'',auth.uid(),auth.uid()
+ rv.id,rv.key,rv.label,'',
+ '00000000-0000-0000-0000-00000000e501',
+ '00000000-0000-0000-0000-00000000e501'
 FROM public.reference_value rv
 JOIN public.reference_catalog rc ON rc.id=rv.catalog_id
 WHERE rc.key='avkk.responsibility_role' AND rv.key='deputy';
-SELECT pg_temp.act_reset();
 
 SELECT pg_temp.act_as('00000000-0000-0000-0000-00000000e507');
 SELECT pg_temp.assert(
