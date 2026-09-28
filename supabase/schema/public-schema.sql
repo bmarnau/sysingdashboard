@@ -962,6 +962,20 @@ $$;
 ALTER FUNCTION "public"."bsf03b_process_statement_request"() OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."bsf03e_add_deputy"("_source_responsibility_id" "uuid", "_target_user_id" "uuid") RETURNS "uuid"
+    LANGUAGE "sql"
+    SET "search_path" TO ''
+    AS $$
+  SELECT private.bsf03e_add_deputy(
+    _source_responsibility_id,
+    _target_user_id
+  );
+$$;
+
+
+ALTER FUNCTION "public"."bsf03e_add_deputy"("_source_responsibility_id" "uuid", "_target_user_id" "uuid") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."bsf03e_avkk_responsibility_candidates"("_subject" "uuid") RETURNS TABLE("user_id" "uuid", "display_name" "text")
     LANGUAGE "sql" STABLE
     SET "search_path" TO ''
@@ -1122,6 +1136,31 @@ $$;
 
 
 ALTER FUNCTION "public"."bsf03e_avkk_subject_scope_guard"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."bsf03e_end_responsibility"("_responsibility_id" "uuid") RETURNS boolean
+    LANGUAGE "sql"
+    SET "search_path" TO ''
+    AS $$
+  SELECT private.bsf03e_end_responsibility(_responsibility_id);
+$$;
+
+
+ALTER FUNCTION "public"."bsf03e_end_responsibility"("_responsibility_id" "uuid") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."bsf03e_transfer_owner"("_responsibility_id" "uuid", "_target_user_id" "uuid") RETURNS "uuid"
+    LANGUAGE "sql"
+    SET "search_path" TO ''
+    AS $$
+  SELECT private.bsf03e_transfer_owner(
+    _responsibility_id,
+    _target_user_id
+  );
+$$;
+
+
+ALTER FUNCTION "public"."bsf03e_transfer_owner"("_responsibility_id" "uuid", "_target_user_id" "uuid") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."can_manage_customer_responsibility"("_user_id" "uuid", "_systemhouse_id" "uuid") RETURNS boolean
@@ -3246,7 +3285,7 @@ CREATE POLICY "avkk_responsibility_delete" ON "public"."avkk_responsibility" FOR
 
 CREATE POLICY "avkk_responsibility_insert" ON "public"."avkk_responsibility" FOR INSERT TO "authenticated" WITH CHECK (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND ("created_by" = "auth"."uid"()) AND (EXISTS ( SELECT 1
    FROM "public"."avkk_subject" "s"
-  WHERE (("s"."id" = "avkk_responsibility"."avkk_subject_id") AND ((("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL)) OR ("public"."has_active_systemhouse_membership"("auth"."uid"(), "s"."systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "s"."systemhouse_id", "s"."customer_id", 'write'::"text"))))))));
+  WHERE (("s"."id" = "avkk_responsibility"."avkk_subject_id") AND ("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL))))));
 
 
 
@@ -3269,7 +3308,7 @@ CREATE POLICY "avkk_responsibility_type_delete" ON "public"."avkk_responsibility
 CREATE POLICY "avkk_responsibility_type_insert" ON "public"."avkk_responsibility_type" FOR INSERT TO "authenticated" WITH CHECK (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND (EXISTS ( SELECT 1
    FROM ("public"."avkk_responsibility" "r"
      JOIN "public"."avkk_subject" "s" ON (("s"."id" = "r"."avkk_subject_id")))
-  WHERE (("r"."id" = "avkk_responsibility_type"."responsibility_id") AND ((("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL)) OR ("public"."has_active_systemhouse_membership"("auth"."uid"(), "s"."systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "s"."systemhouse_id", "s"."customer_id", 'write'::"text"))))))));
+  WHERE (("r"."id" = "avkk_responsibility_type"."responsibility_id") AND ("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL))))));
 
 
 
@@ -3281,9 +3320,9 @@ CREATE POLICY "avkk_responsibility_type_read" ON "public"."avkk_responsibility_t
 
 CREATE POLICY "avkk_responsibility_update" ON "public"."avkk_responsibility" FOR UPDATE TO "authenticated" USING (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND (EXISTS ( SELECT 1
    FROM "public"."avkk_subject" "s"
-  WHERE (("s"."id" = "avkk_responsibility"."avkk_subject_id") AND ((("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL)) OR ("public"."has_active_systemhouse_membership"("auth"."uid"(), "s"."systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "s"."systemhouse_id", "s"."customer_id", 'write'::"text")))))))) WITH CHECK (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND (EXISTS ( SELECT 1
+  WHERE (("s"."id" = "avkk_responsibility"."avkk_subject_id") AND ("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL)))))) WITH CHECK (("public"."has_permission"("auth"."uid"(), 'avkk.responsibility.assign'::"text") AND (EXISTS ( SELECT 1
    FROM "public"."avkk_subject" "s"
-  WHERE (("s"."id" = "avkk_responsibility"."avkk_subject_id") AND ((("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL)) OR ("public"."has_active_systemhouse_membership"("auth"."uid"(), "s"."systemhouse_id") AND "public"."has_customer_access"("auth"."uid"(), "s"."systemhouse_id", "s"."customer_id", 'write'::"text"))))))));
+  WHERE (("s"."id" = "avkk_responsibility"."avkk_subject_id") AND ("s"."systemhouse_id" IS NULL) AND ("s"."customer_id" IS NULL))))));
 
 
 
@@ -3595,6 +3634,12 @@ GRANT ALL ON FUNCTION "public"."bsf03b_process_statement_request"() TO "service_
 
 
 
+REVOKE ALL ON FUNCTION "public"."bsf03e_add_deputy"("_source_responsibility_id" "uuid", "_target_user_id" "uuid") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."bsf03e_add_deputy"("_source_responsibility_id" "uuid", "_target_user_id" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."bsf03e_add_deputy"("_source_responsibility_id" "uuid", "_target_user_id" "uuid") TO "service_role";
+
+
+
 REVOKE ALL ON FUNCTION "public"."bsf03e_avkk_responsibility_candidates"("_subject" "uuid") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."bsf03e_avkk_responsibility_candidates"("_subject" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."bsf03e_avkk_responsibility_candidates"("_subject" "uuid") TO "service_role";
@@ -3608,6 +3653,18 @@ GRANT ALL ON FUNCTION "public"."bsf03e_avkk_responsibility_target_guard"() TO "s
 
 REVOKE ALL ON FUNCTION "public"."bsf03e_avkk_subject_scope_guard"() FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."bsf03e_avkk_subject_scope_guard"() TO "service_role";
+
+
+
+REVOKE ALL ON FUNCTION "public"."bsf03e_end_responsibility"("_responsibility_id" "uuid") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."bsf03e_end_responsibility"("_responsibility_id" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."bsf03e_end_responsibility"("_responsibility_id" "uuid") TO "service_role";
+
+
+
+REVOKE ALL ON FUNCTION "public"."bsf03e_transfer_owner"("_responsibility_id" "uuid", "_target_user_id" "uuid") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."bsf03e_transfer_owner"("_responsibility_id" "uuid", "_target_user_id" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."bsf03e_transfer_owner"("_responsibility_id" "uuid", "_target_user_id" "uuid") TO "service_role";
 
 
 
