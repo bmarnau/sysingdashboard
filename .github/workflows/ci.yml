@@ -124,6 +124,16 @@ jobs:
           psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
             -v ON_ERROR_STOP=1 \
             -f supabase/tests/bsf03b-performance-statement.sql
+      - name: BSF-03E responsibility scope database contract
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -v ON_ERROR_STOP=1 \
+            -f supabase/tests/bsf-03e-responsibility-scope.sql
+      - name: BSF-03E responsibility mutation database contract
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -v ON_ERROR_STOP=1 \
+            -f supabase/tests/bsf03e-responsibility-mutations.sql
       - name: Generate schema snapshot
         run: |
           mkdir -p supabase/schema
