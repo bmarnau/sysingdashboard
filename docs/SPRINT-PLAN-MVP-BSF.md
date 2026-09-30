@@ -55,6 +55,18 @@ Dabei gelten folgende Grenzen:
 
 **BSF-03E P3b-0 dient als Referenz:** Die Due-Projection wird lokal gegen die bestehenden BSF-02C/03A/03B/03E-Verträge regressiert. Der von BSF-03A T12 erkannte Verlust der bereits freigegebenen Kategorie-Semantik wird in der noch nicht freigegebenen P3b-0-Migration selbst behoben; anschließend werden DB-Rebuild und vollständige Regression wiederholt. Produktion bleibt unverändert.
 
+Für DB-Feature-Branches gilt zusätzlich ein verbindliches **Cleanup-/Final-Gate vor Commit**:
+
+1. Arbeitsbaum und kompletter Diff inventarisieren; nur beabsichtigte Produkt-, Migrations-, Test- und generierte Evidenzdateien dürfen verbleiben.
+2. Temporäre CLI-/Log-/Dump-/Cache-/lokale Supabase-Artefakte und Secrets ausschließen.
+3. Fachänderung und Test-Harness-/Fixture-Änderung nach Commit-Scope trennen.
+4. Feature-spezifische DB-Verträge sowie alle betroffenen Regressionen auf dem finalen lokalen Stand erneut ausführen.
+5. Schema-/Types-Snapshot reproduzierbar erzeugen und Drift = NONE nachweisen.
+6. Erst nach Typecheck/Lint/Docs/Build/`git diff --check` getrennte, signierte Commits erzeugen.
+7. Push ohne Force; Exact-Head Security/CI/Advisor-/Quality-Evidenz ist vor Merge maßgeblich.
+
+Für P3b-0 umfasst das Feature-Gate zusätzlich **DUE-01–DUE-07**. Die Clean-reset-/Testreihenfolge-Problematik wird getrennt in **Issue #165** bearbeitet und nicht in den fachlichen Due-Commit gemischt.
+
 ## 3. Aktueller Stand
 
 ### Abgeschlossen
