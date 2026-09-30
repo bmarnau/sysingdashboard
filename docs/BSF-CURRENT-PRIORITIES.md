@@ -75,6 +75,26 @@ Live-P0-Befund: `avkk_subject` besitzt aktuell keinen Systemhouse-/Customer-Scop
 
 Kanonischer Design-/Planungs-PR: **#151**.
 
+#### P3b-0 Due Projection — Cleanup-/Final-Gate
+
+Lokaler Stand 2026-09-30: Root Cause der BSF-03A-T12-Regression behoben; BSF-02C, BSF-03A, BSF-03B sowie BSF-03E Scope/Mutations lokal PASS. Der Supabase-CLI-Rebuild hatte einen Storage-Health-Timeout beim Container-Neustart und bleibt deshalb `PASS_WITH_ENV_WARNING`, obwohl PostgreSQL verfügbar war und alle SQL-Verträge erfolgreich liefen.
+
+Vor dem ersten P3b-0-Commit gilt verbindlich:
+
+- [ ] vollständigen Arbeitsbaum mit `git status --short` und vollständigem Diff prüfen,
+- [ ] temporäre CLI-, Log-, Dump-, Cache- und lokale Supabase-Artefakte entfernen; keine `.env`-/Secret-Dateien aufnehmen,
+- [ ] sicherstellen, dass genau **eine** P3b-0-Due-Migration existiert,
+- [ ] fachlichen P3b-0-Diff von Test-Harness-/Clean-reset-Änderungen trennen,
+- [ ] DUE-01–DUE-07 vollständig nachweisen: Spalte `due DATE NULL`, valides Datum, NULL, Due-only-Revision/Hash, invalides Datum atomar fail-closed, Scope-Deny unverändert, keine zusätzlichen anon/PUBLIC-Rechte,
+- [ ] BSF-02C / BSF-03A / BSF-03B / BSF-03E Scope / BSF-03E Mutations erneut auf dem finalen lokalen Stand PASS,
+- [ ] Schema-Snapshot und Supabase-Types reproduzierbar generieren; `DATABASE_SCHEMA_DRIFT: NONE` und `DATABASE_TYPES_DRIFT: NONE`,
+- [ ] Typecheck, Lint/No-Console, Docs-/Projektstatus-Checks, Build und `git diff --check` gemäß Final-Gate PASS,
+- [ ] erst danach getrennte signierte Commits: **(1) P3b-0 Due Projection**, **(2) DB-Test-Harness/Clean-reset**,
+- [ ] Push ohne Force, danach Exact-Head Security + Full CI; kein Merge/Deploy vor grüner Evidenz.
+
+Der DB-Test-Harness-/Clean-reset-Befund ist separat als **Issue #165** geführt und darf den fachlichen Due-Commit nicht aufblähen.
+
+
 ## Kiosk-first- und Golden-Dataset-Regel
 
 Der Info-Kiosk soll so früh wie möglich sichtbar funktionieren, ohne spätere Architektur vorwegzunehmen. Gleichzeitig wird die Fachsemantik schrittweise über den Goldenen Datensatz reproduzierbar abgesichert.
