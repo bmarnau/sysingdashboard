@@ -94,7 +94,6 @@ Vor dem ersten P3b-0-Commit gilt verbindlich:
 
 Der DB-Test-Harness-/Clean-reset-Befund ist separat als **Issue #165** geführt und darf den fachlichen Due-Commit nicht aufblähen.
 
-
 ## Kiosk-first- und Golden-Dataset-Regel
 
 Der Info-Kiosk soll so früh wie möglich sichtbar funktionieren, ohne spätere Architektur vorwegzunehmen. Gleichzeitig wird die Fachsemantik schrittweise über den Goldenen Datensatz reproduzierbar abgesichert.
