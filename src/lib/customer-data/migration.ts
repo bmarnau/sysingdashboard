@@ -157,6 +157,23 @@ function linkStatus(parentId: string | null | undefined, parentExists: boolean):
   return parentExists ? "linked" : "missing";
 }
 
+function normalizeDue(value: string | undefined): string | null {
+  const due = value?.trim() || null;
+  if (due === null) return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(due);
+  if (!match) throw new Error(`WorkPackage due must be YYYY-MM-DD: ${due}`);
+  const [year, month, day] = match.slice(1).map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    throw new Error(`WorkPackage due must be a valid calendar date: ${due}`);
+  }
+  return due;
+}
+
 export function buildSharedDataMigrationPlan(
   input: SharedDataMigrationInput,
 ): SharedDataMigrationPlan {
@@ -197,6 +214,7 @@ export function buildSharedDataMigrationPlan(
       legacyClient: workPackage.client,
       status: workPackage.status,
       priority: workPackage.priority,
+      due: normalizeDue(workPackage.due),
       categoryKey: workPackage.categoryKey ?? null,
     };
   });

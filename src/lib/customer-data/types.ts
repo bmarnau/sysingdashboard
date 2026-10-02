@@ -55,6 +55,7 @@ export interface SharedWorkPackageProjection {
   legacyClient?: string;
   status: WorkPackage["status"];
   priority: WorkPackage["priority"];
+  due: string | null;
   /**
    * BSF-03A Kategorie-Brücke: `categoryKey` ist Identität, niemals Label.
    * `null` bedeutet explizit "keine Kategorie". Unbekannte historische Keys

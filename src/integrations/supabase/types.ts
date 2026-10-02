@@ -1293,6 +1293,7 @@ export type Database = {
           category_observed: boolean
           created_at: string
           customer_id: string
+          due: string | null
           id: string
           is_active: boolean
           legacy_client: string
@@ -1316,6 +1317,7 @@ export type Database = {
           category_observed?: boolean
           created_at?: string
           customer_id: string
+          due?: string | null
           id?: string
           is_active?: boolean
           legacy_client?: string
@@ -1339,6 +1341,7 @@ export type Database = {
           category_observed?: boolean
           created_at?: string
           customer_id?: string
+          due?: string | null
           id?: string
           is_active?: boolean
           legacy_client?: string
@@ -1766,4 +1769,3 @@ export const Constants = {
     },
   },
 } as const
-
