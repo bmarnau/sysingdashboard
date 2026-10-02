@@ -28,6 +28,14 @@ farblich neutral; Warn- und Kritischfarben markieren nur Risiken. Der Vertrag
 bleibt `sysing.kiosk.demo.v1`, wird strikt validiert und schreibt nicht in
 produktive Fachtabellen.
 
+Die TDF-Schnittstellenreferenz ist
+`docs/SYSING-KIOSK-001_Info-Kiosk-Datenschnittstelle_V1.0.0.md`. Sie beschreibt
+den providerneutralen Runtime-Vertrag, die Demo-JSON-Struktur, Sicherheits- und
+Resilience-Grenzen sowie die spätere Providererweiterung. Der Demo-Import ist
+ausdrücklich **keine produktive externe Kiosk-API**. Eine kompakte
+Schritt-für-Schritt-Anleitung mit vollständiger JSON-Struktur und Copy-&-Paste-
+Beispiel steht unter `docs/examples/README-KIOSK-IMPORT.md`.
+
 ### Lokaler Bestand (`src/lib/demo-data/dataset.ts`)
 
 - 3 Projekte: Netzwerkmodernisierung, Microsoft-365-Migration, Backup-Konzept

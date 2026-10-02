@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-21 · Dashboard-Version 1.66.0
+Stand: 2026-09-23 · Dashboard-Version 1.66.0
 
 ## Vision
 
@@ -50,6 +50,28 @@ Qualitätssicherung gewachsen. Nach der formalen MVP-Baseline verschiebt sich de
 Schwerpunkt auf das **Betriebsfähige Systemhaus-Fundament (BSF)**: belastbare
 Kundenbeziehungen, rollenübergreifende Leistungssichten, Dokumentationsqualität,
 Betreiberhoheit und spätere Integrationen.
+
+## SYSING-KIOSK-001 — TDF-Schnittstellenbaseline (2026-09-23)
+
+Die vorhandene Info-Kiosk-Datengrenze ist erstmals als eigenständiges
+TDF-Schnittstellendokument zusammengeführt. `SYSING-KIOSK-001 V1.0.0` trennt
+den implementierten providerneutralen Runtime-Vertrag
+`KioskDataProvider -> KioskSnapshot`, den ausschließlich synthetischen
+Demo-JSON-Vertrag `sysing.kiosk.demo.v1` und ein mögliches späteres externes
+Provider-Zielbild klar voneinander.
+
+Der bereits freigegebene Referenzdatensatz
+`docs/examples/kiosk-demo-dataset-v1.json` bleibt unverändert die führende
+KIOSK-01-Demoquelle. Ein neuer automatischer Dokument-Code-Dataset-Check bindet
+Dokumentversion, Schema-Version, Dataset-Version und die sechs Domain-IDs an die
+versionierten Codequellen und verhindert stille Dokumentationsdrift. Die
+Word-Ausgabe wird reproduzierbar aus derselben Markdown-Quelle erzeugt; PDF ist
+eine daraus abgeleitete Distributionsfassung.
+
+Der Dokumentationsstrang verändert keine Kiosk-Laufzeit, Datenbank, Migration,
+Authentifizierung, RBAC- oder RLS-Grenze. Eine produktive externe Kiosk-API wird
+ausdrücklich nicht als umgesetzt behauptet. Lovable ist für Erstellung,
+Prüfung und Abnahme dieses Dokumentationsstrangs nicht erforderlich.
 
 ## BSF-03B — Teamlead-Leistungsnachweis FINAL DONE (2026-09-21)
 
