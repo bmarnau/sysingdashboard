@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-09-22  
+Stand: 2026-09-30  
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
@@ -74,6 +74,25 @@ Verbindlicher Ablauf:
 Live-P0-Befund: `avkk_subject` besitzt aktuell keinen Systemhouse-/Customer-Scope; der Legacy-Bestand (4 Project + 5 WorkPackage) hat 0/9 eindeutige `subject_id/source_id`-Matches zur Shared Projection. Daher kein geratener Backfill; Legacy bleibt für BSF-03E bis zu belastbarer Zuordnung fail-closed.
 
 Kanonischer Design-/Planungs-PR: **#151**.
+
+#### P3b-0 Due Projection — Cleanup-/Final-Gate
+
+Lokaler Stand 2026-09-30: Root Cause der BSF-03A-T12-Regression behoben; BSF-02C, BSF-03A, BSF-03B sowie BSF-03E Scope/Mutations lokal PASS. Der Supabase-CLI-Rebuild hatte einen Storage-Health-Timeout beim Container-Neustart und bleibt deshalb `PASS_WITH_ENV_WARNING`, obwohl PostgreSQL verfügbar war und alle SQL-Verträge erfolgreich liefen.
+
+Vor dem ersten P3b-0-Commit gilt verbindlich:
+
+- [ ] vollständigen Arbeitsbaum mit `git status --short` und vollständigem Diff prüfen,
+- [ ] temporäre CLI-, Log-, Dump-, Cache- und lokale Supabase-Artefakte entfernen; keine `.env`-/Secret-Dateien aufnehmen,
+- [ ] sicherstellen, dass genau **eine** P3b-0-Due-Migration existiert,
+- [ ] fachlichen P3b-0-Diff von Test-Harness-/Clean-reset-Änderungen trennen,
+- [ ] DUE-01–DUE-07 vollständig nachweisen: Spalte `due DATE NULL`, valides Datum, NULL, Due-only-Revision/Hash, invalides Datum atomar fail-closed, Scope-Deny unverändert, keine zusätzlichen anon/PUBLIC-Rechte,
+- [ ] BSF-02C / BSF-03A / BSF-03B / BSF-03E Scope / BSF-03E Mutations erneut auf dem finalen lokalen Stand PASS,
+- [ ] Schema-Snapshot und Supabase-Types reproduzierbar generieren; `DATABASE_SCHEMA_DRIFT: NONE` und `DATABASE_TYPES_DRIFT: NONE`,
+- [ ] Typecheck, Lint/No-Console, Docs-/Projektstatus-Checks, Build und `git diff --check` gemäß Final-Gate PASS,
+- [ ] erst danach getrennte signierte Commits: **(1) P3b-0 Due Projection**, **(2) DB-Test-Harness/Clean-reset**,
+- [ ] Push ohne Force, danach Exact-Head Security + Full CI; kein Merge/Deploy vor grüner Evidenz.
+
+Der DB-Test-Harness-/Clean-reset-Befund ist separat als **Issue #165** geführt und darf den fachlichen Due-Commit nicht aufblähen.
 
 ## Kiosk-first- und Golden-Dataset-Regel
 
@@ -240,7 +259,26 @@ Nicht Teil des zwingenden internen Hauptpfads bis `BSF-FINAL-INTERNAL`:
 
 Issue #123 und Draft-PR #124 bleiben als externe Wallboard-/Contract-Vorarbeit erhalten, bestimmen aber nicht die Reihenfolge des internen Kiosk-Piloten.
 
-## Lovable-/Werkzeugsteuerung
+## Werkzeugsteuerung: Codex, Lovable und GitHub
+
+### Codex für lokale Datenbankaktivitäten
+
+Für lokale Supabase-/PostgreSQL-Arbeiten ist **Codex im lokalen, isolierten Worktree das bevorzugte Ausführungswerkzeug**. Dazu gehören insbesondere Docker-/Supabase-CLI-Betrieb, `psql`, Migrationen, Owner-Level-Vertragstests, vollständige lokale DB-Rebuilds sowie Schema- und Types-Drift-Prüfungen.
+
+Verbindliche Regeln:
+
+- GitHub bleibt Source of Truth für Code, Migrationen und Dokumentation; Codex arbeitet auf einem definierten Branch/Worktree gegen diesen Stand.
+- Datenbankänderungen und Verifikation erfolgen ausschließlich gegen eine lokale oder ausdrücklich isolierte Test-/Staging-Datenbank; **kein produktiver DB-Write** aus dem lokalen Codex-Arbeitslauf.
+- Kein Service-Role-Key im Produktpfad und keine produktiven Schlüssel, Tokens oder Passwörter in Prompts, Logs, Code oder Dokumentation.
+- Bestehende Migrationen werden bei noch nicht freigegebenem Branch korrigiert, wenn dies fachlich der richtige Ort ist; es wird **keine zweite Migration zur Umgehung eines Fehlers** erzeugt.
+- Vor einem Commit sind mindestens erforderlich: sauberer DB-Rebuild aus den Migrationen, betroffene Vertrags-/Regressionstests, `git diff --check` sowie die für den Sprint vorgesehenen Schema-/Types-Drift-Gates.
+- Sicherheitsgrenzen wie RLS, RBAC, ACL, SECURITY INVOKER/DEFINER und Last-Sysadmin-Schutz werden nicht für Tests abgeschwächt.
+- Ein lokaler PASS ersetzt keine Exact-Head-CI-, Security- oder Advisor-Evidenz; diese bleibt für Freigabe und Merge zusätzlich erforderlich.
+- ChatGPT koordiniert Root-Cause-Analyse, Abnahmekriterien und Ergebnisprüfung; Codex führt die lokale DB-Arbeit reproduzierbar aus.
+
+**Referenzfall BSF-03E P3b-0 (2026-09-30):** Die lokale Supabase-/PostgreSQL-17-Umgebung wird über Codex genutzt, um die bestehende Due-Projection-Migration gegen BSF-02C/03A/03B/03E zu regressieren. Ein von T12 aufgedeckter Verlust der bereits freigegebenen `category_key/category_observed`-Semantik wird in derselben noch nicht freigegebenen P3b-0-Migration korrigiert; danach folgen DB-Rebuild, Regression und Drift-Gates. Produktion bleibt unberührt.
+
+### Lovable für UI und Preview
 
 Lovable gezielt für sichtbare UI-/Preview-Aufgaben:
 
@@ -248,7 +286,7 @@ Lovable gezielt für sichtbare UI-/Preview-Aufgaben:
 - **mittel/gezielt:** BSF-03A, KIOSK-02, BSF-03B, BSF-03E, BSF-03C, BSF-09,
 - **0 bzw. gering:** GDS-01-Kern, BSF-DOC-02, BSF-04, BSF-05A, BSF-06.
 
-Lovable darf Golden Fixtures verwenden und prüfen, aber fachliche Expected Results nicht selbständig umdefinieren. Credits werden nicht künstlich verbraucht. Architektur, Golden-Dataset-Vertrag, Security, Git und CI bleiben bei den dafür geeigneten Werkzeugen.
+Lovable darf Golden Fixtures verwenden und prüfen, aber fachliche Expected Results nicht selbständig umdefinieren. Credits werden nicht künstlich verbraucht. Owner-Level-Datenbankverifikation ist keine Lovable-Aufgabe, wenn die verfügbare Rolle den erforderlichen PostgreSQL-/Auth-Kontext nicht reproduzieren kann. Architektur, Golden-Dataset-Vertrag, Security, Git und CI bleiben bei den dafür geeigneten Werkzeugen.
 
 ## Definition of Done ab BSF
 

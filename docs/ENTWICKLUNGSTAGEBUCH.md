@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-21 · Dashboard-Version 1.66.0
+Stand: 2026-09-30 · Dashboard-Version 1.66.0
 
 ## Vision
 
@@ -50,6 +50,23 @@ Qualitätssicherung gewachsen. Nach der formalen MVP-Baseline verschiebt sich de
 Schwerpunkt auf das **Betriebsfähige Systemhaus-Fundament (BSF)**: belastbare
 Kundenbeziehungen, rollenübergreifende Leistungssichten, Dokumentationsqualität,
 Betreiberhoheit und spätere Integrationen.
+
+## 2026-09-30 — Codex als Standard für lokale DB-Aktivitäten
+
+Für lokale Supabase-/PostgreSQL-Arbeiten wird Codex ab sofort als bevorzugtes Ausführungswerkzeug festgeschrieben, wenn Docker, Supabase CLI, `psql`, Migrationen, Owner-Level-Vertragstests oder Schema-/Types-Drift reproduzierbar lokal geprüft werden müssen. GitHub bleibt die maßgebliche Quelle; Codex arbeitet auf einem definierten Branch/Worktree und ausschließlich gegen lokale oder ausdrücklich isolierte Test-/Staging-Datenbanken.
+
+Die Trennung der Werkzeuge ist bewusst: Lovable bleibt für UI-, Preview- und visuelle Abnahmen geeignet. Owner-Level-DB-Verifikation wird dagegen lokal mit Codex durchgeführt, wenn die in Lovable verfügbare DB-Rolle den notwendigen PostgreSQL-/Auth-Kontext nicht vollständig reproduzieren kann. Ein lokaler PASS ersetzt weiterhin keine Exact-Head-CI-, Security- oder Advisor-Evidenz.
+
+Verbindliche Sicherheits- und Qualitätsgrenzen:
+
+- keine produktiven DB-Writes aus dem lokalen Codex-Lauf,
+- keine Service-Role im Produktpfad und keine produktiven Secrets in Prompts, Logs oder Dokumentation,
+- keine Abschwächung von RLS, RBAC, ACL, SECURITY-Attributen oder Sicherheits-Triggern für Tests,
+- keine zweite Migration als Ausweichlösung, wenn eine noch nicht freigegebene Feature-Migration an der Quelle korrigiert werden muss,
+- vor Commit: reproduzierbarer DB-Rebuild, betroffene SQL-Verträge/Regressionen, `git diff --check` und die vorgesehenen Schema-/Types-Drift-Gates,
+- ChatGPT koordiniert Root Cause, Abnahmekriterien und Ergebnisprüfung; Codex liefert die lokale reproduzierbare DB-Evidenz.
+
+Erster Referenzfall ist **BSF-03E P3b-0 Due Projection**. Der lokale Codex-Lauf bestätigte als Root Cause, dass die Due-Migration die Publish-RPC ersetzt und dabei die bereits freigegebene `category_key/category_observed`-Semantik aus BSF-03A nicht vollständig übernommen hatte. Die Korrektur wurde ausschließlich in der noch nicht freigegebenen Migration `20260929053733_bsf03e_p3b_due_projection.sql` vorgenommen; `due DATE NULL` blieb erhalten. Anschließend meldeten die lokalen SQL-Verträge BSF-02C T01–T30, BSF-03A T01–T20 einschließlich T12, BSF-03B, BSF-03E Scope und BSF-03E Mutations T01–T25 PASS; `git diff --check` war ebenfalls PASS. Der Supabase-CLI-Rebuild meldete beim Container-Neustart einen Storage-Health-Timeout, während PostgreSQL verfügbar blieb und alle SQL-Verträge erfolgreich liefen; deshalb wird dieser Lauf als **PASS_WITH_ENV_WARNING** und nicht als vollständig störungsfreier DB-Reset dokumentiert. Commit, Push, Merge und Deploy erfolgten nicht; Produktion blieb unberührt.
 
 ## BSF-03B — Teamlead-Leistungsnachweis FINAL DONE (2026-09-21)
 

@@ -1,6 +1,6 @@
 # Sysing Dashboard — Operative Sprintplanung MVP → BSF → Integration
 
-Stand: 2026-09-22  
+Stand: 2026-09-30  
 Status: **verbindliche operative Kiosk-first-Planung; BSF-03B DONE/MERGED; BSF-03E AKTUELL / P0**  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
@@ -34,6 +34,38 @@ GitHub bleibt Source of Truth. Kein Merge/Release ohne die vorgesehenen GitHub-G
 - Produktive Graph-/SharePoint-/Exchange-/PRTG-/MCP-/Agenten-Anbindungen folgen erst nach interner Baseline und Integration Readiness.
 - Credits werden nicht künstlich verbraucht; Lovable wird gezielt für UI/Preview eingesetzt.
 - Keine produktiven Secrets, Tokens, Passwörter oder Service-Role-Keys in Code, Prompts, Logs oder Dokumentation.
+
+### 2.1 Lokale Datenbankaktivitäten mit Codex
+
+Lokale Supabase-/PostgreSQL-Aktivitäten werden bei BSF-Sprints **bevorzugt mit Codex in einem isolierten lokalen Worktree** ausgeführt, wenn für Migrationen oder Vertragstests Owner-Level-PostgreSQL-Funktionen, Docker, Supabase CLI oder `psql` erforderlich sind. Lovable bleibt für UI-/Preview-Aufgaben vorgesehen und ersetzt diese lokale DB-Evidenz nicht.
+
+Verbindlicher Ablauf:
+
+`GitHub-Baseline → isolierter Codex-Worktree → lokale Supabase-/PostgreSQL-DB → Migration/DB-Rebuild → Vertrags-/Regressionstests → Schema-/Types-Drift → Git-/CI-Evidenz`
+
+Dabei gelten folgende Grenzen:
+
+- ausschließlich lokale oder ausdrücklich isolierte Test-/Staging-Datenbanken; keine produktiven DB-Writes aus dem Codex-Arbeitslauf,
+- keine Service-Role im Produktpfad und keine produktiven Secrets in Prompts, Logs oder Dokumentation,
+- keine Abschwächung von RLS, RBAC, ACL oder Sicherheits-Triggern zur Erzeugung eines grünen Tests,
+- bei einem noch nicht freigegebenen Feature-Branch wird eine fehlerhafte bestehende Migration an der Quelle korrigiert; keine zusätzliche Kompensationsmigration nur zur Umgehung des Fehlers,
+- vor Commit mindestens: reproduzierbarer `db reset --local --no-seed`, betroffene SQL-Verträge/Regressionen, `git diff --check`, Schema-/Types-Drift gemäß Sprint-Gate,
+- ein lokaler PASS ist notwendige, aber nicht hinreichende Freigabe; Exact-Head-CI, Security und erforderliche Advisor-/Quality-Gates bleiben zusätzlich maßgeblich,
+- ChatGPT verantwortet Koordination, Root-Cause-Einordnung und Abnahmekriterien; Codex führt die lokale DB-Arbeit aus und liefert reproduzierbare Evidenz.
+
+**BSF-03E P3b-0 dient als Referenz:** Die Due-Projection wird lokal gegen die bestehenden BSF-02C/03A/03B/03E-Verträge regressiert. Der von BSF-03A T12 erkannte Verlust der bereits freigegebenen Kategorie-Semantik wird in der noch nicht freigegebenen P3b-0-Migration selbst behoben; anschließend werden DB-Rebuild und vollständige Regression wiederholt. Produktion bleibt unverändert.
+
+Für DB-Feature-Branches gilt zusätzlich ein verbindliches **Cleanup-/Final-Gate vor Commit**:
+
+1. Arbeitsbaum und kompletter Diff inventarisieren; nur beabsichtigte Produkt-, Migrations-, Test- und generierte Evidenzdateien dürfen verbleiben.
+2. Temporäre CLI-/Log-/Dump-/Cache-/lokale Supabase-Artefakte und Secrets ausschließen.
+3. Fachänderung und Test-Harness-/Fixture-Änderung nach Commit-Scope trennen.
+4. Feature-spezifische DB-Verträge sowie alle betroffenen Regressionen auf dem finalen lokalen Stand erneut ausführen.
+5. Schema-/Types-Snapshot reproduzierbar erzeugen und Drift = NONE nachweisen.
+6. Erst nach Typecheck/Lint/Docs/Build/`git diff --check` getrennte, signierte Commits erzeugen.
+7. Push ohne Force; Exact-Head Security/CI/Advisor-/Quality-Evidenz ist vor Merge maßgeblich.
+
+Für P3b-0 umfasst das Feature-Gate zusätzlich **DUE-01–DUE-07**. Die Clean-reset-/Testreihenfolge-Problematik wird getrennt in **Issue #165** bearbeitet und nicht in den fachlichen Due-Commit gemischt.
 
 ## 3. Aktueller Stand
 
