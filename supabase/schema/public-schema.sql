@@ -415,12 +415,13 @@ BEGIN
     IF NOT FOUND THEN
       INSERT INTO public.shared_work_package_projection (
         systemhouse_id, customer_id, source_id, project_ref, project_source_id, parent_link_status,
-        title, legacy_client, status, priority, category_key, category_observed,
+        title, legacy_client, status, priority, due, category_key, category_observed,
         published_by, published_at, source_revision, source_hash, is_active, withdrawn_at
       ) VALUES (
         p_systemhouse_id, p_customer_id, v_source_id, v_parent_ref, v_parent_source, v_parent_status,
         COALESCE(v_item->>'title', ''), COALESCE(v_item->>'legacy_client', ''),
         COALESCE(v_item->>'status', ''), COALESCE(v_item->>'priority', ''),
+        NULLIF(BTRIM(COALESCE(v_item->>'due', '')), '')::date,
         v_cat_key, COALESCE(v_cat_observed, false),
         v_actor, now(), 1, v_hash, true, NULL
       );
@@ -436,6 +437,7 @@ BEGIN
              legacy_client = COALESCE(v_item->>'legacy_client', ''),
              status = COALESCE(v_item->>'status', ''),
              priority = COALESCE(v_item->>'priority', ''),
+             due = NULLIF(BTRIM(COALESCE(v_item->>'due', '')), '')::date,
              category_key = CASE
                WHEN v_cat_observed THEN v_cat_key
                ELSE public.shared_work_package_projection.category_key
@@ -2331,6 +2333,7 @@ CREATE TABLE IF NOT EXISTS "public"."shared_work_package_projection" (
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "category_key" "text",
     "category_observed" boolean DEFAULT false NOT NULL,
+    "due" "date",
     CONSTRAINT "shared_work_package_projection_parent_consistency_check" CHECK (((("parent_link_status" = 'linked'::"text") AND ("project_ref" IS NOT NULL)) OR (("parent_link_status" = 'none'::"text") AND ("project_ref" IS NULL)))),
     CONSTRAINT "shared_work_package_projection_parent_status_check" CHECK (("parent_link_status" = ANY (ARRAY['none'::"text", 'linked'::"text"]))),
     CONSTRAINT "shared_work_package_projection_source_id_not_empty" CHECK (("btrim"("source_id") <> ''::"text")),
@@ -3962,7 +3965,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "service_role";
-
 
 
 

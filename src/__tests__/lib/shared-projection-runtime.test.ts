@@ -29,6 +29,7 @@ function workPackage(patch: Partial<WorkPackage> = {}): WorkPackage {
     projectId: "P-1",
     status: "offen",
     priority: "mittel",
+    due: "2026-10-15",
     ...patch,
   };
 }
@@ -48,11 +49,11 @@ function activity(patch: Partial<Activity> = {}): Activity {
   };
 }
 
-function plan() {
+function plan(due = "2026-10-15") {
   return buildSharedDataMigrationPlan({
     systemhouseId: "sys-a",
     projects: [project()],
-    workPackages: [workPackage()],
+    workPackages: [workPackage({ due })],
     activities: [activity()],
     customerMappings: [{ legacyName: "Acme GmbH", customerId: "cust-a" }],
   });
@@ -114,7 +115,7 @@ describe("BSF-02C shared projection runtime", () => {
         customerId: "cust-a",
         publisherUserId: "user-1",
         projects: [expect.objectContaining({ id: "P-1" })],
-        workPackages: [expect.objectContaining({ id: "W-1" })],
+        workPackages: [expect.objectContaining({ id: "W-1", due: "2026-10-15" })],
         activities: [expect.objectContaining({ id: "A-1", engineerId: "user-1" })],
       }),
     );
@@ -357,6 +358,27 @@ describe("BSF-02C Supabase transactional publish adapter", () => {
         work_package_source_id: "W-1",
       }),
     ]);
+  });
+
+  it("changes the work-package source hash when only due changes", async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: successfulRpcResult(), error: null });
+    const client = { rpc, from: vi.fn() } as unknown as SupabaseClient<Database>;
+    const repo = createSupabaseSharedProjectionRepository(client);
+
+    await publishSharedCustomerProjection(repo, {
+      plan: plan("2026-10-15"),
+      customerId: "cust-a",
+      publisherUserId: "user-1",
+    });
+    await publishSharedCustomerProjection(repo, {
+      plan: plan("2026-10-16"),
+      customerId: "cust-a",
+      publisherUserId: "user-1",
+    });
+
+    const first = rpc.mock.calls[0]?.[1] as { p_work_packages: Array<{ source_hash: string }> };
+    const second = rpc.mock.calls[1]?.[1] as { p_work_packages: Array<{ source_hash: string }> };
+    expect(first.p_work_packages[0]?.source_hash).not.toBe(second.p_work_packages[0]?.source_hash);
   });
 
   it("fails closed when the transactional RPC returns an error", async () => {

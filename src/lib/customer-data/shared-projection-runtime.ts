@@ -32,6 +32,7 @@ export interface SharedWorkPackageRecord {
   legacyClient: string;
   status: string;
   priority: string;
+  due: string | null;
   /** BSF-03A: expliziter Kategorie-Key oder `null` (keine Kategorie). */
   categoryKey: string | null;
   /** BSF-03A: `false` = Kategorie wurde nie mit dem neuen Vertrag publiziert. */

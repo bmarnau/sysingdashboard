@@ -52,6 +52,7 @@ interface WorkPackageProjectionRow {
   source_id: string;
   title: string;
   status: string;
+  due: string | null;
   is_active: boolean;
 }
 
@@ -137,7 +138,7 @@ export function createSupabaseResponsibilityPersonViewRepository(
         workPackageSourceIds.length > 0
           ? supabase
               .from("shared_work_package_projection")
-              .select("systemhouse_id,customer_id,source_id,title,status,is_active")
+              .select("systemhouse_id,customer_id,source_id,title,status,due,is_active")
               .in("source_id", workPackageSourceIds)
               .eq("is_active", true)
           : Promise.resolve({ data: [], error: null });
@@ -218,7 +219,7 @@ export function createSupabaseResponsibilityPersonViewRepository(
           customerId: subject.customer_id,
           customerName: customer.name,
           status: projection.status,
-          due: null,
+          due: "due" in projection ? projection.due : null,
           missingCount: subjectCompetences.filter((row) => row.rating_key_snapshot === "missing")
             .length,
           partialCount: subjectCompetences.filter((row) => row.rating_key_snapshot === "partial")

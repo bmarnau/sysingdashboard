@@ -129,6 +129,7 @@ describe("CustomerDetailView", () => {
                   title: "Netzwerk",
                   status: "offen",
                   priority: "hoch",
+                  due: null,
                   categoryKey: null,
                   categoryObserved: false,
                 },

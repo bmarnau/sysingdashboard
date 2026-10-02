@@ -17,6 +17,7 @@ type ActivityRow = Tables<"shared_activity_projection">;
 type WorkPackageCategoryRow = WorkPackageRow & {
   category_key?: string | null;
   category_observed?: boolean;
+  due?: string | null;
 };
 
 type PublishMode = "structure" | "activities";
@@ -74,6 +75,7 @@ async function workPackagePayload(batch: SharedCustomerPublishBatch): Promise<Js
       legacy_client: workPackage.legacyClient ?? "",
       status: workPackage.status,
       priority: workPackage.priority,
+      due: workPackage.due,
       category_key: workPackage.categoryKey ?? null,
       source_hash: await sha256({
         projectId: workPackage.projectId,
@@ -81,6 +83,7 @@ async function workPackagePayload(batch: SharedCustomerPublishBatch): Promise<Js
         legacyClient: workPackage.legacyClient ?? "",
         status: workPackage.status,
         priority: workPackage.priority,
+        due: workPackage.due,
         categoryKey: workPackage.categoryKey ?? null,
       }),
     })),
@@ -167,6 +170,7 @@ function toWorkPackage(row: WorkPackageRow): SharedWorkPackageRecord {
     legacyClient: row.legacy_client,
     status: row.status,
     priority: row.priority,
+    due: categoryRow.due ?? null,
     categoryKey: categoryRow.category_key ?? null,
     categoryObserved: categoryRow.category_observed === true,
     publishedBy: row.published_by,
