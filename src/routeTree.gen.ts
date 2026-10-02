@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSyncRouteImport } from './routes/api/sync'
 import { Route as ApiStatusRouteImport } from './routes/api/status'
+import { Route as AuthenticatedVerantwortungenRouteImport } from './routes/_authenticated/verantwortungen'
 import { Route as AuthenticatedProjektcontrollingRouteImport } from './routes/_authenticated/projektcontrolling'
 import { Route as AuthenticatedLeistungsnachweisRouteImport } from './routes/_authenticated/leistungsnachweis'
 import { Route as AuthenticatedKioskRouteImport } from './routes/_authenticated/kiosk'
@@ -53,6 +54,12 @@ const ApiStatusRoute = ApiStatusRouteImport.update({
   path: '/api/status',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedVerantwortungenRoute =
+  AuthenticatedVerantwortungenRouteImport.update({
+    id: '/verantwortungen',
+    path: '/verantwortungen',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedProjektcontrollingRoute =
   AuthenticatedProjektcontrollingRouteImport.update({
     id: '/projektcontrolling',
@@ -105,8 +112,9 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kiosk': typeof AuthenticatedKioskRoute
-  '/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
   '/leistungsnachweis': typeof AuthenticatedLeistungsnachweisRoute
+  '/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
+  '/verantwortungen': typeof AuthenticatedVerantwortungenRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -120,8 +128,9 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kiosk': typeof AuthenticatedKioskRoute
-  '/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
   '/leistungsnachweis': typeof AuthenticatedLeistungsnachweisRoute
+  '/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
+  '/verantwortungen': typeof AuthenticatedVerantwortungenRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -137,8 +146,9 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/kiosk': typeof AuthenticatedKioskRoute
-  '/_authenticated/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
   '/_authenticated/leistungsnachweis': typeof AuthenticatedLeistungsnachweisRoute
+  '/_authenticated/projektcontrolling': typeof AuthenticatedProjektcontrollingRoute
+  '/_authenticated/verantwortungen': typeof AuthenticatedVerantwortungenRoute
   '/api/status': typeof ApiStatusRoute
   '/api/sync': typeof ApiSyncRoute
   '/api/public/auth-config': typeof ApiPublicAuthConfigRoute
@@ -154,8 +164,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard'
     | '/kiosk'
-    | '/projektcontrolling'
     | '/leistungsnachweis'
+    | '/projektcontrolling'
+    | '/verantwortungen'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -169,8 +180,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard'
     | '/kiosk'
-    | '/projektcontrolling'
     | '/leistungsnachweis'
+    | '/projektcontrolling'
+    | '/verantwortungen'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -185,8 +197,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/kiosk'
-    | '/_authenticated/projektcontrolling'
     | '/_authenticated/leistungsnachweis'
+    | '/_authenticated/projektcontrolling'
+    | '/_authenticated/verantwortungen'
     | '/api/status'
     | '/api/sync'
     | '/api/public/auth-config'
@@ -248,6 +261,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/status'
       preLoaderRoute: typeof ApiStatusRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/verantwortungen': {
+      id: '/_authenticated/verantwortungen'
+      path: '/verantwortungen'
+      fullPath: '/verantwortungen'
+      preLoaderRoute: typeof AuthenticatedVerantwortungenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/projektcontrolling': {
       id: '/_authenticated/projektcontrolling'
@@ -311,8 +331,9 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKioskRoute: typeof AuthenticatedKioskRoute
-  AuthenticatedProjektcontrollingRoute: typeof AuthenticatedProjektcontrollingRoute
   AuthenticatedLeistungsnachweisRoute: typeof AuthenticatedLeistungsnachweisRoute
+  AuthenticatedProjektcontrollingRoute: typeof AuthenticatedProjektcontrollingRoute
+  AuthenticatedVerantwortungenRoute: typeof AuthenticatedVerantwortungenRoute
   AuthenticatedKundenverantwortungIndexRoute: typeof AuthenticatedKundenverantwortungIndexRoute
   AuthenticatedMeineKundenIndexRoute: typeof AuthenticatedMeineKundenIndexRoute
   AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute: typeof AuthenticatedMeineKundenSystemhouseIdCustomerIdRoute
@@ -321,8 +342,9 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKioskRoute: AuthenticatedKioskRoute,
-  AuthenticatedProjektcontrollingRoute: AuthenticatedProjektcontrollingRoute,
   AuthenticatedLeistungsnachweisRoute: AuthenticatedLeistungsnachweisRoute,
+  AuthenticatedProjektcontrollingRoute: AuthenticatedProjektcontrollingRoute,
+  AuthenticatedVerantwortungenRoute: AuthenticatedVerantwortungenRoute,
   AuthenticatedKundenverantwortungIndexRoute:
     AuthenticatedKundenverantwortungIndexRoute,
   AuthenticatedMeineKundenIndexRoute: AuthenticatedMeineKundenIndexRoute,
