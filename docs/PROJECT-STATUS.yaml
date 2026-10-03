@@ -49,7 +49,7 @@ architecturePrinciples:
     rule: "Kundenidentität und Kundenscope sind providerneutral an das Systemhaus gebunden und nicht an einen Microsoft-Tenant oder anderen Provider."
 
 versions:
-  dashboard: "1.66.0"
+  dashboard: "1.67.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 17
@@ -700,7 +700,7 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release; volatile report details remain CI artifacts."
 
 releaseManagement:
-  currentRelease: "1.66.0"
+  currentRelease: "1.67.0"
   stage: "preview"
   status: "passed"
   statusBasis: >-

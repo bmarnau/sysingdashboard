@@ -16,6 +16,7 @@ import {
   Server,
   TrendingUp,
   Users,
+  UserRoundCheck,
 } from "lucide-react";
 import {
   dashboardData,
@@ -851,6 +852,15 @@ function Dashboard() {
             >
               AVKK Management
             </TabButton>
+          </PermissionGate>
+          <PermissionGate permission="avkk.management.view">
+            <Link
+              to="/verantwortungen"
+              className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <UserRoundCheck className="size-4" />
+              Verantwortungen
+            </Link>
           </PermissionGate>
           {/* BSF-03: eigene Route, damit (systemhouseId, customerId) in der URL erhalten bleibt. */}
           <PermissionGate permission="dashboard.view">

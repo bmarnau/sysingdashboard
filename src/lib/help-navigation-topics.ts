@@ -318,6 +318,21 @@ Supabase-Verbindungsadresse, keine Projektkennung und keine Zugangsdaten.
       "technical-test-report",
     ],
   },
+  {
+    id: "person-responsibilities",
+    title: "Verantwortungen nach Person",
+    category: "AVKK",
+    route: "/verantwortungen",
+    component: "PersonResponsibilityView",
+    keywords: ["Verantwortung", "Owner", "Deputy", "Person", "AVKK"],
+    lastUpdated: "2026-09-29",
+    content: `## Zweck
+Die Ansicht **Verantwortungen** zeigt aktive Owner- und Deputy-Verantwortungen einer ausgewählten Person. Sie enthält Projekt oder Arbeitspaket, Kunde, Status, Fälligkeit und die bereits ermittelte Risikokennzeichnung.
+
+## Änderungen
+Mit \`avkk.responsibility.assign\` dürfen Owner übertragen oder um einen Deputy ergänzt werden. Deputy-Verantwortungen können beendet werden. Die Auswahl zulässiger Zielpersonen und jede Änderung werden serverseitig geprüft; nach einer erfolgreichen Änderung wird die Liste neu geladen.`,
+    relatedTopics: ["navigation-ansichten", "avkk-arbeitsplatz"],
+  },
 ];
 
 export function registerDashboardNavigationHelp(): void {

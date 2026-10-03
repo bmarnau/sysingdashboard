@@ -13,6 +13,10 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.67.0 - 2026-09-29
+
+- **AVKK-Verantwortungen nach Person (BSF-03E P3a)**: Neue geschützte Personenansicht mit aktiven Owner- und Deputy-Verantwortungen, Risikohinweisen und serverseitig autorisierten Übertragungs-, Ergänzungs- und Beendigungsaktionen.
+
 ## 1.66.0 - 2026-09-21
 
 - **Teamlead-Leistungsnachweis V1 (BSF-03B / Issue #107)**: Neue geschützte Teamlead-Sicht für Kunde + Zeitraum mit revisionsgebundenem Billable-Review, Freshness, getrennten billable/non-billable Summen, bewusster Finalisierung und versionsierter Historie.

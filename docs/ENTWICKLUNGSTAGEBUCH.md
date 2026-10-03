@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-21 · Dashboard-Version 1.66.0
+Stand: 2026-09-29 · Dashboard-Version 1.67.0
 
 ## Vision
 
@@ -40,7 +40,7 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | BSF-03B Teamlead-Leistungsnachweis ist FINAL DONE; Release-Kandidat 1.66.0. Security #1247 und CI #1252 vollständig PASS, Security Advisor BASELINE_ONLY ohne neue BSF-03B-Findings. Lovable Exact-Head-Visualprüfung bleibt transparent als Plattformgrenze NOT EVIDENCED. |
+| Aktueller Stand     | BSF-03E P3a Personensicht und Vertretung ist als Release-Kandidat 1.67.0 integriert; die Exact-Head-Abnahme bleibt maßgeblich. Security #1247 und CI #1252 vollständig PASS, Security Advisor BASELINE_ONLY ohne neue BSF-03B-Findings. Lovable Exact-Head-Visualprüfung bleibt transparent als Plattformgrenze NOT EVIDENCED. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
 | Nächster Nutzen     | BSF-03E / #63: Vertretungs- und Personensicht auf Basis der vorhandenen Responsibility-/Scope-Verträge. |
 
