@@ -1,0 +1,25 @@
+{
+  "deliveryId": "5a58c853-2358-45bb-8989-40c3336ad5d4",
+  "deliveryType": "snapshot",
+  "generatedAt": "2026-09-11T14:10:00Z",
+  "observedAt": "2026-09-11T14:09:30Z",
+  "producer": {
+    "system": "external-management-data",
+    "instance": "systemhouse-demo"
+  },
+  "scope": {
+    "systemhouseId": "sh-demo-001"
+  },
+  "completeness": {
+    "snapshotComplete": true,
+    "missingDomains": []
+  },
+  "sourceStatus": [
+    {
+      "source": "sharepoint",
+      "state": "ok",
+      "observedAt": "2026-09-11T14:09:00Z"
+    }
+  ],
+  "data": {}
+}
