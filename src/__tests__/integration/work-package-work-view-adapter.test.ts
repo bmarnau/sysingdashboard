@@ -187,6 +187,60 @@ describe("BSF-03E P3b-1 Supabase work-package adapter", () => {
     expect(rows[0].responsibilities).toHaveLength(1);
   });
 
+  it("compares offset timestamps as instants instead of timestamp strings", async () => {
+    const data = fixture();
+    data.avkk_responsibility[0].valid_from = "2026-10-03T00:00:00+02:00";
+    data.avkk_responsibility[0].valid_to = null;
+
+    const rows = await createSupabaseWorkPackageWorkViewRepository(
+      client(data).client,
+    ).listAuthorizedWorkPackages("2026-10-02T22:30:00.000Z");
+
+    expect(rows[0].responsibilities).toEqual([expect.objectContaining({ personId: ADA })]);
+  });
+
+  it.each([
+    ["2026-10-02T20:00:00-01:00", null, true],
+    ["2026-10-03T00:30:00+02:00", null, true],
+    ["2026-10-02T20:30:00-02:00", "2026-10-03T00:30:00+02:00", false],
+    ["2026-10-02T20:00:00-01:00", "2026-10-03T01:00:00+02:00", true],
+    ["2026-10-03T01:00:00+02:00", null, false],
+    ["2026-10-02T20:00:00-01:00", "2026-10-03T00:00:00+02:00", false],
+    ["2026-10-02T22:00:00Z", "2026-10-02T23:00:00Z", true],
+  ])(
+    "uses inclusive valid_from and exclusive valid_to instant boundaries",
+    async (validFrom, validTo, expectedActive) => {
+      const data = fixture();
+      data.avkk_responsibility[0].valid_from = validFrom;
+      data.avkk_responsibility[0].valid_to = validTo;
+
+      const rows = await createSupabaseWorkPackageWorkViewRepository(
+        client(data).client,
+      ).listAuthorizedWorkPackages("2026-10-02T22:30:00.000Z");
+
+      expect(rows[0].responsibilities).toHaveLength(expectedActive ? 1 : 0);
+    },
+  );
+
+  it.each([
+    ["not-a-date", "2026-10-02T22:00:00Z", null],
+    ["2026-10-02T22:00:00Z", "2026-99-99", null],
+    ["2026-10-02T22:00:00Z", "", null],
+  ])(
+    "fails closed for invalid responsibility timestamps",
+    async (referenceInstant, validFrom, validTo) => {
+      const data = fixture();
+      data.avkk_responsibility[0].valid_from = validFrom;
+      data.avkk_responsibility[0].valid_to = validTo;
+
+      await expect(
+        createSupabaseWorkPackageWorkViewRepository(client(data).client).listAuthorizedWorkPackages(
+          referenceInstant,
+        ),
+      ).rejects.toThrow(/fehlgeschlagen/i);
+    },
+  );
+
   it("fails closed when the minimal people directory cannot be read", async () => {
     await expect(
       createSupabaseWorkPackageWorkViewRepository(
