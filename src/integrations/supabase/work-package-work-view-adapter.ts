@@ -46,10 +46,19 @@ interface PersonRow {
 function fail(operation: string): never {
   throw new Error(`Arbeitspaket-Arbeitssicht: ${operation} fehlgeschlagen.`);
 }
+
+function timestampMs(value: string, field: string): number {
+  const milliseconds = new Date(value).getTime();
+  if (Number.isNaN(milliseconds)) fail(`ungültiger Timestamp ${field}`);
+  return milliseconds;
+}
+
 function activeAt(row: ResponsibilityRow, referenceInstant: string): boolean {
-  return (
-    row.valid_from <= referenceInstant && (row.valid_to === null || row.valid_to > referenceInstant)
-  );
+  const referenceMs = timestampMs(referenceInstant, "referenceInstant");
+  const validFromMs = timestampMs(row.valid_from, "valid_from");
+  const validToMs = row.valid_to === null ? null : timestampMs(row.valid_to, "valid_to");
+
+  return validFromMs <= referenceMs && (validToMs === null || validToMs > referenceMs);
 }
 function scopeKey(systemhouseId: string, customerId: string, sourceId: string): string {
   return `${systemhouseId}:${customerId}:${sourceId}`;
