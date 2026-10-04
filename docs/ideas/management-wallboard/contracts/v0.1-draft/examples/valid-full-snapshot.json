@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "0.1.0-draft",
+  "deliveryId": "b767cab4-33e2-4e2c-8b2d-f5bc37f6ab10",
+  "deliveryType": "snapshot",
+  "generatedAt": "2026-09-11T14:00:00Z",
+  "observedAt": "2026-09-11T13:59:30Z",
+  "producer": {
+    "system": "external-management-data",
+    "instance": "systemhouse-demo"
+  },
+  "scope": {
+    "systemhouseId": "sh-demo-001"
+  },
+  "completeness": {
+    "snapshotComplete": true,
+    "missingDomains": []
+  },
+  "sourceStatus": [
+    {
+      "source": "sharepoint",
+      "state": "ok",
+      "observedAt": "2026-09-11T13:59:00Z"
+    },
+    {
+      "source": "prtg",
+      "state": "ok",
+      "observedAt": "2026-09-11T13:59:20Z"
+    },
+    {
+      "source": "exchange-online",
+      "state": "ok",
+      "observedAt": "2026-09-11T13:59:25Z"
+    }
+  ],
+  "data": {
+    "projects": [
+      {
+        "sourceId": "project-1001",
+        "title": "M365 Modernisierung",
+        "status": "active",
+        "trafficLight": "green",
+        "lastChangedAt": "2026-09-11T10:15:00Z"
+      },
+      {
+        "sourceId": "project-1002",
+        "title": "Firewall-Erneuerung",
+        "status": "attention",
+        "trafficLight": "yellow",
+        "lastChangedAt": "2026-09-09T08:30:00Z"
+      }
+    ],
+    "workPackages": [
+      {
+        "sourceId": "wp-2001",
+        "projectSourceId": "project-1001",
+        "title": "Tenant-Vorbereitung",
+        "status": "active",
+        "trafficLight": "green",
+        "lastChangedAt": "2026-09-11T09:45:00Z"
+      },
+      {
+        "sourceId": "wp-2002",
+        "projectSourceId": "project-1002",
+        "title": "Regelwerk abstimmen",
+        "status": "attention",
+        "trafficLight": "yellow",
+        "lastChangedAt": "2026-09-08T12:00:00Z"
+      }
+    ],
+    "activities": [
+      {
+        "sourceId": "activity-3001",
+        "workPackageSourceId": "wp-2001",
+        "title": "Testmigration vorbereiten",
+        "status": "open",
+        "trafficLight": "green",
+        "lastChangedAt": "2026-09-11T11:20:00Z"
+      },
+      {
+        "sourceId": "activity-3002",
+        "workPackageSourceId": "wp-2002",
+        "title": "Freigabe einholen",
+        "status": "overdue",
+        "trafficLight": "red",
+        "lastChangedAt": "2026-09-05T15:10:00Z"
+      }
+    ],
+    "absence": {
+      "employeesOnLeaveThisWeek": 3,
+      "employeesStartingLeaveNextWeek": 5,
+      "observedAt": "2026-09-11T13:58:00Z"
+    },
+    "infrastructure": {
+      "ok": 131,
+      "warning": 8,
+      "critical": 3,
+      "total": 142,
+      "observedAt": "2026-09-11T13:59:20Z"
+    },
+    "supportMailbox": {
+      "total": 87,
+      "today": 12,
+      "yesterday": 18,
+      "older": 57,
+      "observedAt": "2026-09-11T13:59:25Z"
+    }
+  }
+}
