@@ -9,6 +9,39 @@ import type { HelpTopic } from "@/lib/help-documentation";
  */
 export const avkkHelpTopics: HelpTopic[] = [
   {
+    id: "avkk-arbeitspaket-arbeitssicht",
+    title: "Verantwortungen – operative Arbeitspaket-Arbeitssicht",
+    category: "Fachmodell",
+    route: "/verantwortungen",
+    component: "WorkPackageWorkView",
+    keywords: [
+      "Arbeitspakete",
+      "Gruppierung",
+      "Fälligkeit",
+      "Owner",
+      "Stellvertretung",
+      "Verantwortungen",
+    ],
+    lastUpdated: "2026-10-04",
+    content: `## Einstieg
+Im Dashboard **Verantwortungen** öffnen und **Arbeitspakete** wählen. Die bisherige Personensicht bleibt unter **Personen** erreichbar. Voraussetzung ist die Berechtigung \`avkk.management.view\`; der Server prüft den tatsächlichen Kunden-/Systemhauszugriff zusätzlich.
+
+## Drei Gruppierungen derselben Arbeitspakete
+**Kunde**, **Verantwortlicher** und **Fälligkeit** zeigen dieselben freigegebenen AP. **Sortieren nach** und **Sortierrichtung** wirken innerhalb der Gruppen. Ein Gruppierungswechsel verändert den Berechtigungsbereich nicht.
+
+## Fälligkeit und Verantwortung
+Die Gruppen **Überfällig**, **Heute**, **Später** und **Ohne Fälligkeitsdatum** stammen aus dem serverseitigen Kalendervertrag mit **Europe/Berlin**. Der angezeigte Datenstand gilt für diese Berechnung. Ein fehlender Termin wird nicht geschätzt.
+
+**Verantwortlicher** bezeichnet den aktiven primären Owner. **Stellvertretung** zeigt zusätzliche aktive Deputies und erzeugt keine doppelten AP-Zeilen. Ohne aktiven Owner bleibt das AP als **Nicht zugeordnet** sichtbar. Gleichnamige Kunden oder Personen bleiben anhand ihrer Identitäten getrennt.
+
+## Filter und Aktualisieren
+Suche sowie Kunden-, Verantwortlichen-, Status- und Fälligkeitsfilter grenzen nur die bereits freigegebene Menge ein. **Nicht zugeordnet** kann gezielt gefiltert werden. **Filter zurücksetzen** entfernt die Filter und erhält Gruppierung/Sortierung. **Aktualisieren** liest die Quelle erneut und berechnet den Datenstand auf dem Server neu.
+
+## Leere oder fehlgeschlagene Abfrage
+Eine leere Quelle und ein leeres Filterergebnis werden unterschieden. Beim Laden oder bei Fehlern erscheinen keine alten AP-Daten. Über **Aktualisieren** ist ein erneuter Versuch möglich. Die AP-Arbeitssicht ist lesend; Verantwortungen werden weiterhin in der Personensicht über die bestehenden autorisierten Einzelaktionen geändert.`,
+    relatedTopics: ["avkk-management", "avkk-arbeitsplatz"],
+  },
+  {
     id: "avkk-arbeitsplatz",
     title: "Mein AVKK — persönlicher Arbeitsplatz",
     category: "Fachmodell",

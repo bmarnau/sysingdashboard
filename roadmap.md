@@ -3,6 +3,21 @@
 Visualisierung (abgeleitete TIECS-Statussicht): `docs/status-board.html`  
 Maßgebliche Fakten bleiben in Roadmap, Projektstatus, Architektur, Entwicklungstagebuch und PR-/CI-Evidenz.
 
+## BSF-03E P3b – operative AP-Arbeitssicht / Kandidat 1.68.0
+
+- [x] Post-Merge-Gates der P3b-1-Hardening-Basis `b5acf3d` geprüft: CI/Security PASS
+- [x] Bestehenden autorisierten AP-Read-Vertrag für die UI verwenden
+- [x] Kunde-/Owner-/Fälligkeitsgruppierung mit stabilen Identitäten und unveränderter AP-Grundmenge
+- [x] Unabhängige Sortierung, explizite Filter und Filter-Reset
+- [x] Owner/Deputy/UNASSIGNED sowie Datenstand aus dem Serververtrag anzeigen
+- [ ] P3b-Kandidatenabnahme und signierter Final-Head vollständig belegen
+- [ ] Separater Merge-Gate und Post-Merge-Abnahme
+- [ ] Lokale Windows-/Lovable-Synchronisation und Runtime-Abnahme
+- [ ] P5-Gesamtabnahme; BSF-03E bleibt offen
+
+Plan: `docs/superpowers/plans/2026-10-04-bsf-03e-p3b-work-view-ui.md`.
+Nachweise: `docs/BSF-03E-P3B-UI-VERIFICATION-2026-10-04.md`.
+
 ## BSF-KIOSK-01 (#135) Info-Kiosk Demo-Pilot — DONE
 
 - [x] Kiosk-first-Roadmap als verbindliche interne Reihenfolge übernommen

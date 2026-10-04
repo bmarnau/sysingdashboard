@@ -9,7 +9,7 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-29 · Dashboard-Version 1.67.0
+Stand: 2026-10-04 · Dashboard-Version 1.68.0
 
 ## Vision
 
@@ -1091,3 +1091,11 @@ Governance dieses Maintenance Windows:
 - Merge: **NEIN**,
 - Deploy: **NEIN**,
 - fehlender Lovable-Nachweis bleibt ausdrücklich **offen**.
+
+## 2026-10-04 – BSF-03E P3b operative AP-Arbeitssicht (Kandidat 1.68.0)
+
+Basis: GitHub main b5acf3d nach Merge von PR #170; Post-Merge CI 37183668646 und Security 37183668658 PASS. Die bestehende Verantwortungsroute wurde um eine lesende AP-Arbeitssicht erweitert. Alle drei Gruppierungen verwenden denselben serverseitig autorisierten Read Contract; Fälligkeit und Datenstand behalten die Kalenderbasis Europe/Berlin. Sortierung/Filter bleiben unabhängig, Owner/Deputy/UNASSIGNED sichtbar. Gleichnamige Kunden und Personen werden anhand stabiler IDs getrennt gruppiert.
+
+Domain-/Hook-Verträge 16/16 und UI-Verträge 6/6 PASS; Typecheck/Build PASS, ESLint 0 Fehler mit bestehender Warnungsbaseline. Die lokale Vollsuite unter TZ=UTC bleibt mit zwei unveränderten API-Status-Harness-Timeouts ausdrücklich nicht vollständig grün. Browserabnahme 10/10 PASS, 1280/640/390 ohne Overflow und Axe ohne Verstöße; gezielte Regression 46/46 PASS und statische Docs-/Manifest-/RBAC-/Golden-/Security-Checks PASS. Exact-Head-Abnahme und Final-Head-Signatur bleiben gesonderte Gates. Keine Schema-/RLS-/RBAC-/Provideränderung, kein Merge/Deploy dieses Kandidaten.
+
+Dauerhafter Plan: docs/superpowers/plans/2026-10-04-bsf-03e-p3b-work-view-ui.md. Tatsächliche Ergebnisse und offene Gates: docs/BSF-03E-P3B-UI-VERIFICATION-2026-10-04.md. P5/BSF-03E-Gesamtabnahme, Windows-Runtime und Lovable-Preview bleiben offen.

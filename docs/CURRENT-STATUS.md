@@ -1,6 +1,15 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-09-22
+Stand: 2026-10-04
+
+## Aktueller BSF-03E-Wiederanlaufpunkt
+
+**P3b UI/E2E-Kandidat 1.68.0; BSF-03E insgesamt weiterhin offen.**
+GitHub-Basis: `main@b5acf3d9349bfb132a1a3615878024955d2a4385`; Post-Merge CI `37183668646` und Security `37183668658` sind PASS. P3a und die serverseitigen P3b-0/P3b-1-Verträge einschließlich PR #170 sind integriert.
+
+Die neue AP-Arbeitssicht auf `/verantwortungen` verwendet dieselbe serverseitig autorisierte AP-Menge für alle drei Gruppierungen. Details und noch offene Nachweise stehen in `docs/BSF-03E-P3B-UI-VERIFICATION-2026-10-04.md`; der ausführbare Plan liegt unter `docs/superpowers/plans/2026-10-04-bsf-03e-p3b-work-view-ui.md`.
+
+P3b ist noch nicht gemergt/deployt. Lokale Windows-Runtime, produktive Lovable-App und P5-Gesamtabnahme sind durch diesen Kandidaten nicht abgenommen. Die nachfolgenden datierten Abschnitte dokumentieren frühere Evidenzstände.
 
 ## Zweck
 
@@ -56,7 +65,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 - BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
 - BSF-03B / Issue #107 ist **FINAL DONE und gemergt**. PR #149 wurde als GitHub-signierter Squash-Commit `12b37be8ce8e5e8e3668d6622ace13872a7f3c48` nach `main` integriert. Der zuvor vollständig grüne Exact-Head und der Merge-Commit besitzen denselben Git-Tree `25ae707e08726f6d357c940a983afc14552d5b03`.
 - Der erste Post-Merge-CI am 22.09. deckte einen **kalendertagsabhängigen E2E-Harness-Escape** auf: die BSF-03B-Fixtures endeten fest am 21.09., während der Produktdefault korrekt „aktueller Monat bis heute“ verwendete. Dadurch wurden am 22.09. korrekt erzeugte Fixture-Snapshots beim Test-Refresh aus der Historie gefiltert. PR #152 korrigierte ausschließlich die Test-Referenzzeit; Produktlogik, Assertions, Expected Results, DB, RBAC und RLS blieben unverändert. Der Fix ist als GitHub-signierter Commit `1ca8f0937a7217de74050061ae39c9c3f028784c` auf `main`; der PR-Gate-Lauf bestätigte **110/110 Playwright PASS**.
-- Aktueller Sprint ist **BSF-03E / #63 — Vertretungs- und Personensicht**. P0 beginnt mit Scope-Hardening der AVKK-Project-/WorkPackage-Verantwortung; Personensicht und Mutationen folgen erst nach der serverseitigen Mandanten-/Customer-Scope-Absicherung.
+- Aktueller Sprint ist **BSF-03E / #63**. P0/P1/P2/P3a und die P3b-Datenverträge sind integriert; aktuell wird der P3b-UI/E2E-Kandidat abgenommen. P5 bleibt offen.
 - Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus und ist vollständig abgenommen. Der korrigierte read-only Lovable-Exact-Head-Retest bestätigt Fresh-Refresh, Fail-closed-Verhalten, beide Zielauflösungen und Tree-Integrität; der frühere Fresh-Refresh-FAIL war ein Harness-False-Negative. Commitbezogene CI-/Security-Aussagen werden weiterhin ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
 
 ## Aktueller BSF-Stand
