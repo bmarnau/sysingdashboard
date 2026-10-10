@@ -23,9 +23,15 @@ export function useCurrentUser(): UserProfile | null {
 
   useEffect(() => {
     let cancelled = false;
+    let loadGeneration = 0;
 
     async function load() {
+      const generation = ++loadGeneration;
+      // Invalidate the published identity before asynchronous session/profile
+      // reads. Dependent views must not retain the previous account meanwhile.
+      if (!cancelled) setUser(null);
       const { data: sessionData } = await supabase.auth.getSession();
+      if (cancelled || generation !== loadGeneration) return;
       const authUser = sessionData.session?.user;
       if (!authUser) {
         if (!cancelled) setUser(null);
@@ -52,7 +58,7 @@ export function useCurrentUser(): UserProfile | null {
         updated_at: new Date().toISOString(),
       };
 
-      if (cancelled) return;
+      if (cancelled || generation !== loadGeneration) return;
       setUser({
         id: p.id,
         firstName: p.first_name ?? "",

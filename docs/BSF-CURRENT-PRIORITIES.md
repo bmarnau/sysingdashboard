@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-09-22  
+Stand: 2026-10-10
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
@@ -9,6 +9,11 @@ Golden-Dataset-Vertrag: `docs/GOLDEN-DATASET-STRATEGY.md`
 Dauerhafter Wiederanlaufpunkt: Issue #35
 
 ## Zweck
+
+Aktueller P3b-Wiederanlauf: UI-Kandidat und tatsächliche Profil-/Sessiongrenze
+geprüft, Important-Befund mit fünf RED→GREEN-Tests korrigiert. Draft-PR und dessen
+CI/Security-/Signaturgate folgen. Frische Evidenz und Grenzen:
+`docs/BSF-03E-P3B-UI-REVIEW-2026-10-10.md`.
 
 Diese Datei ist die kompakte operative Source of Truth für den laufenden BSF-Ausbau. Historische, datierte Abschlussdokumente werden nicht rückwirkend umgeschrieben. Die interne Kiosk-first-Roadmap konkretisiert die Reihenfolge für die noch offenen internen Aufgaben. GDS-01 / #142 ist ein verbindlicher Querschnittsbaustein und verändert die Sprintfolge nicht.
 
@@ -60,6 +65,15 @@ PR #149 ist als signierter Squash-Commit `12b37be8ce8e5e8e3668d6622ace13872a7f3c
 
 ### AKTUELLER SPRINT — BSF-03E / #63
 
+Aktueller Wiederanlaufpunkt: **P3b operative AP-Arbeitssicht / UI-E2E-Kandidat 1.68.0**.
+P0/P1/P2 und P3a sind integriert; P3b-0 Due Projection und P3b-1 Read Contract einschließlich Timestamptz-Hardening stehen auf `main`. PR #170 wurde als `b5acf3d9349bfb132a1a3615878024955d2a4385` integriert; Post-Merge CI `37183668646` und Security `37183668658` sind PASS.
+
+Der aktuelle P3b-Schnitt ergänzt `/verantwortungen` um „Arbeitspakete“ und verwendet ausschließlich den bestehenden autorisierten Read-Vertrag. Gruppen nach Kunde, Owner oder Fälligkeit erhalten dieselbe AP-Menge; Deputies erzeugen keine weiteren Zeilen, unzugeordnete AP bleiben sichtbar. Gleichnamige Kunden/Personen werden identitätsbasiert getrennt. Der Kandidat ist noch nicht auf `main` integriert.
+
+Verbindlicher Detailplan: `docs/superpowers/plans/2026-10-04-bsf-03e-p3b-work-view-ui.md`.
+Abnahme und tatsächliche Grenzen: `docs/BSF-03E-P3B-UI-VERIFICATION-2026-10-04.md`.
+BSF-03E bleibt offen bis zur P5-Gesamtabnahme. P4-Bulk bleibt optional und ist nicht freigegeben. Lokale Windows-/Lovable-Synchronisation und Preview sind noch gesondert nachzuweisen.
+
 Ziel: mandantensichere Vertretungs- und Personensicht für Project-/WorkPackage-Verantwortungen ohne neue konkurrierende Responsibility-Domäne.
 
 Verbindlicher Ablauf:
@@ -71,7 +85,7 @@ Verbindlicher Ablauf:
 5. **P4 Bulk optional**, erst nach vollständig grünem P0–P3.
 6. **P5 Abschluss** — Full CI, Security Advisor, Schema Drift, Backup/Restore, Doku/Prüfbericht.
 
-Live-P0-Befund: `avkk_subject` besitzt aktuell keinen Systemhouse-/Customer-Scope; der Legacy-Bestand (4 Project + 5 WorkPackage) hat 0/9 eindeutige `subject_id/source_id`-Matches zur Shared Projection. Daher kein geratener Backfill; Legacy bleibt für BSF-03E bis zu belastbarer Zuordnung fail-closed.
+Historischer Live-P0-Befund vom 22.09.2026: Der damalige Legacy-Bestand (4 Project + 5 WorkPackage) hatte 0/9 eindeutige `subject_id/source_id`-Matches zur Shared Projection. P0 hat inzwischen den serverseitigen Subject-Scope gehärtet. Ungescopte Legacy-Zuordnungen bleiben fail-closed; kein geratener Backfill.
 
 Kanonischer Design-/Planungs-PR: **#151**.
 
@@ -114,7 +128,7 @@ Golden-Dataset-Grundregeln:
 5. **BSF-03A / #106 — DONE**
 6. **BSF-KIOSK-02 / #136 — DONE / MERGED**
 7. **BSF-03B / #107 — FINAL DONE**
-8. **BSF-03E / #63 — AKTUELLER SPRINT / P0**
+8. **BSF-03E / #63 — AKTUELLER SPRINT / P3b UI-E2E-Kandidat, danach P5**
 9. **BSF-07 / #140 — VORGEZOGEN / GEPLANT**
 10. **BSF-KIOSK-03 / #137 — GEPLANT**
 11. **BSF-03C / #98 — GEPLANT**

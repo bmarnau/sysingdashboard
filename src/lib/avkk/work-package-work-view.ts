@@ -133,23 +133,32 @@ function groupKey(
   row: WorkPackageWorkViewRow,
   groupBy: WorkPackageWorkViewSelection["groupBy"],
 ): string {
+  if (groupBy === "customer") return `${row.systemhouseId}:${row.customerId}`;
+  if (groupBy === "owner") return row.owner === "UNASSIGNED" ? "UNASSIGNED" : personKey(row.owner);
+  return row.dueGroup;
+}
+
+function groupLabel(
+  row: WorkPackageWorkViewRow,
+  groupBy: WorkPackageWorkViewSelection["groupBy"],
+): string {
   if (groupBy === "customer") return row.customerName;
   if (groupBy === "owner") return personName(row.owner);
   return row.dueGroup;
 }
 
 function compareGroups(
-  left: string,
-  right: string,
+  left: WorkPackageWorkViewGroup,
+  right: WorkPackageWorkViewGroup,
   groupBy: WorkPackageWorkViewSelection["groupBy"],
 ): number {
   if (groupBy === "due")
-    return DUE_GROUP_ORDER[left as DueGroup] - DUE_GROUP_ORDER[right as DueGroup];
+    return DUE_GROUP_ORDER[left.key as DueGroup] - DUE_GROUP_ORDER[right.key as DueGroup];
   if (groupBy === "owner") {
-    if (left === "UNASSIGNED") return right === "UNASSIGNED" ? 0 : 1;
-    if (right === "UNASSIGNED") return -1;
+    if (left.key === "UNASSIGNED") return right.key === "UNASSIGNED" ? 0 : 1;
+    if (right.key === "UNASSIGNED") return -1;
   }
-  return compareText(left, right);
+  return compareText(left.label, right.label) || compareText(left.key, right.key);
 }
 
 function compareRows(
@@ -192,9 +201,10 @@ export function selectWorkPackageWorkView(
   }
 
   return [...groups.entries()]
-    .sort(([left], [right]) => compareGroups(left, right, selection.groupBy))
     .map(([key, groupRows]) => ({
       key,
+      label: groupLabel(groupRows[0], selection.groupBy),
       rows: [...groupRows].sort((left, right) => compareRows(left, right, selection)),
-    }));
+    }))
+    .sort((left, right) => compareGroups(left, right, selection.groupBy));
 }
