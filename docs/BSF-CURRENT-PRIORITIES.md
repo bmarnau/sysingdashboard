@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-10-04
+Stand: 2026-10-10
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
@@ -9,6 +9,11 @@ Golden-Dataset-Vertrag: `docs/GOLDEN-DATASET-STRATEGY.md`
 Dauerhafter Wiederanlaufpunkt: Issue #35
 
 ## Zweck
+
+Aktueller P3b-Wiederanlauf: UI-Kandidat und tatsächliche Profil-/Sessiongrenze
+geprüft, Important-Befund mit fünf RED→GREEN-Tests korrigiert. Draft-PR und dessen
+CI/Security-/Signaturgate folgen. Frische Evidenz und Grenzen:
+`docs/BSF-03E-P3B-UI-REVIEW-2026-10-10.md`.
 
 Diese Datei ist die kompakte operative Source of Truth für den laufenden BSF-Ausbau. Historische, datierte Abschlussdokumente werden nicht rückwirkend umgeschrieben. Die interne Kiosk-first-Roadmap konkretisiert die Reihenfolge für die noch offenen internen Aufgaben. GDS-01 / #142 ist ein verbindlicher Querschnittsbaustein und verändert die Sprintfolge nicht.
 

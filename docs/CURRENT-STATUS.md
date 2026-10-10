@@ -1,13 +1,13 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-10-04
+Stand: 2026-10-10
 
 ## Aktueller BSF-03E-Wiederanlaufpunkt
 
 **P3b UI/E2E-Kandidat 1.68.0; BSF-03E insgesamt weiterhin offen.**
 GitHub-Basis: `main@b5acf3d9349bfb132a1a3615878024955d2a4385`; Post-Merge CI `37183668646` und Security `37183668658` sind PASS. P3a und die serverseitigen P3b-0/P3b-1-Verträge einschließlich PR #170 sind integriert.
 
-Die neue AP-Arbeitssicht auf `/verantwortungen` verwendet dieselbe serverseitig autorisierte AP-Menge für alle drei Gruppierungen. Details und noch offene Nachweise stehen in `docs/BSF-03E-P3B-UI-VERIFICATION-2026-10-04.md`; der ausführbare Plan liegt unter `docs/superpowers/plans/2026-10-04-bsf-03e-p3b-work-view-ui.md`.
+Die neue AP-Arbeitssicht auf `/verantwortungen` verwendet dieselbe serverseitig autorisierte AP-Menge für alle drei Gruppierungen. Die unabhängige Review und die Korrektur der tatsächlichen Profil-/Sessiongrenze stehen mit frischen Tests in `docs/BSF-03E-P3B-UI-REVIEW-2026-10-10.md`. Der frühere Nachweis bleibt in `docs/BSF-03E-P3B-UI-VERIFICATION-2026-10-04.md`; der ausführbare Plan liegt unter `docs/superpowers/plans/2026-10-04-bsf-03e-p3b-work-view-ui.md`.
 
 P3b ist noch nicht gemergt/deployt. Lokale Windows-Runtime, produktive Lovable-App und P5-Gesamtabnahme sind durch diesen Kandidaten nicht abgenommen. Die nachfolgenden datierten Abschnitte dokumentieren frühere Evidenzstände.
 

@@ -39,8 +39,10 @@
 - Modify: `src/lib/avkk/work-package-work-view.ts`
 - Modify: `src/lib/avkk/work-package-work-view.types.ts`
 - Create: `src/hooks/useWorkPackageWorkView.ts`
+- Modify: `src/hooks/useCurrentUser.ts` (Generationsschutz und unmittelbare Identitätsinvalidierung als Voraussetzung der bestehenden Sessiongrenze)
 - Test: `src/__tests__/lib/avkk/work-package-work-view.test.ts`
 - Test: `src/__tests__/hooks/useWorkPackageWorkView.test.tsx`
+- Test: `src/__tests__/hooks/current-user-work-view-session.test.tsx` (echte Profil-/AP-Hooks, nur externe Reads simuliert)
 
 **Interfaces:**
 
@@ -52,6 +54,8 @@
 - [x] RED: Hook-Success, DENY ohne Request, Sessionwechsel mit später Altantwort, Permission-Entzug, Refresh-Fehler und erneuter Versuch werden beobachtbar geprüft.
 - [x] GREEN: minimale Identitätskorrektur und Hook implementieren; keine browserseitigen Scope-Parameter senden.
 - [x] Verify: `bun run test src/__tests__/lib/avkk/work-package-work-view.test.ts src/__tests__/hooks/useWorkPackageWorkView.test.tsx`; Expected: alle PASS.
+- [x] Review-Fix 10.10.2026: fünf tatsächliche Auth-/Profil-Races mit unveränderten Produktionshooks RED nachgewiesen. `useCurrentUser` invalidiert die publizierte Identität vor jedem Read und verwirft ältere Session-/Profilantworten über eine Aufrufgeneration.
+- [x] Verify: `npm test -- src/__tests__/hooks/current-user-work-view-session.test.tsx`; 5/5 PASS. Ein serverseitiger Rollenentzug ohne beobachtetes Ereignis oder Refresh bleibt ein eigener Revalidierungsvertrag.
 
 ## Task 2: AP-Arbeitssicht in der bestehenden Verantwortungsroute
 

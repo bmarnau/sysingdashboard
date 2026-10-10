@@ -18,6 +18,7 @@ Format pro Eintrag:
 - **Operative AP-Arbeitssicht (BSF-03E P3b)**: In „Verantwortungen → Arbeitspakete“ dieselben freigegebenen Arbeitspakete nach Kunde, Verantwortlichem oder Fälligkeit gruppieren, unabhängig sortieren und explizit filtern. Primäre Verantwortung, Stellvertretung und „Nicht zugeordnet“ bleiben unterscheidbar.
 - Gleichnamige Kunden und Verantwortliche werden anhand ihrer stabilen Identitäten getrennt gruppiert. Datenstand und Fälligkeitsgruppen stammen aus dem bestehenden Serververtrag mit Kalenderbasis Europe/Berlin.
 - Sessiongebundener Read-Hook blendet alte Antworten bei Benutzer-/Permission-Wechsel und Refresh aus; Fehler zeigen einen neutralen Zustand mit erneutem Ladeversuch.
+- Die tatsächliche Profil-/Sessiongrenze invalidiert die vorherige Identität unmittelbar und verwirft verspätete Session-/Profilantworten. Fünf Regressionstests mit den echten Profil-/AP-Hooks sichern Kontowechsel, Signout und überlappende Rollenreads ab.
 
 ## 1.67.0 - 2026-09-29
 
