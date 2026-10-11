@@ -1,5 +1,9 @@
 # Sysing Dashboard — Operative Sprintplanung MVP → BSF → Integration
 
+> **Planungsupdate 2026-10-11:** Für den operativen Weg **bis zum Golden Gate** gilt nach Merge die neuere Planung
+> [`docs/GOLDEN-GATE-MVP-PLAN-2026-10-11.md`](./GOLDEN-GATE-MVP-PLAN-2026-10-11.md).
+> Sie verschiebt Docker sowie produktive automatische externe Schnittstellen einschließlich Microsoft Graph hinter das Golden Gate.
+> Die historischen Detailabschnitte dieses Dokuments bleiben aus Traceability-Gründen bestehen.
 Stand: 2026-09-22  
 Status: **verbindliche operative Kiosk-first-Planung; BSF-03B DONE/MERGED; BSF-03E AKTUELL / P0**  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
