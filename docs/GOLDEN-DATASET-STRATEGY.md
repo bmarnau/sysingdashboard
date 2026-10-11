@@ -45,7 +45,7 @@ Für KIOSK-01 bleibt `docs/examples/kiosk-demo-dataset-v1.json` unverändert der
 1. **Nur synthetische Daten.** Keine produktiven Kunden-, Personen-, E-Mail-, Host-, IP-, Token-, Secret- oder sonstigen Realidentitäten.
 2. **Stabile IDs und Keys.** Referenzobjekte erhalten feste synthetische Identitäten; Anzeigenamen sind nie Identität.
 3. **Feste Zeitbasis.** Kein `now()`, keine Zufallszeit, keine vom Ausführungstag abhängigen Werte. Referenzzeit V1: `2026-09-14T00:00:00Z`.
-4. **Versionierter Vertrag.** V1 verwendet `schemaVersion = sysing.golden.v1` und `datasetVersion = 1.0.0`.
+4. **Versionierter Vertrag.** V1 verwendet `schemaVersion = sysing.golden.v1`; der aktuell kanonische additive Stand ist `datasetVersion = 1.1.0`.
 5. **Deterministisch.** Keine Zufallswerte, keine stillen Defaults und keine vom Provider abhängige Fachsemantik.
 6. **Providerneutral.** Supabase, spätere Azure-SQL-Adapter oder andere Provider müssen dieselben fachlichen Ergebnisse liefern können.
 7. **Expected Results sind unabhängig.** Erwartungswerte werden fachlich explizit festgelegt und nicht durch genau die Produktionsimplementierung erzeugt, die damit geprüft wird.
