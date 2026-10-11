@@ -12,15 +12,15 @@ Stand: 2026-10-10 · Kandidat 1.68.0 (keine Versionsanhebung) · Issue #63
 
 ## Findings (auf c323835)
 
-| ID  | Schwere | Befund                                                                                                                                                                                  | Status        |
-| --- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
-| U-1 | Minor   | Aktiver Kunden-/Owner-/Statusfilter, dessen Option nach Refresh entfällt: Auswahlfeld zeigte „Alle …“, obwohl gefiltert wurde (irreführend).                                             | behoben       |
-| U-2 | Minor   | „Ohne Fälligkeitsdatum“ stand bei Sortierung Fälligkeit/absteigend ganz oben (Sentinel 9999-12-31).                                                                                     | behoben       |
-| U-3 | Minor   | Unbekannte Statuswerte erschienen roh (z. B. `blocked_by_customer`).                                                                                                                    | behoben       |
-| U-4 | Minor   | Datumsanzeige teilte jeden String naiv; abweichende Formate ergaben unsinnige Anzeige.                                                                                                   | behoben       |
-| U-5 | Minor   | Gleichnamige Kunden/Personen: getrennte Gruppen (ID-Key), aber identische Überschriften/Optionen.                                                                                        | behoben       |
-| U-6 | Hinweis | Fehlerzustand nutzt „Aktualisieren“ als Retry; kein eigener Retry-Button direkt am Fehlertext. Funktional korrekt, nicht geändert.                                                       | offen (Info)  |
-| U-7 | Hinweis | Rollenentzug ohne Client-Ereignis bleibt bis zum nächsten Refresh angezeigt (serverseitig verweigert). Außerhalb UI-Scope.                                                                | offen (Info)  |
+| ID  | Schwere | Befund                                                                                                                                       | Status       |
+| --- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| U-1 | Minor   | Aktiver Kunden-/Owner-/Statusfilter, dessen Option nach Refresh entfällt: Auswahlfeld zeigte „Alle …“, obwohl gefiltert wurde (irreführend). | behoben      |
+| U-2 | Minor   | „Ohne Fälligkeitsdatum“ stand bei Sortierung Fälligkeit/absteigend ganz oben (Sentinel 9999-12-31).                                          | behoben      |
+| U-3 | Minor   | Unbekannte Statuswerte erschienen roh (z. B. `blocked_by_customer`).                                                                         | behoben      |
+| U-4 | Minor   | Datumsanzeige teilte jeden String naiv; abweichende Formate ergaben unsinnige Anzeige.                                                       | behoben      |
+| U-5 | Minor   | Gleichnamige Kunden/Personen: getrennte Gruppen (ID-Key), aber identische Überschriften/Optionen.                                            | behoben      |
+| U-6 | Hinweis | Fehlerzustand nutzt „Aktualisieren“ als Retry; kein eigener Retry-Button direkt am Fehlertext. Funktional korrekt, nicht geändert.           | offen (Info) |
+| U-7 | Hinweis | Rollenentzug ohne Client-Ereignis bleibt bis zum nächsten Refresh angezeigt (serverseitig verweigert). Außerhalb UI-Scope.                   | offen (Info) |
 
 Bestätigt ohne Befund: Personensicht ist Default-Tab und erreichbar; Arbeitspakete klar getrennt (eigenes h1); Gruppierung/Sortierung/Filter unabhängig; Reset entfernt nur Filter; „Nicht zugeordnet“ sichtbar; Owner („Verantwortlicher“) und „Stellvertretung“ getrennt, keine Duplikate; Loading/Empty/Filter-Empty/Error unterscheidbar; DENY seitenweit über PermissionGate; keine UUIDs oder Rohfehler sichtbar.
 
