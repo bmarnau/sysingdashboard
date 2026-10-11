@@ -172,6 +172,8 @@ function compareRows(
     if (selection.sortBy === "owner") return personName(row.owner);
     return row.title;
   };
+  if (selection.sortBy === "due" && (left.due === null) !== (right.due === null))
+    return left.due === null ? 1 : -1; // "Ohne Fälligkeitsdatum" bleibt in beiden Richtungen am Ende.
   const base = compareText(value(left), value(right));
   const directional = selection.sortDirection === "asc" ? base : -base;
   if (directional !== 0) return directional;

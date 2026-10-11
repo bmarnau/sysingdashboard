@@ -19,6 +19,7 @@ Format pro Eintrag:
 - Gleichnamige Kunden und Verantwortliche werden anhand ihrer stabilen Identitäten getrennt gruppiert. Datenstand und Fälligkeitsgruppen stammen aus dem bestehenden Serververtrag mit Kalenderbasis Europe/Berlin.
 - Sessiongebundener Read-Hook blendet alte Antworten bei Benutzer-/Permission-Wechsel und Refresh aus; Fehler zeigen einen neutralen Zustand mit erneutem Ladeversuch.
 - Die tatsächliche Profil-/Sessiongrenze invalidiert die vorherige Identität unmittelbar und verwirft verspätete Session-/Profilantworten. Fünf Regressionstests mit den echten Profil-/AP-Hooks sichern Kontowechsel, Signout und überlappende Rollenreads ab.
+- P3b-2-Präsentation: „Ohne Fälligkeitsdatum“ bleibt bei absteigender Sortierung am Ende; entfallene aktive Filter werden benannt; gleichnamige Kunden/Personen unterscheidbar; lesbare Status- und Datumsanzeige.
 
 ## 1.67.0 - 2026-09-29
 

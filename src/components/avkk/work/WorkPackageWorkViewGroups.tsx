@@ -3,7 +3,12 @@ import type {
   WorkPackageWorkViewGroup,
   WorkPackageWorkViewGroupBy,
 } from "@/lib/avkk/work-package-work-view.types";
-import { dueGroupLabels, workDateLabel, workStatusLabel } from "./work-view-presentation";
+import {
+  disambiguateLabels,
+  dueGroupLabels,
+  workDateLabel,
+  workStatusLabel,
+} from "./work-view-presentation";
 
 export function WorkPackageWorkViewGroups({
   groups,
@@ -12,15 +17,20 @@ export function WorkPackageWorkViewGroups({
   groups: readonly WorkPackageWorkViewGroup[];
   groupBy: WorkPackageWorkViewGroupBy;
 }) {
+  const labels = disambiguateLabels(
+    groups.map((group) => ({
+      label:
+        groupBy === "due"
+          ? dueGroupLabels[group.key as DueGroup]
+          : group.key === "UNASSIGNED"
+            ? "Nicht zugeordnet"
+            : group.label,
+    })),
+  );
   return (
     <div className="space-y-5">
       {groups.map((group, index) => {
-        const label =
-          groupBy === "due"
-            ? dueGroupLabels[group.key as DueGroup]
-            : group.key === "UNASSIGNED"
-              ? "Nicht zugeordnet"
-              : group.label;
+        const label = labels[index].label;
         const headingId = `work-package-group-${index}`;
         return (
           <section key={group.key} aria-labelledby={headingId} className="min-w-0 space-y-2">

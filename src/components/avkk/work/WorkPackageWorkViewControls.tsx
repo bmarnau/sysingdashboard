@@ -4,7 +4,12 @@ import type {
   WorkPackageWorkViewSelection,
 } from "@/lib/avkk/work-package-work-view.types";
 import { inputCls } from "@/components/dashboard/constants";
-import { dueGroupLabels, workStatusLabel } from "./work-view-presentation";
+import {
+  STALE_FILTER_LABEL,
+  disambiguateLabels,
+  dueGroupLabels,
+  workStatusLabel,
+} from "./work-view-presentation";
 
 function SelectControl({
   label,
@@ -17,6 +22,8 @@ function SelectControl({
   options: readonly { value: string; label: string }[];
   onChange: (value: string) => void;
 }) {
+  const stale = value !== "" && !options.some((option) => option.value === value);
+  const shown = stale ? [...options, { value, label: STALE_FILTER_LABEL }] : options;
   return (
     <label className="grid min-w-0 gap-1.5 text-sm">
       {label}
@@ -26,12 +33,17 @@ function SelectControl({
         onChange={(event) => onChange(event.target.value)}
         className={inputCls}
       >
-        {options.map((option) => (
+        {shown.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
       </select>
+      {stale ? (
+        <span className="text-xs text-muted-foreground">
+          Dieser Filter ist noch aktiv, passt aber zu keinem aktuellen Arbeitspaket.
+        </span>
+      ) : null}
     </label>
   );
 }
@@ -56,9 +68,11 @@ export function WorkPackageWorkViewControls({
     ).entries(),
   ];
   const sortOptions = (options: [string, string][]) =>
-    options
-      .sort((a, b) => a[1].localeCompare(b[1], "de"))
-      .map(([value, label]) => ({ value, label }));
+    disambiguateLabels(
+      options
+        .sort((a, b) => a[1].localeCompare(b[1], "de") || a[0].localeCompare(b[0]))
+        .map(([value, label]) => ({ value, label })),
+    );
   const filters = selection.filters ?? {};
   const filter = (next: WorkPackageWorkViewSelection["filters"]) =>
     onChange({ ...selection, filters: { ...filters, ...next } });
