@@ -54,6 +54,117 @@ Providerneutrale Interfaces und Adaptergrenzen bleiben vor dem Golden Gate Pflic
 
 Kein fachlicher Expected Result wird nur deshalb geändert, weil Produktionscode einen Test nicht erfüllt.
 
+## 4a. Verbindliche Querschnittsstandards – gelten für **jede** GG-Phase
+
+Dokumentation, Wartung und Governance sind Bestandteil der Umsetzung und **keine nachgelagerte Aufräumarbeit**.
+
+### AQGS / Quality Gates
+
+Für das Sysing Dashboard gilt das Profil `security-data` aus `quality-gates.yaml`.
+
+Verbindlich je betroffenem Candidate:
+
+- **G0 Source Integrity:** Repository, Branch/Release-Kontext und Exact Commit SHA eindeutig.
+- **G1 Static Quality:** Prettier, Lint, TypeScript, No-Console und Docs-Checks.
+- **G2 Unit/Component/Backend:** neue Regeln testgetrieben absichern; bestehende Regression grün.
+- **G3 Security Baseline:** Security-Workflow und Security-Checks grün.
+- **G4 Production Build:** produktionsnaher Build grün.
+- **G5 Data/Schema Integrity:** Schema-/Type-Drift und DB-Verträge grün, sofern betroffen.
+- **G6 Auth/RBAC/RLS:** serverseitige Berechtigungs- und Negativtests grün.
+- **G7 API/Integration Contracts:** API-Discover/Smoke/Functional grün, sofern betroffen.
+- **G8 Import/Export/Data Portability:** manuelle Import-/Export-Verträge regressionssicher.
+- **G9 Backup/Restore/Rollback:** Backup-, Restore- und Rollback-Verträge grün.
+- **G10 Runtime/E2E:** relevante Nutzerpfade browserseitig geprüft.
+- **G11 UI/A11y:** Accessibility und Responsive-Verhalten geprüft.
+- **G12 Documentation/Project State:** Doku und Projektmanifest synchron.
+- **G13 Technical Debt/Portability:** keine unkontrollierte Provider-/Layer-Kopplung.
+- **G14 Evidence/Release Gate:** technischer Prüfbericht + Quality Gate auf Exact Head.
+- **G15 Operations/Resilience:** bei betriebsrelevantem Scope zusätzlich ausführen; Docker selbst bleibt bis nach GG-09 außerhalb des Pflichtscopes.
+
+`no_silent_skip = true` und `default_evidence_reuse = false` bleiben verbindlich. Ein neuer Commit – auch ein reiner Maintenance-/Doku-Commit – erzeugt einen **neuen Exact Head** und erfordert die für diesen Head vorgesehenen Gates erneut.
+
+### Definition of Done je Phase
+
+Eine GG-Phase ist erst DONE, wenn – soweit betroffen – belegt sind:
+
+- Akzeptanzkriterien erfüllt,
+- Tests mit konkreter Anzahl grün,
+- Typecheck grün,
+- Lint + `lint:no-console` grün,
+- Production Build grün,
+- `bun run docs:check` grün,
+- `bun run project-status:check` grün,
+- RBAC-/RLS-/Security-Nachweise grün,
+- Schema-/Golden-/Import-/Backup-Gates grün, soweit betroffen,
+- E2E-/Responsive-/A11y-Nachweis bei UI-Scope,
+- technischer Prüfbericht neu erzeugt,
+- Quality Gate grün,
+- verbleibende Risiken/Findings dokumentiert,
+- schriftliches Go/No-Go für die Folgephase.
+
+### Pflicht-Dokumentationsflächen
+
+Bei jeder fachlich oder technisch betroffenen Phase werden die relevanten Flächen synchron gehalten:
+
+- `CHANGELOG.md` und SemVer bei produkt-/releasewirksamen Sprintabschlüssen,
+- `docs/ENTWICKLUNGSTAGEBUCH.md`,
+- `docs/CURRENT-STATUS.md`,
+- `docs/PROJECT-STATUS.yaml`,
+- `docs/BSF-CURRENT-PRIORITIES.md`,
+- `roadmap.md`,
+- `docs/SPRINT-PLAN-MVP-BSF.md`, wenn Reihenfolge/Status betroffen ist,
+- technische Fach-/Architekturdokumentation,
+- ADR bei Architekturentscheidungen,
+- RBAC-/Security-/Data-Schema-/API-Dokumentation, soweit betroffen,
+- kontextsensitive Hilfe / Benutzerhandbuch bei UI-/Bedienänderungen,
+- `SYSING-001`, sobald dessen vereinbarte BSF-Fortschreibung betroffen ist,
+- technischer Prüfbericht,
+- Closure-/Verification-Nachweis,
+- GitHub Issue/PR-Status und Abnahmekriterien.
+
+Historische, datierte Closure-Dokumente werden nicht nachträglich umgeschrieben; aktuelle Statusquellen werden synchronisiert.
+
+### Maintenance-Standard
+
+Maintenance-Arbeit ist ein regulärer Qualitätsbestandteil. In jeder Phase wird mindestens geprüft:
+
+- Doku-/Statusdrift,
+- offene/stale Issues und PRs,
+- Versions-/Changelog-/Tag-Konsistenz,
+- Dependency-/Lockfile-Drift,
+- Schema-/Generated-Type-Drift,
+- tote/überholte Planverweise,
+- Help-/Handbuch-Synchronität,
+- Golden-Dataset-Version/Expected-Result-Konsistenz,
+- Systemstatus-Evidenz gemäß AQGS: kein grüner Status ohne aktuelle belastbare Evidenz,
+- technische Schulden/akzeptierte Findings mit Ticket, Begründung und Verfallsdatum.
+
+Maintenance-Fixes dürfen keine fachlichen Expected Results oder Security-Assertions abschwächen.
+
+### Git-Hygiene
+
+Vor Merge/Freigabe:
+
+- sauberer Worktree/definierter Candidate,
+- nachvollziehbarer Branch/PR,
+- **signierte/verifizierbare Commits gemäß Projektstandard**,
+- keine produktiven Secrets,
+- `git diff --check` ohne Befund,
+- keine unbeabsichtigten Binär-/Generated-/Lockfile-Änderungen,
+- Exact-Head-CI und Security auf dem finalen Candidate,
+- kein Merge bei ungeklärtem Signatur- oder Evidence-Gap.
+
+Planungs-/Governance-Commits erzeugen keine künstliche Produktversion. Ein produktwirksamer Sprintabschluss folgt der projektspezifischen SemVer-/CHANGELOG-Regel.
+
+### Golden-/Demo-Governance
+
+- Golden Fixtures sind ausschließlich synthetisch.
+- Expected Results werden unabhängig vom Produktionscode festgelegt.
+- Kein automatisches „Update expected“ zur Reparatur roter Tests.
+- Jede fachliche Golden-Änderung benötigt Begründung und kontrollierte Dataset-Versionierung.
+- Demo- und Golden-Daten dürfen keine produktiven Kunden-/Personen-/Secret-Daten enthalten.
+- Provider-/Runtime-Grenzen und `UNKNOWN/PARTIAL/UNAVAILABLE/DENIED` werden ehrlich sichtbar gemacht.
+
 ## 5. Operative Reihenfolge bis zum Golden Gate
 
 ### GG-01 — BSF-03E abschließen
@@ -236,28 +347,33 @@ Golden Gate ist nur PASS, wenn alle vier Gate-Gruppen erfüllt sind:
 
 ### Zählregel
 
-Als **Lovable-Prompt** zählt ein eigener, klar abgegrenzter Arbeitslauf an Lovable für UI/Preview, Browserabnahme oder plattformspezifische Prüfung.
+Ein **Arbeitsprompt** ist ein klar abgegrenzter Arbeitsauftrag mit eigenem Ziel, Scope, Tests und Abschlussstatus. Reine Statusabfragen oder automatische CI-Reruns ohne neuen Arbeitsauftrag zählen nicht.
 
-ChatGPT-, GitHub-, Codex-, lokale Git-, CI-, Dokumentations- oder reine Analysearbeit zählt nicht als Lovable-Prompt.
+Ein **Lovable-Prompt** ist die Teilmenge der Arbeitsprompts, die gezielt für UI/Preview, Browserabnahme oder plattformspezifische Prüfung an Lovable geht.
 
-Die Zahlen sind **Planungsbereiche und kein Verbrauchsziel**. Bereits vor Aktivierung dieses Plans verbrauchte Lovable-Prompts werden nicht nachträglich eingerechnet.
+Dokumentation, Maintenance, Git-Hygiene und Closure sind **in den Gesamt-Arbeitsprompts jeder Phase bereits enthalten**. Sie werden nicht ans Ende verschoben.
+
+Die Zahlen sind Planungsbereiche, kein Verbrauchsziel. Weniger Prompts sind ausdrücklich erwünscht, wenn dasselbe Gate belastbar mit einem kleineren Arbeitslauf erreicht wird.
 
 <!-- prettier-ignore -->
-| Phase | Kurzinhalt | Noch geplante Lovable-Prompts | Einsatzschwerpunkt |
-|---|---|---:|---|
-| GG-01 | BSF-03E Abschluss | 0 | Git/Signatur/CI; Lovable nicht nötig |
-| GG-02 | BSF-07 Managementcockpit 2 | 2–4 | UI-Verfeinerung, Rollen-/Responsive-/A11y-Gates |
-| GG-03 | Management-Kiosk | 2–3 | Großbildlayout, Kiosk-Preview, Browsermatrix |
-| GG-04 | Kunden-PDF | 1–2 | Preview-/Rendering-/Layout-Abnahme |
-| GG-05 | Canonical Demo-/Import-Vertrag | 0–1 | optional Import-Preview; Kernvertrag außerhalb Lovable |
-| GG-06 | Reporting 2 | 1–2 | Report-Preview und Rendering |
-| GG-07 | Produkt-/Doku-Hardening | 0–1 | nur sichtbare Hilfe/Systemstatus-Preview |
-| GG-08 | Demo-/Golden-Baseline | 1–2 | vollständiger Demo-E2E-/Visual-Smoke |
-| GG-09 | Final Golden Gate | 1 | finaler visueller Exact-Head-Smoke |
+| Phase | Kurzinhalt | Geplante Arbeitsprompts gesamt | davon Lovable | Doku/Maintenance im Budget |
+|---|---|---:|---:|---|
+| GG-01 | BSF-03E Abschluss | 3–5 | 0 | Signatur, P5, Status-/Closure-Sync |
+| GG-02 | BSF-07 Managementcockpit 2 | 8–12 | 2–4 | Vertrag, Security, Golden, Help, Closure |
+| GG-03 | Management-Kiosk | 6–9 | 2–3 | Kiosk-Doku, Datenminimierung, Status, Closure |
+| GG-04 | Kunden-PDF | 6–9 | 1–2 | Reportvertrag, Rendering-Nachweis, Handbuch |
+| GG-05 | Canonical Demo-/Import-Vertrag | 5–8 | 0–1 | Importvertrag, Beispiele, Provenance, Doku |
+| GG-06 | Reporting 2 | 5–8 | 1–2 | Reportingvertrag, Expected Results, Doku |
+| GG-07 | Produkt-/Doku-Hardening | 4–6 | 0–1 | Schwerpunkt Doku-/Maintenance-/Governance-Sync |
+| GG-08 | Demo-/Golden-Baseline | 5–8 | 1–2 | Golden-Versionierung, E2E-Demo, Closure |
+| GG-09 | Final Golden Gate | 3–5 | 1 | Final-Audit, Prüfbericht, Status, Go/No-Go |
 
-**Noch erwarteter Lovable-Bedarf bis Golden Gate: etwa 8–16 Prompts.**
+**Gesamtplanung bis Golden Gate: ca. 45–70 Arbeitsprompts.**  
+Davon voraussichtlich **8–16 Lovable-Prompts**.
 
-Wenn ein Gate ohne Lovable belastbar über GitHub CI, lokale Tests oder Codex nachgewiesen werden kann, wird der dafür geplante Lovable-Prompt nicht künstlich verbraucht.
+Diese Schätzung enthält die verbindlichen Dokumentations-, Maintenance-, Security-, Git- und Abschlussarbeiten. Es gibt **keinen separaten „später machen wir die Doku“-Block**.
+
+Wenn GitHub CI, Codex oder lokale Tests einen Nachweis besser und reproduzierbarer liefern, wird Lovable dafür nicht eingesetzt.
 
 ## 7. Themen nach dem Golden Gate
 
