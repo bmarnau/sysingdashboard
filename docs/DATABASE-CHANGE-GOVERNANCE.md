@@ -1,6 +1,6 @@
 # Database Change Governance — Sysing Dashboard
 
-Stand: 2026-10-12  
+Stand: 2026-10-12
 Status: **verbindliche Projektregel**  
 Geltungsbereich: Sysing Dashboard, Supabase-MVP und spätere Datenbankprovider
 

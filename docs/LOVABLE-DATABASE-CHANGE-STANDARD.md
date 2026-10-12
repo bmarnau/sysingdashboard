@@ -1,6 +1,6 @@
 # Lovable-Standard für Datenbankänderungen
 
-Stand: 2026-10-12  
+Stand: 2026-10-12
 Status: **VERBINDLICHER PROMPT-STANDARD**  
 Bezug: `docs/DATABASE-SCHEMA-SOURCE-OF-TRUTH.md`, Issue #143 (`DB-SOT-01`)
 

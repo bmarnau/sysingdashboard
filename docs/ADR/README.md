@@ -48,7 +48,7 @@ Windows kollidieren.
 | 0033 | [Regelmäßige GitHub-Repository-Governance und Arbeitsvorratsprüfung](./0033-regelmaessige-github-repository-governance.md)   | Accepted |
 | 0034 | [Kontrollierter Supabase-CLI-Fallback für kanonische Migrationen](./0034-kontrollierter-supabase-cli-fallback.md)            | Accepted |
 
-Stand der Prüfung: 2026-09-01. ADR-0031 ist in BSF-02B umgesetzt.
+Stand der Prüfung: 2026-10-12. ADR-0031 ist in BSF-02B umgesetzt.
 ADR-0032 konkretisiert ADR-0030 für den minimalen gemeinsamen Mehrbenutzer-Read-Pfad,
 ohne BSF-04 vorwegzunehmen. ADR-0033 ergänzt ADR-0029 um die regelmäßige
 read-only Prüfung von Issues, Pull Requests, Actions-/Workflow-Runs und
