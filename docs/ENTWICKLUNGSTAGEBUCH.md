@@ -11,6 +11,14 @@ dieser Datei.
 
 Stand: 2026-09-29 · Dashboard-Version 1.67.0
 
+## 2026-10-12 — Database-Governance: kontrollierter Supabase-CLI-Fallback
+
+Issue #177 zeigte eine technische Governance-Lücke: GitHub-`main` enthält drei bereits freigegebene BSF-03E-Migrationen, während die veröffentlichte Supabase-Umgebung noch auf BSF-03B steht. Der Lovable-Preflight bestätigte die Dateien, stoppte aber ohne Write, weil die verwaltete Arbeitsfläche die vorhandenen Supabase-Migrationen nicht unverändert mit korrekter Migration History anwenden kann.
+
+Die bisherige Lovable-only-Regel hätte damit den kanonischen Git-Migrationsvertrag von der technischen Fähigkeit eines einzelnen Entwicklungswerkzeugs abhängig gemacht. ADR-0034 erlaubt deshalb einen fail-closed Supabase-CLI-Fallback ausschließlich für bereits versionierte Migrationen und nur bei exakt geprüftem Projektbezug, sauberem Git-Stand, eindeutigem Pending-Set und anschließendem read-only Postflight einschließlich Security Advisor.
+
+Nicht erlaubt bleiben Raw-SQL, Connector-Writes, `--include-all`, History-Reparaturen, ungeplante Datenmigrationen oder Secrets in Logs/Prompts. Lovable bleibt bevorzugter regulärer DB-Pfad; der Fallback verhindert lediglich eine unersetzbare Tool-Abhängigkeit.
+
 ## Vision
 
 Das Sysing Dashboard ist das Arbeits- und Steuerungswerkzeug für die
