@@ -46,7 +46,7 @@ Windows kollidieren.
 | 0031 | [Systemhouse-Membership und Customer-Zugriff als serverseitige BSF-Grenze](./0031-systemhouse-membership-customer-access.md) | Accepted |
 | 0032 | [BSF-02C als abgeleitete persistente Shared Projection](./0032-bsf-02c-shared-projection.md)                                 | Accepted |
 | 0033 | [Regelmäßige GitHub-Repository-Governance und Arbeitsvorratsprüfung](./0033-regelmaessige-github-repository-governance.md)   | Accepted |
-| 0034 | [Kontrollierter Supabase-CLI-Fallback für kanonische Migrationen](./0034-kontrollierter-supabase-cli-fallback.md)                    | Accepted |
+| 0034 | [Kontrollierter Supabase-CLI-Fallback für kanonische Migrationen](./0034-kontrollierter-supabase-cli-fallback.md)            | Accepted |
 
 Stand der Prüfung: 2026-09-01. ADR-0031 ist in BSF-02B umgesetzt.
 ADR-0032 konkretisiert ADR-0030 für den minimalen gemeinsamen Mehrbenutzer-Read-Pfad,
