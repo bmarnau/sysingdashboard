@@ -1,16 +1,16 @@
 # Database Change Governance — Sysing Dashboard
 
-Stand: 2026-08-25  
+Stand: 2026-10-12
 Status: **verbindliche Projektregel**  
 Geltungsbereich: Sysing Dashboard, Supabase-MVP und spätere Datenbankprovider
 
 ## 1. Verbindliche Grundregel
 
-**Alle Änderungen an einer Datenbank erfolgen ausschließlich über einen ausdrücklich formulierten und freigegebenen Lovable-Prompt.**
+**Datenbankänderungen erfolgen über einen ausdrücklich freigegebenen, kanonischen Migrationspfad. Lovable → Supabase bleibt der bevorzugte reguläre Weg.**
 
-ChatGPT, Codex, VS Code, lokale Skripte, direkte SQL-Sessions, Supabase-Connectoren oder andere Werkzeuge dürfen Datenbankänderungen analysieren, planen, prüfen und für einen Lovable-Prompt vorbereiten, aber **nicht selbst produktiv oder gegen die maßgebliche Entwicklungsdatenbank ausführen**.
+Wenn Lovable nachweislich nicht in der Lage ist, bereits versionierte Supabase-Migrationen unverändert und mit korrekter `supabase_migrations`-Historie anzuwenden, darf ausschließlich der in ADR-0034 definierte **kontrollierte Supabase-CLI-Fallback** verwendet werden.
 
-Diese Regel gilt auch dann, wenn ein anderes Werkzeug technisch in der Lage wäre, die Änderung direkt vorzunehmen.
+Der Fallback ist keine allgemeine Freigabe für direkte SQL-Schreiboperationen. GitHub bleibt Source of Truth; Migration, Zielprojekt, Pending-Set, Security-Grenzen und Postflight müssen vorab eindeutig belegt sein.
 
 ## 2. Was als Datenbankänderung gilt
 
@@ -57,11 +57,11 @@ Diese Werkzeuge dürfen:
 - statische Tests und lokale Prüfungen durchführen,
 - den Lovable-Prompt fachlich vorbereiten.
 
-Sie dürfen die maßgebliche Datenbankänderung nicht direkt anwenden.
+Sie dürfen die maßgebliche Datenbankänderung nicht über Raw-SQL, Dashboard-Klicks oder Connector-Write-Aufrufe anwenden. Der eng begrenzte `supabase db push --linked`-Fallback nach ADR-0034 ist zulässig, wenn alle dort definierten Stop- und Evidenzbedingungen erfüllt sind.
 
 ### Lovable
 
-Lovable ist für Datenbankänderungen der **einzige reguläre Ausführungspfad**.
+Lovable ist für Datenbankänderungen der **bevorzugte reguläre Ausführungspfad**. Kann Lovable den kanonischen Supabase-Migrationspfad nicht unverändert ausführen, stoppt der Lovable-Lauf ohne Ersatzmigration; danach darf ADR-0034 greifen.
 
 Lovable arbeitet nur:
 
@@ -90,7 +90,7 @@ GitHub-Stand prüfen
   -> Merge ausschließlich über geschützten PR
 ```
 
-Kein Schritt in dieser Kette darf durch eine direkte Datenbankänderung eines anderen Werkzeugs abgekürzt werden.
+Kein Schritt in dieser Kette darf durch ad-hoc SQL oder einen alternativen Schemapfad abgekürzt werden. Ein ADR-0034-Fallback ersetzt ausschließlich die operative Anwendung bereits freigegebener, versionierter Migrationen; Analyse, Security, Tests, Advisor, Drift-Check und Dokumentation bleiben vollständig erforderlich.
 
 ## 5. Mindestinhalt eines Datenbank-Lovable-Prompts
 
@@ -141,25 +141,38 @@ Eine Datenbankänderung gilt erst als abgeschlossen, wenn mindestens dokumentier
 
 ## 8. Verbotene reguläre Wege
 
-Ohne vorherige Änderung dieser Governance sind insbesondere nicht zulässig:
+Nicht zulässig sind insbesondere:
 
 - direkte SQL-Schreiboperationen durch ChatGPT oder Codex,
 - direkte Migration über einen Supabase-Connector,
+- `supabase db push --include-all` als Abkürzung,
+- `supabase migration repair` oder manuelle History-Einträge zur Kaschierung von Drift,
 - `apply_migration`, `execute_sql` oder vergleichbare schreibende Connector-Aufrufe außerhalb eines Lovable-Auftrags,
 - manuelle Schemaänderungen im Supabase-Dashboard als regulärer Entwicklungsweg,
 - direkte produktive Datenkorrekturen zur Umgehung einer Migration,
 - RLS-/Grant-Änderungen ohne dokumentierten Lovable-Prompt,
 - Datenbankänderungen direkt auf `main`.
 
-## 9. Ausnahmeverfahren
+## 9. Kontrollierter Supabase-CLI-Fallback
 
-Es gibt **keine stillschweigende technische Ausnahme**.
+Es gibt weiterhin **keine stillschweigende technische Ausnahme**. ADR-0034 definiert jedoch einen ausdrücklich versionierten Fallback für den Sonderfall, dass Lovable eine bereits freigegebene Supabase-Migration nicht kanonisch anwenden kann.
 
-Soll diese Regel später geändert werden, muss die Änderung selbst ausdrücklich als Governance-Entscheidung dokumentiert, über GitHub nachvollziehbar versioniert und über einen geschützten Pull Request integriert werden.
+Der Fallback ist nur zulässig, wenn **alle** Bedingungen erfüllt sind:
 
-Bis dahin gilt:
+1. Die Migrationen liegen bereits versioniert in GitHub vor und sind Bestandteil eines freigegebenen bzw. für die Live-Basis maßgeblichen Git-Stands.
+2. Ein Lovable-Preflight hat den kanonischen Apply-Pfad nachweislich als technisch nicht verfügbar oder ungeeignet dokumentiert und **ohne DB-Write** gestoppt.
+3. `supabase/config.toml` enthält exakt den erwarteten Projekt-Ref; dieser Projektbezug wird unabhängig gegen die Zielumgebung verifiziert.
+4. Der lokale Checkout ist sauber und entspricht exakt dem freigegebenen Git-Commit.
+5. `supabase migration list --linked` zeigt als Pending-Set exakt die erwarteten Migrationen und keine zusätzlichen unbekannten Migrationen.
+6. Die Anwendung erfolgt ausschließlich mit dem normalen `supabase db push --linked`-Pfad. Kein `--include-all`, kein Repair, kein manueller History-Insert, kein Raw-SQL.
+7. Destruktive Änderungen oder produktive Datenmigrationen benötigen weiterhin eine gesonderte explizite Freigabe; der Fallback allein autorisiert sie nicht.
+8. Secrets werden weder ausgegeben noch in Logs, Prompts, Code oder Dokumentation übernommen.
+9. Direkt danach erfolgt ein read-only Postflight: Migration History, Schemaobjekte, RLS/Grants, Daten-/Count-Invarianten, DB-Verträge und offizieller Security Advisor.
+10. Jede Abweichung im Preflight oder Postflight führt zu `BLOCKED` bzw. `FAIL`; es gibt keinen automatischen Reparaturversuch.
 
-> **Datenbankänderung = Lovable-Prompt als alleiniger regulärer Ausführungspfad.**
+Der Fallback erlaubt **keine** allgemeine produktive SQL-Session und keine fachliche Datenkorrektur. Er ist ausschließlich ein alternativer Ausführungskanal für dieselben versionierten Migrationen.
+
+> **Datenbankänderung = kanonische versionierte Migration; Lovable bevorzugt, kontrollierter Supabase-CLI-Fallback nur nach ADR-0034.**
 
 ## 10. Architekturziel bleibt unverändert
 
@@ -174,4 +187,4 @@ Die Anwendung muss weiterhin:
 
 bleiben.
 
-Lovable ist hier der verbindliche **Entwicklungs- und Änderungsweg für Datenbankänderungen**, nicht die fachliche oder betriebliche Laufzeitplattform des Produkts.
+Lovable bleibt der bevorzugte Entwicklungs- und Änderungsweg für Datenbankänderungen. ADR-0034 verhindert jedoch, dass seine technische Apply-Fähigkeit selbst zu einer unersetzbaren Betriebs- oder Governance-Abhängigkeit wird.

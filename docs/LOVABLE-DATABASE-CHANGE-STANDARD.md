@@ -1,6 +1,6 @@
 # Lovable-Standard für Datenbankänderungen
 
-Stand: 2026-09-15  
+Stand: 2026-10-12
 Status: **VERBINDLICHER PROMPT-STANDARD**  
 Bezug: `docs/DATABASE-SCHEMA-SOURCE-OF-TRUTH.md`, Issue #143 (`DB-SOT-01`)
 
@@ -98,7 +98,7 @@ Vor dem produktiven Schema-Write:
 
 ## Phase C — Kontrollierte Anwendung
 
-Schemaänderungen werden im MVP ausschließlich über den vorgesehenen **Lovable → Supabase**-Weg in der freigegebenen Zielumgebung angewandt.
+Schemaänderungen werden im regulären MVP-Pfad über **Lovable → Supabase** angewandt. Lovable muss dabei die vorhandenen Supabase-Migrationen kanonisch und mit korrekter Migration History anwenden können.
 
 Vor Ausführung muss Lovable nochmals ausgeben:
 
@@ -111,6 +111,15 @@ READY_TO_APPLY = YES|NO
 ```
 
 Bei `TARGET_PROJECT`-Abweichung oder unklarer Zuordnung: kein Write.
+
+Wenn Lovable die vorhandene Migration nur über Ersatzmigrationen, Drizzle-Kopien, ad-hoc SQL oder ohne korrekte `supabase_migrations`-Historie anwenden könnte, gilt:
+
+```text
+STATUS = BLOCKED_CANONICAL_MIGRATION_PATH
+DB_WRITE = NO
+```
+
+Lovable darf den fehlenden kanonischen Pfad nicht durch Code-/Types-Patching kaschieren. Nach dokumentiertem Stop kann der **kontrollierte Supabase-CLI-Fallback gemäß ADR-0034 und `docs/DATABASE-CHANGE-GOVERNANCE.md`** separat freigegeben werden.
 
 Destruktive Änderungen benötigen eine gesonderte explizite Freigabe.
 
@@ -205,8 +214,9 @@ Lovable muss ohne weitere Umsetzung stoppen und `BLOCKED` melden bei:
 - fehlendem Nachweis der bestehenden RLS-/Grant-Wirkung,
 - Drift zwischen Git-Vertrag und Live-/reproduziertem Schema,
 - Versuch, Secrets oder Service-Role-Keys in Repository/Prompt/Dokumentation abzulegen,
-- Versuch, Auth/RBAC/RLS zur Vereinfachung zu umgehen.
+- Versuch, Auth/RBAC/RLS zur Vereinfachung zu umgehen,
+- fehlendem kanonischem Lovable-Migrationspfad; in diesem Fall `BLOCKED_CANONICAL_MIGRATION_PATH` und kein Ersatz-Write.
 
 ## Gültigkeit
 
-Dieser Standard gilt ab 2026-09-15 für alle neuen DB-verändernden Lovable-Läufe und wird in BSF-03A und allen Folgesprints mit Supabase-Scope verpflichtend referenziert.
+Dieser Standard gilt ab 2026-09-15 für alle DB-verändernden Lovable-Läufe. Seit ADR-0034 beschreibt er den **Lovable-Pfad**; ein kontrollierter CLI-Fallback ist ausschließlich außerhalb des Lovable-Laufs und nur nach der Database Change Governance zulässig.
