@@ -11,6 +11,23 @@ dieser Datei.
 
 Stand: 2026-09-29 · Dashboard-Version 1.67.0
 
+## 2026-10-13 — Lovable-verwaltete DB: kontrollierter Connector-Fallback
+
+Der in ADR-0034 definierte lokale Supabase-CLI-Fallback erwies sich für das
+tatsächliche Betriebsmodell als nicht ausführbar: Die Datenbank wird vollständig
+von Lovable verwaltet; der Projekt-Owner besitzt absichtlich keinen separaten
+Supabase-Zugang. Gleichzeitig ist der Work-/Lovable-Projektconnector eindeutig an
+die produktive Projektdatenbank gebunden und besitzt die benötigten
+Transaktions-, DDL- und Migration-History-Rechte.
+
+ADR-0035 ersetzt deshalb den CLI-Fallback durch einen ausdrücklich
+freizugebenden, fail-closed Connector-Pfad. Er gilt ausschließlich für bereits
+freigegebene Git-Migrationen mit dokumentierten Datei-Hashes, exakter
+Lovable-Projektbindung, eindeutigem Pending-Set, statischer
+Transaktionsprüfung, atomarem History-Eintrag und vollständigem read-only
+Postflight. Ad-hoc SQL, Ersatzmigrationen, nachträgliche History-Reparaturen,
+Business-Datenkorrekturen und andere Supabase-Projekte bleiben verboten.
+
 ## 2026-10-12 — Database-Governance: kontrollierter Supabase-CLI-Fallback
 
 Issue #177 zeigte eine technische Governance-Lücke: GitHub-`main` enthält drei bereits freigegebene BSF-03E-Migrationen, während die veröffentlichte Supabase-Umgebung noch auf BSF-03B steht. Der Lovable-Preflight bestätigte die Dateien, stoppte aber ohne Write, weil die verwaltete Arbeitsfläche die vorhandenen Supabase-Migrationen nicht unverändert mit korrekter Migration History anwenden kann.

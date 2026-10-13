@@ -56,15 +56,15 @@ Für jede Aufgabe gilt folgende Reihenfolge:
 6. **Manuell abnehmen** — fachliche Oberflächen- und Rollenprüfungen werden außerhalb unnötiger Build-Schleifen durchgeführt.
 7. **GitHub nachprüfen** — tatsächlich erzeugten Commit, Zielbranch, Diff, Version und Dokumentation unabhängig kontrollieren.
 
-### 2.1 Datenbankänderungen und kontrollierter CLI-Fallback
+### 2.1 Datenbankänderungen und kontrollierter Connector-Fallback
 
 Datenbankänderungen folgen zusätzlich `docs/DATABASE-CHANGE-GOVERNANCE.md`. Lovable bleibt der bevorzugte reguläre Apply-Pfad.
 
-Kann Lovable eine bereits versionierte Supabase-Migration nachweislich nicht unverändert und mit korrekter Migration History anwenden, darf nach ADR-0034 ein enger lokaler Fallback verwendet werden:
+Kann Lovable eine bereits versionierte Supabase-Migration nachweislich nicht unverändert und mit korrekter Migration History anwenden und besitzt der Projekt-Owner im vollständig Lovable-verwalteten Betriebsmodell keinen Supabase-Zugang, darf nach ADR-0035 ein enger Work-/Lovable-Connector-Fallback verwendet werden:
 
-`sauberer freigegebener Git-Stand → supabase migration list --linked → exaktes Pending-Set → supabase db push --linked → read-only Postflight/Advisor`.
+`sauberer freigegebener Git-Stand → exakte Lovable-Projektbindung → Hash- und Pending-Prüfung → transaktionales Apply mit atomarem History-Eintrag → read-only Postflight/Advisor`.
 
-Dieser Fallback ist **kein** allgemeiner Raw-SQL-Zugang. Er erlaubt weder ad-hoc SQL noch History-Reparaturen, zusätzliche Migrationen, Datenkorrekturen oder das Umgehen von RLS/RBAC. Jede Abweichung stoppt fail-closed.
+Dieser Fallback ist **kein** allgemeiner Raw-SQL-Zugang. Er erlaubt ausschließlich die byte-identischen, bereits freigegebenen Git-Migrationen und ihren atomaren History-Eintrag; ad-hoc SQL, nachträgliche History-Reparaturen, zusätzliche Migrationen, Datenkorrekturen oder das Umgehen von RLS/RBAC bleiben verboten. Jede Abweichung stoppt fail-closed.
 
 ## 3. Verbindlicher Lovable-Arbeitsmodus
 

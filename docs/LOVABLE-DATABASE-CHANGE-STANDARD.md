@@ -1,6 +1,6 @@
 # Lovable-Standard für Datenbankänderungen
 
-Stand: 2026-10-12
+Stand: 2026-10-13
 Status: **VERBINDLICHER PROMPT-STANDARD**  
 Bezug: `docs/DATABASE-SCHEMA-SOURCE-OF-TRUTH.md`, Issue #143 (`DB-SOT-01`)
 
@@ -119,7 +119,7 @@ STATUS = BLOCKED_CANONICAL_MIGRATION_PATH
 DB_WRITE = NO
 ```
 
-Lovable darf den fehlenden kanonischen Pfad nicht durch Code-/Types-Patching kaschieren. Nach dokumentiertem Stop kann der **kontrollierte Supabase-CLI-Fallback gemäß ADR-0034 und `docs/DATABASE-CHANGE-GOVERNANCE.md`** separat freigegeben werden.
+Lovable darf den fehlenden kanonischen Pfad nicht durch Code-/Types-Patching kaschieren. Wenn die Datenbank vollständig Lovable-verwaltet ist und der Projekt-Owner keinen separaten Supabase-Zugang besitzt, kann nach dokumentiertem Stop der **kontrollierte Work-/Lovable-Connector-Fallback gemäß ADR-0035 und `docs/DATABASE-CHANGE-GOVERNANCE.md`** separat freigegeben werden. Er bindet das Ziel über Lovable-Projekt-ID, Owner, aktivierten Supabase-Stack und Live-Fingerprint und führt ausschließlich die unveränderten Git-Migrationen mit atomarem History-Eintrag aus.
 
 Destruktive Änderungen benötigen eine gesonderte explizite Freigabe.
 
