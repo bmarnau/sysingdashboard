@@ -37,7 +37,7 @@ Reine **Read-only-Inspektion** von Schema, Policies, Logs, Metadaten oder Daten 
 
 ### ChatGPT
 
-ChatGPT:
+ChatGPT/Work:
 
 - prüft zuerst den aktuellen GitHub-Stand,
 - analysiert Ziel, Auswirkungen, Abhängigkeiten und Risiken,
@@ -46,7 +46,8 @@ ChatGPT:
 - formuliert den kopierfertigen Lovable-Prompt,
 - prüft nach dem Lovable-Lauf Branch/Variant, Commit und vollständigen Diff,
 - kontrolliert CI, Security, RLS-/RBAC-Nachweise und Dokumentationsstand,
-- führt selbst keine Datenbankänderung aus.
+- darf nach ausdrücklicher Einzelfreigabe ausschließlich den in ADR-0035
+  definierten Work-/Lovable-Connector-Fallback orchestrieren.
 
 ### Codex / VS Code / lokale Werkzeuge
 
@@ -57,11 +58,11 @@ Diese Werkzeuge dürfen:
 - statische Tests und lokale Prüfungen durchführen,
 - den Lovable-Prompt fachlich vorbereiten.
 
-Sie dürfen die maßgebliche Datenbankänderung nicht über Raw-SQL, Dashboard-Klicks oder Connector-Write-Aufrufe anwenden. Der eng begrenzte `supabase db push --linked`-Fallback nach ADR-0034 ist zulässig, wenn alle dort definierten Stop- und Evidenzbedingungen erfüllt sind.
+Sie dürfen die maßgebliche Datenbankänderung nicht über Raw-SQL, Dashboard-Klicks oder Connector-Write-Aufrufe anwenden. Codex prüft beim ADR-0035-Fallback ausschließlich Git-Stand, Dateihashes und statische Transaktionsfähigkeit; der produktive Write bleibt an Work und den exakt gebundenen Lovable-Projektconnector delegiert.
 
 ### Lovable
 
-Lovable ist für Datenbankänderungen der **bevorzugte reguläre Ausführungspfad**. Kann Lovable den kanonischen Supabase-Migrationspfad nicht unverändert ausführen, stoppt der Lovable-Lauf ohne Ersatzmigration; danach darf ADR-0034 greifen.
+Lovable ist für Datenbankänderungen der **bevorzugte reguläre Ausführungspfad**. Kann Lovable den kanonischen Supabase-Migrationspfad nicht unverändert ausführen, stoppt der Lovable-Lauf ohne Ersatzmigration; bei einer vollständig Lovable-verwalteten Datenbank ohne separaten Supabase-Zugang darf danach ADR-0035 greifen.
 
 Lovable arbeitet nur:
 
@@ -143,8 +144,10 @@ Eine Datenbankänderung gilt erst als abgeschlossen, wenn mindestens dokumentier
 
 Nicht zulässig sind insbesondere:
 
-- direkte SQL-Schreiboperationen durch ChatGPT oder Codex,
-- direkte Migration über einen Supabase-Connector,
+- direkte SQL-Schreiboperationen durch ChatGPT oder Codex außerhalb des
+  ausdrücklich freigegebenen ADR-0035-Fallbacks,
+- direkte Migration über einen nicht an das verifizierte Lovable-Projekt
+  gebundenen Supabase-Connector,
 - `supabase db push --include-all` als Abkürzung,
 - `supabase migration repair` oder manuelle History-Einträge zur Kaschierung von Drift,
 - `apply_migration`, `execute_sql` oder vergleichbare schreibende Connector-Aufrufe außerhalb eines Lovable-Auftrags,
@@ -153,26 +156,27 @@ Nicht zulässig sind insbesondere:
 - RLS-/Grant-Änderungen ohne dokumentierten Lovable-Prompt,
 - Datenbankänderungen direkt auf `main`.
 
-## 9. Kontrollierter Supabase-CLI-Fallback
+## 9. Kontrollierter Work-/Lovable-Connector-Fallback
 
-Es gibt weiterhin **keine stillschweigende technische Ausnahme**. ADR-0034 definiert jedoch einen ausdrücklich versionierten Fallback für den Sonderfall, dass Lovable eine bereits freigegebene Supabase-Migration nicht kanonisch anwenden kann.
+Es gibt weiterhin **keine stillschweigende technische Ausnahme**. ADR-0035 definiert jedoch einen ausdrücklich versionierten Fallback für den Sonderfall, dass Lovable eine bereits freigegebene Supabase-Migration nicht kanonisch anwenden kann und der Projekt-Owner im vollständig Lovable-verwalteten Betriebsmodell keinen separaten Supabase-Zugang besitzt.
 
 Der Fallback ist nur zulässig, wenn **alle** Bedingungen erfüllt sind:
 
 1. Die Migrationen liegen bereits versioniert in GitHub vor und sind Bestandteil eines freigegebenen bzw. für die Live-Basis maßgeblichen Git-Stands.
 2. Ein Lovable-Preflight hat den kanonischen Apply-Pfad nachweislich als technisch nicht verfügbar oder ungeeignet dokumentiert und **ohne DB-Write** gestoppt.
-3. `supabase/config.toml` enthält exakt den erwarteten Projekt-Ref; dieser Projektbezug wird unabhängig gegen die Zielumgebung verifiziert.
-4. Der lokale Checkout ist sauber und entspricht exakt dem freigegebenen Git-Commit.
-5. `supabase migration list --linked` zeigt als Pending-Set exakt die erwarteten Migrationen und keine zusätzlichen unbekannten Migrationen.
-6. Die Anwendung erfolgt ausschließlich mit dem normalen `supabase db push --linked`-Pfad. Kein `--include-all`, kein Repair, kein manueller History-Insert, kein Raw-SQL.
-7. Destruktive Änderungen oder produktive Datenmigrationen benötigen weiterhin eine gesonderte explizite Freigabe; der Fallback allein autorisiert sie nicht.
-8. Secrets werden weder ausgegeben noch in Logs, Prompts, Code oder Dokumentation übernommen.
-9. Direkt danach erfolgt ein read-only Postflight: Migration History, Schemaobjekte, RLS/Grants, Daten-/Count-Invarianten, DB-Verträge und offizieller Security Advisor.
-10. Jede Abweichung im Preflight oder Postflight führt zu `BLOCKED` bzw. `FAIL`; es gibt keinen automatischen Reparaturversuch.
+3. Der lokale Checkout ist sauber und entspricht exakt dem freigegebenen Git-Commit; Dateiname, Git-Blob und SHA-256 jeder Migration sind protokolliert.
+4. Die Zielbindung wird über exakte Lovable-Projekt-ID, Owner-Zuordnung, aktivierten Supabase-Stack und projektspezifischen Live-Fingerprint verifiziert.
+5. Migration History und Zielobjekte zeigen als Pending-Set exakt die erwarteten Migrationen und keine zusätzlichen unbekannten Änderungen.
+6. Die Migrationen sind statisch als transaktional ausführbar geprüft.
+7. Die Anwendung erfolgt ausschließlich über den Datenbank-Connector des gebundenen Lovable-Projekts, byte-identisch, geordnet und je Datei in einer Transaktion mit atomarem History-Eintrag. Kein Repair und keine nachträgliche History-Korrektur.
+8. Destruktive Änderungen oder produktive Datenmigrationen benötigen weiterhin eine gesonderte explizite Freigabe; der Fallback allein autorisiert sie nicht.
+9. Secrets werden weder ausgegeben noch in Logs, Prompts, Code oder Dokumentation übernommen.
+10. Direkt danach erfolgt ein read-only Postflight: Migration History, Schemaobjekte, RLS/Grants, Daten-/Count-Invarianten, DB-Verträge und offizieller Security Advisor.
+11. Jede Abweichung im Preflight oder Postflight führt zu `BLOCKED` bzw. `FAIL`; es gibt keinen automatischen Blind-Reparaturversuch.
 
 Der Fallback erlaubt **keine** allgemeine produktive SQL-Session und keine fachliche Datenkorrektur. Er ist ausschließlich ein alternativer Ausführungskanal für dieselben versionierten Migrationen.
 
-> **Datenbankänderung = kanonische versionierte Migration; Lovable bevorzugt, kontrollierter Supabase-CLI-Fallback nur nach ADR-0034.**
+> **Datenbankänderung = kanonische versionierte Migration; Lovable bevorzugt, kontrollierter Work-/Lovable-Connector-Fallback nur nach ADR-0035.**
 
 ## 10. Architekturziel bleibt unverändert
 
@@ -187,4 +191,4 @@ Die Anwendung muss weiterhin:
 
 bleiben.
 
-Lovable bleibt der bevorzugte Entwicklungs- und Änderungsweg für Datenbankänderungen. ADR-0034 verhindert jedoch, dass seine technische Apply-Fähigkeit selbst zu einer unersetzbaren Betriebs- oder Governance-Abhängigkeit wird.
+Lovable bleibt der bevorzugte Entwicklungs- und Änderungsweg für Datenbankänderungen. ADR-0035 verhindert jedoch, dass ein zusätzlicher Supabase-Operatorzugang zur versteckten Betriebsabhängigkeit wird.
