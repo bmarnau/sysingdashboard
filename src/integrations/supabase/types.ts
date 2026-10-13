@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.5"
+  }
   public: {
     Tables: {
       app_settings: {
@@ -350,13 +355,11 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string | null
-          customer_id: string | null
           id: string
           status: string
           subject_id: string
           subject_title_snapshot: string
           subject_type: string
-          systemhouse_id: string | null
           updated_at: string
           updated_by: string | null
           version: number
@@ -364,13 +367,11 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by?: string | null
-          customer_id?: string | null
           id?: string
           status?: string
           subject_id: string
           subject_title_snapshot?: string
           subject_type: string
-          systemhouse_id?: string | null
           updated_at?: string
           updated_by?: string | null
           version?: number
@@ -378,26 +379,16 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string | null
-          customer_id?: string | null
           id?: string
           status?: string
           subject_id?: string
           subject_title_snapshot?: string
           subject_type?: string
-          systemhouse_id?: string | null
           updated_at?: string
           updated_by?: string | null
           version?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "avkk_subject_customer_scope_fk"
-            columns: ["customer_id", "systemhouse_id"]
-            isOneToOne: false
-            referencedRelation: "customer"
-            referencedColumns: ["id", "systemhouse_id"]
-          },
-        ]
+        Relationships: []
       }
       customer: {
         Row: {
@@ -1112,7 +1103,15 @@ export type Database = {
           systemhouse_id?: string | null
           value_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "reference_value_history_systemhouse_fk"
+            columns: ["systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "systemhouse"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shared_activity_projection: {
         Row: {
@@ -1293,7 +1292,6 @@ export type Database = {
           category_observed: boolean
           created_at: string
           customer_id: string
-          due: string | null
           id: string
           is_active: boolean
           legacy_client: string
@@ -1317,7 +1315,6 @@ export type Database = {
           category_observed?: boolean
           created_at?: string
           customer_id: string
-          due?: string | null
           id?: string
           is_active?: boolean
           legacy_client?: string
@@ -1341,7 +1338,6 @@ export type Database = {
           category_observed?: boolean
           created_at?: string
           customer_id?: string
-          due?: string | null
           id?: string
           is_active?: boolean
           legacy_client?: string
@@ -1509,25 +1505,6 @@ export type Database = {
           p_work_packages?: Json
         }
         Returns: Json
-      }
-      bsf03e_add_deputy: {
-        Args: { _source_responsibility_id: string; _target_user_id: string }
-        Returns: string
-      }
-      bsf03e_avkk_responsibility_candidates: {
-        Args: { _subject: string }
-        Returns: {
-          display_name: string
-          user_id: string
-        }[]
-      }
-      bsf03e_end_responsibility: {
-        Args: { _responsibility_id: string }
-        Returns: boolean
-      }
-      bsf03e_transfer_owner: {
-        Args: { _responsibility_id: string; _target_user_id: string }
-        Returns: string
       }
       can_manage_customer_responsibility: {
         Args: { _systemhouse_id: string; _user_id: string }
