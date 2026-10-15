@@ -1,7 +1,7 @@
 # Sysing Dashboard — Operative Sprintplanung MVP → BSF → Integration
 
 Stand: 2026-10-15
-Status: **verbindliche operative Kiosk-first-Planung; BSF-03E AKTUELL / P3b-Kandidat, danach P5**
+Status: **verbindliche operative Kiosk-first-Planung; BSF-03E DONE / P5 PASS, BSF-07 als nächster Fachsprint**
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`
 Tagesfokus: `docs/BSF-CURRENT-PRIORITIES.md`
@@ -53,7 +53,8 @@ BSF-03D wurde über PR #134 auf `main` integriert. Post-Merge Security sowie vol
 - **BSF-03A / #106 — DONE / PR #144 gemergt**
 - **BSF-KIOSK-02 / #136 — DONE / PR #147 gemergt / v1.65.0 veröffentlicht**
 - **BSF-03B / #107 — FINAL DONE / PR #149 gemergt; deterministischer E2E-Harness-Hotfix #152 gemergt**
-- **BSF-03E / #63 — AKTUELL / P3b-Restack und Exact-Head-Gates; GG-01 abgeschlossen**
+- **BSF-03E / #63 — FINAL DONE / PR #185 gemergt / P5 PASS**
+- **BSF-07 / #140 — NÄCHSTER FACHSPRINT / GEPLANT**
 
 ## 4. Verbindliche operative Reihenfolge
 
@@ -61,7 +62,7 @@ BSF-03D wurde über PR #134 auf `main` integriert. Post-Merge Security sowie vol
 BSF-03A / #106 — DONE
 → BSF-KIOSK-02 / #136 — DONE / MERGED
 → BSF-03B / #107 — FINAL DONE
-→ BSF-03E / #63 — AKTUELL / P3b-Kandidat, danach P5
+→ BSF-03E / #63 — DONE / P5 PASS
 → BSF-07 Managementcockpit 2
 → BSF-KIOSK-03 / #137
 → BSF-03C / #98
@@ -224,12 +225,14 @@ Lovable: gezielt für Prüfsicht, Dialog und Preview.
 
 ## 9. BSF-03E — Vertretungs- und Personensicht (#63)
 
-**Status 15.10.2026:** P0/P1/P2/P3a sowie P3b-0/P3b-1 sind auf `main`
-integriert. Die drei freigegebenen BSF-03E-Migrationen wurden über ADR-0035
-3/3 atomar in die Lovable-verwaltete Datenbank übernommen; Postflight und
-Advisor sind ohne neues Finding grün. Die operative AP-Arbeitssicht aus PR #171
-wird auf den aktuellen Main-Stand restackt. Danach sind unabhängiges Review,
-Exact-Head-CI/Security und P5 auszuführen. BSF-03E ist noch nicht abgeschlossen.
+**Status 15.10.2026: FINAL DONE.** P0–P3b sind auf `main` integriert; P4-Bulk
+bleibt bewusst optional und ist nicht freigegeben. PR #185 wurde als
+GitHub-verifizierter Squash-Commit
+`008c798af1c6901c23526eaab1cf1b8e0242676a` gemergt. Exact-Head-CI #1403,
+Security #1401, Post-Merge-CI #1404 und Security #1402 sind vollständig PASS.
+Der frische read-only Lovable-Check bestätigt Migration History, RLS, Policies,
+Funktionen, Trigger, Index und Due-Projektion. Abschluss:
+`docs/BSF-03E-CLOSURE-2026-10-15.md`. Kein Release, kein Deploy.
 
 - Customer Responsibility, Project Responsibility und temporäre Vertretung bleiben getrennte, kombinierbare Beziehungen,
 - Personensicht für berechtigte Projekt-/Teamleitung,

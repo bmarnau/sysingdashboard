@@ -194,14 +194,14 @@
             Stand 15.10.2026 - abgeleitete Managementsicht, keine eigene Source of Truth
           </div>
         </div>
-        <span class="badge amber">BSF-03E · P3b-KANDIDAT</span>
+        <span class="badge green">BSF-03E · P5 PASS</span>
       </div>
 
       <div class="facts">
-        <div class="fact"><span class="small">Aktiver Sprint</span><b>BSF-03E</b></div>
+        <div class="fact"><span class="small">Nächster Fachsprint</span><b>BSF-07</b></div>
         <div class="fact"><span class="small">Kandidat</span><b>1.68.0</b></div>
-        <div class="fact"><span class="small">Aktuelle Main-Basis</span><b>39658f93</b></div>
-        <div class="fact"><span class="small">Nächstes Gate</span><b>Exact Head</b></div>
+        <div class="fact"><span class="small">Aktuelle Main-Basis</span><b>008c798a</b></div>
+        <div class="fact"><span class="small">BSF-03E-Gate</span><b>PASS</b></div>
       </div>
 
       <div class="grid">
@@ -228,22 +228,26 @@
               Finding.</span
             >
           </div>
+          <div class="card">
+            <span class="badge green">DONE</span><strong>BSF-03E / P5</strong
+            ><span class="small"
+              >PR #185 signiert gemergt; Exact-Head- und Post-Merge-CI/Security vollständig
+              PASS.</span
+            >
+          </div>
         </section>
 
         <section class="col">
           <h2>Aktuell</h2>
           <div class="card">
-            <span class="badge amber">ACTIVE</span><strong>P3b-Restack und Dokumentation</strong
-            ><span class="small"
-              >PR #171 wird auf den aktuellen Main-Stand restackt. Die vier zentralen
-              Work-View-Suiten bestehen mit 27/27 Tests.</span
-            >
+            <span class="badge purple">NEXT</span><strong>BSF-07 vorbereiten</strong
+            ><span class="small">Managementcockpit 2 ist der nächste geplante Fachsprint.</span>
           </div>
           <div class="card">
-            <strong>BSF-03E bleibt offen</strong
+            <strong>Release bleibt separat</strong
             ><span class="small"
-              >Kandidat 1.68.0 ist kein veröffentlichter Release. P5-Gesamtabnahme steht noch
-              aus.</span
+              >Kandidat 1.68.0 ist integriert, aber noch kein veröffentlichter Release und nicht
+              deployt.</span
             >
           </div>
         </section>
@@ -251,17 +255,17 @@
         <section class="col">
           <h2>Nächste Schritte</h2>
           <div class="card">
-            <span class="badge blue">NEXT</span><strong>1. Unabhängiges Review</strong
-            ><span class="small">Restack-Diff gegen aktuelle Main-Basis prüfen.</span>
+            <span class="badge blue">NEXT</span><strong>1. BSF-07 Scope bestätigen</strong
+            ><span class="small">Managementinformationen aus bestehenden Verträgen ableiten.</span>
           </div>
           <div class="card">
-            <span class="badge blue">NEXT</span><strong>2. Exact-Head-Gates</strong
-            ><span class="small">CI und Security auf dem finalen Kandidaten-Head abwarten.</span>
+            <span class="badge blue">NEXT</span><strong>2. Golden-Vertrag festlegen</strong
+            ><span class="small">Kennzahlen und Expected Results reproduzierbar definieren.</span>
           </div>
           <div class="card">
-            <span class="badge blue">NEXT</span><strong>3. P5-Gesamtabnahme</strong
+            <span class="badge blue">NEXT</span><strong>3. Umsetzung planen</strong
             ><span class="small"
-              >Vollständige Gates und Abschlussnachweis; danach erst Release.</span
+              >UI, Providergrenze, Tests und Dokumentation ohne externe Integration planen.</span
             >
           </div>
         </section>
@@ -269,8 +273,8 @@
         <section class="col">
           <h2>Pipeline</h2>
           <div class="card">
-            <span class="badge purple">AKTUELL</span><strong>BSF-03E / #63</strong
-            ><span class="small">P3b integrieren, danach P5.</span>
+            <span class="badge green">DONE</span><strong>BSF-03E / #63</strong
+            ><span class="small">P0–P3b integriert, P5 PASS.</span>
           </div>
           <div class="card">
             <strong>BSF-07 / #140</strong><span class="small">Managementcockpit 2.</span>
@@ -289,29 +293,29 @@
         <div class="timeline">
           <span class="node">P0–P3a INTEGRIERT</span><span class="arrow">-&gt;</span>
           <span class="node">GG-01 DONE</span><span class="arrow">-&gt;</span>
-          <span class="node">P3b RESTACK</span><span class="arrow">-&gt;</span>
-          <span class="node">EXACT-HEAD-GATES</span><span class="arrow">-&gt;</span>
-          <span class="node">P5</span>
+          <span class="node">P3b MERGED</span><span class="arrow">-&gt;</span>
+          <span class="node">P5 PASS</span><span class="arrow">-&gt;</span>
+          <span class="node">BSF-07</span>
         </div>
       </section>
 
       <section class="section">
-        <h2>Offene Abnahmekriterien für BSF-03E</h2>
+        <h2>Abgeschlossene Abnahmekriterien für BSF-03E</h2>
         <ol>
           <li>Unabhängiges Review des Restack-Diffs ohne offenen Critical-/Important-Befund.</li>
           <li>Required CI und Security auf exakt dem finalen Kandidaten-Head vollständig grün.</li>
           <li>DB-, Schema-Drift-, RLS-, RBAC-, E2E- und Accessibility-Verträge bestätigt.</li>
-          <li>Dokumentation, Handbuch 1.24.0 und Projektmanifest synchron.</li>
-          <li>P5-Abschlussnachweis vor Release oder Deploy.</li>
+          <li>Dokumentation, Handbuch 1.24.1 und Projektmanifest synchron.</li>
+          <li>P5-Abschlussnachweis erstellt; Release und Deploy bleiben separat.</li>
         </ol>
       </section>
 
       <footer>
         Quellen: roadmap.md, docs/PROJECT-STATUS.yaml, docs/CURRENT-STATUS.md, docs/ARCHITECTURE.md,
         docs/ENTWICKLUNGSTAGEBUCH.md, docs/BSF-CURRENT-PRIORITIES.md,
-        docs/BSF-03E-DATABASE-SYNC-2026-10-14.md, PR #171 und Exact-Head-CI/Security. Dieses Board
-        ist ausschließlich eine abgeleitete Sicht. Bei Widerspruch gelten die genannten Quellen und
-        GitHub als Source of Truth.
+        docs/BSF-03E-CLOSURE-2026-10-15.md, docs/BSF-03E-DATABASE-SYNC-2026-10-14.md, PR #185 sowie
+        Exact-Head- und Post-Merge-CI/Security. Dieses Board ist ausschließlich eine abgeleitete
+        Sicht. Bei Widerspruch gelten die genannten Quellen und GitHub als Source of Truth.
       </footer>
     </main>
   </body>

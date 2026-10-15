@@ -59,11 +59,11 @@ versions:
   databaseSchema: "managed-by-supabase-migrations"
 
 currentState:
-  currentSprint: "BSF-03E"
-  currentSprintTitle: "Vertretungs- und Personensicht / P3b-Restack und P5-Vorbereitung"
-  currentSprintStatus: "in-progress"
-  nextSprint: "BSF-07"
-  previousSprint: "BSF-03B"
+  currentSprint: "BSF-07"
+  currentSprintTitle: "Managementcockpit 2 / Vorbereitung"
+  currentSprintStatus: "planned"
+  nextSprint: "BSF-KIOSK-03"
+  previousSprint: "BSF-03E"
   previousSprintStatus: "completed"
   releaseReadiness: "not-assessed"
   testsPassing: 1009
@@ -409,7 +409,7 @@ roadmap:
       - "Kundenausgabe ohne Namen des Leistungserbringers"
   - id: "BSF-03E"
     title: "Vertretungs- und Personensicht"
-    status: "in-progress"
+    status: "completed"
     priority: "medium"
     goal: "Customer Responsibility, Project Responsibility und Vertretung auditierbar getrennt und kombinierbar abbilden."
     dependencies:
@@ -706,12 +706,11 @@ releaseManagement:
   stage: "preview"
   status: "not-assessed"
   statusBasis: >-
-    P3b-UI-Kandidat 1.68.0 wird auf main@39658f93fe078f00dbb6347a0fe473173eeaf069
-    restackt. GG-01 ist nach 3/3 atomar angewendeten BSF-03E-Migrationen und
-    vollständigem read-only Postflight abgeschlossen. Die Basis-Gates und der
-    Datenbanknachweis belegen nicht den neuen UI-Kandidaten; dafür bleiben
-    unabhängiges Review sowie Exact-Head-CI/Security erforderlich. Kein Release
-    oder Deploy dieses Kandidaten.
+    BSF-03E ist mit PR #185 auf main@008c798af1c6901c23526eaab1cf1b8e0242676a
+    integriert und nach Exact-Head-CI/Security, Post-Merge-CI/Security sowie
+    frischem read-only Lovable-Datenbankcheck in P5 abgeschlossen. Kandidat
+    1.68.0 bleibt ohne separaten Release-/Deploy-Auftrag im Preview-Status; der
+    veröffentlichte GitHub-Release bleibt v1.65.0.
   releaseEvidence:
     - "CHANGELOG.md"
     - "docs/PROJECT-GOVERNANCE.md"
@@ -720,6 +719,7 @@ releaseManagement:
     - "docs/MVP-ACCEPTANCE-REPORT-FINAL-2026-08-24.md"
     - "docs/ROLE-ACCEPTANCE-09C-FINAL-2026-08-24.md"
     - "docs/ENTWICKLUNGSTAGEBUCH.md"
+    - "docs/BSF-03E-CLOSURE-2026-10-15.md"
     - "docs/BSF-03E-DATABASE-SYNC-2026-10-14.md"
     - "docs/ARCHITECTURE.md"
     - "docs/BSF-CURRENT-PRIORITIES.md"

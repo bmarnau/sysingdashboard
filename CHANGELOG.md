@@ -20,7 +20,7 @@ Format pro Eintrag:
 - Sessiongebundener Read-Hook blendet alte Antworten bei Benutzer-/Permission-Wechsel und Refresh aus; Fehler zeigen einen neutralen Zustand mit erneutem Ladeversuch.
 - Die tatsächliche Profil-/Sessiongrenze invalidiert die vorherige Identität unmittelbar und verwirft verspätete Session-/Profilantworten. Fünf Regressionstests mit den echten Profil-/AP-Hooks sichern Kontowechsel, Signout und überlappende Rollenreads ab.
 - P3b-2-Präsentation: „Ohne Fälligkeitsdatum“ bleibt bei absteigender Sortierung am Ende; entfallene aktive Filter werden benannt; gleichnamige Kunden/Personen unterscheidbar; lesbare Status- und Datumsanzeige.
-- **Handbuch 1.24.0**: P3a-Einzelaktionen, P3b-Arbeitssicht und die noch offene P5-Abnahme sind im integrierten Benutzerhandbuch gemeinsam beschrieben.
+- **Handbuch 1.24.1 / P5-Abschluss**: P3a-Einzelaktionen und P3b-Arbeitssicht sind im integrierten Benutzerhandbuch gemeinsam beschrieben; Exact-Head- und Post-Merge-Gates sowie der read-only Lovable-Datenbanknachweis schließen BSF-03E formal ab.
 - **Datenbankstand synchronisiert**: Die drei bereits freigegebenen BSF-03E-Migrationen wurden über den kontrollierten ADR-0035-Pfad atomar angewendet; Migration History, RLS/Policies, Funktionen, Trigger, Indizes und Berechtigungen sind im Postflight bestätigt.
 
 ## 1.67.0 - 2026-09-29

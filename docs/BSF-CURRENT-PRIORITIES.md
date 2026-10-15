@@ -10,12 +10,11 @@ Dauerhafter Wiederanlaufpunkt: Issue #35
 
 ## Zweck
 
-Aktueller P3b-Wiederanlauf: GG-01 ist nach 3/3 Migrationen und vollständigem
-read-only Postflight abgeschlossen. Der UI-Kandidat wird aus PR #171 auf
-`main@39658f93fe078f00dbb6347a0fe473173eeaf069` restackt; die zentralen
-Work-View-Suiten bestehen mit 27/27 Tests. Danach folgen unabhängiges Review,
-Exact-Head-CI/Security und P5. Datenbanknachweis:
-`docs/BSF-03E-DATABASE-SYNC-2026-10-14.md`.
+BSF-03E ist nach signiertem Merge von PR #185 und vollständiger P5-Abnahme auf
+`main@008c798af1c6901c23526eaab1cf1b8e0242676a` abgeschlossen. Exact-Head- und
+Post-Merge-CI/Security sind PASS; ein frischer read-only Lovable-Check bestätigt
+den unveränderten Datenbankvertrag. Abschlussnachweis:
+`docs/BSF-03E-CLOSURE-2026-10-15.md`. Nächster geplanter Fachsprint ist BSF-07.
 
 Diese Datei ist die kompakte operative Source of Truth für den laufenden BSF-Ausbau. Historische, datierte Abschlussdokumente werden nicht rückwirkend umgeschrieben. Die interne Kiosk-first-Roadmap konkretisiert die Reihenfolge für die noch offenen internen Aufgaben. GDS-01 / #142 ist ein verbindlicher Querschnittsbaustein und verändert die Sprintfolge nicht.
 
@@ -65,16 +64,23 @@ PR #147 ist nach vollständiger Abnahme auf `main` gemergt. Release `v1.65.0` is
 
 PR #149 ist als signierter Squash-Commit `12b37be8ce8e5e8e3668d6622ace13872a7f3c48` auf `main` integriert. Der nach dem Merge sichtbar gewordene kalendertagsabhängige E2E-Harness-Escape wurde mit PR #152 rein testseitig behoben; der Fix liegt als signierter Commit `1ca8f0937a7217de74050061ae39c9c3f028784c` auf `main`. Der Hotfix-PR bestätigte 110/110 Playwright-Tests.
 
-### AKTUELLER SPRINT — BSF-03E / #63
+### BSF-03E / #63 — DONE / MERGED
 
-Aktueller Wiederanlaufpunkt: **P3b operative AP-Arbeitssicht / UI-E2E-Kandidat 1.68.0**.
-P0/P1/P2 und P3a sind integriert; P3b-0 Due Projection und P3b-1 Read Contract einschließlich Timestamptz-Hardening stehen auf `main`. Die drei zugehörigen BSF-03E-Migrationen sind über ADR-0035 3/3 in die Lovable-verwaltete Datenbank übernommen und im Postflight bestätigt.
+P0–P3b stehen auf `main`; die drei zugehörigen BSF-03E-Migrationen sind über
+ADR-0035 3/3 in die Lovable-verwaltete Datenbank übernommen und im Postflight
+bestätigt.
 
-Der aktuelle P3b-Schnitt ergänzt `/verantwortungen` um „Arbeitspakete“ und verwendet ausschließlich den bestehenden autorisierten Read-Vertrag. Gruppen nach Kunde, Owner oder Fälligkeit erhalten dieselbe AP-Menge; Deputies erzeugen keine weiteren Zeilen, unzugeordnete AP bleiben sichtbar. Gleichnamige Kunden/Personen werden identitätsbasiert getrennt. Der Restack-Kandidat ist noch nicht auf `main` integriert.
+Der P3b-Schnitt ergänzt `/verantwortungen` um „Arbeitspakete“ und verwendet
+ausschließlich den bestehenden autorisierten Read-Vertrag. Gruppen nach Kunde,
+Owner oder Fälligkeit erhalten dieselbe AP-Menge; Deputies erzeugen keine
+weiteren Zeilen, unzugeordnete AP bleiben sichtbar. Gleichnamige Kunden/Personen
+werden identitätsbasiert getrennt.
 
 Verbindlicher Detailplan: `docs/superpowers/plans/2026-10-04-bsf-03e-p3b-work-view-ui.md`.
-Abnahme und tatsächliche Grenzen: `docs/BSF-03E-P3B-UI-VERIFICATION-2026-10-04.md`.
-BSF-03E bleibt offen bis zur P5-Gesamtabnahme. P4-Bulk bleibt optional und ist nicht freigegeben. Das Datenbank-Synchronisationsgate ist abgeschlossen; Exact-Head-CI/Security, Kandidatenreview und die P5-Gesamtabnahme bleiben offen.
+Abnahme und tatsächliche Grenzen: `docs/BSF-03E-CLOSURE-2026-10-15.md`.
+P4-Bulk bleibt optional und ist nicht freigegeben. P5 einschließlich Full CI,
+Security, Schema Drift, Backup/Restore, Playwright, Doku und Prüfbericht ist
+abgeschlossen.
 
 Ziel: mandantensichere Vertretungs- und Personensicht für Project-/WorkPackage-Verantwortungen ohne neue konkurrierende Responsibility-Domäne.
 
@@ -130,8 +136,8 @@ Golden-Dataset-Grundregeln:
 5. **BSF-03A / #106 — DONE**
 6. **BSF-KIOSK-02 / #136 — DONE / MERGED**
 7. **BSF-03B / #107 — FINAL DONE**
-8. **BSF-03E / #63 — AKTUELLER SPRINT / P3b UI-E2E-Kandidat, danach P5**
-9. **BSF-07 / #140 — VORGEZOGEN / GEPLANT**
+8. **BSF-03E / #63 — DONE / MERGED / P5 PASS**
+9. **BSF-07 / #140 — NÄCHSTER FACHSPRINT / GEPLANT**
 10. **BSF-KIOSK-03 / #137 — GEPLANT**
 11. **BSF-03C / #98 — GEPLANT**
 12. **BSF-DOC-01 — GEPLANT**
