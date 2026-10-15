@@ -1,174 +1,103 @@
-# NorthBit Engineer Console
+# Sysing Dashboard
 
-Interaktives Dashboard für Systems Engineers eines IT-Systemhauses. Zeigt aktuelle Aufgaben, Projekte, Wochenstunden und Aufwände – mit Echtzeit-Eingabe, lokaler Datenspeicherung und PDF-Druckausgabe.
+Das Sysing Dashboard ist ein Arbeits-, Reporting- und Management-Dashboard für
+IT-Systemhäuser. Es verbindet persönliche Arbeitsorganisation, Projekte,
+Arbeitspakete, Zeiten, Kundenverantwortung, AVKK und revisionsgebundene
+Leistungsnachweise in einer rollen- und mandantengeschützten Anwendung.
 
-## Features
+Aktueller Entwicklungskandidat: **Dashboard 1.68.0**. Der laufende Sprint
+**BSF-03E** ergänzt die autorisierte Verantwortungsansicht um eine operative
+Arbeitspaket-Sicht. Der Sprint bleibt bis zur P5-Gesamtabnahme offen; der zuletzt
+veröffentlichte GitHub-Release ist weiterhin `v1.65.0`.
 
-- **Aufgabenverwaltung** – Tickets mit Status, Priorität, Schätzung und Aufwand; inline editierbar
-- **Projektübersicht** – Budget, Fortschritt, Deadline, Team und Risikostatus
-- **Wochenstunden & Verrechenbarkeit** – Tagesbasierte Erfassung mit Billable-Ratio
-- **Zeiterfassung** – Neue Logs direkt im Dashboard erfassen
-- **PDF-Export** – Druckoptimierte Ansicht über Browser-Druckdialog (Strg+P / Cmd+P)
-- **Responsive Design** – Optimiert für Desktop, Tablet und Mobile
-- **Lokale Datenspeicherung** – Änderungen bleiben nach Refresh erhalten (localStorage)
+## Funktionsumfang
 
----
+- persönliches Dashboard mit Projekten, Arbeitspaketen, Tätigkeiten und Zeiten,
+- Supabase-Anmeldung sowie serverseitige RBAC-/RLS-Prüfungen,
+- Kunden-, Projektcontrolling- und Leistungsnachweis-Sichten,
+- AVKK-Arbeitsplatz und Verantwortungsmanagement für berechtigte Rollen,
+- operative AP-Arbeitssicht mit Gruppierung, Sortierung und Filtern,
+- Info-Kiosk mit klar getrennten Demo-, internen und nicht verfügbaren Quellen,
+- Backup/Restore, JSON-/CSV-/PDF-Export und integriertes Benutzerhandbuch,
+- technische Prüfberichte, Security-Gates und dokumentierte Architekturentscheide.
 
-## Voraussetzungen
+## Architektur und Datenhaltung
 
-- [Bun](https://bun.sh) >= 1.0 (empfohlen) oder Node.js >= 20 mit npm/yarn/pnpm
-- Ein moderner Browser (Chrome, Firefox, Safari, Edge)
+GitHub ist die Source of Truth für Code, Dokumentation und versionierte
+Supabase-Migrationen. Supabase ist die führende Authentifizierungs- und
+Datenplattform des Mehrbenutzer-MVP; Lovable verwaltet die verbundene
+Laufzeitumgebung. Fachlogik und Provideradapter bleiben getrennt, damit Docker,
+Microsoft Entra ID und weitere Datenprovider später ergänzt werden können.
 
----
+Einige persönliche bzw. noch nicht zentralisierte Module verwenden weiterhin
+benutzerbezogenen Browser-Speicher. `localStorage` ist daher weder die alleinige
+Datenquelle der Anwendung noch eine Autorisierungsgrenze. Der vollständige
+Datenhaltungsumbau ist als BSF-04 geplant.
 
-## Schritt-für-Schritt-Setup
+## Lokale Entwicklung
 
-### 1. Repository klonen
+Voraussetzungen:
 
-```bash
-git clone <repository-url>
-cd <projektordner>
-```
-
-### 2. Abhängigkeiten installieren
-
-**Mit Bun (empfohlen):**
-
-```bash
-bun install
-```
-
-**Mit npm:**
-
-```bash
-npm install
-```
-
-**Mit yarn:**
+- [Bun](https://bun.sh) (entsprechend `bun.lock`; auch in der CI verwendet),
+- Node.js 22 für die ergänzenden Node-Skripte,
+- eine lokale `.env` nach dem Muster von `.env.example`, wenn Anmeldung und
+  Supabase-gestützte Funktionen ausgeführt werden sollen.
 
 ```bash
-yarn install
-```
-
-### 3. Entwicklungsserver starten
-
-```bash
+git clone https://github.com/bmarnau/sysingdashboard.git
+cd sysingdashboard
+bun install --frozen-lockfile
 bun run dev
 ```
 
-oder
+Der Entwicklungsserver ist anschließend standardmäßig unter
+`http://localhost:3000` erreichbar. In die Clientvariablen gehören nur
+Publishable-/Anon-Werte; Service-Role-Keys dürfen niemals als `VITE_*` gesetzt
+oder committed werden.
 
-```bash
-npm run dev
-```
+## Wichtige Prüfungen
 
-Die App ist anschließend unter `http://localhost:3000` erreichbar.
+| Befehl                         | Zweck                                      |
+| ------------------------------ | ------------------------------------------ |
+| `bun run test`                 | Vitest-Regressionen                        |
+| `bun run typecheck`            | TypeScript-Prüfung                         |
+| `bun run lint`                 | ESLint                                     |
+| `bun run docs:check`           | Handbuch-/Changelog-Synchronität           |
+| `bun run project-status:check` | Projektmanifest gegen Schema und Changelog |
+| `bun run security:check`       | statischer Security-Report                 |
+| `bun run build`                | Production-Build                           |
 
----
-
-## Build- und Startbefehle
-
-| Befehl              | Beschreibung                                                     |
-| ------------------- | ---------------------------------------------------------------- |
-| `bun run dev`       | Startet den Vite-Entwicklungsserver mit Hot-Reload               |
-| `bun run build`     | Erzeugt einen Production-Build (optimiert für Cloudflare Worker) |
-| `bun run build:dev` | Erzeugt einen Development-Build                                  |
-| `bun run preview`   | Startet einen lokalen Preview-Server für den Production-Build    |
-| `bun run lint`      | Führt ESLint über die gesamte Codebase aus                       |
-| `bun run format`    | Formatiert alle Dateien mit Prettier                             |
-
-> **Hinweis:** Das Projekt nutzt TanStack Start v1 mit SSR. Die Build-Ausgabe ist für den Einsatz auf einer Edge-Runtime (z. B. Cloudflare Workers) optimiert.
-
----
-
-## Lokale Datenspeicherung (localStorage)
-
-Deine Änderungen im Dashboard werden **automatisch im Browser-Speicher (localStorage)** persistiert. Das bedeutet:
-
-- Status-Updates, Aufwandsänderungen und neue Zeitlogs bleiben nach einem Seiten-Refresh erhalten
-- Die Daten werden **nur lokal im Browser** gespeichert – sie werden nicht an einen Server übertragen
-- Mehrere Browser oder Geräte haben jeweils eigene, unabhängige Datenstände
-
-### Details
-
-- **Speicher-Key:** `northbit-dashboard-v1`
-- **Gespeicherte Daten:** Aufgaben, Zeitlogs, Wochenstunden
-- **Nicht gespeichert:** Projektdaten (read-only im aktuellen Setup)
-
-### Daten zurücksetzen
-
-Über den **Reset**-Button in der oberen rechten Ecke der App (neben dem PDF-Button) kannst du alle lokalen Änderungen löschen und auf den initialen Zustand aus `src/data/dashboard.json` zurücksetzen.
-
-Alternativ über die Browser-DevTools:
-
-1. F12 drücken (DevTools öffnen)
-2. Reiter **Anwendung** → **Lokaler Speicher** → `http://localhost:3000`
-3. Den Eintrag `northbit-dashboard-v1` löschen
-4. Seite neu laden
-
-> **Wichtig:** Ein Browser-Cache-Clear oder das Löschen von Website-Daten entfernt ebenfalls die gespeicherten Dashboard-Daten.
-
----
+Die vollständige GitHub-CI ergänzt unter anderem Datenbank-Rebuild und
+Schema-Drift, API-, Security-, Import-/Export-, Backup-, E2E-, Accessibility-,
+Technical-Debt- und Quality-Gates.
 
 ## Projektstruktur
 
-```
-├── src/
-│   ├── data/
-│   │   └── dashboard.json          # Initiale Demo-Daten
-│   ├── lib/
-│   │   └── dashboard-data.ts     # TypeScript-Typen & Datenimport
-│   ├── routes/
-│   │   ├── index.tsx               # Haupt-Dashboard (Aufgaben, KPIs, Projekte)
-│   │   └── __root.tsx              # Root-Layout (Provider, Meta, Error-Boundaries)
-│   ├── components/ui/            # shadcn/ui Komponenten (~45 Stück)
-│   ├── styles.css                  # Design-Tokens (Deep-Cobalt-Theme), Tailwind v4
-│   ├── router.tsx                  # TanStack Router-Konfiguration
-│   ├── server.ts                   # SSR-Error-Wrapper
-│   └── start.ts                    # TanStack Start-Initialisierung
-├── package.json
-├── vite.config.ts
-├── tsconfig.json
-└── bun.lock
+```text
+src/
+  components/            UI und Fachkomponenten
+  hooks/                 sessiongebundene React-Hooks
+  lib/                   providerneutrale Fachlogik und Services
+  routes/                TanStack-Start-Routen und Server-Endpunkte
+supabase/
+  migrations/            kanonische Datenbankmigrationen
+  tests/                 SQL-Vertrags- und RLS-Regressionen
+e2e/                     Playwright-Abnahmen
+docs/                    Status, Architektur, ADRs und Nachweise
+scripts/                 Qualitäts-, Doku- und Projektstatus-Gates
 ```
 
----
+## Maßgebliche Dokumentation
 
-## Technologie-Stack
-
-- **Framework:** TanStack Start v1 (React 19 + SSR + File-based Routing)
-- **Build-Tool:** Vite 7
-- **Styling:** Tailwind CSS v4 mit Custom-Design-Tokens (oklch-Farben)
-- **UI-Komponenten:** shadcn/ui (Radix UI Primitives)
-- **Icons:** Lucide React
-- **State:** React Hooks (`useState`, `useEffect`, `useMemo`)
-- **Daten:** JSON-basiert, client-seitige Persistenz via localStorage
-- **Charts:** Recharts
-- **TypeScript:** Strict Mode
-
----
-
-## Weiterführende Dokumentation
-
-- [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — Ist- und Zielarchitektur, Schichtenmodell, Supabase/RBAC/RLS, Backup 2.0, geplante Bausteine
-- [`docs/PROJECT-GOVERNANCE.md`](./docs/PROJECT-GOVERNANCE.md) — Regelwerk: Prinzipien, Definition of Done, Phasen
-- [`docs/PROJECT-STATUS.md`](./docs/PROJECT-STATUS.md) / [`docs/PROJECT-STATUS.yaml`](./docs/PROJECT-STATUS.yaml) — Projektmanifest (Single Source of Truth für Status und Roadmap), geprüft mit `bun run project-status:check`
-- [`docs/AVKK.md`](./docs/AVKK.md) — AVKK-Führungsmodell (Aufgabe, Verantwortung, Kompetenz, Konsequenz), Datenmodell- und RBAC-Zielkonzept
-- [`docs/REFERENCE-DATA.md`](./docs/REFERENCE-DATA.md) — Referenzdaten als Plattformdienst: Kataloge, Versionierung, Historie, Servicevertrag
-- [`docs/ADR/`](./docs/ADR/) — Architecture Decision Records (Entscheidungshistorie)
-- [`docs/ENTWICKLUNGSTAGEBUCH.md`](./docs/ENTWICKLUNGSTAGEBUCH.md) — Projektchronik (Service → Entwicklungstagebuch)
-- [`docs/API.md`](./docs/API.md) — Server-Routen (`/api/status`, `/api/sync`)
-- [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) — Build, Cloudflare Worker, ENV, CI
-- [`docs/DATA-SCHEMA.md`](./docs/DATA-SCHEMA.md) — Export-Format & Migrationsregeln
-- [`docs/CONTRIBUTING.md`](./docs/CONTRIBUTING.md) — Dev-Workflow, Branch-Strategie, Doku-Sync-Pflicht
-- [`CHANGELOG.md`](./CHANGELOG.md) — Single Source of Truth der Dashboard-Version
-
-**Projektphasen**: Phase 1 „Technische Plattform" ist mit Version 1.50.0 abgeschlossen
-(ADR-0023). Phase 2 „AVKK-Fachmodell" läuft seit Sprint 07A (Version 1.51.0): das
-Fachmodell und die Reference-Data-Architektur sind definiert (ADR-0024), die
-produktive Umsetzung folgt in Sprint 07B.
-
----
+- [`docs/CURRENT-STATUS.md`](./docs/CURRENT-STATUS.md) — aktueller verbindlicher Stand
+- [`docs/BSF-CURRENT-PRIORITIES.md`](./docs/BSF-CURRENT-PRIORITIES.md) — operativer Wiederanlaufpunkt
+- [`docs/PROJECT-STATUS.yaml`](./docs/PROJECT-STATUS.yaml) — maschinenprüfbares Projektmanifest
+- [`docs/SPRINT-PLAN-MVP-BSF.md`](./docs/SPRINT-PLAN-MVP-BSF.md) — Sprintfolge und Gates
+- [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — Ist-/Zielarchitektur
+- [`docs/DATABASE-CHANGE-GOVERNANCE.md`](./docs/DATABASE-CHANGE-GOVERNANCE.md) — kontrollierter Datenbankpfad
+- [`docs/ADR/`](./docs/ADR/) — Architekturentscheidungen
+- [`docs/ENTWICKLUNGSTAGEBUCH.md`](./docs/ENTWICKLUNGSTAGEBUCH.md) — Projektchronik
+- [`CHANGELOG.md`](./CHANGELOG.md) — Dashboard-Version und Änderungshistorie
 
 ## Lizenz
 

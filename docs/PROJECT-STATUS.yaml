@@ -1,5 +1,5 @@
 schemaVersion: "1.3.0"
-lastUpdated: "2026-09-21"
+lastUpdated: "2026-10-15"
 
 project:
   name: "Sysing Dashboard"
@@ -49,7 +49,7 @@ architecturePrinciples:
     rule: "Kundenidentität und Kundenscope sind providerneutral an das Systemhaus gebunden und nicht an einen Microsoft-Tenant oder anderen Provider."
 
 versions:
-  dashboard: "1.67.0"
+  dashboard: "1.68.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 17
@@ -60,12 +60,12 @@ versions:
 
 currentState:
   currentSprint: "BSF-03E"
-  currentSprintTitle: "Vertretungs- und Personensicht"
-  currentSprintStatus: "planned"
+  currentSprintTitle: "Vertretungs- und Personensicht / P3b-Restack und P5-Vorbereitung"
+  currentSprintStatus: "in-progress"
   nextSprint: "BSF-07"
   previousSprint: "BSF-03B"
   previousSprintStatus: "completed"
-  releaseReadiness: "passed"
+  releaseReadiness: "not-assessed"
   testsPassing: 1009
   qualityGates:
     typecheck: "passed"
@@ -123,7 +123,7 @@ supabase:
   environments:
     local: "provider-configured"
     preview: "provider-configured"
-    production: "verified-through-mvp-acceptance"
+    production: "bsf03e-migrations-synchronized-2026-10-14"
   auth:
     status: "implemented-and-verified"
     providers:
@@ -409,7 +409,7 @@ roadmap:
       - "Kundenausgabe ohne Namen des Leistungserbringers"
   - id: "BSF-03E"
     title: "Vertretungs- und Personensicht"
-    status: "planned"
+    status: "in-progress"
     priority: "medium"
     goal: "Customer Responsibility, Project Responsibility und Vertretung auditierbar getrennt und kombinierbar abbilden."
     dependencies:
@@ -417,6 +417,8 @@ roadmap:
     exitCriteria:
       - "Keine neue globale Rolle oder implizite Write-Rechte"
       - "Keine Gesundheitsdaten"
+      - "Eine autorisierte AP-Grundmenge nach Kunde, Owner oder Fälligkeit; UNASSIGNED sichtbar, Deputies ohne Duplikate"
+      - "P3b Exact-Head-Gates und P5-Gesamtabnahme belegt"
   - id: "BSF-03C"
     title: "Kunden-PDF und optionales Kundenpaket"
     status: "planned"
@@ -700,15 +702,16 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release; volatile report details remain CI artifacts."
 
 releaseManagement:
-  currentRelease: "1.67.0"
+  currentRelease: "1.68.0"
   stage: "preview"
-  status: "passed"
+  status: "not-assessed"
   statusBasis: >-
-    Release-Kandidat 1.65.1 hat die korrigierte read-only Lovable-Exact-Head-
-    Fresh-Refresh-Abnahme und die vollständigen GitHub-Gates erfolgreich
-    durchlaufen. Commit-bezogene CI-/Security-Aussagen werden weiterhin
-    live aus GitHub Actions bezogen und nicht als aktueller PASS in diesem
-    versionierten Manifest behauptet.
+    P3b-UI-Kandidat 1.68.0 wird auf main@39658f93fe078f00dbb6347a0fe473173eeaf069
+    restackt. GG-01 ist nach 3/3 atomar angewendeten BSF-03E-Migrationen und
+    vollständigem read-only Postflight abgeschlossen. Die Basis-Gates und der
+    Datenbanknachweis belegen nicht den neuen UI-Kandidaten; dafür bleiben
+    unabhängiges Review sowie Exact-Head-CI/Security erforderlich. Kein Release
+    oder Deploy dieses Kandidaten.
   releaseEvidence:
     - "CHANGELOG.md"
     - "docs/PROJECT-GOVERNANCE.md"
@@ -717,6 +720,7 @@ releaseManagement:
     - "docs/MVP-ACCEPTANCE-REPORT-FINAL-2026-08-24.md"
     - "docs/ROLE-ACCEPTANCE-09C-FINAL-2026-08-24.md"
     - "docs/ENTWICKLUNGSTAGEBUCH.md"
+    - "docs/BSF-03E-DATABASE-SYNC-2026-10-14.md"
     - "docs/ARCHITECTURE.md"
     - "docs/BSF-CURRENT-PRIORITIES.md"
     - "docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md"
