@@ -84,7 +84,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.23.1";
+export const DOCUMENTATION_VERSION = "1.24.0";
 /** Aktuelle Dashboard-Version. Wird zentral aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CURRENT_DASHBOARD_VERSION;
 /** Anzeigename des Dashboards für Handbuch-Footer. */
