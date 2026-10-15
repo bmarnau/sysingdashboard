@@ -5,10 +5,10 @@ IT-Systemhäuser. Es verbindet persönliche Arbeitsorganisation, Projekte,
 Arbeitspakete, Zeiten, Kundenverantwortung, AVKK und revisionsgebundene
 Leistungsnachweise in einer rollen- und mandantengeschützten Anwendung.
 
-Aktueller Entwicklungskandidat: **Dashboard 1.68.0**. Der laufende Sprint
-**BSF-03E** ergänzt die autorisierte Verantwortungsansicht um eine operative
-Arbeitspaket-Sicht. Der Sprint bleibt bis zur P5-Gesamtabnahme offen; der zuletzt
-veröffentlichte GitHub-Release ist weiterhin `v1.65.0`.
+Aktueller Entwicklungskandidat: **Dashboard 1.68.0**. **BSF-03E** mit
+Personen-, Einzelaktions- und operativer Arbeitspaket-Sicht ist nach vollständiger
+P5-Gesamtabnahme auf `main` abgeschlossen. Nächster geplanter Fachsprint ist
+**BSF-07**; der zuletzt veröffentlichte GitHub-Release bleibt `v1.65.0`.
 
 ## Funktionsumfang
 
