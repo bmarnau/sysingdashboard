@@ -9,6 +9,45 @@ import type { HelpTopic } from "@/lib/help-documentation";
  */
 export const avkkHelpTopics: HelpTopic[] = [
   {
+    id: "avkk-arbeitspaket-arbeitssicht",
+    title: "Verantwortungen – operative Arbeitspaket-Arbeitssicht",
+    category: "Fachmodell",
+    route: "/verantwortungen",
+    component: "WorkPackageWorkView",
+    keywords: [
+      "Arbeitspakete",
+      "Gruppierung",
+      "Fälligkeit",
+      "Owner",
+      "Stellvertretung",
+      "Verantwortungen",
+    ],
+    lastUpdated: "2026-10-15",
+    content: `## Einstieg
+Im Dashboard **Verantwortungen** öffnen und **Arbeitspakete** wählen. Die bisherige Personensicht bleibt unter **Personen** erreichbar. Voraussetzung ist die Berechtigung \`avkk.management.view\`; der Server prüft den tatsächlichen Kunden-/Systemhauszugriff zusätzlich.
+
+## Drei Gruppierungen derselben Arbeitspakete
+**Kunde**, **Verantwortlicher** und **Fälligkeit** zeigen dieselben freigegebenen AP. **Sortieren nach** und **Sortierrichtung** wirken innerhalb der Gruppen. Ein Gruppierungswechsel verändert den Berechtigungsbereich nicht.
+
+## Fälligkeit und Verantwortung
+Die Gruppen **Überfällig**, **Heute**, **Später** und **Ohne Fälligkeitsdatum** stammen aus dem serverseitigen Kalendervertrag mit **Europe/Berlin**. Der angezeigte Datenstand gilt für diese Berechnung. Ein fehlender Termin wird nicht geschätzt.
+
+**Verantwortlicher** bezeichnet den aktiven primären Owner. **Stellvertretung** zeigt zusätzliche aktive Deputies und erzeugt keine doppelten AP-Zeilen. Ohne aktiven Owner bleibt das AP als **Nicht zugeordnet** sichtbar. Gleichnamige Kunden oder Personen bleiben anhand ihrer Identitäten getrennt.
+
+## Filter und Aktualisieren
+Suche sowie Kunden-, Verantwortlichen-, Status- und Fälligkeitsfilter grenzen nur die bereits freigegebene Menge ein. **Nicht zugeordnet** kann gezielt gefiltert werden. **Filter zurücksetzen** entfernt die Filter und erhält Gruppierung/Sortierung. **Aktualisieren** liest die Quelle erneut und berechnet den Datenstand auf dem Server neu.
+
+## Personensicht und Einzelaktionen
+Unter **Personen** bleibt die bereits integrierte P3a-Sicht erreichbar. Berechtigte Projekt- und Teamleitungen sehen dort aktive Projekt-/Arbeitspaket-Verantwortungen und können über die vorhandenen serverseitig autorisierten Einzelaktionen einen Owner übertragen, eine Stellvertretung ergänzen oder eine Verantwortung beenden. Die AP-Arbeitssicht selbst bleibt lesend; sie eröffnet keinen zusätzlichen Schreibpfad.
+
+## Leere oder fehlgeschlagene Abfrage
+Eine leere Quelle und ein leeres Filterergebnis werden unterschieden. Beim Laden oder bei Fehlern erscheinen keine alten AP-Daten. Über **Aktualisieren** ist ein erneuter Versuch möglich.
+
+## Abnahmestand
+P3a und die serverseitigen P3b-Datenverträge sind integriert. Die operative AP-Arbeitssicht gehört zum Dashboard-Kandidaten 1.68.0. BSF-03E ist erst nach den vollständigen P5-Gates abgeschlossen; ein Kandidatenstand ist daher nicht automatisch ein veröffentlichter Release.`,
+    relatedTopics: ["avkk-management", "avkk-arbeitsplatz"],
+  },
+  {
     id: "avkk-arbeitsplatz",
     title: "Mein AVKK — persönlicher Arbeitsplatz",
     category: "Fachmodell",

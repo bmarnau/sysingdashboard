@@ -9,7 +9,26 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-09-29 · Dashboard-Version 1.67.0
+Stand: 2026-10-15 · Dashboard-Version 1.68.0
+
+## 2026-10-14/15 — GG-01 abgeschlossen und P3b auf aktuellem Main fortgesetzt
+
+Die drei bereits freigegebenen BSF-03E-Migrationen wurden über den in ADR-0035
+definierten Work-/Lovable-Connector-Pfad 3/3 atomar auf die exakt gebundene,
+vollständig von Lovable verwaltete Supabase-Datenbank angewendet. Die Migration
+History endet bei `20260929053733`. Der read-only Postflight bestätigte RLS,
+Policies, Funktionen, Trigger, Indizes und Berechtigungen; die fachlichen
+Bestandszahlen blieben unverändert. Der offizielle Advisor meldet 0 ERROR und
+weiterhin nur die zwei bekannten WARN. Issues #177 und #179 sind geschlossen.
+Der dauerhafte Nachweis steht in
+`docs/BSF-03E-DATABASE-SYNC-2026-10-14.md`.
+
+Danach wurde der P3b-UI-Kandidat aus PR #171 konfliktfrei auf den aktuellen
+`main`-Stand nach PR #183 restackt. Die vier zentralen Work-View-Suiten bestehen
+mit 27/27 Tests. README, Projektstatus, Sprintplanung und integriertes Handbuch
+werden gemeinsam auf Kandidat 1.68.0 / Handbuch 1.24.0 fortgeschrieben. Noch
+offen bleiben unabhängiges Review, Exact-Head-CI/Security und die vollständige
+P5-Abnahme; kein Release oder Deploy wird dadurch vorweggenommen.
 
 ## 2026-10-13 — Lovable-verwaltete DB: kontrollierter Connector-Fallback
 
@@ -65,9 +84,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | BSF-03E P3a Personensicht und Vertretung ist als Release-Kandidat 1.67.0 integriert; die Exact-Head-Abnahme bleibt maßgeblich. Security #1247 und CI #1252 vollständig PASS, Security Advisor BASELINE_ONLY ohne neue BSF-03B-Findings. Lovable Exact-Head-Visualprüfung bleibt transparent als Plattformgrenze NOT EVIDENCED. |
+| Aktueller Stand     | BSF-03E P3a und die P3b-Server-/Datenbankverträge sind integriert; GG-01 ist mit 3/3 Migrationen und grünem Postflight abgeschlossen. Der P3b-UI-Kandidat 1.68.0 wird auf aktuellem `main` restackt und bleibt bis Exact-Head-Gates und P5 offen. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | BSF-03E / #63: Vertretungs- und Personensicht auf Basis der vorhandenen Responsibility-/Scope-Verträge. |
+| Nächster Nutzen     | BSF-03E / #63: operative AP-Arbeitssicht integrieren und anschließend P5-Gesamtabnahme ausführen. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
@@ -1116,3 +1135,26 @@ Governance dieses Maintenance Windows:
 - Merge: **NEIN**,
 - Deploy: **NEIN**,
 - fehlender Lovable-Nachweis bleibt ausdrücklich **offen**.
+
+## 2026-10-04 – BSF-03E P3b operative AP-Arbeitssicht (Kandidat 1.68.0)
+
+Basis: GitHub main b5acf3d nach Merge von PR #170; Post-Merge CI 37183668646 und Security 37183668658 PASS. Die bestehende Verantwortungsroute wurde um eine lesende AP-Arbeitssicht erweitert. Alle drei Gruppierungen verwenden denselben serverseitig autorisierten Read Contract; Fälligkeit und Datenstand behalten die Kalenderbasis Europe/Berlin. Sortierung/Filter bleiben unabhängig, Owner/Deputy/UNASSIGNED sichtbar. Gleichnamige Kunden und Personen werden anhand stabiler IDs getrennt gruppiert.
+
+Domain-/Hook-Verträge 16/16 und UI-Verträge 6/6 PASS; Typecheck/Build PASS, ESLint 0 Fehler mit bestehender Warnungsbaseline. Die lokale Vollsuite unter TZ=UTC bleibt mit zwei unveränderten API-Status-Harness-Timeouts ausdrücklich nicht vollständig grün. Browserabnahme 10/10 PASS, 1280/640/390 ohne Overflow und Axe ohne Verstöße; gezielte Regression 46/46 PASS und statische Docs-/Manifest-/RBAC-/Golden-/Security-Checks PASS. Exact-Head-Abnahme und Final-Head-Signatur bleiben gesonderte Gates. Keine Schema-/RLS-/RBAC-/Provideränderung, kein Merge/Deploy dieses Kandidaten.
+
+Dauerhafter Plan: docs/superpowers/plans/2026-10-04-bsf-03e-p3b-work-view-ui.md. Tatsächliche Ergebnisse und offene Gates: docs/BSF-03E-P3B-UI-VERIFICATION-2026-10-04.md. P5/BSF-03E-Gesamtabnahme, Windows-Runtime und Lovable-Preview bleiben offen.
+
+## 2026-10-10 – BSF-03E P3b: Wiederaufnahme und echte Sessiongrenze
+
+Der vorhandene UI-Kandidat wurde übernommen und unabhängig geprüft. Eine echte
+Lücke zwischen asynchronem Profilread und AP-Hook wurde mit fünf Tests der
+unveränderten Produktionshooks RED reproduziert und über sofortige
+Identitätsinvalidierung sowie Read-Generationen behoben. 25 gezielte Tests und
+10 Playwright-Fälle bestehen; Responsive 1280/640/390 und Axe bestehen. Die
+Vollsuite liefert 1076 PASS / 3 externe API-Timeouts / 4 TODO. Der unveränderte
+main-Vergleich reproduziert zwei dieser Timeouts. Die Vollsuite wird nicht als
+grün behauptet.
+
+Aktueller Nachweis: `docs/BSF-03E-P3B-UI-REVIEW-2026-10-10.md`. Draft-PR,
+Exact-Head-CI/Security und Signaturnachweis bilden das nächste Gate. Kein Merge,
+kein Deploy; Windows-/Lovable-/P5-Abnahme bleiben offen.

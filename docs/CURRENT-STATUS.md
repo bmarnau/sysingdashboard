@@ -1,6 +1,17 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-09-22
+Stand: 2026-10-15
+
+## Aktueller BSF-03E-Wiederanlaufpunkt
+
+**P3b UI/E2E-Kandidat 1.68.0 auf aktuellem Main; BSF-03E insgesamt weiterhin offen.**
+GitHub-Basis: `main@39658f93fe078f00dbb6347a0fe473173eeaf069` nach Integration von ADR-0035 über PR #183. P3a und die serverseitigen P3b-0/P3b-1-Verträge einschließlich PR #170 sind integriert.
+
+Die neue AP-Arbeitssicht auf `/verantwortungen` verwendet dieselbe serverseitig autorisierte AP-Menge für alle drei Gruppierungen. Sie ist konfliktfrei aus PR #171 auf die aktuelle Main-Basis restackt; die vier zentralen Work-View-Suiten bestehen mit 27/27 Tests. Die frühere unabhängige Review und die Korrektur der tatsächlichen Profil-/Sessiongrenze stehen in `docs/BSF-03E-P3B-UI-REVIEW-2026-10-10.md`; der ausführbare Plan liegt unter `docs/superpowers/plans/2026-10-04-bsf-03e-p3b-work-view-ui.md`.
+
+GG-01 ist abgeschlossen: Die drei BSF-03E-Migrationen wurden 3/3 atomar auf die Lovable-verwaltete Supabase-Datenbank angewendet; History, RLS/Policies, Funktionen, Trigger, Indizes und Berechtigungen sind im Postflight bestätigt. Nachweis: `docs/BSF-03E-DATABASE-SYNC-2026-10-14.md`.
+
+P3b ist noch nicht gemergt/deployt. Exact-Head-CI/Security, unabhängiges Abschlussreview und P5-Gesamtabnahme stehen noch aus. Die nachfolgenden datierten Abschnitte dokumentieren frühere Evidenzstände.
 
 ## Zweck
 
@@ -25,15 +36,16 @@ Für den laufenden BSF-Ausbau gelten zusätzlich:
 4. `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` — abgeschlossener KIOSK-02-Nachweis,
 5. `docs/BSF-03A-CLOSURE-2026-09-14.md` — abgeschlossener BSF-03A-Nachweis,
 6. `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` — abgeschlossener KIOSK-01-Nachweis,
-7. `docs/SPRINT-PLAN-MVP-BSF.md` — operative Sprintfolge,
-8. `docs/BSF-01-ARCHITECTURE-BASELINE.md` — Architektur-Baseline,
-9. `docs/ADR/0029-systemhouse-customer-scope.md` — kanonischer Systemhaus-/Customer-Scope,
-10. `docs/BSF-CONCEPT-REGISTER.md` — gesicherte fachliche Entscheidungen,
-11. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
-12. `docs/BSF-03-CLOSURE-2026-09-13.md` — Abschluss Kundenverantwortung/Kundensicht,
-13. `docs/BSF-03D-CLOSURE-2026-09-13.md` — Abschluss Arbeitspaket-Kategorien,
-14. `docs/BSF-03B-VERIFICATION-2026-09-21.md` — DB-/Security-/Regressionsnachweis für BSF-03B,
-15. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
+7. `docs/BSF-03E-DATABASE-SYNC-2026-10-14.md` — abgeschlossener GG-01-Datenbanknachweis,
+8. `docs/SPRINT-PLAN-MVP-BSF.md` — operative Sprintfolge,
+9. `docs/BSF-01-ARCHITECTURE-BASELINE.md` — Architektur-Baseline,
+10. `docs/ADR/0029-systemhouse-customer-scope.md` — kanonischer Systemhaus-/Customer-Scope,
+11. `docs/BSF-CONCEPT-REGISTER.md` — gesicherte fachliche Entscheidungen,
+12. `docs/BSF-02B-IMPLEMENTATION.md` — umgesetzte Systemhouse-Membership-/Customer-Access-Grenze,
+13. `docs/BSF-03-CLOSURE-2026-09-13.md` — Abschluss Kundenverantwortung/Kundensicht,
+14. `docs/BSF-03D-CLOSURE-2026-09-13.md` — Abschluss Arbeitspaket-Kategorien,
+15. `docs/BSF-03B-VERIFICATION-2026-09-21.md` — DB-/Security-/Regressionsnachweis für BSF-03B,
+16. `docs/CODEX-GIT-CI-RULE.md` — projektweite Minimal-Fix-, Eskalations- und Git-/CI-Werkzeugregel.
 
 Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-/PARTIAL-Aussagen darin beschreiben den damaligen Prüfzeitpunkt und werden durch die oben genannten laufenden Quellen fortgeschrieben.
 
@@ -41,7 +53,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Version: `1.66.0` ist auf `main` integriert. Der veröffentlichte GitHub-Release bleibt bis zur separaten Release-Veröffentlichung `v1.65.0`.
+- Dashboard-Kandidat: `1.68.0`; P3b wird noch geprüft. Der veröffentlichte GitHub-Release bleibt bis zur separaten Release-Veröffentlichung `v1.65.0`.
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts
@@ -56,7 +68,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 - BSF-KIOSK-02 / PR #147 ist nach vollständiger Abnahme auf `main` gemergt; Release `v1.65.0` ist veröffentlicht.
 - BSF-03B / Issue #107 ist **FINAL DONE und gemergt**. PR #149 wurde als GitHub-signierter Squash-Commit `12b37be8ce8e5e8e3668d6622ace13872a7f3c48` nach `main` integriert. Der zuvor vollständig grüne Exact-Head und der Merge-Commit besitzen denselben Git-Tree `25ae707e08726f6d357c940a983afc14552d5b03`.
 - Der erste Post-Merge-CI am 22.09. deckte einen **kalendertagsabhängigen E2E-Harness-Escape** auf: die BSF-03B-Fixtures endeten fest am 21.09., während der Produktdefault korrekt „aktueller Monat bis heute“ verwendete. Dadurch wurden am 22.09. korrekt erzeugte Fixture-Snapshots beim Test-Refresh aus der Historie gefiltert. PR #152 korrigierte ausschließlich die Test-Referenzzeit; Produktlogik, Assertions, Expected Results, DB, RBAC und RLS blieben unverändert. Der Fix ist als GitHub-signierter Commit `1ca8f0937a7217de74050061ae39c9c3f028784c` auf `main`; der PR-Gate-Lauf bestätigte **110/110 Playwright PASS**.
-- Aktueller Sprint ist **BSF-03E / #63 — Vertretungs- und Personensicht**. P0 beginnt mit Scope-Hardening der AVKK-Project-/WorkPackage-Verantwortung; Personensicht und Mutationen folgen erst nach der serverseitigen Mandanten-/Customer-Scope-Absicherung.
+- Aktueller Sprint ist **BSF-03E / #63**. P0/P1/P2/P3a und die P3b-Datenverträge sind integriert; aktuell wird der P3b-UI/E2E-Kandidat abgenommen. P5 bleibt offen.
 - Patch 1.65.1 ergänzt die sichtbare Versions-/Datumsangabe sowie den AQGS-evidenzkalibrierten Systemstatus und ist vollständig abgenommen. Der korrigierte read-only Lovable-Exact-Head-Retest bestätigt Fresh-Refresh, Fail-closed-Verhalten, beide Zielauflösungen und Tree-Integrität; der frühere Fresh-Refresh-FAIL war ein Harness-False-Negative. Commitbezogene CI-/Security-Aussagen werden weiterhin ausschließlich aus den jeweiligen GitHub-Actions-Runs abgeleitet.
 
 ## Aktueller BSF-Stand
@@ -352,11 +364,11 @@ Die kanonische Kundenidentität bleibt `(systemhouseId, customerId)`; `systemhou
 
 ## Dokumentationszustand
 
-- `docs/ENTWICKLUNGSTAGEBUCH.md` ist bis zum BSF-03A-Dokumentations-/Handbuch-Audit vom 2026-09-18 fortgeschrieben.
-- `docs/PROJECT-STATUS.yaml`, `docs/BSF-CURRENT-PRIORITIES.md`, `roadmap.md` und dieses Dokument bilden gemeinsam den aktuellen BSF-03A-Finalverifikationsstand ab.
+- `docs/ENTWICKLUNGSTAGEBUCH.md` ist bis zum GG-01-Abschluss und P3b-Restack vom 2026-10-14 fortgeschrieben.
+- `README.md`, `docs/PROJECT-STATUS.yaml`, `docs/BSF-CURRENT-PRIORITIES.md`, `docs/SPRINT-PLAN-MVP-BSF.md`, `roadmap.md` und dieses Dokument bilden gemeinsam den aktuellen BSF-03E-Kandidatenstand ab.
 - `docs/BSF-KIOSK-01-CLOSURE-2026-09-14.md` dokumentiert den abgeschlossenen KIOSK-01-Sprint; PR #141 ist auf `main`.
 - `docs/BSF-03A-CLOSURE-2026-09-14.md` dokumentiert den vollständig abgenommenen und gemergten BSF-03A-Sprint; `docs/BSF-KIOSK-02-CLOSURE-2026-09-19.md` ist der laufende KIOSK-02-Abnahmenachweis.
-- Benutzerhandbuch und kontextsensitive Hilfe stehen auf Version **1.23.1**; Projektcontrolling, KIOSK-02 Hybrid-/Quellenstatus, aktuelle RBAC-/Kiosk-Rechte, Kundenverantwortung, der heutige Supabase-MVP-Betriebsmodus und die AQGS-konforme Systemstatus-Evidenzlogik sind synchronisiert.
+- Benutzerhandbuch und kontextsensitive Hilfe stehen auf Version **1.24.0**; P3a-Einzelaktionen, P3b-Arbeitssicht, Projektcontrolling, KIOSK-02 Hybrid-/Quellenstatus, aktuelle RBAC-/Kiosk-Rechte, Kundenverantwortung, der heutige Supabase-MVP-Betriebsmodus und die AQGS-konforme Systemstatus-Evidenzlogik sind synchronisiert.
 - `SYSING-001` existiert als Living Document `docs/SYSING-001_Sysing-Dashboard-Produktuebersicht_V0.2.1.md` mit gemeinsamer Markdown-Quelle für PDF/Word.
 - SYSING-001 wird in BSF-DOC-02 kontrolliert aktualisiert und TDF-konform abgenommen; es wird keine zweite Dokumentquelle erzeugt.
 - BSF-DOC-03 macht die freigegebene SYSING-001-Fassung read-only aus dem Board erreichbar.

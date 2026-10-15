@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile, UserRole, UserStatus } from "@/lib/user-management";
 import { resolveProfileDisplayName } from "@/lib/user-display-name";
@@ -18,19 +19,37 @@ import { useRefreshSignal } from "@/hooks/useRefreshSignal";
  */
 export function useCurrentUser(): UserProfile | null {
   const [user, setUser] = useState<UserProfile | null>(null);
+  const publishedUserId = useRef<string | null>(null);
   // Zentraler Refresh liest Profil und Rolle erneut — Quelle bleibt die Session.
   const refreshGeneration = useRefreshSignal();
 
   useEffect(() => {
     let cancelled = false;
+    let loadGeneration = 0;
 
-    async function load() {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const authUser = sessionData.session?.user;
+    function publish(nextUser: UserProfile | null) {
+      if (cancelled) return;
+      publishedUserId.current = nextUser?.id ?? null;
+      setUser(nextUser);
+    }
+
+    async function load(observedSession?: Session | null) {
+      const generation = ++loadGeneration;
+      const sessionData =
+        observedSession === undefined
+          ? (await supabase.auth.getSession()).data.session
+          : observedSession;
+      if (cancelled || generation !== loadGeneration) return;
+      const authUser = sessionData?.user;
       if (!authUser) {
-        if (!cancelled) setUser(null);
+        publish(null);
         return;
       }
+
+      // Keep mounted state for a revalidation of the same account, but hide
+      // the previous account before any profile or permission read can finish.
+      if (publishedUserId.current && publishedUserId.current !== authUser.id) publish(null);
+
       const [{ data: profile }, { data: roles }] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", authUser.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", authUser.id),
@@ -52,8 +71,8 @@ export function useCurrentUser(): UserProfile | null {
         updated_at: new Date().toISOString(),
       };
 
-      if (cancelled) return;
-      setUser({
+      if (cancelled || generation !== loadGeneration) return;
+      publish({
         id: p.id,
         firstName: p.first_name ?? "",
         lastName: p.last_name ?? "",
@@ -75,9 +94,16 @@ export function useCurrentUser(): UserProfile | null {
     }
 
     void load();
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
-        void load();
+        const observedUserId = session?.user.id ?? null;
+        if (
+          event === "SIGNED_OUT" ||
+          (publishedUserId.current !== null && publishedUserId.current !== observedUserId)
+        ) {
+          publish(null);
+        }
+        void load(session);
       }
     });
     return () => {

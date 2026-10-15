@@ -37,6 +37,45 @@ function repository(rows: readonly WorkPackageWorkViewSourceRow[]): WorkPackageW
 }
 
 describe("BSF-03E P3b-1 work package work view", () => {
+  it("keeps distinct customer identities separate even when their names match", async () => {
+    const rows = await new WorkPackageWorkViewService(
+      repository([sourceRow(), sourceRow({ workPackageId: "WP-2", customerId: CUSTOMER_B })]),
+    ).list(REFERENCE);
+    const groups = selectWorkPackageWorkView(rows, {
+      groupBy: "customer",
+      sortBy: "due",
+      sortDirection: "asc",
+    });
+    expect(groups).toHaveLength(2);
+    expect(new Set(groups.map((group) => group.key)).size).toBe(2);
+    expect(groups.flatMap((group) => group.rows.map((row) => row.workPackageId)).sort()).toEqual([
+      "66666666-6666-4666-8666-666666666666",
+      "WP-2",
+    ]);
+  });
+
+  it("keeps distinct owner identities separate even when their names match", async () => {
+    const rows = await new WorkPackageWorkViewService(
+      repository([
+        sourceRow({
+          responsibilities: [{ personId: ADA, displayName: "Alex Beispiel", role: "owner" }],
+        }),
+        sourceRow({
+          workPackageId: "WP-2",
+          responsibilities: [{ personId: BOB, displayName: "Alex Beispiel", role: "owner" }],
+        }),
+      ]),
+    ).list(REFERENCE);
+    const groups = selectWorkPackageWorkView(rows, {
+      groupBy: "owner",
+      sortBy: "due",
+      sortDirection: "asc",
+    });
+    expect(groups).toHaveLength(2);
+    expect(groups.map((group) => group.key)).toEqual([ADA, BOB]);
+    expect(groups.map((group) => group.label)).toEqual(["Alex Beispiel", "Alex Beispiel"]);
+  });
+
   it("derives Berlin due groups across summer, winter, and UTC day boundaries", async () => {
     const service = new WorkPackageWorkViewService(
       repository([
@@ -176,7 +215,7 @@ describe("BSF-03E P3b-1 work package work view", () => {
         groupBy: "owner",
         sortBy: "title",
         sortDirection: "asc",
-      }).map((group) => group.key),
+      }).map((group) => group.label),
     ).toEqual(["Ada Beispiel", "UNASSIGNED"]);
   });
 });

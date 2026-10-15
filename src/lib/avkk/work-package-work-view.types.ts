@@ -58,6 +58,7 @@ export interface WorkPackageWorkViewSelection {
 
 export interface WorkPackageWorkViewGroup {
   key: string;
+  label: string;
   rows: readonly WorkPackageWorkViewRow[];
 }
 
