@@ -3,7 +3,7 @@
 Visualisierung (abgeleitete TIECS-Statussicht): `docs/status-board.html`  
 Maßgebliche Fakten bleiben in Roadmap, Projektstatus, Architektur, Entwicklungstagebuch und PR-/CI-Evidenz.
 
-## BSF-03E P3b – operative AP-Arbeitssicht / Kandidat 1.68.0
+## BSF-03E P3b/P5 – operative AP-Arbeitssicht / abgeschlossen
 
 - [x] Post-Merge-Gates der P3b-1-Hardening-Basis `b5acf3d` geprüft: CI/Security PASS
 - [x] Bestehenden autorisierten AP-Read-Vertrag für die UI verwenden
@@ -12,14 +12,15 @@ Maßgebliche Fakten bleiben in Roadmap, Projektstatus, Architektur, Entwicklungs
 - [x] Owner/Deputy/UNASSIGNED sowie Datenstand aus dem Serververtrag anzeigen
 - [x] GG-01: drei BSF-03E-Migrationen 3/3 atomar angewendet; Postflight/Advisor grün
 - [x] PR-#171-Inhalt konfliktfrei auf `main@39658f93` restackt; zentrale Suiten 27/27 PASS
-- [ ] P3b-Kandidatenabnahme und signierter Final-Head vollständig belegen
-- [ ] Separater Merge-Gate und Post-Merge-Abnahme
-- [ ] P5-Gesamtabnahme; BSF-03E bleibt offen
+- [x] P3b-Kandidatenabnahme und signierter Final-Head vollständig belegt
+- [x] Separater Merge-Gate und Post-Merge-Abnahme PASS
+- [x] P5-Gesamtabnahme; BSF-03E abgeschlossen
 
 Plan: `docs/superpowers/plans/2026-10-04-bsf-03e-p3b-work-view-ui.md`.
 Nachweise: `docs/BSF-03E-P3B-UI-VERIFICATION-2026-10-04.md`,
 `docs/BSF-03E-P3B-UI-REVIEW-2026-10-10.md` und
-`docs/BSF-03E-DATABASE-SYNC-2026-10-14.md`.
+`docs/BSF-03E-DATABASE-SYNC-2026-10-14.md`. Abschluss:
+`docs/BSF-03E-CLOSURE-2026-10-15.md`.
 
 ## BSF-KIOSK-01 (#135) Info-Kiosk Demo-Pilot — DONE
 
@@ -56,7 +57,10 @@ Die Kiosk-Migrationen wurden kontrolliert auf der maßgeblichen Sysingdashboard-
 
 ### Aktueller interner Schritt
 
-BSF-03A und BSF-KIOSK-02 sind vollständig abgenommen und auf `main` integriert. **BSF-03B / #107 — Teamlead-Leistungsnachweis V1** ist FINAL DONE. Funktionaler Abschluss-Head `ffbf3641c`: Security #1247 und CI #1252 vollständig PASS; Security Advisor BASELINE_ONLY ohne neue BSF-03B-Findings. Die Lovable Exact-Head Visual Preview bleibt transparent als Plattformgrenze NOT EVIDENCED. Nächster Sprint ist **BSF-03E / #63**.
+BSF-03A, BSF-KIOSK-02, BSF-03B und BSF-03E sind vollständig abgenommen und auf
+`main` integriert. BSF-03E endete mit PR #185 und vollständiger P5-Abnahme;
+P4-Bulk bleibt optional und nicht freigegeben. Nächster geplanter Fachsprint ist
+**BSF-07 / #140**.
 
 ---
 
@@ -118,7 +122,8 @@ BSF-03A und BSF-KIOSK-02 sind vollständig abgenommen und auf `main` integriert.
 
 ### Danach
 
-**BSF-03E / #63 — NÄCHSTER SPRINT** → BSF-07 / #140 → BSF-KIOSK-03 / #137
+**BSF-03E / #63 — DONE** → **BSF-07 / #140 — NÄCHSTER FACHSPRINT** →
+BSF-KIOSK-03 / #137
 
 ---
 

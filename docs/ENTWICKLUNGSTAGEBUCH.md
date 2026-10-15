@@ -11,7 +11,28 @@ dieser Datei.
 
 Stand: 2026-10-15 · Dashboard-Version 1.68.0
 
-## 2026-10-14/15 — GG-01 abgeschlossen und P3b auf aktuellem Main fortgesetzt
+## 2026-10-15 — BSF-03E P5-Gesamtabnahme abgeschlossen
+
+PR #185 wurde als GitHub-verifizierter Squash-Commit
+`008c798af1c6901c23526eaab1cf1b8e0242676a` nach `main` gemergt. Ein
+unabhängiger Review schloss zuvor eine Regression bei der Revalidierung
+desselben Kontos; der UI-Zustand bleibt nun montiert, während Kontowechsel,
+Signout und überholte Antworten weiterhin fail-closed behandelt werden.
+
+Exact-Head-CI #1403 und Security #1401 sowie Post-Merge-CI #1404 und Security
+#1402 sind vollständig PASS, einschließlich Schema Drift, Backend, API,
+RBAC/Security, Import/Export, Backup/Restore, Production Build, Playwright,
+Accessibility, Technical Debt und Abschlussgate. Lovable bestätigte read-only
+den unveränderten Supabase-Stack bis Migration `20260929053733`, RLS, Policies,
+Funktionen, Trigger, Index und Due-Projektion.
+
+Damit ist BSF-03E nach P5 abgeschlossen. P4-Bulk bleibt bewusst optional und
+nicht freigegeben. Handbuch 1.24.1 und alle laufenden Statusflächen wurden
+synchronisiert. Es erfolgte kein Release und kein Deployment; nächster
+geplanter Fachsprint ist BSF-07. Abschlussnachweis:
+`docs/BSF-03E-CLOSURE-2026-10-15.md`.
+
+## 2026-10-14/15 — Zwischenstand: GG-01 und P3b-Restack
 
 Die drei bereits freigegebenen BSF-03E-Migrationen wurden über den in ADR-0035
 definierten Work-/Lovable-Connector-Pfad 3/3 atomar auf die exakt gebundene,
@@ -26,9 +47,9 @@ Der dauerhafte Nachweis steht in
 Danach wurde der P3b-UI-Kandidat aus PR #171 konfliktfrei auf den aktuellen
 `main`-Stand nach PR #183 restackt. Die vier zentralen Work-View-Suiten bestehen
 mit 27/27 Tests. README, Projektstatus, Sprintplanung und integriertes Handbuch
-werden gemeinsam auf Kandidat 1.68.0 / Handbuch 1.24.0 fortgeschrieben. Noch
-offen bleiben unabhängiges Review, Exact-Head-CI/Security und die vollständige
-P5-Abnahme; kein Release oder Deploy wird dadurch vorweggenommen.
+werden gemeinsam auf Kandidat 1.68.0 / Handbuch 1.24.0 fortgeschrieben. Zu
+diesem Zwischenstand blieben Review, Exact-Head-CI/Security und P5 offen; der
+spätere Abschluss desselben Tages ist im vorstehenden Abschnitt dokumentiert.
 
 ## 2026-10-13 — Lovable-verwaltete DB: kontrollierter Connector-Fallback
 
@@ -84,9 +105,9 @@ Leitplanken von Anfang an:
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Was ist entstanden? | Ein produktionsnahes Projekt-Dashboard mit Authentifizierung, Rollenmodell, AVKK, Backup/Restore, Import/Export, Reporting und integriertem Handbuch.   |
 | Zeitraum            | Mai 2026 bis September 2026                                                                                                                             |
-| Aktueller Stand     | BSF-03E P3a und die P3b-Server-/Datenbankverträge sind integriert; GG-01 ist mit 3/3 Migrationen und grünem Postflight abgeschlossen. Der P3b-UI-Kandidat 1.68.0 wird auf aktuellem `main` restackt und bleibt bis Exact-Head-Gates und P5 offen. |
+| Aktueller Stand     | BSF-03E ist mit P0–P3b auf `main` integriert und nach Exact-Head-, Post-Merge- sowie Lovable-DB-Nachweis in P5 abgeschlossen. Dashboard 1.68.0 bleibt Kandidat; kein Release oder Deploy. |
 | Größte Hürden       | Der operative CRUD-Bestand ist noch teilweise user-scoped lokal; die Shared Projection trägt bereits Mehrbenutzer-Lesesichten, die vollständige Zentralisierung bleibt BSF-04. |
-| Nächster Nutzen     | BSF-03E / #63: operative AP-Arbeitssicht integrieren und anschließend P5-Gesamtabnahme ausführen. |
+| Nächster Nutzen     | BSF-07 / #140: Managementcockpit 2 auf den bestehenden Customer-, Responsibility- und Leistungsgrundlagen vorbereiten. |
 
 Das Projekt ist von einer einzelnen Auswertungsseite zu einer strukturierten
 Anwendung mit Anmeldung, Rechteverwaltung, AVKK, Prüfpfad und automatisierter
