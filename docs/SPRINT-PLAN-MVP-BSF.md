@@ -1,5 +1,7 @@
 # Sysing Dashboard — Operative Sprintplanung MVP → BSF → Integration
 
+> **Historischer Detailverlauf:** Dieses Dokument bewahrt die bisherige Kiosk-first-Sprintplanung als Traceability. Für die aktuelle operative Steuerung bis zum Golden Gate gilt [`docs/GOLDEN-GATE-DELIVERY-PLAN-2026-10-16.md`](./GOLDEN-GATE-DELIVERY-PLAN-2026-10-16.md).
+
 Stand: 2026-10-15
 Status: **verbindliche operative Kiosk-first-Planung; BSF-03E DONE / P5 PASS, BSF-07 als nächster Fachsprint**
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`
