@@ -201,3 +201,49 @@ Die Veröffentlichung erhält **ein eigenes** Go/No-Go nach vollständiger Kandi
 - Wenn GitHub-Dokumentations-/Planungscommit unsigned bleibt: **nicht mergen**. Codex muss den Tree im signierten Kandidaten übernehmen und CI/Security für den neuen Exact Head bestätigen.
 
 **Erfolgskriterium:** Nicht die Anzahl geschlossener Tickets, sondern die Zahl nachweislich nutzbarer, sicherer und überprüfbarer Nutzerpfade wächst.
+## 10. Verbindlicher Arbeitsmodus: Codex-Kopieraufträge und Ergebnisrückgabe
+
+**Vereinbarung vom 16.10.2026:** Der Nutzer führt von ChatGPT vorbereitete **kopierfertige Codex-Aufträge** in seiner lokalen Codex-Umgebung aus und spielt den vollständigen Ergebnisbericht in den Chat zurück. Dies ist der bevorzugte operative Ausführungsweg, solange ChatGPT keinen direkten Codex-Runner besitzt. Der Nutzer übernimmt dabei **nicht** die fachliche Fehlerdiagnose, Git-/CI-Reparatur oder Qualitätsbewertung.
+
+**Ablauf je Auftrag (kein unnötiger Zwischenstopp):**
+
+1. **ChatGPT steuert:** Es prüft vor jedem Auftrag den aktuellen GitHub-\`main\`-SHA, PR-/Issue-Status und ggf. neue Lovable-/CI-Ergebnisse. Es liefert **genau einen** vollständigen Auftrag \`CODEX-GG-L<n>-<nn>\` als zusammenhängenden Kopierblock mit Ziel, Ausgangspunkt, Dateien/Scope, Schritten, Test-/Sicherheitsgrenzen, Abnahme und Ergebnisformat. Bei unabhängigen, nicht kollidierenden Aufgaben darf ausdrücklich eine kleine Parallelgruppe genannt werden.
+2. **Nutzer übergibt:** Der Nutzer kopiert den Auftrag in Codex am vorgesehenen lokalen Workspace \`C:\Users\bmarn\OneDrive\HTML\sysingdashboard\`. Er sendet anschließend **den von Codex ausgegebenen Bericht** (oder den Fehler-/Blockertext) und ggf. PR-Link hierher zurück. Keine Schlüssel, Tokens, Passwörter, Service-Role-Keys oder produktive Kundendaten übermitteln.
+3. **Codex setzt um:** Codex kontrolliert den wirklichen lokalen Checkout, Remotes, sauberen Worktree und Start-SHA. Bei OneDrive-/Windows-Blockern einen isolierten Worktree außerhalb OneDrive nutzen; fremde Änderungen unangetastet lassen. Kleine, testgetriebene Änderungen (RED → GREEN) mit signierten/verifizierbaren Commits auf Nicht-\`main\`-Branches, notwendige gezielte Prüfungen plus Exact-Head-CI/Security. Kein eigenmächtiger Merge, Publish, Release, produktiver DB-Write oder Regel-Bypass. Fehlende Signierung führt zu \`BLOCKED_SIGNING\`, nicht zu einem unsignierten Abkürzungs-Merge.
+4. **ChatGPT prüft unabhängig:** Rückgabe gegen GitHub-Diff, Commit/Signatur, Exact-Head CI/Security, Dokumentations- und Fachvertrag sowie Lovable-Kandidaten-/Browser-Evidenz abgleichen. Das Ergebnis in #175 und betroffenen Tickets nachführen: \`PASS\`, \`PARTIAL\` oder \`BLOCKED\` jeweils **mit** Belegen. Erst danach den **nächsten** Codex-Kopierauftrag liefern, ohne dass der Nutzer die neue Arbeit jedes Mal erneut anstoßen muss.
+5. **Lovable ergänzt gezielt:** ChatGPT beauftragt UI-/Bedien-/Browserarbeit selbstständig **nur in isolierten, eindeutig einem GitHub-Kandidaten zugeordneten Varianten**. Der Nutzer muss keine Lovable-Prompts übertragen. Ausreichende Credits dienen der konkreten Nutzungsabnahme, nicht zusätzlichen unverbindlichen Prototypen. Kein stiller Edit am produktiven Hauptprojekt.
+
+**Jeder Codex-Auftrag erhält diesen festen Aufbau:**
+
+- \`PROMPT_ID\`, \`ZIEL / NUTZERNUTZEN\`, \`REPOSITORY / BASE_SHA / ISSUE_PR\`.
+- \`VORAUSSETZUNGEN\` und \`ERLAUBTE DATEIEN / NICHT-SCOPE\`.
+- \`SCHRITT 1 ANALYSE → SCHRITT 2 TEST RED → SCHRITT 3 MINIMALFIX/GREEN → SCHRITT 4 GATES → SCHRITT 5 DOKUMENTATION / PR\`.
+- \`ABNAHMEKRITERIEN\` und \`STOPPREGELN\` (keine Tests umdeuten, keine Security-Grenzen umgehen, 15–20-Minuten-Eskalation bei einem Kleinfehler ohne klare Ursache).
+- \`ERGEBNISFORMAT\` in einer maschinenlesbaren, textuell kopierbaren Kurzfassung.
+
+**Rückgabeformat von Codex (ohne Geheimnisse):**
+
+\`\`\`text
+PROMPT_ID =
+STATUS = PASS|PARTIAL|BLOCKED
+BASE_SHA =
+BRANCH =
+FINAL_SHA =
+SIGNED_VERIFIED = YES|NO|BLOCKED
+CHANGED_FILES =
+RED_TEST =
+GREEN_TEST =
+TYPECHECK_LINT_FORMAT_DOCS =
+CI_EXACT_HEAD =
+SECURITY_EXACT_HEAD =
+PR_URL =
+LOVABLE_VARIANT =
+PREVIEW_EVIDENCE =
+PUBLISHED = NO
+BLOCKERS =
+NEXT_RECOMMENDATION =
+\`\`\`
+
+ChatGPT darf \`PASS\` nur aus geprüften Nachweisen ableiten. Wenn Codex \`BLOCKED\` meldet, liefert ChatGPT nach Ursachensichtung einen **gezielten Folgeauftrag** statt einen unkontrollierten neuen Sprintfächer. Auch ein teilweiser Bericht ist willkommen; fehlende Belege bleiben als \`NOT_VERIFIED\` offen. Die Codex-/ChatGPT-Übergabe wird **nicht als autonomer Hintergrundlauf** dargestellt.
+
+**Startauftrag:** \`CODEX-GG-L0-01\` repariert den auf PR #188 isolierten Prettier-Fehler an \`docs/GOLDEN-GATE-DELIVERY-PLAN-2026-10-16.md\` und schafft einen signierten, CI-/Security-prüfbaren PR-Kandidaten, ohne den bestehenden unsignierten PR-Branch per Force-Push zu überschreiben. Danach P0-Integration aus #176 und L0-Auth-Smoke getrennt bearbeiten. Der zuletzt bekannte \`main\`-Ausgangspunkt \`601874ec8684450b2ec6f7fe29e2a2c4e1ffe1e8\` wird bei Arbeitsbeginn neu verifiziert.
