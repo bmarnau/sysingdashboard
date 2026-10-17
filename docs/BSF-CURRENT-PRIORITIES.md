@@ -45,7 +45,7 @@ Der Info-Kiosk-Demo-Pilot ist mit PR #141 nach `main` integriert. Post-Merge Sec
 Der Goldene Datensatz V1 ist die versionierte, vollständig synthetische und deterministische Referenzbasis für BSF-03A:
 
 - `schemaVersion = sysing.golden.v1`,
-- `datasetVersion = 1.0.0`,
+- `datasetVersion = 1.1.0`,
 - Referenzzeit `2026-09-14T00:00:00Z`,
 - 2 Kunden, 3 Projekte, 5 Arbeitspakete, 8 Tätigkeiten,
 - 25.0 h gesamt, 20.0 h billable, 5.0 h non-billable, 80.0 % Billable-Quote.
@@ -172,7 +172,7 @@ BSF-10 KI-/Agenten-Labor ist nicht mehr zwingender Bestandteil des internen Haup
 
 ### GDS-01 — Goldener Datensatz (#142)
 
-- `sysing.golden.v1` / Dataset `1.0.0`,
+- `sysing.golden.v1` / Dataset `1.1.0`,
 - feste Referenzzeit und stabile synthetische IDs,
 - kanonische Systemhouse-/Customer-/Project-/WorkPackage-/Activity-/Reference-Data-Fixtures,
 - unabhängige Expected Results,

@@ -7,7 +7,7 @@
 **Goal:** Das definierte Golden Gate mit einem vollständig verwendbaren, sicheren, dokumentierten und anhand synthetischer Daten demonstrierbaren Sysing Dashboard erreichen.
 **Architecture:** Bestehende Domänen-/Read-Modelle und Supabase-RLS-Sicherheitsgrenzen weiterverwenden, Fachlogik/Provider/UI trennen. Codex integriert Funktion und Tests über GitHub-PRs; Lovable implementiert und prüft UI in _isolierten, an einen überprüften GitHub-Stand gebundenen Varianten_.
 **Tech Stack:** TypeScript, React/TanStack Start, Supabase (Daten und Auth), Bun/Vitest, Playwright, GitHub Actions, Codex, Lovable.
-**Spec:** [Golden-Gate-Ziel/Scope #175](https://github.com/bmarnau/sysingdashboard/issues/175), [Projekt-Governance](docs/PROJECT-GOVERNANCE.md), [P0-Cockpit-Design in PR #176](https://github.com/bmarnau/sysingdashboard/pull/176) und nach Integration `docs/BSF-07-MANAGEMENT-COCKPIT-DESIGN.md`.
+**Spec:** [Golden-Gate-Ziel/Scope #175](https://github.com/bmarnau/sysingdashboard/issues/175), [Projekt-Governance](./PROJECT-GOVERNANCE.md), [P0-Cockpit-Design in PR #176](https://github.com/bmarnau/sysingdashboard/pull/176) und nach Integration `docs/BSF-07-MANAGEMENT-COCKPIT-DESIGN.md`.
 **Strategische Reihenfolge:** GG-01 DONE → GG-02 Cockpit → GG-03 Management-Kiosk → GG-04 Kunden-PDF → GG-05 manueller Import → GG-06 Reporting → GG-07/08 Hardening & Golden Dataset → GG-09 finale Freigabe.
 **Tracking:** #175 ist der zentrale Golden-Gate-Tracker, #140/174 sind die BSF-07-Fachtickets. Dieser Plan ändert **nicht** das Golden-Gate-Ziel, sondern ersetzt die bisherige operative Ausführungsweise nach seiner Integration.
 
