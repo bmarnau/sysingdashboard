@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+node_modules
+coverage
+dist
+playwright-report
+test-report
+security-report
+.superpowers
