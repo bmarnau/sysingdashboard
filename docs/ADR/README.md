@@ -6,7 +6,7 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 
 ## Index
 
-Vollständig und lückenlos ADR-0001 bis ADR-0035. Alle ADRs liegen ausschließlich
+Vollständig und lückenlos ADR-0001 bis ADR-0039. Alle ADRs liegen ausschließlich
 in diesem Verzeichnis (`docs/ADR/`); das frühere zweite Verzeichnis `docs/adr/`
 wurde in Sprint 09B aufgelöst, weil zwei Verzeichnisse mit gleichem Namen unter
 Windows kollidieren.
@@ -48,6 +48,10 @@ Windows kollidieren.
 | 0033 | [Regelmäßige GitHub-Repository-Governance und Arbeitsvorratsprüfung](./0033-regelmaessige-github-repository-governance.md)   | Accepted               |
 | 0034 | [Kontrollierter Supabase-CLI-Fallback für kanonische Migrationen](./0034-kontrollierter-supabase-cli-fallback.md)            | Superseded by ADR-0035 |
 | 0035 | [Kontrollierter Work-/Lovable-Connector-Fallback](./0035-kontrollierter-lovable-connector-fallback.md)                       | Accepted               |
+| 0036 | [Kontinuierlicher Testziel-Abgleich und Testökonomie](./0036-kontinuierlicher-testziel-abgleich.md)                           | Accepted               |
+| 0037 | [OneDrive-Arbeitsbasis und temporäre Toolchain-Umgebung](./0037-onedrive-temporare-toolchain-umgebung.md)                     | Accepted               |
+| 0038 | [Kontrollierter WSL-Toolchain-Fallback für Golden-Gate-Prüfungen](./0038-kontrollierter-wsl-toolchain-fallback.md)           | Accepted               |
+| 0039 | [Kanonisches Golden-Gate-Toolchain-Image](./0039-kanonisches-golden-gate-toolchain-image.md)                                 | Accepted               |
 
 Stand der Prüfung: 2026-10-13. ADR-0031 ist in BSF-02B umgesetzt.
 ADR-0032 konkretisiert ADR-0030 für den minimalen gemeinsamen Mehrbenutzer-Read-Pfad,
@@ -56,6 +60,21 @@ read-only Prüfung von Issues, Pull Requests, Actions-/Workflow-Runs und
 Workflow-Definitionen als verbindlichen Governance-Schritt. ADR-0035 ersetzt den
 nicht ausführbaren CLI-Fallback aus ADR-0034 für vollständig Lovable-verwaltete
 Datenbanken durch einen streng begrenzten, atomaren Work-/Lovable-Connector-Pfad.
+
+ADR-0036 etabliert den verbindlichen AQGS-Testziel-Abgleich: Testbestand,
+Schutzzweck und Abnahmekriterien werden kontinuierlich abgeglichen;
+Konsolidierung oder Aussonderung verlangt nachvollziehbare Ersatz- bzw.
+Wegfall-Evidenz.
+
+ADR-0037 trennt den OneDrive-basierten Git-Checkout von der
+dateisystemintensiven, reproduzierbaren Toolchain-Umgebung unter `C:\tmp`.
+
+ADR-0038 erlaubt bei nachgewiesenem nativen Windows-Bun-Fehler einen
+commit-gebundenen WSL2-Fallback ausschließlich für Golden-Gate-Gates.
+
+ADR-0039 definiert das projektversionierte Dev-Container-Image als kanonischen
+lokalen Golden-Gate-Toolchain-Fallback; eine CI- oder Template-Übernahme folgt
+erst nach einem erfolgreichen Pilot.
 
 ## Template
 

@@ -157,6 +157,87 @@ braucht Begründung, Ticket und Verfallsdatum.
 
 ---
 
+### 8.1 AQGS-TCA-01 — kontinuierlicher Testziel-Abgleich
+
+**Verbindliche Regel:** Der erforderliche Testbestand wird fortlaufend gegen
+die fachlichen Ziele, Sicherheitsgrenzen und Abnahmekriterien des jeweils
+bearbeiteten Arbeitspakets abgeglichen. Testmenge ist kein Selbstzweck:
+Jeder erforderliche Test braucht einen nachvollziehbaren Schutzzweck; jede
+Lücke, Doppelung oder Aussonderung braucht eine dokumentierte Entscheidung.
+
+Der Abgleich ist mindestens auszulösen:
+
+1. bei Planung eines Arbeitspakets und bei jeder Änderung seiner Ziele oder
+   Risiken,
+2. vor der fachlichen Abnahme eines Arbeitspakets beziehungsweise vor einem
+   Release Candidate,
+3. bei auffälliger Testlaufzeit, instabilen Tests oder wiederholter
+   Toolchain-Blockade,
+4. bei Änderung einer Schnittstelle, Sicherheitsgrenze, Datenquelle oder eines
+   Abnahmekriteriums.
+
+Das Arbeitspaket oder sein Abnahmebericht enthält mindestens eine kompakte
+Testziel-Matrix mit `Ziel/Risiko`, `Testebene`, `konkreter Test oder Gate`,
+`Evidenz` und `Entscheidung`. Zulässige Entscheidungen sind ausschließlich
+`BEIBEHALTEN`, `ERGÄNZEN`, `KONSOLIDIEREN`, `AUSSONDERN` oder `BLOCKED`.
+
+- `KONSOLIDIEREN` ist nur zulässig, wenn derselbe Fehlerfall weiterhin durch
+  mindestens einen gleichwertigen, reproduzierbaren Test oder ein Gate
+  abgedeckt bleibt.
+- `AUSSONDERN` verlangt den Nachweis, dass kein aktuelles Ziel, keine
+  Sicherheitsgrenze und kein Abnahmekriterium mehr davon abhängt; die
+  Ersatzabdeckung oder bewusste Nichtabdeckung ist zu benennen.
+- Sicherheits-, RBAC/RLS-, Datenintegritäts-, Providergrenzen- und
+  Golden-Regressionen dürfen nicht allein zur Laufzeitverkürzung entfernt
+  oder herabgestuft werden.
+- Tests werden in schnelle, änderungsnahe Vertrags-/Modultests und
+  vollständige Release-/System-Gates gegliedert. Ein schneller PR-Pfad
+  ersetzt nicht die vorgeschriebenen Exact-Head-Gates.
+- Nicht ausführbare Tests oder Gates werden mit Ursache und Wiederherstellungs-
+  schritt als `BLOCKED` berichtet; fehlende Evidenz ist niemals `PASS`.
+
+Der technische Prüfbericht und der Abschlussbericht nennen das Ergebnis des
+Abgleichs sowie verbliebene `BLOCKED`- oder Aussonderungsentscheidungen.
+Diese Regel konkretisiert ADR-0036 und gilt für Menschen und KI-Agenten.
+
+### 8.2 AQGS-ENV-01 — OneDrive-Arbeitsbasis und lokale Toolchain-Umgebung
+
+**Verbindliche Regel:** Git-Arbeitscheckouts, Quellcode und prüfbare
+Dokumentation dürfen in OneDrive liegen. Abhängigkeitsschwere oder
+dateisystemintensive Toolchain-Arbeit (insbesondere `node_modules`,
+Paketinstallationen, Bundler-Caches, Browser-Binaries und vollständige
+Testläufe) wird in einem lokalen, nicht synchronisierten Arbeitsverzeichnis
+unter `C:\tmp` ausgeführt.
+
+- `C:\tmp` ist nur eine reproduzierbare Ausführungsumgebung, nie eine
+  Source-of-Truth: Änderungen werden ausschließlich aus dem Git-Checkout
+  übernommen und bleiben dort nachvollziehbar.
+- Vor einem Gate-Lauf wird der verwendete Commit-SHA zwischen Checkout und
+  temporärer Umgebung verglichen. Abweichungen machen die Evidenz ungültig.
+- `node_modules` und andere abgeleitete Verzeichnisse dürfen nicht als
+  OneDrive-Platzhalter oder Reparse-Verzeichnisse als grüne Toolchain-Evidenz
+  gewertet werden. Fehlende Binaries oder unvollständige Paketdateien sind
+  `BLOCKED`.
+- Die temporäre Umgebung enthält keine Secrets und wird nach Abschluss oder
+  bei Vertrauensverlust verworfen und aus dem Checkout erneut hergestellt.
+- CI und Exact-Head-Gates bleiben maßgeblich; eine lokale `C:\tmp`-Prüfung
+  ersetzt weder einen signierten Kandidaten noch GitHub-CI/Security.
+- Ein WSL-Fallback nach ADR-0038 beginnt nur nach einem erfolgreichen
+  nichtinteraktiven Preflight (`wsl --status` sowie `wsl -d Ubuntu -- bash -lc
+  'true'`). Ein ungültiger Benutzer- oder WSL-Host-Konfigurationswert ist ein
+  Infrastrukturblocker und keine fehlgeschlagene Produktprüfung.
+- Muss ein WSL-Fallback erst Werkzeuge installieren, prüft er zusätzlich
+  `sudo -n true` und die benötigten Basiswerkzeuge. Erfordert Ubuntu eine
+  interaktive Berechtigung, wird der konkrete Bootstrap-Befehl an den Benutzer
+  übergeben; Zugangsdaten werden weder abgefragt noch verarbeitet.
+- Das projektversionierte Toolchain-Image gemäß ADR-0039 ist der kanonische
+  lokale Golden-Gate-Fallback. Sein Entrypoint prüft Git-HEAD, Worktree-
+  Zustand, Bun- und Node-Versionen und installiert ausschließlich mit
+  `bun install --frozen-lockfile`. Ein fehlender Docker-Daemon ist `BLOCKED`;
+  ein lokaler Container-PASS ersetzt weder Signatur noch Exact-Head-CI/Security.
+
+Diese Regel konkretisiert ADR-0037 und gilt für Menschen und KI-Agenten.
+
 ## 9. Sicherheitsregeln
 
 1. Keine Secrets in Code, Doku, Prompts, Logs oder Tests.
