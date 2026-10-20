@@ -1,3 +1,4 @@
+import type { ProjectControllingFilterErrors } from "@/lib/project-controlling/filter-validation";
 import type {
   ProjectControllingFilters as ProjectControllingFilterValue,
   ProjectControllingScopeOption,
@@ -6,6 +7,8 @@ import type {
 interface Props {
   filters: ProjectControllingFilterValue;
   scopeOptions: readonly ProjectControllingScopeOption[];
+  /** Feldbezogene Zeitraumfehler; die Leiste bleibt dabei bedienbar. */
+  errors?: ProjectControllingFilterErrors;
   onChange?: (filters: ProjectControllingFilterValue) => void;
 }
 
@@ -32,7 +35,7 @@ function uniqueOptions(
   });
 }
 
-export function ProjectControllingFilters({ filters, scopeOptions, onChange }: Props) {
+export function ProjectControllingFilters({ filters, scopeOptions, errors, onChange }: Props) {
   const systemhouses = uniqueOptions(scopeOptions, "systemhouse");
   const customers = uniqueOptions(scopeOptions, "customer").filter(
     (option) => !filters.systemhouseId || option.systemhouseId === filters.systemhouseId,
@@ -62,25 +65,43 @@ export function ProjectControllingFilters({ filters, scopeOptions, onChange }: P
   return (
     <section aria-label="Filter" className="rounded-lg border bg-card p-4">
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <label className="space-y-1 text-sm">
-          <span className="font-medium">Von</span>
-          <input
-            type="date"
-            value={filters.from}
-            onChange={(event) => update({ from: event.target.value })}
-            className="h-9 w-full rounded-md border border-input bg-background px-3"
-          />
-        </label>
+        <div>
+          <label className="block space-y-1 text-sm">
+            <span className="font-medium">Von</span>
+            <input
+              type="date"
+              value={filters.from}
+              aria-invalid={errors?.from ? true : undefined}
+              aria-describedby={errors?.from ? "project-controlling-from-error" : undefined}
+              onChange={(event) => update({ from: event.target.value })}
+              className="h-9 w-full rounded-md border border-input bg-background px-3"
+            />
+          </label>
+          {errors?.from && (
+            <p id="project-controlling-from-error" className="mt-1 text-xs text-destructive">
+              {errors.from}
+            </p>
+          )}
+        </div>
 
-        <label className="space-y-1 text-sm">
-          <span className="font-medium">Bis</span>
-          <input
-            type="date"
-            value={filters.to}
-            onChange={(event) => update({ to: event.target.value })}
-            className="h-9 w-full rounded-md border border-input bg-background px-3"
-          />
-        </label>
+        <div>
+          <label className="block space-y-1 text-sm">
+            <span className="font-medium">Bis</span>
+            <input
+              type="date"
+              value={filters.to}
+              aria-invalid={errors?.to ? true : undefined}
+              aria-describedby={errors?.to ? "project-controlling-to-error" : undefined}
+              onChange={(event) => update({ to: event.target.value })}
+              className="h-9 w-full rounded-md border border-input bg-background px-3"
+            />
+          </label>
+          {errors?.to && (
+            <p id="project-controlling-to-error" className="mt-1 text-xs text-destructive">
+              {errors.to}
+            </p>
+          )}
+        </div>
 
         <label className="space-y-1 text-sm">
           <span className="font-medium">Systemhaus</span>
