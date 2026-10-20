@@ -7,7 +7,14 @@ import {
   type ProjectControllingViewState,
 } from "@/components/project-controlling/ProjectControllingView";
 import { readProjectControllingFn } from "@/lib/project-controlling-runtime/project-controlling.functions";
-import type { ProjectControllingFilters } from "@/lib/project-controlling/project-controlling-contract";
+import {
+  hasProjectControllingFilterErrors,
+  validateProjectControllingFilters,
+} from "@/lib/project-controlling/filter-validation";
+import type {
+  ProjectControllingFilters,
+  ProjectControllingScopeOption,
+} from "@/lib/project-controlling/project-controlling-contract";
 import { logger } from "@/lib/logger";
 
 export const Route = createFileRoute("/_authenticated/projektcontrolling")({
@@ -44,15 +51,30 @@ function currentMonthFilters(): ProjectControllingFilters {
 function ProjectControllingPage() {
   const [filters, setFilters] = useState<ProjectControllingFilters>(currentMonthFilters);
   const [state, setState] = useState<ProjectControllingViewState>({ kind: "loading" });
+  // Zuletzt bekannte Auswahloptionen: halten die Filterleiste beim Laden und bei Fehlern bedienbar.
+  const [scopeOptions, setScopeOptions] = useState<readonly ProjectControllingScopeOption[]>([]);
+  const [attempt, setAttempt] = useState(0);
+
+  // Unvollständige oder ungültige Zeiträume (z. B. beim Tippen in ein Datumsfeld)
+  // lösen keinen Serveraufruf aus; die Leiste bleibt mit Feldhinweis bedienbar.
+  const filterErrors = validateProjectControllingFilters(filters);
+  const filtersValid = !hasProjectControllingFilterErrors(filterErrors);
 
   useEffect(() => {
+    if (!filtersValid) return;
+
     let cancelled = false;
     setState({ kind: "loading" });
 
     readProjectControllingFn({ data: filters })
       .then((outcome) => {
         if (cancelled) return;
-        setState(outcome.ok ? { kind: "ready", result: outcome.value } : { kind: "error" });
+        if (outcome.ok) {
+          setScopeOptions(outcome.value.scopeOptions);
+          setState({ kind: "ready", result: outcome.value });
+        } else {
+          setState({ kind: "error" });
+        }
       })
       .catch((error: unknown) => {
         logger.warn("project-controlling.read.failed", {
@@ -64,12 +86,19 @@ function ProjectControllingPage() {
     return () => {
       cancelled = true;
     };
-  }, [filters]);
+  }, [filters, filtersValid, attempt]);
 
   return (
     <PermissionGate permission="project.controlling.view">
       <CustomerPageShell sectionTitle="Projektcontrolling">
-        <ProjectControllingView state={state} onFiltersChange={setFilters} />
+        <ProjectControllingView
+          state={state}
+          filters={filters}
+          scopeOptions={scopeOptions}
+          filterErrors={filterErrors}
+          onFiltersChange={setFilters}
+          onRetry={() => setAttempt((value) => value + 1)}
+        />
       </CustomerPageShell>
     </PermissionGate>
   );

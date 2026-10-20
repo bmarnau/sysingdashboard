@@ -12,59 +12,11 @@ import {
   type SharedCustomerProjectionSnapshot,
   type SharedProjectionPublishResult,
 } from "@/lib/customer-data/shared-projection-runtime";
+import { sharedProjectionPublishSchema } from "@/lib/customer-data-runtime/shared-projection.schema";
 
 const uuid = z.string().uuid();
-const sourceId = z.string().trim().min(1).max(255);
-const text = z.string().max(2000);
 
-const customerMappingSchema = z.object({
-  legacyName: z.string().trim().min(1).max(500),
-  customerId: uuid,
-});
-
-const projectSchema = z.object({
-  id: sourceId,
-  name: text,
-  client: z.string().max(500),
-  status: z.enum(["on_track", "at_risk", "delayed", "abgeschlossen"]),
-});
-
-const workPackageSchema = z.object({
-  id: sourceId,
-  title: text,
-  projectId: sourceId.nullish(),
-  client: z.string().max(500).optional(),
-  status: z.enum(["offen", "in_arbeit", "wartend", "erledigt"]),
-  priority: z.enum(["niedrig", "mittel", "hoch", "kritisch"]),
-});
-
-const activitySchema = z.object({
-  id: sourceId,
-  title: text,
-  workPackageId: sourceId.nullish(),
-  engineerId: uuid.optional(),
-  client: z.string().max(500).optional(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  duration: z.number().finite().nonnegative(),
-  hourlyRate: z.number().finite().nonnegative(),
-  billable: z.boolean(),
-  billingStatus: z.enum(["offen", "abgerechnet", "nicht_abrechenbar"]),
-});
-
-const publishSchema = z.object({
-  systemhouseId: uuid,
-  customerId: uuid,
-  /**
-   * Reconciliation ist nur mit einem vollständigen Local-First-Snapshot
-   * zulässig. Teilmengen dürfen niemals implizit als gelöschte Sources
-   * interpretiert werden.
-   */
-  snapshotComplete: z.literal(true),
-  customerMappings: z.array(customerMappingSchema).max(5000),
-  projects: z.array(projectSchema).max(10000),
-  workPackages: z.array(workPackageSchema).max(20000),
-  activities: z.array(activitySchema).max(50000),
-});
+const publishSchema = sharedProjectionPublishSchema;
 
 const readSchema = z.object({
   systemhouseId: uuid,

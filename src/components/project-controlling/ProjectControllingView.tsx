@@ -1,9 +1,15 @@
 import { ProjectControllingDrilldown } from "@/components/project-controlling/ProjectControllingDrilldown";
 import { ProjectControllingFilters } from "@/components/project-controlling/ProjectControllingFilters";
 import { ProjectControllingSummary } from "@/components/project-controlling/ProjectControllingSummary";
+import { Button } from "@/components/ui/button";
+import {
+  hasProjectControllingFilterErrors,
+  type ProjectControllingFilterErrors,
+} from "@/lib/project-controlling/filter-validation";
 import type {
   ProjectControllingFilters as ProjectControllingFilterValue,
   ProjectControllingResult,
+  ProjectControllingScopeOption,
 } from "@/lib/project-controlling/project-controlling-contract";
 
 export type ProjectControllingViewState =
@@ -20,11 +26,26 @@ function formatHours(value: number): string {
 
 export function ProjectControllingView({
   state,
+  filters,
+  scopeOptions,
+  filterErrors,
   onFiltersChange,
+  onRetry,
 }: {
   state: ProjectControllingViewState;
+  /** Aktuell eingegebene Filter. Ohne Angabe gelten die Filter des fertigen Ergebnisses. */
+  filters?: ProjectControllingFilterValue;
+  /** Zuletzt bekannte Auswahloptionen, damit die Leiste auch beim Laden/Fehler bedienbar bleibt. */
+  scopeOptions?: readonly ProjectControllingScopeOption[];
+  filterErrors?: ProjectControllingFilterErrors;
   onFiltersChange?: (filters: ProjectControllingFilterValue) => void;
+  onRetry?: () => void;
 }) {
+  const readyResult = state.kind === "ready" ? state.result : null;
+  const activeFilters = filters ?? readyResult?.filters;
+  const activeScopeOptions = scopeOptions ?? readyResult?.scopeOptions ?? [];
+  const hasFilterErrors = hasProjectControllingFilterErrors(filterErrors);
+
   return (
     <section aria-labelledby="project-controlling-title" className="space-y-4">
       <div>
@@ -37,6 +58,21 @@ export function ProjectControllingView({
         </p>
       </div>
 
+      {activeFilters && (
+        <ProjectControllingFilters
+          filters={activeFilters}
+          scopeOptions={activeScopeOptions}
+          errors={filterErrors}
+          onChange={onFiltersChange}
+        />
+      )}
+
+      {hasFilterErrors && state.kind === "ready" && (
+        <p role="status" className="text-sm text-muted-foreground">
+          Die Anzeige zeigt weiterhin den zuletzt gültigen Filterstand.
+        </p>
+      )}
+
       {state.kind === "loading" && (
         <p role="status" className="text-sm text-muted-foreground">
           Controlling-Daten werden geladen …
@@ -45,11 +81,6 @@ export function ProjectControllingView({
 
       {state.kind === "ready" && (
         <>
-          <ProjectControllingFilters
-            filters={state.result.filters}
-            scopeOptions={state.result.scopeOptions}
-            onChange={onFiltersChange}
-          />
           <ProjectControllingSummary summary={state.result.summary} />
           <section aria-label="Täglicher Stundenverlauf" className="rounded-lg border bg-card p-4">
             <div className="mb-3">
@@ -95,9 +126,16 @@ export function ProjectControllingView({
       )}
 
       {state.kind === "error" && (
-        <p role="alert" className="text-sm text-destructive">
-          Projektcontrolling konnte nicht geladen werden.
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <p role="alert" className="text-sm text-destructive">
+            Projektcontrolling konnte nicht geladen werden.
+          </p>
+          {onRetry && (
+            <Button type="button" variant="outline" size="sm" onClick={onRetry}>
+              Erneut versuchen
+            </Button>
+          )}
+        </div>
       )}
     </section>
   );
