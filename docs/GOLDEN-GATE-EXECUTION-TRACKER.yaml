@@ -88,7 +88,7 @@ lieferpakete:
     gg: GG-02-Vorbereitung
     titel: Vorhandenen Produktstand praktisch nutzbar machen
     nutzerwert: Geprüfte Preview mit Demo-Pfad und Liste fehlender Funktionen.
-    schaetzung: {codex_auftraege: "3-5", lovable_prompts: "2-3", arbeitstage: "1-2"}
+    schaetzung: { codex_auftraege: "3-5", lovable_prompts: "2-3", arbeitstage: "1-2" }
     abhaengig_von: [S0-04]
     status: planned
     code_merged: no
@@ -116,7 +116,7 @@ lieferpakete:
     nutzerwert: >-
       Frage: Welche meiner autorisierten Projekte erfordern Aufmerksamkeit,
       und warum? Drill-down mit ehrlichen Datenzuständen.
-    schaetzung: {codex_auftraege: "7-12", lovable_prompts: "4-7", arbeitstage: "3-5"}
+    schaetzung: { codex_auftraege: "7-12", lovable_prompts: "4-7", arbeitstage: "3-5" }
     abhaengig_von: [L0, L1]
     status: planned
     code_merged: no
@@ -132,7 +132,7 @@ lieferpakete:
   - id: L3
     gg: GG-02
     titel: Managementcockpit vollständig (fünf Rollenperspektiven)
-    schaetzung: {codex_auftraege: "8-14", lovable_prompts: "5-9", arbeitstage: "4-6"}
+    schaetzung: { codex_auftraege: "8-14", lovable_prompts: "5-9", arbeitstage: "4-6" }
     abhaengig_von: [L2]
     status: planned
     code_merged: no
@@ -146,7 +146,7 @@ lieferpakete:
   - id: L4
     gg: GG-03
     titel: Management-Kiosk auf Cockpit-Daten (BSF-KIOSK-03)
-    schaetzung: {codex_auftraege: "6-9", lovable_prompts: "4-7", arbeitstage: "3-5"}
+    schaetzung: { codex_auftraege: "6-9", lovable_prompts: "4-7", arbeitstage: "3-5" }
     abhaengig_von: [L3]
     status: planned
     code_merged: no
@@ -157,7 +157,7 @@ lieferpakete:
   - id: L5
     gg: GG-04
     titel: Kunden-PDF mit TDF-Nachweis (BSF-03C)
-    schaetzung: {codex_auftraege: "6-10", lovable_prompts: "3-6", arbeitstage: "3-5"}
+    schaetzung: { codex_auftraege: "6-10", lovable_prompts: "3-6", arbeitstage: "3-5" }
     abhaengig_von: [L3]
     status: planned
     code_merged: no
@@ -170,7 +170,7 @@ lieferpakete:
   - id: L6
     gg: GG-05
     titel: Manueller kanonischer Import und Demo-Reset (BSF-05A)
-    schaetzung: {codex_auftraege: "7-10", lovable_prompts: "2-4", arbeitstage: "3-5"}
+    schaetzung: { codex_auftraege: "7-10", lovable_prompts: "2-4", arbeitstage: "3-5" }
     abhaengig_von: [L0]
     status: planned
     code_merged: no
@@ -184,7 +184,7 @@ lieferpakete:
   - id: L7
     gg: GG-06
     titel: Reporting 2 und Golden Reporting (BSF-09)
-    schaetzung: {codex_auftraege: "7-10", lovable_prompts: "3-5", arbeitstage: "3-5"}
+    schaetzung: { codex_auftraege: "7-10", lovable_prompts: "3-5", arbeitstage: "3-5" }
     abhaengig_von: [L3, L5]
     status: planned
     code_merged: no
@@ -195,7 +195,7 @@ lieferpakete:
   - id: L8
     gg: GG-07/08/09
     titel: Gesamt-Hardening, Golden-Demo und finale Freigabe
-    schaetzung: {codex_auftraege: "8-12", lovable_prompts: "4-6", arbeitstage: "4-7"}
+    schaetzung: { codex_auftraege: "8-12", lovable_prompts: "4-6", arbeitstage: "4-7" }
     abhaengig_von: [L4, L5, L6, L7, QS-01]
     status: planned
     code_merged: no
@@ -241,7 +241,7 @@ querschnitt:
           Selbstregistrierung bleibt offen und erfordert aktive E-Mail-Bestätigung.
     umsetzungsregeln:
       - Trigger als SECURITY INVOKER (current_user + has_any_role); bei SECURITY DEFINER ist current_user der Owner.
-      - Migrationen getrennt (A: Profile/Trigger, B: Bootstrap, C: Default-ACL inkl. pg_default_acl-Inventar).
+      - "Migrationen getrennt (A: Profile/Trigger, B: Bootstrap, C: Default-ACL inkl. pg_default_acl-Inventar)."
       - ADR-0034/0035 und DATABASE-CHANGE-GOVERNANCE einhalten; keine Plattform-/Auth-Storage-Änderung.
       - Schema-Drift (u. a. reference_value_history_systemhouse_fk) vorab abgleichen.
     offene_punkte:
@@ -256,7 +256,7 @@ querschnitt:
       nach dem Golden Gate geplant ist. In L8 ist nur Backup/Restore im
       bestehenden Umfang Pflicht.
     status: planned
-    vor_golden_gate_erforderlich: no   # Entscheidung des Nutzers steht aus
+    vor_golden_gate_erforderlich: no # Entscheidung des Nutzers steht aus
 
   - id: QS-03
     titel: Produktname "SysIng Dashboard" und Release-Hygiene
@@ -281,7 +281,7 @@ nach_golden_gate:
   - BSF-06 (Docker, Betreiberhoheit, Installierbarkeit)
   - Integration-Readiness-Gate
   - Microsoft Graph, Entra-ID, SharePoint, Exchange, PRTG, MCP, Agenten, NAVIS
-  - Rechtstexte (zurückgestellt; Auslöser: weiterer Nutzer neben dem Betreiber)
+  - "Rechtstexte (zurückgestellt; Auslöser: weiterer Nutzer neben dem Betreiber)"
 
 # ---------------------------------------------------------------------------
 # Risiken und Single Points of Failure
