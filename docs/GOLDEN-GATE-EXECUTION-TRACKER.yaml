@@ -43,22 +43,30 @@ sprint_0:
   pakete:
     - id: S0-01
       titel: Fix DUE-DROP (due/categoryKey im Publish-Schema)
-      referenz: PR #192, Commit 1efbb23
-      status: in_progress
-      code_merged: no
-      gates_pass: not_run
+      referenz: PR #192, Commit 1efbb23, main 3acabae
+      status: done
+      code_merged: yes
+      gates_pass: yes
     - id: S0-02
       titel: Fix CONTROLLING-FILTER (Filterleiste in allen Zuständen)
-      referenz: PR #192, Commit f7fe2ec
-      status: in_progress
-      code_merged: no
-      gates_pass: not_run
+      referenz: PR #192, Commit f7fe2ec, main 3acabae
+      status: done
+      code_merged: yes
+      gates_pass: yes
     - id: S0-03
-      titel: Sync-Branch lovable-sync-1792500399 per Merge-Commit nach main
+      titel: Sync-Branch lovable-sync-1792520819 per Merge-Commit nach main
       regel: Kein Squash und kein Rebase (Hinweis der Lovable-GitHub-Integration).
       abhaengig_von: [S0-01, S0-02]
-      status: planned
-      risiko: Konfigurations-Upgrade 2.13.1 auf 2.26.5 muss in der CI bestehen.
+      status: done
+      code_merged: yes
+      gates_pass: yes
+      referenz: PR #194, main 6e7219a
+      hinweis: >-
+        Der ursprüngliche Branch lovable-sync-1792500399 wurde von Lovable
+        gesichert und als lovable-sync-1792520819 wiederhergestellt. Übernommen:
+        Konfigurations-Upgrade 2.26.5, Lockfile, .lovable/plan.md. Nicht
+        übernommen: Preview-Auth-Broker (verboten per Contract-Test),
+        veralteter Roadmap-Block, generierte Typen (Schema-Drift).
     - id: S0-04
       titel: Lovable-Variant auf neuem main-SHA anlegen
       abhaengig_von: [S0-03]
@@ -240,6 +248,10 @@ querschnitt:
           Erster Admin wird an die konfigurierte Admin-E-Mail gebunden;
           Selbstregistrierung bleibt offen und erfordert aktive E-Mail-Bestätigung.
     umsetzungsregeln:
+      - >-
+        Generierte Supabase-Typen aus Lovable (types.ts) nur übernehmen, wenn eine
+        Migration sie deckt. Befund aus PR #194, Check Database Schema Drift,
+        Fremdschlüssel reference_value_history_systemhouse_fk.
       - Trigger als SECURITY INVOKER (current_user + has_any_role); bei SECURITY DEFINER ist current_user der Owner.
       - "Migrationen getrennt (A: Profile/Trigger, B: Bootstrap, C: Default-ACL inkl. pg_default_acl-Inventar)."
       - ADR-0034/0035 und DATABASE-CHANGE-GOVERNANCE einhalten; keine Plattform-/Auth-Storage-Änderung.
@@ -309,6 +321,12 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-20
+    ereignis: >-
+      S0-01 bis S0-03 abgeschlossen. Lovable-Sync-Branch per Merge-Commit in
+      main (PR #194). Schema-Drift-Check deckte Live-Typen ohne Migration auf;
+      Typen blieben auf main-Stand.
+    beleg: PR #192, PR #193, PR #194, main 6e7219a
   - datum: 2026-10-20
     ereignis: Tracker angelegt; Fixes S0-01/S0-02 als PR #192 offen, CI angelaufen.
     beleg: PR #192
