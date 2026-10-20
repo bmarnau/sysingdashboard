@@ -1,0 +1,314 @@
+# Golden Gate – Ausführungsverfolgung (Execution Tracker)
+#
+# Zweck: maschinenlesbare Fortschrittsverfolgung zu
+#   docs/GOLDEN-GATE-DELIVERY-PLAN-2026-10-16.md (Liefersteuerung) und
+#   Issue #175 (Ziel/Scope).
+# Dieses Dokument ändert weder Ziel noch Reihenfolge dieser Quellen und ist
+# keine zweite Roadmap. Es bildet pro Lieferpaket den Ist-Status ab und trägt
+# die Querschnittsthemen, die aus der Bestandsanalyse vom 2026-10-20 folgen.
+# Maßgeblich bei Widerspruch: Delivery Plan > Tracker.
+
+schema_version: 1
+document: golden-gate-execution-tracker
+stand: 2026-10-20
+base_main_sha: fd8aa71bbe98e6d265fcc9abbfce557a72ac2bf8
+repository: bmarnau/sysingdashboard
+tracker_issue: 175
+reifegrad: Entwurf
+einheit_der_schaetzung: Arbeits-/Promptbudget, keine Termin- oder Erfolgszusage
+
+# Vier getrennte Statusfelder je Paket (Delivery Plan, Abschnitt 2, Punkt 3).
+# Ein Feld ersetzt niemals ein anderes.
+status_felder:
+  CODE_MERGED: [yes, no]
+  GATES_PASS: [yes, no, blocked, not_run]
+  PREVIEW_VERIFIED: [yes, no, blocked, not_applicable]
+  PUBLISHED_VERIFIED: [yes, no, not_published]
+
+paket_status: [done, in_progress, planned, blocked]
+
+# ---------------------------------------------------------------------------
+# Sprint 0: Basis klären (Voraussetzung für alle weiteren Pakete)
+# ---------------------------------------------------------------------------
+sprint_0:
+  ziel: >-
+    GitHub main und Lovable-Projekt auf einen gemeinsamen, geprüften Stand
+    bringen, damit Lovable-Varianten an einen verifizierten Base-SHA gebunden
+    werden können.
+  warum: >-
+    Lovable arbeitet laut Meldung auf dem Sync-Branch lovable-sync-1792500399
+    (11 Commits vor GitHub). Ohne gemeinsame Basis entstehen Konflikte, und
+    schreibende Lovable-Arbeit ist gemäß AI-ASSISTED-DEVELOPMENT-WORKFLOW
+    nicht zulässig.
+  pakete:
+    - id: S0-01
+      titel: Fix DUE-DROP (due/categoryKey im Publish-Schema)
+      referenz: PR #192, Commit 1efbb23
+      status: in_progress
+      code_merged: no
+      gates_pass: not_run
+    - id: S0-02
+      titel: Fix CONTROLLING-FILTER (Filterleiste in allen Zuständen)
+      referenz: PR #192, Commit f7fe2ec
+      status: in_progress
+      code_merged: no
+      gates_pass: not_run
+    - id: S0-03
+      titel: Sync-Branch lovable-sync-1792500399 per Merge-Commit nach main
+      regel: Kein Squash und kein Rebase (Hinweis der Lovable-GitHub-Integration).
+      abhaengig_von: [S0-01, S0-02]
+      status: planned
+      risiko: Konfigurations-Upgrade 2.13.1 auf 2.26.5 muss in der CI bestehen.
+    - id: S0-04
+      titel: Lovable-Variant auf neuem main-SHA anlegen
+      abhaengig_von: [S0-03]
+      status: planned
+      akteur: Nutzer (Lovable-Oberfläche)
+    - id: S0-05
+      titel: Zeitzonen-abhängige Tests in time-period.test.ts beheben (TEST-TZ)
+      prioritaet: P3
+      status: planned
+      hinweis: 4 Fehlschläge außerhalb UTC, identisch auf fd8aa71; unabhängig von S0-01/02.
+
+# ---------------------------------------------------------------------------
+# Lieferpakete gemäß Delivery Plan (Reihenfolge verbindlich)
+# ---------------------------------------------------------------------------
+lieferpakete:
+  - id: GG-01
+    delivery: abgeschlossen
+    titel: Vertretungs- und Personensicht (BSF-03E)
+    status: done
+    code_merged: yes
+    gates_pass: yes
+    preview_verified: yes
+    published_verified: not_published
+    referenz: Issue #63, PR #185, PR #187
+
+  - id: L0
+    gg: GG-02-Vorbereitung
+    titel: Vorhandenen Produktstand praktisch nutzbar machen
+    nutzerwert: Geprüfte Preview mit Demo-Pfad und Liste fehlender Funktionen.
+    schaetzung: { codex_auftraege: "3-5", lovable_prompts: "2-3", arbeitstage: "1-2" }
+    abhaengig_von: [S0-04]
+    status: planned
+    code_merged: no
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+    offene_punkte:
+      - Ist 1.68.0 veröffentlicht, oder läuft v1.65.0? (nicht automatisch annehmen)
+      - Demo-Daten, Route und Build-Abweichungen als konkrete Blocker ausweisen.
+
+  - id: L1
+    gg: GG-02
+    titel: BSF-07 P0-Vertrag und Design integrieren
+    status: done
+    code_merged: yes
+    gates_pass: yes
+    preview_verified: not_applicable
+    published_verified: not_published
+    referenz: PR #190, docs/BSF-07-MANAGEMENT-COCKPIT-DESIGN.md
+    hinweis: "P0 DESIGN READY ist nicht BSF-07 DONE."
+
+  - id: L2
+    gg: GG-02
+    titel: Erster nutzbarer Cockpit-Schnitt
+    nutzerwert: >-
+      Frage: Welche meiner autorisierten Projekte erfordern Aufmerksamkeit,
+      und warum? Drill-down mit ehrlichen Datenzuständen.
+    schaetzung: { codex_auftraege: "7-12", lovable_prompts: "4-7", arbeitstage: "3-5" }
+    abhaengig_von: [L0, L1]
+    status: planned
+    code_merged: no
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+    abnahme:
+      - Berechtigter Projektmanager sieht Projekt-/AP-Kontext.
+      - Unberechtigte Rolle sieht kein Objekt, keinen Count, keine ID.
+      - Zustände AVAILABLE, EMPTY, PARTIAL, UNKNOWN, UNAVAILABLE, DENIED ohne geschönte Nullwerte.
+    ist_stand_code: Keine Cockpit-Route und kein Composer im Repository.
+
+  - id: L3
+    gg: GG-02
+    titel: Managementcockpit vollständig (fünf Rollenperspektiven)
+    schaetzung: { codex_auftraege: "8-14", lovable_prompts: "5-9", arbeitstage: "4-6" }
+    abhaengig_von: [L2]
+    status: planned
+    code_merged: no
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+    abnahme:
+      - BSF-07 P0 bis P5, Golden-Dataset 1.2.0 mit expected/management-cockpit.json.
+      - Keine Personenrankings, keine zweite KPI-Berechnung, keine neue Rolle.
+
+  - id: L4
+    gg: GG-03
+    titel: Management-Kiosk auf Cockpit-Daten (BSF-KIOSK-03)
+    schaetzung: { codex_auftraege: "6-9", lovable_prompts: "4-7", arbeitstage: "3-5" }
+    abhaengig_von: [L3]
+    status: planned
+    code_merged: no
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+
+  - id: L5
+    gg: GG-04
+    titel: Kunden-PDF mit TDF-Nachweis (BSF-03C)
+    schaetzung: { codex_auftraege: "6-10", lovable_prompts: "3-6", arbeitstage: "3-5" }
+    abhaengig_von: [L3]
+    status: planned
+    code_merged: no
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+    abnahme:
+      - Autorisierter Kundensnapshot, reproduzierbar; keine Rechnungslogik.
+
+  - id: L6
+    gg: GG-05
+    titel: Manueller kanonischer Import und Demo-Reset (BSF-05A)
+    schaetzung: { codex_auftraege: "7-10", lovable_prompts: "2-4", arbeitstage: "3-5" }
+    abhaengig_von: [L0]
+    status: planned
+    code_merged: no
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+    abnahme:
+      - Positiv- und Negativfixture, idempotenter Export-Import-Roundtrip.
+      - Keine externe Automation.
+
+  - id: L7
+    gg: GG-06
+    titel: Reporting 2 und Golden Reporting (BSF-09)
+    schaetzung: { codex_auftraege: "7-10", lovable_prompts: "3-5", arbeitstage: "3-5" }
+    abhaengig_von: [L3, L5]
+    status: planned
+    code_merged: no
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+
+  - id: L8
+    gg: GG-07/08/09
+    titel: Gesamt-Hardening, Golden-Demo und finale Freigabe
+    schaetzung: { codex_auftraege: "8-12", lovable_prompts: "4-6", arbeitstage: "4-7" }
+    abhaengig_von: [L4, L5, L6, L7, QS-01]
+    status: planned
+    code_merged: no
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+    abnahme:
+      - Kein offener CRITICAL/HIGH-Sicherheitsbefund.
+      - Golden Expected Results PASS, Backup/Restore, Schema Drift, Advisor, RLS/RBAC.
+      - Bekannte Drifts #172 (Accessibility) und #173 (Dokumentation) geschlossen oder bewertet.
+      - Publish nur nach gesondertem Go/No-Go.
+
+# ---------------------------------------------------------------------------
+# Querschnittsthemen aus der Bestandsanalyse (2026-10-20)
+# Sie erzeugen keine zusätzliche Hauptlinie; sie sind in L8 abnahmerelevant
+# ("kein offener CRITICAL/HIGH-Befund") und werden vor L8 umgesetzt.
+# ---------------------------------------------------------------------------
+querschnitt:
+  - id: QS-01
+    titel: Konto- und Berechtigungsschutz (Sicherheitsplan)
+    bezug: L8 Abnahme "kein offener CRITICAL/HIGH-Sicherheitsbefund"
+    freigabe_voraussetzung: [S0-04]
+    status: planned
+    gates_pass: not_run
+    befunde:
+      - id: SEC-PROFILE-SELF-UPDATE
+        beschreibung: >-
+          Policy profiles_self_update ohne Spaltenbeschränkung; Nutzer können
+          Konto-/Rollenfelder des eigenen Profils ändern.
+        referenz: supabase/schema/public-schema.sql
+      - id: SEC-ACTIVE-ACCOUNT
+        beschreibung: Aktivitätsprüfung des Kontos fehlt in dieser Policy.
+      - id: SEC-DEFAULT-ACL
+        beschreibung: Default Privileges vergeben TRUNCATE an anon/authenticated.
+      - id: SEC-AUDIT-ERRORS
+        beschreibung: writeAudit ignoriert zurückgegebene Fehler.
+        referenz: src/lib/admin/auth-accounts.server.ts
+      - id: SEC-BOOTSTRAP-ADMIN
+        beschreibung: >-
+          Erste Registrierung wird Systemadministrator, solange keiner existiert.
+        entscheidung: >-
+          Erster Admin wird an die konfigurierte Admin-E-Mail gebunden;
+          Selbstregistrierung bleibt offen und erfordert aktive E-Mail-Bestätigung.
+    umsetzungsregeln:
+      - Trigger als SECURITY INVOKER (current_user + has_any_role); bei SECURITY DEFINER ist current_user der Owner.
+      - "Migrationen getrennt (A: Profile/Trigger, B: Bootstrap, C: Default-ACL inkl. pg_default_acl-Inventar)."
+      - ADR-0034/0035 und DATABASE-CHANGE-GOVERNANCE einhalten; keine Plattform-/Auth-Storage-Änderung.
+      - Schema-Drift (u. a. reference_value_history_systemhouse_fk) vorab abgleichen.
+    offene_punkte:
+      - Ablageort der Admin-E-Mail (z. B. nicht öffentlicher app_settings-Eintrag).
+      - Ist die E-Mail-Bestätigung im Hosting aktiv?
+
+  - id: QS-02
+    titel: Server-Backup (Local-First plus Server-Sicherung)
+    entscheidung: RPO höchstens 15 Minuten nach Änderungen, ca. 30 Versionen Aufbewahrung.
+    einordnung: >-
+      Passt thematisch zu BSF-04 (zentrale Datenstrategie), das laut Reihenfolge
+      nach dem Golden Gate geplant ist. In L8 ist nur Backup/Restore im
+      bestehenden Umfang Pflicht.
+    status: planned
+    vor_golden_gate_erforderlich: no # Entscheidung des Nutzers steht aus
+
+  - id: QS-03
+    titel: Produktname "SysIng Dashboard" und Release-Hygiene
+    inhalt:
+      - Golden Gate bleibt interner Codename.
+      - Version 1.68.1 mit Changelog-Eintrag (zu entscheiden).
+    status: planned
+
+  - id: QS-04
+    titel: Domain und Auth-Mail (sysingdashboard.de, SPF/DKIM/DMARC)
+    referenz: docs/BACKLOG.md (Stand 2026-08-17)
+    einordnung: Betriebsfähigkeit der Registrierung; Plattform-Mails sind für externe Empfänger unzuverlässig.
+    vor_golden_gate_erforderlich: unklar
+    status: planned
+
+# ---------------------------------------------------------------------------
+# Bewusst nach dem Golden Gate (Delivery Plan, Abschnitt 7)
+# ---------------------------------------------------------------------------
+nach_golden_gate:
+  - BSF-04 / BSF-04A (zentrale Datenstrategie, Vorlagen)
+  - BSF-DOC-01 bis BSF-DOC-03
+  - BSF-06 (Docker, Betreiberhoheit, Installierbarkeit)
+  - Integration-Readiness-Gate
+  - Microsoft Graph, Entra-ID, SharePoint, Exchange, PRTG, MCP, Agenten, NAVIS
+  - "Rechtstexte (zurückgestellt; Auslöser: weiterer Nutzer neben dem Betreiber)"
+
+# ---------------------------------------------------------------------------
+# Risiken und Single Points of Failure
+# ---------------------------------------------------------------------------
+risiken:
+  - id: R-01
+    titel: Lovable-Basis divergiert erneut von GitHub
+    wirkung: Konflikte, blockierte Lovable-Arbeit
+    gegenmassnahme: Nur Variants mit Exact-Tree-Bindung; keine Writes im Lovable-Hauptprojekt.
+  - id: R-02
+    titel: Unwiderrufliche Datenbankmigrationen
+    gegenmassnahme: Getrennte Migrationen A/B/C, Governance-Prozess, Postflight und Advisor.
+  - id: R-03
+    titel: Cockpit ist größter noch nicht begonnener Block
+    wirkung: Terminrisiko für alle abhängigen Pakete (L4, L5, L7)
+    gegenmassnahme: Zuerst nur eine Managementfrage (L2), danach erweitern.
+  - id: R-04
+    titel: Einzelner Betreiber als SPoF für Freigaben und Supabase-Zugriff
+    gegenmassnahme: Betreiberhoheit in BSF-06; bis dahin dokumentierter Exit-/Restore-Pfad.
+  - id: R-05
+    titel: Gelesene PASS-Statusanzeigen ohne Evidenz
+    gegenmassnahme: Vier getrennte Statusfelder; PASS nur mit Exact-Head-Nachweis.
+
+# ---------------------------------------------------------------------------
+# Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
+# ---------------------------------------------------------------------------
+fortschritt:
+  - datum: 2026-10-20
+    ereignis: Tracker angelegt; Fixes S0-01/S0-02 als PR #192 offen, CI angelaufen.
+    beleg: PR #192
