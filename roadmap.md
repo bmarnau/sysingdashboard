@@ -1,5 +1,11 @@
 # Roadmap
 
+## Gezielte Fixes DUE-DROP / CONTROLLING-FILTER — wartet auf Variant-Bindung
+
+- [ ] DUE-DROP: Server-Validator in `src/lib/customer-data-runtime/shared-projection.functions.ts` um optional/nullable `due` und `categoryKey` ergänzen; ungültige Kalenderdaten ablehnen; Validator-Test ergänzen, nicht ausführen.
+- [ ] CONTROLLING-FILTER: In `ProjectControllingView.tsx` und `projektcontrolling.tsx` die Filterleiste in loading/ready/error erhalten, Wiederholen ermöglichen, Datumsfehler feldbezogen anzeigen und Eingabefokus erhalten.
+- Blocker: Arbeitskopie ist auf einem verwalteten `edit/`-Branch; ein ausdrücklich erzeugter Project Variant mit verifiziertem, abgenommenem `base_sha` ist für diesen Auftrag nicht nachgewiesen. Keine Umsetzung bis zur Bindung; keine Tests, Plattform-/Auth-Storage-/Versionsänderungen oder Merges.
+
 Visualisierung (abgeleitete TIECS-Statussicht): `docs/status-board.html`  
 Maßgebliche Fakten bleiben in Roadmap, Projektstatus, Architektur, Entwicklungstagebuch und PR-/CI-Evidenz.
 
