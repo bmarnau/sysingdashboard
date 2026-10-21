@@ -130,6 +130,13 @@ import {
 import { KpiCard, TabButton } from "@/components/dashboard/primitives";
 import { ProjectsView } from "@/components/dashboard/views/ProjectsView";
 import { WorkPackagesView } from "@/components/dashboard/views/WorkPackagesView";
+import { PublishToTeamDialog } from "@/components/dashboard/dialogs/PublishToTeamDialog";
+import type { PublishPayload } from "@/lib/customer-data/publish-to-team";
+import { listMyCustomersFn } from "@/lib/customer-data-runtime/my-customers.functions";
+import {
+  publishSharedCustomerProjectionFn,
+  readSharedCustomerProjectionFn,
+} from "@/lib/customer-data-runtime/shared-projection.functions";
 import { ActivitiesView } from "@/components/dashboard/views/ActivitiesView";
 import { BillingView } from "@/components/dashboard/views/BillingView";
 import { AvkkWorkspaceView } from "@/components/avkk/AvkkWorkspaceView";
@@ -158,6 +165,14 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   }),
   component: Dashboard,
 });
+
+/** L0b: Server-Zugriffe des Veröffentlichungsdialogs (stabile Referenzen, kein Re-Render-Effekt). */
+const publishToTeamApi = {
+  listCustomers: () => listMyCustomersFn(),
+  readProjection: (scope: { systemhouseId: string; customerId: string }) =>
+    readSharedCustomerProjectionFn({ data: scope }),
+  publish: (payload: PublishPayload) => publishSharedCustomerProjectionFn({ data: payload }),
+};
 
 /* ---------------------------------- Component --------------------------------- */
 
@@ -221,6 +236,7 @@ function Dashboard() {
   const [showDemoData, setShowDemoData] = useState(false);
   const [showBackendAdmin, setShowBackendAdmin] = useState(false);
   const [showWpCategories, setShowWpCategories] = useState(false);
+  const [showPublishToTeam, setShowPublishToTeam] = useState(false);
   // BSF-03D: systemhausbezogener Kategoriekontext für den Arbeitspaket-Dialog
   const wpCategories = useWorkPackageCategories();
   const currentUser = useCurrentUser();
@@ -925,6 +941,7 @@ function Dashboard() {
             onEdit={setEditingWP}
             onDelete={deleteWP}
             canEdit={canEditWP}
+            onPublish={canEditProject && currentUser ? () => setShowPublishToTeam(true) : undefined}
           />
         )}
         {tab === "taetigkeiten" && (
@@ -1014,6 +1031,16 @@ function Dashboard() {
             saveWP(w);
             setEditingWP(null);
           }}
+        />
+      )}
+      {showPublishToTeam && canEditProject && currentUser && (
+        <PublishToTeamDialog
+          snapshot={{ projects, workPackages, activities }}
+          publisherUserId={currentUser.id}
+          onClose={() => setShowPublishToTeam(false)}
+          listCustomers={publishToTeamApi.listCustomers}
+          readProjection={publishToTeamApi.readProjection}
+          publish={publishToTeamApi.publish}
         />
       )}
       {editingActivity && canEditActivity && (

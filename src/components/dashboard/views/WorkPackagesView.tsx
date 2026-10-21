@@ -19,6 +19,7 @@ export function WorkPackagesView({
   onEdit,
   onDelete,
   canEdit,
+  onPublish,
 }: {
   workPackages: WorkPackage[];
   projects: Project[];
@@ -30,6 +31,8 @@ export function WorkPackagesView({
   onDelete: (id: string) => void;
   /** RBAC: Schreibaktionen werden nur bei `workpackage.edit` angeboten. */
   canEdit: boolean;
+  /** L0b: Aktion "An Team veröffentlichen"; ohne Handler wird keine Schaltfläche angeboten. */
+  onPublish?: () => void;
 }) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"alle" | WorkPackageStatus>("alle");
@@ -102,6 +105,14 @@ export function WorkPackagesView({
               </option>
             ))}
           </select>
+          {onPublish && (
+            <button
+              onClick={onPublish}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm font-medium hover:bg-secondary"
+            >
+              An Team veröffentlichen
+            </button>
+          )}
           {canEdit && (
             <button
               onClick={onNew}
