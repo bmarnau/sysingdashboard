@@ -126,11 +126,12 @@ lieferpakete:
     entscheidung: "Nutzer wählt Option A am 2026-10-21 (Schaltfläche statt nur Demo-Import)."
     schaetzung: { codex_auftraege: "4-7", lovable_prompts: "2-4", arbeitstage: "2-3" }
     abhaengig_von: [L0]
-    status: planned
-    code_merged: no
-    gates_pass: not_run
+    status: in_progress
+    code_merged: yes
+    gates_pass: yes
     preview_verified: no
     published_verified: not_published
+    referenz: PR #200 (main aac99ec)
     anforderungen:
       - "Die Oberfläche muss eine Aktion 'An Team veröffentlichen' für Nutzer mit project.edit bereitstellen."
       - "Vor der Ausführung muss eine Vorschau je Paket Status 'wird veröffentlicht' oder 'übersprungen' mit Grund (z. B. mapping_missing) zeigen."
@@ -138,10 +139,13 @@ lieferpakete:
       - "Nach der Ausführung muss die Oberfläche Anzahl veröffentlichter und übersprungener Pakete ausweisen."
       - "Die Aktion sollte idempotent sein; wiederholtes Ausführen darf keine Duplikate erzeugen."
       - "Ein Fälligkeitsdatum im Format JJJJ-MM-TT muss in Verantwortungen → Arbeitspakete in der Spalte Fällig erscheinen (UI-Nachweis für DUE-DROP)."
+    entschieden:
+      - "Ort: Arbeitspaket-Ansicht (Nutzer, 2026-10-21)."
+      - "Umsetzung: Claude-Code-PR, keine Lovable-Variant nötig (Nutzer, 2026-10-21)."
     offene_punkte:
-      - Greifen die Datenbank-Zugriffsregeln (Systemhaus-Zugehörigkeit, Kundenfreigabe) für das Betreiberkonto? (nicht nachgewiesen)
-      - Wo liegt die Aktion in der Oberfläche (Arbeitspaket-Ansicht oder Verantwortungen)?
-      - Umsetzung über Claude-Code-PR oder Lovable-Variant (S0-04)?
+      - "Praxistest in der Preview: Das Konto braucht Systemhaus-Zugehörigkeit, Verantwortung und Kundenfreigabe write. Der Arbeitspaket-Dialog meldete zuletzt 'Keine aktive Systemhaus-Zugehörigkeit'; Nutzer gab 'vorhanden' an (Widerspruch ungeklärt)."
+      - "Tätigkeiten ohne UUID-Ingenieurkennung werden mit Grund übersprungen (engineer_missing); eigener Entscheid nötig, ob die Kennung des Veröffentlichenden ergänzt werden soll."
+      - "Zurückziehungs-Zahl in der Vorschau ist eine Schätzung; Server rechnet maßgeblich."
     risiko: Schreibender Pfad auf die gemeinsame Tabelle; Rollen- und Mandantenprüfung muss serverseitig bleiben (R-06).
 
   - id: L1
@@ -362,6 +366,12 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-21
+    ereignis: >-
+      L0b Code gemergt: Schaltfläche und Dialog "An Team veröffentlichen" in der
+      Arbeitspaket-Ansicht, 21 neue Tests, CI 15/15. Preview-Nachweis (Fälligkeit
+      in Verantwortungen sichtbar) steht aus.
+    beleg: PR #200, main aac99ec
   - datum: 2026-10-21
     ereignis: >-
       Befund: Kein Bedienweg veröffentlicht lokale Arbeitspakete in die gemeinsame
