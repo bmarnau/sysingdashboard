@@ -26,7 +26,7 @@ function validJson(): string {
     synthetic: true,
     snapshot: {
       mode: "demo",
-      datasetVersion: "1.0.0",
+      datasetVersion: "1.1.0",
       generatedAt: "2026-09-14T08:00:00Z",
       observedAt: "2026-09-14T08:00:00Z",
       domains: [
@@ -62,7 +62,7 @@ describe("KioskDemoDataSection", () => {
     });
 
     await waitFor(() => expect(screen.getByText("Kiosk-Demo-JSON importiert.")).toBeVisible());
-    expect(screen.getByText("Version 1.0.0")).toBeVisible();
+    expect(screen.getByText("Version 1.1.0")).toBeVisible();
     expect(readKioskDemoDataset()?.domains[0]?.id).toBe("projects");
   });
 

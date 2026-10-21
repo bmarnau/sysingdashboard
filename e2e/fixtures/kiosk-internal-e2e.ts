@@ -123,7 +123,7 @@ export async function seedKioskHybridDemoDataset(page: Page): Promise<void> {
     {
       key: "northbit-kiosk-demo-dataset-v1",
       value: JSON.stringify({
-        version: "1.0.0",
+        version: "1.1.0",
         loadedAt: "2026-09-19T05:00:00.000Z",
         domains: [
           {

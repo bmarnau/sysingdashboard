@@ -20,7 +20,7 @@ describe("DemoKioskDataProvider", () => {
     const snapshot = await provider.getSnapshot();
     expect(snapshot.mode).toBe("demo");
     expect(snapshot.datasetState).toBe("loaded");
-    expect(snapshot.datasetVersion).toBe("1.0.0");
+    expect(snapshot.datasetVersion).toBe("1.1.0");
     expect(snapshot.generatedAt).toBe(NOW.toISOString());
     expect(snapshot.domains).toHaveLength(6);
     expect(snapshot.domains.every((domain) => domain.sourceKind === "demo")).toBe(true);
