@@ -309,21 +309,26 @@ querschnitt:
       nach dem Golden Gate geplant ist. In L8 ist nur Backup/Restore im
       bestehenden Umfang Pflicht.
     status: planned
-    vor_golden_gate_erforderlich: no # Entscheidung des Nutzers steht aus
+    vor_golden_gate_erforderlich: no
+    entscheidung_nutzer: "2026-10-21: QS-02 erst nach dem Golden Gate."
 
   - id: QS-03
     titel: Produktname "SysIng Dashboard" und Release-Hygiene
     inhalt:
       - Golden Gate bleibt interner Codename.
-      - Version 1.68.1 mit Changelog-Eintrag (zu entscheiden).
-    status: planned
+      - "Version 1.69.0 mit Changelog-Eintrag (Nutzer 2026-10-21; Minor wegen neuer Funktion)."
+      - Sichtbare Titel und Kopfzeilen einheitlich SysIng Dashboard.
+      - "Release-Tag v1.69.0 und GitHub-Release erst nach Publish-Go/No-Go (eigene Freigabe)."
+    status: in_progress
+    code_merged: pending
 
   - id: QS-04
     titel: Domain und Auth-Mail (sysingdashboard.de, SPF/DKIM/DMARC)
     referenz: docs/BACKLOG.md (Stand 2026-08-17)
     einordnung: Betriebsfähigkeit der Registrierung; Plattform-Mails sind für externe Empfänger unzuverlässig.
-    vor_golden_gate_erforderlich: unklar
-    status: planned
+    vor_golden_gate_erforderlich: no
+    entscheidung: "Nutzer 2026-10-21: QS-04 ist optional; Umfang reicht bis QS-03."
+    status: optional
 
 # ---------------------------------------------------------------------------
 # Bewusst nach dem Golden Gate (Delivery Plan, Abschnitt 7)
@@ -366,6 +371,12 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-21
+    ereignis: >-
+      Umfang festgelegt: QS-01 und QS-03 jetzt, QS-02 nach dem Golden Gate, QS-04
+      optional. Version 1.69.0 beschlossen; Changelog, Produktname und
+      Statusdateien auf 1.69.0 gebracht (PR offen).
+    beleg: Nutzerentscheidungen 2026-10-21
   - datum: 2026-10-21
     ereignis: >-
       L0b Code gemergt: Schaltfläche und Dialog "An Team veröffentlichen" in der

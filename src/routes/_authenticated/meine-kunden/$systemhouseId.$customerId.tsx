@@ -21,7 +21,7 @@ const uuid = z.string().uuid();
 export const Route = createFileRoute("/_authenticated/meine-kunden/$systemhouseId/$customerId")({
   head: () => ({
     meta: [
-      { title: "Kunde – Meine Kunden – Engineer Console" },
+      { title: "Kunde – Meine Kunden – SysIng Dashboard" },
       {
         name: "description",
         content: "Freigegebene Projekte, Arbeitspakete und Tätigkeiten eines Kunden (nur lesen).",

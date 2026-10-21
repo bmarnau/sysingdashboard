@@ -9,7 +9,21 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-15 · Dashboard-Version 1.68.0
+Stand: 2026-10-21 · Dashboard-Version 1.69.0
+
+## 2026-10-21 — Golden-Gate-Vorbereitung: Veröffentlichungsweg und Release 1.69.0
+
+Der Golden-Gate-Plan ist als `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` im Repository
+hinterlegt. L0 prüfte den Produktstand und deckte einen Befund auf: Die Funktion zum
+Veröffentlichen in die gemeinsame Projektion wurde von keiner Oberfläche aufgerufen,
+sodass „Verantwortungen → Arbeitspakete“ leer blieb. Mit PR #200 (L0b) gibt es dafür die
+Aktion „An Team veröffentlichen“ mit Vorschau, Gründen und Bestätigung vor Zurückziehungen.
+
+Weitere Korrekturen seit 1.68.0: Fälligkeit und Kategorie gehen beim Veröffentlichen nicht
+mehr verloren (#192), Kiosk-Demodaten 1.1.0 (#196), Fehlergrund in der GitHub-Statusanzeige
+(#197). Die Version wird auf 1.69.0 angehoben; der Produktname „SysIng Dashboard“ gilt in
+allen sichtbaren Titeln, „Golden Gate“ bleibt interner Projektname. Ein veröffentlichter
+GitHub-Release oder Deploy entsteht dadurch nicht; beides bleibt eigene Freigaben.
 
 ## 2026-10-15 — BSF-03E P5-Gesamtabnahme abgeschlossen
 

@@ -20,7 +20,7 @@ import { logger } from "@/lib/logger";
 export const Route = createFileRoute("/_authenticated/projektcontrolling")({
   head: () => ({
     meta: [
-      { title: "Projektcontrolling – Engineer Console" },
+      { title: "Projektcontrolling – SysIng Dashboard" },
       {
         name: "description",
         content: "Read-only Projektcontrolling für berechtigte Leitungsrollen.",

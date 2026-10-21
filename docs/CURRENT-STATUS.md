@@ -65,7 +65,7 @@ Historische Dokumente werden nicht rückwirkend umgeschrieben. Abweichende OPEN-
 
 - Produktive Anwendung: `https://sysingdashboard.lovable.app`
 - Source of Truth für Code und Dokumentation: GitHub `bmarnau/sysingdashboard`
-- Dashboard-Kandidat: `1.68.0`; BSF-03E ist integriert und P5-abgenommen. Der veröffentlichte GitHub-Release bleibt bis zur separaten Release-Veröffentlichung `v1.65.0`.
+- Dashboard-Kandidat: `1.69.0`; BSF-03E ist integriert und P5-abgenommen. Der veröffentlichte GitHub-Release bleibt bis zur separaten Release-Veröffentlichung `v1.65.0`.
 - Produktiver MVP-/BSF-Daten-/Auth-Provider: Supabase
 - Authentifizierung, RBAC und RLS: technisch und durch Rollen-/Negativtests nachgewiesen
 - Azure SQL, Azure Table Storage und Microsoft Entra ID: optionaler Migrations-/Erweiterungspfad, nicht Voraussetzung des aktuellen BSF-Schritts

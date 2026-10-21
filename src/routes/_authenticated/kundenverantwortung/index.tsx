@@ -16,7 +16,7 @@ import { logger } from "@/lib/logger";
 export const Route = createFileRoute("/_authenticated/kundenverantwortung/")({
   head: () => ({
     meta: [
-      { title: "Kundenverantwortung – Engineer Console" },
+      { title: "Kundenverantwortung – SysIng Dashboard" },
       {
         name: "description",
         content: "Primäre Kundenverantwortung im eigenen Systemhaus verwalten.",

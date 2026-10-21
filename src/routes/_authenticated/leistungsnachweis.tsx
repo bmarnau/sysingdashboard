@@ -26,7 +26,7 @@ import type { ReportFormat } from "@/lib/report/types";
 export const Route = createFileRoute("/_authenticated/leistungsnachweis")({
   head: () => ({
     meta: [
-      { title: "Leistungsnachweis – Engineer Console" },
+      { title: "Leistungsnachweis – SysIng Dashboard" },
       {
         name: "description",
         content: "Teamlead-Review und finalisierter Kunden-Leistungsnachweis.",
