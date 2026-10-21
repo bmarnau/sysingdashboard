@@ -49,7 +49,7 @@ architecturePrinciples:
     rule: "Kundenidentität und Kundenscope sind providerneutral an das Systemhaus gebunden und nicht an einen Microsoft-Tenant oder anderen Provider."
 
 versions:
-  dashboard: "1.68.0"
+  dashboard: "1.69.0"
   projectManifestSchema: "1.3.0"
   technicalReportSchema: "2.0.0"
   technicalReportVersion: 17
@@ -702,14 +702,14 @@ quality:
   updateRule: "Quality metrics are updated after each sprint or release; volatile report details remain CI artifacts."
 
 releaseManagement:
-  currentRelease: "1.68.0"
+  currentRelease: "1.69.0"
   stage: "preview"
   status: "not-assessed"
   statusBasis: >-
     BSF-03E ist mit PR #185 auf main@008c798af1c6901c23526eaab1cf1b8e0242676a
     integriert und nach Exact-Head-CI/Security, Post-Merge-CI/Security sowie
     frischem read-only Lovable-Datenbankcheck in P5 abgeschlossen. Kandidat
-    1.68.0 bleibt ohne separaten Release-/Deploy-Auftrag im Preview-Status; der
+    1.69.0 bleibt ohne separaten Release-/Deploy-Auftrag im Preview-Status; der
     veröffentlichte GitHub-Release bleibt v1.65.0.
   releaseEvidence:
     - "CHANGELOG.md"

@@ -13,7 +13,7 @@ import { logger } from "@/lib/logger";
 export const Route = createFileRoute("/_authenticated/meine-kunden/")({
   head: () => ({
     meta: [
-      { title: "Meine Kunden – Engineer Console" },
+      { title: "Meine Kunden – SysIng Dashboard" },
       {
         name: "description",
         content: "Kunden mit aktiver fachlicher Verantwortung und Lesezugriff.",

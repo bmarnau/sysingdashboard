@@ -155,7 +155,7 @@ import { EngineerDialog } from "@/components/dashboard/dialogs/EngineerDialog";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: `Engineer Console – ${dashboardData.engineer.company}` },
+      { title: `SysIng Dashboard – ${dashboardData.engineer.company}` },
       {
         name: "description",
         content:
@@ -551,7 +551,7 @@ function Dashboard() {
               <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
                 {engineerState.company}
               </p>
-              <p className="text-sm font-semibold">Engineer Console</p>
+              <p className="text-sm font-semibold">SysIng Dashboard</p>
             </div>
           </div>
 

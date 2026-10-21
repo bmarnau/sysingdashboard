@@ -6,7 +6,7 @@ import { WorkPackageWorkView } from "@/components/avkk/work/WorkPackageWorkView"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/_authenticated/verantwortungen")({
-  head: () => ({ meta: [{ title: "Verantwortungen - Engineer Console" }] }),
+  head: () => ({ meta: [{ title: "Verantwortungen - SysIng Dashboard" }] }),
   component: ResponsibilitiesPage,
 });
 

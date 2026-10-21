@@ -88,7 +88,7 @@ export const DOCUMENTATION_VERSION = "1.24.1";
 /** Aktuelle Dashboard-Version. Wird zentral aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CURRENT_DASHBOARD_VERSION;
 /** Anzeigename des Dashboards für Handbuch-Footer. */
-export const DASHBOARD_VERSION_HINT = `Engineer Console ${DASHBOARD_VERSION}`;
+export const DASHBOARD_VERSION_HINT = `SysIng Dashboard ${DASHBOARD_VERSION}`;
 
 /* ---------------------------- Built-in Topics ---------------------------- */
 

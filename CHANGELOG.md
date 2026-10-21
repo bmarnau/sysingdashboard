@@ -13,6 +13,15 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.69.0 - 2026-10-21
+
+- **An Team veröffentlichen (L0b)**: In der Arbeitspaket-Ansicht bringt die neue Aktion den lokalen Bestand für einen Kunden in die gemeinsame Datenbasis (nur mit Bearbeitungsrecht für Projekte). Der Dialog zeigt vorab, was veröffentlicht, übersprungen (mit Grund) oder zurückgezogen wird; lokale Kundennamen werden ausdrücklich zugeordnet, nichts wird geraten. Der Server prüft Rolle, Systemhaus und Kundenfreigabe weiterhin selbst.
+- **Fälligkeit und Kategorie bleiben erhalten**: Beim Veröffentlichen gingen Fälligkeitsdatum und Kategorie eines Arbeitspakets verloren, weil das Eingabeschema sie verwarf. Beide werden jetzt übernommen (Fix #192).
+- **Projektcontrolling**: Die Filterleiste bleibt in allen Zuständen (Laden, Fehler, leer) sichtbar (Fix #192).
+- **Kiosk-Demodaten 1.1.0**: Geräte mit alten Demodaten laden den aktuellen Datensatz; die Spalte „Infrastruktur“ zeigt wieder OK, Warnung und Kritisch.
+- **Systemstatus**: Ist GitHub nicht erreichbar, nennt die Anzeige jetzt den Grund (z. B. Anfragelimit, Zeitüberschreitung, Netzwerkfehler) statt nur „nicht prüfbar“.
+- **Produktname**: Sichtbare Titel und Kopfzeilen heißen einheitlich „SysIng Dashboard“ (vorher teils „Engineer Console“). „Golden Gate“ bleibt interner Projektname.
+
 ## 1.68.0 - 2026-10-04
 
 - **Operative AP-Arbeitssicht (BSF-03E P3b)**: In „Verantwortungen → Arbeitspakete“ dieselben freigegebenen Arbeitspakete nach Kunde, Verantwortlichem oder Fälligkeit gruppieren, unabhängig sortieren und explizit filtern. Primäre Verantwortung, Stellvertretung und „Nicht zugeordnet“ bleiben unterscheidbar.

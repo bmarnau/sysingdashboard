@@ -31,7 +31,7 @@ export function CustomerPageShell({
             </span>
             <span className="leading-tight">
               <span className="block font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Engineer Console
+                SysIng Dashboard
               </span>
               <span className="block text-sm font-semibold">{sectionTitle}</span>
             </span>

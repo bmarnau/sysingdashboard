@@ -44,7 +44,7 @@ Unter **Personen** bleibt die bereits integrierte P3a-Sicht erreichbar. Berechti
 Eine leere Quelle und ein leeres Filterergebnis werden unterschieden. Beim Laden oder bei Fehlern erscheinen keine alten AP-Daten. Über **Aktualisieren** ist ein erneuter Versuch möglich.
 
 ## Abnahmestand
-P3a, die serverseitigen P3b-Datenverträge und die operative AP-Arbeitssicht sind auf **main** integriert. Die vollständigen P5-Gates für BSF-03E sind abgeschlossen. Dashboard 1.68.0 bleibt dennoch ein Entwicklungskandidat; ohne separaten Release-/Deploy-Auftrag entsteht kein neuer veröffentlichter Release.`,
+P3a, die serverseitigen P3b-Datenverträge und die operative AP-Arbeitssicht sind auf **main** integriert. Die vollständigen P5-Gates für BSF-03E sind abgeschlossen. Dashboard 1.69.0 bleibt dennoch ein Entwicklungskandidat; ohne separaten Release-/Deploy-Auftrag entsteht kein neuer veröffentlichter Release.`,
     relatedTopics: ["avkk-management", "avkk-arbeitsplatz"],
   },
   {
