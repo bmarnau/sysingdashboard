@@ -11,6 +11,7 @@
  * von `/api/status` (nur Booleans, Counts und ggf. freigegebene Namen).
  */
 import { useCallback, useEffect, useSyncExternalStore } from "react";
+import type { GithubStatusFailure } from "@/lib/github-status-failure";
 
 export interface AzureComponentStatus {
   configured: boolean;
@@ -30,6 +31,7 @@ export interface SystemStatusPayload {
     mainCommit?: string | null;
     checkedAt?: string | null;
     sourceOfTruthReachable?: boolean | null;
+    sourceOfTruthFailure?: GithubStatusFailure | null;
   };
   lovable?: {
     publishedUrl?: string | null;

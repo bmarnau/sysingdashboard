@@ -30,6 +30,7 @@ export const Route = createFileRoute("/api/status")({
             mainCommit: githubMain.mainCommit,
             checkedAt: githubMain.checkedAt,
             sourceOfTruthReachable: githubMain.reachable,
+            sourceOfTruthFailure: githubMain.failure,
           },
           correlationId: getCurrentCorrelationId(),
         };
