@@ -297,9 +297,12 @@ querschnitt:
       - "Migrationen getrennt (A: Profile/Trigger, B: Bootstrap, C: Default-ACL inkl. pg_default_acl-Inventar)."
       - ADR-0034/0035 und DATABASE-CHANGE-GOVERNANCE einhalten; keine Plattform-/Auth-Storage-Änderung.
       - Schema-Drift (u. a. reference_value_history_systemhouse_fk) vorab abgleichen.
+    entschieden:
+      - "Admin-E-Mail liegt in einem nicht öffentlichen app_settings-Eintrag (Nutzer, 2026-10-21)."
+      - "QS-01 jetzt im Umfang (Nutzer, 2026-10-21)."
     offene_punkte:
-      - Ablageort der Admin-E-Mail (z. B. nicht öffentlicher app_settings-Eintrag).
       - Ist die E-Mail-Bestätigung im Hosting aktiv?
+      - Lovable-Variant (S0-04) für die Datenbankmigrationen anlegen.
 
   - id: QS-02
     titel: Server-Backup (Local-First plus Server-Sicherung)
@@ -320,7 +323,9 @@ querschnitt:
       - Sichtbare Titel und Kopfzeilen einheitlich SysIng Dashboard.
       - "Release-Tag v1.69.0 und GitHub-Release erst nach Publish-Go/No-Go (eigene Freigabe)."
     status: in_progress
-    code_merged: pending
+    code_merged: yes
+    gates_pass: yes
+    referenz: PR #202 (main 8ecf9d2)
 
   - id: QS-04
     titel: Domain und Auth-Mail (sysingdashboard.de, SPF/DKIM/DMARC)
@@ -371,6 +376,14 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-21
+    ereignis: >-
+      QS-03 Code gemergt (1.69.0, Changelog, Produktname). Tag und GitHub-Release
+      stehen aus (nach Publish-Go/No-Go). QS-01: Ablageort der Admin-E-Mail
+      entschieden. Offen für den nächsten Termin: Systemhaus-Zugehörigkeit des
+      Betreiberkontos in der Preview (Praxistest L0b), E-Mail-Bestätigung,
+      Variant S0-04, Publish-Entscheidung.
+    beleg: PR #202, main 8ecf9d2
   - datum: 2026-10-21
     ereignis: >-
       Umfang festgelegt: QS-01 und QS-03 jetzt, QS-02 nach dem Golden Gate, QS-04
