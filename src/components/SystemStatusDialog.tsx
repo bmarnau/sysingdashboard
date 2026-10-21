@@ -39,6 +39,7 @@ import { can } from "@/lib/rbac/permissions";
 import { getAuthConfigurationStatus } from "@/integrations/supabase/config";
 import { getAuthBackendStatus } from "@/lib/admin/auth-accounts.functions";
 import { resolveGitSyncState } from "@/lib/git-sync-status";
+import { describeGithubStatusFailure } from "@/lib/github-status-failure";
 
 interface SystemStatusDialogProps {
   open: boolean;
@@ -223,6 +224,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
   const ghMainCommit = p.github?.mainCommit ?? null;
   const ghCheckedAt = p.github?.checkedAt ?? null;
   const ghSourceReachable = p.github?.sourceOfTruthReachable ?? null;
+  const ghFailureText = describeGithubStatusFailure(p.github?.sourceOfTruthFailure);
   const ghEvidenceCurrent = health.apiReachable !== false;
   const ghSyncState = resolveGitSyncState(ghCommit, ghMainCommit, ghEvidenceCurrent);
   const ghSyncLabel =
@@ -233,7 +235,7 @@ export function SystemStatusDialog({ open, onOpenChange }: SystemStatusDialogPro
         : ghSyncState === "different"
           ? "ABWEICHEND — Build entspricht nicht GitHub main"
           : ghSourceReachable === false
-            ? "NICHT PRÜFBAR — GitHub main nicht erreichbar"
+            ? `NICHT PRÜFBAR — GitHub main nicht erreichbar${ghFailureText ? ` (${ghFailureText})` : ""}`
             : "NICHT PRÜFBAR — Build- oder main-Commit fehlt";
   const ghMainCommitDisplay =
     health.apiReachable === false

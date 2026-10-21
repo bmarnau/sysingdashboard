@@ -26,6 +26,11 @@ declare module "*/backend/services/githubStatus.mjs" {
     mainCommit: string | null;
     checkedAt: string;
     reachable: boolean;
+    failure: {
+      reason: "http_error" | "invalid_response" | "timeout" | "network_error" | "fetch_unavailable";
+      httpStatus: number | null;
+      rateLimitRemaining: number | null;
+    } | null;
   }>;
   export function resetGithubMainStatusCacheForTests(): void;
 }
@@ -45,6 +50,16 @@ declare module "*/backend/services/statusService.mjs" {
       mainCommit?: string | null;
       checkedAt?: string | null;
       sourceOfTruthReachable?: boolean | null;
+      sourceOfTruthFailure?: {
+        reason:
+          | "http_error"
+          | "invalid_response"
+          | "timeout"
+          | "network_error"
+          | "fetch_unavailable";
+        httpStatus: number | null;
+        rateLimitRemaining: number | null;
+      } | null;
     };
     lovable: {
       publishedUrl: string | null;

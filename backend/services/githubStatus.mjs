@@ -11,6 +11,25 @@ function isoNow(epochMs) {
   return new Date(epochMs).toISOString();
 }
 
+// Nur numerische bzw. enumerierte Diagnose. Weder Antwort-Body noch Header-Werte
+// (außer dem Rate-Limit-Zähler als Zahl) gelangen in das Ergebnis.
+function failureResult(branch, checkedAt, reason, httpStatus = null, rateLimitRemaining = null) {
+  return {
+    branch,
+    mainCommit: null,
+    checkedAt,
+    reachable: false,
+    failure: { reason, httpStatus, rateLimitRemaining },
+  };
+}
+
+function parseRateLimitRemaining(response) {
+  const raw = response?.headers?.get?.("x-ratelimit-remaining");
+  if (raw === null || raw === undefined || raw === "") return null;
+  const value = Number(raw);
+  return Number.isInteger(value) && value >= 0 ? value : null;
+}
+
 export async function getGithubMainStatus({
   fetchImpl = globalThis.fetch,
   now = () => Date.now(),
@@ -24,12 +43,7 @@ export async function getGithubMainStatus({
 
   const checkedAt = isoNow(currentTime);
   if (typeof fetchImpl !== "function") {
-    return {
-      branch: MAIN_BRANCH,
-      mainCommit: null,
-      checkedAt,
-      reachable: false,
-    };
+    return failureResult(MAIN_BRANCH, checkedAt, "fetch_unavailable");
   }
 
   const controller = new AbortController();
@@ -46,12 +60,13 @@ export async function getGithubMainStatus({
     });
 
     if (!response.ok) {
-      return {
-        branch: MAIN_BRANCH,
-        mainCommit: null,
+      return failureResult(
+        MAIN_BRANCH,
         checkedAt,
-        reachable: false,
-      };
+        "http_error",
+        response.status,
+        parseRateLimitRemaining(response),
+      );
     }
 
     const payload = await response.json();
@@ -60,11 +75,16 @@ export async function getGithubMainStatus({
         ? payload.object.sha
         : null;
 
+    if (!mainCommit) {
+      return failureResult(MAIN_BRANCH, checkedAt, "invalid_response");
+    }
+
     const result = {
       branch: MAIN_BRANCH,
       mainCommit,
       checkedAt,
-      reachable: Boolean(mainCommit),
+      reachable: true,
+      failure: null,
     };
 
     if (cacheTtlMs > 0) {
@@ -73,13 +93,12 @@ export async function getGithubMainStatus({
     }
 
     return result;
-  } catch {
-    return {
-      branch: MAIN_BRANCH,
-      mainCommit: null,
+  } catch (error) {
+    return failureResult(
+      MAIN_BRANCH,
       checkedAt,
-      reachable: false,
-    };
+      error?.name === "AbortError" ? "timeout" : "network_error",
+    );
   } finally {
     clearTimeout(timer);
   }
