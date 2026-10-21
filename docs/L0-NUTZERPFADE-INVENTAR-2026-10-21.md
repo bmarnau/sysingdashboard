@@ -24,8 +24,8 @@ Preview oder die veröffentlichte App durchläuft.
 | `/auth`, `/reset-password`                            | Anmeldung, Registrierung, Kennwort zurücksetzen | öffentlich                        |
 | `/dashboard`                                          | persönliches Arbeitsdashboard, „Mein AVKK"      | `avkk.view`                       |
 | `/verantwortungen`                                    | Verantwortungen, Arbeitspaket-Sicht (BSF-03E)   | `avkk.management.view`            |
-| `/meine-kunden`, `/meine-kunden/:id`                  | Kunden mit aktiver Verantwortung                | Kundenverantwortung               |
-| `/kundenverantwortung`                                | primäre Kundenverantwortung verwalten           | Verwaltungsrecht                  |
+| `/meine-kunden`, `/meine-kunden/:id`                  | Kunden mit aktiver Verantwortung                | nicht geprüft                     |
+| `/kundenverantwortung`                                | primäre Kundenverantwortung verwalten           | nicht geprüft                     |
 | `/projektcontrolling`                                 | Leistungssicht, read-only (BSF-03A)             | `project.controlling.view`        |
 | `/leistungsnachweis`                                  | Teamlead-Review und finaler Nachweis (BSF-03B)  | `performance.statement.manage`    |
 | `/kiosk`                                              | Wallboard (Demo- und interne Daten)             | `kiosk.view` (technische Rolle)   |
