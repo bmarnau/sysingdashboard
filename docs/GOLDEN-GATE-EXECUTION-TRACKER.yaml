@@ -98,14 +98,51 @@ lieferpakete:
     nutzerwert: Geprüfte Preview mit Demo-Pfad und Liste fehlender Funktionen.
     schaetzung: { codex_auftraege: "3-5", lovable_prompts: "2-3", arbeitstage: "1-2" }
     abhaengig_von: [S0-04]
+    status: in_progress
+    code_merged: partial
+    gates_pass: partial
+    preview_verified: partial
+    published_verified: not_published
+    referenz: PR #196, PR #197, PR #198, docs/L0-NUTZERPFADE-INVENTAR-2026-10-21.md
+    erreicht:
+      - "Preview läuft auf main d37538b und zeigt SYNCHRON (Nutzer-Screenshot 2026-10-21)."
+      - "Kiosk-Demo-Datensatz 1.1.0 (Infrastruktur-Spalte), GitHub-Statusdiagnose, Nutzerpfade-Inventar gemergt."
+    offene_punkte:
+      - Veröffentlichte App (1.68.0, Build 20.10.) bleibt unverifiziert; Build-Commit dort unbekannt.
+      - "DUE-DROP-Fix nur durch Tests belegt; UI-Nachweis erst nach L0b möglich."
+      - Publish braucht eigenes Go/No-Go.
+
+  - id: L0b
+    gg: GG-02-Vorbereitung
+    titel: Veröffentlichungsweg "An Team veröffentlichen" (lokal zu gemeinsamer Projektion)
+    nutzerwert: >-
+      Ein berechtigter Nutzer bringt lokale Projekte und Arbeitspakete selbst in die
+      gemeinsame Datenbasis; Verantwortungen und Cockpit zeigen dann echte Daten.
+    befund: >-
+      Am 2026-10-21 per Codeprüfung belegt: publishSharedCustomerProjectionFn
+      (shared-projection.functions.ts:96) wird von keiner Oberfläche aufgerufen;
+      der Reiter Arbeitspakete bleibt leer (Leerzustand "Keine Arbeitspakete im
+      freigegebenen Bereich").
+    entscheidung: "Nutzer wählt Option A am 2026-10-21 (Schaltfläche statt nur Demo-Import)."
+    schaetzung: { codex_auftraege: "4-7", lovable_prompts: "2-4", arbeitstage: "2-3" }
+    abhaengig_von: [L0]
     status: planned
     code_merged: no
     gates_pass: not_run
     preview_verified: no
     published_verified: not_published
+    anforderungen:
+      - "Die Oberfläche muss eine Aktion 'An Team veröffentlichen' für Nutzer mit project.edit bereitstellen."
+      - "Vor der Ausführung muss eine Vorschau je Paket Status 'wird veröffentlicht' oder 'übersprungen' mit Grund (z. B. mapping_missing) zeigen."
+      - "Die Aktion muss einen lokalen Kundennamen einem Kunden der Kundenfreigabe zuordnen lassen, ohne Namen zu raten."
+      - "Nach der Ausführung muss die Oberfläche Anzahl veröffentlichter und übersprungener Pakete ausweisen."
+      - "Die Aktion sollte idempotent sein; wiederholtes Ausführen darf keine Duplikate erzeugen."
+      - "Ein Fälligkeitsdatum im Format JJJJ-MM-TT muss in Verantwortungen → Arbeitspakete in der Spalte Fällig erscheinen (UI-Nachweis für DUE-DROP)."
     offene_punkte:
-      - Ist 1.68.0 veröffentlicht, oder läuft v1.65.0? (nicht automatisch annehmen)
-      - Demo-Daten, Route und Build-Abweichungen als konkrete Blocker ausweisen.
+      - Greifen die Datenbank-Zugriffsregeln (Systemhaus-Zugehörigkeit, Kundenfreigabe) für das Betreiberkonto? (nicht nachgewiesen)
+      - Wo liegt die Aktion in der Oberfläche (Arbeitspaket-Ansicht oder Verantwortungen)?
+      - Umsetzung über Claude-Code-PR oder Lovable-Variant (S0-04)?
+    risiko: Schreibender Pfad auf die gemeinsame Tabelle; Rollen- und Mandantenprüfung muss serverseitig bleiben (R-06).
 
   - id: L1
     gg: GG-02
@@ -125,7 +162,7 @@ lieferpakete:
       Frage: Welche meiner autorisierten Projekte erfordern Aufmerksamkeit,
       und warum? Drill-down mit ehrlichen Datenzuständen.
     schaetzung: { codex_auftraege: "7-12", lovable_prompts: "4-7", arbeitstage: "3-5" }
-    abhaengig_von: [L0, L1]
+    abhaengig_von: [L0, L0b, L1]
     status: planned
     code_merged: no
     gates_pass: not_run
@@ -316,11 +353,26 @@ risiken:
   - id: R-05
     titel: Gelesene PASS-Statusanzeigen ohne Evidenz
     gegenmassnahme: Vier getrennte Statusfelder; PASS nur mit Exact-Head-Nachweis.
+  - id: R-06
+    titel: Gemeinsame Projektion ohne Bedienweg bleibt leer
+    wirkung: Verantwortungen und Cockpit zeigen keine echten Daten; DUE-DROP in der UI nicht prüfbar
+    gegenmassnahme: Paket L0b; bis dahin DUE-DROP nur als GATES_PASS, nicht PREVIEW_VERIFIED führen.
 
 # ---------------------------------------------------------------------------
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-21
+    ereignis: >-
+      Befund: Kein Bedienweg veröffentlicht lokale Arbeitspakete in die gemeinsame
+      Projektion (Code- und Lovable-Prüfung). Nutzer wählt Option A; Paket L0b
+      angelegt, L2 hängt davon ab. DUE-DROP-Fix bleibt bis dahin nur durch Tests belegt.
+    beleg: Nutzer-Screenshots Arbeitspaket-Arbeitssicht (leer), Lovable-Leseantwort, shared-projection.functions.ts:96
+  - datum: 2026-10-21
+    ereignis: >-
+      L0 begonnen: Kiosk-Datensatz 1.1.0, GitHub-Statusdiagnose und
+      Nutzerpfade-Inventar auf main; Preview zeigt SYNCHRON auf d37538b.
+    beleg: PR #196, PR #197, PR #198, main d37538b
   - datum: 2026-10-20
     ereignis: >-
       S0-01 bis S0-03 abgeschlossen. Lovable-Sync-Branch per Merge-Commit in
