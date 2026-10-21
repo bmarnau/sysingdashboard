@@ -74,6 +74,38 @@ describe("kiosk demo repository", () => {
     expect(window.localStorage.getItem(KIOSK_DEMO_STORAGE_KEY)).toBeNull();
   });
 
+  it("discards stored demo data from an older dataset version (stale infrastructure labels)", () => {
+    // Geräte, die den frühen Datensatz geladen haben, speichern ihn unter derselben
+    // Version "1.0.0", aber mit alten Infrastruktur-Bezeichnungen. Die Wallboard-Ansicht
+    // erwartet OK/Warnung/Kritisch; ohne Versionswechsel blieb die Spalte leer.
+    window.localStorage.setItem(
+      KIOSK_DEMO_STORAGE_KEY,
+      JSON.stringify({
+        version: "1.0.0",
+        loadedAt: "2026-09-14T08:00:00.000Z",
+        domains: [
+          {
+            id: "infrastructure",
+            title: "Infrastruktur",
+            level: "ok",
+            metrics: [{ label: "Ueberwachte Systeme", value: 42, level: "ok" }],
+          },
+        ],
+      }),
+    );
+
+    expect(readKioskDemoDataset()).toBeNull();
+  });
+
+  it("publishes the infrastructure status labels the wallboard filters on", () => {
+    const infrastructure = loadKioskDemoDataset().domains.find(
+      (domain) => domain.id === "infrastructure",
+    );
+
+    const labels = infrastructure?.metrics.map((metric) => metric.label) ?? [];
+    expect(labels).toEqual(expect.arrayContaining(["OK", "Warnung", "Kritisch"]));
+  });
+
   it("uses a device-wide key rather than a user-scoped key", () => {
     expect(KIOSK_DEMO_STORAGE_KEY).toBe("northbit-kiosk-demo-dataset-v1");
     expect(KIOSK_DEMO_STORAGE_KEY).not.toContain("::");

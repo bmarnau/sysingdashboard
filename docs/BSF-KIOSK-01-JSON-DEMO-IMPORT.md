@@ -48,7 +48,7 @@ Top-Level-Vertrag:
   "synthetic": true,
   "snapshot": {
     "mode": "demo",
-    "datasetVersion": "1.0.0",
+    "datasetVersion": "1.1.0",
     "generatedAt": "2026-09-14T00:00:00Z",
     "observedAt": "2026-09-14T00:00:00Z",
     "domains": []

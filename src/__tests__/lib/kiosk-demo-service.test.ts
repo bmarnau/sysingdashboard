@@ -27,7 +27,7 @@ describe("kiosk demo service authorization", () => {
 
   it("allows a user manager to load and remove kiosk demo data", () => {
     const admin = actor("administrator");
-    expect(loadKioskDemoDataForActor(admin).version).toBe("1.0.0");
+    expect(loadKioskDemoDataForActor(admin).version).toBe("1.1.0");
     expect(readKioskDemoDataset()).not.toBeNull();
     removeKioskDemoDataForActor(admin);
     expect(readKioskDemoDataset()).toBeNull();

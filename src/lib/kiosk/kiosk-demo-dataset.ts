@@ -1,6 +1,6 @@
 import type { KioskDomainSnapshot } from "@/lib/kiosk/kiosk-contract";
 
-export const KIOSK_DEMO_DATASET_VERSION = "1.0.0";
+export const KIOSK_DEMO_DATASET_VERSION = "1.1.0";
 
 export interface KioskDemoDataset {
   version: string;

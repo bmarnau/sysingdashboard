@@ -25,7 +25,7 @@ function validJson(): string {
     synthetic: true,
     snapshot: {
       mode: "demo",
-      datasetVersion: "1.0.0",
+      datasetVersion: "1.1.0",
       generatedAt: "2026-09-14T00:00:00Z",
       observedAt: "2026-09-14T00:00:00Z",
       domains: [
@@ -57,7 +57,7 @@ describe("kiosk demo JSON import", () => {
       () => new Date("2026-09-14T08:00:00Z"),
     );
 
-    expect(result.version).toBe("1.0.0");
+    expect(result.version).toBe("1.1.0");
     expect(result.loadedAt).toBe("2026-09-14T08:00:00.000Z");
     expect(result.domains[0]?.id).toBe("projects");
     expect(result.domains[0]?.metrics[0]?.trend).toEqual([5, 6, 7, 8]);
@@ -69,7 +69,7 @@ describe("kiosk demo JSON import", () => {
     const invalid = JSON.stringify({
       schemaVersion: "sysing.kiosk.demo.v1",
       synthetic: false,
-      snapshot: { mode: "demo", datasetVersion: "1.0.0", domains: [] },
+      snapshot: { mode: "demo", datasetVersion: "1.1.0", domains: [] },
     });
 
     expect(() => importKioskDemoJsonForActor(actor("administrator"), invalid)).toThrow();
