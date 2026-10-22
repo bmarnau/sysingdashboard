@@ -116,3 +116,87 @@ Nur vorbereiten und berichten. Danach stoppen.
      Supabase-Projekt-Referenz (nur Referenz), Bestätigung Preview/Publish unverändert,
      Unsicherheiten.
 ```
+
+## Variant-Prompt S0-04, Fassung 2 (mit `types.ts`)
+
+```text
+Aufgabe: Variant für eine spätere Datenbankänderung vorbereiten (S0-04).
+Nur vorbereiten und berichten. Danach stoppen.
+
+1. Ausgangsstand
+   - Repository: bmarnau/sysingdashboard, Basis GitHub-main
+     228addf0a6cc403b0cd2b0a08014bfe5b74603d2 (oder neuer). Nenne den vollständigen base_sha.
+
+2. Was du tun sollst
+   - Vergleiche den gespeicherten Lovable-Stand mit GitHub-main.
+   - Erlaubte, bekannte Abweichung (von der Lovable-Plattform erzeugt): ausschließlich
+     src/integrations/supabase/client.ts, src/integrations/supabase/previewAuthStorage.ts
+     und src/integrations/supabase/types.ts.
+     Erwartete SHA-256:
+       previewAuthStorage.ts = 5b00130146b77ecd8ed49f118c640d3e75aa7c5e76695f3b9e3f7f8833719f0a
+       client.ts (mit Broker) = f8484c686a271fec973cb843be7cd6efe4ad027ca96ab4b1b3315eff79da26cc
+       types.ts = ef467ecf24731aa25fc71e51c97e699906832d3ffabac916354507b94e4ed144
+   - Ist der Lovable-Stand identisch mit main, ist das ebenfalls in Ordnung.
+   - Jede andere Abweichung oder abweichende Prüfsumme: stoppen und melden, mit Dateiliste
+     und tatsächlichen Prüfsummen. Dann keine Variant anlegen.
+   - Sonst: Lege eine isolierte Variant an, die genau diesem Stand entspricht.
+   - Der Branch der GitHub-Verbindung bleibt main; Preview und Publish bleiben unverändert.
+
+3. Nicht tun
+   - Keine Migration, kein SQL, kein Datenbankzugriff, keine Codeänderung, kein Commit auf
+     main, nicht veröffentlichen, keine Secrets ausgeben.
+   - Die drei Plattformdateien weder ändern noch bereinigen oder entfernen.
+
+4. Bericht (Pflicht)
+   - base_sha (vollständig)
+   - Name/ID der Variant bzw. des Branches (oder: keine angelegt, mit Grund)
+   - Liste der Abweichungen zu main und die tatsächlichen SHA-256-Werte
+   - Supabase-Projekt-Referenz (nur die Referenz, keine Schlüssel)
+   - Bestätigung, dass Preview und Publish unverändert sind
+   - Abweichungen oder Unsicherheiten
+   Wenn etwas nicht eindeutig ist: stoppen und melden, nicht raten.
+```
+
+## Variant-Prompt S0-04, Fassung 3 (mit `.lovable/`)
+
+```text
+Aufgabe: Variant für eine spätere Datenbankänderung vorbereiten (S0-04).
+Nur vorbereiten und berichten. Danach stoppen. Lege dafür keinen Plan und keine Plandatei an.
+
+1. Ausgangsstand
+   - Repository: bmarnau/sysingdashboard, Basis GitHub-main
+     228addf0a6cc403b0cd2b0a08014bfe5b74603d2 (oder neuer). Nenne den vollständigen base_sha.
+
+2. Was du tun sollst
+   - Vergleiche den gespeicherten Lovable-Stand mit GitHub-main.
+   - Erlaubte, bekannte Abweichungen:
+     a) Code-Dateien (von der Lovable-Plattform erzeugt), nur mit exakter Prüfsumme:
+        src/integrations/supabase/previewAuthStorage.ts =
+          5b00130146b77ecd8ed49f118c640d3e75aa7c5e76695f3b9e3f7f8833719f0a
+        src/integrations/supabase/client.ts (mit Broker) =
+          f8484c686a271fec973cb843be7cd6efe4ad027ca96ab4b1b3315eff79da26cc
+        src/integrations/supabase/types.ts = ef467ecf24731aa25fc71e51c97e699906832d3ffabac916354507b94e4ed144
+     b) Alle Dateien unter .lovable/ (Lovables Planungs-Metadaten): erlaubt, ohne Prüfsumme.
+        Liste sie im Bericht auf.
+   - Ist der Lovable-Stand identisch mit main, ist das ebenfalls in Ordnung.
+   - Jede andere Abweichung außerhalb von .lovable/ oder jede abweichende Prüfsumme bei den drei
+     Code-Dateien: stoppen und melden, mit Dateiliste und tatsächlichen Prüfsummen. Dann keine
+     Variant anlegen.
+   - Sonst: Lege eine isolierte Variant an, die genau diesem Stand entspricht.
+   - Der Branch der GitHub-Verbindung bleibt main; Preview und Publish bleiben unverändert.
+
+3. Nicht tun
+   - Keine Migration, kein SQL, kein Datenbankzugriff, keine Codeänderung, kein Commit auf
+     main, nicht veröffentlichen, keine Secrets ausgeben.
+   - Die drei Code-Dateien weder ändern noch bereinigen oder entfernen.
+
+4. Bericht (Pflicht)
+   - base_sha (vollständig)
+   - Name/ID der Variant bzw. des Branches (oder: keine angelegt, mit Grund)
+   - Liste der Abweichungen zu main (getrennt: Code-Dateien mit tatsächlichen SHA-256, und
+     Dateien unter .lovable/)
+   - Supabase-Projekt-Referenz (nur die Referenz, keine Schlüssel)
+   - Bestätigung, dass Preview und Publish unverändert sind
+   - Abweichungen oder Unsicherheiten
+   Wenn etwas nicht eindeutig ist: stoppen und melden, nicht raten.
+```
