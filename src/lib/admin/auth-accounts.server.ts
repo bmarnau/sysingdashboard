@@ -9,6 +9,7 @@
 
 import { getRequest } from "@tanstack/react-start/server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { logger } from "@/lib/logger";
 
 export interface AuthAccountSummary {
   id: string;
@@ -65,15 +66,27 @@ export async function writeAudit(
   payload: Record<string, unknown>,
 ): Promise<void> {
   try {
-    await admin.from("audit_log").insert({
+    // supabase-js wirft bei Datenbankfehlern nicht, sondern liefert `{ error }`.
+    // Ein reines try/catch hätte fehlgeschlagene Audit-Einträge deshalb verschluckt.
+    const { error } = await admin.from("audit_log").insert({
       action,
       target,
       actor_id: actorId,
       payload: payload as never,
     } as never);
-  } catch {
-    // Audit darf die Aktion nicht scheitern lassen; Fehler bleiben serverseitig.
+    if (error) reportAuditFailure(action, target, error);
+  } catch (error) {
+    reportAuditFailure(action, target, error);
   }
+}
+
+/**
+ * Audit darf die bereits ausgeführte Aktion nicht scheitern lassen, der Ausfall
+ * muss aber sichtbar sein. Protokolliert werden nur Aktion und Ziel, nie die
+ * Nutzlast (kann Konto-Daten enthalten).
+ */
+function reportAuditFailure(action: string, target: string, error: unknown): void {
+  logger.error("auth.audit.write_failed", error, { action, target });
 }
 
 /** Anzahl aktiver Systemadministratoren ohne das angegebene Konto. */
