@@ -16,7 +16,8 @@ keinen Pre-/Postflight, und das Lovable-Migrationswerkzeug kann den festen Datei
 | Git-Blob-SHA           | `32fe3ea2fe5ee699d7d21f8a2f8f96bb74de26c8`                                                          |
 | SHA-256                | `b67df3a1ad42cb47adb6b2760628bbef86666ef6883b22b36e35a0ce3ea79649`                                  |
 | Größe                  | 76 Zeilen, 3259 Byte                                                                                |
-| Erwartetes Pending-Set | genau diese eine Migration (Version `20261022090000`)                                               |
+| Anwendungsmenge        | genau diese eine Migration (Version `20261022090000`)                                               |
+| History-Lücken (Stand 2026-10-22, Abgleich + Katalogprüfung) | `20260913213000`, `20260917182000`, `20260917190000`: Objekte live vorhanden, nur History-Nachweis fehlt. **Nicht anwenden** (nur separat dokumentieren). |
 
 ## Auftragstext
 
@@ -43,8 +44,12 @@ Bericht -> stoppen. Die Einzelfreigabe des Projekt-Owners für genau diesen Lauf
 
 3. Preflight (nur lesend, protokollieren)
    - Migration History: erwartet endet bei 20260929053733; 20261022090000 darf nicht
-     vorhanden sein. Pending-Set muss exakt {20261022090000} sein.
-   - public.profiles: Zeilenzahl, RLS aktiv, Policy profiles_self_update (Definition),
+     vorhanden sein. Anwendungsmenge ist exakt {20261022090000}. Die History-Lücken
+     20260913213000, 20260917182000 und 20260917190000 sind bekannt (Objekte live vorhanden,
+     Katalogprüfung 2026-10-22) und werden NICHT angewendet und NICHT repariert. Weicht der
+     Befund ab (neue Lücken, andere Endversion): stoppen.
+   - public.profiles: Zeilenzahl, RLS aktiv, Policy profiles_self_update (Definition; erwartet:
+     Ausdruck nur auth.uid() = id, Hash USING/WITH CHECK 593ac56f4ca8fd31037039474d979d9151ac95a93ccad97c91e6c49ad2258f9c),
      vorhandene Trigger, Vorhandensein von profiles_admins_update_all.
    - Funktionen public.has_any_role(uuid, app_role[]) und public.is_account_active(uuid)
      vorhanden; Enum public.app_role enthält systemadministrator und administrator.
@@ -64,8 +69,10 @@ Bericht -> stoppen. Die Einzelfreigabe des Projekt-Owners für genau diesen Lauf
      Name qs01_a_profile_self_update_guard. Kein Repair, keine nachträgliche
      History-Korrektur.
    - Keine Datenkorrektur, keine weiteren Migrationen. Insbesondere nicht anwenden: den
-     Fremdschlüssel reference_value_history_systemhouse_fk, Bootstrap-Admin, Default-
-     Privilegien.
+     Fremdschlüssel reference_value_history_systemhouse_fk (existiert live bereits, Git-Nachzug
+     in PR #210), Bootstrap-Admin, Default-
+     Privilegien sowie die History-Lücken-Migrationen 20260913213000, 20260917182000 und
+     20260917190000 (würden bestehende Objekte überschreiben).
 
 6. Postflight (unmittelbar danach, nur lesend)
    - Migration History enthält 20261022090000 genau einmal und endet dort.
