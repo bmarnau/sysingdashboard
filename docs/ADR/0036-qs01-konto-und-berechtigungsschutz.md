@@ -124,3 +124,18 @@ Draft-PR 210) und dem von der Plattform erzeugten Kopf `__InternalSupabase` mit
 - Weicht der Inhalt ab, stoppt der Auftrag und meldet den Unterschied.
 - Nach dem Merge von PR 210 enthält `main` den Fremdschlüssel; als Abweichung bleibt dann nur
   der Plattformkopf. Die Prüfsumme wird dann neu bestimmt und hier nachgetragen.
+
+### Erweiterung 2026-10-22 (14:35): Ordner `.lovable/`
+
+Der zweite Variant-Lauf stoppte bei Lovables Planungsspeicher (`.lovable/plan.md` überschrieben,
+je Auftrag eine neue Datei unter `.lovable/plan/`; Lovable-Stand `fa0af9d`, 6 Commits vor
+`main`). Der Ordner enthält bereits viele solche Dateien seit August, hat keine Laufzeitwirkung
+und ist von Prettier ausgenommen. Prüfsummen wären nicht stabil, weil jeder Auftrag neue Dateien
+erzeugt.
+
+**Entscheidung (Betreiber):** Änderungen unter `.lovable/` sind als Plattform-Metadaten erlaubt.
+
+- Die Dateien unter `.lovable/` werden im Bericht aufgelistet, aber nicht per Prüfsumme gebunden.
+- Die drei Dateien unter `src/integrations/supabase/` bleiben fest an ihre Prüfsummen gebunden.
+- Jede andere Abweichung außerhalb von `.lovable/` stoppt den Auftrag.
+- Lovable wird gebeten, keine Plandatei anzulegen. Das ist eine Bitte und keine Garantie.
