@@ -334,6 +334,25 @@ querschnitt:
     vor_golden_gate_erforderlich: no
     entscheidung: "Nutzer 2026-10-21: QS-04 ist optional; Umfang reicht bis QS-03."
     status: optional
+  - id: QS-05
+    titel: Systemstatus zeigt Abweichungen Datenbank, Git und Lovable
+    einordnung: >-
+      Der Systemstatus prüft heute Git gegen Build (Build-Commit gegen main-HEAD),
+      nicht die Datenbank gegen die Migrationen. Der FK-Drift vom 2026-10-22 und der
+      Lovable-Broker wären dort nicht aufgefallen.
+    vor_golden_gate_erforderlich: no
+    entscheidung: "Nutzer 2026-10-22: Paket in den Tracker aufnehmen."
+    status: geplant
+    abhaengigkeiten:
+      - QS-01 Migration A angewendet (die Prüfung ist selbst eine Datenbankfunktion)
+    anforderungen:
+      - Der Systemstatus muss für Administratoren anzeigen, ob die angewendeten Migrationen der Datenbank mit dem im Build erwarteten Migrationsstand übereinstimmen (SYNCHRON, ABWEICHEND, NICHT PRÜFBAR).
+      - Die Prüfung muss nur lesen und darf keine Konto-, Kunden- oder Geschäftsdaten ausgeben.
+      - Die Prüfung muss serverseitig mit Rollenprüfung laufen; Nicht-Administratoren dürfen kein Ergebnis erhalten.
+      - Der Systemstatus sollte anzeigen, wenn die Auth-Storage-Broker-Datei im Build enthalten ist.
+      - Jede Abweichung muss mit Zeitpunkt der Prüfung und den abweichenden Migrationsnamen angezeigt werden.
+    risiko: Eine neue Datenbankfunktion; Anwendung nur über den Governance-Pfad (eigene Migration, Variant).
+    status_detail: noch nicht begonnen
 
 # ---------------------------------------------------------------------------
 # Bewusst nach dem Golden Gate (Delivery Plan, Abschnitt 7)
