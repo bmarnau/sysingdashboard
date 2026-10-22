@@ -3133,6 +3133,11 @@ ALTER TABLE ONLY "public"."reference_value"
 
 
 
+ALTER TABLE ONLY "public"."reference_value_history"
+    ADD CONSTRAINT "reference_value_history_systemhouse_fk" FOREIGN KEY ("systemhouse_id") REFERENCES "public"."systemhouse"("id") ON DELETE RESTRICT;
+
+
+
 ALTER TABLE ONLY "public"."reference_value"
     ADD CONSTRAINT "reference_value_parent_value_id_fkey" FOREIGN KEY ("parent_value_id") REFERENCES "public"."reference_value"("id") ON DELETE RESTRICT;
 
@@ -3145,11 +3150,6 @@ ALTER TABLE ONLY "public"."reference_value"
 
 ALTER TABLE ONLY "public"."reference_value"
     ADD CONSTRAINT "reference_value_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "auth"."users"("id");
-
-
-
-ALTER TABLE ONLY "public"."reference_value_history"
-    ADD CONSTRAINT "reference_value_history_systemhouse_fk" FOREIGN KEY ("systemhouse_id") REFERENCES "public"."systemhouse"("id") ON DELETE RESTRICT;
 
 
 
