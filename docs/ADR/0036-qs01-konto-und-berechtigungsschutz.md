@@ -86,3 +86,26 @@ Der Lovable-Prompt für Migration A liegt in
 
 Nach Anwendung von A kann ein Konto seinen Status und seine Authentifizierungsfelder nicht
 mehr selbst setzen. Der Test T01–T08 sichert den Vertrag dauerhaft ab.
+
+## Nachtrag 2026-10-22: Variant-Ausnahme für den Lovable-Auth-Broker
+
+Lovable legt in jeder neuen Arbeitskopie automatisch den Auth-Storage-Broker
+(`previewAuthStorage.ts`, Änderung in `client.ts`) an, auch nach einer Rücksetzung auf
+den GitHub-Stand (Beleg: Commit `a1ef0ec` Rücksetzung, danach `3fd8f74` am selben Tag).
+Der Broker ist per Governance verboten (Recovery PR #66,
+`src/__tests__/security/supabase-client-contract.test.ts`). Eine Variant ist deshalb nie
+exakt identisch mit `main`.
+
+**Entscheidung (Betreiber, 2026-10-22):** Für die Variant (S0-04) gilt eine begrenzte
+Ausnahme.
+
+1. Die Abweichung zu `main` darf ausschließlich `client.ts` und `previewAuthStorage.ts`
+   betreffen. Jede weitere Abweichung stoppt den Auftrag.
+2. Erwartete Prüfsummen (SHA-256, Stand `3fd8f74`):
+   - `previewAuthStorage.ts`: `5b00130146b77ecd8ed49f118c640d3e75aa7c5e76695f3b9e3f7f8833719f0a`
+   - `client.ts` mit Broker: `f8484c686a271fec973cb843be7cd6efe4ad027ca96ab4b1b3315eff79da26cc`
+   - Weichen die Prüfsummen ab, stoppt der Auftrag und meldet den Unterschied.
+3. Weder die Variant noch ihre Sync-Branches werden nach `main` gemergt.
+4. Die Ausnahme gilt nur für die Datenbankanwendung, nicht für Preview oder Publish.
+5. Vor der Publish-Entscheidung ist zu klären, ob Lovable aus der eigenen Arbeitskopie
+   oder aus `main` veröffentlicht (Risiko R-07 im Tracker).
