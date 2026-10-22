@@ -139,3 +139,18 @@ erzeugt.
 - Die drei Dateien unter `src/integrations/supabase/` bleiben fest an ihre Prüfsummen gebunden.
 - Jede andere Abweichung außerhalb von `.lovable/` stoppt den Auftrag.
 - Lovable wird gebeten, keine Plandatei anzulegen. Das ist eine Bitte und keine Garantie.
+
+### Korrektur 2026-10-22 (14:39): Anwendungsweg ist ADR-0035, nicht die Variant
+
+Der Lovable-Lauf in der Variant S0-04 ergab: Eine Variant merkt Datenbankänderungen nur vor und
+wendet sie erst bei der Übernahme an (kein Pre-/Postflight möglich), und das
+Lovable-Migrationswerkzeug kann den festen Dateinamen der Migration nicht übernehmen. Das
+Lovable-verwaltete Betriebsmodell hat zudem bewusst keinen Supabase-Zugang für den Owner, ein
+CLI-Weg (`supabase db push`) steht daher nicht zur Verfügung.
+
+**Entscheidung (Betreiber, 2026-10-22):** Migration A wird nach ADR-0035 angewendet
+(Präzedenzfall GG-01 / BSF-03E): Merge nach `main` (PR 205, 15/15), danach der Work-Lauf mit
+Preflight, byte-identischer Anwendung in einer Transaktion samt History-Eintrag und Postflight.
+Der Auftragstext steht in `docs/QS-01-WORK-AUFTRAG-MIGRATION-A.md`. Die Variant-Ausnahmen (drei
+Prüfsummen, `.lovable/`) sind für Datenbankänderungen gegenstandslos; der Auth-Broker bleibt
+für Publish ein offenes Risiko (R-07).
