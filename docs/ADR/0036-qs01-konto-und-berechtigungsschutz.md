@@ -109,3 +109,18 @@ Ausnahme.
 4. Die Ausnahme gilt nur für die Datenbankanwendung, nicht für Preview oder Publish.
 5. Vor der Publish-Entscheidung ist zu klären, ob Lovable aus der eigenen Arbeitskopie
    oder aus `main` veröffentlicht (Risiko R-07 im Tracker).
+
+### Erweiterung 2026-10-22 (14:30): `types.ts`
+
+Der erste Variant-Lauf mit Ausnahme stoppte korrekt bei `src/integrations/supabase/types.ts`
+(Lovable-Stand `1486e86`). Der Unterschied (+14/-1 Zeilen, auf GitHub nachgeprüft) besteht
+ausschließlich aus dem Fremdschlüssel `reference_value_history_systemhouse_fk` (Drift R-08,
+Draft-PR 210) und dem von der Plattform erzeugten Kopf `__InternalSupabase` mit
+`PostgrestVersion "14.5"`.
+
+**Entscheidung (Betreiber):** `types.ts` ist eine dritte, konkret begrenzte Ausnahme.
+
+- Erlaubt ist nur dieser Inhalt: SHA-256 `ef467ecf24731aa25fc71e51c97e699906832d3ffabac916354507b94e4ed144`.
+- Weicht der Inhalt ab, stoppt der Auftrag und meldet den Unterschied.
+- Nach dem Merge von PR 210 enthält `main` den Fremdschlüssel; als Abweichung bleibt dann nur
+  der Plattformkopf. Die Prüfsumme wird dann neu bestimmt und hier nachgetragen.
