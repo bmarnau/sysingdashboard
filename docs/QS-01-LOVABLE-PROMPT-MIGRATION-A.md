@@ -84,3 +84,35 @@ testen, dokumentieren, Abschlussbericht, stoppen.
    - Abschlussbericht: base_sha, Variant/Branch, Commit, vollständiger Diff, Preflight-
      und Postflight-Ergebnis, Testergebnis, bekannte Restrisiken. Dann stoppen.
 ```
+
+## Variant-Prompt S0-04 (mit Ausnahme nach ADR-0036 Nachtrag)
+
+```text
+Aufgabe: Variant für eine spätere Datenbankänderung vorbereiten (S0-04).
+Nur vorbereiten und berichten. Danach stoppen.
+
+1. Ausgangsstand
+   - Repository: bmarnau/sysingdashboard, Basis GitHub-main 65b479070b640750a83caad0ed5a001623119832
+     (oder neuer). Nenne den vollständigen base_sha.
+
+2. Was du tun sollst
+   - Vergleiche den gespeicherten Lovable-Stand mit GitHub-main.
+   - Erlaubte, bekannte Abweichung (Plattformdateien): ausschließlich
+     src/integrations/supabase/client.ts und src/integrations/supabase/previewAuthStorage.ts.
+     Erwartete SHA-256: previewAuthStorage.ts =
+     5b00130146b77ecd8ed49f118c640d3e75aa7c5e76695f3b9e3f7f8833719f0a, client.ts =
+     f8484c686a271fec973cb843be7cd6efe4ad027ca96ab4b1b3315eff79da26cc.
+   - Jede andere Abweichung oder abweichende Prüfsumme: stoppen und melden.
+   - Sonst: Lege eine isolierte Variant an, die genau diesem Stand entspricht.
+   - Der Branch der GitHub-Verbindung bleibt main; Preview/Publish bleiben unverändert.
+
+3. Nicht tun
+   - Keine Migration, kein SQL, kein Datenbankzugriff, keine Codeänderung, kein Commit auf
+     main, nicht veröffentlichen, keine Secrets ausgeben, die beiden Plattformdateien
+     weder ändern noch "bereinigen".
+
+4. Bericht
+   - base_sha, Variant-Name/ID, Liste und Prüfsummen der Abweichungen zu main,
+     Supabase-Projekt-Referenz (nur Referenz), Bestätigung Preview/Publish unverändert,
+     Unsicherheiten.
+```
