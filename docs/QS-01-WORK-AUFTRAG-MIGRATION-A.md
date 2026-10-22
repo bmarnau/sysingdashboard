@@ -8,15 +8,15 @@ keinen Pre-/Postflight, und das Lovable-Migrationswerkzeug kann den festen Datei
 
 ## Freigegebene Quelle
 
-| Merkmal                | Wert                                                                                                |
-| ---------------------- | --------------------------------------------------------------------------------------------------- |
-| Repository / Branch    | bmarnau/sysingdashboard, `main`                                                                     |
-| Freigegebener Commit   | `5af3a80a0726c57235805b296780ff6f37732f80` (oder ein Nachfolger, der die Datei unverändert enthält) |
-| Datei                  | `supabase/migrations/20261022090000_qs01_a_profile_self_update_guard.sql`                           |
-| Git-Blob-SHA           | `32fe3ea2fe5ee699d7d21f8a2f8f96bb74de26c8`                                                          |
-| SHA-256                | `b67df3a1ad42cb47adb6b2760628bbef86666ef6883b22b36e35a0ce3ea79649`                                  |
-| Größe                  | 76 Zeilen, 3259 Byte                                                                                |
-| Anwendungsmenge        | genau diese eine Migration (Version `20261022090000`)                                               |
+| Merkmal                                                      | Wert                                                                                                                                                      |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository / Branch                                          | bmarnau/sysingdashboard, `main`                                                                                                                           |
+| Freigegebener Commit                                         | `5af3a80a0726c57235805b296780ff6f37732f80` (oder ein Nachfolger, der die Datei unverändert enthält)                                                       |
+| Datei                                                        | `supabase/migrations/20261022090000_qs01_a_profile_self_update_guard.sql`                                                                                 |
+| Git-Blob-SHA                                                 | `32fe3ea2fe5ee699d7d21f8a2f8f96bb74de26c8`                                                                                                                |
+| SHA-256                                                      | `b67df3a1ad42cb47adb6b2760628bbef86666ef6883b22b36e35a0ce3ea79649`                                                                                        |
+| Größe                                                        | 76 Zeilen, 3259 Byte                                                                                                                                      |
+| Anwendungsmenge                                              | genau diese eine Migration (Version `20261022090000`)                                                                                                     |
 | History-Lücken (Stand 2026-10-22, Abgleich + Katalogprüfung) | `20260913213000`, `20260917182000`, `20260917190000`: Objekte live vorhanden, nur History-Nachweis fehlt. **Nicht anwenden** (nur separat dokumentieren). |
 
 ## Auftragstext
