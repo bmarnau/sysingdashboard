@@ -3148,6 +3148,11 @@ ALTER TABLE ONLY "public"."reference_value"
 
 
 
+ALTER TABLE ONLY "public"."reference_value_history"
+    ADD CONSTRAINT "reference_value_history_systemhouse_fk" FOREIGN KEY ("systemhouse_id") REFERENCES "public"."systemhouse"("id") ON DELETE RESTRICT;
+
+
+
 ALTER TABLE ONLY "public"."shared_activity_projection"
     ADD CONSTRAINT "shared_activity_projection_customer_fk" FOREIGN KEY ("customer_id", "systemhouse_id") REFERENCES "public"."customer"("id", "systemhouse_id") ON DELETE RESTRICT;
 
