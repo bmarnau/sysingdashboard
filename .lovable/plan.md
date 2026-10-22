@@ -2,7 +2,7 @@
 
 ## Was Sie selbst tun müssen (ich kann es nicht auslösen)
 1. Oben im Chat den Reiter **Verlauf (History)** öffnen.
-2. Den Eintrag suchen, der dem Commit `65b4790` entspricht. Das ist der letzte Stand **vor** den Zusatzcommits `9e486930` und `c9ae1033`.
+2. Den Eintrag suchen, der dem Commit `65b4790` entspricht: 22.10.2026, 10:58:34 Uhr Berliner Zeit (08:58:34 UTC), „Merge pull request #209“. Das ist der letzte Stand **vor** den Zusatzcommits `9e486930` und `c9ae1033`.
 3. Diesen Stand wiederherstellen. Alternativ unter der passenden Chat-Nachricht auf **Revert** klicken.
 4. Später entstandene Stände bleiben im Verlauf erhalten und lassen sich bei Bedarf erneut anwenden.
 
