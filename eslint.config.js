@@ -14,7 +14,6 @@ export default tseslint.config(
       ".vinxi",
       "src/routeTree.gen.ts",
       "src/integrations/supabase/types.ts",
-      "src/integrations/supabase/previewAuthStorage.ts",
     ],
   },
   {

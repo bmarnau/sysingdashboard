@@ -20,4 +20,3 @@ src/integrations/supabase/types.ts
 
 # Coverage-Artefakte (Maschinenausgabe)
 coverage
-src/integrations/supabase/previewAuthStorage.ts
