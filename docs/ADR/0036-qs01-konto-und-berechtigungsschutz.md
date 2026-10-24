@@ -86,3 +86,71 @@ Der Lovable-Prompt für Migration A liegt in
 
 Nach Anwendung von A kann ein Konto seinen Status und seine Authentifizierungsfelder nicht
 mehr selbst setzen. Der Test T01–T08 sichert den Vertrag dauerhaft ab.
+
+## Nachtrag 2026-10-22: Variant-Ausnahme für den Lovable-Auth-Broker
+
+Lovable legt in jeder neuen Arbeitskopie automatisch den Auth-Storage-Broker
+(`previewAuthStorage.ts`, Änderung in `client.ts`) an, auch nach einer Rücksetzung auf
+den GitHub-Stand (Beleg: Commit `a1ef0ec` Rücksetzung, danach `3fd8f74` am selben Tag).
+Der Broker ist per Governance verboten (Recovery PR #66,
+`src/__tests__/security/supabase-client-contract.test.ts`). Eine Variant ist deshalb nie
+exakt identisch mit `main`.
+
+**Entscheidung (Betreiber, 2026-10-22):** Für die Variant (S0-04) gilt eine begrenzte
+Ausnahme.
+
+1. Die Abweichung zu `main` darf ausschließlich `client.ts` und `previewAuthStorage.ts`
+   betreffen. Jede weitere Abweichung stoppt den Auftrag.
+2. Erwartete Prüfsummen (SHA-256, Stand `3fd8f74`):
+   - `previewAuthStorage.ts`: `5b00130146b77ecd8ed49f118c640d3e75aa7c5e76695f3b9e3f7f8833719f0a`
+   - `client.ts` mit Broker: `f8484c686a271fec973cb843be7cd6efe4ad027ca96ab4b1b3315eff79da26cc`
+   - Weichen die Prüfsummen ab, stoppt der Auftrag und meldet den Unterschied.
+3. Weder die Variant noch ihre Sync-Branches werden nach `main` gemergt.
+4. Die Ausnahme gilt nur für die Datenbankanwendung, nicht für Preview oder Publish.
+5. Vor der Publish-Entscheidung ist zu klären, ob Lovable aus der eigenen Arbeitskopie
+   oder aus `main` veröffentlicht (Risiko R-07 im Tracker).
+
+### Erweiterung 2026-10-22 (14:30): `types.ts`
+
+Der erste Variant-Lauf mit Ausnahme stoppte korrekt bei `src/integrations/supabase/types.ts`
+(Lovable-Stand `1486e86`). Der Unterschied (+14/-1 Zeilen, auf GitHub nachgeprüft) besteht
+ausschließlich aus dem Fremdschlüssel `reference_value_history_systemhouse_fk` (Drift R-08,
+Draft-PR 210) und dem von der Plattform erzeugten Kopf `__InternalSupabase` mit
+`PostgrestVersion "14.5"`.
+
+**Entscheidung (Betreiber):** `types.ts` ist eine dritte, konkret begrenzte Ausnahme.
+
+- Erlaubt ist nur dieser Inhalt: SHA-256 `ef467ecf24731aa25fc71e51c97e699906832d3ffabac916354507b94e4ed144`.
+- Weicht der Inhalt ab, stoppt der Auftrag und meldet den Unterschied.
+- Nach dem Merge von PR 210 enthält `main` den Fremdschlüssel; als Abweichung bleibt dann nur
+  der Plattformkopf. Die Prüfsumme wird dann neu bestimmt und hier nachgetragen.
+
+### Erweiterung 2026-10-22 (14:35): Ordner `.lovable/`
+
+Der zweite Variant-Lauf stoppte bei Lovables Planungsspeicher (`.lovable/plan.md` überschrieben,
+je Auftrag eine neue Datei unter `.lovable/plan/`; Lovable-Stand `fa0af9d`, 6 Commits vor
+`main`). Der Ordner enthält bereits viele solche Dateien seit August, hat keine Laufzeitwirkung
+und ist von Prettier ausgenommen. Prüfsummen wären nicht stabil, weil jeder Auftrag neue Dateien
+erzeugt.
+
+**Entscheidung (Betreiber):** Änderungen unter `.lovable/` sind als Plattform-Metadaten erlaubt.
+
+- Die Dateien unter `.lovable/` werden im Bericht aufgelistet, aber nicht per Prüfsumme gebunden.
+- Die drei Dateien unter `src/integrations/supabase/` bleiben fest an ihre Prüfsummen gebunden.
+- Jede andere Abweichung außerhalb von `.lovable/` stoppt den Auftrag.
+- Lovable wird gebeten, keine Plandatei anzulegen. Das ist eine Bitte und keine Garantie.
+
+### Korrektur 2026-10-22 (14:39): Anwendungsweg ist ADR-0035, nicht die Variant
+
+Der Lovable-Lauf in der Variant S0-04 ergab: Eine Variant merkt Datenbankänderungen nur vor und
+wendet sie erst bei der Übernahme an (kein Pre-/Postflight möglich), und das
+Lovable-Migrationswerkzeug kann den festen Dateinamen der Migration nicht übernehmen. Das
+Lovable-verwaltete Betriebsmodell hat zudem bewusst keinen Supabase-Zugang für den Owner, ein
+CLI-Weg (`supabase db push`) steht daher nicht zur Verfügung.
+
+**Entscheidung (Betreiber, 2026-10-22):** Migration A wird nach ADR-0035 angewendet
+(Präzedenzfall GG-01 / BSF-03E): Merge nach `main` (PR 205, 15/15), danach der Work-Lauf mit
+Preflight, byte-identischer Anwendung in einer Transaktion samt History-Eintrag und Postflight.
+Der Auftragstext steht in `docs/QS-01-WORK-AUFTRAG-MIGRATION-A.md`. Die Variant-Ausnahmen (drei
+Prüfsummen, `.lovable/`) sind für Datenbankänderungen gegenstandslos; der Auth-Broker bleibt
+für Publish ein offenes Risiko (R-07).

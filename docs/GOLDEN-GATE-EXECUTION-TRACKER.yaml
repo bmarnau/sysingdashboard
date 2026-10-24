@@ -10,7 +10,7 @@
 
 schema_version: 1
 document: golden-gate-execution-tracker
-stand: 2026-10-20
+stand: 2026-10-24
 base_main_sha: fd8aa71bbe98e6d265fcc9abbfce557a72ac2bf8
 repository: bmarnau/sysingdashboard
 tracker_issue: 175
@@ -148,6 +148,73 @@ lieferpakete:
       - "Zurückziehungs-Zahl in der Vorschau ist eine Schätzung; Server rechnet maßgeblich."
     risiko: Schreibender Pfad auf die gemeinsame Tabelle; Rollen- und Mandantenprüfung muss serverseitig bleiben (R-06).
 
+  - id: L0c
+    gg: GG-02-Vorbereitung
+    titel: Mandanten-Bootstrap (synthetischer Demo-Mandant in den leeren Mandantentabellen)
+    nutzerwert: >-
+      Ein Betreiberkonto erhält Systemhaus-Zugehörigkeit und Kundenfreigabe, damit
+      "An Team veröffentlichen" (L0b) und Verantwortungen (L2) real getestet werden können.
+    befund: >-
+      Am 2026-10-22 per read-only Inventar belegt: systemhouse, customer,
+      systemhouse_membership, customer_access und customer_responsibility haben live
+      0 Zeilen; Schreibzugriff nur service_role; kein UI-/RPC-Pfad für die erste
+      Mitgliedschaft. Erklärt "Keine aktive Systemhaus-Zugehörigkeit".
+    entscheidung: >-
+      Nutzer 2026-10-22: synthetischer Demo-Mandant mit festen IDs, klar als DEMO
+      gekennzeichnet, keine Echtdaten; Konten: Systemadministrator plus ein Projektleiter.
+    abhaengig_von: [L0b, QS-01]
+    status: planned
+    code_merged: not_applicable
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+    anforderungen:
+      - "Der Auftrag muss einmalig, idempotent (ON CONFLICT DO NOTHING) und in einer Transaktion laufen."
+      - "Der Auftrag muss vor dem Schreiben Leerstand, Trigger und Schreibrecht des Kanals prüfen und bei Abweichung stoppen."
+      - "Der Auftrag muss eine ausdrückliche Einzelfreigabe des Owners vor dem Schreiben abwarten (ADR-0035 deckt keine Datenänderung)."
+      - "Der Auftrag darf kein Schema, keine Policies, Grants oder Rollen ändern."
+    offene_punkte:
+      - "Schreibrecht des Connector-Kanals auf die Mandantentabellen ungeklärt (Preflight)."
+      - "Ausführung erst nach bestandenem Retest von QS-01 Migration A."
+    risiko: Datenschreibender Pfad in Produktion; nur über den freigegebenen Einzelauftrag.
+
+  - id: TD-01
+    gg: GG-02-Vorbereitung
+    titel: Testgrundlage Demodaten erweitern (Stufe a Code, Stufe b Live-Demo-Mandant)
+    nutzerwert: >-
+      Eine belastbare, synthetische Datenbasis für alle Nutzerpfade, auch für die
+      vorhandenen Demo-User, damit Cockpit, Verantwortungen und Veröffentlichen
+      realistisch getestet werden können.
+    befund: >-
+      Nutzer 2026-10-24: Die aktuellen Demodaten enthalten zu wenig Daten.
+      Code-Demodaten: src/lib/kiosk/kiosk-demo-dataset.ts, src/lib/demo-data (Personas,
+      AVKK-Seeds); Live-Demo-Mandant entsteht mit L0c.
+    entscheidung: "Nutzer 2026-10-24: erst Stufe a, dann Stufe b."
+    abhaengig_von: [L0c]
+    status: planned
+    code_merged: no
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+    stufen:
+      - id: a
+        titel: Golden Dataset und Demo-Personas im Code erweitern
+        regeln: >-
+          Synthetisch, deterministisch, versioniert, mit Expected Results und Tests
+          (docs/GOLDEN-DATASET-STRATEGY.md); auch für die vorhandenen Demo-User.
+          Umsetzung per Claude-Code-PR, kein Datenbankzugriff.
+      - id: b
+        titel: Zusätzliche Fachdaten im Live-Demo-Mandanten
+        regeln: >-
+          Beispielprojekte, Arbeitspakete und Aktivitäten nur über einen eigenen
+          Datenauftrag mit Preflight, Postflight und Einzelfreigabe des Owners; Daten
+          sind als DEMO gekennzeichnet und per feste IDs rückbaubar.
+    anforderungen:
+      - "Der erweiterte Datensatz muss ausschließlich synthetische Daten enthalten."
+      - "Die Erweiterung muss für jeden vorhandenen Demo-User Daten liefern."
+      - "Jede Stufe muss durch Tests (Stufe a) bzw. Postflight (Stufe b) belegt sein."
+    risiko: Stufe b ist ein Datenschreibpfad in Produktion (siehe L0c).
+
   - id: L1
     gg: GG-02
     titel: BSF-07 P0-Vertrag und Design integrieren
@@ -267,8 +334,12 @@ querschnitt:
     titel: Konto- und Berechtigungsschutz (Sicherheitsplan)
     bezug: L8 Abnahme "kein offener CRITICAL/HIGH-Sicherheitsbefund"
     freigabe_voraussetzung: [S0-04]
-    status: planned
-    gates_pass: not_run
+    status: in_progress
+    gates_pass: yes
+    status_detail: >-
+      Migration A (Profil-Selbstschutz) am 2026-10-22 16:55 MESZ live angewendet
+      (ADR-0035-Pfad) und per Postflight bestätigt; fachlicher Retest des Owners steht aus.
+      Migration B und C folgen getrennt.
     befunde:
       - id: SEC-PROFILE-SELF-UPDATE
         beschreibung: >-
@@ -334,6 +405,25 @@ querschnitt:
     vor_golden_gate_erforderlich: no
     entscheidung: "Nutzer 2026-10-21: QS-04 ist optional; Umfang reicht bis QS-03."
     status: optional
+  - id: QS-05
+    titel: Systemstatus zeigt Abweichungen Datenbank, Git und Lovable
+    einordnung: >-
+      Der Systemstatus prüft heute Git gegen Build (Build-Commit gegen main-HEAD),
+      nicht die Datenbank gegen die Migrationen. Der FK-Drift vom 2026-10-22 und der
+      Lovable-Broker wären dort nicht aufgefallen.
+    vor_golden_gate_erforderlich: no
+    entscheidung: "Nutzer 2026-10-22: Paket in den Tracker aufnehmen."
+    status: geplant
+    abhaengigkeiten:
+      - QS-01 Migration A angewendet (die Prüfung ist selbst eine Datenbankfunktion)
+    anforderungen:
+      - Der Systemstatus muss für Administratoren anzeigen, ob die angewendeten Migrationen der Datenbank mit dem im Build erwarteten Migrationsstand übereinstimmen (SYNCHRON, ABWEICHEND, NICHT PRÜFBAR).
+      - Die Prüfung muss nur lesen und darf keine Konto-, Kunden- oder Geschäftsdaten ausgeben.
+      - Die Prüfung muss serverseitig mit Rollenprüfung laufen; Nicht-Administratoren dürfen kein Ergebnis erhalten.
+      - Der Systemstatus sollte anzeigen, wenn die Auth-Storage-Broker-Datei im Build enthalten ist.
+      - Jede Abweichung muss mit Zeitpunkt der Prüfung und den abweichenden Migrationsnamen angezeigt werden.
+    risiko: Eine neue Datenbankfunktion; Anwendung nur über den Governance-Pfad (eigene Migration, Variant).
+    status_detail: noch nicht begonnen
 
 # ---------------------------------------------------------------------------
 # Bewusst nach dem Golden Gate (Delivery Plan, Abschnitt 7)
@@ -371,11 +461,48 @@ risiken:
     titel: Gemeinsame Projektion ohne Bedienweg bleibt leer
     wirkung: Verantwortungen und Cockpit zeigen keine echten Daten; DUE-DROP in der UI nicht prüfbar
     gegenmassnahme: Paket L0b; bis dahin DUE-DROP nur als GATES_PASS, nicht PREVIEW_VERIFIED führen.
+  - id: R-07
+    titel: Lovable erzeugt den verbotenen Auth-Storage-Broker bei jeder Arbeitskopie neu
+    wirkung: Lovable-Stand weicht von main ab; Variant nicht exakt an main gebunden; Gefahr, dass der Broker über Publish in Produktion gelangt
+    gegenmassnahme: Variant-Ausnahme nur mit Prüfsummen-Allowlist (ADR-0036 Nachtrag); Merge nach main bleibt verboten (Test supabase-client-contract); vor Publish-Go klären, ob Lovable aus eigener Arbeitskopie oder aus main veröffentlicht; Anfrage an Lovable-Support.
+  - id: R-08
+    titel: Live-Datenbank weicht von den Migrationen ab (FK reference_value_history_systemhouse_fk)
+    wirkung: Neuaufbau aus Migrationen liefert ein anderes Schema als Produktion
+    gegenmassnahme: >-
+      Entscheidung 2026-10-24: Draft-PR 210 wird als reiner Git-Nachzug gemergt und
+      nicht live angewendet (FK existiert live bereits, Katalogprüfung 2026-10-22).
+  - id: R-09
+    titel: Kein Bereitstellungspfad für die erste Systemhaus-Mitgliedschaft; Mandantentabellen live leer
+    wirkung: L0b und L2 nicht praktisch testbar; Veröffentlichen scheitert mit "Keine aktive Systemhaus-Zugehörigkeit"
+    gegenmassnahme: Paket L0c (synthetischer Demo-Mandant über freigegebenen Einzelauftrag); danach TD-01.
+  - id: R-10
+    titel: Migrationshistorie der Live-Datenbank hat Lücken (20260913213000, 20260917182000, 20260917190000) und leere Statements
+    wirkung: Objekte sind live vorhanden, der History-Nachweis fehlt; zehn Live-Einträge ohne gespeicherte Statements; ein Werkzeug könnte die Versionen als pending führen
+    gegenmassnahme: >-
+      Entscheidung 2026-10-24: nur dokumentieren, kein Repair; diese Migrationen nie
+      anwenden. Lovable-Support-Anfrage (Statements, Aliasversionen) bei R-07 bündeln.
 
 # ---------------------------------------------------------------------------
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-24
+    ereignis: >-
+      QS-01 Migration A live angewendet (2026-10-22 16:55 MESZ, Postflight und Advisor
+      unverändert 0 ERROR). Historien-Abgleich: 32 Git-Migrationen, 29 Live-Einträge,
+      drei History-Lücken bei vorhandenen Objekten (R-10, nur dokumentieren). PR 210
+      bleibt Git-Nachzug (R-08). Mandantentabellen live leer (R-09); Pakete L0c und TD-01
+      (Demodaten: erst Stufe a Code, dann Stufe b Live) geplant. Retest des Owners steht aus.
+    beleg: PR 212, Work-Berichte vom 2026-10-22
+  - datum: 2026-10-22
+    ereignis: >-
+      QS-01 Migration A (Draft-PR 205) und FK-Drift-Migration (Draft-PR 210) in CI
+      geprüft, nicht angewendet. ADR-0036 auf main. Befunde: Lovable erzeugt den
+      verbotenen Auth-Broker bei jeder Arbeitskopie neu (R-07); FK
+      reference_value_history_systemhouse_fk live vorhanden, in Migrationen nicht (R-08);
+      Systemhaus-Status wird nirgends geprüft. E-Mail-Bestätigung aktiv. Migration B/C
+      nach A, getrennt. Variant S0-04 mit begrenzter Ausnahme (ADR-0036 Nachtrag) vorbereitet.
+    beleg: PR 206, 209; Draft-PR 205, 210
   - datum: 2026-10-21
     ereignis: >-
       QS-03 Code gemergt (1.69.0, Changelog, Produktname). Tag und GitHub-Release
