@@ -144,7 +144,7 @@ lieferpakete:
       - "Umsetzung: Claude-Code-PR, keine Lovable-Variant nötig (Nutzer, 2026-10-21)."
     offene_punkte:
       - "Praxistest in der Preview: Das Konto braucht Systemhaus-Zugehörigkeit, Verantwortung und Kundenfreigabe write. Der Arbeitspaket-Dialog meldete zuletzt 'Keine aktive Systemhaus-Zugehörigkeit'; Nutzer gab 'vorhanden' an (Widerspruch ungeklärt)."
-      - "Tätigkeiten ohne UUID-Ingenieurkennung werden mit Grund übersprungen (engineer_missing); eigener Entscheid nötig, ob die Kennung des Veröffentlichenden ergänzt werden soll."
+      - "Entschieden 2026-10-24 (Nutzer): Tätigkeiten ohne echte Kennung werden dem Veröffentlichenden zugeordnet (effectiveEngineerId); fremde Kennungen bleiben engineer_mismatch."
       - "Zurückziehungs-Zahl in der Vorschau ist eine Schätzung; Server rechnet maßgeblich."
     risiko: Schreibender Pfad auf die gemeinsame Tabelle; Rollen- und Mandantenprüfung muss serverseitig bleiben (R-06).
 

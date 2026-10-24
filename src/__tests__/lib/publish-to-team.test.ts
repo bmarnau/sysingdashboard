@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { Activity, Project, WorkPackage } from "@/lib/dashboard-data";
 import {
   buildPublishPayload,
+  effectiveEngineerId,
   collectLocalCustomerNames,
   findInvalidEntries,
   groupByReason,
@@ -62,6 +63,7 @@ describe("publish-to-team payload", () => {
       scope,
       snapshot: snapshot(),
       selectedLegacyNames: ["Brunner Logistik AG"],
+      publisherUserId: ME,
     });
 
     const parsed = sharedProjectionPublishSchema.parse(payload);
@@ -74,12 +76,13 @@ describe("publish-to-team payload", () => {
       scope,
       snapshot: snapshot({ workPackages: [{ ...workPackage, due: "" }] }),
       selectedLegacyNames: ["Brunner Logistik AG"],
+      publisherUserId: ME,
     });
 
     expect(sharedProjectionPublishSchema.parse(payload).workPackages[0].due).toBeUndefined();
   });
 
-  it("drops engineer ids that are not real identifiers so the server contract holds", () => {
+  it("assigns activities without a real engineer id to the publisher so the server contract holds", () => {
     const activity: Activity = {
       id: "A-1",
       title: "Analyse",
@@ -97,20 +100,27 @@ describe("publish-to-team payload", () => {
       scope,
       snapshot: snapshot({ activities: [activity] }),
       selectedLegacyNames: ["Brunner Logistik AG"],
+      publisherUserId: ME,
     });
 
-    expect(payload.activities[0].engineerId).toBeUndefined();
+    expect(payload.activities[0].engineerId).toBe(ME);
     expect(() => sharedProjectionPublishSchema.parse(payload)).not.toThrow();
   });
 
   it("maps only explicitly selected local names and never guesses", () => {
-    const none = buildPublishPayload({ scope, snapshot: snapshot(), selectedLegacyNames: [] });
+    const none = buildPublishPayload({
+      scope,
+      snapshot: snapshot(),
+      selectedLegacyNames: [],
+      publisherUserId: ME,
+    });
     expect(none.customerMappings).toEqual([]);
 
     const some = buildPublishPayload({
       scope,
       snapshot: snapshot(),
       selectedLegacyNames: ["Brunner Logistik AG", "  brunner  logistik ag "],
+      publisherUserId: ME,
     });
     expect(some.customerMappings).toEqual([
       { legacyName: "Brunner Logistik AG", customerId: CUSTOMER },
@@ -167,7 +177,7 @@ describe("publish-to-team preview", () => {
     ]);
   });
 
-  it("skips activities without a real engineer id", () => {
+  it("publishes activities without an engineer id under the publisher", () => {
     const activity: Activity = {
       id: "A-1",
       title: "Analyse",
@@ -188,10 +198,45 @@ describe("publish-to-team preview", () => {
       current: current(),
     });
 
+    expect(preview.publish.activities).toBe(1);
+    expect(preview.skipped.some((entry) => entry.reason === "engineer_missing")).toBe(false);
+  });
+
+  it("still skips activities that belong to another account", () => {
+    const other = "44444444-4444-4444-8444-444444444444";
+    const activity: Activity = {
+      id: "A-2",
+      title: "Fremde Tätigkeit",
+      workPackageId: "WP-2041",
+      engineerId: other,
+      client: "Brunner Logistik AG",
+      date: "2026-10-01",
+      duration: 1,
+      hourlyRate: 120,
+      billable: true,
+      billingStatus: "offen",
+    };
+
+    const preview = previewPublish({
+      scope,
+      snapshot: snapshot({ activities: [activity] }),
+      selectedLegacyNames: ["Brunner Logistik AG"],
+      publisherUserId: ME,
+      current: current(),
+    });
+
     expect(preview.publish.activities).toBe(0);
     expect(preview.skipped).toEqual([
-      expect.objectContaining({ sourceId: "A-1", reason: "engineer_missing" }),
+      expect.objectContaining({ sourceId: "A-2", reason: "engineer_mismatch" }),
     ]);
+  });
+
+  it("resolves the effective engineer id deterministically", () => {
+    const other = "44444444-4444-4444-8444-444444444444";
+    expect(effectiveEngineerId({}, ME)).toBe(ME);
+    expect(effectiveEngineerId({ engineerId: "  " }, ME)).toBe(ME);
+    expect(effectiveEngineerId({ engineerId: "MH" }, ME)).toBe(ME);
+    expect(effectiveEngineerId({ engineerId: ` ${other} ` }, ME)).toBe(other);
   });
 
   it("estimates withdrawals only for objects the current publisher published", () => {
