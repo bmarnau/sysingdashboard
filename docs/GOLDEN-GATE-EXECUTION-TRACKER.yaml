@@ -163,10 +163,15 @@ lieferpakete:
       Nutzer 2026-10-22: synthetischer Demo-Mandant mit festen IDs, klar als DEMO
       gekennzeichnet, keine Echtdaten; Konten: Systemadministrator plus ein Projektleiter.
     abhaengig_von: [L0b, QS-01]
-    status: planned
+    status: in_progress
     code_merged: not_applicable
-    gates_pass: not_run
+    gates_pass: yes
     preview_verified: no
+    status_detail: >-
+      Am 2026-10-24 ausgeführt (Work-Lauf, eine Transaktion): systemhouse 1, customer 2,
+      systemhouse_membership 2, customer_access 4, customer_responsibility 0; Postflight
+      bestanden (Join-Probe beide Konten, 7 Profile, 30 Migrationen unverändert). Offen:
+      App-Test Veröffentlichen mit Betreiber- und Projektmanager-Konto.
     published_verified: not_published
     anforderungen:
       - "Der Auftrag muss einmalig, idempotent (ON CONFLICT DO NOTHING) und in einer Transaktion laufen."
@@ -174,8 +179,10 @@ lieferpakete:
       - "Der Auftrag muss eine ausdrückliche Einzelfreigabe des Owners vor dem Schreiben abwarten (ADR-0035 deckt keine Datenänderung)."
       - "Der Auftrag darf kein Schema, keine Policies, Grants oder Rollen ändern."
     offene_punkte:
-      - "Schreibrecht des Connector-Kanals auf die Mandantentabellen ungeklärt (Preflight)."
-      - "Ausführung erst nach bestandenem Retest von QS-01 Migration A."
+      - "App-Test: An Team veröffentlichen (Betreiberkonto) und Sichtbarkeit (Projektmanager-Konto)."
+    entschieden:
+      - "Datenaufträge dürfen über den Connector-Kanal als Rolle postgres laufen (Nutzer 2026-10-24); Preflight prüft nur Anwendungstrigger (tgisinternal = false); Advisor entfällt bei reinen Datenaufträgen."
+      - "Demo-Konten: Systemadministrator (ohne Info-Kiosk) und ein Projektmanager; feste Demo-IDs ...0d1 bis ...0d3, Rückbau über diese IDs."
     risiko: Datenschreibender Pfad in Produktion; nur über den freigegebenen Einzelauftrag.
 
   - id: TD-01
@@ -338,7 +345,8 @@ querschnitt:
     gates_pass: yes
     status_detail: >-
       Migration A (Profil-Selbstschutz) am 2026-10-22 16:55 MESZ live angewendet
-      (ADR-0035-Pfad) und per Postflight bestätigt; fachlicher Retest des Owners steht aus.
+      (ADR-0035-Pfad), per Postflight bestätigt; fachlicher Retest des Owners am 2026-10-24
+      bestanden (Anzeigename, Sperren/Entsperren, An-/Abmeldung).
       Migration B und C folgen getrennt.
     befunde:
       - id: SEC-PROFILE-SELF-UPDATE
@@ -471,10 +479,12 @@ risiken:
     gegenmassnahme: >-
       Entscheidung 2026-10-24: Draft-PR 210 wird als reiner Git-Nachzug gemergt und
       nicht live angewendet (FK existiert live bereits, Katalogprüfung 2026-10-22).
+      Umgesetzt: PR 210 gemergt am 2026-10-24 (main 78999c6); in Git geschlossen.
   - id: R-09
     titel: Kein Bereitstellungspfad für die erste Systemhaus-Mitgliedschaft; Mandantentabellen live leer
     wirkung: L0b und L2 nicht praktisch testbar; Veröffentlichen scheitert mit "Keine aktive Systemhaus-Zugehörigkeit"
     gegenmassnahme: Paket L0c (synthetischer Demo-Mandant über freigegebenen Einzelauftrag); danach TD-01.
+    stand: Demo-Mandant am 2026-10-24 angelegt; ein dauerhafter Bereitstellungspfad für echte Mandanten fehlt weiterhin.
   - id: R-10
     titel: Migrationshistorie der Live-Datenbank hat Lücken (20260913213000, 20260917182000, 20260917190000) und leere Statements
     wirkung: Objekte sind live vorhanden, der History-Nachweis fehlt; zehn Live-Einträge ohne gespeicherte Statements; ein Werkzeug könnte die Versionen als pending führen
@@ -486,6 +496,13 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-24
+    ereignis: >-
+      L0c ausgeführt: synthetischer Demo-Mandant live angelegt (9 Zeilen, eine Transaktion,
+      Postflight bestanden). QS-01 Migration A fachlich abgenommen (Retest bestanden). PR 210
+      gemergt (R-08 in Git geschlossen). Kanalentscheidung für Datenaufträge: Rolle postgres,
+      nur Anwendungstrigger prüfen. Nächster Schritt: App-Test Veröffentlichen, dann TD-01 Stufe a.
+    beleg: Work-Berichte vom 2026-10-24, PR 210, PR 213
   - datum: 2026-10-24
     ereignis: >-
       QS-01 Migration A live angewendet (2026-10-22 16:55 MESZ, Postflight und Advisor
