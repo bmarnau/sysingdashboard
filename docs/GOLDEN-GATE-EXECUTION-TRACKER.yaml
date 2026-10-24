@@ -146,6 +146,12 @@ lieferpakete:
       - "Praxistest in der Preview: Das Konto braucht Systemhaus-Zugehörigkeit, Verantwortung und Kundenfreigabe write. Der Arbeitspaket-Dialog meldete zuletzt 'Keine aktive Systemhaus-Zugehörigkeit'; Nutzer gab 'vorhanden' an (Widerspruch ungeklärt)."
       - "Entschieden 2026-10-24 (Nutzer): Tätigkeiten ohne echte Kennung werden dem Veröffentlichenden zugeordnet (effectiveEngineerId); fremde Kennungen bleiben engineer_mismatch."
       - "Zurückziehungs-Zahl in der Vorschau ist eine Schätzung; Server rechnet maßgeblich."
+    testplan: >-
+      Volltest auf der veröffentlichten App (Nutzer 2026-10-24), vorher gesondertes
+      Publish-Go/No-Go wegen R-07 (read-only Lovable-Prüfung: Stand, Broker, Publish-Quelle).
+      Reihenfolge: Demodaten je Konto einspielen; Bernd veröffentlicht Kunde A; Fälligkeiten in
+      Verantwortungen prüfen; Petra veröffentlicht Kunde B; Alex ohne Freigabe; Alexa Viewer.
+      Lovable und GitHub waren am 2026-10-24 synchron (Commit 422d06b, kein Sync-Branch).
     risiko: Schreibender Pfad auf die gemeinsame Tabelle; Rollen- und Mandantenprüfung muss serverseitig bleiben (R-06).
 
   - id: L0c
@@ -167,12 +173,14 @@ lieferpakete:
     code_merged: not_applicable
     gates_pass: yes
     preview_verified: no
-    status_detail: >-
-      Am 2026-10-24 ausgeführt (Work-Lauf, eine Transaktion): systemhouse 1, customer 2,
-      systemhouse_membership 2, customer_access 4, customer_responsibility 0; Postflight
-      bestanden (Join-Probe beide Konten, 7 Profile, 30 Migrationen unverändert). Offen:
-      App-Test Veröffentlichen mit Betreiber- und Projektmanager-Konto.
     published_verified: not_published
+    status_detail: >-
+      Am 2026-10-24 ausgeführt (zwei Work-Läufe, je eine Transaktion, Postflight bestanden):
+      systemhouse 1, customer 2, systemhouse_membership 2, customer_access 4 sowie
+      customer_responsibility 2 (Kunde A: Bernd, Kunde B: Petra) mit 2 erwarteten
+      audit_log-Zeilen; is_my_customer-Matrix wie vorgegeben, 7 Profile und 30 Migrationen
+      unverändert. Der erste Lauf stoppte korrekt (interne RI-Trigger, Kanal postgres);
+      die Regeln stehen jetzt in ADR-0037. Offen: App-Test Veröffentlichen.
     anforderungen:
       - "Der Auftrag muss einmalig, idempotent (ON CONFLICT DO NOTHING) und in einer Transaktion laufen."
       - "Der Auftrag muss vor dem Schreiben Leerstand, Trigger und Schreibrecht des Kanals prüfen und bei Abweichung stoppen."
@@ -182,7 +190,9 @@ lieferpakete:
       - "App-Test: An Team veröffentlichen (Betreiberkonto) und Sichtbarkeit (Projektmanager-Konto)."
     entschieden:
       - "Datenaufträge dürfen über den Connector-Kanal als Rolle postgres laufen (Nutzer 2026-10-24); Preflight prüft nur Anwendungstrigger (tgisinternal = false); Advisor entfällt bei reinen Datenaufträgen."
-      - "Demo-Konten: Systemadministrator (ohne Info-Kiosk) und ein Projektmanager; feste Demo-IDs ...0d1 bis ...0d3, Rückbau über diese IDs."
+      - "Demo-Konten: Systemadministrator (ohne Info-Kiosk) und ein Projektmanager; feste Demo-IDs ...0d1 bis ...0d3 sowie ...0e1/...0e2 (Verantwortungen), Rückbau über diese IDs."
+      - "Testbesetzung: Bernd (Kunde A) und Petra (Kunde B) veröffentlichen; Alex hat bewusst keine Mitgliedschaft (Negativprobe); Alexa bleibt Viewer (Gegenprobe) (Nutzer 2026-10-24)."
+      - "Regelwerk für Datenaufträge: ADR-0037."
     risiko: Datenschreibender Pfad in Produktion; nur über den freigegebenen Einzelauftrag.
 
   - id: TD-01
@@ -198,8 +208,13 @@ lieferpakete:
       AVKK-Seeds); Live-Demo-Mandant entsteht mit L0c.
     entscheidung: "Nutzer 2026-10-24: erst Stufe a, dann Stufe b."
     abhaengig_von: [L0c]
-    status: planned
+    status: in_progress
     code_merged: no
+    status_detail: >-
+      Stufe a umgesetzt in PR 215 (Datensatz 2.2.0: 6 Projekte, 24 Arbeitspakete, rund 57
+      Tätigkeiten, Randfälle, sechs Personas, Aktualitätshinweis) und PR 216 (Tätigkeiten ohne
+      echte Kennung gehören dem Veröffentlichenden). Stufe b offen: Live-Auffrischung der
+      Datumswerte und Kategorien als eigene Datenaufträge nach ADR-0037.
     gates_pass: not_run
     preview_verified: no
     published_verified: not_published
@@ -496,6 +511,13 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-24
+    ereignis: >-
+      Demo-Mandant um Kundenverantwortungen ergänzt (L0c), ADR-0037 für Datenaufträge
+      angelegt. TD-01 Stufe a (Datensatz 2.2.0) und Konto-ID-Zuordnung beim Veröffentlichen
+      (PR 215, 216). Lovable und GitHub synchron. Test auf der veröffentlichten App geplant,
+      davor Publish-Go/No-Go (R-07).
+    beleg: PR 215, PR 216, ADR-0037, Work-Berichte vom 2026-10-24
   - datum: 2026-10-24
     ereignis: >-
       L0c ausgeführt: synthetischer Demo-Mandant live angelegt (9 Zeilen, eine Transaktion,
