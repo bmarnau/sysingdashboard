@@ -487,7 +487,7 @@ risiken:
   - id: R-07
     titel: Lovable erzeugt den verbotenen Auth-Storage-Broker bei jeder Arbeitskopie neu
     wirkung: Lovable-Stand weicht von main ab; Variant nicht exakt an main gebunden; Gefahr, dass der Broker über Publish in Produktion gelangt
-    gegenmassnahme: Variant-Ausnahme nur mit Prüfsummen-Allowlist (ADR-0036 Nachtrag); Merge nach main bleibt verboten (Test supabase-client-contract); vor Publish-Go klären, ob Lovable aus eigener Arbeitskopie oder aus main veröffentlicht (read-only Prüfung und Kriterien: docs/LOVABLE-PUBLISH-PRUEFUNG.md, Stand 2026-10-24); Anfrage an Lovable-Support.
+    gegenmassnahme: Variant-Ausnahme nur mit Prüfsummen-Allowlist (ADR-0036 Nachtrag); Merge nach main bleibt verboten (Test supabase-client-contract); vor Publish-Go klären, ob Lovable aus eigener Arbeitskopie oder aus main veröffentlicht (read-only Prüfung und Kriterien siehe docs/LOVABLE-PUBLISH-PRUEFUNG.md, Stand 2026-10-24); Anfrage an Lovable-Support.
   - id: R-08
     titel: Live-Datenbank weicht von den Migrationen ab (FK reference_value_history_systemhouse_fk)
     wirkung: Neuaufbau aus Migrationen liefert ein anderes Schema als Produktion
