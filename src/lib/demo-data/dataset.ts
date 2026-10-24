@@ -232,7 +232,7 @@ const EXTRA_WORK_PACKAGES: readonly ExtraWorkPackage[] = [
     priority: "hoch",
     dueOffset: -12,
     estimated: 22,
-    assignee: ALEXA,
+    assignee: ALEX,
     tags: ["wlan", "analyse"],
   },
   {
@@ -244,7 +244,7 @@ const EXTRA_WORK_PACKAGES: readonly ExtraWorkPackage[] = [
     priority: "hoch",
     dueOffset: 25,
     estimated: 48,
-    assignee: ALEXA,
+    assignee: ALEX,
     tags: ["wlan", "rollout"],
   },
   {
@@ -268,7 +268,7 @@ const EXTRA_WORK_PACKAGES: readonly ExtraWorkPackage[] = [
     priority: "mittel",
     dueOffset: null,
     estimated: 12,
-    assignee: ALEXA,
+    assignee: ALEX,
     tags: ["nachweis"],
   },
   {
