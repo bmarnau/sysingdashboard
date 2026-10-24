@@ -78,12 +78,13 @@ describe("Erweiterter Demo-Datensatz (TD-01 Stufe a)", () => {
     expect(assigned.size).toBeGreaterThanOrEqual(4);
   });
 
-  it("should_includeViewerPersonaWithoutAssignments_when_personasListed", () => {
-    const viewer = DEMO_PERSONAS.find((p) => p.requiredRole === "viewer");
-    expect(viewer).toBeDefined();
+  it("should_giveEveryPersonaAWorkingRole_when_personasListed", () => {
+    const roles = new Map(DEMO_PERSONAS.map((p) => [p.id, p.requiredRole]));
+    expect(roles.get("alexa")).toBe("engineer");
+    expect(roles.get("petra")).toBe("projectmanager");
     const d = buildDemoDataset();
-    expect(d.workPackages.some((w) => w.assignee === viewer!.displayName)).toBe(false);
-    expect(d.projects.some((p) => p.lead === viewer!.displayName)).toBe(false);
+    const alexa = DEMO_PERSONAS.find((p) => p.id === "alexa")!;
+    expect(d.workPackages.some((w) => w.assignee === alexa.displayName)).toBe(true);
   });
 });
 

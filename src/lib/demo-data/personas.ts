@@ -67,11 +67,11 @@ export const DEMO_PERSONAS: readonly DemoPersona[] = [
   },
   {
     id: "alexa",
-    displayName: "Demo Alexa Leserechte",
-    functionLabel: "Lesende Rolle (Viewer)",
-    requiredRole: "viewer",
+    displayName: "Demo Alexa Systemtechnik",
+    functionLabel: "Systemingenieurin C",
+    requiredRole: "engineer",
     scope:
-      "Ohne Zuständigkeiten; weist nach, dass lesende Konten nichts verändern oder veröffentlichen können.",
+      "WLAN- und Lagerprojekte; weist die Trennung zu Alex und Sam im gleichen Kundenumfeld nach.",
   },
 ] as const;
 

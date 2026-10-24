@@ -69,7 +69,7 @@ selbst ist maschinell abgesichert
 Der Datensatz verteilt seine Inhalte auf sechs fiktive Personen: Demo Alex
 Systemtechnik und Demo Sam Infrastruktur (Systemingenieure), Demo Petra
 Projektleitung, Demo Georg Geschäftsführung, Demo Bernd Systemadministration
-und Demo Alexa Leserechte (Viewer, ohne Zuständigkeiten). Die Anzeigenamen sind zugleich
+und Demo Alexa Systemtechnik (Systemingenieurin C, WLAN- und Lagerpakete). Die Anzeigenamen sind zugleich
 die `assignee`- und `lead`-Werte des lokalen Bestands
 (`src/lib/demo-data/personas.ts`). Die Erwartungswerte je Person werden aus dem
 Datensatz abgeleitet (`persona-expectations.ts`) und sind damit nicht pflegbar
