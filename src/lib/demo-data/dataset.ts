@@ -59,7 +59,6 @@ const SAM = "Demo Sam Infrastruktur";
 const PETRA = "Demo Petra Projektleitung";
 const GEORG = "Demo Georg Geschäftsführung";
 const BERND = "Demo Bernd Systemadministration";
-const ALEXA = "Demo Alexa Systemtechnik";
 
 /**
  * Erweiterung 2.2.0 (TD-01 Stufe a): Arbeitspakete mit gezielten Randfällen für
