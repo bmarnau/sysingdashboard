@@ -513,6 +513,26 @@ risiken:
 fortschritt:
   - datum: 2026-10-24
     ereignis: >-
+      Lovable-Arbeitskopie (e5bcff1) enthielt erneut den verbotenen Auth-Broker
+      (client.ts und previewAuthStorage.ts, R-07); read-only Abgleich mit main belegt das.
+      Ein Zurücksetzen-Auftrag an Lovable lief; ein Merge auf main (PR 218, main 1dd9c84)
+      löste im selben Moment den Lovable-Konfliktdialog aus. Entscheidung: Repository-Version
+      behalten, die Lovable-Arbeit bleibt im Backup. Auf GitHub ist main ohne Broker, ohne
+      Sync-Branch. Ausstehend: Bestätigung des Lovable-Stands nach dem Re-Check, dann Publish-Go/No-Go.
+      Regel: Während eine schreibende Lovable-Arbeit läuft, nichts nach main mergen.
+      Die Plattform legte den Broker beim nächsten Schritt erneut an (Arbeitskopie 6d94013,
+      Lovable-Bericht 15:16). Support-Anfrage an Lovable am 2026-10-24 um 15:18 versendet
+      (Broker abschaltbar? Publish aus GitHub-Commit? Wirkung auf die veröffentlichte App?
+      Aliasversionen, NULL-Statements). Publish bleibt No-Go; Zwischenlösung: Test in der Vorschau.
+      Lovable-Support (15:45): Projekt läuft auf Lovable Cloud, nicht auf eigenem Supabase;
+      Push auf GitHub ändert die Live-Seite nie, nur Publish aus Lovable. Die Fragen sind an das
+      Team weitergegeben, Antwort binnen 24 Stunden an Werktagen (frühestens Montag).
+      Test in der Vorschau: Bernd veröffentlichte Kunde A (3 Projekte, 12 Arbeitspakete,
+      27 Tätigkeiten, 0 zurückgezogen), Arbeitssicht zeigt 12 von 12. Mängel: Überfällig bei
+      Status Erledigt (dueGroup ohne Status), Verantwortliche je Arbeitspaket fehlen in den Demodaten.
+    beleg: PR 218, Vergleich main gegen e5bcff1 und 48ae9aa (GitHub-API), docs/LOVABLE-PUBLISH-PRUEFUNG.md
+  - datum: 2026-10-24
+    ereignis: >-
       Publish-Prüfung für R-07 als Dokument angelegt (Prompt, Go/No-Go-Kriterien).
       Alle Codeänderungen für den Volltest sind auf main (5a32898); ausstehend sind der
       Lovable-Re-Check, die read-only Antwort von Lovable und das Publish-Go/No-Go.
