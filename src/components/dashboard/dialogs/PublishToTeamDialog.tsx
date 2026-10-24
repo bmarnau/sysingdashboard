@@ -186,6 +186,7 @@ export function PublishToTeamDialog({
         scope: { systemhouseId: customer.systemhouseId, customerId: customer.customerId },
         snapshot,
         selectedLegacyNames: selectedNames,
+        publisherUserId,
       });
       const result = await publish(payload);
       writeStoredNameSelection(publisherUserId, customer.customerId, selectedNames);
@@ -202,7 +203,7 @@ export function PublishToTeamDialog({
           Veröffentlicht den lokalen Bestand für einen Kunden in die gemeinsame Datenbasis.
           Verantwortungen und Kundenansichten zeigen danach diese Daten. Der Stand dieses Geräts
           gilt dabei als vollständig: Objekte, die lokal nicht mehr vorkommen, werden im Team
-          zurückgezogen.
+          zurückgezogen. Tätigkeiten ohne eigene Konto-Kennung werden dir zugeordnet.
         </p>
 
         {customersState.kind === "loading" && <p role="status">Kunden werden geladen …</p>}

@@ -222,6 +222,20 @@ export function collectLocalCustomerNames(snapshot: LocalSnapshot): string[] {
 }
 
 /**
+ * Entscheidung 2026-10-24: Der lokale Bestand ist Single-Engineer; Tätigkeiten ohne echte
+ * Kennung (leer oder lokale Kosmetik wie "MH") gehören dem Veröffentlichenden. Eine echte
+ * fremde Kennung bleibt erhalten und wird vom Server weiter als `engineer_mismatch`
+ * übersprungen, damit niemand Tätigkeiten anderer Konten veröffentlicht.
+ */
+export function effectiveEngineerId(
+  activity: Pick<Activity, "engineerId">,
+  publisherUserId: string,
+): string {
+  const own = activity.engineerId?.trim();
+  return own && UUID_RE.test(own) ? own : publisherUserId;
+}
+
+/**
  * Baut die Server-Eingabe. Aufrufer müssen vorher `findInvalidEntries` prüfen;
  * Texte werden hier bewusst NICHT gekürzt, damit nichts still verändert wird.
  */
@@ -229,6 +243,8 @@ export function buildPublishPayload(input: {
   scope: PublishCustomerScope;
   snapshot: LocalSnapshot;
   selectedLegacyNames: LegacyNameSelection;
+  /** Konto des Veröffentlichenden; Tätigkeiten ohne echte Ingenieur-Kennung werden ihm zugeordnet. */
+  publisherUserId: string;
 }): PublishPayload {
   const { scope, snapshot } = input;
   const seen = new Set<string>();
@@ -267,10 +283,7 @@ export function buildPublishPayload(input: {
       title: activity.title,
       workPackageId: activity.workPackageId ? activity.workPackageId.trim() : null,
       // Nur echte Kennungen weiterreichen; lokale Kosmetik-IDs würden den Server-Vertrag brechen.
-      engineerId:
-        activity.engineerId && UUID_RE.test(activity.engineerId.trim())
-          ? activity.engineerId.trim()
-          : undefined,
+      engineerId: effectiveEngineerId(activity, input.publisherUserId),
       client: activity.client,
       date: activity.date,
       duration: activity.duration,
@@ -312,6 +325,7 @@ export function previewPublish(input: {
     scope: input.scope,
     snapshot: input.snapshot,
     selectedLegacyNames: input.selectedLegacyNames,
+    publisherUserId: input.publisherUserId,
   });
   const plan = buildSharedDataMigrationPlan({
     systemhouseId: payload.systemhouseId,
@@ -320,7 +334,10 @@ export function previewPublish(input: {
       ...workPackage,
       due: workPackage.due?.trim() || undefined,
     })) as WorkPackage[],
-    activities: input.snapshot.activities as Activity[],
+    activities: input.snapshot.activities.map((activity) => ({
+      ...activity,
+      engineerId: effectiveEngineerId(activity, input.publisherUserId),
+    })) as Activity[],
     customerMappings: payload.customerMappings,
   });
   const batch = prepareSharedCustomerPublishBatch({
