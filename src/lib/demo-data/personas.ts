@@ -14,7 +14,7 @@
  *   es systembedingt keine Mandanten- oder Personentrennung.
  */
 
-export type DemoPersonaId = "alex" | "sam" | "petra" | "georg";
+export type DemoPersonaId = "alex" | "sam" | "petra" | "georg" | "bernd" | "alexa";
 
 export interface DemoPersona {
   id: DemoPersonaId;
@@ -23,7 +23,7 @@ export interface DemoPersona {
   /** Fachliche Funktion im Demoszenario. */
   functionLabel: string;
   /** Rolle, die dem zugehörigen Anmeldekonto zugewiesen werden muss. */
-  requiredRole: "engineer" | "projectmanager" | "teamlead";
+  requiredRole: "engineer" | "projectmanager" | "teamlead" | "systemadministrator" | "viewer";
   /** Was diese Person im Demoszenario nachweisen soll. */
   scope: string;
 }
@@ -56,6 +56,22 @@ export const DEMO_PERSONAS: readonly DemoPersona[] = [
     functionLabel: "Führungssicht",
     requiredRole: "teamlead",
     scope: "Portfoliosicht über alle Demo-Projekte ohne Personenrangfolge (ADR-0027).",
+  },
+  {
+    id: "bernd",
+    displayName: "Demo Bernd Systemadministration",
+    functionLabel: "Systemadministration",
+    requiredRole: "systemadministrator",
+    scope:
+      "Betrieb und Härtung (Virtualisierung, Administrationskonten); Konten- und Rollenverwaltung.",
+  },
+  {
+    id: "alexa",
+    displayName: "Demo Alexa Leserechte",
+    functionLabel: "Lesende Rolle (Viewer)",
+    requiredRole: "viewer",
+    scope:
+      "Ohne Zuständigkeiten; weist nach, dass lesende Konten nichts verändern oder veröffentlichen können.",
   },
 ] as const;
 

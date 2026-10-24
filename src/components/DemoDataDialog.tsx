@@ -28,6 +28,7 @@ import {
   DEMO_PERSONAS,
   DEMO_DATASET_VERSION,
   demoAvkkCases,
+  getDemoFreshness,
   hasDemoData,
   removeDemoData,
   retireAvkkDemoData,
@@ -52,6 +53,7 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
   const [log, setLog] = useState<string[]>([]);
   const [accounts, setAccounts] = useState<DemoPersonaAccounts>({});
   const [candidates, setCandidates] = useState<UserProfile[]>([]);
+  const freshness = getDemoFreshness();
   const [candidatesError, setCandidatesError] = useState(false);
 
   useEffect(() => {
@@ -162,6 +164,11 @@ export function DemoDataDialog({ open, onOpenChange }: DemoDataDialogProps) {
           <Badge variant={hasDemoData() ? "default" : "outline"}>
             {hasDemoData() ? "lokal vorhanden" : "lokal nicht vorhanden"}
           </Badge>
+          {freshness.stale && (
+            <Badge variant="destructive">
+              Stand {freshness.seededBaseDate} ({freshness.ageDays} Tage alt) – erneut einspielen
+            </Badge>
+          )}
         </div>
 
         <p

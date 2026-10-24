@@ -10,8 +10,14 @@ export {
 } from "./dataset";
 export type { DemoDataset } from "./dataset";
 
-export { hasDemoData, seedDemoData, removeDemoData } from "./seed";
-export type { DemoSeedResult } from "./seed";
+export {
+  hasDemoData,
+  seedDemoData,
+  removeDemoData,
+  getDemoFreshness,
+  DEMO_STALE_AFTER_DAYS,
+} from "./seed";
+export type { DemoSeedResult, DemoFreshness } from "./seed";
 
 export { DEMO_AVKK_VERSION, DEMO_AVKK_EXPECTATIONS, demoAvkkCases } from "./avkk-dataset";
 export type { DemoAvkkCase, DemoAvkkCaseId } from "./avkk-dataset";
