@@ -1112,7 +1112,15 @@ export type Database = {
           systemhouse_id?: string | null
           value_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "reference_value_history_systemhouse_fk"
+            columns: ["systemhouse_id"]
+            isOneToOne: false
+            referencedRelation: "systemhouse"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shared_activity_projection: {
         Row: {

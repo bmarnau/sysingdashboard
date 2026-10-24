@@ -128,6 +128,11 @@ jobs:
           psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
             -v ON_ERROR_STOP=1 \
             -f supabase/tests/bsf03e-p3b-due-projection.sql
+      - name: DB-DRIFT-FK reference_value_history contract
+        run: |
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+            -v ON_ERROR_STOP=1 \
+            -f supabase/tests/db-fk-reference-value-history-systemhouse.sql
       - name: QS-01 profile self-update guard database contract
         run: |
           psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
