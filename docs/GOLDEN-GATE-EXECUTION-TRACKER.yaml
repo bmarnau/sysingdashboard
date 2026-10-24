@@ -520,6 +520,10 @@ fortschritt:
       behalten, die Lovable-Arbeit bleibt im Backup. Auf GitHub ist main ohne Broker, ohne
       Sync-Branch. Ausstehend: Bestätigung des Lovable-Stands nach dem Re-Check, dann Publish-Go/No-Go.
       Regel: Während eine schreibende Lovable-Arbeit läuft, nichts nach main mergen.
+      Die Plattform legte den Broker beim nächsten Schritt erneut an (Arbeitskopie 6d94013,
+      Lovable-Bericht 15:16). Support-Anfrage an Lovable am 2026-10-24 um 15:18 versendet
+      (Broker abschaltbar? Publish aus GitHub-Commit? Wirkung auf die veröffentlichte App?
+      Aliasversionen, NULL-Statements). Publish bleibt No-Go; Zwischenlösung: Test in der Vorschau.
     beleg: PR 218, Vergleich main gegen e5bcff1 und 48ae9aa (GitHub-API), docs/LOVABLE-PUBLISH-PRUEFUNG.md
   - datum: 2026-10-24
     ereignis: >-
