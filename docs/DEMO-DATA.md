@@ -5,7 +5,7 @@ MVP-Abnahme. Er ist ein Abnahmeartefakt nach `docs/MVP-PLAN.md` Abschnitt 3.3.
 
 | Merkmal          | Wert                                                  |
 | ---------------- | ----------------------------------------------------- |
-| Datensatzversion | `DEMO_DATASET_VERSION` (aktuell 2.1.0)                |
+| Datensatzversion | `DEMO_DATASET_VERSION` (aktuell 2.2.0)                |
 | AVKK-Fallversion | `DEMO_AVKK_VERSION`                                   |
 | Kennungspräfix   | `demo-`                                               |
 | Stichtag         | aktueller Tag, überschreibbar via `setDemoBaseDate()` |
@@ -30,9 +30,23 @@ produktive Fachtabellen.
 
 ### Lokaler Bestand (`src/lib/demo-data/dataset.ts`)
 
-- 3 Projekte: Netzwerkmodernisierung, Microsoft-365-Migration, Backup-Konzept
-- zugehörige Arbeitspakete in unterschiedlichen Lagen (im Plan, gefährdet, überfällig)
-- Tätigkeiten mit abrechenbaren und nicht abrechenbaren Anteilen
+- 6 Projekte: Netzwerkmodernisierung, Microsoft-365-Migration, Backup-Konzept (seit 2.1.0)
+  sowie Standortvernetzung Filialen, Servervirtualisierung und Lager-WLAN (ab 2.2.0)
+- 24 Arbeitspakete in unterschiedlichen Lagen (im Plan, gefährdet, überfällig), davon zwei
+  ohne Projekt; Fälligkeit vergangen, heute, zukünftig oder leer
+- 4 lokale Kunden; „Beispiel Logistik KG (fiktiv)“ dient als Fall „ohne Zuordnung“
+  (`mapping_missing`) beim Veröffentlichen
+- rund 57 Tätigkeiten mit abrechenbaren und nicht abrechenbaren Anteilen. Sie tragen
+  bewusst keine `engineerId`: Eine echte Kennung wäre ein Fremdschlüssel auf Konten,
+  eine erfundene bräche den Server-Vertrag. Beim Veröffentlichen werden sie daher mit
+  `engineer_missing` übersprungen, bis über die Kennung des Veröffentlichenden entschieden ist.
+
+### Aktualität (ab 2.2.0)
+
+Alle Datumsangaben sind relativ zum Stichtag (`day(±n)`); Neu-Einspielen setzt den Stand
+auf heute. Bereits eingespielte lokale Daten altern jedoch. Der Demo-Dialog zeigt ab
+drei Tagen Abstand den Hinweis „Stand … – erneut einspielen“ (`getDemoFreshness`).
+Das Einspielen ist idempotent und ersetzt nur `demo-`-Einträge.
 
 ### AVKK-Abnahmefälle (`src/lib/demo-data/avkk-dataset.ts`)
 
@@ -50,11 +64,12 @@ selbst ist maschinell abgesichert
 > Neuaufbau nicht mehr als saubere Produktivinstanz. Demodaten gehören
 > ausschließlich in Entwicklungs-, Schulungs- und Abnahmeinstanzen.
 
-## Personenschicht (ab 2.1.0)
+## Personenschicht (ab 2.1.0, erweitert in 2.2.0)
 
-Der Datensatz verteilt seine Inhalte auf vier fiktive Personen: Demo Alex
+Der Datensatz verteilt seine Inhalte auf sechs fiktive Personen: Demo Alex
 Systemtechnik und Demo Sam Infrastruktur (Systemingenieure), Demo Petra
-Projektleitung und Demo Georg Geschäftsführung. Die Anzeigenamen sind zugleich
+Projektleitung, Demo Georg Geschäftsführung, Demo Bernd Systemadministration
+und Demo Alexa Leserechte (Viewer, ohne Zuständigkeiten). Die Anzeigenamen sind zugleich
 die `assignee`- und `lead`-Werte des lokalen Bestands
 (`src/lib/demo-data/personas.ts`). Die Erwartungswerte je Person werden aus dem
 Datensatz abgeleitet (`persona-expectations.ts`) und sind damit nicht pflegbar

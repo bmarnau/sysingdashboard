@@ -9,6 +9,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { DemoPersonaId } from "@/lib/demo-data";
 import type { AvkkDossier, AvkkResponsibility } from "@/lib/avkk/types";
 import { buildRows, taskKey, type AvkkTask } from "@/lib/avkk/workspace";
 
@@ -117,7 +118,14 @@ const ALEX = "user-alex";
 const SAM = "user-sam";
 const PETRA = "user-petra";
 const GEORG = "user-georg";
-const ACCOUNTS = { alex: ALEX, sam: SAM, petra: PETRA, georg: GEORG } as const;
+const ACCOUNTS: Record<DemoPersonaId, string> = {
+  alex: ALEX,
+  sam: SAM,
+  petra: PETRA,
+  georg: GEORG,
+  bernd: "user-bernd",
+  alexa: "user-alexa",
+};
 
 function activePerson(subjectId: string): string | undefined {
   const s = [...store.values()].find((x) => x.subjectId === subjectId);
