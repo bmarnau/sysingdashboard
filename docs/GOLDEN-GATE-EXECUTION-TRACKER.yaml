@@ -513,6 +513,16 @@ risiken:
 fortschritt:
   - datum: 2026-10-24
     ereignis: >-
+      Lovable-Arbeitskopie (e5bcff1) enthielt erneut den verbotenen Auth-Broker
+      (client.ts und previewAuthStorage.ts, R-07); read-only Abgleich mit main belegt das.
+      Ein Zurücksetzen-Auftrag an Lovable lief; ein Merge auf main (PR 218, main 1dd9c84)
+      löste im selben Moment den Lovable-Konfliktdialog aus. Entscheidung: Repository-Version
+      behalten, die Lovable-Arbeit bleibt im Backup. Auf GitHub ist main ohne Broker, ohne
+      Sync-Branch. Ausstehend: Bestätigung des Lovable-Stands nach dem Re-Check, dann Publish-Go/No-Go.
+      Regel: Während eine schreibende Lovable-Arbeit läuft, nichts nach main mergen.
+    beleg: PR 218, Vergleich main gegen e5bcff1 und 48ae9aa (GitHub-API), docs/LOVABLE-PUBLISH-PRUEFUNG.md
+  - datum: 2026-10-24
+    ereignis: >-
       Publish-Prüfung für R-07 als Dokument angelegt (Prompt, Go/No-Go-Kriterien).
       Alle Codeänderungen für den Volltest sind auf main (5a32898); ausstehend sind der
       Lovable-Re-Check, die read-only Antwort von Lovable und das Publish-Go/No-Go.
