@@ -1,8 +1,8 @@
 # Demo-Anmeldekonten für die Rollenabnahme (F-11)
 
-Sprint 09C · gilt ab Datensatzversion 2.1.0
+Sprint 09C · gilt ab Datensatzversion 2.1.0, erweitert in 2.2.0 (sechs Personen)
 
-Der Systemhaus-Demo-Datensatz verteilt seine Sachverhalte auf vier fiktive
+Der Systemhaus-Demo-Datensatz verteilt seine Sachverhalte auf sechs fiktive
 Personen. Damit die persönliche Sicht, die Projektsicht und die Führungssicht
 tatsächlich unterschiedlich aussehen, braucht jede Person ein eigenes
 Anmeldekonto. Ohne Konten läuft alles auf den einspielenden Benutzer — dann ist
@@ -10,18 +10,35 @@ kein Mehrbenutzer-Nachweis möglich.
 
 > Nur auf Test-, Schulungs- oder Preview-Instanzen. Nicht produktiv.
 
-## Die vier Personen
+## Die sechs Personen
 
-| Person                      | Funktion          | Benötigte Rolle  | Fachlicher Scope                                                         |
-| --------------------------- | ----------------- | ---------------- | ------------------------------------------------------------------------ |
-| Demo Alex Systemtechnik     | Systemingenieur A | `engineer`       | Netzwerkpakete, Fälle A und C (davon einer gefährdet)                    |
-| Demo Sam Infrastruktur      | Systemingenieur B | `engineer`       | Microsoft-365- und Backup-Pakete, Fälle B, D, E (alle handlungsrelevant) |
-| Demo Petra Projektleitung   | Projektmanagerin  | `projectmanager` | Projekte Netzwerk und Microsoft 365, Fälle F und H                       |
-| Demo Georg Geschäftsführung | Führungssicht     | `teamlead`       | Projekt Backup, Fall G, Portfoliosicht über alle Demo-Projekte           |
+| Person                          | Funktion             | Benötigte Rolle       | Fachlicher Scope                                                             |
+| ------------------------------- | -------------------- | --------------------- | ---------------------------------------------------------------------------- |
+| Demo Alex Systemtechnik         | Systemingenieur A    | `engineer`            | Netzwerkpakete, Fälle A und C (davon einer gefährdet)                        |
+| Demo Sam Infrastruktur          | Systemingenieur B    | `engineer`            | Microsoft-365- und Backup-Pakete, Fälle B, D, E (alle handlungsrelevant)     |
+| Demo Petra Projektleitung       | Projektmanagerin     | `projectmanager`      | Projekte Netzwerk und Microsoft 365, Fälle F und H                           |
+| Demo Georg Geschäftsführung     | Führungssicht        | `teamlead`            | Projekt Backup, Fall G, Portfoliosicht über alle Demo-Projekte               |
+| Demo Bernd Systemadministration | Systemadministration | `systemadministrator` | Servervirtualisierung, Administrationskonten                                 |
+| Demo Alexa Leserechte           | Lesende Rolle        | `viewer`              | Ohne Zuständigkeiten; Gegenprobe: darf nichts verändern oder veröffentlichen |
 
 Die Anzeigenamen sind identisch mit den `assignee`- und `lead`-Werten im
 lokalen Datensatz — dadurch passen Arbeitspakete, Tätigkeiten und AVKK-Fälle
 zusammen.
+
+### Zuordnung der Testinstanz (Stand 2026-10-24)
+
+| Persona | Konto (Anzeigename) | Rolle in der App     |
+| ------- | ------------------- | -------------------- |
+| Alex    | Alex Marnau         | Systemingenieur      |
+| Sam     | Sam Marnau          | Systemingenieur      |
+| Alexa   | Alexa Marnau        | Viewer (Gegenprobe)  |
+| Petra   | Petra Marnau        | Projektmanager       |
+| Georg   | Georg Marnau        | Teamleiter           |
+| Bernd   | Bernd Marnau        | System-Administrator |
+
+Das Info-Kiosk-Konto gehört nicht zu den Demo-Personen. Im Live-Demo-Mandanten
+(TD-01 Stufe b, L0c) haben Bernd (Kunde A) und Petra (Kunde B) die Kundenverantwortung.
+Alex hat dort bewusst keine Mitgliedschaft und dient als Negativprobe.
 
 ## Einrichtung in vier Schritten
 
