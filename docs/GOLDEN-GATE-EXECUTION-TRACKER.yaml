@@ -547,6 +547,11 @@ risiken:
 fortschritt:
   - datum: 2026-10-25
     ereignis: >-
+      Freigabe 2 (GO, Nutzer, 17:46 MEZ) für den Schreibauftrag Kunde B erteilt. SQL-Block aus
+      Abschnitt 6 an den Nutzer zur Ausführung in Work übergeben; Ergebnis und Postflight stehen aus.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
       Preflight Kunde B (Work, 17:43 MEZ) bestanden: Projektbindung ok, 8 Pakete, 0 Zeilen in den ID-Bereichen,
       audit_log 299, Memberships von Bernd und Petra aktiv, 4 Referenzwerte aktiv, Pflichtspalten im Insert
       vollständig. Es wurde nichts geschrieben. Freigabe 2 steht aus.
