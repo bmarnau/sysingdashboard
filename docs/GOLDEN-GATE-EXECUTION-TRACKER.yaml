@@ -547,6 +547,13 @@ risiken:
 fortschritt:
   - datum: 2026-10-25
     ereignis: >-
+      Tests mit Alex (T8 bestanden) und Alexa (T9 teilweise): Befund M4, Rolle viewer sieht
+      Abrechnungsdaten (Permission billing.view fehlt). Als QS-06 nach dem Golden Gate vor
+      BSF-06 eingeplant. Neu: Merge-Checkliste, TD-01-Stufe-b-Konzept, Hilfetext-Korrektur
+      (Draft-PR #221).
+    beleg: docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md, docs/QS-06-VIEWER-ABRECHNUNG.md, docs/MERGE-CHECKLISTE-GOLDEN-GATE.md, docs/TD-01-STUFE-B-KONZEPT.md, PR #221
+  - datum: 2026-10-25
+    ereignis: >-
       Entscheidung Nutzer: QS-04 (Auth-Mail über eigene Domain) wird nach dem Golden Gate
       umgesetzt. Bis dahin bleibt der Passwortweg über das administrative Setzen im Servicemenü
       der App (Schloss-Symbol). Neues Paket PW-01 (Passwort in der Anwendung ändern) ist geplant,
