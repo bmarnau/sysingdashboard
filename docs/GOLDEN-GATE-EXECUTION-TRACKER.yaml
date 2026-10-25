@@ -547,6 +547,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-25
     ereignis: >-
+      Stufe-0-Bericht Kunde B (Work, 17:16 MEZ): Zielbindung bestätigt, 8 aktive Pakete, 0 AVKK-Subjects,
+      audit_log 299 Zeilen, Petra aktiv im Systemhaus. Bernd, Referenzwerte, ID-Muster und Trigger
+      fehlten im Bericht; Stufe 0b (nur lesen) vorbereitet. Es wurde nichts geschrieben.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md, Abschnitt 6
+  - datum: 2026-10-25
+    ereignis: >-
       Entscheidung Nutzer: Dauerauftrag Dokupflege wird in CLAUDE.md verankert (gilt in jeder
       Claude-Code-Sitzung).
     beleg: CLAUDE.md, docs/DOKU-PFLEGE-AUFTRAG.md

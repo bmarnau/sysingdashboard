@@ -75,3 +75,31 @@ Schreibe nichts. Verwende ausschließlich SELECT. Brich ab, falls eine Anweisung
 
 Nur auf ausdrückliches Kommando und nur über die festen IDs des späteren Schreibauftrags.
 `audit_log` wird nie gelöscht.
+
+## 6 Ergebnis Stufe 0 (2026-10-25, 17:16 MEZ) und Stufe 0b
+
+Ergebnis Stufe 0 (Work): Zielbindung bestätigt (Projekt `3c209338-443a-40f8-8a16-7c3c1b51da0e`, DB `zffimqwnrsuzuozsgnlc`).
+8 aktive Arbeitspakete von Kunde B (source_id `demo-wp-backup-konzept`, `demo-wp-backup-test`, `demo-wp-frei-admin`,
+`demo-wp-virt-analyse`, `demo-wp-virt-betrieb`, `demo-wp-virt-cluster`, `demo-wp-virt-migration`, `demo-wp-virt-storage`).
+Keine zugehörigen `avkk_subject` (0). `audit_log` Ausgangswert 299 Zeilen. Petra: aktive Mitgliedschaft im Systemhaus `…0d1`.
+Nichts verändert. Es fehlen die Punkte 4 (Bernd, `customer_access`), 5 bis 7 des Auftragstextes (Referenzwerte, ID-Muster, Trigger).
+
+Auftragstext Stufe 0b (nur lesen):
+
+```text
+Datenauftrag Stufe 0b (nur lesen) nach ADR-0037, Projekt SysIng Dashboard. Nur SELECT.
+1. Bernd: Konto-ID und Anzeigename, systemhouse_membership im Systemhaus ...0d1 (Status, valid_from, valid_to)
+   und customer_access fuer Kunde B ...0d3 (Rolle, Status). Gleiches fuer Petra (customer_access). Keine E-Mail-Adressen.
+2. Kunde-A-Muster: Gib je EINE vollstaendige Beispielzeile (alle Spalten ausser Zeitstempel-Rauschen) aus
+   avkk_subject (ID ...0f01), avkk_responsibility (ID ...0f21) und avkk_responsibility_type (ID ...0f41) aus.
+3. Verteilung bei Kunde A: Zaehle avkk_responsibility je role_key_snapshot und person_id; zeige, ob ein
+   Arbeitspaket sowohl eine Owner- als auch eine Deputy-Zeile hat (ja/nein, Anzahl).
+4. Referenzwerte: reference_value-IDs und Schluessel fuer Rolle owner und deputy sowie fuer den Typ, den
+   avkk_responsibility_type bei Kunde A verwendet.
+5. Existieren Zeilen mit IDs der Endungen 0f11-0f18 (subject), 0f31-0f40 (responsibility), 0f51-0f60 (type)
+   mit dem gleichen Praefix wie Kunde A?
+6. Trigger (pg_trigger.tgisinternal = false) auf avkk_subject, avkk_responsibility, avkk_responsibility_type
+   und welche in audit_log schreiben. Constraints/Unique-Indizes auf diesen drei Tabellen (Name, Definition).
+7. audit_log: Zeilen je table_name/action der Kunde-A-Laeufe am 2026-10-25 (erwartet 32 insgesamt).
+8. Bericht: Tabelle je Punkt, Fehler im Wortlaut. Nichts schreiben.
+```
