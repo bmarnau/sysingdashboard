@@ -547,6 +547,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-25
     ereignis: >-
+      Doku-Pflege automatisiert: Skript scripts/check-project-docs.mjs (npm run docs:project,
+      CI-Schritt) prüft Tracker-YAML, tote Verweise und Stände; Dauerauftrag als Prompt in
+      docs/DOKU-PFLEGE-AUFTRAG.md.
+    beleg: docs/DOKU-PFLEGE-AUFTRAG.md, scripts/check-project-docs.mjs
+  - datum: 2026-10-25
+    ereignis: >-
       Tests mit Alex (T8 bestanden) und Alexa (T9 teilweise): Befund M4, Rolle viewer sieht
       Abrechnungsdaten (Permission billing.view fehlt). Als QS-06 nach dem Golden Gate vor
       BSF-06 eingeplant. Neu: Merge-Checkliste, TD-01-Stufe-b-Konzept, Hilfetext-Korrektur
