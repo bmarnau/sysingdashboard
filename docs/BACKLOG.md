@@ -255,3 +255,4 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 - QS-06 Abrechnungsdaten nach Rolle (`billing.view`; Teamlead ja, Engineer nur Stunden), siehe `docs/QS-06-VIEWER-ABRECHNUNG.md`.
 - PW-01 bis PW-03 Passwort in der Anwendung ändern, PW-05 Passwort-Reset mit Textbeschriftung, siehe `docs/PW-01-PASSWORT-AENDERN.md`.
 - TD-01 Stufe b Live-Demo-Mandant auffrischen, siehe `docs/TD-01-STUFE-B-KONZEPT.md`.
+- DOC-01 Prüfskripte `scripts/check-docs-sync.mjs` und `scripts/check-project-docs.mjs` unter Windows lauffähig machen: `new URL(...).pathname` liefert `/C:/…` und führt zu `ENOENT`; Ersatz durch `fileURLToPath`. In der CI (Linux) ohne Wirkung.

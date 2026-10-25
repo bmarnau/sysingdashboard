@@ -547,6 +547,14 @@ risiken:
 fortschritt:
   - datum: 2026-10-25
     ereignis: >-
+      Wiederanlauf-Prüfung (read-only): Lovable-Team hat noch nicht geantwortet (R-07, Publish
+      No-Go). main unverändert 1dd9c84. Branch lovable-sync-1792847779 (d510e85, 2026-10-24)
+      enthält genau den Auth-Broker (client.ts, previewAuthStorage.ts, types.ts) und ist das
+      Lovable-Backup; er wird nicht gemergt. PR #220 und #221 CI 15/15 grün (Draft), PR #219
+      CI lief noch. Datenauftrag Kunde B Stufe 0 (read-only Bericht) als Entwurf angelegt.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md, GitHub-API Vergleich main...lovable-sync-1792847779, gh pr checks 219-221
+  - datum: 2026-10-25
+    ereignis: >-
       Doku-Pflege automatisiert: Skript scripts/check-project-docs.mjs (npm run docs:project,
       CI-Schritt) prüft Tracker-YAML, tote Verweise und Stände; Dauerauftrag als Prompt in
       docs/DOKU-PFLEGE-AUFTRAG.md.

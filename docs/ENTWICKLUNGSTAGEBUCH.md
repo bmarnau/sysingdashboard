@@ -23,6 +23,10 @@ Beträge, Engineer nur Stunden; PW-01 (Passwort in der App ändern) geplant.
 Neue Dokumente: Testprotokoll, Merge-Checkliste, PW-01, QS-06, TD-01-Stufe-b-Konzept,
 Lovable-Publish-Prüfung.
 
+Nachtrag (Wiederanlauf): Die Lovable-Antwort steht aus, der Publish bleibt gesperrt. Für Kunde B
+liegt der read-only Berichtsauftrag als Entwurf vor (`docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md`);
+geschrieben wird erst nach Bericht und zwei Freigaben.
+
 ## 2026-10-21 — Golden-Gate-Vorbereitung: Veröffentlichungsweg und Release 1.69.0
 
 Der Golden-Gate-Plan ist als `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` im Repository
