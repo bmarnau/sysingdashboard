@@ -453,6 +453,13 @@ querschnitt:
     vor_golden_gate_erforderlich: no
     entscheidung: "Nutzer 2026-10-21: QS-04 ist optional; Umfang reicht bis QS-03."
     status: optional
+    status_detail: >-
+      Stand 2026-10-25 (Lovable-Bericht): Domain notify.berndmarnau.de ist bei Lovable verifiziert,
+      aber keine eigenen Auth-Vorlagen vorhanden (Plattformstandard). Eigene Auth-Mails brauchen
+      Repository-Code (Versandroute src/routes/lovable/email/auth/webhook.ts, sechs Vorlagen unter
+      src/lib/email-templates/, drei neue Pakete) und damit einen Code-Auftrag mit Review. Lovable
+      lehnte den Auftrag ab, weil keine freigegebene Variant mit festem base_sha nachgewiesen ist
+      (S0-04). Die Entscheidung, QS-04 hochzustufen, steht aus.
   - id: QS-05
     titel: Systemstatus zeigt Abweichungen Datenbank, Git und Lovable
     einordnung: >-
