@@ -237,6 +237,31 @@ lieferpakete:
       - "Jede Stufe muss durch Tests (Stufe a) bzw. Postflight (Stufe b) belegt sein."
     risiko: Stufe b ist ein Datenschreibpfad in Produktion (siehe L0c).
 
+  - id: PW-01
+    gg: GG-02-Vorbereitung
+    titel: Passwort in der Anwendung ändern (Selbstbedienung, später Benutzerverwaltung)
+    nutzerwert: >-
+      Angemeldete Nutzer können ihr Passwort selbst ändern, ohne Anmeldeseite und ohne
+      zuverlässige Auth-Mail; Administratoren erreichen die Passwort-Aktionen auch in der
+      Benutzerverwaltung.
+    befund: >-
+      Nutzer 2026-10-25: Aus der Anwendung heraus fehlt eine Passwort-Funktion. Code: nur
+      Reset über Anmeldeseite (Mail) und Servicemenü Backend und Auth-Konten (Administrator).
+    entscheidung: "Nutzer 2026-10-25: erst PW-01 bis PW-03 (Stufe 1), danach PW-05 (Stufe 2)."
+    abhaengig_von: []
+    status: planned
+    code_merged: no
+    status_detail: >-
+      Anforderungen, Abnahme und Lovable-Prompt in docs/PW-01-PASSWORT-AENDERN.md. Umsetzung
+      als Lovable-Auftrag; Merge und Publish erst nach Klärung des Auth-Brokers (R-07), Test
+      auf der veröffentlichten App erforderlich.
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+    anforderungen:
+      - "Ein angemeldeter Nutzer muss sein Passwort in der Anwendung ändern können (PW-01)."
+      - "Die Änderung muss das aktuelle Passwort prüfen (PW-02) und die Registrierungsregel anwenden (PW-03)."
+      - "client.ts und previewAuthStorage.ts dürfen nicht verändert werden."
   - id: L1
     gg: GG-02
     titel: BSF-07 P0-Vertrag und Design integrieren
