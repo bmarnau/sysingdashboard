@@ -451,7 +451,7 @@ querschnitt:
     referenz: docs/BACKLOG.md (Stand 2026-08-17)
     einordnung: Betriebsfähigkeit der Registrierung; Plattform-Mails sind für externe Empfänger unzuverlässig.
     vor_golden_gate_erforderlich: no
-    entscheidung: "Nutzer 2026-10-21: QS-04 ist optional; Umfang reicht bis QS-03."
+    entscheidung: "Nutzer 2026-10-21: QS-04 ist optional; Umfang reicht bis QS-03. Nutzer 2026-10-25: QS-04 wird nach dem Golden Gate umgesetzt (Empfehlung angenommen)."
     status: optional
     status_detail: >-
       Stand 2026-10-25 (Lovable-Bericht): Domain notify.berndmarnau.de ist bei Lovable verifiziert,
@@ -486,6 +486,7 @@ querschnitt:
 nach_golden_gate:
   - BSF-04 / BSF-04A (zentrale Datenstrategie, Vorlagen)
   - BSF-DOC-01 bis BSF-DOC-03
+  - "QS-04 Domain und Auth-Mail (Entscheidung Nutzer 2026-10-25: nach dem Golden Gate; Voraussetzung: Variant mit base_sha (S0-04), Code-Auftrag mit Review für Versandroute und Vorlagen; Domain notify.berndmarnau.de ist verifiziert)"
   - BSF-06 (Docker, Betreiberhoheit, Installierbarkeit)
   - Integration-Readiness-Gate
   - Microsoft Graph, Entra-ID, SharePoint, Exchange, PRTG, MCP, Agenten, NAVIS
@@ -543,6 +544,13 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-25
+    ereignis: >-
+      Entscheidung Nutzer: QS-04 (Auth-Mail über eigene Domain) wird nach dem Golden Gate
+      umgesetzt. Bis dahin bleibt der Passwortweg über das administrative Setzen im Servicemenü
+      der App (Schloss-Symbol). Neues Paket PW-01 (Passwort in der Anwendung ändern) ist geplant,
+      Merge erst nach Klärung des Auth-Brokers (R-07).
+    beleg: Lovable-Bericht Auth-Mail 2026-10-25, docs/PW-01-PASSWORT-AENDERN.md
   - datum: 2026-10-25
     ereignis: >-
       Datenauftrag Verantwortliche je Arbeitspaket (Kunde A) ausgeführt (ADR-0037, Stufe 1 und 2):
