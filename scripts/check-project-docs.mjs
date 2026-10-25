@@ -14,10 +14,11 @@
  * Exitcode 0 = ok, 1 = Verstoß. Aufruf: `npm run docs:project`.
  */
 import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { parse } from "yaml";
 
-const ROOT = resolve(new URL("..", import.meta.url).pathname);
+const ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const errors = [];
 const read = (p) => readFileSync(resolve(ROOT, p), "utf8");
 

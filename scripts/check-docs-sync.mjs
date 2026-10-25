@@ -18,9 +18,10 @@
  * Exitcode 0 = ok, 1 = Verstoß. Aufruf: `bun run docs:check`.
  */
 import { readFileSync, readdirSync, statSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { resolve, join } from "node:path";
 
-const ROOT = resolve(new URL("..", import.meta.url).pathname);
+const ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const errors = [];
 const warnings = [];
 
