@@ -1,7 +1,7 @@
 # Datenauftrag Kunde B: Verantwortliche schreiben (Stufe 1 und 2)
 
 Stand: 2026-10-25. Grundlage: `docs/ADR/0037-kontrollierte-datenauftraege.md`, Mangel M2, Stufe-0/0b-Bericht (Work, 17:16 und 17:24 MEZ) in `docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md`.
-Status: **Freigabe 1 erteilt (Nutzer, 2026-10-25, 17:41 MEZ); Preflight bestanden (Work, 2026-10-25, 17:43 MEZ, alle Sollwerte erfüllt, Pflichtspalten im Insert vollständig); Freigabe 2 erteilt (Nutzer, 2026-10-25, 17:46 MEZ, „GO“); Ausführung in Work offen.** Es wird nichts geschrieben, bevor Freigabe 2 (nach dem Preflight) vorliegt.
+Status: **Freigabe 1 erteilt (Nutzer, 2026-10-25, 17:41 MEZ); Preflight bestanden (Work, 2026-10-25, 17:43 MEZ, alle Sollwerte erfüllt, Pflichtspalten im Insert vollständig); Freigabe 2 erteilt (Nutzer, 2026-10-25, 17:46 MEZ, „GO“); **Ausgeführt (Work, 2026-10-25, 17:49 MEZ), Postflight bestanden: 8/11/11 Zeilen, Petra 8 Owner, Bernd 3 Deputy, audit_log 299 auf 329, keine Fehler.\*\* Tests K-1 bis K-3 stehen aus. Es wird nichts geschrieben, bevor Freigabe 2 (nach dem Preflight) vorliegt.
 
 ## 1 Ziel und Entscheidung
 

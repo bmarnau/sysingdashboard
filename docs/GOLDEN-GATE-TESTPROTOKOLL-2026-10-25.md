@@ -19,12 +19,12 @@ Datensatz 2.2.0, Version 1.69.0 (Datum 21.10.2026). Mandant: synthetischer Demo-
 
 ## Mängel
 
-| Nr  | Befund                                                                                                                                            | Maßnahme                                                                                   |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| M1  | Erledigte Arbeitspakete erscheinen in der Arbeitssicht als „Überfällig“.                                                                          | Fix in Entwurfs-PR 220 (neue Fälligkeitsgruppe DONE), CI grün, Merge nach Lovable-Klärung. |
-| M2  | Verantwortliche je Arbeitspaket fehlten in den Demodaten („Nicht zugeordnet“).                                                                    | Datenauftrag Kunde A ausgeführt (2026-10-25, 12:25); Kunde B folgt (offen, Work-Guthaben). |
-| M3  | Veröffentlichte App und Lovable-Arbeitskopie weichen ab: Lovable legt den verbotenen Auth-Broker bei jedem Schritt neu an (R-07).                 | Support-Anfrage an Lovable am 2026-10-24 gestellt; Publish bleibt No-Go bis zur Klärung.   |
-| M4  | Rolle Viewer sieht Reiter „Abrechnung“, Umsatz-Kachel sowie Satz und Betrag in Tätigkeiten (Demodaten lokal, kein Datenabfluss; UI-Gating fehlt). | Code-Prüfung gegen RBAC-Matrix, danach Fix als eigener Auftrag.                            |
+| Nr  | Befund                                                                                                                                            | Maßnahme                                                                                                                   |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| M1  | Erledigte Arbeitspakete erscheinen in der Arbeitssicht als „Überfällig“.                                                                          | Fix in Entwurfs-PR 220 (neue Fälligkeitsgruppe DONE), CI grün, Merge nach Lovable-Klärung.                                 |
+| M2  | Verantwortliche je Arbeitspaket fehlten in den Demodaten („Nicht zugeordnet“).                                                                    | Datenauftrag Kunde A ausgeführt (2026-10-25, 12:25); Kunde B ausgeführt (2026-10-25, 17:49), Prüfung in der App steht aus. |
+| M3  | Veröffentlichte App und Lovable-Arbeitskopie weichen ab: Lovable legt den verbotenen Auth-Broker bei jedem Schritt neu an (R-07).                 | Support-Anfrage an Lovable am 2026-10-24 gestellt; Publish bleibt No-Go bis zur Klärung.                                   |
+| M4  | Rolle Viewer sieht Reiter „Abrechnung“, Umsatz-Kachel sowie Satz und Betrag in Tätigkeiten (Demodaten lokal, kein Datenabfluss; UI-Gating fehlt). | Code-Prüfung gegen RBAC-Matrix, danach Fix als eigener Auftrag.                                                            |
 
 ## Hinweise
 

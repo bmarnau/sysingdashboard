@@ -547,6 +547,13 @@ risiken:
 fortschritt:
   - datum: 2026-10-25
     ereignis: >-
+      Datenauftrag Verantwortliche je Arbeitspaket (Kunde B) ausgeführt (ADR-0037, Stufe 1 und 2):
+      8 avkk_subject, 11 avkk_responsibility, 11 avkk_responsibility_type mit festen IDs (0f11 bis 0f18,
+      0f31 bis 0f3b, 0f51 bis 0f5b). Postflight bestanden: Petra 8 Owner, Bernd 3 Deputy, audit_log
+      299 auf 329 (30 Trigger-Einträge), keine Fehler. Mangel M2 für beide Kunden behoben, Tests K-1 bis K-3 in der App stehen aus.
+    beleg: Work-Berichte vom 2026-10-25 (Preflight 17:43, Datenauftrag und Postflight 17:49), docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
       Freigabe 2 (GO, Nutzer, 17:46 MEZ) für den Schreibauftrag Kunde B erteilt. SQL-Block aus
       Abschnitt 6 an den Nutzer zur Ausführung in Work übergeben; Ergebnis und Postflight stehen aus.
     beleg: docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
