@@ -1,12 +1,14 @@
 # Sysing Dashboard — aktuelle BSF-Prioritäten
 
-Stand: 2026-10-15
+Stand: 2026-10-25
 Status: operative Prioritätenliste für den täglichen Wiederanlauf  
 Strategische Grundlage: `docs/GESAMTPLAN-SYSING-DASHBOARD.md`  
 Interne Neuplanung: `docs/BSF-INTERNAL-KIOSK-FIRST-ROADMAP.md`  
 Operative Detailplanung: `docs/SPRINT-PLAN-MVP-BSF.md`  
 Golden-Dataset-Vertrag: `docs/GOLDEN-DATASET-STRATEGY.md`  
 Dauerhafter Wiederanlaufpunkt: Issue #35
+
+Hinweis: Die aktuelle Priorität ist das Golden Gate (Testphase). Maßgeblich sind `docs/CURRENT-STATUS.md` und `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml`; die folgende BSF-Planung bleibt unverändert gültig.
 
 ## Zweck
 

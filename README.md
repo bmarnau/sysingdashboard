@@ -9,6 +9,8 @@ Aktueller Entwicklungskandidat: **SysIng Dashboard 1.69.0**. **BSF-03E** mit
 Personen-, Einzelaktions- und operativer Arbeitspaket-Sicht ist nach vollständiger
 P5-Gesamtabnahme auf `main` abgeschlossen. Nächster geplanter Fachsprint ist
 **BSF-07**; der zuletzt veröffentlichte GitHub-Release bleibt `v1.65.0`.
+Aktuell läuft die Golden-Gate-Testphase mit Demodaten; Stand und Plan stehen in
+`docs/CURRENT-STATUS.md` und `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml`.
 
 ## Funktionsumfang
 
