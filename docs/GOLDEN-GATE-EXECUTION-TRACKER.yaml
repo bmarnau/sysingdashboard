@@ -487,7 +487,7 @@ nach_golden_gate:
   - BSF-04 / BSF-04A (zentrale Datenstrategie, Vorlagen)
   - BSF-DOC-01 bis BSF-DOC-03
   - "QS-04 Domain und Auth-Mail (Entscheidung Nutzer 2026-10-25: nach dem Golden Gate; Voraussetzung: Variant mit base_sha (S0-04), Code-Auftrag mit Review für Versandroute und Vorlagen; Domain notify.berndmarnau.de ist verifiziert)"
-  - "QS-06 / M4 Viewer sieht Abrechnungsdaten (Entscheidung Nutzer 2026-10-25: Nachtrag nach dem Golden Gate, vor BSF-06 (Docker) und allen folgenden Punkten; Reiter Abrechnung, Umsatz-Kachel sowie Satz/Betrag/Abrechnungsstatus in Tätigkeiten für Rolle viewer ausblenden, Abgleich mit docs/RBAC-MATRIX.md, Frontend-Test je Rolle; Befund aus Test T9, Testprotokoll 2026-10-25)"
+  - "QS-06 / M4 Viewer sieht Abrechnungsdaten (Entscheidung Nutzer 2026-10-25: Nachtrag nach dem Golden Gate, vor BSF-06 (Docker) und allen folgenden Punkten; Reiter Abrechnung, Umsatz-Kachel sowie Satz/Betrag/Abrechnungsstatus in Tätigkeiten für Rolle viewer ausblenden, Abgleich mit docs/RBAC-MATRIX.md, Frontend-Test je Rolle; Befund aus Test T9, Testprotokoll 2026-10-25; Analyse: docs/QS-06-VIEWER-ABRECHNUNG.md, es fehlt eine Permission billing.view)"
   - BSF-06 (Docker, Betreiberhoheit, Installierbarkeit)
   - Integration-Readiness-Gate
   - Microsoft Graph, Entra-ID, SharePoint, Exchange, PRTG, MCP, Agenten, NAVIS
