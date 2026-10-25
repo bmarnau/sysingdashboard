@@ -511,6 +511,15 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-25
+    ereignis: >-
+      Datenauftrag Verantwortliche je Arbeitspaket (Kunde A) ausgeführt (ADR-0037, Stufe 1 und 2):
+      12 avkk_subject, 10 avkk_responsibility, 10 avkk_responsibility_type mit festen IDs
+      (0f01 bis 0f0c, 0f21 bis 0f2a, 0f41 bis 0f4a), 32 audit_log-Zeilen wie freigegeben,
+      Postflight bestanden (Bernd 7 Verantwortliche, Petra 3 Stellvertreterin, 5 Pakete ohne).
+      Kunde B folgt nach Petras Veröffentlichung. Bekannt: avkk_people_directory liefert im
+      SQL-Kanal 0 Personen (kein auth.uid); Anzeige der Namen in der Sitzung noch zu prüfen.
+    beleg: Work-Berichte vom 2026-10-25 (Vorprüfung 12:18, Datenauftrag 12:25)
   - datum: 2026-10-24
     ereignis: >-
       Lovable-Arbeitskopie (e5bcff1) enthielt erneut den verbotenen Auth-Broker
