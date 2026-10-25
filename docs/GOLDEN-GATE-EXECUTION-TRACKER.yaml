@@ -547,6 +547,13 @@ risiken:
 fortschritt:
   - datum: 2026-10-25
     ereignis: >-
+      Stufe-0b-Bericht Kunde B (Work, 17:24 MEZ) vollständig. Schreibauftrag erstellt: 8 Subjects,
+      11 Verantwortungen (Petra Owner 8, Bernd Deputy 3), 11 Typen mit festen IDs, eine Transaktion,
+      erwartet 30 audit_log-Zeilen (299 auf 329). Wartet auf Freigabe 1 des Nutzers, danach Preflight
+      und Freigabe 2. Es wurde nichts geschrieben.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
       Stufe-0-Bericht Kunde B (Work, 17:16 MEZ): Zielbindung bestätigt, 8 aktive Pakete, 0 AVKK-Subjects,
       audit_log 299 Zeilen, Petra aktiv im Systemhaus. Bernd, Referenzwerte, ID-Muster und Trigger
       fehlten im Bericht; Stufe 0b (nur lesen) vorbereitet. Es wurde nichts geschrieben.
