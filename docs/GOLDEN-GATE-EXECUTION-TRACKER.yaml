@@ -547,6 +547,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-25
     ereignis: >-
+      Preflight Kunde B (Work, 17:43 MEZ) bestanden: Projektbindung ok, 8 Pakete, 0 Zeilen in den ID-Bereichen,
+      audit_log 299, Memberships von Bernd und Petra aktiv, 4 Referenzwerte aktiv, Pflichtspalten im Insert
+      vollständig. Es wurde nichts geschrieben. Freigabe 2 steht aus.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
       Freigabe 1 (Nutzer, 17:41 MEZ) für den Schreibauftrag Kunde B erteilt: Petra Owner bei 8 Paketen,
       Bernd Stellvertretung bei Backup-Test, Cluster und Migration. Als Nächstes Preflight (nur lesen)
       in Work, danach Freigabe 2.
