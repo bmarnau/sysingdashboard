@@ -547,6 +547,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-25
     ereignis: >-
+      Entscheidung Nutzer: Kunde B (Datenauftrag M2) bekommt Petra als Verantwortliche bei allen
+      8 Arbeitspaketen und Bernd als Stellvertretung bei etwa 3 von 8. Stufe-0-Lesebericht wird um
+      17:15 in Work ausgeführt.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md
+  - datum: 2026-10-25
+    ereignis: >-
       Wiederanlauf-Prüfung (read-only): Lovable-Team hat noch nicht geantwortet (R-07, Publish
       No-Go). main unverändert 1dd9c84. Branch lovable-sync-1792847779 (d510e85, 2026-10-24)
       enthält genau den Auth-Broker (client.ts, previewAuthStorage.ts, types.ts) und ist das

@@ -10,6 +10,8 @@ müssen je Arbeitspaket Verantwortliche hinterlegt werden: Petra als Verantwortl
 Stellvertretung. Vor jedem Schreiben muss ein read-only Bericht vorliegen (Stufe 0). Der
 schreibende Auftrag (Stufe 1 und 2) wird erst aus diesem Bericht abgeleitet.
 
+Entscheidung Nutzer 2026-10-25: Petra ist bei allen 8 Arbeitspaketen Verantwortliche (Owner); Bernd ist bei etwa 3 von 8 Paketen Stellvertretung (analog Kunde A, 3 von 10). Die genaue Auswahl der 3 Pakete legt Claude nach dem Bericht fest und nennt sie im Schreibauftrag mit festen IDs.
+
 ## 2 Ablauf
 
 ```mermaid
