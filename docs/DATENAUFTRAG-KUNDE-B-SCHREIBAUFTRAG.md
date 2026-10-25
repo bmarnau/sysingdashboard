@@ -7,7 +7,7 @@ Status: **Entwurf, wartet auf Freigabe 1 durch den Nutzer.** Es wird nichts gesc
 
 Nutzer 2026-10-25: Petra ist bei allen 8 Arbeitspaketen von Kunde B Verantwortliche (`owner`). Bernd ist bei 3 von 8 Paketen Stellvertretung (`deputy`). Die 3 Pakete (überfälliger Test, laufender Aufbau, wartende Migration) liefern absichtlich unterschiedliche Fälligkeitsgruppen für die Arbeitssicht.
 
-## 2 Angelegte Datensätze (feste IDs, Präfix `00000000-0000-4000-8000-000000000`)
+## 2 Angelegte Datensätze (feste IDs, Präfix `00000000-0000-4000-8000-00000000` plus vierstellige Endung)
 
 | Subject-ID | source_id                | Titel                                       | Owner (Petra) | Deputy (Bernd) |
 | ---------- | ------------------------ | ------------------------------------------- | ------------- | -------------- |
@@ -65,7 +65,7 @@ Pruefe und melde je Punkt Ergebnis und Soll:
    demo-wp-backup-konzept, demo-wp-backup-test, demo-wp-frei-admin, demo-wp-virt-analyse,
    demo-wp-virt-betrieb, demo-wp-virt-cluster, demo-wp-virt-migration, demo-wp-virt-storage. Soll 8.
 3. avkk_subject mit ID ...0f11 bis ...0f18, avkk_responsibility ...0f31 bis ...0f3b,
-   avkk_responsibility_type ...0f51 bis ...0f5b (Praefix 00000000-0000-4000-8000-000000000): Soll je 0.
+   avkk_responsibility_type ...0f51 bis ...0f5b (Praefix 00000000-0000-4000-8000-00000000 plus Endung): Soll je 0.
 4. avkk_subject mit (systemhouse ...0d1, subject_type workpackage, subject_id in den 8 source_id): Soll 0.
 5. audit_log Gesamtzahl. Soll 299.
 6. systemhouse_membership Petra und Bernd im Systemhaus ...0d1: aktiv, valid_to NULL. Soll 2.
@@ -91,7 +91,7 @@ DECLARE
   r_deputy constant uuid := 'd3f812a5-739f-4d1b-81a4-1dd9d71a36dd';
   t_result constant uuid := '917595fd-998c-4f56-a2e2-bf687ddf07c3';
   t_coord constant uuid := '4d21bd2d-0ee8-4c65-b1ff-d796495d7782';
-  p constant text := '00000000-0000-4000-8000-000000000';
+  p constant text := '00000000-0000-4000-8000-00000000';
 BEGIN
   -- Zielbindung und Ausgangslage (bricht bei Abweichung ab)
   SELECT count(*) INTO n FROM public.shared_work_package_projection
@@ -191,3 +191,17 @@ Postflight Kunde B (nur lesen):
 | K-1 | Petra | Arbeitssicht zeigt 8 Pakete von Kunde B mit Verantwortliche = Petra.                                                                |
 | K-2 | Bernd | Arbeitssicht zeigt bei 3 Paketen Stellvertretung (Backup-Test, Cluster, Migration).                                                 |
 | K-3 | Petra | Gruppen: überfällig (Backup-Test, Migration), heute (Pflege Admin), künftig, erledigt (Lastanalyse), ohne Datum (Betriebshandbuch). |
+
+## 10 Vorab-Test des SQL-Blocks (2026-10-25)
+
+Der SQL-Block aus Abschnitt 6 wurde gegen eine lokale PostgreSQL-16-Instanz mit nachgebautem Minimalschema ausgeführt (drei AVKK-Tabellen mit den im Bericht genannten Constraints, Audit-Trigger, `audit_log` mit 299 Zeilen, Projektion mit 8 Zeilen).
+
+| Prüfung                | Ergebnis                                                                    |
+| ---------------------- | --------------------------------------------------------------------------- |
+| Erster Lauf            | 8 Subjects, 11 Verantwortungen, 11 Typen; Petra 8 Owner, Bernd 3 Deputy     |
+| Audit                  | 299 auf 329 (30 neue Zeilen)                                                |
+| Zweiter Lauf           | bricht mit Ausnahme ab, nichts geändert (Schutz gegen Doppelausführung)     |
+| Rückbau über feste IDs | Verantwortungen und Typen per Kaskade gelöscht, 22 zusätzliche Audit-Zeilen |
+| Fund im Test           | ID-Präfix hatte eine Null zu viel (ungültige UUID); korrigiert              |
+
+Grenzen: Das Minimalschema enthält nicht die echten Trigger `bsf03e_avkk_subject_scope_guard` und `bsf03e_avkk_responsibility_target_guard` sowie die Fremdschlüssel auf `customer`, `profiles` und `reference_value`. Diese Punkte deckt der Preflight (Abschnitt 5) und der Postflight ab. Der Test ersetzt sie nicht.
