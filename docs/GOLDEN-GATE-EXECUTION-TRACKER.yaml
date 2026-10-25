@@ -214,7 +214,7 @@ lieferpakete:
       Stufe a umgesetzt in PR 215 (Datensatz 2.2.0: 6 Projekte, 24 Arbeitspakete, rund 57
       Tätigkeiten, Randfälle, sechs Personas, Aktualitätshinweis) und PR 216 (Tätigkeiten ohne
       echte Kennung gehören dem Veröffentlichenden). Stufe b offen: Live-Auffrischung der
-      Datumswerte und Kategorien als eigene Datenaufträge nach ADR-0037.
+      Datumswerte und Kategorien als eigene Datenaufträge nach ADR-0037 Konzept: docs/TD-01-STUFE-B-KONZEPT.md.
     gates_pass: not_run
     preview_verified: no
     published_verified: not_published
