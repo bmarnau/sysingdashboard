@@ -41,6 +41,8 @@ Auftrag bei jeder Sitzung und vor jedem Abschluss:
    Offene_Fragen, Roadmap).
 ```
 
+Die Kurzfassung dieser Regeln steht in `CLAUDE.md` und gilt damit in jeder Claude-Code-Sitzung automatisch.
+
 ## 4 Grenzen
 
 - Die Prüfung erkennt veraltete Stände, aber keine inhaltlich falschen Aussagen. Dafür bleibt der Abschnitt „Prüfen der Arbeit“ im Auftrag.
