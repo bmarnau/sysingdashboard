@@ -1,7 +1,7 @@
 # Datenauftrag Kunde B: Verantwortliche schreiben (Stufe 1 und 2)
 
 Stand: 2026-10-25. Grundlage: `docs/ADR/0037-kontrollierte-datenauftraege.md`, Mangel M2, Stufe-0/0b-Bericht (Work, 17:16 und 17:24 MEZ) in `docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md`.
-Status: **Entwurf, wartet auf Freigabe 1 durch den Nutzer.** Es wird nichts geschrieben, bevor Freigabe 2 (nach dem Preflight) vorliegt.
+Status: **Freigabe 1 erteilt (Nutzer, 2026-10-25, 17:41 MEZ); Preflight offen, Freigabe 2 steht aus.** Es wird nichts geschrieben, bevor Freigabe 2 (nach dem Preflight) vorliegt.
 
 ## 1 Ziel und Entscheidung
 

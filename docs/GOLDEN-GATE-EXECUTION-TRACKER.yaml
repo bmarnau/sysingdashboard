@@ -547,6 +547,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-25
     ereignis: >-
+      Freigabe 1 (Nutzer, 17:41 MEZ) für den Schreibauftrag Kunde B erteilt: Petra Owner bei 8 Paketen,
+      Bernd Stellvertretung bei Backup-Test, Cluster und Migration. Als Nächstes Preflight (nur lesen)
+      in Work, danach Freigabe 2.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
       Stufe-0b-Bericht Kunde B (Work, 17:24 MEZ) vollständig. Schreibauftrag erstellt: 8 Subjects,
       11 Verantwortungen (Petra Owner 8, Bernd Deputy 3), 11 Typen mit festen IDs, eine Transaktion,
       erwartet 30 audit_log-Zeilen (299 auf 329). Vorab-Test des SQL-Blocks gegen lokale PostgreSQL 16 bestanden (Fund: ID-Präfix korrigiert). Wartet auf Freigabe 1 des Nutzers, danach Preflight
