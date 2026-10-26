@@ -23,6 +23,8 @@ Zu Beginn lesen: `docs/CURRENT-STATUS.md`, `docs/GOLDEN-GATE-EXECUTION-TRACKER.y
 3. Bei nutzersichtbaren Änderungen: `CHANGELOG.md` und ggf. `src/lib/help-documentation.ts`.
 4. Ausführen: `npm run docs:check`, `npm run docs:project`, Prettier-Prüfung der geänderten Dateien.
 5. Committen, pushen und mit `git ls-remote --heads origin <branch>` prüfen, dass der Remote-Stand dem lokalen Commit entspricht.
+6. Nach jedem Merge: lokalen Branch löschen. Zum Abschluss `npm run git:hygiene` ausführen und die Zahl gemergter Remote-Branches, offener PRs und Drafts in einer Zeile melden. Bei mehr als 10 gemergten Remote-Branches den lokalen Aufräumauftrag (`docs/GIT-AUFRAEUMEN.md`) anbieten. Branches `lovable*`, `backup/*`, `audit/*` nie löschen. Das Löschen von Remote-Branches ist in der Cloud-Sitzung gesperrt und erfolgt lokal durch den Nutzer.
+7. Doku-Änderungen eines Tages in einem PR bündeln, statt pro Kleinigkeit einen Branch zu öffnen.
 
 ## Abschluss jeder komplexen Antwort
 

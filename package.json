@@ -14,6 +14,7 @@
     "format": "prettier --write .",
     "docs:check": "node scripts/check-docs-sync.mjs",
     "docs:project": "node scripts/check-project-docs.mjs",
+    "git:hygiene": "node scripts/git-hygiene.mjs",
     "docs:sysing": "node scripts/docs/build-sysing-001.mjs",
     "project-status:check": "node scripts/project-status/check.mjs",
     "db:schema:rebuild": "supabase db reset --local --no-seed",

@@ -11,6 +11,11 @@ dieser Datei.
 
 Stand: 2026-10-26 · Dashboard-Version 1.69.0
 
+## 2026-10-26 — Git-Hygiene als Standard
+
+Ursache für die angehäuften Branches: Auto-Delete im Repository ist aus, Löschen in der Cloud-Sitzung gesperrt, und der Abschluss prüfte den Branch-Zustand nicht.
+Maßnahmen: Skript `npm run git:hygiene`, neue Regeln in `CLAUDE.md`, GitHub-Einstellung durch den Nutzer. PR 220 ist gemergt.
+
 ## 2026-10-26 — Kunde B: Verantwortliche gesetzt und in der App bestätigt
 
 Der Datenauftrag für Kunde B lief am 25.10. um 17:49 (8 Subjects, 11 Verantwortungen, 11 Typen; Audit 299 auf 329). Am 26.10. zeigt die Arbeitssicht

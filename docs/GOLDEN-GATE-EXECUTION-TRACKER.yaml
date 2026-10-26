@@ -546,6 +546,13 @@ risiken:
 fortschritt:
   - datum: 2026-10-26
     ereignis: >-
+      Git-Hygiene als Standard eingeführt: Skript `npm run git:hygiene` (nur lesend), Regeln 6 und 7 in CLAUDE.md
+      (Branch nach Merge löschen, Abschlusszeile mit Zahl offener Branches und PRs, Doku-PRs bündeln). PR 220 gemergt (e518087).
+      GitHub-Einstellung "Automatically delete head branches" lässt sich aus der Cloud-Sitzung nicht setzen (HTTP 403), Nutzer muss sie einschalten.
+      Stand Remote: 2 gemergte Branches löschbar (vorher 40, lokal bereinigt).
+    beleg: scripts/git-hygiene.mjs, CLAUDE.md, PR 220 (e518087)
+  - datum: 2026-10-26
+    ereignis: >-
       Planung und Dokumente aktualisiert: L0c abgeschlossen (done, App-Tests T1 bis T10), L0b Vorschau geprüft,
       offene Punkte bereinigt. Git: 5 lokale gemergte Branches entfernt; 40 gemergte Remote-Branches sind zum
       Löschen vorbereitet (Löschen in der Cloud-Sitzung gesperrt, lokaler Auftrag in docs/GIT-AUFRAEUMEN.md).
