@@ -68,6 +68,8 @@ jobs:
         run: bun run lint:no-console
       - name: Docs sync check
         run: bun run docs:check
+      - name: Project docs freshness check
+        run: bun run docs:project
       - name: Project manifest check
         run: bun run project-status:check
       - name: Golden Dataset contract

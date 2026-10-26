@@ -1,8 +1,27 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-10-15
+Stand: 2026-10-26
 
-## Aktueller Wiederanlaufpunkt
+## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-25)
+
+Das Golden Gate steht in der Testphase mit Demodaten (Bernd, Petra, Alex, Alexa).
+Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risiken),
+`docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md` (T1–T9, Mängel M1–M4) und
+`docs/MERGE-CHECKLISTE-GOLDEN-GATE.md` (Reihenfolge der Merges und Tests nach dem Publish).
+`main` steht auf `1dd9c84`. **Publish bleibt No-Go**, bis das Lovable-Team die Auth-Broker-
+Abweichung und die Publish-Quelle klärt (R-07, `docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
+Kunde B: Verantwortliche per Datenauftrag gesetzt (2026-10-25, 17:49) und in der App bestätigt (Test T10, 2026-10-26). L0c ist abgeschlossen.
+Verbleibend bis zum Publish: Lovable-Antwort zu R-07, Merge von PR #219, #220, #221 (Reihenfolge in `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md`), Test N1 bis N5 auf der veröffentlichten App. Git-Aufräumen: `docs/GIT-AUFRAEUMEN.md`.
+Offen: PR #219 (Doku), Draft-PR #220 (Fix „Erledigt nie überfällig“), Draft-PR #221 (Hilfetext).
+Wartebedingung: Antwort des Lovable-Teams (frühestens Montag, 2026-10-26). Der Branch
+`lovable-sync-1792847779` ist das Lovable-Backup mit Auth-Broker und wird nicht gemergt.
+Vorbereitet: Datenauftrag Kunde B, Stufe 0 (read-only), `docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md`;
+nächster Schritt dort ist die Ausführung des Berichts durch den Nutzer in Lovable/Work.
+Nach dem Golden Gate: QS-04 (Auth-Mail), QS-06 (Abrechnungsdaten nach Rolle,
+`docs/QS-06-VIEWER-ABRECHNUNG.md`), danach BSF-06 (Docker). Konzepte: `docs/PW-01-PASSWORT-AENDERN.md`,
+`docs/TD-01-STUFE-B-KONZEPT.md`.
+
+## Vorheriger Wiederanlaufpunkt (BSF-03E, 2026-10-15)
 
 **BSF-03E ist nach P5-Gesamtabnahme abgeschlossen; nächster geplanter
 Fachsprint ist BSF-07.** GitHub-Stand:
