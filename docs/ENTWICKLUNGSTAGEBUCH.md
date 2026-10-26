@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-26 · Dashboard-Version 1.69.0
 
+## 2026-10-26 — Lovable Support: Eingangsbestätigung zu R-07
+
+Der KI-Agent von Lovable bestätigt, dass das Projekt auf Lovable Cloud läuft, und hat die Fragen zu Auth-Storage-Datei, Publish aus GitHub, veröffentlichtem Commit und Migrationen an das Team weitergegeben. Eine inhaltliche Antwort steht aus; der Publish bleibt No-Go.
+
 ## 2026-10-26 — Entscheidungen: TD-01 relativ, L2 freigegeben, ADG-Standard gemergt
 
 Der Standard zur Branch- und PR-Hygiene ist in `bmarnau-standards/ai-development-governance` gemergt (PR 15, Squash). TD-01 Stufe b: Fälligkeiten relativ zu heute,
