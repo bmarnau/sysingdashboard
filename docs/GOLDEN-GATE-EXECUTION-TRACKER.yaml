@@ -290,6 +290,9 @@ lieferpakete:
       - Unberechtigte Rolle sieht kein Objekt, keinen Count, keine ID.
       - Zustände AVAILABLE, EMPTY, PARTIAL, UNKNOWN, UNAVAILABLE, DENIED ohne geschönte Nullwerte.
     ist_stand_code: Keine Cockpit-Route und kein Composer im Repository.
+    konzept: docs/L2-COCKPIT-SCHNITT-KONZEPT.md
+    status_detail: >-
+      Konzept (Entwurf) liegt vor (2026-10-26): Nutzungsfall, Datenquellen, Aufmerksamkeitsgründe, Anforderungen L2-01 bis L2-12, RED-Matrix, Auftragstext P1. Freigabe durch den Nutzer und Klärung der Abhängigkeit zu QS-06 (keine Beträge) stehen aus.
 
   - id: L3
     gg: GG-02
@@ -544,6 +547,13 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-26
+    ereignis: >-
+      PR 219 (Doku, Tracker, Merge-Checkliste) per REST gemergt (Merge-Commit 22af893), CI 15 Checks grün. Vorher geprüft:
+      keine Lovable-Schreibaktivität seit 2026-10-24 13:16 UTC (letzter lovable-sync-Branch). PR 220 (Fix erledigt/überfällig, M1)
+      und PR 221 (Hilfetext Passwort) per update-branch aktualisiert und für die Prüfung freigegeben; Merge nach grüner CI.
+      QS-06 als Draft-PR 222 angelegt (Permission billing.view, UI-Gating, Rollentests), bewusst nicht gemergt. L2-Cockpit-Konzept als Entwurf eingecheckt.
+    beleg: PR 219 (22af893), PR 220, PR 221, PR 222 (Draft), docs/L2-COCKPIT-SCHNITT-KONZEPT.md
   - datum: 2026-10-26
     ereignis: >-
       Planung und Dokumente aktualisiert: L0c abgeschlossen (done, App-Tests T1 bis T10), L0b Vorschau geprüft,
