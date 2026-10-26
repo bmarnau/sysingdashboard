@@ -20,6 +20,8 @@ Format pro Eintrag:
 - **Projektcontrolling**: Die Filterleiste bleibt in allen Zuständen (Laden, Fehler, leer) sichtbar (Fix #192).
 - **Kiosk-Demodaten 1.1.0**: Geräte mit alten Demodaten laden den aktuellen Datensatz; die Spalte „Infrastruktur“ zeigt wieder OK, Warnung und Kritisch.
 - **Systemstatus**: Ist GitHub nicht erreichbar, nennt die Anzeige jetzt den Grund (z. B. Anfragelimit, Zeitüberschreitung, Netzwerkfehler) statt nur „nicht prüfbar“.
+- **Arbeitssicht**: Erledigte Arbeitspakete erscheinen nicht mehr als „Überfällig“, sondern in der eigenen Gruppe „Erledigt“; der Fälligkeitsfilter bietet die Gruppe ebenfalls an.
+- **Hilfe**: Der Text zum Zurücksetzen von Passwörtern widerspricht nicht mehr dem administrativen Setzen eines Passworts.
 - **Produktname**: Sichtbare Titel und Kopfzeilen heißen einheitlich „SysIng Dashboard“ (vorher teils „Engineer Console“). „Golden Gate“ bleibt interner Projektname.
 
 ## 1.68.0 - 2026-10-04

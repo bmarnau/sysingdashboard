@@ -1,4 +1,4 @@
-export type DueGroup = "OVERDUE" | "TODAY" | "FUTURE" | "NO_DUE_DATE";
+export type DueGroup = "OVERDUE" | "TODAY" | "FUTURE" | "NO_DUE_DATE" | "DONE";
 export type WorkPackageResponsibilityRole = "owner" | "deputy";
 
 export interface WorkPackagePerson {

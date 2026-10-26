@@ -19,7 +19,11 @@ const DUE_GROUP_ORDER: Record<DueGroup, number> = {
   TODAY: 1,
   FUTURE: 2,
   NO_DUE_DATE: 3,
+  DONE: 4,
 };
+
+/** Erledigte Arbeitspakete sind nie überfällig, egal wie alt ihr Termin ist. */
+const DONE_STATUSES: ReadonlySet<string> = new Set(["done", "erledigt"]);
 
 function fail(message: string): never {
   throw new Error(`Arbeitspaket-Arbeitssicht: ${message}.`);
@@ -49,7 +53,8 @@ function validDue(due: string): boolean {
   );
 }
 
-function dueGroup(due: string | null, asOfDate: string): DueGroup {
+function dueGroup(due: string | null, asOfDate: string, status: string): DueGroup {
+  if (DONE_STATUSES.has(status.trim().toLowerCase())) return "DONE";
   if (due === null) return "NO_DUE_DATE";
   if (!validDue(due)) fail("ungültige Fälligkeit");
   if (due < asOfDate) return "OVERDUE";
@@ -102,7 +107,7 @@ function hydrate(row: WorkPackageWorkViewSourceRow, asOfDate: string): WorkPacka
     title: row.title,
     status: row.status,
     due: row.due,
-    dueGroup: dueGroup(row.due, asOfDate),
+    dueGroup: dueGroup(row.due, asOfDate, row.status),
     owner,
     deputies,
     asOfDate,

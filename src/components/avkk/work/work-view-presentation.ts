@@ -5,6 +5,7 @@ export const dueGroupLabels: Record<DueGroup, string> = {
   TODAY: "Heute",
   FUTURE: "Später",
   NO_DUE_DATE: "Ohne Fälligkeitsdatum",
+  DONE: "Erledigt",
 };
 
 const statusLabels: Record<string, string> = {
