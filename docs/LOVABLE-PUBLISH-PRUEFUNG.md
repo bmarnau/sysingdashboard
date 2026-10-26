@@ -55,3 +55,20 @@ Ein Go gilt nur für den geprüften Commit. Nach jeder neuen Änderung in Lovabl
 Siehe Tracker, Paket L0b (`testplan`) und `docs/DEMO-USERS.md` (Zuordnung der Testinstanz).
 Die Datenbank ist für Preview und veröffentlichte App dieselbe; der Test erzeugt keine
 zusätzlichen Schreibrisiken über die in ADR-0037 geregelten Demo-Daten hinaus.
+
+## Bekannte Plattformabweichung (Stand 2026-10-25)
+
+Lovable legt den Auth-Broker bei jedem Schritt in der Arbeitskopie neu an. Gegenüber GitHub-main
+`1dd9c8447230a81c3c14f90689852ee2a78352a7` weichen genau drei Dateien ab (Lovable-Bericht
+2026-10-25, Arbeitskopie `d510e85`, Merge aus `1dd9c84` und `6d94013`):
+
+| Datei                                             | Arbeitskopie (SHA-256)                                             | main (SHA-256)                                                     |
+| ------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `src/integrations/supabase/client.ts`             | `f8484c686a271fec973cb843be7cd6efe4ad027ca96ab4b1b3315eff79da26cc` | `d333ca49073b11a766a9e97f3dc80dfb917522dc324efce658ecea8117653214` |
+| `src/integrations/supabase/previewAuthStorage.ts` | `5b00130146b77ecd8ed49f118c640d3e75aa7c5e76695f3b9e3f7f8833719f0a` | nicht vorhanden                                                    |
+| `src/integrations/supabase/types.ts`              | `ef467ecf24731aa25fc71e51c97e699906832d3ffabac916354507b94e4ed144` | `13f25998d227cf577bf294b8bfadb8ec99fda045cc2628d13c748246b3b23763` |
+
+Die Prüfsummen von `client.ts` und `previewAuthStorage.ts` entsprechen der Allowlist aus ADR-0036
+(Stand `3fd8f74`). Neu gegenüber ADR-0036 ist `types.ts` (nur der generierte Block
+`__InternalSupabase`, +5 Zeilen). Die ADR-0036-Ausnahme gilt nur für Datenbankanwendung, nicht für
+Code-Aufträge, Preview oder Publish.
