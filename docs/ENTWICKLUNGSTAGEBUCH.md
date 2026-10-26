@@ -11,6 +11,12 @@ dieser Datei.
 
 Stand: 2026-10-26 · Dashboard-Version 1.69.0
 
+## 2026-10-26 — Entscheidungen: TD-01 relativ, L2 freigegeben, ADG-Standard gemergt
+
+Der Standard zur Branch- und PR-Hygiene ist in `bmarnau-standards/ai-development-governance` gemergt (PR 15, Squash). TD-01 Stufe b: Fälligkeiten relativ zu heute,
+Kunde A einbezogen; der lesende Bericht (Stufe 0) liegt als Auftragstext vor, geschrieben wird erst nach Bericht und zwei Freigaben. L2-Cockpit freigegeben:
+P1 (reiner Composer, 20 Tests) als Draft-PR 226. QS-06 (PR 222) bleibt Draft bis nach dem Golden Gate.
+
 ## 2026-10-26 — PR 221, 224 und 223 gemergt, Git aufgeräumt
 
 PR 221 (Hilfetext Passwort), PR 224 (Git-Hygiene) und PR 223 (L2-Cockpit-Konzept) sind per REST gemergt, jeweils mit 15 grünen CI-Checks. `main` steht auf `59c5e55`.
