@@ -691,9 +691,10 @@ angezeigt noch im Dashboard gespeichert.
   Schulung und Abnahme).
 - **Mail erneut** — sendet die Bestätigungsmail nochmals.
 - **Passwort zurücksetzen** — sendet eine Recovery-Mail an die registrierte
-  Adresse. Administratoren können Passwörter weder einsehen noch direkt setzen;
-  das neue Passwort vergibt ausschließlich die Kontoinhaberin oder der
-  Kontoinhaber über den Link in der Mail. Die Meldung bestätigt nur die
+  Adresse. Administratoren können Passwörter nicht einsehen; im Regelfall
+  vergibt die Kontoinhaberin oder der Kontoinhaber das neue Passwort selbst über
+  den Link in der Mail (Ausnahme: „Administratives Passwort setzen“ weiter
+  unten). Die Meldung bestätigt nur die
   **Anforderung** beim Anbieter; lehnt der Anbieter ab (z. B. Cooldown oder
   Stundenlimit für Auth-Mails), erscheint eine Fehlermeldung mit dem Grund.
 

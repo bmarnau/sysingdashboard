@@ -99,6 +99,41 @@ describe("BSF-03E P3b-1 work package work view", () => {
     );
   });
 
+  it("never marks finished work packages as overdue, whatever their due date", async () => {
+    const service = new WorkPackageWorkViewService(
+      repository([
+        sourceRow({
+          workPackageId: "00000000-0000-4000-8000-000000000011",
+          status: "done",
+          due: "2026-10-02",
+        }),
+        sourceRow({
+          workPackageId: "00000000-0000-4000-8000-000000000012",
+          status: "Erledigt",
+          due: "2026-10-04",
+        }),
+        sourceRow({
+          workPackageId: "00000000-0000-4000-8000-000000000013",
+          status: "done",
+          due: null,
+        }),
+        sourceRow({
+          workPackageId: "00000000-0000-4000-8000-000000000014",
+          status: "open",
+          due: "2026-10-02",
+        }),
+      ]),
+    );
+
+    const rows = await service.list(REFERENCE);
+    expect(rows.map((row) => [row.status, row.dueGroup])).toEqual([
+      ["done", "DONE"],
+      ["Erledigt", "DONE"],
+      ["done", "DONE"],
+      ["open", "OVERDUE"],
+    ]);
+  });
+
   it("fails closed for invalid calendar dates instead of normalizing them", async () => {
     const service = new WorkPackageWorkViewService(repository([sourceRow({ due: "2026-02-31" })]));
     await expect(service.list(REFERENCE)).rejects.toThrow(/Fälligkeit|due/i);
@@ -177,7 +212,7 @@ describe("BSF-03E P3b-1 work package work view", () => {
         customerIds: [CUSTOMER_B],
         ownerIds: [ADA],
         status: ["done"],
-        dueGroups: ["NO_DUE_DATE"],
+        dueGroups: ["DONE"],
       },
     });
     expect(filtered).toHaveLength(1);

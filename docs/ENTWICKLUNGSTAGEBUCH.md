@@ -11,6 +11,11 @@ dieser Datei.
 
 Stand: 2026-10-26 · Dashboard-Version 1.69.0
 
+## 2026-10-26 — Git-Hygiene als Standard
+
+Ursache für die angehäuften Branches: Auto-Delete im Repository ist aus, Löschen in der Cloud-Sitzung gesperrt, und der Abschluss prüfte den Branch-Zustand nicht.
+Maßnahmen: Skript `npm run git:hygiene`, neue Regeln in `CLAUDE.md`, GitHub-Einstellung durch den Nutzer. PR 220 ist gemergt.
+
 ## 2026-10-26 — Merge-Reihenfolge gestartet, QS-06 und L2 vorbereitet
 
 PR 219 ist gemergt (Doku und Tracker, 15 CI-Checks grün). PR 220 (M1) und PR 221 (Hilfetext Passwort) sind aktualisiert und warten auf grüne CI.

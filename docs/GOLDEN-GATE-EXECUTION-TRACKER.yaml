@@ -549,6 +549,13 @@ risiken:
 fortschritt:
   - datum: 2026-10-26
     ereignis: >-
+      Git-Hygiene als Standard eingeführt: Skript `npm run git:hygiene` (nur lesend), Regeln 6 und 7 in CLAUDE.md
+      (Branch nach Merge löschen, Abschlusszeile mit Zahl offener Branches und PRs, Doku-PRs bündeln). PR 220 gemergt (e518087).
+      GitHub-Einstellung "Automatically delete head branches" lässt sich aus der Cloud-Sitzung nicht setzen (HTTP 403), Nutzer muss sie einschalten.
+      Stand Remote: 2 gemergte Branches löschbar (vorher 40, lokal bereinigt).
+    beleg: scripts/git-hygiene.mjs, CLAUDE.md, PR 220 (e518087)
+  - datum: 2026-10-26
+    ereignis: >-
       PR 219 (Doku, Tracker, Merge-Checkliste) per REST gemergt (Merge-Commit 22af893), CI 15 Checks grün. Vorher geprüft:
       keine Lovable-Schreibaktivität seit 2026-10-24 13:16 UTC (letzter lovable-sync-Branch). PR 220 (Fix erledigt/überfällig, M1)
       und PR 221 (Hilfetext Passwort) per update-branch aktualisiert und für die Prüfung freigegeben; Merge nach grüner CI.
