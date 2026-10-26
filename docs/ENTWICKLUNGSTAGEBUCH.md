@@ -9,7 +9,13 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-25 · Dashboard-Version 1.69.0
+Stand: 2026-10-26 · Dashboard-Version 1.69.0
+
+## 2026-10-26 — Kunde B: Verantwortliche gesetzt und in der App bestätigt
+
+Der Datenauftrag für Kunde B lief am 25.10. um 17:49 (8 Subjects, 11 Verantwortungen, 11 Typen; Audit 299 auf 329). Am 26.10. zeigt die Arbeitssicht
+20 von 20 Paketen; Kunde B zeigt Petra Marnau als Verantwortliche und Bernd Marnau als Stellvertretung (Test T10, teilweise). Offen: Test mit Bernd, Rest von
+Kunde B, Merge von PR 220 (M1) und die Antwort des Lovable-Teams zu R-07.
 
 ## 2026-10-25 — Golden Gate: Tests mit Demodaten und Befunde
 

@@ -205,3 +205,7 @@ Der SQL-Block aus Abschnitt 6 wurde gegen eine lokale PostgreSQL-16-Instanz mit 
 | Fund im Test           | ID-Präfix hatte eine Null zu viel (ungültige UUID); korrigiert              |
 
 Grenzen: Das Minimalschema enthält nicht die echten Trigger `bsf03e_avkk_subject_scope_guard` und `bsf03e_avkk_responsibility_target_guard` sowie die Fremdschlüssel auf `customer`, `profiles` und `reference_value`. Diese Punkte deckt der Preflight (Abschnitt 5) und der Postflight ab. Der Test ersetzt sie nicht.
+
+## 11 Ergebnis der App-Tests (2026-10-26)
+
+K-1 teilweise bestanden: Filter „DEMO – Kunde B (synthetisch)“ zeigt 8 von 20 Paketen, Verantwortlicher „Petra Marnau“, beim Wiederherstellungstest zusätzlich Stellvertretung „Bernd Marnau“. Sichtbar waren im Screenshot 3 der 8 Pakete. Das erledigte Paket „Lastanalyse Bestandsserver“ erscheint weiterhin als „Überfällig“ (Mangel M1, Fix in Draft-PR #220). K-2 (Bernd) und der Rest von K-3 stehen aus.
