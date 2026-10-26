@@ -15,7 +15,7 @@ Verbleibend bis zum Publish: Lovable-Antwort zu R-07, Test N1 bis N5 auf der ver
 Offen: Draft-PR #222 (QS-06, `billing.view`) bleibt bis nach dem Golden Gate ungemergt; PR #155 und Draft-PR #124 unverändert. Konzept L2-Cockpit: `docs/L2-COCKPIT-SCHNITT-KONZEPT.md` (gemergt mit PR #223).
 Wartebedingung: inhaltliche Antwort eines Lovable-Mitarbeiters (Eingangsbestätigung des KI-Agenten liegt seit 2026-10-26 vor, Frist 24 Stunden an Werktagen). Der Branch
 `lovable-sync-1792847779` ist das Lovable-Backup mit Auth-Broker und wird nicht gemergt.
-Entschieden 2026-10-26: TD-01 Stufe b läuft relativ zu heute (Stufe 0 als Auftragstext in `docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md`, Ausführung durch den Nutzer in Work). L2-Cockpit freigegeben, P1 als Draft-PR #226 (nicht gemergt). ADG-PR #15 gemergt.
+Entschieden 2026-10-26: TD-01 Stufe b läuft relativ zu heute (Stufe 0 ausgeführt, Schreibauftrag in `docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md` vorbereitet und lokal getestet, wartet auf Freigabe 1 des Nutzers). L2-Cockpit freigegeben, P1 als Draft-PR #226 (nicht gemergt). ADG-PR #15 gemergt.
 Vorbereitet: Datenauftrag Kunde B, Stufe 0 (read-only), `docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md`;
 nächster Schritt dort ist die Ausführung des Berichts durch den Nutzer in Lovable/Work.
 Nach dem Golden Gate: QS-04 (Auth-Mail), QS-06 (Abrechnungsdaten nach Rolle,

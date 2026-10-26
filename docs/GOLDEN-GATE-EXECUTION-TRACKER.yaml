@@ -549,6 +549,15 @@ risiken:
 fortschritt:
   - datum: 2026-10-26
     ereignis: >-
+      TD-01 Stufe 0 (Work, 19:58 MEZ, nur lesen) ausgeführt: 20 Arbeitspakete, 5 Projekte, 47 Tätigkeiten der Demo-Kunden A und B, 4 erledigte Pakete,
+      keine Audit-Wirkung der Projektions-Trigger, audit_log 329. Konstanter Versatz zum lokalen Datensatz 2.2.0 (Kunde A 2 Tage, Kunde B 1 Tag) abgeleitet.
+      Schreibauftrag (14 Arbeitspakete, 47 Tätigkeiten, eine Transaktion, Rückbau) lokal gegen PostgreSQL 16 getestet (Erstlauf, Doppelausführung, Rückbau).
+      Befund TB-6: Kiosk-Spalte "Infrastruktur" kommt laut Code aus dem lokalen Kiosk-Demodatensatz des Geräts, nicht aus category_key; kein Datenauftrag nötig,
+      Korrektur (Demodaten 1.1.0) wirkt erst nach dem Publish. TB-5 (Kategorien) zurückgestellt: der lokale Datensatz enthält keine Kategorien.
+      Wartet auf Freigabe 1 des Nutzers.
+    beleg: docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md (Abschnitte 6 bis 8), src/lib/kiosk/internal-kiosk-provider.ts
+  - datum: 2026-10-26
+    ereignis: >-
       Lovable Support (KI-Agent "Sam") hat die Anfrage zu R-07 bestätigt, aber noch nicht inhaltlich beantwortet. Aussage: Das Projekt läuft auf Lovable Cloud,
       nicht auf einem eigenen Supabase-Projekt (entspricht der Annahme in den Architekturdokumenten). Die Fragen zu Auth-Storage-Datei, Publish aus GitHub,
       Wirkung der Änderung in der veröffentlichten App, aktuell veröffentlichtem Commit und zwei Migrationsfragen sind an das Team weitergegeben;

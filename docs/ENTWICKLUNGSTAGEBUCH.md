@@ -11,6 +11,11 @@ dieser Datei.
 
 Stand: 2026-10-26 · Dashboard-Version 1.69.0
 
+## 2026-10-26 — TD-01 Stufe 0 ausgewertet, Schreibauftrag vorbereitet
+
+Der lesende Bericht liegt vor. Die Live-Daten laufen gegenüber dem lokalen Datensatz konstant 2 Tage (Kunde A) bzw. 1 Tag (Kunde B) zurück, deshalb genügt ein Auftrag mit festem Versatz je Zeile
+(14 Arbeitspakete, 47 Tätigkeiten, keine Audit-Wirkung). Lokal gegen PostgreSQL 16 getestet. Der Kiosk-Befund „Infrastruktur“ ist kein Datenproblem, die Kategorien (TB-5) sind zurückgestellt.
+
 ## 2026-10-26 — Lovable Support: Eingangsbestätigung zu R-07
 
 Der KI-Agent von Lovable bestätigt, dass das Projekt auf Lovable Cloud läuft, und hat die Fragen zu Auth-Storage-Datei, Publish aus GitHub, veröffentlichtem Commit und Migrationen an das Team weitergegeben. Eine inhaltliche Antwort steht aus; der Publish bleibt No-Go.

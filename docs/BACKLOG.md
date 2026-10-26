@@ -255,9 +255,10 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 - QS-06 Abrechnungsdaten nach Rolle (`billing.view`; Teamlead ja, Engineer nur Stunden), siehe `docs/QS-06-VIEWER-ABRECHNUNG.md`. Umsetzung als Draft-PR #222 vorbereitet; offen: QS6-4 (serverseitig), QS6-5 (Export), CHANGELOG nach Merge von PR #220.
 - L2-Cockpit: Konzept `docs/L2-COCKPIT-SCHNITT-KONZEPT.md` liegt als Entwurf vor; Code P1 erst nach Freigabe und Klärung der Abhängigkeit zu QS-06 (keine Beträge im Cockpit).
 - PW-01 bis PW-03 Passwort in der Anwendung ändern, PW-05 Passwort-Reset mit Textbeschriftung, siehe `docs/PW-01-PASSWORT-AENDERN.md`.
-- TD-01 Stufe b Live-Demo-Mandant auffrischen (relativ zu heute, entschieden 2026-10-26), Stufe 0 siehe `docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md`; Schreibauftrag nach Bericht. Wiederkehrende Auffrischung als geplante Aufgabe nach dem Golden Gate.
+- TD-01 Stufe b Live-Demo-Mandant auffrischen (relativ zu heute, entschieden 2026-10-26), Stufe 0 erledigt, Schreibauftrag vorbereitet (`docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md`), wartet auf Freigabe 1. Wiederkehrende Auffrischung als geplante Aufgabe nach dem Golden Gate.
 - L2-Cockpit P2 bis P4 (Server-Read, Route, Rollenabnahme, Hilfe); P1 liegt als Draft-PR #226 vor.
 - DOC-01 erledigt 2026-10-25: Prüfskripte `scripts/check-docs-sync.mjs` und `scripts/check-project-docs.mjs` nutzen `fileURLToPath` und laufen unter Windows. Offen (sollte): dieselbe Korrektur in `check-bundle.mjs`, `check-no-console.mjs`, `generate-test-report.mjs`, `test-example-files.mjs`.
 - B2 Verantwortlichen-Filter der Arbeitssicht: Stellvertretungen berücksichtigen? Fachliche Entscheidung nach dem Golden Gate (Beobachtung aus Test K-2).
 - GIT-01 Gemergte Remote-Branches löschen (40 vorbereitet, Lovable-Branches nur nach Rückfrage): `docs/GIT-AUFRAEUMEN.md`. Empfehlung: zusätzlich in GitHub „Automatically delete head branches“ aktivieren.
 - GIT-02: GitHub-Einstellung „Automatically delete head branches“ einschalten (Nutzer, Repository-Einstellungen); danach `git:hygiene --strict` optional in die CI aufnehmen.
+- TD-01 TB-5: Kategorien für Demo-Arbeitspakete (Katalog `workpackage.category` füllen, `category_key` setzen) als eigener Datenauftrag nach dem Golden Gate; der lokale Datensatz enthält keine Kategorien und müsste zuerst erweitert werden.
