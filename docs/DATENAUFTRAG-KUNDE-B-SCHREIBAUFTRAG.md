@@ -208,4 +208,4 @@ Grenzen: Das Minimalschema enthält nicht die echten Trigger `bsf03e_avkk_subjec
 
 ## 11 Ergebnis der App-Tests (2026-10-26)
 
-K-1 teilweise bestanden: Filter „DEMO – Kunde B (synthetisch)“ zeigt 8 von 20 Paketen, Verantwortlicher „Petra Marnau“, beim Wiederherstellungstest zusätzlich Stellvertretung „Bernd Marnau“. Sichtbar waren im Screenshot 3 der 8 Pakete. Das erledigte Paket „Lastanalyse Bestandsserver“ erscheint weiterhin als „Überfällig“ (Mangel M1, Fix in Draft-PR #220). K-2 (Bernd) und der Rest von K-3 stehen aus.
+K-1 und K-3 bestanden (Screenshots 05:13 und 05:15): Filter „DEMO – Kunde B (synthetisch)“ zeigt 8 von 20 Paketen, bei allen Verantwortlicher „Petra Marnau“, Stellvertretung „Bernd Marnau“ bei Wiederherstellungstest, Migration Produktivserver und Cluster-Aufbau. Gruppen: überfällig (4, darunter Pflege Administrationskonten, fällig 25.10.), später (3), ohne Fälligkeitsdatum (1). Das erledigte Paket „Lastanalyse Bestandsserver“ erscheint weiterhin als „Überfällig“ (Mangel M1, Fix in Draft-PR #220). K-2 (Bernd angemeldet) steht aus.
