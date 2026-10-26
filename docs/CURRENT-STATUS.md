@@ -10,7 +10,8 @@ Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risike
 `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md` (Reihenfolge der Merges und Tests nach dem Publish).
 `main` steht auf `1dd9c84`. **Publish bleibt No-Go**, bis das Lovable-Team die Auth-Broker-
 Abweichung und die Publish-Quelle klärt (R-07, `docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
-Kunde B: Verantwortliche per Datenauftrag gesetzt (2026-10-25, 17:49; Tests K-1 bis K-3 in der App offen).
+Kunde B: Verantwortliche per Datenauftrag gesetzt (2026-10-25, 17:49) und in der App bestätigt (Test T10, 2026-10-26). L0c ist abgeschlossen.
+Verbleibend bis zum Publish: Lovable-Antwort zu R-07, Merge von PR #219, #220, #221 (Reihenfolge in `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md`), Test N1 bis N5 auf der veröffentlichten App. Git-Aufräumen: `docs/GIT-AUFRAEUMEN.md`.
 Offen: PR #219 (Doku), Draft-PR #220 (Fix „Erledigt nie überfällig“), Draft-PR #221 (Hilfetext).
 Wartebedingung: Antwort des Lovable-Teams (frühestens Montag, 2026-10-26). Der Branch
 `lovable-sync-1792847779` ist das Lovable-Backup mit Auth-Broker und wird nicht gemergt.
