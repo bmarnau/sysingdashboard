@@ -546,6 +546,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-26
     ereignis: >-
+      Git aufgeräumt (lokal, mit Freigabe): 40 gemergte Remote-Branches, 2 gemergte Lovable-Branches und 27
+      diag/tmp-Branches gelöscht (diese vorher als Tag archive/* gesichert). Remote 152 auf 83. Offene PRs und
+      24 Lovable-Branches unberührt (R-07, Inventar in Abschnitt 6.1).
+    beleg: docs/GIT-AUFRAEUMEN.md (Abschnitt 6)
+  - datum: 2026-10-26
+    ereignis: >-
       Planung und Dokumente aktualisiert: L0c abgeschlossen (done, App-Tests T1 bis T10), L0b Vorschau geprüft,
       offene Punkte bereinigt. Git: 5 lokale gemergte Branches entfernt; 40 gemergte Remote-Branches sind zum
       Löschen vorbereitet (Löschen in der Cloud-Sitzung gesperrt, lokaler Auftrag in docs/GIT-AUFRAEUMEN.md).
