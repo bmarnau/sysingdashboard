@@ -110,4 +110,12 @@ describe("F-18 UI-Gating der Fachobjektansichten", () => {
     expect(screen.queryAllByTitle("Bearbeiten").length).toBeGreaterThanOrEqual(3);
     expect(screen.queryAllByTitle("Löschen").length).toBeGreaterThanOrEqual(3);
   });
+
+  it("QS-06: should_hideAmountColumns_when_noBillingPermission", () => {
+    renderAll(false);
+    expect(screen.queryByText("Betrag")).toBeNull();
+    expect(screen.queryByText("Satz")).toBeNull();
+    expect(screen.queryByText("Abrechnung")).toBeNull();
+    expect(screen.queryByLabelText("Tätigkeiten nach Abrechnungsstatus filtern")).toBeNull();
+  });
 });

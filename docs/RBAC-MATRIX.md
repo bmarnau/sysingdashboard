@@ -46,6 +46,7 @@ Legende: ● erlaubt · ○ verboten
 | `referencedata.manage`           |    ●     |   ●   |    ○     |    ○    |    ○     |    ○     |   ○    |   ○   |
 | `customer.responsibility.manage` |    ●     |   ●   |    ●     |    ○    |    ○     |    ○     |   ○    |   ○   |
 | `project.controlling.view`       |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
+| `billing.view`                   |    ●     |   ●   |    ●     |    ●    |    ○     |    ○     |   ○    |   ○   |
 | `performance.statement.manage`   |    ●     |   ○   |    ●     |    ○    |    ○     |    ○     |   ○    |   ○   |
 | `kiosk.view`                     |    ○     |   ○   |    ○     |    ○    |    ○     |    ○     |   ○    |   ●   |
 
@@ -74,6 +75,7 @@ Invarianten aus `scripts/check-rbac.mjs`:
 - `teamlead` und `projectmanager` mit `avkk.responsibility.assign`
 - `customer.responsibility.manage` nur für systemadministrator, administrator und teamlead
 - `project.controlling.view` nur für systemadministrator, administrator, teamlead und projectmanager
+- `billing.view` nur für systemadministrator, administrator, teamlead und projectmanager (QS-06); engineer sieht nur Stunden
 - `performance.statement.manage` nur für systemadministrator und teamlead
 - `kiosk` besitzt ausschließlich `kiosk.view`; keine andere Rolle besitzt `kiosk.view`
 

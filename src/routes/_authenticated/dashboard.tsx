@@ -245,6 +245,8 @@ function Dashboard() {
   const canEditProject = usePermission(CRUD_PERMISSION.project);
   const canEditWP = usePermission(CRUD_PERMISSION.workpackage);
   const canEditActivity = usePermission(CRUD_PERMISSION.activity);
+  /** QS-06: Beträge, Umsatz und Abrechnung nur mit `billing.view`. */
+  const canViewBilling = usePermission("billing.view");
   const canCreateAnything = canEditProject || canEditWP || canEditActivity;
   const [targetTimeModels, setTargetTimeModels] = useState<EngineerTargetTimeModel[]>([]);
 
@@ -791,13 +793,15 @@ function Dashboard() {
             tone="success"
           />
 
-          <KpiCard
-            icon={<Euro className="size-5" />}
-            label="Umsatz gesamt"
-            value={fmtEuro(totalRevenue)}
-            sub={`${fmtEuro(openRevenue)} noch offen`}
-            tone="info"
-          />
+          {canViewBilling && (
+            <KpiCard
+              icon={<Euro className="size-5" />}
+              label="Umsatz gesamt"
+              value={fmtEuro(totalRevenue)}
+              sub={`${fmtEuro(openRevenue)} noch offen`}
+              tone="info"
+            />
+          )}
           <KpiCard
             icon={<AlertTriangle className="size-5" />}
             label="Offene Arbeitspakete"
@@ -844,13 +848,15 @@ function Dashboard() {
           >
             Tätigkeiten ({periodActivities.length}/{activities.length})
           </TabButton>
-          <TabButton
-            active={tab === "abrechnung"}
-            onClick={() => setTab("abrechnung")}
-            icon={<Euro className="size-4" />}
-          >
-            Abrechnung
-          </TabButton>
+          {canViewBilling && (
+            <TabButton
+              active={tab === "abrechnung"}
+              onClick={() => setTab("abrechnung")}
+              icon={<Euro className="size-4" />}
+            >
+              Abrechnung
+            </TabButton>
+          )}
           <PermissionGate permission="avkk.view">
             <TabButton
               active={tab === "avkk"}
@@ -955,9 +961,10 @@ function Dashboard() {
             onEdit={setEditingActivity}
             onDelete={deleteActivity}
             canEdit={canEditActivity}
+            canViewBilling={canViewBilling}
           />
         )}
-        {tab === "abrechnung" && (
+        {tab === "abrechnung" && canViewBilling && (
           <BillingView
             activities={activities}
             workPackages={workPackages}
