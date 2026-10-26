@@ -1,6 +1,6 @@
 # Datenauftrag TD-01 Stufe b: Fälligkeiten im Live-Demo-Mandanten auffrischen (Stufe 0, read-only)
 
-Stand: 2026-10-26. Grundlage: `docs/ADR/0037-kontrollierte-datenauftraege.md`, `docs/TD-01-STUFE-B-KONZEPT.md` (Abschnitt 7). Status: **Stufe 0 ausgeführt (Work, 2026-10-26, 19:58 MEZ, nur lesen). Schreibauftrag (Stufe 1 und 2) vorbereitet und lokal getestet, wartet auf Freigabe 1. Nichts geschrieben.**
+Stand: 2026-10-26. Grundlage: `docs/ADR/0037-kontrollierte-datenauftraege.md`, `docs/TD-01-STUFE-B-KONZEPT.md` (Abschnitt 7). Status: **Stufe 0 ausgeführt (Work, 2026-10-26, 19:58 MEZ, nur lesen). Freigabe 1 erteilt (Nutzer, 2026-10-26, 20:36 MEZ): Umfang mit Tätigkeiten (61 Änderungen). Ausführung am 2026-10-27, daher Stichtag 2026-10-27. Preflight ausstehend, Freigabe 2 (GO) ausstehend. Nichts geschrieben.**
 
 ## 1 Ziel
 
@@ -114,22 +114,117 @@ flowchart LR
 
 ### Preflight (nur lesen, nach Freigabe 1)
 
+Der Preflight ist eine einzelne `SELECT`-Anweisung mit den Soll-Werten (lokal gegen PostgreSQL 16 getestet: 329, 14, 47, 4, keine Abweichung, 0). Nach einem Lauf des Schreibauftrags zeigt derselbe Preflight 0 und 0 sowie die Abweichungen, daher dient er auch als Nachweis gegen Doppelausführung.
+
 ```text
-Datenauftrag TD-01 Stufe b, Preflight (nur lesen) nach ADR-0037. Nur SELECT, nichts schreiben.
-1. Projekt-ID 3c209338-443a-40f8-8a16-7c3c1b51da0e, DB-Referenz zffimqwnrsuzuozsgnlc. Soll bestaetigt.
-2. audit_log Gesamtzahl. Soll 329.
-3. shared_work_package_projection: Soll 14 aktive Zeilen, Status ungleich erledigt, deren due dem erwarteten alten Wert
-   entspricht (Liste im SQL-Block, Abschnitt Schreiben). Nenne Abweichungen je source_id.
-4. shared_activity_projection: Soll 47 aktive Zeilen, deren activity_date dem erwarteten alten Wert entspricht.
-5. Die 4 erledigten Arbeitspakete (demo-wp-fil-design, demo-wp-netz-planung, demo-wp-fil-pilot, demo-wp-virt-analyse)
-   sind unveraendert und bleiben ausserhalb des Auftrags.
-6. Trigger auf den beiden Tabellen: nur identity_guard und set_updated_at, keine Audit-Wirkung.
-7. Bericht: Tabelle Soll/Ist. Bei Abweichung: STOPP. Nichts schreiben.
+Datenauftrag TD-01 Stufe b, Preflight (nur lesen) nach ADR-0037, Projekt SysIng Dashboard.
+Fuehre ausschliesslich die folgende SELECT-Anweisung aus. Schreibe nichts. Aendere nichts.
+Pruefe vorab: Projekt-ID 3c209338-443a-40f8-8a16-7c3c1b51da0e, DB-Referenz zffimqwnrsuzuozsgnlc.
+Melde die Ergebniszeilen (pruefung, ist, soll) unveraendert. Bei jeder Abweichung ist das Ergebnis STOPP.
+
+-- TD-01 Stufe b, Preflight: NUR LESEN (SELECT). Soll-Werte in der Spalte soll.
+WITH
+ids AS (SELECT '00000000-0000-4000-8000-0000000000d1'::uuid AS sh,
+               '00000000-0000-4000-8000-0000000000d2'::uuid AS ka,
+               '00000000-0000-4000-8000-0000000000d3'::uuid AS kb),
+wpv(cust, sid, old_due, off) AS (VALUES
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-frei-vertrieb',DATE '2026-10-20',-4),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-m365-berechtigungen',DATE '2026-10-21',-3),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-fil-firewall',DATE '2026-10-22',-2),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-m365-schulung',DATE '2026-10-24',0),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-netz-rollout',DATE '2026-11-02',9),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-m365-migration',DATE '2026-11-11',18),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-fil-rollout',DATE '2026-11-14',21),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-netz-doku',DATE '2026-12-03',40),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-backup-test',DATE '2026-10-19',-6),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-virt-migration',DATE '2026-10-20',-5),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-frei-admin',DATE '2026-10-25',0),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-virt-cluster',DATE '2026-10-28',3),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-virt-storage',DATE '2026-11-04',10),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-backup-konzept',DATE '2026-11-08',14)
+),
+acv(cust, sid, old_date, off) AS (VALUES
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-26',DATE '2026-09-03',-51),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-56',DATE '2026-09-04',-50),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-28',DATE '2026-09-07',-47),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-23',DATE '2026-09-08',-46),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-25',DATE '2026-09-12',-42),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-20',DATE '2026-09-13',-41),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-55',DATE '2026-09-13',-41),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-27',DATE '2026-09-16',-38),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-22',DATE '2026-09-17',-37),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-17',DATE '2026-09-18',-36),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-24',DATE '2026-09-21',-33),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-1',DATE '2026-09-22',-32),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-19',DATE '2026-09-22',-32),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-21',DATE '2026-09-26',-28),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-16',DATE '2026-09-27',-27),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-11',DATE '2026-09-28',-26),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-18',DATE '2026-10-01',-23),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-15',DATE '2026-10-06',-18),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-2',DATE '2026-10-06',-18),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-10',DATE '2026-10-07',-17),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-8',DATE '2026-10-12',-12),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-4',DATE '2026-10-15',-9),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-9',DATE '2026-10-16',-8),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-57',DATE '2026-10-17',-7),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-5',DATE '2026-10-19',-5),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-7',DATE '2026-10-21',-3),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-3',DATE '2026-10-22',-2),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-54',DATE '2026-09-01',-54),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-35',DATE '2026-09-02',-53),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-30',DATE '2026-09-03',-52),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-32',DATE '2026-09-07',-48),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-53',DATE '2026-09-10',-45),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-29',DATE '2026-09-12',-43),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-52',DATE '2026-09-19',-36),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-14',DATE '2026-09-24',-31),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-13',DATE '2026-10-03',-22),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-41',DATE '2026-10-05',-20),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-36',DATE '2026-10-15',-10),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-37',DATE '2026-10-06',-19),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-39',DATE '2026-10-10',-15),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-34',DATE '2026-10-11',-14),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-12',DATE '2026-10-12',-13),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-40',DATE '2026-10-14',-11),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-31',DATE '2026-10-16',-9),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-38',DATE '2026-10-19',-6),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-33',DATE '2026-10-20',-5),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-6',DATE '2026-10-24',-1)
+),
+dv(cust, sid, due) AS (VALUES
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-fil-design',DATE '2026-10-04'),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-netz-planung',DATE '2026-10-14'),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-fil-pilot',DATE '2026-10-17'),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-virt-analyse',DATE '2026-09-10')
+)
+SELECT '1 audit_log' AS pruefung, (SELECT count(*) FROM public.audit_log)::text AS ist, '329' AS soll
+UNION ALL SELECT '2 Arbeitspakete mit erwartetem alten Wert (aktiv, nicht erledigt)',
+  (SELECT count(*) FROM public.shared_work_package_projection t, ids, wpv v
+    WHERE t.systemhouse_id = ids.sh AND t.customer_id = v.cust AND t.source_id = v.sid
+      AND t.is_active AND t.due = v.old_due AND t.status <> 'erledigt')::text, '14'
+UNION ALL SELECT '3 Taetigkeiten mit erwartetem alten Wert (aktiv)',
+  (SELECT count(*) FROM public.shared_activity_projection t, ids, acv v
+    WHERE t.systemhouse_id = ids.sh AND t.customer_id = v.cust AND t.source_id = v.sid
+      AND t.is_active AND t.activity_date = v.old_date)::text, '47'
+UNION ALL SELECT '4 erledigte Arbeitspakete mit altem Datum (bleiben ausserhalb)',
+  (SELECT count(*) FROM public.shared_work_package_projection t, dv d
+    WHERE t.customer_id = d.cust AND t.source_id = d.sid AND t.due = d.due AND t.status = 'erledigt')::text, '4'
+UNION ALL SELECT '5 Arbeitspakete des Auftrags mit abweichendem Wert (source_id)',
+  coalesce((SELECT string_agg(v.sid, ', ') FROM wpv v, ids
+    WHERE NOT EXISTS (SELECT 1 FROM public.shared_work_package_projection t
+      WHERE t.systemhouse_id = ids.sh AND t.customer_id = v.cust AND t.source_id = v.sid
+        AND t.is_active AND t.due = v.old_due AND t.status <> 'erledigt')), 'keine'), 'keine'
+UNION ALL SELECT '6 Taetigkeiten des Auftrags mit abweichendem Wert (Anzahl)',
+  (SELECT count(*) FROM acv v, ids
+    WHERE NOT EXISTS (SELECT 1 FROM public.shared_activity_projection t
+      WHERE t.systemhouse_id = ids.sh AND t.customer_id = v.cust AND t.source_id = v.sid
+        AND t.is_active AND t.activity_date = v.old_date))::text, '0';
 ```
 
 ### Schreiben (nur nach ausdrücklichem „GO“ des Nutzers, Freigabe 2)
 
-Der Stichtag `s` ist ein Parameter. Wird der Auftrag an einem anderen Tag als dem 2026-10-26 ausgeführt, muss `s` auf den Ausführungstag gesetzt und der Auftrag neu freigegeben werden. Die alten Werte ändern sich nach dem ersten Lauf; ein zweiter Lauf mit demselben Block bricht deshalb mit Ausnahme ab (Schutz gegen Doppelausführung).
+Der Stichtag `s` ist ein Parameter. Der Stichtag ist auf 2026-10-27 gesetzt (Ausführung am 2026-10-27, Entscheidung des Nutzers 2026-10-26). Wird der Auftrag an einem anderen Tag als dem 2026-10-27 ausgeführt, muss `s` auf den Ausführungstag gesetzt und der Auftrag neu freigegeben werden. Die alten Werte ändern sich nach dem ersten Lauf; ein zweiter Lauf mit demselben Block bricht deshalb mit Ausnahme ab (Schutz gegen Doppelausführung).
 
 ```sql
 -- Datenauftrag TD-01 Stufe b: Fälligkeiten und Tätigkeitsdaten auffrischen. Eine Transaktion (DO-Block), ADR-0037.
@@ -139,7 +234,7 @@ DECLARE
   sh constant uuid := '00000000-0000-4000-8000-0000000000d1';
   ka constant uuid := '00000000-0000-4000-8000-0000000000d2';
   kb constant uuid := '00000000-0000-4000-8000-0000000000d3';
-  s  constant date := DATE '2026-10-26'; -- Stichtag (Parameter)
+  s  constant date := DATE '2026-10-27'; -- Stichtag (Parameter)
 BEGIN
   -- Ausgangslage (bricht bei Abweichung ab)
   SELECT count(*) INTO n FROM public.audit_log;
@@ -252,7 +347,7 @@ Postflight TD-01 Stufe b (nur lesen):
 2. shared_activity_projection: activity_date der 47 Zeilen gleich Stichtag plus Versatz. Soll 47 von 47.
 3. Die 4 erledigten Pakete und die 2 Pakete ohne Faelligkeit unveraendert.
 4. audit_log Gesamtzahl. Soll 329.
-5. Faelligkeitsverteilung je Kunde nach dem Lauf (ueberfaellig, heute, naechste 7 Tage, spaeter, ohne). Erwartet bei Stichtag 2026-10-26:
+5. Faelligkeitsverteilung je Kunde nach dem Lauf (ueberfaellig, heute, naechste 7 Tage, spaeter, ohne). Erwartet bei Stichtag 2026-10-27 (Ansicht am 2026-10-27):
    Kunde A: ueberfaellig 3 (offen), heute 1; Kunde B: ueberfaellig 2, heute 1.
 6. Bericht Soll/Ist, Fehler im Wortlaut.
 ```
@@ -267,7 +362,7 @@ DECLARE
   sh constant uuid := '00000000-0000-4000-8000-0000000000d1';
   ka constant uuid := '00000000-0000-4000-8000-0000000000d2';
   kb constant uuid := '00000000-0000-4000-8000-0000000000d3';
-  s  constant date := DATE '2026-10-26'; -- Stichtag (Parameter)
+  s  constant date := DATE '2026-10-27'; -- Stichtag (Parameter)
 BEGIN
   WITH v(cust, sid, old_due, off) AS (VALUES
       (ka,'demo-wp-frei-vertrieb',DATE '2026-10-20',-4),
@@ -348,7 +443,7 @@ BEGIN
 END $$;
 ```
 
-### Vorab-Test (2026-10-26)
+### Vorab-Test (2026-10-26, wiederholt mit Stichtag 2026-10-27)
 
 Beide Blöcke wurden gegen eine lokale PostgreSQL-16-Instanz mit nachgebautem Minimalschema ausgeführt (beide Projektionstabellen mit den Live-Werten aus dem Stufe-0-Bericht, `audit_log` mit 329 Zeilen).
 
@@ -358,9 +453,11 @@ Beide Blöcke wurden gegen eine lokale PostgreSQL-16-Instanz mit nachgebautem Mi
 | Zweiter Lauf | bricht mit Ausnahme ab („erwartet 14, geändert 0“), nichts geändert                                   |
 | Rückbau      | alle ursprünglichen Werte wiederhergestellt (Tätigkeiten 2026-09-01 bis 2026-10-24), Audit 329        |
 
+Der Lauf wurde nach der Umstellung des Stichtags auf 2026-10-27 wiederholt (Preflight vorher 329/14/47/4/keine/0, erster Lauf, zweiter Lauf bricht mit „erwartet 14, geändert 0“ ab, Verteilung Kunde A 3/1/0/4 und Kunde B 2/1/1/2, Rückbau stellt den Ausgangszustand her). Der Preflight selbst hängt nicht vom Stichtag ab.
+
 Grenzen: Das Minimalschema enthält nicht die echten Trigger, Fremdschlüssel und Berechtigungen. Der Preflight muss sie in der echten Datenbank bestätigen.
 
-## 8 Erwartetes Ergebnis nach dem Lauf (Stichtag 2026-10-26)
+## 8 Erwartetes Ergebnis nach dem Lauf (Stichtag 2026-10-27, Ansicht am Ausführungstag)
 
 | Kunde | Überfällig (offen)                                    | Heute                            | Nächste 7 Tage     | Später                                         |
 | ----- | ----------------------------------------------------- | -------------------------------- | ------------------ | ---------------------------------------------- |

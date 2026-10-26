@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-26 · Dashboard-Version 1.69.0
 
+## 2026-10-26 — TD-01: Freigabe 1 erteilt, Preflight übergeben
+
+Der Nutzer hat den Umfang mit Tätigkeiten (61 Änderungen) freigegeben und die Ausführung auf den 2026-10-27 gelegt; der Stichtag ist daher 2026-10-27 (SQL erneut lokal getestet). Der Preflight (nur lesen) liegt bei Work; der Schreibauftrag folgt nach dem Ergebnis und dem GO des Nutzers.
+
 ## 2026-10-26 — TD-01 Stufe 0 ausgewertet, Schreibauftrag vorbereitet
 
 Der lesende Bericht liegt vor. Die Live-Daten laufen gegenüber dem lokalen Datensatz konstant 2 Tage (Kunde A) bzw. 1 Tag (Kunde B) zurück, deshalb genügt ein Auftrag mit festem Versatz je Zeile
