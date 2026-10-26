@@ -558,6 +558,13 @@ fortschritt:
     beleg: docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md (Abschnitte 6 bis 8), src/lib/kiosk/internal-kiosk-provider.ts
   - datum: 2026-10-26
     ereignis: >-
+      Lovable Support (KI-Agent "Sam") hat die Anfrage zu R-07 bestätigt, aber noch nicht inhaltlich beantwortet. Aussage: Das Projekt läuft auf Lovable Cloud,
+      nicht auf einem eigenen Supabase-Projekt (entspricht der Annahme in den Architekturdokumenten). Die Fragen zu Auth-Storage-Datei, Publish aus GitHub,
+      Wirkung der Änderung in der veröffentlichten App, aktuell veröffentlichtem Commit und zwei Migrationsfragen sind an das Team weitergegeben;
+      ein Mitarbeiter meldet sich innerhalb von 24 Stunden an Werktagen. Publish bleibt No-Go.
+    beleg: Lovable-Support-Nachricht vom 2026-10-26 19:11 (Nutzer), docs/LOVABLE-PUBLISH-PRUEFUNG.md
+  - datum: 2026-10-26
+    ereignis: >-
       Entscheidungen Nutzer: ADG-PR 15 freigegeben und gemergt (bmarnau-standards/ai-development-governance, 7ff04aa, Squash).
       TD-01 Stufe b: Fälligkeiten laufen relativ zu heute, Kunde A einbezogen; Stufe 0 (nur lesen) als Auftragstext vorbereitet,
       Schreibauftrag erst nach Bericht und zwei Freigaben (ADR-0037). L2-Cockpit freigegeben; P1 als Draft-PR 226 umgesetzt.
