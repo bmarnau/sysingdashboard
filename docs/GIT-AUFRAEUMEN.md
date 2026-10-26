@@ -86,3 +86,43 @@ Aufgabe: Gemergte Remote-Branches aufräumen, Regeln GA-1 bis GA-5 aus docs/GIT-
    git branch --merged main | grep -v main | xargs git branch -d.
 6. Bericht: gelöschte Anzahl, verbleibende Branches, Fehler im Wortlaut. Nichts anderes löschen.
 ```
+
+## 6 Ergebnis 2026-10-26 (lokal, Claude Code, mit Freigabe des Betreibers)
+
+| Schritt                                                        | Umfang | Ergebnis                                                                                                             |
+| -------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------- |
+| Gemergte Branches ohne offenen PR (Abschnitt 3)                | 40     | gelöscht, keine Fehler                                                                                               |
+| Gemergte Lovable-Branches, risikoarm (GA-4, Rückfrage erfolgt) | 2      | gelöscht: `merge/lovable-sync-1792520819` (`3b1c826`), `lovable/sec-02-reference-data-grants-2026-08-26` (`830eba4`) |
+| `diag/*` und `tmp/*` (nicht gemergt, ohne Verweis auf `main`)  | 27     | als Tag `archive/<branch>` gesichert und geprüft, danach gelöscht                                                    |
+
+- Remote-Branches: 152 vorher, 83 nachher. Offene PRs #219, #220, #221, #155 und #124 unberührt.
+- Danach: Einstellung „Automatically delete head branches“ aktiviert (`delete_branch_on_merge=true`). Nach dem Merge von #221, #224 und #223 `fix/arbeitssicht-erledigt-nicht-ueberfaellig` (`43647cf`) gelöscht; Remote 82, `npm run git:hygiene` meldet 0 gemergte Branches.
+- Wiederherstellen eines archivierten Branches: `git push origin archive/<branch>^{commit}:refs/heads/<branch>`.
+- Behalten bis zur Klärung mit dem Lovable-Team (R-07): 4 gemergte `lovable-sync-*` (`1792495837`, `1792496228`, `1792500399`, `1792520819`) und 20 nicht gemergte Lovable-Branches (Inventar unten).
+
+### 6.1 Inventar nicht gemergter Lovable-Branches (Basis `origin/main` 22af893)
+
+Nicht löschen, nicht mergen. Spalte „Eigen“: Patches, die nicht in `main` enthalten sind (`git cherry`). `lovable-sync-1792847779` ist der neueste Lovable-Stand (Lovable-Backup mit Auth-Broker laut `docs/CURRENT-STATUS.md`) und wird nicht gemergt.
+
+| Branch                           | Commit    | Datum      | Hinter main | Eigen |
+| -------------------------------- | --------- | ---------- | ----------- | ----- |
+| `lovable-backup-main-1788412232` | `76e75e1` | 2026-09-03 | 946         | 3     |
+| `lovable-sync`                   | `1b49dc4` | 2026-09-17 | 552         | 12    |
+| `lovable-sync-1791775331`        | `bf1d4fa` | 2026-10-12 | 135         | 2     |
+| `lovable-sync-1791864423`        | `f4d14dd` | 2026-10-13 | 131         | 2     |
+| `lovable-sync-1791948369`        | `c72bd0c` | 2026-10-14 | 129         | 2     |
+| `lovable-sync-1792581246`        | `4bad000` | 2026-10-21 | 101         | 1     |
+| `lovable-sync-1792585437`        | `739bb0d` | 2026-10-21 | 93          | 1     |
+| `lovable-sync-1792655070`        | `1843b1b` | 2026-10-22 | 76          | 1     |
+| `lovable-sync-1792661766`        | `c9ae103` | 2026-10-22 | 74          | 1     |
+| `lovable-sync-1792668953`        | `77d10fc` | 2026-10-22 | 74          | 2     |
+| `lovable-sync-1792669255`        | `e0cb03c` | 2026-10-22 | 74          | 3     |
+| `lovable-sync-1792669534`        | `dfad625` | 2026-10-22 | 74          | 6     |
+| `lovable-sync-1792669559`        | `3b8cf14` | 2026-10-22 | 74          | 8     |
+| `lovable-sync-1792672165`        | `c1e339b` | 2026-10-22 | 71          | 1     |
+| `lovable-sync-1792672318`        | `51f3e0d` | 2026-10-22 | 71          | 2     |
+| `lovable-sync-1792672436`        | `fa0af9d` | 2026-10-22 | 71          | 3     |
+| `lovable-sync-1792674265`        | `a30c1af` | 2026-10-22 | 67          | 1     |
+| `lovable-sync-1792841478`        | `2b6efe9` | 2026-10-24 | 38          | 1     |
+| `lovable-sync-1792847299`        | `1faabb2` | 2026-10-24 | 38          | 3     |
+| `lovable-sync-1792847779`        | `d510e85` | 2026-10-24 | 35          | 1     |

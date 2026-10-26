@@ -549,6 +549,15 @@ risiken:
 fortschritt:
   - datum: 2026-10-26
     ereignis: >-
+      PR 221 (bf0b89f), PR 224 (99f3cde) und PR 223 (59c5e55) per REST gemergt, jeweils nach update-branch und 15 grünen
+      CI-Checks; vorher geprüft: keine Lovable-Schreibaktivität seit 2026-10-24 13:16 UTC. PR 223 per Merge von main
+      aktualisiert (Konflikte Tracker/Tagebuch: beide Einträge behalten). Git aufgeräumt (lokal, mit Freigabe):
+      40 gemergte Branches, 2 gemergte Lovable-Branches, 27 diag/tmp-Branches (vorher als Tag archive/* gesichert)
+      und fix/arbeitssicht-erledigt-nicht-ueberfaellig gelöscht; Remote 152 auf 82. "Automatically delete head branches"
+      ist aktiv. 24 Lovable-Branches unberührt (R-07). Offen: PR 222 (Draft), 155, 124 (Draft).
+    beleg: PR 221, PR 223, PR 224, docs/GIT-AUFRAEUMEN.md (Abschnitt 6), npm run git:hygiene (0 gemergte Branches)
+  - datum: 2026-10-26
+    ereignis: >-
       Git-Hygiene als Standard eingeführt: Skript `npm run git:hygiene` (nur lesend), Regeln 6 und 7 in CLAUDE.md
       (Branch nach Merge löschen, Abschlusszeile mit Zahl offener Branches und PRs, Doku-PRs bündeln). PR 220 gemergt (e518087).
       GitHub-Einstellung "Automatically delete head branches" lässt sich aus der Cloud-Sitzung nicht setzen (HTTP 403), Nutzer muss sie einschalten.

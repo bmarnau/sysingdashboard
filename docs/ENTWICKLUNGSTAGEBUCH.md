@@ -11,6 +11,11 @@ dieser Datei.
 
 Stand: 2026-10-26 · Dashboard-Version 1.69.0
 
+## 2026-10-26 — PR 221, 224 und 223 gemergt, Git aufgeräumt
+
+PR 221 (Hilfetext Passwort), PR 224 (Git-Hygiene) und PR 223 (L2-Cockpit-Konzept) sind per REST gemergt, jeweils mit 15 grünen CI-Checks. `main` steht auf `59c5e55`.
+Lokal aufgeräumt: 70 Remote-Branches gelöscht (davon 27 diag/tmp vorher als Tag `archive/*` gesichert), Auto-Delete im Repository aktiviert. Lovable-Branches bleiben bis zur Klärung von R-07.
+
 ## 2026-10-26 — Git-Hygiene als Standard
 
 Ursache für die angehäuften Branches: Auto-Delete im Repository ist aus, Löschen in der Cloud-Sitzung gesperrt, und der Abschluss prüfte den Branch-Zustand nicht.
