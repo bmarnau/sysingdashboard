@@ -549,6 +549,11 @@ risiken:
 fortschritt:
   - datum: 2026-10-26
     ereignis: >-
+      TD-01 Stufe b: Freigabe 1 erteilt (Nutzer, 20:36 MEZ), Umfang mit Tätigkeiten (14 Arbeitspakete, 47 Tätigkeiten), Stichtag 2026-10-26.
+      Ausführung am 2026-10-27 (Nutzer), daher Stichtag 2026-10-27; Schreib- und Rückbau-SQL damit lokal gegen PostgreSQL 16 erneut getestet (grün). Preflight (nur SELECT) an Work übergeben. Freigabe 2 (GO) für den Schreibauftrag steht aus.
+    beleg: docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md (Abschnitt 7)
+  - datum: 2026-10-26
+    ereignis: >-
       TD-01 Stufe 0 (Work, 19:58 MEZ, nur lesen) ausgeführt: 20 Arbeitspakete, 5 Projekte, 47 Tätigkeiten der Demo-Kunden A und B, 4 erledigte Pakete,
       keine Audit-Wirkung der Projektions-Trigger, audit_log 329. Konstanter Versatz zum lokalen Datensatz 2.2.0 (Kunde A 2 Tage, Kunde B 1 Tag) abgeleitet.
       Schreibauftrag (14 Arbeitspakete, 47 Tätigkeiten, eine Transaktion, Rückbau) lokal gegen PostgreSQL 16 getestet (Erstlauf, Doppelausführung, Rückbau).
