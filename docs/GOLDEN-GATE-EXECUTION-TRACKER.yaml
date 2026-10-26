@@ -549,7 +549,7 @@ fortschritt:
     ereignis: >-
       Test T10 (Arbeitssicht nach Datenauftrag Kunde B) bestanden: alle 8 Pakete von Kunde B mit Petra Marnau
       als Verantwortlicher, Bernd Marnau als Stellvertretung bei 3 Paketen. M1 (erledigt
-      als überfällig) weiterhin sichtbar bis Merge von PR 220. K-2 (Anmeldung als Bernd) steht aus.
+      als überfällig) weiterhin sichtbar bis Merge von PR 220. K-2 bestanden: Filter Verantwortlicher Bernd Marnau zeigt 7 Pakete bei Kunde A. Beobachtung B2: Der Filter erfasst nur Owner, keine Stellvertretungen.
     beleg: docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md (T10), docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md Abschnitt 11
   - datum: 2026-10-25
     ereignis: >-
