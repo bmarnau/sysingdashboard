@@ -16,6 +16,12 @@ Stand: 2026-10-26 · Dashboard-Version 1.69.0
 Ursache für die angehäuften Branches: Auto-Delete im Repository ist aus, Löschen in der Cloud-Sitzung gesperrt, und der Abschluss prüfte den Branch-Zustand nicht.
 Maßnahmen: Skript `npm run git:hygiene`, neue Regeln in `CLAUDE.md`, GitHub-Einstellung durch den Nutzer. PR 220 ist gemergt.
 
+## 2026-10-26 — Merge-Reihenfolge gestartet, QS-06 und L2 vorbereitet
+
+PR 219 ist gemergt (Doku und Tracker, 15 CI-Checks grün). PR 220 (M1) und PR 221 (Hilfetext Passwort) sind aktualisiert und warten auf grüne CI.
+QS-06 liegt als Draft-PR 222 vor: neue Permission `billing.view`, Rollenkreis Systemadministrator, Administrator, Teamlead, Projektmanager; Engineer sieht nur Stunden.
+Offen bei QS-06: serverseitige Filterung (QS6-4) und Export (QS6-5). Das L2-Cockpit-Konzept liegt als Entwurf vor und wartet auf Freigabe.
+
 ## 2026-10-26 — Kunde B: Verantwortliche gesetzt und in der App bestätigt
 
 Der Datenauftrag für Kunde B lief am 25.10. um 17:49 (8 Subjects, 11 Verantwortungen, 11 Typen; Audit 299 auf 329). Am 26.10. zeigt die Arbeitssicht
