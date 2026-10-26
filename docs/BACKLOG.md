@@ -1,6 +1,6 @@
 # Sysing Dashboard — Backlog
 
-Stand: 2026-08-17
+Stand: 2026-10-25
 Status: lebendes, chat-unabhängiges Backlog
 
 GitHub ist die maßgebliche Quelle. Neue Backlog-Einträge werden hier fachlich beschrieben und bei Einplanung in Sprint-/Meilensteinplanung mit `docs/ROADMAP-MVP-BSF.md` synchronisiert.
@@ -248,3 +248,13 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 - BSF = Führung,
 - Post-BSF = intelligente Entscheidungsvorbereitung,
 - klare Trennung zwischen umgesetzt, geplant und konzeptionell.
+
+## Ergänzungen 2026-10-25 (Golden Gate, nach dem Golden Gate)
+
+- QS-04 Domain und Auth-Mail (eigene Absenderdomäne, Vorlagen, Versandroute mit Review).
+- QS-06 Abrechnungsdaten nach Rolle (`billing.view`; Teamlead ja, Engineer nur Stunden), siehe `docs/QS-06-VIEWER-ABRECHNUNG.md`.
+- PW-01 bis PW-03 Passwort in der Anwendung ändern, PW-05 Passwort-Reset mit Textbeschriftung, siehe `docs/PW-01-PASSWORT-AENDERN.md`.
+- TD-01 Stufe b Live-Demo-Mandant auffrischen, siehe `docs/TD-01-STUFE-B-KONZEPT.md`.
+- DOC-01 erledigt 2026-10-25: Prüfskripte `scripts/check-docs-sync.mjs` und `scripts/check-project-docs.mjs` nutzen `fileURLToPath` und laufen unter Windows. Offen (sollte): dieselbe Korrektur in `check-bundle.mjs`, `check-no-console.mjs`, `generate-test-report.mjs`, `test-example-files.mjs`.
+- B2 Verantwortlichen-Filter der Arbeitssicht: Stellvertretungen berücksichtigen? Fachliche Entscheidung nach dem Golden Gate (Beobachtung aus Test K-2).
+- GIT-01 Gemergte Remote-Branches löschen (40 vorbereitet, Lovable-Branches nur nach Rückfrage): `docs/GIT-AUFRAEUMEN.md`. Empfehlung: zusätzlich in GitHub „Automatically delete head branches“ aktivieren.

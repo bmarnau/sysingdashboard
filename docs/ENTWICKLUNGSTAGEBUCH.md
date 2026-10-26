@@ -9,7 +9,29 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-21 · Dashboard-Version 1.69.0
+Stand: 2026-10-26 · Dashboard-Version 1.69.0
+
+## 2026-10-26 — Kunde B: Verantwortliche gesetzt und in der App bestätigt
+
+Der Datenauftrag für Kunde B lief am 25.10. um 17:49 (8 Subjects, 11 Verantwortungen, 11 Typen; Audit 299 auf 329). Am 26.10. zeigt die Arbeitssicht
+20 von 20 Paketen; Kunde B zeigt Petra Marnau als Verantwortliche und Bernd Marnau als Stellvertretung (Test T10, teilweise). Offen: Test mit Bernd, Rest von
+Kunde B, Merge von PR 220 (M1) und die Antwort des Lovable-Teams zu R-07.
+
+## 2026-10-25 — Golden Gate: Tests mit Demodaten und Befunde
+
+Veröffentlichen für Kunde A und Kunde B wurde in Vorschau und veröffentlichter App getestet;
+die Arbeitssicht zeigt Verantwortliche (Datenauftrag nach ADR-0037 für Kunde A ausgeführt, Kunde B
+folgt). Tests T1–T8 bestanden, T9 (Alexa, Viewer) teilweise. Befunde: M1 erledigte Pakete als
+„Überfällig“ (Fix in Draft-PR #220), M2 fehlende Verantwortliche, M3 Auth-Broker-Abweichung
+der Lovable-Arbeitskopie (Support-Anfrage, Publish No-Go), M4 Viewer sieht Abrechnungsdaten
+(QS-06, nach dem Golden Gate). Entscheidungen: QS-04 nach dem Golden Gate; Teamlead sieht
+Beträge, Engineer nur Stunden; PW-01 (Passwort in der App ändern) geplant.
+Neue Dokumente: Testprotokoll, Merge-Checkliste, PW-01, QS-06, TD-01-Stufe-b-Konzept,
+Lovable-Publish-Prüfung.
+
+Nachtrag (Wiederanlauf): Die Lovable-Antwort steht aus, der Publish bleibt gesperrt. Für Kunde B
+liegt der read-only Berichtsauftrag als Entwurf vor (`docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md`);
+geschrieben wird erst nach Bericht und zwei Freigaben.
 
 ## 2026-10-21 — Golden-Gate-Vorbereitung: Veröffentlichungsweg und Release 1.69.0
 

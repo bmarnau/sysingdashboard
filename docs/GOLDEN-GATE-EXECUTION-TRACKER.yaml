@@ -10,7 +10,7 @@
 
 schema_version: 1
 document: golden-gate-execution-tracker
-stand: 2026-10-24
+stand: 2026-10-26
 base_main_sha: fd8aa71bbe98e6d265fcc9abbfce557a72ac2bf8
 repository: bmarnau/sysingdashboard
 tracker_issue: 175
@@ -129,7 +129,7 @@ lieferpakete:
     status: in_progress
     code_merged: yes
     gates_pass: yes
-    preview_verified: no
+    preview_verified: yes
     published_verified: not_published
     referenz: PR #200 (main aac99ec)
     anforderungen:
@@ -143,7 +143,7 @@ lieferpakete:
       - "Ort: Arbeitspaket-Ansicht (Nutzer, 2026-10-21)."
       - "Umsetzung: Claude-Code-PR, keine Lovable-Variant nötig (Nutzer, 2026-10-21)."
     offene_punkte:
-      - "Praxistest in der Preview: Das Konto braucht Systemhaus-Zugehörigkeit, Verantwortung und Kundenfreigabe write. Der Arbeitspaket-Dialog meldete zuletzt 'Keine aktive Systemhaus-Zugehörigkeit'; Nutzer gab 'vorhanden' an (Widerspruch ungeklärt)."
+      - "Erledigt 2026-10-25: Praxistest in Vorschau und veröffentlichter App bestanden (T1 bis T3, T6 im Testprotokoll); Veröffentlichen für Kunde A und Kunde B ohne engineer_mismatch."
       - "Entschieden 2026-10-24 (Nutzer): Tätigkeiten ohne echte Kennung werden dem Veröffentlichenden zugeordnet (effectiveEngineerId); fremde Kennungen bleiben engineer_mismatch."
       - "Zurückziehungs-Zahl in der Vorschau ist eine Schätzung; Server rechnet maßgeblich."
     testplan: >-
@@ -169,10 +169,10 @@ lieferpakete:
       Nutzer 2026-10-22: synthetischer Demo-Mandant mit festen IDs, klar als DEMO
       gekennzeichnet, keine Echtdaten; Konten: Systemadministrator plus ein Projektleiter.
     abhaengig_von: [L0b, QS-01]
-    status: in_progress
+    status: done
     code_merged: not_applicable
     gates_pass: yes
-    preview_verified: no
+    preview_verified: yes
     published_verified: not_published
     status_detail: >-
       Am 2026-10-24 ausgeführt (zwei Work-Läufe, je eine Transaktion, Postflight bestanden):
@@ -180,14 +180,13 @@ lieferpakete:
       customer_responsibility 2 (Kunde A: Bernd, Kunde B: Petra) mit 2 erwarteten
       audit_log-Zeilen; is_my_customer-Matrix wie vorgegeben, 7 Profile und 30 Migrationen
       unverändert. Der erste Lauf stoppte korrekt (interne RI-Trigger, Kanal postgres);
-      die Regeln stehen jetzt in ADR-0037. Offen: App-Test Veröffentlichen.
+      die Regeln stehen jetzt in ADR-0037. App-Tests bestanden (T1 bis T10 im Testprotokoll vom 2026-10-25/26); Verantwortliche für Kunde A und Kunde B gesetzt (zwei weitere Datenaufträge, ADR-0037).
     anforderungen:
       - "Der Auftrag muss einmalig, idempotent (ON CONFLICT DO NOTHING) und in einer Transaktion laufen."
       - "Der Auftrag muss vor dem Schreiben Leerstand, Trigger und Schreibrecht des Kanals prüfen und bei Abweichung stoppen."
       - "Der Auftrag muss eine ausdrückliche Einzelfreigabe des Owners vor dem Schreiben abwarten (ADR-0035 deckt keine Datenänderung)."
       - "Der Auftrag darf kein Schema, keine Policies, Grants oder Rollen ändern."
-    offene_punkte:
-      - "App-Test: An Team veröffentlichen (Betreiberkonto) und Sichtbarkeit (Projektmanager-Konto)."
+    offene_punkte: []
     entschieden:
       - "Datenaufträge dürfen über den Connector-Kanal als Rolle postgres laufen (Nutzer 2026-10-24); Preflight prüft nur Anwendungstrigger (tgisinternal = false); Advisor entfällt bei reinen Datenaufträgen."
       - "Demo-Konten: Systemadministrator (ohne Info-Kiosk) und ein Projektmanager; feste Demo-IDs ...0d1 bis ...0d3 sowie ...0e1/...0e2 (Verantwortungen), Rückbau über diese IDs."
@@ -214,7 +213,7 @@ lieferpakete:
       Stufe a umgesetzt in PR 215 (Datensatz 2.2.0: 6 Projekte, 24 Arbeitspakete, rund 57
       Tätigkeiten, Randfälle, sechs Personas, Aktualitätshinweis) und PR 216 (Tätigkeiten ohne
       echte Kennung gehören dem Veröffentlichenden). Stufe b offen: Live-Auffrischung der
-      Datumswerte und Kategorien als eigene Datenaufträge nach ADR-0037.
+      Datumswerte und Kategorien als eigene Datenaufträge nach ADR-0037 Konzept: docs/TD-01-STUFE-B-KONZEPT.md.
     gates_pass: not_run
     preview_verified: no
     published_verified: not_published
@@ -237,6 +236,31 @@ lieferpakete:
       - "Jede Stufe muss durch Tests (Stufe a) bzw. Postflight (Stufe b) belegt sein."
     risiko: Stufe b ist ein Datenschreibpfad in Produktion (siehe L0c).
 
+  - id: PW-01
+    gg: GG-02-Vorbereitung
+    titel: Passwort in der Anwendung ändern (Selbstbedienung, später Benutzerverwaltung)
+    nutzerwert: >-
+      Angemeldete Nutzer können ihr Passwort selbst ändern, ohne Anmeldeseite und ohne
+      zuverlässige Auth-Mail; Administratoren erreichen die Passwort-Aktionen auch in der
+      Benutzerverwaltung.
+    befund: >-
+      Nutzer 2026-10-25: Aus der Anwendung heraus fehlt eine Passwort-Funktion. Code: nur
+      Reset über Anmeldeseite (Mail) und Servicemenü Backend und Auth-Konten (Administrator).
+    entscheidung: "Nutzer 2026-10-25: erst PW-01 bis PW-03 (Stufe 1), danach PW-05 (Stufe 2)."
+    abhaengig_von: []
+    status: planned
+    code_merged: no
+    status_detail: >-
+      Anforderungen, Abnahme und Lovable-Prompt in docs/PW-01-PASSWORT-AENDERN.md. Umsetzung
+      als Lovable-Auftrag; Merge und Publish erst nach Klärung des Auth-Brokers (R-07), Test
+      auf der veröffentlichten App erforderlich.
+    gates_pass: not_run
+    preview_verified: no
+    published_verified: not_published
+    anforderungen:
+      - "Ein angemeldeter Nutzer muss sein Passwort in der Anwendung ändern können (PW-01)."
+      - "Die Änderung muss das aktuelle Passwort prüfen (PW-02) und die Registrierungsregel anwenden (PW-03)."
+      - "client.ts und previewAuthStorage.ts dürfen nicht verändert werden."
   - id: L1
     gg: GG-02
     titel: BSF-07 P0-Vertrag und Design integrieren
@@ -426,8 +450,15 @@ querschnitt:
     referenz: docs/BACKLOG.md (Stand 2026-08-17)
     einordnung: Betriebsfähigkeit der Registrierung; Plattform-Mails sind für externe Empfänger unzuverlässig.
     vor_golden_gate_erforderlich: no
-    entscheidung: "Nutzer 2026-10-21: QS-04 ist optional; Umfang reicht bis QS-03."
+    entscheidung: "Nutzer 2026-10-21: QS-04 ist optional; Umfang reicht bis QS-03. Nutzer 2026-10-25: QS-04 wird nach dem Golden Gate umgesetzt (Empfehlung angenommen)."
     status: optional
+    status_detail: >-
+      Stand 2026-10-25 (Lovable-Bericht): Domain notify.berndmarnau.de ist bei Lovable verifiziert,
+      aber keine eigenen Auth-Vorlagen vorhanden (Plattformstandard). Eigene Auth-Mails brauchen
+      Repository-Code (Versandroute src/routes/lovable/email/auth/webhook.ts, sechs Vorlagen unter
+      src/lib/email-templates/, drei neue Pakete) und damit einen Code-Auftrag mit Review. Lovable
+      lehnte den Auftrag ab, weil keine freigegebene Variant mit festem base_sha nachgewiesen ist
+      (S0-04). Die Entscheidung, QS-04 hochzustufen, steht aus.
   - id: QS-05
     titel: Systemstatus zeigt Abweichungen Datenbank, Git und Lovable
     einordnung: >-
@@ -454,6 +485,8 @@ querschnitt:
 nach_golden_gate:
   - BSF-04 / BSF-04A (zentrale Datenstrategie, Vorlagen)
   - BSF-DOC-01 bis BSF-DOC-03
+  - "QS-04 Domain und Auth-Mail (Entscheidung Nutzer 2026-10-25: nach dem Golden Gate; Voraussetzung: Variant mit base_sha (S0-04), Code-Auftrag mit Review für Versandroute und Vorlagen; Domain notify.berndmarnau.de ist verifiziert)"
+  - "QS-06 / M4 Viewer sieht Abrechnungsdaten (Entscheidung Nutzer 2026-10-25: Nachtrag nach dem Golden Gate, vor BSF-06 (Docker) und allen folgenden Punkten; Reiter Abrechnung, Umsatz-Kachel sowie Satz/Betrag/Abrechnungsstatus in Tätigkeiten für Rolle viewer ausblenden, Abgleich mit docs/RBAC-MATRIX.md, Frontend-Test je Rolle; Befund aus Test T9, Testprotokoll 2026-10-25; Rollenkreis entschieden 2026-10-25: Teamlead sieht Beträge, Engineer nur Stunden; Analyse: docs/QS-06-VIEWER-ABRECHNUNG.md, es fehlt eine Permission billing.view)"
   - BSF-06 (Docker, Betreiberhoheit, Installierbarkeit)
   - Integration-Readiness-Gate
   - Microsoft Graph, Entra-ID, SharePoint, Exchange, PRTG, MCP, Agenten, NAVIS
@@ -511,6 +544,124 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-26
+    ereignis: >-
+      Planung und Dokumente aktualisiert: L0c abgeschlossen (done, App-Tests T1 bis T10), L0b Vorschau geprüft,
+      offene Punkte bereinigt. Git: 5 lokale gemergte Branches entfernt; 40 gemergte Remote-Branches sind zum
+      Löschen vorbereitet (Löschen in der Cloud-Sitzung gesperrt, lokaler Auftrag in docs/GIT-AUFRAEUMEN.md).
+      Verbleibend für den Publish: Lovable-Antwort (R-07), Merge PR 219, 220, 221, Test auf der veröffentlichten App.
+    beleg: docs/GIT-AUFRAEUMEN.md, docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md
+  - datum: 2026-10-26
+    ereignis: >-
+      Test T10 (Arbeitssicht nach Datenauftrag Kunde B) bestanden: alle 8 Pakete von Kunde B mit Petra Marnau
+      als Verantwortlicher, Bernd Marnau als Stellvertretung bei 3 Paketen. M1 (erledigt
+      als überfällig) weiterhin sichtbar bis Merge von PR 220. K-2 bestanden: Filter Verantwortlicher Bernd Marnau zeigt 7 Pakete bei Kunde A. Beobachtung B2: Der Filter erfasst nur Owner, keine Stellvertretungen.
+    beleg: docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md (T10), docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md Abschnitt 11
+  - datum: 2026-10-25
+    ereignis: >-
+      Datenauftrag Verantwortliche je Arbeitspaket (Kunde B) ausgeführt (ADR-0037, Stufe 1 und 2):
+      8 avkk_subject, 11 avkk_responsibility, 11 avkk_responsibility_type mit festen IDs (0f11 bis 0f18,
+      0f31 bis 0f3b, 0f51 bis 0f5b). Postflight bestanden: Petra 8 Owner, Bernd 3 Deputy, audit_log
+      299 auf 329 (30 Trigger-Einträge), keine Fehler. Mangel M2 für beide Kunden behoben, Tests K-1 bis K-3 in der App stehen aus.
+    beleg: Work-Berichte vom 2026-10-25 (Preflight 17:43, Datenauftrag und Postflight 17:49), docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
+      Freigabe 2 (GO, Nutzer, 17:46 MEZ) für den Schreibauftrag Kunde B erteilt. SQL-Block aus
+      Abschnitt 6 an den Nutzer zur Ausführung in Work übergeben; Ergebnis und Postflight stehen aus.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
+      Preflight Kunde B (Work, 17:43 MEZ) bestanden: Projektbindung ok, 8 Pakete, 0 Zeilen in den ID-Bereichen,
+      audit_log 299, Memberships von Bernd und Petra aktiv, 4 Referenzwerte aktiv, Pflichtspalten im Insert
+      vollständig. Es wurde nichts geschrieben. Freigabe 2 steht aus.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
+      Freigabe 1 (Nutzer, 17:41 MEZ) für den Schreibauftrag Kunde B erteilt: Petra Owner bei 8 Paketen,
+      Bernd Stellvertretung bei Backup-Test, Cluster und Migration. Als Nächstes Preflight (nur lesen)
+      in Work, danach Freigabe 2.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
+      Stufe-0b-Bericht Kunde B (Work, 17:24 MEZ) vollständig. Schreibauftrag erstellt: 8 Subjects,
+      11 Verantwortungen (Petra Owner 8, Bernd Deputy 3), 11 Typen mit festen IDs, eine Transaktion,
+      erwartet 30 audit_log-Zeilen (299 auf 329). Vorab-Test des SQL-Blocks gegen lokale PostgreSQL 16 bestanden (Fund: ID-Präfix korrigiert). Wartet auf Freigabe 1 des Nutzers, danach Preflight
+      und Freigabe 2. Es wurde nichts geschrieben.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-SCHREIBAUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
+      Stufe-0-Bericht Kunde B (Work, 17:16 MEZ): Zielbindung bestätigt, 8 aktive Pakete, 0 AVKK-Subjects,
+      audit_log 299 Zeilen, Petra aktiv im Systemhaus. Bernd, Referenzwerte, ID-Muster und Trigger
+      fehlten im Bericht; Stufe 0b (nur lesen) vorbereitet. Es wurde nichts geschrieben.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md, Abschnitt 6
+  - datum: 2026-10-25
+    ereignis: >-
+      Entscheidung Nutzer: Dauerauftrag Dokupflege wird in CLAUDE.md verankert (gilt in jeder
+      Claude-Code-Sitzung).
+    beleg: CLAUDE.md, docs/DOKU-PFLEGE-AUFTRAG.md
+  - datum: 2026-10-25
+    ereignis: >-
+      Entscheidung Nutzer: Kunde B (Datenauftrag M2) bekommt Petra als Verantwortliche bei allen
+      8 Arbeitspaketen und Bernd als Stellvertretung bei etwa 3 von 8. Stufe-0-Lesebericht wird um
+      17:15 in Work ausgeführt.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md
+  - datum: 2026-10-25
+    ereignis: >-
+      Wiederanlauf-Prüfung (read-only): Lovable-Team hat noch nicht geantwortet (R-07, Publish
+      No-Go). main unverändert 1dd9c84. Branch lovable-sync-1792847779 (d510e85, 2026-10-24)
+      enthält genau den Auth-Broker (client.ts, previewAuthStorage.ts, types.ts) und ist das
+      Lovable-Backup; er wird nicht gemergt. PR #220 und #221 CI 15/15 grün (Draft), PR #219
+      CI lief noch. Datenauftrag Kunde B Stufe 0 (read-only Bericht) als Entwurf angelegt.
+    beleg: docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md, GitHub-API Vergleich main...lovable-sync-1792847779, gh pr checks 219-221
+  - datum: 2026-10-25
+    ereignis: >-
+      Doku-Pflege automatisiert: Skript scripts/check-project-docs.mjs (npm run docs:project,
+      CI-Schritt) prüft Tracker-YAML, tote Verweise und Stände; Dauerauftrag als Prompt in
+      docs/DOKU-PFLEGE-AUFTRAG.md.
+    beleg: docs/DOKU-PFLEGE-AUFTRAG.md, scripts/check-project-docs.mjs
+  - datum: 2026-10-25
+    ereignis: >-
+      Tests mit Alex (T8 bestanden) und Alexa (T9 teilweise): Befund M4, Rolle viewer sieht
+      Abrechnungsdaten (Permission billing.view fehlt). Als QS-06 nach dem Golden Gate vor
+      BSF-06 eingeplant. Neu: Merge-Checkliste, TD-01-Stufe-b-Konzept, Hilfetext-Korrektur
+      (Draft-PR #221).
+    beleg: docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md, docs/QS-06-VIEWER-ABRECHNUNG.md, docs/MERGE-CHECKLISTE-GOLDEN-GATE.md, docs/TD-01-STUFE-B-KONZEPT.md, PR #221
+  - datum: 2026-10-25
+    ereignis: >-
+      Entscheidung Nutzer: QS-04 (Auth-Mail über eigene Domain) wird nach dem Golden Gate
+      umgesetzt. Bis dahin bleibt der Passwortweg über das administrative Setzen im Servicemenü
+      der App (Schloss-Symbol). Neues Paket PW-01 (Passwort in der Anwendung ändern) ist geplant,
+      Merge erst nach Klärung des Auth-Brokers (R-07).
+    beleg: Lovable-Bericht Auth-Mail 2026-10-25, docs/PW-01-PASSWORT-AENDERN.md
+  - datum: 2026-10-25
+    ereignis: >-
+      Datenauftrag Verantwortliche je Arbeitspaket (Kunde A) ausgeführt (ADR-0037, Stufe 1 und 2):
+      12 avkk_subject, 10 avkk_responsibility, 10 avkk_responsibility_type mit festen IDs
+      (0f01 bis 0f0c, 0f21 bis 0f2a, 0f41 bis 0f4a), 32 audit_log-Zeilen wie freigegeben,
+      Postflight bestanden (Bernd 7 Verantwortliche, Petra 3 Stellvertreterin, 5 Pakete ohne).
+      Kunde B folgt nach Petras Veröffentlichung. Bekannt: avkk_people_directory liefert im
+      SQL-Kanal 0 Personen (kein auth.uid); Anzeige der Namen in der Sitzung noch zu prüfen.
+    beleg: Work-Berichte vom 2026-10-25 (Vorprüfung 12:18, Datenauftrag 12:25)
+  - datum: 2026-10-24
+    ereignis: >-
+      Lovable-Arbeitskopie (e5bcff1) enthielt erneut den verbotenen Auth-Broker
+      (client.ts und previewAuthStorage.ts, R-07); read-only Abgleich mit main belegt das.
+      Ein Zurücksetzen-Auftrag an Lovable lief; ein Merge auf main (PR 218, main 1dd9c84)
+      löste im selben Moment den Lovable-Konfliktdialog aus. Entscheidung: Repository-Version
+      behalten, die Lovable-Arbeit bleibt im Backup. Auf GitHub ist main ohne Broker, ohne
+      Sync-Branch. Ausstehend: Bestätigung des Lovable-Stands nach dem Re-Check, dann Publish-Go/No-Go.
+      Regel: Während eine schreibende Lovable-Arbeit läuft, nichts nach main mergen.
+      Die Plattform legte den Broker beim nächsten Schritt erneut an (Arbeitskopie 6d94013,
+      Lovable-Bericht 15:16). Support-Anfrage an Lovable am 2026-10-24 um 15:18 versendet
+      (Broker abschaltbar? Publish aus GitHub-Commit? Wirkung auf die veröffentlichte App?
+      Aliasversionen, NULL-Statements). Publish bleibt No-Go; Zwischenlösung: Test in der Vorschau.
+      Lovable-Support (15:45): Projekt läuft auf Lovable Cloud, nicht auf eigenem Supabase;
+      Push auf GitHub ändert die Live-Seite nie, nur Publish aus Lovable. Die Fragen sind an das
+      Team weitergegeben, Antwort binnen 24 Stunden an Werktagen (frühestens Montag).
+      Test in der Vorschau: Bernd veröffentlichte Kunde A (3 Projekte, 12 Arbeitspakete,
+      27 Tätigkeiten, 0 zurückgezogen), Arbeitssicht zeigt 12 von 12. Mängel: Überfällig bei
+      Status Erledigt (dueGroup ohne Status), Verantwortliche je Arbeitspaket fehlen in den Demodaten.
+    beleg: PR 218, Vergleich main gegen e5bcff1 und 48ae9aa (GitHub-API), docs/LOVABLE-PUBLISH-PRUEFUNG.md
   - datum: 2026-10-24
     ereignis: >-
       Publish-Prüfung für R-07 als Dokument angelegt (Prompt, Go/No-Go-Kriterien).
