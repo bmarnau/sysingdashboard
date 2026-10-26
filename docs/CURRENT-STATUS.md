@@ -13,7 +13,7 @@ Abweichung und die Publish-Quelle klärt (R-07, `docs/LOVABLE-PUBLISH-PRUEFUNG.m
 Kunde B: Verantwortliche per Datenauftrag gesetzt (2026-10-25, 17:49) und in der App bestätigt (Test T10, 2026-10-26). L0c ist abgeschlossen.
 Verbleibend bis zum Publish: Lovable-Antwort zu R-07, Test N1 bis N5 auf der veröffentlichten App. Git aufgeräumt (82 Remote-Branches, 0 gemergt, Auto-Delete aktiv): `docs/GIT-AUFRAEUMEN.md` Abschnitt 6.
 Offen: Draft-PR #222 (QS-06, `billing.view`) bleibt bis nach dem Golden Gate ungemergt; PR #155 und Draft-PR #124 unverändert. Konzept L2-Cockpit: `docs/L2-COCKPIT-SCHNITT-KONZEPT.md` (gemergt mit PR #223).
-Wartebedingung: Antwort des Lovable-Teams (frühestens Montag, 2026-10-26). Der Branch
+Wartebedingung: inhaltliche Antwort eines Lovable-Mitarbeiters (Eingangsbestätigung des KI-Agenten liegt seit 2026-10-26 vor, Frist 24 Stunden an Werktagen). Der Branch
 `lovable-sync-1792847779` ist das Lovable-Backup mit Auth-Broker und wird nicht gemergt.
 Entschieden 2026-10-26: TD-01 Stufe b läuft relativ zu heute (Stufe 0 als Auftragstext in `docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md`, Ausführung durch den Nutzer in Work). L2-Cockpit freigegeben, P1 als Draft-PR #226 (nicht gemergt). ADG-PR #15 gemergt.
 Vorbereitet: Datenauftrag Kunde B, Stufe 0 (read-only), `docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md`;
