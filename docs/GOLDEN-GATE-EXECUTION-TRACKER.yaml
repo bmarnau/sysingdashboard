@@ -549,6 +549,15 @@ risiken:
 fortschritt:
   - datum: 2026-10-27
     ereignis: >-
+      Draft-PR 233 gegen main angelegt/aktualisiert, nicht gemergt. GitHub-Git-API statt Shell-Push
+      verwendet (Shell ohne GitHub-Anmeldung); geprüfter Tree unverändert, lokaler und entfernter Commit 8d7033fa
+      per git ls-remote identisch bestätigt. Security erfolgreich; CI läuft auf diesem Head.
+      Git-Hygiene auf beiden Arbeitsbranches ausgeführt: 0 gemergte Remote-Branches, 8 offene PRs, davon 6 Drafts.
+    beleg: >-
+      PR 233; git ls-remote --heads origin feat/l2-cockpit-p2b;
+      npm run git:hygiene. Der anschließende reine Dokumentationsabschluss wird erneut gegatet.
+  - datum: 2026-10-27
+    ereignis: >-
       P2b Draft-PR 233: CI 1556 und Security 1554 für 5853d585 erfolgreich. Unabhängiger Review fand
       zwei irreführende Leer-/Nullwerte bei fehlender Kundenzuordnung und unbekannten Schweregrad-Rängen.
       Vier RED-Tests bestätigen die Lücken; der Fix meldet beide Fälle über den bestehenden Fehlerpfad als UNAVAILABLE.
