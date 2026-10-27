@@ -9,7 +9,13 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-26 · Dashboard-Version 1.69.0
+Stand: 2026-10-27 · Dashboard-Version 1.69.0
+
+## 2026-10-27 — L2 P2 und Planungsabgleich
+
+L2 P2 (Server-Lesepfad des Management-Cockpits) liegt als Draft-PR 231 vor, nicht gemergt. Beim Test fiel ein Vertragsfehler aus P1 auf: Der Kundenkreis-Schlüssel von `myCustomerScopeKey` (zwei Doppelpunkte) passte nicht zum Composer (ein Doppelpunkt). Der Schlüsselbau liegt jetzt an einer Stelle (`cockpitScopeKey`). Die AVKK-Führungsdaten werden bisher nur im Browser geladen; das Cockpit meldet sie deshalb als UNAVAILABLE (Annahme: eigener Schnitt P2b).
+
+Der Planungsabgleich fand vier veraltete Angaben auf `main` (Hash im Status, L2-Status `planned`, `base_main_sha`, Gesamtschätzung nur im Chat). Sie sind korrigiert; die Gesamtschätzung steht als `roadmap_schaetzung` im Tracker.
 
 ## 2026-10-26 — TD-01: Freigabe 1 erteilt, Preflight übergeben
 
