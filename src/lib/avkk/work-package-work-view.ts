@@ -29,7 +29,7 @@ function fail(message: string): never {
   throw new Error(`Arbeitspaket-Arbeitssicht: ${message}.`);
 }
 
-function berlinDate(referenceInstant: string): string {
+export function berlinDate(referenceInstant: string): string {
   const instant = new Date(referenceInstant);
   if (Number.isNaN(instant.getTime())) fail("ungültiger Referenzzeitpunkt");
 
