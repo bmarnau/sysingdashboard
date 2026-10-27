@@ -178,11 +178,15 @@ export const readManagementCockpitFn = createServerFn({ method: "POST" })
       { createSupabaseMyCustomersRepository },
       { createSupabaseProjectControllingRepository },
       { createSupabaseWorkPackageWorkViewRepository },
+      { createSupabaseManagementCockpitAvkkRepository },
     ] = await Promise.all([
       import("@/integrations/supabase/my-customers-adapter"),
       import("@/integrations/supabase/project-controlling-adapter"),
       import("@/integrations/supabase/work-package-work-view-adapter"),
+      import("@/integrations/supabase/management-cockpit-avkk-adapter"),
     ]);
+
+    const referenceInstant = new Date().toISOString();
 
     return executeManagementCockpitRequest(
       supabase,
@@ -191,8 +195,8 @@ export const readManagementCockpitFn = createServerFn({ method: "POST" })
         customers: createSupabaseMyCustomersRepository(supabase),
         controlling: createSupabaseProjectControllingRepository(supabase, context.userId),
         workPackages: createSupabaseWorkPackageWorkViewRepository(supabase),
-        // AVKK: noch kein Server-Lesepfad (siehe AvkkSignalRepository) -> Zustand UNAVAILABLE.
+        avkk: createSupabaseManagementCockpitAvkkRepository(supabase, referenceInstant),
       },
-      new Date().toISOString(),
+      referenceInstant,
     );
   });

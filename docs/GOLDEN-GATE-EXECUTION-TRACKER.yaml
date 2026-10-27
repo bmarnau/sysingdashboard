@@ -292,7 +292,7 @@ lieferpakete:
     ist_stand_code: Keine Cockpit-Route und kein Composer im Repository.
     konzept: docs/L2-COCKPIT-SCHNITT-KONZEPT.md
     status_detail: >-
-      Konzept (Entwurf) liegt vor (2026-10-26): Nutzungsfall, Datenquellen, Aufmerksamkeitsgründe, Anforderungen L2-01 bis L2-12, RED-Matrix, Auftragstext P1. Freigabe durch den Nutzer am 2026-10-26. P1 (reiner Composer, 20 Tests nach RED-Matrix) liegt als Draft-PR 226 vor und ist nicht gemergt. P2 (Server-Lesepfad mit User-JWT, 21 Tests) liegt als Draft-PR 231 auf P1 vor und ist nicht gemergt; AVKK hat noch keinen Server-Lesepfad und wird als UNAVAILABLE gemeldet (Entscheidung offen, Konzept Abschnitt 11). Offen: AVKK-Server-Lesepfad (P2b), P3 Route, P4 Rollenabnahme, Hilfe (L2-12). Beträge bleiben ausgeschlossen (L2-06), bis QS-06 gemergt ist.
+      Konzept (Entwurf) liegt vor (2026-10-26): Nutzungsfall, Datenquellen, Aufmerksamkeitsgründe, Anforderungen L2-01 bis L2-12, RED-Matrix, Auftragstext P1. Freigabe durch den Nutzer am 2026-10-26. P1 (reiner Composer, 20 Tests nach RED-Matrix) liegt als Draft-PR 226 vor und ist nicht gemergt. P2 (Server-Lesepfad mit User-JWT, 21 Tests) liegt als Draft-PR 231 auf P1 vor und ist nicht gemergt. P2b ergänzt auf dem separaten Branch feat/l2-cockpit-p2b den rein lesenden AVKK-Serverpfad: User-JWT und RLS bleiben maßgeblich, die vorhandene AVKK-Ableitung verdichtet hohe/kritische Befunde je autorisiertem Kunden, Fehler werden als UNAVAILABLE gemeldet. Offen: P3 Route, P4 Rollenabnahme, Hilfe (L2-12). Beträge bleiben ausgeschlossen (L2-06), bis QS-06 gemergt ist.
 
   - id: L3
     gg: GG-02
@@ -547,6 +547,14 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-27
+    ereignis: >-
+      L2 P2b auf separatem Branch umgesetzt (nicht gemergt): rein lesender AVKK-Serveradapter über den User-JWT-Client,
+      RLS und anschließenden Abgleich mit dem autorisierten Kundenkreis. Hohe und kritische Konsequenzen werden mit buildRows,
+      buildManagementSummary sowie den vorhandenen Rangkonstanten abgeleitet; Providerfehler ergeben UNAVAILABLE ohne Rohdetails.
+    beleg: >-
+      Branch feat/l2-cockpit-p2b; src/__tests__/backend/management-cockpit-avkk-adapter.test.ts und
+      src/__tests__/backend/management-cockpit.functions.test.ts.
   - datum: 2026-10-27
     ereignis: >-
       L2 P2 umgesetzt (Draft-PR 231, auf P1 aufgesetzt, nicht gemergt): Server-Lesepfad mit User-JWT, leere Anfrage, Capabilities,

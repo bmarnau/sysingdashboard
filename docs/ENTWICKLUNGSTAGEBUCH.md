@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-27 · Dashboard-Version 1.69.0
 
+## 2026-10-27 — L2 P2b: AVKK-Server-Lesepfad
+
+Auf dem separaten, nicht gemergten Branch `feat/l2-cockpit-p2b` liest das Management-Cockpit die AVKK-Signale nun serverseitig mit dem User-JWT-Client; RLS bleibt maßgeblich. Der Adapter führt keine zweite Fachlogik ein, sondern verwendet `buildRows`, `buildManagementSummary` und die bestehenden Ranggrenzen für hohe und kritische Konsequenzen. Die Cockpit-Komposition schneidet das Ergebnis nochmals auf den autorisierten Systemhaus-/Kundenkreis zu. Datenbankfehler werden ohne Rohdetails als `UNAVAILABLE` sichtbar. Es wurden weder Tabellen noch Policies, Rollen oder Berechtigungen verändert.
+
 ## 2026-10-27 — L2 P2: Server-Lesepfad des Management-Cockpits
 
 Draft-PR 231 (auf P1 aufgesetzt, nicht gemergt): Der Lesepfad ermittelt Capabilities, Kundenkreis und Stichtag serverseitig, nimmt nur eine leere Anfrage an und meldet Teilausfälle je Quelle als Datenzustand. Beim Test fiel ein Vertragsfehler aus P1 auf: Der Kundenkreis-Schlüssel von `myCustomerScopeKey` (zwei Doppelpunkte) passte nicht zum Composer (ein Doppelpunkt). Der Schlüsselbau liegt jetzt an einer Stelle (`cockpitScopeKey`). Die AVKK-Führungsdaten werden bisher nur im Browser geladen; das Cockpit meldet sie deshalb als UNAVAILABLE, bis ein Server-Lesepfad existiert.
