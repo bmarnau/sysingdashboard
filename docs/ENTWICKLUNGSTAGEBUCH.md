@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-26 · Dashboard-Version 1.69.0
+Stand: 2026-10-27 · Dashboard-Version 1.69.0
+
+## 2026-10-27 — L2 P2: Server-Lesepfad des Management-Cockpits
+
+Draft-PR 231 (auf P1 aufgesetzt, nicht gemergt): Der Lesepfad ermittelt Capabilities, Kundenkreis und Stichtag serverseitig, nimmt nur eine leere Anfrage an und meldet Teilausfälle je Quelle als Datenzustand. Beim Test fiel ein Vertragsfehler aus P1 auf: Der Kundenkreis-Schlüssel von `myCustomerScopeKey` (zwei Doppelpunkte) passte nicht zum Composer (ein Doppelpunkt). Der Schlüsselbau liegt jetzt an einer Stelle (`cockpitScopeKey`). Die AVKK-Führungsdaten werden bisher nur im Browser geladen; das Cockpit meldet sie deshalb als UNAVAILABLE, bis ein Server-Lesepfad existiert.
 
 ## 2026-10-26 — TD-01: Freigabe 1 erteilt, Preflight übergeben
 

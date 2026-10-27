@@ -124,3 +124,19 @@ Lies docs/BSF-07-MANAGEMENT-COCKPIT-DESIGN.md (Kap. 3, 4, 7, 13, 14) und docs/L2
 4. Vor Abschluss: npm test (betroffene Tests), tsc, eslint, Prettier, npm run docs:check, npm run docs:project; Tracker und Tagebuch nachziehen.
 5. Commit, push, Remote-Stand pruefen, Draft-PR. Bericht mit YAML-Block.
 ```
+
+## 11 Ergebnis P2 (2026-10-27, Draft-PR 231)
+
+Umgesetzt: `src/lib/management-cockpit-runtime/management-cockpit.functions.ts` (TanStack-Server-Function, User-JWT, keine Service Role, keine Schreibzugriffe) und 21 Tests unter `src/__tests__/backend/management-cockpit.functions.test.ts`.
+
+| Entscheidung                    | Inhalt                                                                                                                                                                                        |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Anfrage                         | leer (`strict`); Scope, Stichtag und Rollen kommen nie vom Client                                                                                                                             |
+| Capabilities                    | `is_account_active` und `dashboard.view` als Grundlage; Controlling über `project.controlling.view`; Arbeitssicht und AVKK über `avkk.management.view` (wie der vorhandene Arbeitssicht-Pfad) |
+| Kundenkreis                     | `listMyCustomers` (RLS plus `is_my_customer`); nicht ermittelbar ergibt UNAVAILABLE für alle Quellen, nie eine leere Erfolgsansicht                                                           |
+| Fehler der Berechtigungsprüfung | generischer Fehler (fail-closed), nichts wird gelesen                                                                                                                                         |
+| Teilausfall                     | je Quelle UNAVAILABLE statt Rohfehler; die übrigen Quellen liefern weiter (L2-R5)                                                                                                             |
+| Controlling-Fenster             | 90 Tage bis zum Stichtag, alle Abrechnungsarten; Parameter `COCKPIT_CONTROLLING_WINDOW_DAYS`                                                                                                  |
+| Befund P1, behoben              | Kundenkreis-Schlüssel: `myCustomerScopeKey` trennt mit `::`, der Composer erwartet `:`; Schlüsselbau jetzt nur in `cockpitScopeKey`                                                           |
+
+**Offene Entscheidung (AVKK):** Die AVKK-Führungsdaten (`listDossiers`, `useAvkkManagement`) werden bisher nur im Browser mit dem Client-Supabase-Objekt geladen; es gibt keinen Server-Lesepfad und keine serverseitige Ableitung der Schweregrade je Kunde. Bis dahin liefert das Cockpit AVKK als UNAVAILABLE (ehrlich, kein Nullwert). Für `AVKK_HIGH_OR_CRITICAL` ist ein eigener Schnitt P2b nötig: ein Server-Adapter, der die vorhandene Ableitung (`buildRows`, `buildManagementSummary`) wiederverwendet statt nachzubauen (Risiko L2-R1). Alternative: AVKK im ersten nutzbaren Schnitt weglassen und den Grund erst mit P2b ergänzen.
