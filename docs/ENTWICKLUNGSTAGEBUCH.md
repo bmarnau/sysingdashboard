@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-27 · Dashboard-Version 1.69.0
 
+## 2026-10-27 — P2b Review: Datenzustände abgesichert
+
+Draft-PR #233 bleibt ungemergt. CI #1556 und Security #1554 sind für `5853d585` grün. Im unabhängigen Review wurden zwei Datenzustandslücken belegt: gelesene Legacy-Dossiers ohne Kundenzuordnung und aktuelle Konsequenzen ohne belastbaren Schweregrad-Rang konnten als leer bzw. Null erscheinen. Vier neue RED-Tests reproduzierten dies. Der Adapter bricht nun generisch ab, sodass die bestehende Serverfunktion `UNAVAILABLE` ausgibt. Backend: 105/105 grün; die bisherigen API-/Zeitzonen-Umgebungsfehler bleiben getrennt dokumentiert. Die Gates laufen für den neuen Review-Head erneut. P3, P4 und L2-12 bleiben eigenständige Schritte.
+
 ## 2026-10-27 — L2 P2b: AVKK-Server-Lesepfad
 
 Auf dem separaten, nicht gemergten Branch `feat/l2-cockpit-p2b` liest das Management-Cockpit die AVKK-Signale nun serverseitig mit dem User-JWT-Client; RLS bleibt maßgeblich. Der Adapter führt keine zweite Fachlogik ein, sondern verwendet `buildRows`, `buildManagementSummary` und die bestehenden Ranggrenzen für hohe und kritische Konsequenzen. Die Cockpit-Komposition schneidet das Ergebnis nochmals auf den autorisierten Systemhaus-/Kundenkreis zu. Datenbankfehler werden ohne Rohdetails als `UNAVAILABLE` sichtbar. Es wurden weder Tabellen noch Policies, Rollen oder Berechtigungen verändert.

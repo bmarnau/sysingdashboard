@@ -181,9 +181,12 @@ export function createSupabaseManagementCockpitAvkkRepository(
           .range(from, to),
       );
 
-      const subjects = subjectRows.filter(
-        (subject) => subject.systemhouse_id !== null && subject.customer_id !== null,
-      );
+      // Vorhandene, aber nicht zuordenbare Legacy-Dossiers sind kein belegtes EMPTY.
+      // Der bestehende Serververtrag bildet den generischen Adapterfehler auf UNAVAILABLE ab.
+      if (subjectRows.some((subject) => !subject.systemhouse_id || !subject.customer_id)) {
+        fail("Kundenzuordnung prüfen");
+      }
+      const subjects = subjectRows;
       if (subjects.length === 0) return [];
 
       const subjectIds = subjects.map((subject) => subject.id);
@@ -278,6 +281,16 @@ export function createSupabaseManagementCockpitAvkkRepository(
             return rank === null ? [] : ([[value.key, rank]] as const);
           }),
       );
+      // buildRows verwendet für unbekannte Ränge intern 0. Dies ist hier keine
+      // belastbare Bewertung und darf nicht als erfolgreich ermittelte Null erscheinen.
+      if (
+        consequenceRows.some(
+          (row) =>
+            row.superseded_at === null && severityRanks[row.severity_key_snapshot] === undefined,
+        )
+      ) {
+        fail("Schweregrade bewerten");
+      }
       const threshold = thresholdFrom(thresholdResult.data?.value);
       const competences = competenceRows.map(mapCompetence);
       const consequences = consequenceRows.map(mapConsequence);

@@ -45,8 +45,8 @@ export function parseManagementCockpitRequest(input: unknown): Record<never, nev
 }
 
 /**
- * Server-Lesepfad für AVKK-Befunde je Kunde. Es gibt ihn noch nicht (AVKK-Führungsdaten werden bisher
- * nur im Browser geladen); fehlt der Provider, meldet das Cockpit AVKK als UNAVAILABLE.
+ * Port für den AVKK-Serveradapter. Fehlt der Provider oder scheitert die belastbare
+ * Zuordnung/Bewertung, meldet das Cockpit AVKK als UNAVAILABLE.
  */
 export interface AvkkSignalRepository {
   listCustomerSignals(): Promise<readonly AvkkCustomerSignal[]>;

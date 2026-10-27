@@ -173,6 +173,30 @@ function fixture(): Data {
 }
 
 describe("L2 P2b — AVKK Supabase server adapter", () => {
+  it("bricht bei fehlender Kundenzuordnung ab statt vorhandene Dossiers als leer zu melden", async () => {
+    const data = fixture();
+    data.avkk_subject = [{ ...data.avkk_subject[0], customer_id: null }];
+    const repository = createSupabaseManagementCockpitAvkkRepository(
+      fakeClient(data),
+      "2026-10-27T08:00:00.000Z",
+    );
+    await expect(repository.listCustomerSignals()).rejects.toThrow("Kundenzuordnung");
+  });
+
+  it.each([null, "high", Number.NaN])(
+    "meldet nicht bewertbare Schweregrade nicht als Null (%j)",
+    async (rank) => {
+      const data = fixture();
+      data.reference_value = data.reference_value.map((value) =>
+        value.key === "high" ? { ...value, attributes: { rank } } : value,
+      );
+      const repository = createSupabaseManagementCockpitAvkkRepository(
+        fakeClient(data),
+        "2026-10-27T08:00:00.000Z",
+      );
+      await expect(repository.listCustomerSignals()).rejects.toThrow("Schweregrade bewerten");
+    },
+  );
   it("leitet hohe und kritische AVKK-Signale mit der bestehenden Fachlogik je Mandant/Kunde ab", async () => {
     const repository = createSupabaseManagementCockpitAvkkRepository(
       fakeClient(fixture()),
