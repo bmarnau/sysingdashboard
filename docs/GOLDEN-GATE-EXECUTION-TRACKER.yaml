@@ -292,7 +292,7 @@ lieferpakete:
     ist_stand_code: Keine Cockpit-Route und kein Composer im Repository.
     konzept: docs/L2-COCKPIT-SCHNITT-KONZEPT.md
     status_detail: >-
-      Konzept (Entwurf) liegt vor (2026-10-26): Nutzungsfall, Datenquellen, Aufmerksamkeitsgründe, Anforderungen L2-01 bis L2-12, RED-Matrix, Auftragstext P1. Freigabe durch den Nutzer am 2026-10-26. P1 (reiner Composer, 20 Tests nach RED-Matrix) liegt als Draft-PR 226 vor und ist nicht gemergt. Offen: P2 Server-Read, P3 Route, P4 Rollenabnahme, Hilfe (L2-12). Beträge bleiben ausgeschlossen (L2-06), bis QS-06 gemergt ist.
+      Konzept (Entwurf) liegt vor (2026-10-26): Nutzungsfall, Datenquellen, Aufmerksamkeitsgründe, Anforderungen L2-01 bis L2-12, RED-Matrix, Auftragstext P1. Freigabe durch den Nutzer am 2026-10-26. P1 (reiner Composer, 20 Tests nach RED-Matrix) liegt als Draft-PR 226 vor und ist nicht gemergt. P2 (Server-Lesepfad mit User-JWT, 21 Tests) liegt als Draft-PR 231 auf P1 vor und ist nicht gemergt; AVKK hat noch keinen Server-Lesepfad und wird als UNAVAILABLE gemeldet (Entscheidung offen, Konzept Abschnitt 11). Offen: AVKK-Server-Lesepfad (P2b), P3 Route, P4 Rollenabnahme, Hilfe (L2-12). Beträge bleiben ausgeschlossen (L2-06), bis QS-06 gemergt ist.
 
   - id: L3
     gg: GG-02
@@ -547,6 +547,15 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-27
+    ereignis: >-
+      L2 P2 umgesetzt (Draft-PR 231, auf P1 aufgesetzt, nicht gemergt): Server-Lesepfad mit User-JWT, leere Anfrage, Capabilities,
+      Kundenkreis und Stichtag serverseitig, Teilausfälle je Quelle als Datenzustand. Befund P1: Schlüsselformat des Kundenkreises
+      wich ab (myCustomerScopeKey trennt mit zwei Doppelpunkten, der Composer erwartet einen); behoben über cockpitScopeKey.
+      AVKK-Führungsdaten haben keinen Server-Lesepfad und werden als UNAVAILABLE gemeldet.
+    beleg: >-
+      PR 231 (f8199b7), src/__tests__/backend/management-cockpit.functions.test.ts (21 Tests), tsc und eslint ohne Befund.
+      Regression in src/__tests__/backend, security und lib: nur die bekannten 4 Zeitzonen-Fehler in time-period.test.ts (auch auf main).
   - datum: 2026-10-26
     ereignis: >-
       TD-01 Stufe b: Freigabe 1 erteilt (Nutzer, 20:36 MEZ), Umfang mit Tätigkeiten (14 Arbeitspakete, 47 Tätigkeiten), Stichtag 2026-10-26.
