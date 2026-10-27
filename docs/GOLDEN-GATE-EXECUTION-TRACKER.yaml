@@ -289,10 +289,10 @@ lieferpakete:
       - Berechtigter Projektmanager sieht Projekt-/AP-Kontext.
       - Unberechtigte Rolle sieht kein Objekt, keinen Count, keine ID.
       - Zustände AVAILABLE, EMPTY, PARTIAL, UNKNOWN, UNAVAILABLE, DENIED ohne geschönte Nullwerte.
-    ist_stand_code: Keine Cockpit-Route und kein Composer im Repository.
+    ist_stand_code: P1/P2 und P3-Route auf Draft-Branches vorhanden; auf main weiterhin keine Cockpit-Route.
     konzept: docs/L2-COCKPIT-SCHNITT-KONZEPT.md
     status_detail: >-
-      Konzept (Entwurf) liegt vor (2026-10-26): Nutzungsfall, Datenquellen, Aufmerksamkeitsgründe, Anforderungen L2-01 bis L2-12, RED-Matrix, Auftragstext P1. Freigabe durch den Nutzer am 2026-10-26. P1 (reiner Composer, 20 Tests nach RED-Matrix) liegt als Draft-PR 226 vor und ist nicht gemergt. P2 (Server-Lesepfad mit User-JWT, 21 Tests) liegt als Draft-PR 231 auf P1 vor und ist nicht gemergt; AVKK hat noch keinen Server-Lesepfad und wird als UNAVAILABLE gemeldet (Entscheidung offen, Konzept Abschnitt 11). Offen: AVKK-Server-Lesepfad (P2b), P3 Route, P4 Rollenabnahme, Hilfe (L2-12). Beträge bleiben ausgeschlossen (L2-06), bis QS-06 gemergt ist.
+      Konzept (Entwurf) liegt vor (2026-10-26): Nutzungsfall, Datenquellen, Aufmerksamkeitsgründe, Anforderungen L2-01 bis L2-12, RED-Matrix, Auftragstext P1. Freigabe durch den Nutzer am 2026-10-26. P1 (reiner Composer, 20 Tests nach RED-Matrix) liegt als Draft-PR 226 vor und ist nicht gemergt. P2 (Server-Lesepfad mit User-JWT, 21 Tests) liegt als Draft-PR 231 auf P1 vor und ist nicht gemergt; AVKK hat noch keinen Server-Lesepfad und wird als UNAVAILABLE gemeldet (Entscheidung offen, Konzept Abschnitt 11). P2b als separater Draft-PR 233 vorhanden. P3 auf feat/l2-cockpit-p3 implementiert (Basis exakt P2@1009887, P2b nicht enthalten), mit 33 neuen Tests und 10 synthetischen Browserfällen. Offen: nutzerseitige Integration der Drafts, P4 auf integrierter Basis, Veröffentlichungsentscheidung und Hilfe/Handbuch/CHANGELOG (L2-12). Beträge bleiben ausgeschlossen (L2-06), bis QS-06 gemergt ist.
 
   - id: L3
     gg: GG-02
@@ -547,6 +547,18 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-27
+    ereignis: >-
+      P3 auf separatem Branch feat/l2-cockpit-p3 von P2@1009887 umgesetzt: read-only /managementcockpit
+      verwendet readManagementCockpitFn mit leerer Anfrage. Bestehende Management-Permissions erlauben
+      PM, Teamlead und Administration; Viewer, Customer, Kiosk und Engineer lösen keinen Cockpit-Read aus.
+      Sechs Datenzustände, fehlende Werte nie als Null, Handlungsbedarf vor Kennzahlen und beide Reiter-Drill-downs.
+      Browserprüfung mit synthetischen Server-/Auth-Grenzen 10/10 grün (1280/820/390, Tastatur, Axe, keine Konsolenfehler).
+      Keine Live-RLS-/P4-Gesamtabnahme; P2b ist in diesem Branch nicht enthalten. Hilfe und CHANGELOG warten auf Publish-Entscheidung.
+    beleg: >-
+      src/__tests__/components/management-cockpit-page.test.tsx; src/__tests__/components/management-cockpit-view.test.tsx;
+      src/__tests__/components/management-cockpit-access.test.tsx; e2e/specs/management-cockpit/management-cockpit.spec.ts.
+      Fokus 156/156 grün; Vollsuite 1227 PASS, 4 TODO, 5 auf unverändertem main reproduzierte Umgebungsfehler.
   - datum: 2026-10-27
     ereignis: >-
       L2 P2 umgesetzt (Draft-PR 231, auf P1 aufgesetzt, nicht gemergt): Server-Lesepfad mit User-JWT, leere Anfrage, Capabilities,

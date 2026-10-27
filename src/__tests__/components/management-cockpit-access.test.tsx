@@ -36,6 +36,22 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("L2 P3 — Rollen-Gate des Management-Cockpits", () => {
+  it("lädt ohne aktive Sitzung keine Cockpitdaten", () => {
+    useCurrentUserMock.mockReturnValue(null);
+    const { rerender } = render(
+      <ManagementCockpitAccess>
+        <ReadProbe />
+      </ManagementCockpitAccess>,
+    );
+    expect(readCockpit).not.toHaveBeenCalled();
+    useCurrentUserMock.mockReturnValue(makeUser("administrator", { status: "locked" }));
+    rerender(
+      <ManagementCockpitAccess>
+        <ReadProbe />
+      </ManagementCockpitAccess>,
+    );
+    expect(readCockpit).not.toHaveBeenCalled();
+  });
   for (const role of [
     "systemadministrator",
     "administrator",

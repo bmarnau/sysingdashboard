@@ -109,7 +109,7 @@ describe("L2 P3 — schreibgeschützte Cockpit-Präsentation", () => {
     render(<ManagementCockpitView state={{ kind: "ready", result: result() }} />);
     expect(screen.getByRole("link", { name: /Ohne Verantwortlichen/ })).toHaveAttribute(
       "href",
-      "/verantwortungen",
+      "/verantwortungen?tab=workpackages",
     );
     expect(screen.getByRole("link", { name: /Hohe oder kritische AVKK-Folge/ })).toHaveAttribute(
       "href",
@@ -134,5 +134,21 @@ describe("L2 P3 — schreibgeschützte Cockpit-Präsentation", () => {
     render(<ManagementCockpitView state={{ kind: "unavailable" }} />);
     expect(screen.getByText("Nicht verfügbar")).toBeInTheDocument();
     expect(screen.queryByText(/kein Handlungsbedarf/i)).not.toBeInTheDocument();
+  });
+
+  it("zeigt bei DENIED auch mit widersprüchlicher Antwort keine Kundendetails oder Zähler", () => {
+    render(
+      <ManagementCockpitView state={{ kind: "ready", result: result({ dataState: "DENIED" }) }} />,
+    );
+    expect(screen.queryByText("DEMO – Kunde A")).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Kennzahlen" })).not.toBeInTheDocument();
+  });
+
+  it("stellt technische Kunden-IDs nicht als Anzeigenamen dar", () => {
+    const data = result();
+    data.items = data.items.map((item) => ({ ...item, customerName: CUSTOMER }));
+    render(<ManagementCockpitView state={{ kind: "ready", result: data }} />);
+    expect(screen.queryByText(CUSTOMER)).not.toBeInTheDocument();
+    expect(screen.getByText("Autorisierter Kunde")).toBeInTheDocument();
   });
 });

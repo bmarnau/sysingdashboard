@@ -20,23 +20,23 @@ export function CustomerPageShell({
         <div className="mx-auto flex h-16 max-w-[1600px] items-center gap-4 px-4 sm:px-6">
           <Link
             to="/dashboard"
-            className="flex items-center gap-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex min-w-0 items-center gap-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label="Zum Dashboard"
           >
             <span
-              className="grid size-9 place-items-center rounded-lg"
+              className="grid size-9 shrink-0 place-items-center rounded-lg"
               style={{ background: "var(--gradient-primary)" }}
             >
               <Server className="size-5 text-primary-foreground" aria-hidden="true" />
             </span>
-            <span className="leading-tight">
-              <span className="block font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            <span className="min-w-0 leading-tight">
+              <span className="block truncate font-mono text-xs uppercase tracking-widest text-muted-foreground">
                 SysIng Dashboard
               </span>
-              <span className="block text-sm font-semibold">{sectionTitle}</span>
+              <span className="block truncate text-sm font-semibold">{sectionTitle}</span>
             </span>
           </Link>
-          <nav aria-label="Bereiche" className="ml-auto flex items-center gap-2">
+          <nav aria-label="Bereiche" className="ml-auto flex shrink-0 items-center gap-2">
             <Link
               to="/dashboard"
               className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary/40 px-3 text-sm text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
