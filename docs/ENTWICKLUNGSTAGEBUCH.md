@@ -9,7 +9,21 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-26 · Dashboard-Version 1.69.0
+Stand: 2026-10-27 · Dashboard-Version 1.69.0
+
+## 2026-10-27 — Draft-PR 234: Git-Nachweis und Statusabschluss
+
+Draft gegen `main`, kein Merge/Publish. Der geprüfte Stand `a565a21d` wurde über die verbundene GitHub-Git-API übertragen (Shell-Push ohne Anmeldung blockiert), mit identischem Tree lokal übernommen und per `git ls-remote` bestätigt. Security ist erfolgreich; die CI läuft. Git-Hygiene: 0 gemergte Remote-Branches, 8 offene PRs, davon 6 Drafts. Dieser reine Dokuabschluss wird erneut gegatet. P4/integrierte Live-Abnahme und L2-12 bleiben offen.
+
+## 2026-10-27 — L2 P3: schreibgeschützte Managementcockpit-Route
+
+Der separate Branch `feat/l2-cockpit-p3` basiert exakt auf P2 `1009887`, ohne P2b. `/managementcockpit` ruft `readManagementCockpitFn({ data: {} })` erst innerhalb des aktiven Management-Gates auf. Konto-/Rollenwechsel verwerfen den bisherigen Zustand und verspätete Antworten. Handlungsbedarf steht vor Kennzahlen; Gründe und Quellen zeigen Datenzustände, unbekannte Zähler bleiben unbekannt, technische IDs werden nicht als Namen dargestellt. Keine Beträge, Personenwertung oder Schreibaktionen. Die Links öffnen die bestehende Arbeitspaket-Arbeitssicht bzw. den AVKK-Management-Reiter und Projektcontrolling. Der gemeinsame Seitenkopf kann auf schmalen Bildschirmen schrumpfen, ohne die Navigation abzuschneiden.
+
+Nachweise: 33 neue Unit-/Komponententests, Fokus einschließlich Backend/Composer/Routenregression 156/156. Vollsuite 1227 PASS, 4 TODO; fünf bestehende Fehler auch auf unverändertem main reproduziert: vier Zeitzonenfälle in `time-period.test.ts` und `/api/status`-Timeout in `api/runner.test.ts`. TypeScript, Build und ESLint (0 Fehler, 20 bestehende Warnungen) grün. Synthetische Browserprüfung 10/10: vier Managementrollen, vier negative Rollen ohne Cockpitread, 1280/820/390, Tastatur, Axe ohne Befund und Konsolenfehler 0 in den vier positiven Rollenfällen. Dies ersetzt keine Live-RLS- oder P4-Gesamtabnahme nach Integration. Hilfe/Handbuch und CHANGELOG bleiben gemäß Auftrag bis zur Veröffentlichungsentscheidung offen; kein Merge und kein Publish.
+
+## 2026-10-27 — L2 P2: Server-Lesepfad des Management-Cockpits
+
+Draft-PR 231 (auf P1 aufgesetzt, nicht gemergt): Der Lesepfad ermittelt Capabilities, Kundenkreis und Stichtag serverseitig, nimmt nur eine leere Anfrage an und meldet Teilausfälle je Quelle als Datenzustand. Beim Test fiel ein Vertragsfehler aus P1 auf: Der Kundenkreis-Schlüssel von `myCustomerScopeKey` (zwei Doppelpunkte) passte nicht zum Composer (ein Doppelpunkt). Der Schlüsselbau liegt jetzt an einer Stelle (`cockpitScopeKey`). Die AVKK-Führungsdaten werden bisher nur im Browser geladen; das Cockpit meldet sie deshalb als UNAVAILABLE, bis ein Server-Lesepfad existiert.
 
 ## 2026-10-26 — TD-01: Freigabe 1 erteilt, Preflight übergeben
 

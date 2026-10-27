@@ -151,8 +151,11 @@ import { useWorkPackageCategories } from "@/hooks/useWorkPackageCategories";
 import { ActivityDialog } from "@/components/dashboard/dialogs/ActivityDialog";
 import { AppVersionStamp } from "@/components/AppVersionStamp";
 import { EngineerDialog } from "@/components/dashboard/dialogs/EngineerDialog";
+import { DashboardSearchSchema } from "@/components/dashboard/search";
+import { ManagementCockpitAccess } from "@/components/management-cockpit/ManagementCockpitAccess";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  validateSearch: DashboardSearchSchema,
   head: () => ({
     meta: [
       { title: `SysIng Dashboard – ${dashboardData.engineer.company}` },
@@ -201,6 +204,10 @@ function Dashboard() {
   const [hydrated, setHydrated] = useState(false);
 
   const [tab, setTab] = useState<Tab>("projekte");
+  const search = Route.useSearch();
+  useEffect(() => {
+    if (search.tab === "avkk-management") setTab("avkk-management");
+  }, [search.tab]);
   const avkkTasks = useMemo(
     () => tasksFromLocalData({ projects, workPackages, activities }),
     [projects, workPackages, activities],
@@ -897,6 +904,15 @@ function Dashboard() {
               Projektcontrolling
             </Link>
           </PermissionGate>
+          <ManagementCockpitAccess>
+            <Link
+              to="/managementcockpit"
+              className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Gauge className="size-4" aria-hidden="true" />
+              Managementcockpit
+            </Link>
+          </ManagementCockpitAccess>
           <PermissionGate permission="performance.statement.manage">
             <Link
               to="/leistungsnachweis"
