@@ -342,6 +342,7 @@ describe("L2 P2 — Datenzustände und Teilausfälle", () => {
     const signals: AvkkCustomerSignal[] = [
       { systemhouseId: SH, customerId: KB, highOrCritical: 2 },
       { systemhouseId: SH, customerId: KA, highOrCritical: 5 },
+      { systemhouseId: SH_FOREIGN, customerId: KB, highOrCritical: 7 },
     ];
     const result = await run(
       {},
@@ -353,6 +354,23 @@ describe("L2 P2 — Datenzustände und Teilausfälle", () => {
     expect(result.sources.avkk).toBe("AVAILABLE");
     expect(result.items.map((i) => i.customerId)).toEqual([KB]);
     expect(result.items[0].reasons.find((r) => r.code === "AVKK_HIGH_OR_CRITICAL")?.count).toBe(2);
+    expect(JSON.stringify(result)).not.toContain(SH_FOREIGN);
+  });
+
+  it("AVKK-Providerfehler wird ohne Rohtext als UNAVAILABLE gemeldet", async () => {
+    const result = await run(
+      {},
+      deps({
+        avkk: {
+          listCustomerSignals: async () => {
+            throw new Error("synthetic sensitive provider detail");
+          },
+        },
+      }),
+    );
+    expect(result.sources.avkk).toBe("UNAVAILABLE");
+    expect(result.dataState).toBe("PARTIAL");
+    expect(JSON.stringify(result)).not.toContain("synthetic sensitive");
   });
 });
 
