@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-27 · Dashboard-Version 1.69.0
 
+## 2026-10-27 — Draft-PR 234: Git-Nachweis und Statusabschluss
+
+Draft gegen `main`, kein Merge/Publish. Der geprüfte Stand `a565a21d` wurde über die verbundene GitHub-Git-API übertragen (Shell-Push ohne Anmeldung blockiert), mit identischem Tree lokal übernommen und per `git ls-remote` bestätigt. Security ist erfolgreich; die CI läuft. Git-Hygiene: 0 gemergte Remote-Branches, 8 offene PRs, davon 6 Drafts. Dieser reine Dokuabschluss wird erneut gegatet. P4/integrierte Live-Abnahme und L2-12 bleiben offen.
+
 ## 2026-10-27 — L2 P3: schreibgeschützte Managementcockpit-Route
 
 Der separate Branch `feat/l2-cockpit-p3` basiert exakt auf P2 `1009887`, ohne P2b. `/managementcockpit` ruft `readManagementCockpitFn({ data: {} })` erst innerhalb des aktiven Management-Gates auf. Konto-/Rollenwechsel verwerfen den bisherigen Zustand und verspätete Antworten. Handlungsbedarf steht vor Kennzahlen; Gründe und Quellen zeigen Datenzustände, unbekannte Zähler bleiben unbekannt, technische IDs werden nicht als Namen dargestellt. Keine Beträge, Personenwertung oder Schreibaktionen. Die Links öffnen die bestehende Arbeitspaket-Arbeitssicht bzw. den AVKK-Management-Reiter und Projektcontrolling. Der gemeinsame Seitenkopf kann auf schmalen Bildschirmen schrumpfen, ohne die Navigation abzuschneiden.
