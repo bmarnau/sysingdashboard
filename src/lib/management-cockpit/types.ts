@@ -81,7 +81,7 @@ export interface CockpitInput {
   /** Stichtag `YYYY-MM-DD` (Europe/Berlin), vom Aufrufer gesetzt. */
   asOfDate: string;
   capabilities: CockpitCapabilities;
-  /** Autorisierter Kundenkreis als `systemhouseId:customerId` (aus `myCustomerScopeKey`). */
+  /** Autorisierter Kundenkreis als `systemhouseId:customerId`, gebildet mit `cockpitScopeKey` (nicht `myCustomerScopeKey`, das mit `::` trennt). */
   authorizedCustomers: ReadonlySet<string>;
   controlling: SourceResult<readonly ProjectControllingRow[]>;
   workPackages: SourceResult<readonly WorkPackageWorkViewRow[]>;
