@@ -21,6 +21,7 @@ class Query implements PromiseLike<{ data: Row[] | null; error: { message: strin
   private readonly predicates: Array<(row: Row) => boolean> = [];
   private pageFrom = 0;
   private pageTo = 1;
+  private filterTooLarge = false;
 
   constructor(
     private readonly table: string,
@@ -38,7 +39,12 @@ class Query implements PromiseLike<{ data: Row[] | null; error: { message: strin
   }
 
   in(column: string, values: readonly unknown[]) {
+    this.filterTooLarge ||= values.length > 100;
     this.predicates.push((row) => values.includes(row[column]));
+    return this;
+  }
+
+  order() {
     return this;
   }
 
@@ -59,6 +65,9 @@ class Query implements PromiseLike<{ data: Row[] | null; error: { message: strin
   }
 
   private async materialize() {
+    if (this.filterTooLarge) {
+      return { data: null, error: { message: "synthetic URI filter limit" } };
+    }
     if (this.table === this.errorTable) {
       return { data: null, error: { message: "synthetic sensitive database detail" } };
     }
@@ -200,6 +209,27 @@ describe("L2 P2b — AVKK Supabase server adapter", () => {
     );
   });
 
+  it("bündelt große Subject-ID-Mengen für die abhängigen Abfragen", async () => {
+    const data = fixture();
+    data.avkk_subject = Array.from({ length: 101 }, (_, index) =>
+      subject(
+        `10000000-0000-4000-8000-${String(index + 100).padStart(12, "0")}`,
+        SH,
+        KA,
+        `wp-${index}`,
+      ),
+    );
+    data.avkk_consequence = [];
+    const repository = createSupabaseManagementCockpitAvkkRepository(
+      fakeClient(data),
+      "2026-10-27T08:00:00.000Z",
+    );
+
+    await expect(repository.listCustomerSignals()).resolves.toEqual([
+      { systemhouseId: SH, customerId: KA, highOrCritical: 0 },
+    ]);
+  });
+
   it("bleibt beim User-JWT-Lesepfad ohne Datenbank-Schreiboperation", () => {
     const source = readFileSync(
       resolve(process.cwd(), "src/integrations/supabase/management-cockpit-avkk-adapter.ts"),
@@ -207,5 +237,6 @@ describe("L2 P2b — AVKK Supabase server adapter", () => {
     );
     expect(source).not.toMatch(/service[_-]?role|supabaseAdmin|client\.server/i);
     expect(source).not.toMatch(/\.(insert|update|upsert|delete)\(/);
+    expect(source).toContain('.order("id", { ascending: true })');
   });
 });
