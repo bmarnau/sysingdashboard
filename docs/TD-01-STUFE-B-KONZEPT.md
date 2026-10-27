@@ -1,6 +1,6 @@
 # TD-01 Stufe b – Live-Demo-Mandant auffrischen (Konzept)
 
-Stand: 2026-10-25 · Status: Konzept, Umsetzung nur als Datenaufträge nach ADR-0037 · Voraussetzung: L0c, Kunde-B-Auftrag erledigt
+Stand: 2026-10-26 · Status: Entscheidung getroffen (relativ zu heute), Stufe 0 vorbereitet, Umsetzung nur als Datenaufträge nach ADR-0037 · Voraussetzung: L0c, Kunde-B-Auftrag erledigt
 
 ## 1 Ausgangslage
 
@@ -49,3 +49,17 @@ flowchart LR
 
 - Ist der Zielzustand „wie lokale Demodaten“ oder ein fester Realtermin (z. B. Abnahme Montag)?
 - Darf die Auffrischung auch Kunde A treffen, obwohl dessen Verantwortliche bereits gesetzt sind? (Empfehlung: ja, nur Datumsfelder.)
+
+## 7 Entscheidung (2026-10-26)
+
+- Zielzustand: Die Fälligkeiten im Live-Mandanten laufen relativ zu heute, also wie die lokalen Demodaten (überfällig, heute, künftig). Ein fester Realtermin entfällt.
+- Kunde A wird einbezogen. Verändert werden nur Datumsfelder, keine Status, Zuordnungen oder Verantwortliche.
+- Der Stichtag ist Parameter des Auftrags (R-TB-2). Eine geplante, wiederkehrende Auffrischung ist ein Punkt nach dem Golden Gate.
+- Nächster Schritt: Stufe 0 (nur lesen), Auftragstext in `docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md`. Der schreibende Auftrag entsteht erst aus dem Bericht und braucht zwei Freigaben nach ADR-0037.
+
+## 8 Stand Stufe 0 und Folgerungen (2026-10-26)
+
+- Stufe 0 ausgeführt, Schreibauftrag vorbereitet und lokal getestet: `docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md` Abschnitte 6 bis 8. Wartet auf Freigabe 1.
+- TB-1 bis TB-4: abgedeckt (Versatz je Kunde, erledigte Pakete unverändert, ADR-0037-Ablauf, 0 neue Audit-Zeilen).
+- TB-5 (Kategorien): zurückgestellt, weil der lokale Datensatz 2.2.0 keine Kategorien enthält und der Katalog `workpackage.category` leer ist. Eigener Datenauftrag nach dem Golden Gate.
+- TB-6 (Kiosk „Infrastruktur“): geklärt. Der Bereich stammt aus dem lokalen Kiosk-Demodatensatz des Geräts. Kein Datenauftrag; die Korrektur steht in 1.69.0 und wirkt nach dem Publish.
