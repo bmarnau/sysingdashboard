@@ -9,7 +9,23 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-26 · Dashboard-Version 1.69.0
+Stand: 2026-10-27 · Dashboard-Version 1.69.0
+
+## 2026-10-27 — Draft-PR 233: Git-Nachweis und Statusabschluss
+
+Draft gegen `main`, kein Merge/Publish. Der geprüfte Stand `8d7033fa` wurde über die verbundene GitHub-Git-API übertragen (Shell-Push ohne Anmeldung blockiert), mit identischem Tree lokal übernommen und per `git ls-remote` bestätigt. Security ist erfolgreich; die CI läuft. Git-Hygiene: 0 gemergte Remote-Branches, 8 offene PRs, davon 6 Drafts. Dieser reine Dokuabschluss wird erneut gegatet. P4/integrierte Live-Abnahme und L2-12 bleiben offen.
+
+## 2026-10-27 — P2b Review: Datenzustände abgesichert
+
+Draft-PR #233 bleibt ungemergt. CI #1556 und Security #1554 sind für `5853d585` grün. Im unabhängigen Review wurden zwei Datenzustandslücken belegt: gelesene Legacy-Dossiers ohne Kundenzuordnung und aktuelle Konsequenzen ohne belastbaren Schweregrad-Rang konnten als leer bzw. Null erscheinen. Vier neue RED-Tests reproduzierten dies. Der Adapter bricht nun generisch ab, sodass die bestehende Serverfunktion `UNAVAILABLE` ausgibt. Backend: 105/105 grün; die bisherigen API-/Zeitzonen-Umgebungsfehler bleiben getrennt dokumentiert. Die Gates laufen für den neuen Review-Head erneut. P3, P4 und L2-12 bleiben eigenständige Schritte.
+
+## 2026-10-27 — L2 P2b: AVKK-Server-Lesepfad
+
+Auf dem separaten, nicht gemergten Branch `feat/l2-cockpit-p2b` liest das Management-Cockpit die AVKK-Signale nun serverseitig mit dem User-JWT-Client; RLS bleibt maßgeblich. Der Adapter führt keine zweite Fachlogik ein, sondern verwendet `buildRows`, `buildManagementSummary` und die bestehenden Ranggrenzen für hohe und kritische Konsequenzen. Die Cockpit-Komposition schneidet das Ergebnis nochmals auf den autorisierten Systemhaus-/Kundenkreis zu. Datenbankfehler werden ohne Rohdetails als `UNAVAILABLE` sichtbar. Es wurden weder Tabellen noch Policies, Rollen oder Berechtigungen verändert.
+
+## 2026-10-27 — L2 P2: Server-Lesepfad des Management-Cockpits
+
+Draft-PR 231 (auf P1 aufgesetzt, nicht gemergt): Der Lesepfad ermittelt Capabilities, Kundenkreis und Stichtag serverseitig, nimmt nur eine leere Anfrage an und meldet Teilausfälle je Quelle als Datenzustand. Beim Test fiel ein Vertragsfehler aus P1 auf: Der Kundenkreis-Schlüssel von `myCustomerScopeKey` (zwei Doppelpunkte) passte nicht zum Composer (ein Doppelpunkt). Der Schlüsselbau liegt jetzt an einer Stelle (`cockpitScopeKey`). Die AVKK-Führungsdaten werden bisher nur im Browser geladen; das Cockpit meldet sie deshalb als UNAVAILABLE, bis ein Server-Lesepfad existiert.
 
 ## 2026-10-26 — TD-01: Freigabe 1 erteilt, Preflight übergeben
 
