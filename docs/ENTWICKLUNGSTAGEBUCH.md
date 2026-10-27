@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-27 · Dashboard-Version 1.69.0
 
+## 2026-10-27 — TD-01 verschoben auf 2026-10-28
+
+Der Ein-Prompt-Auftrag an Work scheiterte um 16:01 MEZ am Zugriff auf das Zielprojekt (MCP-Fehler -32600). Es wurde nichts gelesen oder geschrieben. Der Nutzer verschob den Lauf auf den 28.10.; Stichtag, Schreibblock, Rückbau und Prompt wurden umgestellt und lokal erneut getestet. Parallel liegen P2b (Draft-PR 233) und P3 (Draft-PR 234) vor, beide mit grüner CI und nicht gemergt.
+
 ## 2026-10-27 — L2 P2 und Planungsabgleich
 
 L2 P2 (Server-Lesepfad des Management-Cockpits) liegt als Draft-PR 231 vor, nicht gemergt. Beim Test fiel ein Vertragsfehler aus P1 auf: Der Kundenkreis-Schlüssel von `myCustomerScopeKey` (zwei Doppelpunkte) passte nicht zum Composer (ein Doppelpunkt). Der Schlüsselbau liegt jetzt an einer Stelle (`cockpitScopeKey`). Die AVKK-Führungsdaten werden bisher nur im Browser geladen; das Cockpit meldet sie deshalb als UNAVAILABLE (Annahme: eigener Schnitt P2b).

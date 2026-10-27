@@ -1,6 +1,6 @@
 # Datenauftrag TD-01 Stufe b: Fälligkeiten im Live-Demo-Mandanten auffrischen (Stufe 0, read-only)
 
-Stand: 2026-10-26. Grundlage: `docs/ADR/0037-kontrollierte-datenauftraege.md`, `docs/TD-01-STUFE-B-KONZEPT.md` (Abschnitt 7). Status: **Stufe 0 ausgeführt (Work, 2026-10-26, 19:58 MEZ, nur lesen). Freigabe 1 erteilt (Nutzer, 2026-10-26, 20:36 MEZ): Umfang mit Tätigkeiten (61 Änderungen). Ausführung am 2026-10-27, daher Stichtag 2026-10-27. Preflight ausstehend, Freigabe 2 (GO) ausstehend. Nichts geschrieben.**
+Stand: 2026-10-26. Grundlage: `docs/ADR/0037-kontrollierte-datenauftraege.md`, `docs/TD-01-STUFE-B-KONZEPT.md` (Abschnitt 7). Status: **Stufe 0 ausgeführt (Work, 2026-10-26, 19:58 MEZ, nur lesen). Freigabe 1 erteilt (Nutzer, 2026-10-26, 20:36 MEZ): Umfang mit Tätigkeiten (61 Änderungen). Ausführung auf 2026-10-28 verschoben (am 2026-10-27 wies Work den Zugriff auf das Zielprojekt ab, nichts geschrieben), daher Stichtag 2026-10-28. Preflight ausstehend, Freigabe 2 (GO) ausstehend. Nichts geschrieben.**
 
 ## 1 Ziel
 
@@ -224,7 +224,7 @@ UNION ALL SELECT '6 Taetigkeiten des Auftrags mit abweichendem Wert (Anzahl)',
 
 ### Schreiben (nur nach ausdrücklichem „GO“ des Nutzers, Freigabe 2)
 
-Der Stichtag `s` ist ein Parameter. Der Stichtag ist auf 2026-10-27 gesetzt (Ausführung am 2026-10-27, Entscheidung des Nutzers 2026-10-26). Wird der Auftrag an einem anderen Tag als dem 2026-10-27 ausgeführt, muss `s` auf den Ausführungstag gesetzt und der Auftrag neu freigegeben werden. Die alten Werte ändern sich nach dem ersten Lauf; ein zweiter Lauf mit demselben Block bricht deshalb mit Ausnahme ab (Schutz gegen Doppelausführung).
+Der Stichtag `s` ist ein Parameter. Der Stichtag ist auf 2026-10-28 gesetzt (Ausführung am 2026-10-28; der Versuch am 2026-10-27 scheiterte am Zugriff von Work, Entscheidung des Nutzers 2026-10-27). Wird der Auftrag an einem anderen Tag als dem 2026-10-28 ausgeführt, muss `s` auf den Ausführungstag gesetzt und der Auftrag neu freigegeben werden. Die alten Werte ändern sich nach dem ersten Lauf; ein zweiter Lauf mit demselben Block bricht deshalb mit Ausnahme ab (Schutz gegen Doppelausführung).
 
 ```sql
 -- Datenauftrag TD-01 Stufe b: Fälligkeiten und Tätigkeitsdaten auffrischen. Eine Transaktion (DO-Block), ADR-0037.
@@ -234,7 +234,7 @@ DECLARE
   sh constant uuid := '00000000-0000-4000-8000-0000000000d1';
   ka constant uuid := '00000000-0000-4000-8000-0000000000d2';
   kb constant uuid := '00000000-0000-4000-8000-0000000000d3';
-  s  constant date := DATE '2026-10-27'; -- Stichtag (Parameter)
+  s  constant date := DATE '2026-10-28'; -- Stichtag (Parameter)
 BEGIN
   -- Ausgangslage (bricht bei Abweichung ab)
   SELECT count(*) INTO n FROM public.audit_log;
@@ -347,10 +347,16 @@ Postflight TD-01 Stufe b (nur lesen):
 2. shared_activity_projection: activity_date der 47 Zeilen gleich Stichtag plus Versatz. Soll 47 von 47.
 3. Die 4 erledigten Pakete und die 2 Pakete ohne Faelligkeit unveraendert.
 4. audit_log Gesamtzahl. Soll 329.
-5. Faelligkeitsverteilung je Kunde nach dem Lauf (ueberfaellig, heute, naechste 7 Tage, spaeter, ohne). Erwartet bei Stichtag 2026-10-27 (Ansicht am 2026-10-27):
+5. Faelligkeitsverteilung je Kunde nach dem Lauf (ueberfaellig, heute, naechste 7 Tage, spaeter, ohne). Erwartet bei Stichtag 2026-10-28 (Ansicht am 2026-10-28):
    Kunde A: ueberfaellig 3 (offen), heute 1; Kunde B: ueberfaellig 2, heute 1.
 6. Bericht Soll/Ist, Fehler im Wortlaut.
 ```
+
+### Ein-Prompt-Ablauf für Work
+
+Der Nutzer wünschte einen einzigen Prompt. Er enthält, strikt nacheinander: Schritt 0 (Datum in Europe/Berlin muss der Stichtag sein, sonst STOPP), Schritt 1 (Preflight, nur lesen), Schritt 2 (Fortsetzung nur, wenn alle sechs Zeilen genau stimmen: 329, 14, 47, 4, keine, 0; sonst STOPP ohne Schreiben), Schritt 3 (Schreibblock einmalig, bei Fehler kein Wiederholen und kein Rückbau), Schritt 4 (Postflight mit Soll/Ist), Abschlussbericht. Das Absenden des Prompts gilt als Freigabe 2 unter der Bedingung aus Schritt 2. Der Rückbau läuft nie von selbst, nur auf ausdrückliches Kommando.
+
+Versuch am 2026-10-27, 16:01 MEZ: Work meldete BLOCKED (MCP-Fehler -32600, keine Berechtigung für das Zielprojekt). Schritt 0 und 1 wurden nicht ausgeführt, es wurde nichts gelesen oder geschrieben. Der Nutzer verschob den Lauf auf den 2026-10-28; Stichtag, Schreibblock, Rückbau und Prompt wurden umgestellt und lokal erneut getestet (grün).
 
 ### Rückbau (nur auf ausdrückliches Kommando)
 
@@ -362,7 +368,7 @@ DECLARE
   sh constant uuid := '00000000-0000-4000-8000-0000000000d1';
   ka constant uuid := '00000000-0000-4000-8000-0000000000d2';
   kb constant uuid := '00000000-0000-4000-8000-0000000000d3';
-  s  constant date := DATE '2026-10-27'; -- Stichtag (Parameter)
+  s  constant date := DATE '2026-10-28'; -- Stichtag (Parameter)
 BEGIN
   WITH v(cust, sid, old_due, off) AS (VALUES
       (ka,'demo-wp-frei-vertrieb',DATE '2026-10-20',-4),
@@ -443,7 +449,7 @@ BEGIN
 END $$;
 ```
 
-### Vorab-Test (2026-10-26, wiederholt mit Stichtag 2026-10-27)
+### Vorab-Test (2026-10-26, wiederholt mit Stichtag 2026-10-28)
 
 Beide Blöcke wurden gegen eine lokale PostgreSQL-16-Instanz mit nachgebautem Minimalschema ausgeführt (beide Projektionstabellen mit den Live-Werten aus dem Stufe-0-Bericht, `audit_log` mit 329 Zeilen).
 
@@ -453,11 +459,11 @@ Beide Blöcke wurden gegen eine lokale PostgreSQL-16-Instanz mit nachgebautem Mi
 | Zweiter Lauf | bricht mit Ausnahme ab („erwartet 14, geändert 0“), nichts geändert                                   |
 | Rückbau      | alle ursprünglichen Werte wiederhergestellt (Tätigkeiten 2026-09-01 bis 2026-10-24), Audit 329        |
 
-Der Lauf wurde nach der Umstellung des Stichtags auf 2026-10-27 wiederholt (Preflight vorher 329/14/47/4/keine/0, erster Lauf, zweiter Lauf bricht mit „erwartet 14, geändert 0“ ab, Verteilung Kunde A 3/1/0/4 und Kunde B 2/1/1/2, Rückbau stellt den Ausgangszustand her). Der Preflight selbst hängt nicht vom Stichtag ab.
+Der Lauf wurde nach der Umstellung des Stichtags auf 2026-10-28 wiederholt (Preflight vorher 329/14/47/4/keine/0, erster Lauf, zweiter Lauf bricht mit „erwartet 14, geändert 0“ ab, Verteilung Kunde A 3/1/0/4 und Kunde B 2/1/1/2, Rückbau stellt den Ausgangszustand her). Der Preflight selbst hängt nicht vom Stichtag ab.
 
 Grenzen: Das Minimalschema enthält nicht die echten Trigger, Fremdschlüssel und Berechtigungen. Der Preflight muss sie in der echten Datenbank bestätigen.
 
-## 8 Erwartetes Ergebnis nach dem Lauf (Stichtag 2026-10-27, Ansicht am Ausführungstag)
+## 8 Erwartetes Ergebnis nach dem Lauf (Stichtag 2026-10-28, Ansicht am Ausführungstag)
 
 | Kunde | Überfällig (offen)                                    | Heute                            | Nächste 7 Tage     | Später                                         |
 | ----- | ----------------------------------------------------- | -------------------------------- | ------------------ | ---------------------------------------------- |
