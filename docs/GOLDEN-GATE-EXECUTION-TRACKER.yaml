@@ -562,6 +562,14 @@ risiken:
 fortschritt:
   - datum: 2026-10-28
     ereignis: >-
+      L2-Integrationsprobe (lokal, nicht gepusht): Reihenfolge P1, P2, P2b, P3 ohne Code-Konflikte; nur Dokumentationskonflikte.
+      8 Testdateien mit 88 Tests grün, tsc fehlerfrei, eslint 0 Fehler, Prettier ok; AVKK-Adapter im integrierten Stand verdrahtet.
+      Lovable-Nachfass zu R-07 vorbereitet (Antwort des Mitarbeiters seit 2026-10-27 überfällig); Versand durch den Nutzer.
+      Drafts #226, #231, #233, #234 bleiben unverändert und werden nur auf ausdrückliche Anweisung gemergt.
+    beleg: >-
+      Lokaler Probelauf 2026-10-28 (Branch tmp/l2-integrationsprobe, gelöscht), PR 226, 231, 233, 234
+  - datum: 2026-10-28
+    ereignis: >-
       Planung nach TD-01 aktualisiert: Paket TD-01 auf done (Stufe a und b belegt, TB-5 ausgegliedert), base_main_sha und Hash im Status auf 13c7ddc,
       nächste Schritte im Wiederanlaufpunkt (Sichtprüfung TD-01, Antwort zu R-07, danach Publish und Test N1 bis N5; L2-Drafts in der Reihenfolge 226, 231, 233, 234 mit Integrationsabnahme).
       Aufgeräumt: 0 gemergte Remote-Branches, 0 gemergte lokale Branches.

@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-28 · Dashboard-Version 1.69.0
 
+## 2026-10-28 — L2-Integrationsprobe und Lovable-Nachfass
+
+Lokale Probe (nicht gepusht): P1, P2, P2b, P3 lassen sich in dieser Reihenfolge ohne Code-Konflikte zusammenführen, es treten nur Dokumentationskonflikte auf. 88 Tests, tsc, eslint und Prettier ohne Befund; der AVKK-Adapter ist im integrierten Stand verdrahtet. Die Drafts bleiben unverändert. Die Antwort des Lovable-Teams zu R-07 ist überfällig; der Nachfass wird vom Nutzer versendet. Publish bleibt No-Go.
+
 ## 2026-10-28 — Planung nach TD-01 aktualisiert
 
 Das Paket TD-01 steht im Tracker auf done (Stufe a und b belegt, Kategorien TB-5 als eigener Datenauftrag ausgegliedert). Hash im Status und `base_main_sha` sind auf den Stand nach PR 232 gesetzt, die nächsten Schritte stehen im Wiederanlaufpunkt. Aufgeräumt: keine gemergten Branches mehr, weder remote noch lokal.
