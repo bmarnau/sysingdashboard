@@ -15,6 +15,14 @@ Stand: 2026-10-28 · Dashboard-Version 1.69.0
 
 Von 13 Kandidaten mit gemergtem PR wurden 11 Remote-Branches gelöscht, deren Inhalt nachweislich in `main` steht; die Liste mit Kurz-SHA steht in `docs/GIT-AUFRAEUMEN.md`. `aqgs-pilot` bleibt als Evidenz, ein Branch mit nachträglichem Commit wird gesondert geprüft. Nichts wurde gemergt.
 
+## 2026-10-28 — S0-05: Zeitzonen in Zeitraumberechnung
+
+Die Tests zu `time-period` waren nur unter UTC grün. Die Testdatei formatiert lokale Kalendertage jetzt ohne `toISOString`. Im Produkt werden Datumstexte `YYYY-MM-DD` in `sumActivitiesInRange` und `buildChartBuckets` als lokaler Kalendertag ausgewertet; Zeitstempel mit Uhrzeit oder Zone bleiben unverändert. Dabei fiel auf, dass unter deutscher Zeit im Monatsdiagramm die Aktivitäten des letzten Monatstags fehlten; ein Regressionstest sichert das ab. Ergebnis: 21 von 21 in UTC, Europe/Berlin und America/New_York. PR offen, nicht gemergt.
+
+## 2026-10-28 — Auftrag S0-05 und Korrektur zum MVP
+
+Für S0-05 (Zeitzonen-Tests) liegt ein Auftrag für lokalen Claude Code vor (`docs/AUFTRAG-S0-05-ZEITZONEN-TESTS.md`): Unter Europe/Berlin scheitern vier Tests testseitig, unter America/New_York zwei produktseitig. Außerdem wurde der Stand zum MVP korrigiert: Die formale Baseline gilt seit PR #60 (2026-08-24); die frühere Angabe "Abnahme offen" stützte sich auf den überholten Zwischenstand vom 2026-08-21.
+
 ## 2026-10-28 — Planungsrunde und Werkzeugwechsel
 
 Der Anzeigename des Golden Gate lautet jetzt "Interne Freigabe 1.0"; IDs, Dateinamen und Issue bleiben unverändert. Die Planungsseite nennt die Ziele beider Meilensteine und was danach zur Verfügung steht.

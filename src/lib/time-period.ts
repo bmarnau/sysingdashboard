@@ -28,6 +28,19 @@ function toISODate(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+/**
+ * Wertet Aktivitätsdaten aus. Ein reiner Datumstext `YYYY-MM-DD` gilt als lokaler
+ * Kalendertag (lokale Mitternacht); `new Date("YYYY-MM-DD")` würde UTC-Mitternacht
+ * liefern und außerhalb von UTC den Tag verschieben. Zeitstempel mit Uhrzeit oder
+ * Zonenangabe werden unverändert mit `new Date` geparst.
+ */
+function parseActivityDate(value: string): Date {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  const month = m ? Number(m[2]) : 0;
+  if (m && month >= 1 && month <= 12) return new Date(Number(m[1]), month - 1, Number(m[3]));
+  return new Date(value); // auch ungültige Texte bleiben ungültig (NaN)
+}
+
 function sameDay(a: Date, b: Date) {
   return (
     a.getFullYear() === b.getFullYear() &&
@@ -268,7 +281,7 @@ export function sumActivitiesInRange(activities: Activity[], range: PeriodRange)
   let billable = 0;
   for (const a of activities) {
     if (!a.date) continue;
-    const d = new Date(a.date);
+    const d = parseActivityDate(a.date);
     if (Number.isNaN(d.getTime())) continue;
     if (d < range.start || d >= range.end) continue;
     const dur = Number(a.duration) || 0;
@@ -302,7 +315,7 @@ export function buildChartBuckets(
     }));
     for (const a of activities) {
       if (!a.date) continue;
-      const d = new Date(a.date);
+      const d = parseActivityDate(a.date);
       if (Number.isNaN(d.getTime())) continue;
       const diff = Math.floor((+d - +start) / 86400000);
       if (diff < 0 || diff > 4) continue;
@@ -328,7 +341,7 @@ export function buildChartBuckets(
   }
   for (const a of activities) {
     if (!a.date) continue;
-    const d = new Date(a.date);
+    const d = parseActivityDate(a.date);
     if (Number.isNaN(d.getTime())) continue;
     if (d < first || d > last) continue;
     const key = `${getISOWeekYear(d)}-W${String(getISOWeek(d)).padStart(2, "0")}`;

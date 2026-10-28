@@ -10,8 +10,8 @@
 
 schema_version: 1
 document: golden-gate-execution-tracker
-stand: 2026-10-27
-base_main_sha: 13c7ddc6c0f2ac3a9cfd971f9c39732400254873
+stand: 2026-10-28
+base_main_sha: b5ffc5fba2ce1d6b7f0d2c018edb4661b8c3af2e
 repository: bmarnau/sysingdashboard
 tracker_issue: 175
 reifegrad: Entwurf
@@ -124,8 +124,10 @@ sprint_0:
     - id: S0-05
       titel: Zeitzonen-abhängige Tests in time-period.test.ts beheben (TEST-TZ)
       prioritaet: P3
-      status: planned
-      hinweis: 4 Fehlschläge außerhalb UTC, identisch auf fd8aa71; unabhängig von S0-01/02.
+      status: in_progress
+      hinweis: >-
+        Umgesetzt auf Branch fix/s0-05-time-period-tz (PR offen, nicht gemergt). Tests formatieren lokale Kalendertage ohne toISOString;
+        sumActivitiesInRange und buildChartBuckets werten Datumstexte YYYY-MM-DD als lokalen Kalendertag aus. Abschluss mit Merge auf Anweisung des Owners.
       auftrag: docs/AUFTRAG-S0-05-ZEITZONEN-TESTS.md (Berlin 4 Fehlschläge testseitig, New York 2 Fehlschläge produktseitig, reproduziert 2026-10-28)
 
 # ---------------------------------------------------------------------------
@@ -603,6 +605,19 @@ fortschritt:
       zum Merge-Commit einzeln gelöscht; aqgs-pilot (GA-3) und docs/tracker-lovable-broker-ruecksetzung (Commit 28bcd15b nach Merge von PR 219) bleiben.
       Remote-Branches 88 auf 77; git:hygiene 0 gemergte Remote-Branches, 9 offene PRs, 6 Drafts.
     beleg: docs/GIT-AUFRAEUMEN.md Abschnitt 7
+  - datum: 2026-10-28
+    ereignis: >-
+      S0-05 umgesetzt (Claude Code, ADR-0039): Testdatei mit lokalem Formatierer localDay statt toISOString; in src/lib/time-period.ts neue Hilfsfunktion parseActivityDate
+      (YYYY-MM-DD als lokaler Kalendertag, Zeitstempel und ungültige Texte unverändert über new Date). Zusatzbefund: unter Europe/Berlin fielen im Monatsdiagramm Aktivitäten
+      des letzten Monatstags heraus; Regressionstest should_includeLastDayOfMonth_when_monthMode ergänzt (schlägt gegen alten Code fehl).
+      Ergebnis time-period.test.ts: UTC, Europe/Berlin, America/New_York und Asia/Tokyo je 21 von 21 (vorher Berlin 4, New York 2 Fehlschläge). $env:TZ wirkt unter Windows.
+      Vollsuite Europe/Berlin: 1156 bestanden, 2 Fehlschläge in BackendAdminDialog.test.tsx (Lastabhängig, isoliert 6 von 6 grün, kein Bezug zu time-period); tsc und eslint ohne Befund.
+    beleg: Branch fix/s0-05-time-period-tz, lokale Testläufe 2026-10-28 (PowerShell, $env:TZ)
+  - datum: 2026-10-28
+    ereignis: >-
+      Stand-Abgleich: Tracker-Stand, base_main_sha und main-Verweis in CURRENT-STATUS auf 23a8f3c nachgezogen (nach PR 243). Tagebuch um den Eintrag zu S0-05 und zur MVP-Korrektur ergänzt.
+      Für Nutzer sichtbar hat sich seit 2026-10-26 nichts am Produkt geändert; CHANGELOG und Hilfe bleiben unverändert (Version 1.69.0).
+    beleg: git log main (23a8f3c), docs:check und docs:project grün
   - datum: 2026-10-28
     ereignis: >-
       Anzeigename: "Golden Gate" heißt in der Anzeige (Planungsseite) und in der Kommunikation künftig "Interne Freigabe 1.0". IDs (GG-01 bis GG-09), Dateinamen, Tracker und Issue 175
