@@ -10,8 +10,8 @@
 
 schema_version: 1
 document: golden-gate-execution-tracker
-stand: 2026-10-27
-base_main_sha: 13c7ddc6c0f2ac3a9cfd971f9c39732400254873
+stand: 2026-10-28
+base_main_sha: 97d292c3127aa422483421722c42aed2fd9421f7
 repository: bmarnau/sysingdashboard
 tracker_issue: 175
 reifegrad: Entwurf
@@ -607,6 +607,11 @@ fortschritt:
       Ergebnis time-period.test.ts: UTC, Europe/Berlin, America/New_York und Asia/Tokyo je 21 von 21 (vorher Berlin 4, New York 2 Fehlschläge). $env:TZ wirkt unter Windows.
       Vollsuite Europe/Berlin: 1156 bestanden, 2 Fehlschläge in BackendAdminDialog.test.tsx (Lastabhängig, isoliert 6 von 6 grün, kein Bezug zu time-period); tsc und eslint ohne Befund.
     beleg: Branch fix/s0-05-time-period-tz, lokale Testläufe 2026-10-28 (PowerShell, $env:TZ)
+  - datum: 2026-10-28
+    ereignis: >-
+      Stand-Abgleich: Tracker-Stand, base_main_sha und main-Verweis in CURRENT-STATUS auf 23a8f3c nachgezogen (nach PR 243). Tagebuch um den Eintrag zu S0-05 und zur MVP-Korrektur ergänzt.
+      Für Nutzer sichtbar hat sich seit 2026-10-26 nichts am Produkt geändert; CHANGELOG und Hilfe bleiben unverändert (Version 1.69.0).
+    beleg: git log main (23a8f3c), docs:check und docs:project grün
   - datum: 2026-10-28
     ereignis: >-
       Anzeigename: "Golden Gate" heißt in der Anzeige (Planungsseite) und in der Kommunikation künftig "Interne Freigabe 1.0". IDs (GG-01 bis GG-09), Dateinamen, Tracker und Issue 175
