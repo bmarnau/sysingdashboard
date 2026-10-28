@@ -562,6 +562,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-28
     ereignis: >-
+      R-07: Seit der Eingangsbestätigung vom 2026-10-26 keine inhaltliche Antwort von Lovable (Nutzer bestätigt, Stand 2026-10-28 morgens;
+      Git zeigt keine neue Lovable-Aktivität seit 2026-10-24, Broker-Abweichung in client.ts unverändert). Nachfass per E-Mail am 2026-10-28 durch den Nutzer versendet,
+      Antwort bis 2026-10-29 erbeten. Publish bleibt No-Go.
+    beleg: Nutzerbestätigung 2026-10-28 05:53, GitHub-API (lovable-sync-1792847779 vom 2026-10-24)
+  - datum: 2026-10-28
+    ereignis: >-
       L2-Integrationsprobe (lokal, nicht gepusht): Reihenfolge P1, P2, P2b, P3 ohne Code-Konflikte; nur Dokumentationskonflikte.
       8 Testdateien mit 88 Tests grün, tsc fehlerfrei, eslint 0 Fehler, Prettier ok; AVKK-Adapter im integrierten Stand verdrahtet.
       Lovable-Nachfass zu R-07 vorbereitet (Antwort des Mitarbeiters seit 2026-10-27 überfällig); Versand durch den Nutzer.
