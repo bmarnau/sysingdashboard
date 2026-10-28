@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-28 · Dashboard-Version 1.69.0
 
+## 2026-10-28 — Meilensteine und Schätzung geklärt
+
+Der Owner hat MVP, Golden Gate und BSF abgegrenzt (ADR-0038, Entwurf): MVP fachlich erreicht, Golden Gate als Release-Meilenstein, BSF mit Cockpit, QS-06 und BSF-06; Azure/Entra und weiterer Reporting-Ausbau liegen nach dem BSF, L7 bleibt im Golden Gate. Die Schätzung wurde bottom-up hergeleitet: bis Golden Gate 9 Pakete, 26 bis 43 Arbeitstage; bis BSF fehlen Schätzfelder. Lovable hat die Nachfass-Mail mit dem offenen Ticket zusammengeführt, ohne inhaltlich zu antworten.
+
 ## 2026-10-28 — L2-Integrationsprobe und Lovable-Nachfass
 
 Lokale Probe (nicht gepusht): P1, P2, P2b, P3 lassen sich in dieser Reihenfolge ohne Code-Konflikte zusammenführen, es treten nur Dokumentationskonflikte auf. 88 Tests, tsc, eslint und Prettier ohne Befund; der AVKK-Adapter ist im integrierten Stand verdrahtet. Die Drafts bleiben unverändert. Die Antwort des Lovable-Teams zu R-07 ist überfällig; der Nachfass wird vom Nutzer versendet. Publish bleibt No-Go.

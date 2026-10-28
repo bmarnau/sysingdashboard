@@ -6,7 +6,7 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 
 ## Index
 
-Vollständig und lückenlos ADR-0001 bis ADR-0037. Alle ADRs liegen ausschließlich
+Vollständig und lückenlos ADR-0001 bis ADR-0038. Alle ADRs liegen ausschließlich
 in diesem Verzeichnis (`docs/ADR/`); das frühere zweite Verzeichnis `docs/adr/`
 wurde in Sprint 09B aufgelöst, weil zwei Verzeichnisse mit gleichem Namen unter
 Windows kollidieren.
@@ -50,6 +50,7 @@ Windows kollidieren.
 | 0035 | [Kontrollierter Work-/Lovable-Connector-Fallback](./0035-kontrollierter-lovable-connector-fallback.md)                       | Accepted               |
 | 0036 | [QS-01 Konto- und Berechtigungsschutz](./0036-qs01-konto-und-berechtigungsschutz.md)                                         | Proposed               |
 | 0037 | [Kontrollierte Datenaufträge über den Work-/Lovable-Connector](./0037-kontrollierte-datenauftraege.md)                       | Accepted               |
+| 0038 | [BSF-Umfang und Meilensteindefinition (MVP, Golden Gate, BSF)](./0038-bsf-umfang-und-meilensteine.md)                        | Proposed               |
 
 Stand der Prüfung: 2026-10-13. ADR-0031 ist in BSF-02B umgesetzt.
 ADR-0032 konkretisiert ADR-0030 für den minimalen gemeinsamen Mehrbenutzer-Read-Pfad,
