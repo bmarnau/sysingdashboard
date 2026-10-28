@@ -126,3 +126,26 @@ Nicht löschen, nicht mergen. Spalte „Eigen“: Patches, die nicht in `main` e
 | `lovable-sync-1792841478`        | `2b6efe9` | 2026-10-24 | 38          | 1     |
 | `lovable-sync-1792847299`        | `1faabb2` | 2026-10-24 | 38          | 3     |
 | `lovable-sync-1792847779`        | `d510e85` | 2026-10-24 | 35          | 1     |
+
+## 7 Durchführung 2026-10-28 (lokal, Claude Code, Freigabe des Betreibers 2026-10-28)
+
+Prüfung je Kandidat: kein offener PR (Head oder Basis), `git rev-list --count origin/main..origin/<branch>`, PR-Nummer und Merge-Commit.
+Alle 13 Kandidaten hatten Commits außerhalb von `main` (Squash-Merges). Gelöscht wurden nur die 11 Fälle, deren Dateistand an der Branch-Spitze dem Merge-Commit des PR entspricht (Merge-Commit in `main`, bei gestapelten PRs über den Folge-PR), nach ausdrücklicher Freigabe. Gelöscht wurde einzeln per `git push --force-with-lease=<sha> origin :<branch>`.
+
+| Branch                                             | Kurz-SHA   | Commits nicht in main | PR (Merge-Commit)            | Entscheidung                        |
+| -------------------------------------------------- | ---------- | --------------------- | ---------------------------- | ----------------------------------- |
+| `chore/repository-line-endings`                    | `ed1eac46` | 1                     | #158 (`a1bbaf1f`)            | gelöscht                            |
+| `docs/bsf-03e-main-baseline-2026-09-22`            | `2c6ec7f3` | 6                     | #151 (`00dc0637`)            | gelöscht                            |
+| `docs/bsf03e-p5-closure-2026-10-15`                | `c15eb3f0` | 1                     | #186 (`7affeeb6`), dann #187 | gelöscht                            |
+| `feat/bsf-03b-performance-statement`               | `92712927` | 157                   | #149 (`12b37be8`)            | gelöscht                            |
+| `fix/bsf03b-e2e-reference-date`                    | `b207f238` | 1                     | #152 (`1ca8f093`)            | gelöscht                            |
+| `governance/lovable-connector-fallback-2026-10-13` | `dfa6cfed` | 7                     | #180, #182 (`e6c86a29`)      | gelöscht                            |
+| `restack/bsf-03e-p3b-docs-2026-10-14`              | `fa1d3aa4` | 1                     | #184 (`430e7737`), dann #185 | gelöscht                            |
+| `signed/bsf-03e-p3b-work-view-2026-10-15`          | `430e7737` | 1                     | #185 (`008c798a`)            | gelöscht                            |
+| `signed/bsf-07-p0-contract-2026-10-16`             | `c83b33ce` | 2                     | #190 (`fd8aa71b`)            | gelöscht                            |
+| `signed/bsf03e-p5-closure-2026-10-15`              | `7affeeb6` | 1                     | #187 (`601874ec`)            | gelöscht                            |
+| `signed/gg-delivery-plan-2026-10-16`               | `d4708c62` | 1                     | #189 (`fb55000c`)            | gelöscht                            |
+| `aqgs-pilot`                                       | `d9ec5101` | 6                     | #146 (`c4c225f6`)            | erhalten (GA-3, Evidenz)            |
+| `docs/tracker-lovable-broker-ruecksetzung`         | `28bcd15b` | 1                     | #219 (`22af8935`)            | erhalten, Commit nach Merge, prüfen |
+
+Lokal: Der gemergte Branch `docs/stand-2026-10-26-merge-abschluss` ist im Worktree `sysingdashboard-gg-docs` ausgecheckt und blieb erhalten (`git branch -d` nicht möglich). Remote-Branches: 88 vorher, 77 nachher.

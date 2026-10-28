@@ -11,7 +11,7 @@
 schema_version: 1
 document: golden-gate-execution-tracker
 stand: 2026-10-28
-base_main_sha: 97d292c3127aa422483421722c42aed2fd9421f7
+base_main_sha: b5ffc5fba2ce1d6b7f0d2c018edb4661b8c3af2e
 repository: bmarnau/sysingdashboard
 tracker_issue: 175
 reifegrad: Entwurf
@@ -599,6 +599,12 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-28
+    ereignis: >-
+      Git aufgeräumt (Freigabe des Betreibers): 13 Kandidaten geprüft, alle mit Commits außerhalb von main (Squash-Merges). 11 Branches mit identischem Dateistand
+      zum Merge-Commit einzeln gelöscht; aqgs-pilot (GA-3) und docs/tracker-lovable-broker-ruecksetzung (Commit 28bcd15b nach Merge von PR 219) bleiben.
+      Remote-Branches 88 auf 77; git:hygiene 0 gemergte Remote-Branches, 9 offene PRs, 6 Drafts.
+    beleg: docs/GIT-AUFRAEUMEN.md Abschnitt 7
   - datum: 2026-10-28
     ereignis: >-
       S0-05 umgesetzt (Claude Code, ADR-0039): Testdatei mit lokalem Formatierer localDay statt toISOString; in src/lib/time-period.ts neue Hilfsfunktion parseActivityDate
