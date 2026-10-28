@@ -574,8 +574,8 @@ Grenzen: Das Minimalschema enthält nicht die echten Trigger, Fremdschlüssel un
 
 | Kunde | Überfällig (offen)                                    | Heute                            | Nächste 7 Tage     | Später                                         |
 | ----- | ----------------------------------------------------- | -------------------------------- | ------------------ | ---------------------------------------------- |
-| A     | 3 (Angebot, Berechtigungen, Firewall)                 | 1 (Anwenderschulung Pilotgruppe) | 0                  | 4 (Switch-Rollout 04.11. bis Netzdoku)         |
-| B     | 2 (Wiederherstellungstest, Migration Produktivserver) | 1 (Pflege Administrationskonten) | 1 (Cluster 29.10.) | 2 (Storage 05.11., Wiederanlaufkonzept 09.11.) |
+| A     | 3 (Angebot, Berechtigungen, Firewall)                 | 1 (Anwenderschulung Pilotgruppe) | 0                  | 4 (Switch-Rollout 06.11. bis Netzdoku)         |
+| B     | 2 (Wiederherstellungstest, Migration Produktivserver) | 1 (Pflege Administrationskonten) | 1 (Cluster 31.10.) | 2 (Storage 07.11., Wiederanlaufkonzept 11.11.) |
 
 ## 9 Ergebnis des Laufs (2026-10-28)
 
@@ -599,3 +599,24 @@ Ablauf in Einzelschritten durch den Nutzer in der SQL-Konsole des Lovable-Projek
 | Kunde B: überfällig / heute / nächste 7 Tage / später (offen) | 2 / 1 / 1 / 2 | 2 / 1 / 1 / 2 |
 
 Grenzen: Der Beleg ist das Postflight-Ergebnis der Datenbank. Eine Sichtprüfung in der App (Arbeitssicht, Kiosk) steht aus; der Kiosk-Befund TB-6 greift erst nach dem Publish. Die Veröffentlichungszeitpunkte (`published_at`, `source_hash`) wurden bewusst nicht geändert (Risiko R-TB-4). Kategorien (TB-5) bleiben ein eigener Datenauftrag nach dem Golden Gate.
+
+## 10 Sichtprüfung in der App (2026-10-28, 19:25 bis 19:27 Uhr)
+
+Der Nutzer hat die Ansichten als Bernd geprüft und Bildschirmfotos übergeben (Beleg: Sitzung vom 2026-10-28).
+
+| Prüfpunkt                                    | Soll                                  | Ist (App)                                                                     | Ergebnis           |
+| -------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------- | ------------------ |
+| Kunde A, Mengen                              | 3 Projekte, 12 Pakete, 27 Tätigkeiten | 3 / 12 / 27                                                                   | erfüllt            |
+| Arbeitssicht, Datenstand                     | 28.10.2026 (Europe/Berlin)            | 28.10.2026                                                                    | erfüllt            |
+| Arbeitssicht, Pakete gesamt                  | 20 (12 + 8)                           | 20 von 20                                                                     | erfüllt            |
+| Überfällig                                   | 5 (3 + 2)                             | 5                                                                             | erfüllt            |
+| Heute                                        | 2 (Schulung A, Administrationskonten) | 2, beide 28.10.                                                               | erfüllt            |
+| Später (die App kennt keine Gruppe "7 Tage") | 7 (4 + 1 + 2)                         | 7; Cluster 31.10., Switch-Rollout 06.11., Storage 07.11., Wiederanlauf 11.11. | erfüllt (Daten ok) |
+| Verantwortliche und Stellvertretung          | je Paket vorhanden                    | vorhanden; Angebotsunterstützung (Kunde A): "Nicht zugeordnet"                | Befund TB-7, offen |
+
+Hinweise:
+
+- Die App gruppiert nach Überfällig, Heute, Später und Ohne Fälligkeit; eine Gruppe "nächste 7 Tage" gibt es nicht. Der Fall "Cluster in 7 Tagen" erscheint unter "Später".
+- Die Termine in der erwarteten Verteilung (Abschnitt 8) waren zuvor um zwei Tage zu früh angegeben; die Datenbank entspricht dem Schreibblock (Stichtag plus Versatz). Die Tabelle ist korrigiert.
+- Der lokale Datensatz weist Angebotsunterstützung Petra zu; die App zeigt keinen Verantwortlichen. Ursache ungeklärt (mögliche Lücke in der Verantwortungsprojektion bei Kunde A). Kein Datenauftrag ohne Klärung und ohne Freigabe nach ADR-0037.
+- Die Ansicht des Reiters "Arbeitspakete" im Dashboard zeigt weiterhin die lokalen Demodaten des Geräts (Mai-Termine); die Korrektur wirkt erst nach dem Publish.
