@@ -263,3 +263,9 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 - GIT-01 Gemergte Remote-Branches löschen (40 vorbereitet, Lovable-Branches nur nach Rückfrage): `docs/GIT-AUFRAEUMEN.md`. Empfehlung: zusätzlich in GitHub „Automatically delete head branches“ aktivieren.
 - GIT-02: GitHub-Einstellung „Automatically delete head branches“ einschalten (Nutzer, Repository-Einstellungen); danach `git:hygiene --strict` optional in die CI aufnehmen.
 - TD-01 TB-5: Kategorien für Demo-Arbeitspakete (Katalog `workpackage.category` füllen, `category_key` setzen) als eigener Datenauftrag nach dem Golden Gate; der lokale Datensatz enthält keine Kategorien und müsste zuerst erweitert werden.
+
+## Ergänzung 2026-10-28 (ADR-0038, Entwurf)
+
+- Nach dem BSF: Azure-/Entra-Migrationsfähigkeit und weiterer Reporting-Ausbau (L7 Reporting 2 bleibt im Golden Gate).
+- Formale MVP-Abnahme: Datum und Beleg nachtragen.
+- Planungsrunde: Schätzfelder für BSF-04/04A, BSF-DOC-01 bis -03, QS-06, BSF-06 und BSF-FINAL-INTERNAL ergänzen.
