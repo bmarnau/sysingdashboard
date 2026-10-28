@@ -18,10 +18,22 @@ import { makeActivity } from "../fixtures/activities";
  * Fokus: reine Datums-/Sollzeit-Logik. Keine DOM-Abhängigkeit.
  */
 
+/**
+ * Formatiert den lokalen Kalendertag als `YYYY-MM-DD`. Nicht `toISOString`
+ * verwenden: das liefert den UTC-Tag und verschiebt lokale Mitternacht
+ * außerhalb von UTC (z. B. Europe/Berlin) auf den Vortag.
+ */
+function localDay(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 describe("germanHolidays", () => {
   it("should_returnFixedHolidays_when_yearIs2025", () => {
     // Arrange
-    const holidays = germanHolidays(2025).map((d) => d.toISOString().slice(0, 10));
+    const holidays = germanHolidays(2025).map(localDay);
 
     // Assert – bundesweit gültige Feiertage 2025
     expect(holidays).toContain("2025-01-01"); // Neujahr
@@ -37,7 +49,7 @@ describe("germanHolidays", () => {
 
   it("should_computeEasterMonday_when_yearIs2024", () => {
     // Arrange & Act
-    const holidays = germanHolidays(2024).map((d) => d.toISOString().slice(0, 10));
+    const holidays = germanHolidays(2024).map(localDay);
 
     // Assert – Ostermontag 2024 = 1. April
     expect(holidays).toContain("2024-04-01");
@@ -48,7 +60,7 @@ describe("getWorkingDaysOfMonth", () => {
   it("should_excludeWeekendsAndHolidays_when_may2025", () => {
     // Arrange
     const days = getWorkingDaysOfMonth(2025, 4); // Mai
-    const isoDates = days.map((d) => d.toISOString().slice(0, 10));
+    const isoDates = days.map(localDay);
 
     // Assert – 1.5. (Feiertag), 29.5. (Himmelfahrt) und alle Wochenenden fehlen
     expect(isoDates).not.toContain("2025-05-01");
@@ -74,7 +86,7 @@ describe("getWorkingDaysOfMonth", () => {
   });
 
   it("should_excludeChristmasDays_when_december2025", () => {
-    const iso = getWorkingDaysOfMonth(2025, 11).map((d) => d.toISOString().slice(0, 10));
+    const iso = getWorkingDaysOfMonth(2025, 11).map(localDay);
     expect(iso).not.toContain("2025-12-25");
     expect(iso).not.toContain("2025-12-26");
   });
@@ -170,8 +182,8 @@ describe("periodKey round-trip", () => {
     const key = periodKey("month", new Date(2025, 4, 15));
     expect(key).toBe("2025-05");
     const range = getPeriodRangeByKey("month", key);
-    expect(range?.start.toISOString().slice(0, 10)).toBe("2025-05-01");
-    expect(range?.end.toISOString().slice(0, 10)).toBe("2025-06-01");
+    expect(range ? localDay(range.start) : undefined).toBe("2025-05-01");
+    expect(range ? localDay(range.end) : undefined).toBe("2025-06-01");
   });
 
   it("should_recreateRange_when_weekKeyRoundtripped", () => {
@@ -202,5 +214,17 @@ describe("buildChartBuckets", () => {
     );
     expect(buckets.length).toBeGreaterThan(0);
     expect(buckets.every((b) => b.label.startsWith("KW"))).toBe(true);
+  });
+
+  it("should_includeLastDayOfMonth_when_monthMode", () => {
+    // Datumstext ist ein lokaler Kalendertag; östlich von UTC fiel der letzte Monatstag sonst heraus.
+    const buckets = buildChartBuckets(
+      [makeActivity({ date: "2025-03-31", duration: 3, billable: true })],
+      "month",
+      new Date(2025, 2, 15),
+    );
+    const total = buckets.reduce((sum, b) => sum + b.hours, 0);
+    expect(total).toBe(3);
+    expect(buckets.find((b) => b.key === "2025-W14")?.billable).toBe(3);
   });
 });
