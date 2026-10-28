@@ -9,7 +9,21 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-26 · Dashboard-Version 1.69.0
+Stand: 2026-10-28 · Dashboard-Version 1.69.0
+
+## 2026-10-28 — TD-01 Stufe b ausgeführt
+
+Der Nutzer führte den Datenauftrag in der SQL-Konsole des Lovable-Projekts in Einzelschritten aus: Datumsprüfung, Preflight (329/14/47/4/keine/0), einmaliger Schreibblock ohne Ausnahme, Postflight (7 von 7 Zeilen gleich Soll). 14 Arbeitspakete und 47 Tätigkeiten stehen auf Stichtag 2026-10-28 plus Versatz, `audit_log` blieb bei 329, der Rückbau wurde nicht ausgelöst. Der Versuch über Work am Vortag war an der Berechtigung gescheitert und hatte nichts geschrieben. Offen bleibt die Sichtprüfung in der App.
+
+## 2026-10-27 — TD-01 verschoben auf 2026-10-28
+
+Der Ein-Prompt-Auftrag an Work scheiterte um 16:01 MEZ am Zugriff auf das Zielprojekt (MCP-Fehler -32600). Es wurde nichts gelesen oder geschrieben. Der Nutzer verschob den Lauf auf den 28.10.; Stichtag, Schreibblock, Rückbau und Prompt wurden umgestellt und lokal erneut getestet. Parallel liegen P2b (Draft-PR 233) und P3 (Draft-PR 234) vor, beide mit grüner CI und nicht gemergt.
+
+## 2026-10-27 — L2 P2 und Planungsabgleich
+
+L2 P2 (Server-Lesepfad des Management-Cockpits) liegt als Draft-PR 231 vor, nicht gemergt. Beim Test fiel ein Vertragsfehler aus P1 auf: Der Kundenkreis-Schlüssel von `myCustomerScopeKey` (zwei Doppelpunkte) passte nicht zum Composer (ein Doppelpunkt). Der Schlüsselbau liegt jetzt an einer Stelle (`cockpitScopeKey`). Die AVKK-Führungsdaten werden bisher nur im Browser geladen; das Cockpit meldet sie deshalb als UNAVAILABLE (Annahme: eigener Schnitt P2b).
+
+Der Planungsabgleich fand vier veraltete Angaben auf `main` (Hash im Status, L2-Status `planned`, `base_main_sha`, Gesamtschätzung nur im Chat). Sie sind korrigiert; die Gesamtschätzung steht als `roadmap_schaetzung` im Tracker.
 
 ## 2026-10-26 — TD-01: Freigabe 1 erteilt, Preflight übergeben
 

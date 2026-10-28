@@ -1,6 +1,6 @@
 # Datenauftrag TD-01 Stufe b: Fälligkeiten im Live-Demo-Mandanten auffrischen (Stufe 0, read-only)
 
-Stand: 2026-10-26. Grundlage: `docs/ADR/0037-kontrollierte-datenauftraege.md`, `docs/TD-01-STUFE-B-KONZEPT.md` (Abschnitt 7). Status: **Stufe 0 ausgeführt (Work, 2026-10-26, 19:58 MEZ, nur lesen). Freigabe 1 erteilt (Nutzer, 2026-10-26, 20:36 MEZ): Umfang mit Tätigkeiten (61 Änderungen). Ausführung am 2026-10-27, daher Stichtag 2026-10-27. Preflight ausstehend, Freigabe 2 (GO) ausstehend. Nichts geschrieben.**
+Stand: 2026-10-28. Grundlage: `docs/ADR/0037-kontrollierte-datenauftraege.md`, `docs/TD-01-STUFE-B-KONZEPT.md` (Abschnitt 7). Status: **Stufe b ausgeführt am 2026-10-28 (ca. 04:50 MEZ, Stichtag 2026-10-28, durch den Nutzer in der SQL-Konsole des Lovable-Projekts). Postflight bestanden (7 von 7 Zeilen gleich Soll). Rückbau nicht ausgelöst.**
 
 ## 1 Ziel
 
@@ -224,7 +224,7 @@ UNION ALL SELECT '6 Taetigkeiten des Auftrags mit abweichendem Wert (Anzahl)',
 
 ### Schreiben (nur nach ausdrücklichem „GO“ des Nutzers, Freigabe 2)
 
-Der Stichtag `s` ist ein Parameter. Der Stichtag ist auf 2026-10-27 gesetzt (Ausführung am 2026-10-27, Entscheidung des Nutzers 2026-10-26). Wird der Auftrag an einem anderen Tag als dem 2026-10-27 ausgeführt, muss `s` auf den Ausführungstag gesetzt und der Auftrag neu freigegeben werden. Die alten Werte ändern sich nach dem ersten Lauf; ein zweiter Lauf mit demselben Block bricht deshalb mit Ausnahme ab (Schutz gegen Doppelausführung).
+Der Stichtag `s` ist ein Parameter. Der Stichtag ist auf 2026-10-28 gesetzt (Ausführung am 2026-10-28; der Versuch am 2026-10-27 scheiterte am Zugriff von Work, Entscheidung des Nutzers 2026-10-27). Wird der Auftrag an einem anderen Tag als dem 2026-10-28 ausgeführt, muss `s` auf den Ausführungstag gesetzt und der Auftrag neu freigegeben werden. Die alten Werte ändern sich nach dem ersten Lauf; ein zweiter Lauf mit demselben Block bricht deshalb mit Ausnahme ab (Schutz gegen Doppelausführung).
 
 ```sql
 -- Datenauftrag TD-01 Stufe b: Fälligkeiten und Tätigkeitsdaten auffrischen. Eine Transaktion (DO-Block), ADR-0037.
@@ -234,7 +234,7 @@ DECLARE
   sh constant uuid := '00000000-0000-4000-8000-0000000000d1';
   ka constant uuid := '00000000-0000-4000-8000-0000000000d2';
   kb constant uuid := '00000000-0000-4000-8000-0000000000d3';
-  s  constant date := DATE '2026-10-27'; -- Stichtag (Parameter)
+  s  constant date := DATE '2026-10-28'; -- Stichtag (Parameter)
 BEGIN
   -- Ausgangslage (bricht bei Abweichung ab)
   SELECT count(*) INTO n FROM public.audit_log;
@@ -347,10 +347,123 @@ Postflight TD-01 Stufe b (nur lesen):
 2. shared_activity_projection: activity_date der 47 Zeilen gleich Stichtag plus Versatz. Soll 47 von 47.
 3. Die 4 erledigten Pakete und die 2 Pakete ohne Faelligkeit unveraendert.
 4. audit_log Gesamtzahl. Soll 329.
-5. Faelligkeitsverteilung je Kunde nach dem Lauf (ueberfaellig, heute, naechste 7 Tage, spaeter, ohne). Erwartet bei Stichtag 2026-10-27 (Ansicht am 2026-10-27):
+5. Faelligkeitsverteilung je Kunde nach dem Lauf (ueberfaellig, heute, naechste 7 Tage, spaeter, ohne). Erwartet bei Stichtag 2026-10-28 (Ansicht am 2026-10-28):
    Kunde A: ueberfaellig 3 (offen), heute 1; Kunde B: ueberfaellig 2, heute 1.
 6. Bericht Soll/Ist, Fehler im Wortlaut.
 ```
+
+### Postflight als SQL (nur lesen, getestet)
+
+Eine einzelne `SELECT`-Anweisung mit sieben Ergebniszeilen (Spalten `pruefung`, `ist`, `soll`). Gegen PostgreSQL 16 geprüft: nach dem Schreibblock liefert sie genau das Soll, vor dem Lauf zeigt sie die Abweichungen.
+
+```sql
+WITH
+ids AS (SELECT '00000000-0000-4000-8000-0000000000d1'::uuid AS sh,
+               '00000000-0000-4000-8000-0000000000d2'::uuid AS ka,
+               '00000000-0000-4000-8000-0000000000d3'::uuid AS kb),
+wpv(cust, sid, old_due, off) AS (VALUES
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-frei-vertrieb',DATE '2026-10-20',-4),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-m365-berechtigungen',DATE '2026-10-21',-3),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-fil-firewall',DATE '2026-10-22',-2),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-m365-schulung',DATE '2026-10-24',0),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-netz-rollout',DATE '2026-11-02',9),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-m365-migration',DATE '2026-11-11',18),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-fil-rollout',DATE '2026-11-14',21),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-netz-doku',DATE '2026-12-03',40),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-backup-test',DATE '2026-10-19',-6),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-virt-migration',DATE '2026-10-20',-5),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-frei-admin',DATE '2026-10-25',0),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-virt-cluster',DATE '2026-10-28',3),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-virt-storage',DATE '2026-11-04',10),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-backup-konzept',DATE '2026-11-08',14)
+),
+acv(cust, sid, old_date, off) AS (VALUES
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-26',DATE '2026-09-03',-51),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-56',DATE '2026-09-04',-50),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-28',DATE '2026-09-07',-47),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-23',DATE '2026-09-08',-46),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-25',DATE '2026-09-12',-42),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-20',DATE '2026-09-13',-41),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-55',DATE '2026-09-13',-41),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-27',DATE '2026-09-16',-38),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-22',DATE '2026-09-17',-37),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-17',DATE '2026-09-18',-36),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-24',DATE '2026-09-21',-33),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-1',DATE '2026-09-22',-32),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-19',DATE '2026-09-22',-32),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-21',DATE '2026-09-26',-28),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-16',DATE '2026-09-27',-27),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-11',DATE '2026-09-28',-26),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-18',DATE '2026-10-01',-23),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-15',DATE '2026-10-06',-18),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-2',DATE '2026-10-06',-18),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-10',DATE '2026-10-07',-17),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-8',DATE '2026-10-12',-12),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-4',DATE '2026-10-15',-9),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-9',DATE '2026-10-16',-8),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-57',DATE '2026-10-17',-7),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-5',DATE '2026-10-19',-5),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-7',DATE '2026-10-21',-3),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-act-3',DATE '2026-10-22',-2),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-54',DATE '2026-09-01',-54),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-35',DATE '2026-09-02',-53),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-30',DATE '2026-09-03',-52),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-32',DATE '2026-09-07',-48),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-53',DATE '2026-09-10',-45),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-29',DATE '2026-09-12',-43),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-52',DATE '2026-09-19',-36),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-14',DATE '2026-09-24',-31),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-13',DATE '2026-10-03',-22),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-41',DATE '2026-10-05',-20),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-36',DATE '2026-10-15',-10),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-37',DATE '2026-10-06',-19),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-39',DATE '2026-10-10',-15),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-34',DATE '2026-10-11',-14),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-12',DATE '2026-10-12',-13),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-40',DATE '2026-10-14',-11),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-31',DATE '2026-10-16',-9),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-38',DATE '2026-10-19',-6),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-33',DATE '2026-10-20',-5),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-act-6',DATE '2026-10-24',-1)
+),
+dv(cust, sid, due) AS (VALUES
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-fil-design',DATE '2026-10-04'),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-netz-planung',DATE '2026-10-14'),
+      ('00000000-0000-4000-8000-0000000000d2'::uuid,'demo-wp-fil-pilot',DATE '2026-10-17'),
+      ('00000000-0000-4000-8000-0000000000d3'::uuid,'demo-wp-virt-analyse',DATE '2026-09-10')
+)
+SELECT '1 audit_log' AS pruefung, (SELECT count(*) FROM public.audit_log)::text AS ist, '329' AS soll
+UNION ALL SELECT '2 Arbeitspakete auf Stichtag plus Versatz',
+  (SELECT count(*) FROM public.shared_work_package_projection t, ids, wpv v
+    WHERE t.systemhouse_id = ids.sh AND t.customer_id = v.cust AND t.source_id = v.sid
+      AND t.is_active AND t.due = DATE '2026-10-28' + v.off AND t.status <> 'erledigt')::text, '14'
+UNION ALL SELECT '3 Taetigkeiten auf Stichtag plus Versatz',
+  (SELECT count(*) FROM public.shared_activity_projection t, ids, acv v
+    WHERE t.systemhouse_id = ids.sh AND t.customer_id = v.cust AND t.source_id = v.sid
+      AND t.is_active AND t.activity_date = DATE '2026-10-28' + v.off)::text, '47'
+UNION ALL SELECT '4 erledigte Arbeitspakete unveraendert',
+  (SELECT count(*) FROM public.shared_work_package_projection t, dv d
+    WHERE t.customer_id = d.cust AND t.source_id = d.sid AND t.due = d.due AND t.status = 'erledigt')::text, '4'
+UNION ALL SELECT '5 Pakete ohne Faelligkeit unveraendert (monitoring, betrieb)',
+  (SELECT count(*) FROM public.shared_work_package_projection t
+    WHERE t.source_id IN ('demo-wp-fil-monitoring','demo-wp-virt-betrieb') AND t.due IS NULL)::text, '2'
+UNION ALL SELECT '6 Kunde A: ueberfaellig / heute / naechste 7 Tage / spaeter (offene Pakete)',
+  (SELECT count(*) FILTER (WHERE due < DATE '2026-10-28') || ' / ' || count(*) FILTER (WHERE due = DATE '2026-10-28') || ' / ' ||
+          count(*) FILTER (WHERE due > DATE '2026-10-28' AND due <= DATE '2026-10-28' + 7) || ' / ' || count(*) FILTER (WHERE due > DATE '2026-10-28' + 7)
+     FROM public.shared_work_package_projection t, ids
+    WHERE t.systemhouse_id = ids.sh AND t.customer_id = ids.ka AND t.is_active AND t.status <> 'erledigt' AND t.due IS NOT NULL), '3 / 1 / 0 / 4'
+UNION ALL SELECT '7 Kunde B: ueberfaellig / heute / naechste 7 Tage / spaeter (offene Pakete)',
+  (SELECT count(*) FILTER (WHERE due < DATE '2026-10-28') || ' / ' || count(*) FILTER (WHERE due = DATE '2026-10-28') || ' / ' ||
+          count(*) FILTER (WHERE due > DATE '2026-10-28' AND due <= DATE '2026-10-28' + 7) || ' / ' || count(*) FILTER (WHERE due > DATE '2026-10-28' + 7)
+     FROM public.shared_work_package_projection t, ids
+    WHERE t.systemhouse_id = ids.sh AND t.customer_id = ids.kb AND t.is_active AND t.status <> 'erledigt' AND t.due IS NOT NULL), '2 / 1 / 1 / 2';
+```
+
+### Ein-Prompt-Ablauf für Work
+
+Der Nutzer wünschte einen einzigen Prompt. Er enthält, strikt nacheinander: Schritt 0 (Datum in Europe/Berlin muss der Stichtag sein, sonst STOPP), Schritt 1 (Preflight, nur lesen), Schritt 2 (Fortsetzung nur, wenn alle sechs Zeilen genau stimmen: 329, 14, 47, 4, keine, 0; sonst STOPP ohne Schreiben), Schritt 3 (Schreibblock einmalig, bei Fehler kein Wiederholen und kein Rückbau), Schritt 4 (Postflight mit Soll/Ist), Abschlussbericht. Das Absenden des Prompts gilt als Freigabe 2 unter der Bedingung aus Schritt 2. Der Rückbau läuft nie von selbst, nur auf ausdrückliches Kommando.
+
+Versuch am 2026-10-27, 16:01 MEZ: Work meldete BLOCKED (MCP-Fehler -32600, keine Berechtigung für das Zielprojekt). Schritt 0 und 1 wurden nicht ausgeführt, es wurde nichts gelesen oder geschrieben. Der Nutzer verschob den Lauf auf den 2026-10-28; Stichtag, Schreibblock, Rückbau und Prompt wurden umgestellt und lokal erneut getestet (grün).
 
 ### Rückbau (nur auf ausdrückliches Kommando)
 
@@ -362,7 +475,7 @@ DECLARE
   sh constant uuid := '00000000-0000-4000-8000-0000000000d1';
   ka constant uuid := '00000000-0000-4000-8000-0000000000d2';
   kb constant uuid := '00000000-0000-4000-8000-0000000000d3';
-  s  constant date := DATE '2026-10-27'; -- Stichtag (Parameter)
+  s  constant date := DATE '2026-10-28'; -- Stichtag (Parameter)
 BEGIN
   WITH v(cust, sid, old_due, off) AS (VALUES
       (ka,'demo-wp-frei-vertrieb',DATE '2026-10-20',-4),
@@ -443,7 +556,7 @@ BEGIN
 END $$;
 ```
 
-### Vorab-Test (2026-10-26, wiederholt mit Stichtag 2026-10-27)
+### Vorab-Test (2026-10-26, wiederholt mit Stichtag 2026-10-28)
 
 Beide Blöcke wurden gegen eine lokale PostgreSQL-16-Instanz mit nachgebautem Minimalschema ausgeführt (beide Projektionstabellen mit den Live-Werten aus dem Stufe-0-Bericht, `audit_log` mit 329 Zeilen).
 
@@ -453,13 +566,36 @@ Beide Blöcke wurden gegen eine lokale PostgreSQL-16-Instanz mit nachgebautem Mi
 | Zweiter Lauf | bricht mit Ausnahme ab („erwartet 14, geändert 0“), nichts geändert                                   |
 | Rückbau      | alle ursprünglichen Werte wiederhergestellt (Tätigkeiten 2026-09-01 bis 2026-10-24), Audit 329        |
 
-Der Lauf wurde nach der Umstellung des Stichtags auf 2026-10-27 wiederholt (Preflight vorher 329/14/47/4/keine/0, erster Lauf, zweiter Lauf bricht mit „erwartet 14, geändert 0“ ab, Verteilung Kunde A 3/1/0/4 und Kunde B 2/1/1/2, Rückbau stellt den Ausgangszustand her). Der Preflight selbst hängt nicht vom Stichtag ab.
+Der Lauf wurde nach der Umstellung des Stichtags auf 2026-10-28 wiederholt (Preflight vorher 329/14/47/4/keine/0, erster Lauf, zweiter Lauf bricht mit „erwartet 14, geändert 0“ ab, Verteilung Kunde A 3/1/0/4 und Kunde B 2/1/1/2, Rückbau stellt den Ausgangszustand her). Der Preflight selbst hängt nicht vom Stichtag ab.
 
 Grenzen: Das Minimalschema enthält nicht die echten Trigger, Fremdschlüssel und Berechtigungen. Der Preflight muss sie in der echten Datenbank bestätigen.
 
-## 8 Erwartetes Ergebnis nach dem Lauf (Stichtag 2026-10-27, Ansicht am Ausführungstag)
+## 8 Erwartetes Ergebnis nach dem Lauf (Stichtag 2026-10-28, Ansicht am Ausführungstag)
 
 | Kunde | Überfällig (offen)                                    | Heute                            | Nächste 7 Tage     | Später                                         |
 | ----- | ----------------------------------------------------- | -------------------------------- | ------------------ | ---------------------------------------------- |
 | A     | 3 (Angebot, Berechtigungen, Firewall)                 | 1 (Anwenderschulung Pilotgruppe) | 0                  | 4 (Switch-Rollout 04.11. bis Netzdoku)         |
 | B     | 2 (Wiederherstellungstest, Migration Produktivserver) | 1 (Pflege Administrationskonten) | 1 (Cluster 29.10.) | 2 (Storage 05.11., Wiederanlaufkonzept 09.11.) |
+
+## 9 Ergebnis des Laufs (2026-10-28)
+
+Ablauf in Einzelschritten durch den Nutzer in der SQL-Konsole des Lovable-Projekts (der Versuch über Work am 2026-10-27 war an der Berechtigung gescheitert, nichts geschrieben). Freigabe 2 wurde aus der Antwort „Weiter geht es“ auf die ausdrückliche Rückfrage abgeleitet.
+
+| Schritt | Ergebnis                                                                                                                        |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 1       | Datum in Europe/Berlin: 2026-10-28                                                                                              |
+| 2       | Preflight (Export 04:47): audit_log 329, Arbeitspakete 14, Tätigkeiten 47, erledigte Pakete 4, keine Abweichung, 0 Abweichungen |
+| 3       | Schreibblock einmalig ausgeführt: „Query succeeded, No rows returned“, keine Ausnahme (alle Prüfungen im Block bestanden)       |
+| 4       | Postflight (Export 04:59): 7 von 7 Zeilen gleich Soll (siehe unten)                                                             |
+
+| Postflight-Prüfung                                            | Ist           | Soll          |
+| ------------------------------------------------------------- | ------------- | ------------- |
+| audit_log                                                     | 329           | 329           |
+| Arbeitspakete auf Stichtag plus Versatz                       | 14            | 14            |
+| Tätigkeiten auf Stichtag plus Versatz                         | 47            | 47            |
+| erledigte Arbeitspakete unverändert                           | 4             | 4             |
+| Pakete ohne Fälligkeit unverändert                            | 2             | 2             |
+| Kunde A: überfällig / heute / nächste 7 Tage / später (offen) | 3 / 1 / 0 / 4 | 3 / 1 / 0 / 4 |
+| Kunde B: überfällig / heute / nächste 7 Tage / später (offen) | 2 / 1 / 1 / 2 | 2 / 1 / 1 / 2 |
+
+Grenzen: Der Beleg ist das Postflight-Ergebnis der Datenbank. Eine Sichtprüfung in der App (Arbeitssicht, Kiosk) steht aus; der Kiosk-Befund TB-6 greift erst nach dem Publish. Die Veröffentlichungszeitpunkte (`published_at`, `source_hash`) wurden bewusst nicht geändert (Risiko R-TB-4). Kategorien (TB-5) bleiben ein eigener Datenauftrag nach dem Golden Gate.

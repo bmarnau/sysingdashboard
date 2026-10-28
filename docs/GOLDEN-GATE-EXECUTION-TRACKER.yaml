@@ -10,12 +10,23 @@
 
 schema_version: 1
 document: golden-gate-execution-tracker
-stand: 2026-10-26
-base_main_sha: fd8aa71bbe98e6d265fcc9abbfce557a72ac2bf8
+stand: 2026-10-27
+base_main_sha: 3b664452386f7a4353b54217565a3199d780a0b4
 repository: bmarnau/sysingdashboard
 tracker_issue: 175
 reifegrad: Entwurf
 einheit_der_schaetzung: Arbeits-/Promptbudget, keine Termin- oder Erfolgszusage
+
+# Gesamtschätzung (Stand 2026-10-27). Bisher nur in den Sitzungsabschlüssen geführt, jetzt in Git.
+# Grobe Einschätzung des Systemingenieurs, nicht aus den schaetzung-Feldern der Pakete errechnet.
+roadmap_schaetzung:
+  stand: 2026-10-27
+  sprints_bis_bsf: 8
+  sprints_bis_mvp: 3
+  belastbarkeit: grob, keine Zusage
+  offen: >-
+    Definition von BSF und MVP gegen den Delivery Plan abgleichen und die Zahlen bei der nächsten
+    Planungsrunde aus den schaetzung-Feldern der offenen Pakete neu herleiten.
 
 # Vier getrennte Statusfelder je Paket (Delivery Plan, Abschnitt 2, Punkt 3).
 # Ein Feld ersetzt niemals ein anderes.
@@ -212,8 +223,8 @@ lieferpakete:
     status_detail: >-
       Stufe a umgesetzt in PR 215 (Datensatz 2.2.0: 6 Projekte, 24 Arbeitspakete, rund 57
       Tätigkeiten, Randfälle, sechs Personas, Aktualitätshinweis) und PR 216 (Tätigkeiten ohne
-      echte Kennung gehören dem Veröffentlichenden). Stufe b offen: Live-Auffrischung der
-      Datumswerte und Kategorien als eigene Datenaufträge nach ADR-0037 Konzept: docs/TD-01-STUFE-B-KONZEPT.md.
+      echte Kennung gehören dem Veröffentlichenden). Stufe b: Live-Auffrischung der Datumswerte am 2026-10-28 ausgeführt
+      (Postflight 7 von 7 gleich Soll, siehe fortschritt); Kategorien (TB-5) bleiben ein eigener Datenauftrag nach ADR-0037 Konzept: docs/TD-01-STUFE-B-KONZEPT.md.
     gates_pass: not_run
     preview_verified: no
     published_verified: not_published
@@ -280,7 +291,7 @@ lieferpakete:
       und warum? Drill-down mit ehrlichen Datenzuständen.
     schaetzung: { codex_auftraege: "7-12", lovable_prompts: "4-7", arbeitstage: "3-5" }
     abhaengig_von: [L0, L0b, L1]
-    status: planned
+    status: in_progress
     code_merged: no
     gates_pass: not_run
     preview_verified: no
@@ -289,10 +300,10 @@ lieferpakete:
       - Berechtigter Projektmanager sieht Projekt-/AP-Kontext.
       - Unberechtigte Rolle sieht kein Objekt, keinen Count, keine ID.
       - Zustände AVAILABLE, EMPTY, PARTIAL, UNKNOWN, UNAVAILABLE, DENIED ohne geschönte Nullwerte.
-    ist_stand_code: Keine Cockpit-Route und kein Composer im Repository.
+    ist_stand_code: Composer (P1, Draft-PR 226) und Server-Lesepfad (P2, Draft-PR 231) liegen nur auf Draft-Branches, nicht auf main; keine Cockpit-Route.
     konzept: docs/L2-COCKPIT-SCHNITT-KONZEPT.md
     status_detail: >-
-      Konzept (Entwurf) liegt vor (2026-10-26): Nutzungsfall, Datenquellen, Aufmerksamkeitsgründe, Anforderungen L2-01 bis L2-12, RED-Matrix, Auftragstext P1. Freigabe durch den Nutzer am 2026-10-26. P1 (reiner Composer, 20 Tests nach RED-Matrix) liegt als Draft-PR 226 vor und ist nicht gemergt. Offen: P2 Server-Read, P3 Route, P4 Rollenabnahme, Hilfe (L2-12). Beträge bleiben ausgeschlossen (L2-06), bis QS-06 gemergt ist.
+      Konzept (Entwurf) liegt vor (2026-10-26): Nutzungsfall, Datenquellen, Aufmerksamkeitsgründe, Anforderungen L2-01 bis L2-12, RED-Matrix, Auftragstext P1. Freigabe durch den Nutzer am 2026-10-26. P1 (reiner Composer, 20 Tests nach RED-Matrix) liegt als Draft-PR 226 vor und ist nicht gemergt. P2 (Server-Lesepfad mit User-JWT, 21 Tests) liegt als Draft-PR 231 vor und ist nicht gemergt; AVKK hat noch keinen Server-Lesepfad und wird als UNAVAILABLE gemeldet (Annahme: eigener Schnitt P2b, Konzept Abschnitt 11). P2b (AVKK-Server-Lesepfad) liegt als Draft-PR 233 und P3 (Route /managementcockpit) als Draft-PR 234 vor, beide gegen main, CI grün, nicht gemergt; P3 enthält P2b nicht. Offen: Integrationsabnahme, P4 Rollenabnahme, Hilfe (L2-12). Beträge bleiben ausgeschlossen (L2-06), bis QS-06 gemergt ist.
 
   - id: L3
     gg: GG-02
@@ -547,6 +558,29 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-28
+    ereignis: >-
+      TD-01 Stufe b ausgeführt (Datenauftrag nach ADR-0037, Stichtag 2026-10-28, durch den Nutzer in der SQL-Konsole des Lovable-Projekts, ca. 04:50 MEZ):
+      Datum geprüft, Preflight bestanden (329/14/47/4/keine/0), Schreibblock einmalig ohne Ausnahme, Postflight 7 von 7 gleich Soll
+      (14 Arbeitspakete und 47 Tätigkeiten auf Stichtag plus Versatz, 4 erledigte und 2 fristlose Pakete unverändert, audit_log 329, Verteilung Kunde A 3/1/0/4 und Kunde B 2/1/1/2).
+      Rückbau nicht ausgelöst. Freigabe 2 aus "Weiter geht es" auf ausdrückliche Rückfrage abgeleitet.
+    beleg: Preflight-Export 2026-10-28 04:47, Postflight-Export 2026-10-28 04:59 (Nutzer), docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md Abschnitt 9
+  - datum: 2026-10-27
+    ereignis: >-
+      TD-01 Stufe b: Ein-Prompt-Auftrag an Work (Datumsprüfung, Preflight, Bedingung, Schreibblock, Postflight). Work meldete um 16:01 MEZ BLOCKED
+      (MCP-Fehler -32600, keine Berechtigung für das Zielprojekt); Preflight nicht ausgeführt, nichts gelesen oder geschrieben. Nutzer verschob den Lauf auf
+      2026-10-28; Stichtag, SQL und Prompt umgestellt und lokal gegen PostgreSQL 16 erneut getestet (Preflight 329/14/47/4/keine/0, zweiter Lauf bricht ab,
+      Verteilung Kunde A 3/1/0/4 und Kunde B 2/1/1/2, Rückbau stellt Ausgangszustand her). Neue Freigabe für den 28.10. steht aus.
+    beleg: Work-Bericht vom 2026-10-27 16:01 (BLOCKED), docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md (Abschnitt 7, Ein-Prompt-Ablauf)
+  - datum: 2026-10-27
+    ereignis: >-
+      L2 P2 umgesetzt (Draft-PR 231, nicht gemergt): Server-Lesepfad mit User-JWT, leere Anfrage, Capabilities, Kundenkreis und Stichtag
+      serverseitig, Teilausfälle je Quelle als Datenzustand. Befund P1: Schlüsselformat des Kundenkreises wich ab (myCustomerScopeKey trennt
+      mit zwei Doppelpunkten, der Composer erwartet einen), behoben über cockpitScopeKey. AVKK hat keinen Server-Lesepfad (UNAVAILABLE).
+      Planungsabgleich: veraltete Angaben korrigiert (main-Hash, L2-Status, base_main_sha), Gesamtschätzung als roadmap_schaetzung in Git geführt.
+    beleg: >-
+      PR 231 (1009887, 15 CI-Checks grün), src/__tests__/backend/management-cockpit.functions.test.ts (21 Tests), tsc und eslint ohne Befund.
+      Regression in src/__tests__/backend, security und lib: nur die bekannten 4 Zeitzonen-Fehler in time-period.test.ts (auch auf main).
   - datum: 2026-10-26
     ereignis: >-
       TD-01 Stufe b: Freigabe 1 erteilt (Nutzer, 20:36 MEZ), Umfang mit Tätigkeiten (14 Arbeitspakete, 47 Tätigkeiten), Stichtag 2026-10-26.
