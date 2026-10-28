@@ -599,6 +599,11 @@ risiken:
 fortschritt:
   - datum: 2026-10-28
     ereignis: >-
+      Anzeigename: "Golden Gate" heißt in der Anzeige (Planungsseite) und in der Kommunikation künftig "Interne Freigabe 1.0". IDs (GG-01 bis GG-09), Dateinamen, Tracker und Issue 175
+      behalten ihre Namen; in Dokumenten gilt "Golden Gate" weiter als bisheriger Name. Planungsseite um Ziele und "was danach zur Verfügung steht" für beide Meilensteine ergänzt.
+    beleg: Nutzerantwort 2026-10-28 19:48, Planungsseite "Golden Gate Fortschritt" (Artifact, Version 8)
+  - datum: 2026-10-28
+    ereignis: >-
       Planungsrunde abgeschlossen (Owner bestätigt jeweils Variante A): BSF-06 6-10, BSF-04 5-8, BSF-04A 4-6, BSF-DOC 3-5, QS-06 2-3, BSF-FINAL-INTERNAL 5-8 Arbeitstage.
       Bis BSF damit 15 Pakete, 51 bis 83 Arbeitstage (grob, Analogieschätzung). Einheit Arbeitstag definiert (Gesamtaufwand). ADR-0039: Claude Code ersetzt Codex in den Regeldokumenten
       (CODEX-GIT-CI-RULE, AI-ASSISTED-DEVELOPMENT-WORKFLOW, DATABASE-CHANGE-GOVERNANCE, CURRENT-STATUS).
