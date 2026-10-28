@@ -267,5 +267,4 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 ## Ergänzung 2026-10-28 (ADR-0038, angenommen)
 
 - Nach dem BSF: Azure-/Entra-Migrationsfähigkeit und weiterer Reporting-Ausbau (L7 Reporting 2 bleibt im Golden Gate).
-- Formale MVP-Abnahme: Datum und Beleg nachtragen.
 - Planungsrunde: Schätzfelder für BSF-04/04A, BSF-DOC-01 bis -03, QS-06, BSF-06 und BSF-FINAL-INTERNAL ergänzen.

@@ -30,14 +30,16 @@ roadmap_schaetzung:
   sprints_bis_bsf: unbestimmt
   sprints_bis_mvp: 0
   belastbarkeit: grob, keine Zusage
+  kapazitaet_owner: 1 bis 2 Tage pro Woche (Angabe 2026-10-28); Golden Gate damit grob 2 bis 6 Monate, nach 2 bis 3 Wochen am gemessenen Tempo neu bewerten
+  reihenfolge_owner: R-07, S0-04, S0-05, dann L2 integrieren, Publish und Tests N1 bis N5, danach L3 bis L8 (Entscheidung 2026-10-28)
   tempo_historie: >-
     Gemergte PRs seit 2026-10-01 (GitHub-REST, Zuordnung nach Titel): KW40 4 Fach, KW42 3 Fach/7 Doku, KW43 12 Fach/14 Doku, KW44 2 Fach/12 Doku (bis 2026-10-28).
     Planungsgröße etwa 1 bis 1,5 Sprints pro Woche, grobe Näherung.
   letzte_aenderung: >-
-    2026-10-28: Meilensteine geklärt (ADR-0038, angenommen am 2026-10-28). MVP fachlich erreicht, formale Abnahme offen. Golden Gate bottom-up hergeleitet.
+    2026-10-28: Meilensteine geklärt (ADR-0038, angenommen am 2026-10-28). MVP formal abgeschlossen (MVP-CLOSURE-STATUS-2026-08-24, PR #60; Bestätigung des Owners 2026-10-28, Lanzerath). Golden Gate bottom-up hergeleitet.
   offen: >-
     Schätzfelder für BSF-04/04A, BSF-DOC-01 bis -03, QS-06, BSF-06 und BSF-FINAL-INTERNAL in einer Planungsrunde ergänzen;
-    Kapazität pro Woche vom Owner für die Kalenderumrechnung; Datum der formalen MVP-Abnahme.
+    Kapazität pro Woche vom Owner für die Kalenderumrechnung.
 
 # Vier getrennte Statusfelder je Paket (Delivery Plan, Abschnitt 2, Punkt 3).
 # Ein Feld ersetzt niemals ein anderes.
@@ -569,6 +571,12 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-28
+    ereignis: >-
+      Korrektur: Die formale MVP-Baseline ist seit PR #60 (2026-08-24) wirksam; die frühere Aussage "formale Abnahme offen" stützte sich auf den überholten Zwischenstand vom 2026-08-21.
+      Owner bestätigt den MVP-Abschluss am 2026-10-28 in Lanzerath. Kapazität 1 bis 2 Tage pro Woche und Reihenfolge (Publish-Freischaltung vor L3 bis L8) festgelegt;
+      Auslegung BSF-06 bestätigt (Vorbereitung Entra/Azure bleibt im BSF).
+    beleg: docs/MVP-CLOSURE-STATUS-2026-08-24.md, PR 60, Nutzerantworten 2026-10-28
   - datum: 2026-10-28
     ereignis: >-
       ADR-0038 (BSF-Umfang und Meilensteindefinition) vom Owner angenommen, Status Accepted. Gesamtplan, Phase 16, entsprechend angepasst

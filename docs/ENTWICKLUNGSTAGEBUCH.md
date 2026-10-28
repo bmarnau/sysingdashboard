@@ -13,7 +13,7 @@ Stand: 2026-10-28 · Dashboard-Version 1.69.0
 
 ## 2026-10-28 — Meilensteine und Schätzung geklärt
 
-Der Owner hat MVP, Golden Gate und BSF abgegrenzt (ADR-0038, am selben Tag angenommen): MVP fachlich erreicht, Golden Gate als Release-Meilenstein, BSF mit Cockpit, QS-06 und BSF-06; Azure/Entra und weiterer Reporting-Ausbau liegen nach dem BSF, L7 bleibt im Golden Gate. Die Schätzung wurde bottom-up hergeleitet: bis Golden Gate 9 Pakete, 26 bis 43 Arbeitstage; bis BSF fehlen Schätzfelder. Lovable hat die Nachfass-Mail mit dem offenen Ticket zusammengeführt, ohne inhaltlich zu antworten.
+Der Owner hat MVP, Golden Gate und BSF abgegrenzt (ADR-0038, am selben Tag angenommen): MVP formal abgeschlossen (PR #60, 2026-08-24), Golden Gate als Release-Meilenstein, BSF mit Cockpit, QS-06 und BSF-06; Azure/Entra und weiterer Reporting-Ausbau liegen nach dem BSF, L7 bleibt im Golden Gate. Die Schätzung wurde bottom-up hergeleitet: bis Golden Gate 9 Pakete, 26 bis 43 Arbeitstage; bis BSF fehlen Schätzfelder. Lovable hat die Nachfass-Mail mit dem offenen Ticket zusammengeführt, ohne inhaltlich zu antworten.
 
 ## 2026-10-28 — L2-Integrationsprobe und Lovable-Nachfass
 

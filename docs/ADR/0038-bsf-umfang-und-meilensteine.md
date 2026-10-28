@@ -11,7 +11,7 @@ Die Meilensteine MVP, Golden Gate und BSF waren nicht eindeutig gegeneinander ab
 
 ## Entscheidung
 
-1. **MVP** (Transparenz) gilt fachlich als erreicht. Offen ist nur die formale Abnahme (Stand `MVP-CLOSURE-STATUS`: GO WITH FINDINGS / FORMAL SIGN-OFF PENDING). Die Zahl "Sprints bis MVP" entfällt; an ihre Stelle tritt der Punkt "formale MVP-Abnahme".
+1. **MVP** (Transparenz) ist erreicht und formal abgeschlossen: `docs/MVP-CLOSURE-STATUS-2026-08-24.md` führt "MVP 100 % / BASELINE READY", wirksam mit dem Merge von PR #60 (2026-08-24). Der ältere Zwischenstand vom 2026-08-21 ("FORMAL SIGN-OFF PENDING") ist überholt. Der Owner hat den Abschluss am 2026-10-28 in Lanzerath bestätigt. Eine Kennzahl "Sprints bis MVP" entfällt.
 2. **Golden Gate** ist der Release-Meilenstein (Lieferpakete L0 bis L8, Publish, Tag v1.69.0, Tests N1 bis N5). Er ist kein Teil des MVP und noch nicht der BSF.
 3. **BSF** (Führung) umfasst: Managementcockpit (L2, L3), QS-06, BSF-06 (Betreiberhoheit, Docker, Installierbarkeit) und den Querschnitt aus Tests, Sicherheit und Dokumentation. Gate: `BSF = 100 % / BASELINE`.
 4. **Nach dem BSF** liegen: Azure-/Entra-Migrationsfähigkeit, der weitere Reporting-Ausbau und die intelligente Entscheidungsvorbereitung. **L7 (Reporting 2, BSF-09) bleibt im Golden Gate**, weil L8 fachlich davon abhängt.
