@@ -49,7 +49,7 @@ ChatGPT/Work:
 - darf nach ausdrücklicher Einzelfreigabe ausschließlich den in ADR-0035
   definierten Work-/Lovable-Connector-Fallback orchestrieren.
 
-### Codex / VS Code / lokale Werkzeuge
+### Claude Code / VS Code / lokale Werkzeuge
 
 Diese Werkzeuge dürfen:
 
@@ -58,7 +58,7 @@ Diese Werkzeuge dürfen:
 - statische Tests und lokale Prüfungen durchführen,
 - den Lovable-Prompt fachlich vorbereiten.
 
-Sie dürfen die maßgebliche Datenbankänderung nicht über Raw-SQL, Dashboard-Klicks oder Connector-Write-Aufrufe anwenden. Codex prüft beim ADR-0035-Fallback ausschließlich Git-Stand, Dateihashes und statische Transaktionsfähigkeit; der produktive Write bleibt an Work und den exakt gebundenen Lovable-Projektconnector delegiert.
+Sie dürfen die maßgebliche Datenbankänderung nicht über Raw-SQL, Dashboard-Klicks oder Connector-Write-Aufrufe anwenden. Claude Code prüft beim ADR-0035-Fallback ausschließlich Git-Stand, Dateihashes und statische Transaktionsfähigkeit; der produktive Write bleibt an Work und den exakt gebundenen Lovable-Projektconnector delegiert.
 
 ### Lovable
 
@@ -144,7 +144,7 @@ Eine Datenbankänderung gilt erst als abgeschlossen, wenn mindestens dokumentier
 
 Nicht zulässig sind insbesondere:
 
-- direkte SQL-Schreiboperationen durch ChatGPT oder Codex außerhalb des
+- direkte SQL-Schreiboperationen durch ChatGPT oder Claude Code außerhalb des
   ausdrücklich freigegebenen ADR-0035-Fallbacks,
 - direkte Migration über einen nicht an das verifizierte Lovable-Projekt
   gebundenen Supabase-Connector,

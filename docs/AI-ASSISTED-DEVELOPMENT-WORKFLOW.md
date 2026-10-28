@@ -11,7 +11,7 @@ KI-gestützte Entwicklungsarbeit soll nachvollziehbar, sicher und ressourcenscho
 
 ### 1.1 Schreibschutzregel für `main`
 
-Für ChatGPT, Codex, Lovable und andere schreibende Werkzeuge gilt verbindlich:
+Für ChatGPT, Claude Code, Lovable und andere schreibende Werkzeuge gilt verbindlich:
 
 - **keine direkte reguläre Änderung auf `main`,**
 - jede schreibende Aufgabe erhält einen eindeutig benannten Branch bzw. eine nachweislich getrennte Variant,
@@ -51,7 +51,7 @@ Für jede Aufgabe gilt folgende Reihenfolge:
 1. **GitHub prüfen** — aktuellen Code-, Doku- und Commitstand feststellen.
 2. **ChatGPT analysiert** — Ursache, Scope, Risiken, betroffene Dateien, Teststrategie und Abnahmekriterien vorab klären.
 3. **GitHub-Arbeiten direkt über ChatGPT** — Dokumentation, Statuspflege, Roadmap, Prüfberichte und sonstige sichere Repository-Änderungen werden vorrangig direkt im Repository erledigt; schreibende Änderungen erfolgen auf eigenem Branch mit PR.
-4. **Lokale Entwicklung / Codex / VS Code bevorzugen**, wenn eine Änderung ohne Lovable-spezifische Laufzeitfunktion sauber implementiert und getestet werden kann.
+4. **Lokale Entwicklung / Claude Code / VS Code bevorzugen**, wenn eine Änderung ohne Lovable-spezifische Laufzeitfunktion sauber implementiert und getestet werden kann.
 5. **Lovable nur gezielt und isoliert einsetzen**, wenn Live-App, UI-Preview, plattformspezifische Funktionen oder eine dort sinnvollere technische Umsetzung erforderlich sind und vorher eine Nicht-main-Arbeitsfläche eindeutig verifiziert wurde.
 6. **Manuell abnehmen** — fachliche Oberflächen- und Rollenprüfungen werden außerhalb unnötiger Build-Schleifen durchgeführt.
 7. **GitHub nachprüfen** — tatsächlich erzeugten Commit, Zielbranch, Diff, Version und Dokumentation unabhängig kontrollieren.
@@ -171,7 +171,7 @@ Wenn Lovable für Analyse oder Experiment genutzt wird, soll auch dafür bevorzu
 
 Der MVP ist abgeschlossen. Mit wachsendem Projektumfang wird lokale Entwicklung wichtiger. Für kleine und klar abgegrenzte Codeänderungen ist nach Möglichkeit folgender Pfad vorzuziehen:
 
-`GitHub → lokaler Branch/Workspace → Codex oder VS Code → lokale Tests/Gates → Commit/PR → GitHub-Prüfung`
+`GitHub → lokaler Branch/Workspace → Claude Code oder VS Code → lokale Tests/Gates → Commit/PR → GitHub-Prüfung`
 
 Lovable bleibt Referenz für die veröffentlichte App sowie gezieltes Implementierungs-/Preview-Werkzeug, wenn seine Plattform einen echten Mehrwert bietet. Es darf keine technisch unersetzbare Entwicklungs- oder Laufzeitabhängigkeit entstehen.
 

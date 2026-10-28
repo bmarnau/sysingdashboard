@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-28 · Dashboard-Version 1.69.0
 
+## 2026-10-28 — Planungsrunde und Werkzeugwechsel
+
+Die Planungsrunde hat die Pakete bis zum BSF geschätzt: BSF-06, BSF-04, BSF-04A, BSF-DOC, QS-06 und BSF-FINAL-INTERNAL mit zusammen 25 bis 40 Arbeitstagen; bis BSF insgesamt 15 Pakete und 51 bis 83 Arbeitstage (Analogieschätzung). Ein Arbeitstag ist ein Tag Gesamtaufwand. Codex ist aus Planung und Regeldokumenten genommen (ADR-0039), Claude Code übernimmt.
+
 ## 2026-10-28 — TD-01 in der App geprüft
 
 Die Sichtprüfung als Bernd bestätigt die erwartete Verteilung (Datenstand 28.10.2026, 20 Pakete, überfällig 5, heute 2, später 7). Befund TB-7: ein Paket ohne Verantwortlichen. Die Termine in der Soll-Tabelle des Datenauftrags wurden korrigiert.
