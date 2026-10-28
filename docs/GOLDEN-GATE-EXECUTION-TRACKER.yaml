@@ -101,6 +101,7 @@ sprint_0:
       prioritaet: P3
       status: planned
       hinweis: 4 Fehlschläge außerhalb UTC, identisch auf fd8aa71; unabhängig von S0-01/02.
+      auftrag: docs/AUFTRAG-S0-05-ZEITZONEN-TESTS.md (Berlin 4 Fehlschläge testseitig, New York 2 Fehlschläge produktseitig, reproduziert 2026-10-28)
 
 # ---------------------------------------------------------------------------
 # Lieferpakete gemäß Delivery Plan (Reihenfolge verbindlich)
@@ -571,6 +572,11 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-28
+    ereignis: >-
+      S0-05 analysiert und Auftrag für lokalen Claude Code vorbereitet: unter Europe/Berlin 4 Fehlschläge durch toISOString in den Tests (Produktcode korrekt),
+      unter America/New_York 2 Fehlschläge durch UTC-Parsing von Datumstexten in sumActivitiesInRange und buildChartBuckets (P3). Umsetzung steht aus.
+    beleg: docs/AUFTRAG-S0-05-ZEITZONEN-TESTS.md, lokaler Testlauf in drei Zeitzonen 2026-10-28
   - datum: 2026-10-28
     ereignis: >-
       Korrektur: Die formale MVP-Baseline ist seit PR #60 (2026-08-24) wirksam; die frühere Aussage "formale Abnahme offen" stützte sich auf den überholten Zwischenstand vom 2026-08-21.
