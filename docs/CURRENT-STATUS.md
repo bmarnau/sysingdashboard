@@ -8,7 +8,7 @@ Das Golden Gate steht in der Testphase mit Demodaten (Bernd, Petra, Alex, Alexa)
 Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risiken),
 `docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md` (T1–T9, Mängel M1–M4) und
 `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md` (Reihenfolge der Merges und Tests nach dem Publish).
-`main` zuletzt geprüft auf `13c7ddc` (nach PR #232). **Publish bleibt No-Go**, bis das Lovable-Team die Auth-Broker-
+`main` zuletzt geprüft auf `23a8f3c` (nach PR #243). **Publish bleibt No-Go**, bis das Lovable-Team die Auth-Broker-
 Abweichung und die Publish-Quelle klärt (R-07, `docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
 Kunde B: Verantwortliche per Datenauftrag gesetzt (2026-10-25, 17:49) und in der App bestätigt (Test T10, 2026-10-26). L0c ist abgeschlossen.
 Verbleibend bis zum Publish: Lovable-Antwort zu R-07, Sichtprüfung von TD-01 in der App, Test N1 bis N5 auf der veröffentlichten App. Git aufgeräumt (82 Remote-Branches, 0 gemergt, Auto-Delete aktiv): `docs/GIT-AUFRAEUMEN.md` Abschnitt 6.

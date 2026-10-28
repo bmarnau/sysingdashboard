@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-28 · Dashboard-Version 1.69.0
 
+## 2026-10-28 — Auftrag S0-05 und Korrektur zum MVP
+
+Für S0-05 (Zeitzonen-Tests) liegt ein Auftrag für lokalen Claude Code vor (`docs/AUFTRAG-S0-05-ZEITZONEN-TESTS.md`): Unter Europe/Berlin scheitern vier Tests testseitig, unter America/New_York zwei produktseitig. Außerdem wurde der Stand zum MVP korrigiert: Die formale Baseline gilt seit PR #60 (2026-08-24); die frühere Angabe "Abnahme offen" stützte sich auf den überholten Zwischenstand vom 2026-08-21.
+
 ## 2026-10-28 — Planungsrunde und Werkzeugwechsel
 
 Der Anzeigename des Golden Gate lautet jetzt "Interne Freigabe 1.0"; IDs, Dateinamen und Issue bleiben unverändert. Die Planungsseite nennt die Ziele beider Meilensteine und was danach zur Verfügung steht.
