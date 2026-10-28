@@ -30,6 +30,18 @@ roadmap_schaetzung:
   sprints_bis_bsf: unbestimmt
   sprints_bis_mvp: 0
   belastbarkeit: grob, keine Zusage
+  werkzeuge: >-
+    Seit 2026-10-28 laufen Aufträge mit Claude Code und Lovable; Codex ist aus der Planung entfernt (Entscheidung Owner). Die Werte in claude_code_auftraege
+    wurden unverändert aus den früheren Codex-Schätzungen übernommen und sind nach den ersten Paketen am gemessenen Tempo zu prüfen.
+  planungsrunde:
+    stand: 2026-10-28
+    bsf_06:
+      {
+        claude_code_auftraege: "10-16",
+        lovable_prompts: "4-8",
+        arbeitstage: "6-10",
+        status: bestätigt durch Owner 2026-10-28,
+      }
   kapazitaet_owner: 1 bis 2 Tage pro Woche (Angabe 2026-10-28); Golden Gate damit grob 2 bis 6 Monate, nach 2 bis 3 Wochen am gemessenen Tempo neu bewerten
   reihenfolge_owner: R-07, S0-04, S0-05, dann L2 integrieren, Publish und Tests N1 bis N5, danach L3 bis L8 (Entscheidung 2026-10-28)
   tempo_historie: >-
@@ -121,7 +133,7 @@ lieferpakete:
     gg: GG-02-Vorbereitung
     titel: Vorhandenen Produktstand praktisch nutzbar machen
     nutzerwert: Geprüfte Preview mit Demo-Pfad und Liste fehlender Funktionen.
-    schaetzung: { codex_auftraege: "3-5", lovable_prompts: "2-3", arbeitstage: "1-2" }
+    schaetzung: { claude_code_auftraege: "3-5", lovable_prompts: "2-3", arbeitstage: "1-2" }
     abhaengig_von: [S0-04]
     status: in_progress
     code_merged: partial
@@ -149,7 +161,7 @@ lieferpakete:
       der Reiter Arbeitspakete bleibt leer (Leerzustand "Keine Arbeitspakete im
       freigegebenen Bereich").
     entscheidung: "Nutzer wählt Option A am 2026-10-21 (Schaltfläche statt nur Demo-Import)."
-    schaetzung: { codex_auftraege: "4-7", lovable_prompts: "2-4", arbeitstage: "2-3" }
+    schaetzung: { claude_code_auftraege: "4-7", lovable_prompts: "2-4", arbeitstage: "2-3" }
     abhaengig_von: [L0]
     status: in_progress
     code_merged: yes
@@ -303,7 +315,7 @@ lieferpakete:
     nutzerwert: >-
       Frage: Welche meiner autorisierten Projekte erfordern Aufmerksamkeit,
       und warum? Drill-down mit ehrlichen Datenzuständen.
-    schaetzung: { codex_auftraege: "7-12", lovable_prompts: "4-7", arbeitstage: "3-5" }
+    schaetzung: { claude_code_auftraege: "7-12", lovable_prompts: "4-7", arbeitstage: "3-5" }
     abhaengig_von: [L0, L0b, L1]
     status: in_progress
     code_merged: no
@@ -322,7 +334,7 @@ lieferpakete:
   - id: L3
     gg: GG-02
     titel: Managementcockpit vollständig (fünf Rollenperspektiven)
-    schaetzung: { codex_auftraege: "8-14", lovable_prompts: "5-9", arbeitstage: "4-6" }
+    schaetzung: { claude_code_auftraege: "8-14", lovable_prompts: "5-9", arbeitstage: "4-6" }
     abhaengig_von: [L2]
     status: planned
     code_merged: no
@@ -336,7 +348,7 @@ lieferpakete:
   - id: L4
     gg: GG-03
     titel: Management-Kiosk auf Cockpit-Daten (BSF-KIOSK-03)
-    schaetzung: { codex_auftraege: "6-9", lovable_prompts: "4-7", arbeitstage: "3-5" }
+    schaetzung: { claude_code_auftraege: "6-9", lovable_prompts: "4-7", arbeitstage: "3-5" }
     abhaengig_von: [L3]
     status: planned
     code_merged: no
@@ -347,7 +359,7 @@ lieferpakete:
   - id: L5
     gg: GG-04
     titel: Kunden-PDF mit TDF-Nachweis (BSF-03C)
-    schaetzung: { codex_auftraege: "6-10", lovable_prompts: "3-6", arbeitstage: "3-5" }
+    schaetzung: { claude_code_auftraege: "6-10", lovable_prompts: "3-6", arbeitstage: "3-5" }
     abhaengig_von: [L3]
     status: planned
     code_merged: no
@@ -360,7 +372,7 @@ lieferpakete:
   - id: L6
     gg: GG-05
     titel: Manueller kanonischer Import und Demo-Reset (BSF-05A)
-    schaetzung: { codex_auftraege: "7-10", lovable_prompts: "2-4", arbeitstage: "3-5" }
+    schaetzung: { claude_code_auftraege: "7-10", lovable_prompts: "2-4", arbeitstage: "3-5" }
     abhaengig_von: [L0]
     status: planned
     code_merged: no
@@ -374,7 +386,7 @@ lieferpakete:
   - id: L7
     gg: GG-06
     titel: Reporting 2 und Golden Reporting (BSF-09)
-    schaetzung: { codex_auftraege: "7-10", lovable_prompts: "3-5", arbeitstage: "3-5" }
+    schaetzung: { claude_code_auftraege: "7-10", lovable_prompts: "3-5", arbeitstage: "3-5" }
     abhaengig_von: [L3, L5]
     status: planned
     code_merged: no
@@ -385,7 +397,7 @@ lieferpakete:
   - id: L8
     gg: GG-07/08/09
     titel: Gesamt-Hardening, Golden-Demo und finale Freigabe
-    schaetzung: { codex_auftraege: "8-12", lovable_prompts: "4-6", arbeitstage: "4-7" }
+    schaetzung: { claude_code_auftraege: "8-12", lovable_prompts: "4-6", arbeitstage: "4-7" }
     abhaengig_von: [L4, L5, L6, L7, QS-01]
     status: planned
     code_merged: no
@@ -572,6 +584,11 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-28
+    ereignis: >-
+      Entscheidung Owner: Codex wird aus der Planung genommen; Aufträge laufen mit Claude Code und Lovable. Schätzfeld codex_auftraege in claude_code_auftraege umbenannt
+      (9 Stellen, Werte unverändert). Planungsrunde gestartet: BSF-06 mit 6 bis 10 Arbeitstagen bestätigt. Die Regeldokumente zu Codex (CODEX-GIT-CI-RULE) bleiben bis zu einer eigenen Entscheidung unverändert.
+    beleg: Nutzerantworten 2026-10-28 19:41
   - datum: 2026-10-28
     ereignis: >-
       TD-01 in der App geprüft (Nutzer, Bildschirmfotos): Kunde A 3/12/27, Arbeitssicht 20 von 20, überfällig 5, heute 2, später 7, Datenstand 28.10.2026; Verteilung entspricht dem Soll.
