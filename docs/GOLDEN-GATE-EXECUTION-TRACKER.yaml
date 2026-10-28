@@ -11,7 +11,7 @@
 schema_version: 1
 document: golden-gate-execution-tracker
 stand: 2026-10-27
-base_main_sha: 3b664452386f7a4353b54217565a3199d780a0b4
+base_main_sha: 13c7ddc6c0f2ac3a9cfd971f9c39732400254873
 repository: bmarnau/sysingdashboard
 tracker_issue: 175
 reifegrad: Entwurf
@@ -24,6 +24,8 @@ roadmap_schaetzung:
   sprints_bis_bsf: 8
   sprints_bis_mvp: 3
   belastbarkeit: grob, keine Zusage
+  letzte_aenderung: >-
+    2026-10-28: TD-01 abgeschlossen. Zahlen unverändert und nicht neu hergeleitet (Herleitung aus den schaetzung-Feldern steht aus).
   offen: >-
     Definition von BSF und MVP gegen den Delivery Plan abgleichen und die Zahlen bei der nächsten
     Planungsrunde aus den schaetzung-Feldern der offenen Pakete neu herleiten.
@@ -218,13 +220,13 @@ lieferpakete:
       AVKK-Seeds); Live-Demo-Mandant entsteht mit L0c.
     entscheidung: "Nutzer 2026-10-24: erst Stufe a, dann Stufe b."
     abhaengig_von: [L0c]
-    status: in_progress
+    status: done
     code_merged: no
     status_detail: >-
       Stufe a umgesetzt in PR 215 (Datensatz 2.2.0: 6 Projekte, 24 Arbeitspakete, rund 57
       Tätigkeiten, Randfälle, sechs Personas, Aktualitätshinweis) und PR 216 (Tätigkeiten ohne
       echte Kennung gehören dem Veröffentlichenden). Stufe b: Live-Auffrischung der Datumswerte am 2026-10-28 ausgeführt
-      (Postflight 7 von 7 gleich Soll, siehe fortschritt); Kategorien (TB-5) bleiben ein eigener Datenauftrag nach ADR-0037 Konzept: docs/TD-01-STUFE-B-KONZEPT.md.
+      (Postflight 7 von 7 gleich Soll, siehe fortschritt); Kategorien (TB-5) bleiben ein eigener Datenauftrag nach ADR-0037 und sind nicht Teil des Golden Gate. Offen: Sichtprüfung in der App (preview_verified bleibt no), Kiosk-Wirkung erst nach dem Publish Konzept: docs/TD-01-STUFE-B-KONZEPT.md.
     gates_pass: not_run
     preview_verified: no
     published_verified: not_published
@@ -558,6 +560,12 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-28
+    ereignis: >-
+      Planung nach TD-01 aktualisiert: Paket TD-01 auf done (Stufe a und b belegt, TB-5 ausgegliedert), base_main_sha und Hash im Status auf 13c7ddc,
+      nächste Schritte im Wiederanlaufpunkt (Sichtprüfung TD-01, Antwort zu R-07, danach Publish und Test N1 bis N5; L2-Drafts in der Reihenfolge 226, 231, 233, 234 mit Integrationsabnahme).
+      Aufgeräumt: 0 gemergte Remote-Branches, 0 gemergte lokale Branches.
+    beleg: PR 232 (13c7ddc), docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md Abschnitt 9, npm run git:hygiene
   - datum: 2026-10-28
     ereignis: >-
       TD-01 Stufe b ausgeführt (Datenauftrag nach ADR-0037, Stichtag 2026-10-28, durch den Nutzer in der SQL-Konsole des Lovable-Projekts, ca. 04:50 MEZ):

@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-28 · Dashboard-Version 1.69.0
 
+## 2026-10-28 — Planung nach TD-01 aktualisiert
+
+Das Paket TD-01 steht im Tracker auf done (Stufe a und b belegt, Kategorien TB-5 als eigener Datenauftrag ausgegliedert). Hash im Status und `base_main_sha` sind auf den Stand nach PR 232 gesetzt, die nächsten Schritte stehen im Wiederanlaufpunkt. Aufgeräumt: keine gemergten Branches mehr, weder remote noch lokal.
+
 ## 2026-10-28 — TD-01 Stufe b ausgeführt
 
 Der Nutzer führte den Datenauftrag in der SQL-Konsole des Lovable-Projekts in Einzelschritten aus: Datumsprüfung, Preflight (329/14/47/4/keine/0), einmaliger Schreibblock ohne Ausnahme, Postflight (7 von 7 Zeilen gleich Soll). 14 Arbeitspakete und 47 Tätigkeiten stehen auf Stichtag 2026-10-28 plus Versatz, `audit_log` blieb bei 329, der Rückbau wurde nicht ausgelöst. Der Versuch über Work am Vortag war an der Berechtigung gescheitert und hatte nichts geschrieben. Offen bleibt die Sichtprüfung in der App.
