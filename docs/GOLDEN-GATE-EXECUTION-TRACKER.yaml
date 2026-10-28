@@ -223,8 +223,8 @@ lieferpakete:
     status_detail: >-
       Stufe a umgesetzt in PR 215 (Datensatz 2.2.0: 6 Projekte, 24 Arbeitspakete, rund 57
       Tätigkeiten, Randfälle, sechs Personas, Aktualitätshinweis) und PR 216 (Tätigkeiten ohne
-      echte Kennung gehören dem Veröffentlichenden). Stufe b offen: Live-Auffrischung der
-      Datumswerte und Kategorien als eigene Datenaufträge nach ADR-0037 Konzept: docs/TD-01-STUFE-B-KONZEPT.md.
+      echte Kennung gehören dem Veröffentlichenden). Stufe b: Live-Auffrischung der Datumswerte am 2026-10-28 ausgeführt
+      (Postflight 7 von 7 gleich Soll, siehe fortschritt); Kategorien (TB-5) bleiben ein eigener Datenauftrag nach ADR-0037 Konzept: docs/TD-01-STUFE-B-KONZEPT.md.
     gates_pass: not_run
     preview_verified: no
     published_verified: not_published
@@ -558,6 +558,13 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-28
+    ereignis: >-
+      TD-01 Stufe b ausgeführt (Datenauftrag nach ADR-0037, Stichtag 2026-10-28, durch den Nutzer in der SQL-Konsole des Lovable-Projekts, ca. 04:50 MEZ):
+      Datum geprüft, Preflight bestanden (329/14/47/4/keine/0), Schreibblock einmalig ohne Ausnahme, Postflight 7 von 7 gleich Soll
+      (14 Arbeitspakete und 47 Tätigkeiten auf Stichtag plus Versatz, 4 erledigte und 2 fristlose Pakete unverändert, audit_log 329, Verteilung Kunde A 3/1/0/4 und Kunde B 2/1/1/2).
+      Rückbau nicht ausgelöst. Freigabe 2 aus "Weiter geht es" auf ausdrückliche Rückfrage abgeleitet.
+    beleg: Preflight-Export 2026-10-28 04:47, Postflight-Export 2026-10-28 04:59 (Nutzer), docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md Abschnitt 9
   - datum: 2026-10-27
     ereignis: >-
       TD-01 Stufe b: Ein-Prompt-Auftrag an Work (Datumsprüfung, Preflight, Bedingung, Schreibblock, Postflight). Work meldete um 16:01 MEZ BLOCKED

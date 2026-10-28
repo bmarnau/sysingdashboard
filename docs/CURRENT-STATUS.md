@@ -1,8 +1,8 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-10-27
+Stand: 2026-10-28
 
-## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-27)
+## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
 Das Golden Gate steht in der Testphase mit Demodaten (Bernd, Petra, Alex, Alexa).
 Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risiken),
@@ -15,7 +15,7 @@ Verbleibend bis zum Publish: Lovable-Antwort zu R-07, Test N1 bis N5 auf der ver
 Offen: Draft-PR #222 (QS-06, `billing.view`) bleibt bis nach dem Golden Gate ungemergt; PR #155 und Draft-PR #124 unverändert. Konzept L2-Cockpit: `docs/L2-COCKPIT-SCHNITT-KONZEPT.md` (gemergt mit PR #223).
 Wartebedingung: inhaltliche Antwort eines Lovable-Mitarbeiters (Eingangsbestätigung des KI-Agenten liegt seit 2026-10-26 vor, Frist 24 Stunden an Werktagen). Der Branch
 `lovable-sync-1792847779` ist das Lovable-Backup mit Auth-Broker und wird nicht gemergt.
-Entschieden 2026-10-26: TD-01 Stufe b läuft relativ zu heute (Stufe 0 ausgeführt, Schreibauftrag in `docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md` vorbereitet und lokal getestet, Freigabe 1 erteilt 2026-10-26 20:36; der Lauf am 2026-10-27 scheiterte am Zugriff von Work, nichts geschrieben; neuer Termin 2026-10-28 mit Stichtag 2026-10-28, neue Freigabe steht aus). L2-Cockpit freigegeben, P1 als Draft-PR #226 und P2 (Server-Lesepfad) als Draft-PR #231, der AVKK-Server-Lesepfad (P2b) als Draft-PR #233 und die Route (P3) als Draft-PR #234 (alle nicht gemergt, CI grün); offen sind die Integrationsabnahme beider Zweige und die Rollenabnahme (P4). ADG-PR #15 gemergt.
+Entschieden 2026-10-26: TD-01 Stufe b läuft relativ zu heute (Stufe 0 ausgeführt, Schreibauftrag in `docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md` vorbereitet und lokal getestet, Freigabe 1 erteilt 2026-10-26 20:36; der Versuch am 2026-10-27 scheiterte am Zugriff von Work, nichts geschrieben; ausgeführt am 2026-10-28 mit Stichtag 2026-10-28 in der SQL-Konsole des Lovable-Projekts, Postflight 7 von 7 gleich Soll, Rückbau nicht ausgelöst; Sichtprüfung in der App steht aus). L2-Cockpit freigegeben, P1 als Draft-PR #226 und P2 (Server-Lesepfad) als Draft-PR #231, der AVKK-Server-Lesepfad (P2b) als Draft-PR #233 und die Route (P3) als Draft-PR #234 (alle nicht gemergt, CI grün); offen sind die Integrationsabnahme beider Zweige und die Rollenabnahme (P4). ADG-PR #15 gemergt.
 Vorbereitet: Datenauftrag Kunde B, Stufe 0 (read-only), `docs/DATENAUFTRAG-KUNDE-B-VERANTWORTLICHE.md`;
 nächster Schritt dort ist die Ausführung des Berichts durch den Nutzer in Lovable/Work.
 Nach dem Golden Gate: QS-04 (Auth-Mail), QS-06 (Abrechnungsdaten nach Rolle,

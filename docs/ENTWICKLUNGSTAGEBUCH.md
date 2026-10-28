@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-27 · Dashboard-Version 1.69.0
+Stand: 2026-10-28 · Dashboard-Version 1.69.0
+
+## 2026-10-28 — TD-01 Stufe b ausgeführt
+
+Der Nutzer führte den Datenauftrag in der SQL-Konsole des Lovable-Projekts in Einzelschritten aus: Datumsprüfung, Preflight (329/14/47/4/keine/0), einmaliger Schreibblock ohne Ausnahme, Postflight (7 von 7 Zeilen gleich Soll). 14 Arbeitspakete und 47 Tätigkeiten stehen auf Stichtag 2026-10-28 plus Versatz, `audit_log` blieb bei 329, der Rückbau wurde nicht ausgelöst. Der Versuch über Work am Vortag war an der Berechtigung gescheitert und hatte nichts geschrieben. Offen bleibt die Sichtprüfung in der App.
 
 ## 2026-10-27 — TD-01 verschoben auf 2026-10-28
 
