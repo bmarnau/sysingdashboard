@@ -264,6 +264,11 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 - GIT-02: GitHub-Einstellung „Automatically delete head branches“ einschalten (Nutzer, Repository-Einstellungen); danach `git:hygiene --strict` optional in die CI aufnehmen.
 - TD-01 TB-5: Kategorien für Demo-Arbeitspakete (Katalog `workpackage.category` füllen, `category_key` setzen) als eigener Datenauftrag nach dem Golden Gate; der lokale Datensatz enthält keine Kategorien und müsste zuerst erweitert werden.
 
+## Ergänzung 2026-10-28 (Planungsrunde)
+
+- Einheit Arbeitstag nach den ersten drei Paketen am gemessenen Tempo nachmessen.
+- Rückkehr zu Codex wäre eine neue Entscheidung (ADR-0039).
+
 ## Ergänzung 2026-10-28 (TD-01-Sichtprüfung)
 
 - TB-7: Angebotsunterstützung (Kunde A) zeigt "Nicht zugeordnet"; Ursache klären (Verantwortungsprojektion), danach ggf. Datenauftrag nach ADR-0037.

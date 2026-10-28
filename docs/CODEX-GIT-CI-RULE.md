@@ -1,6 +1,6 @@
-# Verbindliche Projektregel: Codex bei Git- und CI-Fehlern
+# Verbindliche Projektregel: Claude Code bei Git- und CI-Fehlern
 
-Stand: 2026-09-13  
+Stand: 2026-10-28 (umgestellt von Claude Code auf Claude Code, ADR-0039; Dateiname aus Linkgründen unverändert)  
 Status: verbindliche Arbeitsregel für das gesamte Projekt Sysing Dashboard
 
 ## 1. Geltungsbereich
@@ -11,7 +11,7 @@ Sie ergänzt den bestehenden KI-gestützten Entwicklungsworkflow und ist unabhä
 
 ## 2. Verbindliche Werkzeugregel
 
-Bei Git-, Branch-, Pull-Request-, Merge- und CI-Fehlern wird **Codex als bevorzugtes Werkzeug für die technische Fehleranalyse und Korrektur eingesetzt**, sofern der Fehler mit Repository-Zugriff, lokalem Checkout oder einer Codex-Arbeitsumgebung sinnvoll reproduzierbar und behebbar ist.
+Bei Git-, Branch-, Pull-Request-, Merge- und CI-Fehlern wird **Claude Code als bevorzugtes Werkzeug für die technische Fehleranalyse und Korrektur eingesetzt**, sofern der Fehler mit Repository-Zugriff, lokalem Checkout oder einer Claude Code-Arbeitsumgebung sinnvoll reproduzierbar und behebbar ist.
 
 Dies umfasst insbesondere:
 
@@ -25,13 +25,13 @@ Dies umfasst insbesondere:
 - Probleme mit Commit-, Branch- oder PR-Konsistenz,
 - reproduzierbare Build- und Quality-Gate-Fehler.
 
-Ist Codex technisch nicht verfügbar, zum Beispiel wegen fehlender Credits, darf ohne Warte- oder Blockierzustand auf das **kleinstmögliche geeignete Fallback-Werkzeug** gewechselt werden. Je nach Fehlerart sind dies insbesondere GitHub, Lovable, GitHub Copilot/VS Code oder eine vorhandene lokale Toolchain. Die nachfolgenden Minimal-Fix-, Sicherheits- und Verifikationsregeln gelten unverändert.
+Ist Claude Code technisch nicht verfügbar, zum Beispiel wegen fehlender Credits, darf ohne Warte- oder Blockierzustand auf das **kleinstmögliche geeignete Fallback-Werkzeug** gewechselt werden. Je nach Fehlerart sind dies insbesondere GitHub, Lovable, GitHub Copilot/VS Code oder eine vorhandene lokale Toolchain. Die nachfolgenden Minimal-Fix-, Sicherheits- und Verifikationsregeln gelten unverändert.
 
 ## 3. Rollenverteilung
 
-### Codex
+### Claude Code
 
-Codex übernimmt bevorzugt die operative technische Schleife:
+Claude Code übernimmt bevorzugt die operative technische Schleife:
 
 1. Fehler reproduzieren,
 2. Root Cause bestimmen,
@@ -50,20 +50,20 @@ ChatGPT bleibt für die übergeordnete Steuerung und unabhängige Abnahme verant
 - RBAC und RLS,
 - Supabase- und Provider-Grenzen,
 - Scope- und Nicht-Scope-Definition,
-- Review von Codex-Ergebnissen,
+- Review von Claude Code-Ergebnissen,
 - unabhängige Prüfung von Diff, Branch, Commit und PR,
 - Dokumentations-, Status- und Versionskonsistenz,
 - Git-Hygiene und Freigabeempfehlung.
 
-Ein Codex-Abschlussbericht ersetzt keine unabhängige Prüfung.
+Ein Claude Code-Abschlussbericht ersetzt keine unabhängige Prüfung.
 
 ### GitHub Copilot / VS Code
 
-Copilot und VS Code können für kleine interaktive Einzelkorrekturen genutzt werden. Bei einer echten Git-/CI-Fehlerschleife mit mehreren Prüf- und Korrekturschritten hat Codex jedoch Vorrang, sofern technisch verfügbar und geeignet.
+Copilot und VS Code können für kleine interaktive Einzelkorrekturen genutzt werden. Bei einer echten Git-/CI-Fehlerschleife mit mehreren Prüf- und Korrekturschritten hat Claude Code jedoch Vorrang, sofern technisch verfügbar und geeignet.
 
 ## 4. Sicherheits- und Governance-Grenzen
 
-Auch bei Verwendung von Codex oder eines Fallback-Werkzeugs gelten unverändert alle Projektregeln:
+Auch bei Verwendung von Claude Code oder eines Fallback-Werkzeugs gelten unverändert alle Projektregeln:
 
 - keine reguläre direkte Änderung auf `main`,
 - jede schreibende Änderung auf einem eindeutig benannten Branch,
@@ -103,7 +103,7 @@ Wird ein als Kleinfehler klassifizierter Fehler nicht innerhalb von ungefähr **
 Vor weiterem Aufwand werden mindestens neu bewertet:
 
 - Fehlerklassifikation: Ist es wirklich noch ein Kleinfehler?
-- Werkzeugwahl: Ist Codex, GitHub, Lovable, Copilot/VS Code oder die lokale Toolchain geeigneter?
+- Werkzeugwahl: Ist Claude Code, GitHub, Lovable, Copilot/VS Code oder die lokale Toolchain geeigneter?
 - Entwicklungsumgebung: Wird gerade in der richtigen Umgebung gearbeitet?
 - Root Cause: Liegt eine bestätigte Ursache vor oder wird nur symptomatisch repariert?
 - Scope: Ist die Änderung noch minimal oder ist der Auftrag unbeabsichtigt gewachsen?
@@ -138,7 +138,7 @@ Diese Verhältnismäßigkeit hebt keine verbindlichen Release-, PR-, CI- oder Se
 
 ## 6. Abschlussbericht
 
-Jeder Codex-Auftrag zu einem Git- oder CI-Fehler endet mit einem strukturierten Abschlussbericht mit mindestens:
+Jeder Claude Code-Auftrag zu einem Git- oder CI-Fehler endet mit einem strukturierten Abschlussbericht mit mindestens:
 
 - Ausgangsfehler,
 - Root Cause,
@@ -151,11 +151,11 @@ Jeder Codex-Auftrag zu einem Git- oder CI-Fehler endet mit einem strukturierten 
 - `git diff --check`,
 - verbleibende Risiken oder offene Punkte.
 
-Bei einem Fallback ohne Codex wird derselbe Abschlussbericht sinngemäß erstellt, soweit die verwendete Umgebung die jeweiligen Nachweise unterstützt.
+Bei einem Fallback ohne Claude Code wird derselbe Abschlussbericht sinngemäß erstellt, soweit die verwendete Umgebung die jeweiligen Nachweise unterstützt.
 
 ## 7. Freigaberegel
 
-Ein Git- oder CI-Fehler gilt nicht allein deshalb als behoben, weil Codex oder ein anderes Werkzeug einen Fix erstellt oder lokale Tests bestanden haben.
+Ein Git- oder CI-Fehler gilt nicht allein deshalb als behoben, weil Claude Code oder ein anderes Werkzeug einen Fix erstellt oder lokale Tests bestanden haben.
 
 Vor einer endgültigen Freigabe werden der tatsächliche GitHub-Stand, der vollständige Diff, die relevanten CI-/Security-Gates, die Dokumentation und die Git-Hygiene unabhängig geprüft.
 
