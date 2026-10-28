@@ -21,7 +21,7 @@ einheit_der_schaetzung: Arbeits-/Promptbudget, keine Termin- oder Erfolgszusage
 # Grobe Einschätzung des Systemingenieurs, nicht aus den schaetzung-Feldern der Pakete errechnet.
 roadmap_schaetzung:
   stand: 2026-10-28
-  einheit: 1 Sprint = 1 abgeschlossenes Arbeitspaket mit eigenem PR (ADR-0038, Entwurf)
+  einheit: 1 Sprint = 1 abgeschlossenes Arbeitspaket mit eigenem PR (ADR-0038, angenommen)
   bis_golden_gate:
     offene_pakete: [L0, L0b, L2, L3, L4, L5, L6, L7, L8]
     sprints: 9
@@ -34,10 +34,10 @@ roadmap_schaetzung:
     Gemergte PRs seit 2026-10-01 (GitHub-REST, Zuordnung nach Titel): KW40 4 Fach, KW42 3 Fach/7 Doku, KW43 12 Fach/14 Doku, KW44 2 Fach/12 Doku (bis 2026-10-28).
     Planungsgröße etwa 1 bis 1,5 Sprints pro Woche, grobe Näherung.
   letzte_aenderung: >-
-    2026-10-28: Meilensteine geklärt (ADR-0038, Entwurf). MVP fachlich erreicht, formale Abnahme offen. Golden Gate bottom-up hergeleitet.
+    2026-10-28: Meilensteine geklärt (ADR-0038, angenommen am 2026-10-28). MVP fachlich erreicht, formale Abnahme offen. Golden Gate bottom-up hergeleitet.
   offen: >-
     Schätzfelder für BSF-04/04A, BSF-DOC-01 bis -03, QS-06, BSF-06 und BSF-FINAL-INTERNAL in einer Planungsrunde ergänzen;
-    Kapazität pro Woche vom Owner für die Kalenderumrechnung; Annahme von ADR-0038 durch den Owner; Datum der formalen MVP-Abnahme.
+    Kapazität pro Woche vom Owner für die Kalenderumrechnung; Datum der formalen MVP-Abnahme.
 
 # Vier getrennte Statusfelder je Paket (Delivery Plan, Abschnitt 2, Punkt 3).
 # Ein Feld ersetzt niemals ein anderes.
@@ -569,6 +569,11 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-28
+    ereignis: >-
+      ADR-0038 (BSF-Umfang und Meilensteindefinition) vom Owner angenommen, Status Accepted. Gesamtplan, Phase 16, entsprechend angepasst
+      (Azure/Entra-Migrationsfähigkeit und weiterer Reporting-Ausbau nach dem BSF). Auslegung zur Vorbereitung in BSF-06 im ADR vermerkt.
+    beleg: docs/ADR/0038-bsf-umfang-und-meilensteine.md, Nutzerantwort 2026-10-28 06:22
   - datum: 2026-10-28
     ereignis: >-
       Meilensteine und Schätzung geklärt (Owner-Antworten auf Fragen 1 bis 5): MVP fachlich erreicht, Sprint-Einheit festgelegt, Azure/Entra und weiterer Reporting-Ausbau

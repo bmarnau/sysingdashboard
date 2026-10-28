@@ -507,10 +507,10 @@ Gesamtprüfung:
 - Customer-/Leistungsmodell,
 - Templates/Kategorien soweit bis dahin umgesetzt,
 - Import,
-- Reporting,
+- Reporting (Reporting 2 / L7 im Golden Gate; weiterer Ausbau nach dem BSF, ADR-0038),
 - Betrieb,
 - Docker-Portabilität,
-- Azure-/Entra-Migrationsfähigkeit,
+- Azure-/Entra-Migrationsfähigkeit (nach dem BSF, ADR-0038; Vorbereitung bleibt in BSF-06),
 - Tests,
 - Sicherheit,
 - Dokumentation.

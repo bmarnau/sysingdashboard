@@ -1,6 +1,6 @@
 # ADR-0038: BSF-Umfang und Meilensteindefinition (MVP, Golden Gate, BSF)
 
-- **Status**: Proposed
+- **Status**: Accepted (Owner, 2026-10-28)
 - **Datum**: 2026-10-28
 - **Entscheider**: Owner (Klärung am 2026-10-28, Fragen 1 bis 5)
 - **Ergänzt**: Gesamtplan, Sprintplan MVP/BSF, Golden-Gate-Execution-Tracker
@@ -24,7 +24,11 @@ Die Meilensteine MVP, Golden Gate und BSF waren nicht eindeutig gegeneinander ab
 - `roadmap_schaetzung` im Tracker führt die Herleitung; die Zahl "bis BSF" bleibt bis zur Planungsrunde unbestimmt.
 - Risiko: Das BSF-Gate wird enger gefasst als im Gesamtplan; die Verschiebung ist hiermit bewusst dokumentiert.
 
+## Annahme
+
+Der Owner hat den ADR am 2026-10-28 mit "ADR-0038 annehmen" angenommen.
+
 ## Offene Punkte
 
-- Annahme dieses ADR durch den Owner (Status wechselt dann auf Accepted).
+- Auslegung: Die "Vorbereitung Entra ID / Azure SQL / Azure Storage" in BSF-06 bleibt im BSF; nach dem BSF liegt die vollständige Migrationsfähigkeit. Bei abweichender Auslegung des Owners ist dieser ADR zu korrigieren.
 - Umfang von BSF-04, BSF-04A, BSF-DOC-01 bis -03 und BSF-FINAL-INTERNAL relativ zum BSF-Gate.
