@@ -15,6 +15,7 @@ Format pro Eintrag:
 
 ## 1.69.0 - 2026-10-21
 
+- **Monatsdiagramm**: Aktivitäten am letzten Tag eines Monats werden wieder mitgezählt; Datumsangaben gelten unabhängig von der Zeitzone des Browsers als lokaler Kalendertag (S0-05).
 - **An Team veröffentlichen (L0b)**: In der Arbeitspaket-Ansicht bringt die neue Aktion den lokalen Bestand für einen Kunden in die gemeinsame Datenbasis (nur mit Bearbeitungsrecht für Projekte). Der Dialog zeigt vorab, was veröffentlicht, übersprungen (mit Grund) oder zurückgezogen wird; lokale Kundennamen werden ausdrücklich zugeordnet, nichts wird geraten. Der Server prüft Rolle, Systemhaus und Kundenfreigabe weiterhin selbst.
 - **Fälligkeit und Kategorie bleiben erhalten**: Beim Veröffentlichen gingen Fälligkeitsdatum und Kategorie eines Arbeitspakets verloren, weil das Eingabeschema sie verwarf. Beide werden jetzt übernommen (Fix #192).
 - **Projektcontrolling**: Die Filterleiste bleibt in allen Zuständen (Laden, Fehler, leer) sichtbar (Fix #192).
