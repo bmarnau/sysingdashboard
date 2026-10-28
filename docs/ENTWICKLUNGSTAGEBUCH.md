@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-28 · Dashboard-Version 1.69.0
 
+## 2026-10-28 — Git aufgeräumt
+
+Von 13 Kandidaten mit gemergtem PR wurden 11 Remote-Branches gelöscht, deren Inhalt nachweislich in `main` steht; die Liste mit Kurz-SHA steht in `docs/GIT-AUFRAEUMEN.md`. `aqgs-pilot` bleibt als Evidenz, ein Branch mit nachträglichem Commit wird gesondert geprüft. Nichts wurde gemergt.
+
 ## 2026-10-28 — Planungsrunde und Werkzeugwechsel
 
 Der Anzeigename des Golden Gate lautet jetzt "Interne Freigabe 1.0"; IDs, Dateinamen und Issue bleiben unverändert. Die Planungsseite nennt die Ziele beider Meilensteine und was danach zur Verfügung steht.

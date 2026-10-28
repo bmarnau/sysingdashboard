@@ -599,6 +599,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-28
     ereignis: >-
+      Git aufgeräumt (Freigabe des Betreibers): 13 Kandidaten geprüft, alle mit Commits außerhalb von main (Squash-Merges). 11 Branches mit identischem Dateistand
+      zum Merge-Commit einzeln gelöscht; aqgs-pilot (GA-3) und docs/tracker-lovable-broker-ruecksetzung (Commit 28bcd15b nach Merge von PR 219) bleiben.
+      Remote-Branches 88 auf 77; git:hygiene 0 gemergte Remote-Branches, 9 offene PRs, 6 Drafts.
+    beleg: docs/GIT-AUFRAEUMEN.md Abschnitt 7
+  - datum: 2026-10-28
+    ereignis: >-
       Anzeigename: "Golden Gate" heißt in der Anzeige (Planungsseite) und in der Kommunikation künftig "Interne Freigabe 1.0". IDs (GG-01 bis GG-09), Dateinamen, Tracker und Issue 175
       behalten ihre Namen; in Dokumenten gilt "Golden Gate" weiter als bisheriger Name. Planungsseite um Ziele und "was danach zur Verfügung steht" für beide Meilensteine ergänzt.
     beleg: Nutzerantwort 2026-10-28 19:48, Planungsseite "Golden Gate Fortschritt" (Artifact, Version 8)
