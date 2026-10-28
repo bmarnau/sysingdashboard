@@ -574,6 +574,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-28
     ereignis: >-
+      TD-01 in der App geprüft (Nutzer, Bildschirmfotos): Kunde A 3/12/27, Arbeitssicht 20 von 20, überfällig 5, heute 2, später 7, Datenstand 28.10.2026; Verteilung entspricht dem Soll.
+      Befund TB-7: Angebotsunterstützung (Kunde A) ohne Verantwortlichen ("Nicht zugeordnet"), im lokalen Datensatz Petra zugewiesen; Ursache offen, kein Datenauftrag.
+      Termine in der erwarteten Verteilung im Datenauftrag korrigiert (Cluster 31.10., Switch-Rollout 06.11., Storage 07.11., Wiederanlauf 11.11.).
+    beleg: docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md (Abschnitt 10), Bildschirmfotos des Nutzers 2026-10-28 19:25 bis 19:27
+  - datum: 2026-10-28
+    ereignis: >-
       S0-05 analysiert und Auftrag für lokalen Claude Code vorbereitet: unter Europe/Berlin 4 Fehlschläge durch toISOString in den Tests (Produktcode korrekt),
       unter America/New_York 2 Fehlschläge durch UTC-Parsing von Datumstexten in sumActivitiesInRange und buildChartBuckets (P3). Umsetzung steht aus.
     beleg: docs/AUFTRAG-S0-05-ZEITZONEN-TESTS.md, lokaler Testlauf in drei Zeitzonen 2026-10-28

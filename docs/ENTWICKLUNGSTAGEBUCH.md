@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-28 · Dashboard-Version 1.69.0
 
+## 2026-10-28 — TD-01 in der App geprüft
+
+Die Sichtprüfung als Bernd bestätigt die erwartete Verteilung (Datenstand 28.10.2026, 20 Pakete, überfällig 5, heute 2, später 7). Befund TB-7: ein Paket ohne Verantwortlichen. Die Termine in der Soll-Tabelle des Datenauftrags wurden korrigiert.
+
 ## 2026-10-28 — Meilensteine und Schätzung geklärt
 
 Der Owner hat MVP, Golden Gate und BSF abgegrenzt (ADR-0038, am selben Tag angenommen): MVP formal abgeschlossen (PR #60, 2026-08-24), Golden Gate als Release-Meilenstein, BSF mit Cockpit, QS-06 und BSF-06; Azure/Entra und weiterer Reporting-Ausbau liegen nach dem BSF, L7 bleibt im Golden Gate. Die Schätzung wurde bottom-up hergeleitet: bis Golden Gate 9 Pakete, 26 bis 43 Arbeitstage; bis BSF fehlen Schätzfelder. Lovable hat die Nachfass-Mail mit dem offenen Ticket zusammengeführt, ohne inhaltlich zu antworten.
