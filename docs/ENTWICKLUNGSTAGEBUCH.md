@@ -13,7 +13,7 @@ Stand: 2026-10-29 · Dashboard-Version 1.69.0
 
 ## 2026-10-29 — Abschluss-PR gemergt, Backlog ergänzt
 
-PR #247 ist nach Freigabe des Owners gemergt (Merge-Commit 8af547b, 15 von 15 CI-Checks grün). Der Bericht zu S0-05, Git-Aufräumen und den Merges wurde gegen Git geprüft: Der Branch `docs/tracker-lovable-broker-ruecksetzung` trägt nur Inhalt, der bereits auf `main` steht. Ins Backlog aufgenommen: Squash-Erkennung im Hygiene-Skript und der Test `BackendAdminDialog` unter Volllast (Ursache nicht belegt).
+PR #247 ist nach Freigabe des Owners gemergt (Merge-Commit 8af547b, 15 von 15 CI-Checks grün). Der Bericht zu S0-05, Git-Aufräumen und den Merges wurde gegen Git geprüft: Der Branch `docs/tracker-lovable-broker-ruecksetzung` trägt nur Inhalt, der bereits auf `main` steht. Ins Backlog aufgenommen: Squash-Erkennung im Hygiene-Skript und der Test `BackendAdminDialog` unter Volllast (Ursache nicht belegt). Das Risiko R-11 (Terminrisiko durch knappe Kapazität) ist nach Freigabe des Owners in den Tracker aufgenommen.
 
 ## 2026-10-28 — Merge der Doku- und S0-05-PRs
 

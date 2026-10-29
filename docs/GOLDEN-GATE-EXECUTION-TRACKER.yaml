@@ -594,6 +594,16 @@ risiken:
     gegenmassnahme: >-
       Entscheidung 2026-10-24: nur dokumentieren, kein Repair; diese Migrationen nie
       anwenden. Lovable-Support-Anfrage (Statements, Aliasversionen) bei R-07 bündeln.
+  - id: R-11
+    titel: Terminrisiko durch knappe Kapazität des Betreibers
+    wirkung: >-
+      26 bis 43 Arbeitstage bis zur Internen Freigabe 1.0 bei 1 bis 2 Arbeitstagen pro Woche
+      (grob 2 bis 6 Monate, Analogieschätzung); Wartezeiten auf den Lovable-Support kommen hinzu.
+    gegenmassnahme: >-
+      Reihenfolge nach ADR-0038: Publish-Freischaltung (R-07) zuerst. Tempo nach drei Paketen
+      am Arbeitstag neu messen und die Schätzung anpassen.
+    betroffene_pakete: L2 bis L8
+    stand: offen
 
 # ---------------------------------------------------------------------------
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
@@ -603,7 +613,8 @@ fortschritt:
     ereignis: >-
       PR 247 (Abschluss-PR mit Bericht) nach Freigabe des Owners gemergt (Merge-Commit 8af547b, 15 von 15 CI-Checks grün). Bericht gegen Git geprüft; Branch docs/tracker-lovable-broker-ruecksetzung enthält nur Inhalt, der bereits auf main steht (Verwerfen empfohlen, Entscheidung offen).
       Backlog ergänzt: Squash-Erkennung im Hygiene-Skript, Test BackendAdminDialog unter Volllast.
-    beleg: PR 247, docs/BACKLOG.md
+      Risiko R-11 (Terminrisiko durch knappe Kapazität) nach Freigabe des Owners in den Tracker aufgenommen.
+    beleg: PR 247, docs/BACKLOG.md, Tracker risiken R-11
   - datum: 2026-10-28
     ereignis: >-
       PR 244, 245 und 246 nach Freigabe des Owners der Reihe nach per REST gemergt (Merge-Commits 97d292c, b5ffc5f, 8fa33b6; je 15 von 15 CI-Checks grün).
