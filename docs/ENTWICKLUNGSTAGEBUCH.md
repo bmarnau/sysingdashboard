@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-28 · Dashboard-Version 1.69.0
 
+## 2026-10-28 — Merge der Doku- und S0-05-PRs
+
+PR #244 (Stand-Abgleich), #245 (S0-05) und #246 (Git-Aufräumen) sind nach Freigabe des Owners der Reihe nach gemergt, jeweils mit 15 von 15 grünen CI-Checks. Die erwarteten Doku-Konflikte wurden aufgelöst, ohne Inhalte zu verlieren. Der Bericht zu den drei Aufträgen steht in `docs/BERICHT-2026-10-28-S0-05-AUFRAEUMEN-MERGE.md`.
+
 ## 2026-10-28 — Git aufgeräumt
 
 Von 13 Kandidaten mit gemergtem PR wurden 11 Remote-Branches gelöscht, deren Inhalt nachweislich in `main` steht; die Liste mit Kurz-SHA steht in `docs/GIT-AUFRAEUMEN.md`. `aqgs-pilot` bleibt als Evidenz, ein Branch mit nachträglichem Commit wird gesondert geprüft. Nichts wurde gemergt.

@@ -11,7 +11,7 @@
 schema_version: 1
 document: golden-gate-execution-tracker
 stand: 2026-10-28
-base_main_sha: b5ffc5fba2ce1d6b7f0d2c018edb4661b8c3af2e
+base_main_sha: 8fa33b6198055102c83a6b1c62a3d956836208b2
 repository: bmarnau/sysingdashboard
 tracker_issue: 175
 reifegrad: Entwurf
@@ -124,10 +124,10 @@ sprint_0:
     - id: S0-05
       titel: Zeitzonen-abhängige Tests in time-period.test.ts beheben (TEST-TZ)
       prioritaet: P3
-      status: in_progress
+      status: done
       hinweis: >-
-        Umgesetzt auf Branch fix/s0-05-time-period-tz (PR offen, nicht gemergt). Tests formatieren lokale Kalendertage ohne toISOString;
-        sumActivitiesInRange und buildChartBuckets werten Datumstexte YYYY-MM-DD als lokalen Kalendertag aus. Abschluss mit Merge auf Anweisung des Owners.
+        Gemergt mit PR 245 (Merge-Commit b5ffc5f, CI 15 von 15). Tests formatieren lokale Kalendertage ohne toISOString;
+        sumActivitiesInRange und buildChartBuckets werten Datumstexte YYYY-MM-DD als lokalen Kalendertag aus. Bericht: docs/BERICHT-2026-10-28-S0-05-AUFRAEUMEN-MERGE.md.
       auftrag: docs/AUFTRAG-S0-05-ZEITZONEN-TESTS.md (Berlin 4 Fehlschläge testseitig, New York 2 Fehlschläge produktseitig, reproduziert 2026-10-28)
 
 # ---------------------------------------------------------------------------
@@ -599,6 +599,11 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-28
+    ereignis: >-
+      PR 244, 245 und 246 nach Freigabe des Owners der Reihe nach per REST gemergt (Merge-Commits 97d292c, b5ffc5f, 8fa33b6; je 15 von 15 CI-Checks grün).
+      Doku-Konflikte in 245 und 246 lokal aufgelöst (beide Seiten erhalten). S0-05 auf done. Remote-Branches durch Auto-Delete entfernt; Bericht zu den drei Aufträgen erstellt.
+    beleg: docs/BERICHT-2026-10-28-S0-05-AUFRAEUMEN-MERGE.md, PR 244, PR 245, PR 246
   - datum: 2026-10-28
     ereignis: >-
       Git aufgeräumt (Freigabe des Betreibers): 13 Kandidaten geprüft, alle mit Commits außerhalb von main (Squash-Merges). 11 Branches mit identischem Dateistand
