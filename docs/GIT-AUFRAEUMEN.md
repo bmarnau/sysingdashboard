@@ -149,3 +149,18 @@ Alle 13 Kandidaten hatten Commits außerhalb von `main` (Squash-Merges). Gelösc
 | `docs/tracker-lovable-broker-ruecksetzung`         | `28bcd15b` | 1                     | #219 (`22af8935`)            | erhalten, Commit nach Merge, prüfen |
 
 Lokal: Der gemergte Branch `docs/stand-2026-10-26-merge-abschluss` ist im Worktree `sysingdashboard-gg-docs` ausgecheckt und blieb erhalten (`git branch -d` nicht möglich). Remote-Branches: 88 vorher, 77 nachher.
+
+## 8 Durchführung 2026-10-29 (lokal, Claude Code, Freigabe des Betreibers 2026-10-29)
+
+Der Branch `docs/tracker-lovable-broker-ruecksetzung` ist verworfen, nicht gemergt.
+
+| Branch                                     | SHA        | Archiv-Tag                                         | Entscheidung                       |
+| ------------------------------------------ | ---------- | -------------------------------------------------- | ---------------------------------- |
+| `docs/tracker-lovable-broker-ruecksetzung` | `28bcd15b` | `archive/docs-tracker-lovable-broker-ruecksetzung` | Remote gelöscht, als Tag gesichert |
+
+- Prüfung: kein offener PR (Head oder Basis); einziger Commit außerhalb von `main` ist `28bcd15b` (2026-10-26 05:54).
+- Begründung: Der Inhalt steht auf `main` (Abschnitte 6 und 6.1, Tracker-Eintrag vom 2026-10-26). Die einzige abweichende Zeile (Beschreibung von `lovable-sync-1792847779` in 6.1) wurde auf `main` mit `12c8fada` (2026-10-26 06:30) bewusst ersetzt („Lovable-Backup mit Auth-Broker“, passend zu R-07). Der Tracker-Eintrag unterscheidet sich nur redaktionell.
+- Gelöscht mit `git push --force-with-lease=refs/heads/<branch>:28bcd15b… origin --delete <branch>` nach Prüfung des SHA gegen `origin/<branch>`. Remote-Branches danach: 75.
+- Wiederherstellen: `git push origin archive/docs-tracker-lovable-broker-ruecksetzung^{commit}:refs/heads/docs/tracker-lovable-broker-ruecksetzung`.
+- Lokal: Der Branch gleichen Namens (`28bcd15b`) bleibt bestehen; `git branch -d` verweigert, weil der Commit nicht in `main` ist. `-D` wurde nicht verwendet; Entscheidung des Betreibers offen.
+- Worktree `sysingdashboard-gg-docs` entfernt (Stand sauber, nichts ungepusht); dessen Branch `docs/stand-2026-10-26-merge-abschluss` (`12c8fada`, PR #225, Vorfahre von `main`) mit `git branch -d` gelöscht.
