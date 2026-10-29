@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-28 · Dashboard-Version 1.69.0
+Stand: 2026-10-29 · Dashboard-Version 1.69.0
+
+## 2026-10-29 — Abschluss-PR gemergt, Backlog ergänzt
+
+PR #247 ist nach Freigabe des Owners gemergt (Merge-Commit 8af547b, 15 von 15 CI-Checks grün). Der Bericht zu S0-05, Git-Aufräumen und den Merges wurde gegen Git geprüft: Der Branch `docs/tracker-lovable-broker-ruecksetzung` trägt nur Inhalt, der bereits auf `main` steht. Ins Backlog aufgenommen: Squash-Erkennung im Hygiene-Skript und der Test `BackendAdminDialog` unter Volllast (Ursache nicht belegt).
 
 ## 2026-10-28 — Merge der Doku- und S0-05-PRs
 

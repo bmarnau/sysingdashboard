@@ -10,8 +10,8 @@
 
 schema_version: 1
 document: golden-gate-execution-tracker
-stand: 2026-10-28
-base_main_sha: 8fa33b6198055102c83a6b1c62a3d956836208b2
+stand: 2026-10-29
+base_main_sha: 8af547b9dd9f5f0944bf0590877eabdbae99af31
 repository: bmarnau/sysingdashboard
 tracker_issue: 175
 reifegrad: Entwurf
@@ -599,6 +599,11 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-29
+    ereignis: >-
+      PR 247 (Abschluss-PR mit Bericht) nach Freigabe des Owners gemergt (Merge-Commit 8af547b, 15 von 15 CI-Checks grün). Bericht gegen Git geprüft; Branch docs/tracker-lovable-broker-ruecksetzung enthält nur Inhalt, der bereits auf main steht (Verwerfen empfohlen, Entscheidung offen).
+      Backlog ergänzt: Squash-Erkennung im Hygiene-Skript, Test BackendAdminDialog unter Volllast.
+    beleg: PR 247, docs/BACKLOG.md
   - datum: 2026-10-28
     ereignis: >-
       PR 244, 245 und 246 nach Freigabe des Owners der Reihe nach per REST gemergt (Merge-Commits 97d292c, b5ffc5f, 8fa33b6; je 15 von 15 CI-Checks grün).

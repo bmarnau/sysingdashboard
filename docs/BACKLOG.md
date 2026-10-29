@@ -1,6 +1,6 @@
 # Sysing Dashboard — Backlog
 
-Stand: 2026-10-25
+Stand: 2026-10-29
 Status: lebendes, chat-unabhängiges Backlog
 
 GitHub ist die maßgebliche Quelle. Neue Backlog-Einträge werden hier fachlich beschrieben und bei Einplanung in Sprint-/Meilensteinplanung mit `docs/ROADMAP-MVP-BSF.md` synchronisiert.
@@ -277,3 +277,8 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 
 - Nach dem BSF: Azure-/Entra-Migrationsfähigkeit und weiterer Reporting-Ausbau (L7 Reporting 2 bleibt im Golden Gate).
 - Planungsrunde: Schätzfelder für BSF-04/04A, BSF-DOC-01 bis -03, QS-06, BSF-06 und BSF-FINAL-INTERNAL ergänzen.
+
+## Ergänzung 2026-10-29 (Befunde aus Git-Aufräumen und S0-05)
+
+- Hygiene-Skript: Squash-Erkennung per PR-Abgleich. `npm run git:hygiene` erkennt Squash-Merges nicht; "0 gemergte Branches" ist deshalb nicht aussagekräftig. Das Skript sollte Branches mit gemergtem PR (REST, `head.ref`) zusätzlich ausweisen und je Branch prüfen, ob der Dateistand mit `main` übereinstimmt. Beleg: `docs/BERICHT-2026-10-28-S0-05-AUFRAEUMEN-MERGE.md`.
+- Test `BackendAdminDialog.test.tsx` schlug unter Volllast zweimal fehl; Ursache nicht belegt. Zu klären: Ursache und Stabilisierung, vor einer Bewertung als instabil.
