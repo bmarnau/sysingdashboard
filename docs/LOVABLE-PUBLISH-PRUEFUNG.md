@@ -72,3 +72,30 @@ Die Prüfsummen von `client.ts` und `previewAuthStorage.ts` entsprechen der Allo
 (Stand `3fd8f74`). Neu gegenüber ADR-0036 ist `types.ts` (nur der generierte Block
 `__InternalSupabase`, +5 Zeilen). Die ADR-0036-Ausnahme gilt nur für Datenbankanwendung, nicht für
 Code-Aufträge, Preview oder Publish.
+
+## Antwort des Lovable-Supports (2026-10-30)
+
+Quelle: E-Mail von Lea (Lovable Support, Mitarbeiterin) im Ticket zu R-07. Die Aussagen sind Angaben des
+Supports, keine eigenen Messungen. Zwei Automatik-Antworten (2026-10-29, 2026-10-30) enthielten keine Aussage.
+
+| Frage                      | Antwort des Supports                                                                                                 | Status                                      |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Broker abschaltbar?        | Nein, pro Projekt nicht. Absicht (Plattform-Update); `client.ts` wird nur umgeschrieben, wenn es dem Original ähnelt | Aussage des Supports                        |
+| Wirkung in der Produktion? | Keine; nur in der Editor-Preview, veröffentlicht wird normales `localStorage`                                        | nicht gemessen                              |
+| Publish-Quelle?            | Immer der aktuelle Lovable-Projektstand inklusive Zusatzdateien; kein Pinning auf Commit oder Branch                 | bestätigt                                   |
+| `types.ts` (+5 Zeilen)?    | Standardblock zur API-Version; im Git: `__InternalSupabase` mit `PostgrestVersion` "14.5"                            | im Git geprüft, schon am 2026-10-25 bekannt |
+| Sync-Branch umstellen?     | Lovable zieht auf den neuen Branch; Lovable-Änderungen werden nicht übernommen; vorher synchronisieren               | Aussage des Supports                        |
+| Migrationsfragen (R-10)?   | Zurückgestellt; Rückfrage des Supports (Lovable Cloud oder eigenes Supabase-Projekt) offen                           | offen                                       |
+
+Workaround des Supports (ungetestet am Projekt): Import in `client.ts` entfernen, die Zeile für den Auth-Speicher so ändern,
+dass sie nicht mehr dem generierten Standard entspricht (z. B. `storage: window.localStorage`), `previewAuthStorage.ts`
+löschen, eine kleine Änderung in Lovable machen und prüfen, dass die Dateien nicht zurückkommen. Alternative des Supports:
+die Hilfsdatei im Vertragstest erlauben.
+
+### Entscheidung des Owners (2026-10-30)
+
+- Weg B zuerst (Helper entfernen), Weg A (Ausnahme im Vertragstest, ADR-0036 ändern) als Rückfall.
+- Weg B ist eine Schreiboperation in Lovable und läuft nur nach ausdrücklicher Freigabe und nach vorherigem Sync.
+- Der Sync-Branch `lovable-sync-1793295874` (2 Commits vor `main`, enthält genau die drei Dateien) wird nicht gemergt.
+- Publish bleibt No-Go, bis Weg B oder A entschieden und nachgewiesen ist (kein Broker im Lovable-Projektstand, oder
+  Vertragstest und ADR angepasst und Wirkungslosigkeit in der veröffentlichten App geprüft).

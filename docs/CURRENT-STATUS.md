@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-10-29
+Stand: 2026-10-30
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
@@ -8,8 +8,9 @@ Das Golden Gate steht in der Testphase mit Demodaten (Bernd, Petra, Alex, Alexa)
 Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risiken),
 `docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md` (T1–T9, Mängel M1–M4) und
 `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md` (Reihenfolge der Merges und Tests nach dem Publish).
-`main` zuletzt geprüft auf `8af547b` (nach PR #247). **Publish bleibt No-Go**, bis das Lovable-Team die Auth-Broker-
-Abweichung und die Publish-Quelle klärt (R-07, `docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
+`main` zuletzt geprüft auf `d999690` (nach PR #248). **Publish bleibt No-Go.** Antwort des Lovable-Supports vom 2026-10-30:
+Publish deployt den Lovable-Projektstand (kein Pinning), der Broker ist nicht abschaltbar. Entscheidung: Weg B (Helper entfernen), Weg A als
+Rückfall; offen: Freigabe der Schreiboperation in Lovable (R-07, `docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
 Kunde B: Verantwortliche per Datenauftrag gesetzt (2026-10-25, 17:49) und in der App bestätigt (Test T10, 2026-10-26). L0c ist abgeschlossen.
 Verbleibend bis zum Publish: Lovable-Antwort zu R-07, Sichtprüfung von TD-01 in der App, Test N1 bis N5 auf der veröffentlichten App. Git aufgeräumt (82 Remote-Branches, 0 gemergt, Auto-Delete aktiv): `docs/GIT-AUFRAEUMEN.md` Abschnitt 6.
 Offen: Draft-PR #222 (QS-06, `billing.view`) bleibt bis nach dem Golden Gate ungemergt; PR #155 und Draft-PR #124 unverändert. Konzept L2-Cockpit: `docs/L2-COCKPIT-SCHNITT-KONZEPT.md` (gemergt mit PR #223).
