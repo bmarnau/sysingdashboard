@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-29 · Dashboard-Version 1.69.0
+Stand: 2026-10-30 · Dashboard-Version 1.69.0
+
+## 2026-10-30 — Antwort des Lovable-Supports zu R-07
+
+Nach zwei Automatik-Antworten liegt die erste inhaltliche Antwort eines Mitarbeiters vor. Publish deployt immer den Lovable-Projektstand, nicht GitHub-`main`, und lässt sich nicht an einen Commit binden. Der Auth-Broker ist Absicht der Plattform und pro Projekt nicht abschaltbar; laut Support wirkt er nur in der Editor-Preview (von uns nicht gemessen). Der Support nennt einen Workaround (ungetestet) oder die Erlaubnis im Vertragstest. Entscheidung: Weg B zuerst (Helper entfernen), Weg A als Rückfall; keine Schreiboperation in Lovable ohne Freigabe. Der neue Sync-Branch `lovable-sync-1793295874` enthält genau die drei bekannten Dateien und wird nicht gemergt. Die Rückfrage des Supports (Lovable Cloud oder eigenes Supabase-Projekt) ist offen, die Migrationsfragen (R-10) ruhen deshalb. Die `types.ts`-Abweichung war schon am 2026-10-25 bekannt.
 
 ## 2026-10-29 — Branch verworfen, Worktree entfernt
 
