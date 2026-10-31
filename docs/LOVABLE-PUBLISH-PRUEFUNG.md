@@ -153,3 +153,27 @@ Voraussetzung: Lovables Stand entsprach nach Re-check `main@daa5b1f` (Dialog "Re
 | Prompt C Frage 5                            | "nein": Broker nicht zurückgekehrt, `client.ts` nicht verändert                                                                |
 
 Bewertung: Nach einer echten Lovable-Änderung hat die Plattform `client.ts` nicht umgeschrieben und den Broker nicht neu erzeugt. Das stützt Weg B (Support: Umschreiben nur bei Originalform). Es ist eine Messung, kein Dauernachweis. Offen bleiben die Publish-Quelle (belegen, dass der Lovable-Stand `main` entspricht) und die Beobachtung über weitere Änderungen. Publish bleibt No-Go. Der Sync-Branch wird nicht gemergt (Regel: keine `lovable-sync-*` nach `main`); die README-Kontrollzeile bleibt dort.
+
+### Befund veröffentlichte App (2026-10-31)
+
+Lesende Prüfung der öffentlichen App (`sysingdashboard.lovable.app`, Version 1.69.0, Versionsdatum 2026-10-21) und Prompt D im Lovable-Chat:
+
+| Prüfpunkt                  | Ergebnis                                                                                                                                                                   |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Veröffentlichtes Bundle    | `index-B1N4K92k.js` enthält die Broker-Funktion (Kennungen `lovable-preview-auth:get`, `:set`, `:remove`, `:result`); die übrigen 12 geladenen Skripte enthalten sie nicht |
+| Wirkung im Betrieb         | aus dem Quelltext: Broker nur im Editor-Rahmen mit Projekt-ID im Hostnamen, sonst `localStorage`; nicht im Betrieb gemessen                                                |
+| Veröffentlichungszeitpunkt | nicht ermittelbar (das Versionsdatum 2026-10-21 ist ein Changelog-Datum)                                                                                                   |
+| Publish-Quelle (Support)   | aktueller Lovable-Projektstand, kein Pinning; von Lovable nur zitiert, nicht gemessen                                                                                      |
+| Lovable-Stand jetzt        | HEAD `5a0fec0` auf `lovable-sync-1793449032`: `main@ac9b377` plus `types.ts` (+5), `client.ts` unverändert, kein Broker                                                    |
+
+Bewertung: R-07 ist für die bereits veröffentlichte App eingetreten: Der verbotene Broker (ADR-0036) ist ausgeliefert. Die Wirkung ist nach dem Quelltext begrenzt, aber nicht gemessen. Ein Publish des heutigen Lovable-Stands (main plus `types.ts`) würde den Broker aus der Produktion entfernen. Für die Entscheidung gilt: Publish bleibt No-Go bis zur ausdrücklichen Freigabe des Owners; zuvor sollten N1 bis N5 und eine Messung der Broker-Wirkung in der veröffentlichten App (Anmeldung, Sitzung) geplant werden.
+
+Messung der Sitzungsablage in der veröffentlichten App (2026-10-31, angemeldet, Konsole im Tab der Produktionsadresse, nur Schlüsselnamen und Wertlängen, keine Werte):
+
+| Prüfpunkt                 | Ergebnis                                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------------------------- |
+| Host und Einbettung       | `sysingdashboard.lovable.app`, nicht eingebettet (`framed: false`), keine Projekt-ID im Hostnamen |
+| Broker-Bedingung          | nicht erfüllt: Broker-Pfad inaktiv                                                                |
+| Sitzung im `localStorage` | Eintrag `sb-<Projektreferenz>-auth-token` vorhanden (Länge 2476), 15 Einträge insgesamt           |
+
+Bewertung: In der veröffentlichten App liegt die Sitzung im `localStorage`; der ausgelieferte Broker ist wirkungslos. Das stützt die Support-Aussage durch eine eigene Messung (eine Sitzung, ein Browser). Der Verstoß gegen ADR-0036 bleibt als Befund bestehen und wird mit einem Publish des Weg-B-Stands beseitigt; danach das Bundle erneut auf die Broker-Kennungen prüfen.
