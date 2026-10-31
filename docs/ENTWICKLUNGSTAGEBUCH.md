@@ -11,6 +11,14 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — Weg B: Broker bei der ersten Prüfung nicht zurückgekehrt
+
+Nach dem Merge von PR 253 zeigt der Lese-Prompt A: Lovables Projektstand hat keine Datei `previewAuthStorage.ts`, und `client.ts` trägt die neue Zeile. Der neue Sync-Branch `lovable-sync-1793429000` weicht von `main` nur durch den Block `__InternalSupabase` in `types.ts` ab (+5 Zeilen). Das ist eine Beobachtung und kein Dauernachweis; die kontrollierte Änderung in Lovable (Prompt B) und die Beobachtung über mehrere Schritte stehen aus.
+
+## 2026-10-31 — ADR-0040 angenommen
+
+Der Owner hat ADR-0040 (Kontinuierlicher Testziel-Abgleich, Regel `AQGS-TCA-01`) mit "ADR-0040 annehmen" angenommen. Die Regel steht in `docs/PROJECT-GOVERNANCE.md` (Abschnitt 8a). Der Mehraufwand wird beim ersten Paket nach Annahme mitgemessen.
+
 ## 2026-10-31 — S0-06: Speicher-Zeile gegen erneutes Einfügen des Brokers
 
 Laut Lovable-Support schreibt die Plattform `client.ts` nur um, solange die Datei dem generierten Original gleicht. Die Speicher-Zeile verwendet deshalb jetzt `window.localStorage` statt `localStorage`; die Schutzabfrage und das Verhalten bleiben gleich. Der Vertragstest erwartet genau diese Form und verbietet weiterhin Import und Datei des Brokers. Ob die Plattform den Broker danach wirklich nicht mehr einfügt, zeigt erst der Sync nach Lovable; bis dahin bleibt Publish No-Go.

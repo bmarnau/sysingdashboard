@@ -125,3 +125,17 @@ Prüfschritte nach dem Sync:
 - Vertragstest gegen den Stand des Sync-Branches ausführen: 3 von 3.
 - Kommt der Broker zurück: Weg B gilt als gescheitert, Rückfall auf Weg A nach Entscheidung des Owners.
 - Ob die Plattform eine bereits vorhandene `previewAuthStorage.ts` im Projektstand von selbst entfernt, ist nicht belegt; das prüft Schritt 1 der Prüfschritte.
+
+### Beobachtung nach dem Merge von Teil 1 (2026-10-31)
+
+Lese-Prompt A im Lovable-Chat (rein lesend) und Abgleich mit GitHub:
+
+| Prüfpunkt                                       | Ergebnis                                                                                                                                                                        | Quelle               |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| `previewAuthStorage.ts` im Lovable-Projektstand | nicht vorhanden                                                                                                                                                                 | Lovable-Chat         |
+| Zeile `storage:` in `client.ts`                 | `typeof window !== "undefined" ? window.localStorage : undefined,` (Zeile 63), kein Import des Brokers                                                                          | Lovable-Chat und Git |
+| Neuer Sync-Branch `lovable-sync-1793429000`     | 2 Commits ("Work in progress" `9961edc`, "Lovable update" `4f3f800`), Basis `8537eb3` (main nach PR 253); Unterschied zu main: nur `types.ts` (+5 Zeilen, `__InternalSupabase`) | Git                  |
+
+Bewertung: Die Plattform hat bei dieser Aktivität den Broker nicht erneut eingefügt. Das ist eine Beobachtung, kein Nachweis der
+Dauerhaftigkeit. Der Block in `types.ts` ist laut Support ein Standardblock zur API-Version. Der Branch `lovable-sync-1793295874`
+(mit Broker) ist damit überholt; Branches mit Präfix `lovable*` werden nicht gelöscht.

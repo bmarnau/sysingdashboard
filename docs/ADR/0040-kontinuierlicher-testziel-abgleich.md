@@ -1,9 +1,9 @@
 # ADR-0040: Kontinuierlicher Testziel-Abgleich und Testökonomie
 
-- **Status**: Proposed
+- **Status**: Accepted (Owner, 2026-10-31)
 - **Datum**: 2026-10-31
 - **Ergänzt**: ADR-0009, ADR-0017, ADR-0018, ADR-0029 (CI-, Test- und Release-Governance)
-- **Herkunft**: Übernommen aus `backup/codex-2026-10-31` (dort ADR-0036, Stand 2026-10-19). Die Regel `AQGS-TCA-01` wird erst nach Annahme in `docs/PROJECT-GOVERNANCE.md` aufgenommen.
+- **Herkunft**: Übernommen aus `backup/codex-2026-10-31` (dort ADR-0036, Stand 2026-10-19). Die Regel `AQGS-TCA-01` steht seit der Annahme in `docs/PROJECT-GOVERNANCE.md` (Abschnitt 8a).
 
 ## Kontext
 
@@ -62,6 +62,10 @@ Test/Gate → Ergebnis → Entscheidung` im Arbeits- oder Abschlussbericht
   Dokumentationsarbeit.
 - Entscheidung 2026-10-31: Ob die Regel Mehraufwand pro Arbeitspaket
   verursacht, wird beim ersten Paket nach Annahme mitgemessen.
+
+## Annahme
+
+Der Owner hat den ADR am 2026-10-31 mit "ADR-0040 annehmen" angenommen. Die Regel gilt ab dem nächsten Arbeitspaket; der Mehraufwand wird dort mitgemessen.
 
 ## Trust-Boundary / Security-Note
 
