@@ -132,11 +132,13 @@ sprint_0:
     - id: S0-04
       titel: Lovable-Variant auf neuem main-SHA anlegen
       abhaengig_von: [S0-03]
-      status: planned
+      status: done
+      hinweis: >-
+        Owner-Entscheidung 2026-10-31: Der heutige Lovable-Stand (main plus types.ts, ohne Broker, in Sync) genügt, eine zweite Lovable-Kopie wird nicht angelegt.
       akteur: Nutzer (Lovable-Oberfläche)
     - id: S0-06
       titel: Auth-Broker aus dem Lovable-Projektstand entfernen (Weg B)
-      status: in_progress
+      status: done
       akteur: Nutzer (Freigabe) und Lovable-Oberfläche; Vorprüfung durch Claude Code
       abhaengig_von: [Freigabe Owner, Sync-Stand, Prüfung des Branches lovable-sync-1793295874]
       hinweis: >-
@@ -645,6 +647,17 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-31
+    ereignis: >-
+      Owner-Entscheidung: S0-04 erledigt ohne zweite Lovable-Kopie, der heutige Lovable-Stand (main plus types.ts, ohne Broker) genügt.
+    beleg: Owner-Aussage im Chat 2026-10-31, docs/LOVABLE-PUBLISH-PRUEFUNG.md (Kontrollmessung)
+  - datum: 2026-10-31
+    ereignis: >-
+      S0-06 abgeschlossen: Weg B hält bei der Kontrollmessung (PR 253, 254, 256, 257 gemergt, main fb7c61b). Der Lovable-Stand ist main plus types.ts (+5), ohne Broker;
+      die veröffentlichte App enthält den Broker, er ist dort wirkungslos (Sitzung im localStorage gemessen). Dauerbeobachtung läuft über die täglichen Lovable-Prompts
+      (Prüfung: client.ts unverändert, kein Broker). Reihenfolge laut Owner: S0-06 schließen, S0-04 und erstes Entwicklungspaket, Publish mit N1 bis N5, Antwort an Lea.
+      Publish bleibt No-Go bis zur ausdrücklichen Freigabe des Owners.
+    beleg: PR 257 (Merge-Commit fb7c61b), docs/LOVABLE-PUBLISH-PRUEFUNG.md (Kontrollmessung, Befund veröffentlichte App)
   - datum: 2026-10-31
     ereignis: >-
       Weg 1 (Publish-Quelle): Prompt D im Lovable-Chat: Veröffentlicht ist Version 1.69.0, Zeitpunkt und Commit nicht ermittelbar; Publish deployt den Lovable-Projektstand
