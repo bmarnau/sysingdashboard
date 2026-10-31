@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — Tägliche Lovable-Prompts
+
+Der Owner möchte die täglichen Lovable-Credits nutzen. Eine geplante Aufgabe erzeugt ab 01.11. täglich um 07:17 genau einen kleinen, risikoarmen Prompt (lesend oder rückbaubar, nie Publish, nie Datenbankänderung, nie Branch-Wechsel). Prompt B und C zu S0-06 haben Vorrang. Schreibende Prompts laufen erst nach Git-Re-check; bis zum Vergleich des neuen `lovable-sync-*`-Branches wird nichts nach `main` gemergt.
+
 ## 2026-10-31 — Weg B: Broker bei der ersten Prüfung nicht zurückgekehrt
 
 Nach dem Merge von PR 253 zeigt der Lese-Prompt A: Lovables Projektstand hat keine Datei `previewAuthStorage.ts`, und `client.ts` trägt die neue Zeile. Der neue Sync-Branch `lovable-sync-1793429000` weicht von `main` nur durch den Block `__InternalSupabase` in `types.ts` ab (+5 Zeilen). Das ist eine Beobachtung und kein Dauernachweis; die kontrollierte Änderung in Lovable (Prompt B) und die Beobachtung über mehrere Schritte stehen aus.

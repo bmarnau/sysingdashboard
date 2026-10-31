@@ -642,6 +642,11 @@ risiken:
 fortschritt:
   - datum: 2026-10-31
     ereignis: >-
+      Owner-Entscheidung: Täglich ein Lovable-Prompt erzeugen, damit die täglichen Lovable-Credits nicht verfallen. Geplante Aufgabe täglich 07:17 (Europe/Berlin)
+      liefert genau einen kleinen, risikoarmen Prompt (lesend oder rückbaubar; nie Publish, nie Datenbankänderung, nie Branch-Wechsel). Prompt B und C (S0-06) haben Vorrang.
+    beleg: docs/CURRENT-STATUS.md, Planungsseite Version 13
+  - datum: 2026-10-31
+    ereignis: >-
       Weg B Teil 2, Lese-Prompt A im Lovable-Chat: Projektstand ohne previewAuthStorage.ts, client.ts mit der Zeile aus PR 253. Neuer Sync-Branch
       lovable-sync-1793429000 (2 Commits, Basis 8537eb3) unterscheidet sich von main nur durch +5 Zeilen in types.ts (__InternalSupabase). Der Broker ist bei dieser
       Aktivität nicht zurückgekehrt; als Beobachtung vermerkt, nicht als Dauerbeleg. Publish bleibt No-Go (R-07) bis zur kontrollierten Änderung und zum Publish-Nachweis.
