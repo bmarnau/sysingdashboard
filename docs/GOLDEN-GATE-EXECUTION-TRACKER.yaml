@@ -616,6 +616,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-31
     ereignis: >-
+      Codex-ADR-0036 (Testziel-Abgleich, Regel AQGS-TCA-01) nach Freigabe des Owners als ADR-0040 mit Status Proposed übernommen.
+      Abweichungen vom Original: Nummer, Status, Datum, Herkunftshinweis, Präzisierung des Verweises auf ADR-0029 (zwei Dateien mit Nummer 0029), Satz zur Aufwandsmessung unter Konsequenzen.
+      Übrige Codex-ADRs nicht übernommen; backup/codex-2026-10-31 unverändert. Nicht gemergt.
+    beleg: docs/ADR/0040-kontinuierlicher-testziel-abgleich.md, Branch docs/2026-10-31-adr-0040-testziel-abgleich
+  - datum: 2026-10-31
+    ereignis: >-
       Arbeitsklone unter OneDrive nach Freigabe des Owners entfernt: Worktree sysingdashboard-s0-05 (git worktree remove), Klone sysingdashboard-codex und sysingdashboard-bsf03.
       Vorprüfung: alle lokalen Branches auf origin enthalten, keine Stashes, keine ignorierten Dateien außer node_modules und Cache. Kein Remote-Branch gelöscht.
       Einziger Arbeitsklon ist C:/dev/sysingdashboard; backup/codex-2026-10-31 und C:/dev/_sicherung_sysingdashboard-codex bleiben.

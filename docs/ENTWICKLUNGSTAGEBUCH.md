@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — ADR-0040 Testziel-Abgleich vorgeschlagen
+
+Aus der Sichtung des Codex-Backups wird nur eine Entscheidung übernommen: die Regel, Tests fortlaufend gegen die Ziele und Risiken des jeweiligen Arbeitspakets abzugleichen. Tests dürfen nur mit gleichwertigem Ersatz zusammengelegt oder mit begründetem Wegfall ihres Zwecks entfernt werden; Sicherheitstests werden nicht zur Laufzeitverkürzung gestrichen, und ein nicht ausführbares Gate bleibt `BLOCKED`. Die Regel steht als ADR-0040 mit Status „Proposed“ zur Annahme durch den Owner. Ob sie Mehraufwand verursacht, wird beim ersten Paket nach Annahme gemessen.
+
 ## 2026-10-31 — Arbeitsklone unter OneDrive aufgeräumt
 
 Nach der Prüfung der Sicherung sind die drei alten Arbeitskopien unter OneDrive entfernt: der Codex-Klon, sein Worktree für S0-05 und der Klon für BSF-03. Vorher war belegt, dass jeder ihrer Branches auf GitHub liegt und keine ungesicherte Arbeit darin steckt. Gearbeitet wird jetzt nur noch im Klon unter `C:\dev`. Bericht: `docs/BERICHT-2026-10-31-AUFRAEUMEN-ONEDRIVE.md`.
