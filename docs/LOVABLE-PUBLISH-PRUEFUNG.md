@@ -139,3 +139,17 @@ Lese-Prompt A im Lovable-Chat (rein lesend) und Abgleich mit GitHub:
 Bewertung: Die Plattform hat bei dieser Aktivität den Broker nicht erneut eingefügt. Das ist eine Beobachtung, kein Nachweis der
 Dauerhaftigkeit. Der Block in `types.ts` ist laut Support ein Standardblock zur API-Version. Der Branch `lovable-sync-1793295874`
 (mit Broker) ist damit überholt; Branches mit Präfix `lovable*` werden nicht gelöscht.
+
+### Kontrollmessung Prompt B und C (2026-10-31)
+
+Voraussetzung: Lovables Stand entsprach nach Re-check `main@daa5b1f` (Dialog "Repository-Version behalten"). Prompt B: eine Kommentarzeile am Ende von `README.md`. Prompt C: lesend. Abgleich mit Git:
+
+| Prüfpunkt                                   | Ergebnis                                                                                                                       |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Neuer Sync-Branch `lovable-sync-1793441453` | 3 Commits (`73b760a`, `eb2e032`, `e5bbf7f`), Basis `daa5b1f`, 0 hinter `main`; Spitze `e5bbf7f` = HEAD laut Lovable (Prompt C) |
+| Unterschied zu `main`                       | nur `README.md` (+2 Zeilen: Leerzeile, Kommentar) und `types.ts` (+5 Zeilen, `__InternalSupabase`)                             |
+| `client.ts` Zeile 63                        | unverändert `window.localStorage`, kein Import des Brokers (Git und Lovable stimmen überein)                                   |
+| `previewAuthStorage.ts`                     | keine Datei im Branch; der Name steht nur in Vertragstest und Doku-Texten                                                      |
+| Prompt C Frage 5                            | "nein": Broker nicht zurückgekehrt, `client.ts` nicht verändert                                                                |
+
+Bewertung: Nach einer echten Lovable-Änderung hat die Plattform `client.ts` nicht umgeschrieben und den Broker nicht neu erzeugt. Das stützt Weg B (Support: Umschreiben nur bei Originalform). Es ist eine Messung, kein Dauernachweis. Offen bleiben die Publish-Quelle (belegen, dass der Lovable-Stand `main` entspricht) und die Beobachtung über weitere Änderungen. Publish bleibt No-Go. Der Sync-Branch wird nicht gemergt (Regel: keine `lovable-sync-*` nach `main`); die README-Kontrollzeile bleibt dort.

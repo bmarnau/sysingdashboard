@@ -145,7 +145,7 @@ sprint_0:
         Rückfall Weg A: Hilfsdatei im Vertragstest erlauben (ADR-0036 ändern, Wirkungslosigkeit in der veröffentlichten App prüfen).
         Mechanismus: Die Plattform schreibt client.ts nur bei Originalform um. Teil 1 (2026-10-31): Speicher-Zeile auf
         window.localStorage mit unveränderter Schutzabfrage, Vertragstest 2 auf die neue Form. Teil 1 gemergt (PR 253). Beobachtung 2026-10-31: Lovable-Projektstand ohne Broker,
-        client.ts mit der neuen Zeile; neuer Sync-Branch lovable-sync-1793429000 weicht nur in types.ts (+5 Zeilen) von main ab. Offen: kontrollierte Änderung in Lovable (Prompt B), Dauerbeobachtung.
+        client.ts mit der neuen Zeile; neuer Sync-Branch lovable-sync-1793429000 weicht nur in types.ts (+5 Zeilen) von main ab. Kontrollmessung 2026-10-31 (Prompt B und C): nach einer README-Änderung in Lovable bleibt client.ts unverändert, kein Broker (Branch lovable-sync-1793441453). Offen: Publish-Quelle belegen, Dauerbeobachtung.
       beleg: Branch fix/s0-06-auth-storage-form, PR (siehe Fortschritt 2026-10-31), docs/LOVABLE-PUBLISH-PRUEFUNG.md (Weg B Umsetzung)
     - id: S0-05
       titel: Zeitzonen-abhängige Tests in time-period.test.ts beheben (TEST-TZ)
@@ -640,6 +640,12 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-31
+    ereignis: >-
+      Weg B Kontrollmessung: Prompt B (README-Kommentarzeile) und Prompt C (lesend) im Lovable-Chat nach Re-check auf main daa5b1f. Neuer Sync-Branch
+      lovable-sync-1793441453 (3 Commits, 0 hinter main) unterscheidet sich von main nur durch README.md (+2) und types.ts (+5); client.ts unverändert, keine
+      Broker-Datei. Lovable bestätigt per Prompt C: nicht zurückgekehrt. Messung, kein Dauernachweis. Publish bleibt No-Go (R-07) bis die Publish-Quelle belegt ist.
+    beleg: docs/LOVABLE-PUBLISH-PRUEFUNG.md (Kontrollmessung Prompt B und C), Branch lovable-sync-1793441453 (e5bbf7f)
   - datum: 2026-10-31
     ereignis: >-
       Owner-Entscheidung: Täglich ein Lovable-Prompt erzeugen, damit die täglichen Lovable-Credits nicht verfallen. Geplante Aufgabe täglich 07:17 (Europe/Berlin)
