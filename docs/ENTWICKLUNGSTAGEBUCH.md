@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — Tagesabschluss und Startdatei
+
+Sprint 0 ist abgeschlossen (`main` 7fc2393). Die Startdatei `start-sysingboard.ps1` (öffnet ein eigenes Terminal, fängt Fehler ab, prüft Verzeichnis, Werkzeuge und Git-Stand, startet Claude Code) läuft beim Owner. Die Anforderungen daran stehen als Entwurf im ADG-Standard (Pull-Request 28, Abschnitt "Lokaler Startpunkt (Windows)"). Nächste Schritte: Antwort an Lea, erstes Entwicklungspaket nach Anweisung, Publish nur nach ausdrücklicher Freigabe.
+
 ## 2026-10-31 — S0-06 abgeschlossen
 
 Weg B hält bei der Kontrollmessung; die Pakete PR 253, 254, 256 und 257 sind gemergt (`main` fb7c61b). Der Broker bleibt in der veröffentlichten App wirkungslos. Die Dauerbeobachtung läuft über die täglichen Lovable-Prompts. Nächste Schritte laut Owner: S0-04 und das erste Entwicklungspaket, danach Publish mit N1 bis N5, danach die Antwort an Lea. Publish bleibt No-Go bis zur ausdrücklichen Freigabe.
