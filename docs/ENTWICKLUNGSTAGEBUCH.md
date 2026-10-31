@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — Weg B: Kontrollmessung bestanden (Messung)
+
+Nach Re-check und Prompt B (README-Kommentarzeile) zeigt der neue Sync-Branch `lovable-sync-1793441453`: nur `README.md` und `types.ts` (+5) weichen von `main` ab, `client.ts` ist unverändert und es gibt keine Broker-Datei. Prompt C bestätigt das von Lovables Seite. Das stützt Weg B; es ist eine Messung, kein Dauernachweis. Offen: Publish-Quelle belegen. Publish bleibt No-Go (R-07). Der Sync-Branch wird nicht gemergt.
+
 ## 2026-10-31 — Tägliche Lovable-Prompts
 
 Der Owner möchte die täglichen Lovable-Credits nutzen. Eine geplante Aufgabe erzeugt ab 01.11. täglich um 07:17 genau einen kleinen, risikoarmen Prompt (lesend oder rückbaubar, nie Publish, nie Datenbankänderung, nie Branch-Wechsel). Prompt B und C zu S0-06 haben Vorrang. Schreibende Prompts laufen erst nach Git-Re-check; bis zum Vergleich des neuen `lovable-sync-*`-Branches wird nichts nach `main` gemergt.
