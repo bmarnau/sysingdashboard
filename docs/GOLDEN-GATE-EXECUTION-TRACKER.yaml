@@ -649,6 +649,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-31
     ereignis: >-
+      Tagesabschluss: Sprint 0 abgeschlossen (S0-04, S0-05, S0-06 done), main 7fc2393. Startdatei für die lokale Arbeit (start-sysingboard.ps1) vom Owner erfolgreich getestet.
+      Als Standard-Entwurf übernommen: ADG-Pull-Request 28 (REPOSITORY_BASISHYGIENE, Abschnitt Lokaler Startpunkt Windows, Vorlage start-projekt.ps1), noch nicht gemergt.
+      Erstes Entwicklungspaket (L2) nach ausdrücklicher Anweisung des Owners; Publish bleibt No-Go bis zur Freigabe; Antwort an Lea offen (Cloud-Art).
+    beleg: PR 258 (Merge-Commit 7fc2393), bmarnau-standards/ai-development-governance PR 28
+  - datum: 2026-10-31
+    ereignis: >-
       Owner-Entscheidung: S0-04 erledigt ohne zweite Lovable-Kopie, der heutige Lovable-Stand (main plus types.ts, ohne Broker) genügt.
     beleg: Owner-Aussage im Chat 2026-10-31, docs/LOVABLE-PUBLISH-PRUEFUNG.md (Kontrollmessung)
   - datum: 2026-10-31
