@@ -8,6 +8,7 @@ Das Golden Gate steht in der Testphase mit Demodaten (Bernd, Petra, Alex, Alexa)
 Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risiken),
 `docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md` (T1–T9, Mängel M1–M4) und
 `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md` (Reihenfolge der Merges und Tests nach dem Publish).
+S0-06 Teil 1 (2026-10-31): Speicher-Zeile in `client.ts` auf `window.localStorage` (Weg B), Vertragstest angepasst, PR offen und nicht gemergt; danach Sync nach Lovable und Prüfung, ob der Broker zurückkommt (`docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
 `main` zuletzt geprüft auf `4887334` (nach PR #250). Gearbeitet wird nur noch in `C:\dev\sysingdashboard`. **Publish bleibt No-Go.** Antwort des Lovable-Supports vom 2026-10-30:
 Publish deployt den Lovable-Projektstand (kein Pinning), der Broker ist nicht abschaltbar. Entscheidung: Weg B (Helper entfernen), Weg A als
 Rückfall; offen: Freigabe der Schreiboperation in Lovable für das Paket S0-06 (R-07, `docs/LOVABLE-PUBLISH-PRUEFUNG.md`).

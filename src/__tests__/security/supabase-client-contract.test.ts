@@ -6,6 +6,10 @@
  * `brokeredPreviewStorage`) wurde am 24.08.2026 als unbeauftragte Nebenänderung
  * entfernt (Commits 9849350, 425fbed). Dieser statische Test verhindert, dass er
  * erneut in den Client gelangt.
+ *
+ * Die Form der Storage-Zeile weicht absichtlich vom generierten Standard ab
+ * (Support-Auskunft Lovable 2026-10-30), damit die Plattform den Broker nicht
+ * erneut einfügt; die Absicht des Vertrags (kein Broker) bleibt.
  */
 import { describe, expect, it } from "vitest";
 import "../env/test-instance";
@@ -25,7 +29,7 @@ describe("Supabase-Client — abgenommener Auth-Storage-Vertrag (425fbed)", () =
 
   it("should_useLocalStorageOrUndefined_when_configuringAuthStorage", () => {
     expect(FLAT).toMatch(
-      /auth: \{ storage: typeof window !== "undefined" \? localStorage : undefined, persistSession: true, autoRefreshToken: true, \}/,
+      /auth: \{ storage: typeof window !== "undefined" \? window\.localStorage : undefined, persistSession: true, autoRefreshToken: true, \}/,
     );
   });
 

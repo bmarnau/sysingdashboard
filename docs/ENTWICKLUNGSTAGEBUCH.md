@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — S0-06: Speicher-Zeile gegen erneutes Einfügen des Brokers
+
+Laut Lovable-Support schreibt die Plattform `client.ts` nur um, solange die Datei dem generierten Original gleicht. Die Speicher-Zeile verwendet deshalb jetzt `window.localStorage` statt `localStorage`; die Schutzabfrage und das Verhalten bleiben gleich. Der Vertragstest erwartet genau diese Form und verbietet weiterhin Import und Datei des Brokers. Ob die Plattform den Broker danach wirklich nicht mehr einfügt, zeigt erst der Sync nach Lovable; bis dahin bleibt Publish No-Go.
+
 ## 2026-10-31 — ADR-0040 Testziel-Abgleich vorgeschlagen
 
 Aus der Sichtung des Codex-Backups wird nur eine Entscheidung übernommen: die Regel, Tests fortlaufend gegen die Ziele und Risiken des jeweiligen Arbeitspakets abzugleichen. Tests dürfen nur mit gleichwertigem Ersatz zusammengelegt oder mit begründetem Wegfall ihres Zwecks entfernt werden; Sicherheitstests werden nicht zur Laufzeitverkürzung gestrichen, und ein nicht ausführbares Gate bleibt `BLOCKED`. Die Regel steht als ADR-0040 mit Status „Proposed“ zur Annahme durch den Owner. Ob sie Mehraufwand verursacht, wird beim ersten Paket nach Annahme gemessen.
