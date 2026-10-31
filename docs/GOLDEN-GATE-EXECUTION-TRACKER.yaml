@@ -638,6 +638,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-31
     ereignis: >-
+      Codex-ADR-0036 (Testziel-Abgleich, Regel AQGS-TCA-01) nach Freigabe des Owners als ADR-0040 mit Status Proposed übernommen.
+      Abweichungen vom Original: Nummer, Status, Datum, Herkunftshinweis, Präzisierung des Verweises auf ADR-0029 (zwei Dateien mit Nummer 0029), Satz zur Aufwandsmessung unter Konsequenzen.
+      Übrige Codex-ADRs nicht übernommen; backup/codex-2026-10-31 unverändert. Nicht gemergt.
+    beleg: docs/ADR/0040-kontinuierlicher-testziel-abgleich.md, Branch docs/2026-10-31-adr-0040-testziel-abgleich
+  - datum: 2026-10-31
+    ereignis: >-
       Plan aktualisiert: neues Paket S0-06 (Weg B, Analogieschätzung 1 bis 2 Arbeitstage, außerhalb der 9 Pakete bis zur Internen Freigabe 1.0), Zahlen bis BSF
       unverändert (15 Pakete, 51 bis 83 Arbeitstage). Arbeitsklon C:\dev\sysingdashboard, CI-Vorgaben Node 22 und bun festgehalten.
       PR 250 (Berichte zur Sicherung und zum Aufräumen der OneDrive-Ordner) gemergt, Merge-Commit 4887334, 15 von 15 CI-Checks grün.

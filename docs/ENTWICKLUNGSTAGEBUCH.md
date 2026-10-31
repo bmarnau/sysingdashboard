@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — ADR-0040 Testziel-Abgleich vorgeschlagen
+
+Aus der Sichtung des Codex-Backups wird nur eine Entscheidung übernommen: die Regel, Tests fortlaufend gegen die Ziele und Risiken des jeweiligen Arbeitspakets abzugleichen. Tests dürfen nur mit gleichwertigem Ersatz zusammengelegt oder mit begründetem Wegfall ihres Zwecks entfernt werden; Sicherheitstests werden nicht zur Laufzeitverkürzung gestrichen, und ein nicht ausführbares Gate bleibt `BLOCKED`. Die Regel steht als ADR-0040 mit Status „Proposed“ zur Annahme durch den Owner. Ob sie Mehraufwand verursacht, wird beim ersten Paket nach Annahme gemessen.
+
 ## 2026-10-31 — Plan aktualisiert
 
 Aus der Support-Antwort zu R-07 folgt ein neues Paket S0-06 (Auth-Broker aus dem Lovable-Projektstand entfernen, Weg B). Es liegt in Sprint 0, ist mit 1 bis 2 Arbeitstagen als Analogie geschätzt und in den 9 Paketen bis zur Internen Freigabe 1.0 nicht enthalten; die Zahlen bis zum BSF bleiben bei 15 Paketen und 51 bis 83 Arbeitstagen. Gearbeitet wird nur noch im Klon `C:\dev\sysingdashboard`. Die CI nutzt Node 22 und `bun install --frozen-lockfile`; die Auftragsvorlagen werden darauf umgestellt. Die Codex-ADR 0039 und 0040 dienen später als Vorlage für BSF-06 und werden nicht gemergt.
