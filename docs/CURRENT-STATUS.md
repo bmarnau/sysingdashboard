@@ -12,6 +12,7 @@ S0-06 Teil 1 (2026-10-31): Speicher-Zeile in `client.ts` auf `window.localStorag
 `main` zuletzt geprüft auf `4887334` (nach PR #250). Gearbeitet wird nur noch in `C:\dev\sysingdashboard`. **Publish bleibt No-Go.** Antwort des Lovable-Supports vom 2026-10-30:
 Publish deployt den Lovable-Projektstand (kein Pinning), der Broker ist nicht abschaltbar. Entscheidung: Weg B (Helper entfernen), Weg A als
 Rückfall; offen: Freigabe der Schreiboperation in Lovable für das Paket S0-06 (R-07, `docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
+ADR-0040 (Testziel-Abgleich, aus dem Codex-Backup) als Proposed vorgeschlagen, Annahme durch den Owner offen (`docs/ADR/0040-kontinuierlicher-testziel-abgleich.md`).
 Sicherung 2026-10-31: Codex-Arbeitsstand als Branch `backup/codex-2026-10-31` (`2a0cf1d9`, nicht mergen), Bundle und Dateikopie gesichert und geprüft; Bericht `docs/BERICHT-2026-10-31-SICHERUNG.md`, Übernahme der Inhalte im Backlog. Arbeitsklone unter OneDrive entfernt, einziger Arbeitsklon ist `C:\dev\sysingdashboard` (`docs/BERICHT-2026-10-31-AUFRAEUMEN-ONEDRIVE.md`).
 Kunde B: Verantwortliche per Datenauftrag gesetzt (2026-10-25, 17:49) und in der App bestätigt (Test T10, 2026-10-26). L0c ist abgeschlossen.
 Verbleibend bis zum Publish: Lovable-Antwort zu R-07, Sichtprüfung von TD-01 in der App, Test N1 bis N5 auf der veröffentlichten App. Git aufgeräumt (82 Remote-Branches, 0 gemergt, Auto-Delete aktiv): `docs/GIT-AUFRAEUMEN.md` Abschnitt 6.
