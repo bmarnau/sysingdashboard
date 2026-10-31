@@ -233,10 +233,164 @@ unter `C:\tmp` ausgeführt.
 - Das projektversionierte Toolchain-Image gemäß ADR-0039 ist der kanonische
   lokale Golden-Gate-Fallback. Sein Entrypoint prüft Git-HEAD, Worktree-
   Zustand, Bun- und Node-Versionen und installiert ausschließlich mit
-  `bun install --frozen-lockfile`. Ein fehlender Docker-Daemon ist `BLOCKED`;
-  ein lokaler Container-PASS ersetzt weder Signatur noch Exact-Head-CI/Security.
+  `bun install --frozen-lockfile`. Vor jedem Lauf bestätigt `docker version`
+  auf dem Host den erreichbaren Client und Server. Für Windows-Mounts darf der
+  Entrypoint ausschließlich den explizit eingebundenen Workspace als
+  `safe.directory` markieren. Alle anwendbaren lokalen P1-Gates laufen im
+  Image; native Host-Läufe sind Diagnose, keine Golden-Gate-Evidenz. Ein
+  fehlender Docker-Daemon ist `BLOCKED`; ein lokaler Container-PASS ersetzt
+  weder Signatur noch Exact-Head-CI/Security.
 
 Diese Regel konkretisiert ADR-0037 und gilt für Menschen und KI-Agenten.
+
+#### Verbindlicher Containerablauf fuer Golden-Gate-Evidenz
+
+Jede KI und jede Person verwendet fuer lokale P1-Gates diesen Ablauf:
+
+1. Im massgeblichen Checkout `docker version` ausfuehren. Nur ein
+   ausgegebener Client **und** Server erlauben den naechsten Schritt; sonst
+   `BLOCKED` mit der konkreten Docker-Ursache melden.
+2. Nach Aenderungen an `.devcontainer/Dockerfile` das Image bauen:
+   `docker build -t sysingdashboard-golden-gate:local -f .devcontainer/Dockerfile .`.
+   Ohne Dockerfile-Aenderung darf das vorhandene, dokumentierte Image genutzt
+   werden.
+3. Den Entrypoint im Image regressiv pruefen:
+   `docker run --rm -v "${PWD}:/workspace" -w /workspace sysingdashboard-golden-gate:local bash scripts/golden-gate/test-run-p1-toolchain-gates.sh`.
+4. Nur mit sauberem Git-Worktree den vollstaendigen P1-Gate-Lauf starten:
+   `docker run --rm -v "${PWD}:/workspace" -w /workspace sysingdashboard-golden-gate:local bash scripts/golden-gate/run-p1-toolchain-gates.sh`.
+   Ein Dirty Worktree ist absichtlich `BLOCKED`, niemals ein Grund den
+   Entrypoint abzuschwaechen.
+   Vor dem signierten Kandidaten darf fuer eine vollstaendige Vorabpruefung
+   unter `C:\tmp` ein lokaler, ungepushter Clean-Candidate-Snapshot entstehen.
+   Seine Dateien muessen den zu pruefenden Aenderungen entsprechen und sein
+   Git-Tree wird protokolliert. Der spaetere signierte Exact Head muss den
+   identischen Tree haben und die vollstaendigen Gates erneut bestehen; ein
+   Snapshot ist niemals PR-, Merge- oder Release-Evidenz.
+5. Der vollstaendige Lauf fuehrt im Image Prettier, Lint, Typecheck,
+   Docs-Check, Project-Status-Check, Security-Check sowie die fokussierten
+   P1-Quell- und Composer-Tests aus. Seine Abhaengigkeiten muessen vorher
+   nach Regel 5a vorbereitet und verifiziert sein. Jeder Gate-Name und dessen
+   Exit-Status ist Evidenz.
+5a. Eine vollstaendige, netzwerkgestuetzte Paketinstallation ist **nicht**
+   fuer jeden Kandidatenlauf erforderlich. Der Abhaengigkeitsvertrag ist
+   `Image-Digest + Bun-Version + Linux-Plattform + SHA-256(bun.lock)`.
+   Fuer jeden bisher nicht vorbereiteten Vertrag laeuft ein eigener,
+   begrenzter `dependency-prepare`-Schritt mit
+   `bun install --frozen-lockfile --network-concurrency 8`. Er speichert nur
+   Bun-Paketcache, `node_modules` und ein Manifest dieses Vertrags in einem
+   benannten Docker-Volume; weder Quellcode noch Secrets duerfen darin liegen.
+   Die begrenzte Netzparallelitaet verhindert, dass die Bun-
+   Standardparallelitaet von 48 Verbindungen den Docker- oder Proxy-Pfad
+   ueberfaehrt.
+5b. Vor jedem Golden-Gate-Lauf prueft der Entrypoint das Cache-Manifest gegen
+   den Abhaengigkeitsvertrag. Bei Uebereinstimmung werden die vorhandenen
+   Abhaengigkeiten ohne Netzinstallation genutzt. Bei fehlendem,
+   beschaedigtem oder nicht passendem Manifest lautet das Ergebnis
+   `BLOCKED/DEPENDENCY_PROVENANCE` mit Aktion `run-dependency-prepare`; der
+   Gate-Lauf darf weder einen fremden Cache verwenden noch selbst stillschweigend
+   ins Netz gehen. Eine Aenderung von `bun.lock`, Bun-Version, Plattform oder
+   Image-Digest erfordert daher genau einen neuen Prepare-Lauf.
+   Auf Windows startet jede KI und jede Person beide Schritte ausschliesslich
+   ueber `scripts/golden-gate/invoke-p1-toolchain-gates.ps1`: zuerst
+   `-Mode Prepare`, danach `-Mode Run`. Der Wrapper erstellt nur die aus dem
+   Vertrag abgeleiteten, gelabelten Volumes und bindet sie fuer den jeweiligen
+   Lauf ein; `-Mode Run` erstellt fehlende Volumes nicht, sondern bleibt
+   `BLOCKED`.
+6. Das Image enthaelt Ubuntu, Node 22, eine gepinnte Bun-Version, Git, Curl,
+   CA-Zertifikate und Unzip sowie den nicht privilegierten Benutzer `vscode`.
+   Es enthaelt weder Quellcode noch `node_modules`, Browser-Binaries,
+   Supabase, Secrets oder Docker-Socket. Der Checkout wird nur zur Laufzeit
+   eingebunden; der Entrypoint vertraut ausschliesslich diesem Mount als
+   `safe.directory`.
+7. Lokale Container-Evidenz wird mit Image-Tag/-Digest, Git-HEAD,
+   Worktree-Zustand, Gate-Ausgabe und Datum im technischen Pruefbericht
+   festgehalten. Sie ist notwendig, aber weder Signatur noch Exact-Head-CI
+   oder Exact-Head-Security.
+8. Ein Image-Update erfolgt nur als versionskontrollierte Aenderung von
+   Dockerfile, Dev-Container-Definition oder Gate-Entrypoint. Danach muessen
+   Image-Vertragstest, Entrypoint-Regressionstest und alle anwendbaren P1-
+   Gates im neu gebauten Image erneut laufen. Jede neue Tool-Version, jeder
+   geaenderte enthaltene Baustein und der neue Image-Digest werden im ADR und
+   technischen Pruefbericht erfasst; ohne diese Evidenz bleibt das Update
+   `BLOCKED`.
+9. Gibt ein Gate innerhalb des vereinbarten Zeitlimits keine Fortschritts- oder
+   Abschlussausgabe aus, lautet sein Ergebnis `BLOCKED/TIMEOUT`. Logs, aktives
+   Gate, Zeitlimit und betroffener Container werden dokumentiert. Nur der von
+   der pruefenden Person oder KI gestartete Container darf danach gezielt
+   beendet werden; andere Projektcontainer bleiben unberuehrt. Nachfolgende
+   Gates gelten dann als nicht ausgefuehrt.
+10. Der Entrypoint meldet jeden Zustand sofort als einzelne, maschinenlesbare
+    Zeile: `EVENT timestamp=<UTC> phase=<preflight|gate> status=<START|PASS|
+    FAIL|BLOCKED|RETRY> class=<...> reason=<...> action=<...> attempt=<n>`.
+    Diese Zeile wird ohne Zusammenfassung oder Ursachenforschung nach aussen
+    kommuniziert. Sie nennt damit wann, wo, bei welchem Versuch und weshalb
+    der Lauf fortgesetzt, wiederholt oder beendet wurde.
+11. `bun install` darf nur mit der dokumentierten Parallelitaet laufen und
+    wird bei einem Exit-Code hoechstens dreimal mit kurzer Wartezeit erneut
+    versucht (`GG_INSTALL_ATTEMPTS=3`,
+    `GG_INSTALL_RETRY_DELAY_SECONDS=5`). Nach dem letzten Versuch lautet der
+    Status `BLOCKED` mit Klasse `DEPENDENCY_INSTALL` und Aktion
+    `check-network-and-resources`. Es folgt kein automatischer
+    Forschungs- oder Reparaturlauf; die weiteren Gates sind `NOT RUN`.
+12. Vor einem Kandidatenlauf dokumentiert der Host-Preflight mindestens
+   Docker Client/Server, die auf 20 Sekunden begrenzte Registry-Erreichbarkeit
+   und den verfuegbaren Speicher. Scheitert einer dieser Punkte, wird der
+   Lauf als `BLOCKED/INFRASTRUCTURE_NETWORK` oder
+   `BLOCKED/INFRASTRUCTURE_RESOURCE` beendet, ohne den P1-Runner zu starten.
+13. Lange Gates senden mindestens alle 30 Sekunden ein `EVENT` mit
+    `status=HEARTBEAT`; der Intervallwert ist nur ueber
+    `GG_HEARTBEAT_SECONDS` konfigurierbar. Eine KI oder Person kommuniziert
+    diese Ereignisse fortlaufend. Wenn die aufrufende Umgebung Standard-Output
+    puffert, liest sie Status und letzte Ereignisse read-only mit
+    `docker inspect`, `docker logs --tail 30` und
+    `docker stats --no-stream` des von ihr gestarteten Containers. CPU-,
+    Netzwerk- oder I/O-Aktivitaet bedeutet `RUNNING`; ausbleibende Heartbeats
+    und keine Aktivitaet innerhalb des vereinbarten Zeitlimits bedeuten
+    `BLOCKED/TIMEOUT`.
+14. `dependency-prepare` unterliegt denselben Event-, Heartbeat-, Retry- und
+    Host-Preflight-Regeln wie ein Golden-Gate-Lauf. Sein Ergebnis ist nur
+    wiederverwendbare Toolchain-Evidenz; es ersetzt weder die Tests des
+    konkreten HEAD noch Signatur, Exact-Head-CI oder Exact-Head-Security.
+15. Docker-/WSL-Speicher wird nur ueber
+    `scripts/golden-gate/clean-docker-toolchain.ps1` gewartet. Der Standardmodus
+    ist Inventur ohne Aenderung. Eine Bereinigung verlangt `-Apply` und den
+    expliziten Token `CLEAN_GOLDEN_GATE_CACHE`; sie darf ausschliesslich
+    gestoppte Container mit dem Label
+    `org.sysingdashboard.golden-gate=true` sowie unreferenzierte Volumes mit
+    dem Praefix `sysingdashboard-gg-` loeschen. Globale `docker system prune`,
+    `docker volume prune`, nicht markierte Artefakte und BuildKit-Caches sind
+    verboten. Die Routine berichtet den Docker-WSL-VHDX-Pfad und dessen Groesse,
+    kompaktiert die VHDX aber nie automatisch: Das erfordert gestopptes Docker
+    Desktop/WSL und kann andere Distributionen beeintraechtigen. Ein solcher
+    manueller Wartungsschritt braucht eine gesonderte, dokumentierte Freigabe.
+16. Shell-Vertragstests fuer Golden-Gate-Skripte laufen auf Windows verbindlich
+    mit der installierten Git Bash und einem vom Test erzeugten temporaeren
+    `HOME`. WSL darf fuer diese Tests weder implizit noch als automatischer
+    Fallback verwendet werden: Ein fehlender WSL-Zugriff oder eine nicht
+    aufloesbare Windows-Pfaduebergabe ist als
+    `BLOCKED/INFRASTRUCTURE_SHELL` zu melden, nicht durch Wiederholungen mit
+    wechselnden Shells zu kaschieren. Lokale Git-Signing-, Credential- und
+    Ignore-Konfigurationen duerfen Test-Fixtures nicht beeinflussen.
+17. Jeder Prepare-, Installations-, Cache- und Bereinigungspfad braucht einen
+    automatisierten Negativtest. Dieser prueft mindestens den exakten
+    Nichtnull-Exit-Code, die maschinenlesbare Fehlerklasse und dass keine
+    nachgelagerte Aktion stattfindet. Insbesondere darf ein fehlgeschlagener
+    `bun install` niemals als erfolgreicher Prepare-Lauf enden. Ein neu
+    beobachteter Infrastrukturfehler wird zuerst als isolierter Vertragstest
+    erfasst; erst dann darf die minimal erforderliche Korrektur erfolgen.
+18. Wiederholungsregel: Nach einem reproduzierten Infrastrukturfehler wird
+    derselbe Befehl hoechstens einmal in der im Standard vorgesehenen Umgebung
+    erneut ausgefuehrt. Bleibt er blockiert, wird Ursache, Umgebung, Zeitpunkt
+    und naechste Aktion als `BLOCKED` dokumentiert. Weitere Varianten oder
+    Ursachenforschung brauchen einen neuen, dokumentierten Testfall oder eine
+    ausdrueckliche Freigabe; sie duerfen nicht den Golden-Gate-Lauf verdecken.
+19. GitHub-Authentifizierung fuer Golden-Gate-Synchronisation erfolgt nur
+    interaktiv ueber `scripts/golden-gate/repair-github-auth.ps1`. Das Skript
+    speichert oder protokolliert keine Tokens, prueft `gh auth status` im
+    massgeblichen Checkout und fuehrt `git fetch origin --prune` erst nach
+    erfolgreicher Verifikation aus. Ein Device-Code wird nur im Terminal
+    angezeigt und nie in Dokumentation, Commits oder technische Berichte
+    uebernommen.
 
 ## 9. Sicherheitsregeln
 

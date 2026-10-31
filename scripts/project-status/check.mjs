@@ -20,10 +20,11 @@
  */
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
 import Ajv2020 from "ajv/dist/2020.js";
 
-const ROOT = resolve(new URL("../..", import.meta.url).pathname);
+const ROOT = resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const MANIFEST = "docs/PROJECT-STATUS.yaml";
 const SCHEMA = "docs/project-status.schema.json";
 

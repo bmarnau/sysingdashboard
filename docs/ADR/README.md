@@ -52,6 +52,7 @@ Windows kollidieren.
 | 0037 | [OneDrive-Arbeitsbasis und temporäre Toolchain-Umgebung](./0037-onedrive-temporare-toolchain-umgebung.md)                     | Accepted               |
 | 0038 | [Kontrollierter WSL-Toolchain-Fallback für Golden-Gate-Prüfungen](./0038-kontrollierter-wsl-toolchain-fallback.md)           | Accepted               |
 | 0039 | [Kanonisches Golden-Gate-Toolchain-Image](./0039-kanonisches-golden-gate-toolchain-image.md)                                 | Accepted               |
+| 0040 | [Sichere lokale Speicherwartung fuer Golden Gate](./0040-sichere-lokale-speicherwartung.md)                                  | Accepted               |
 
 Stand der Prüfung: 2026-10-13. ADR-0031 ist in BSF-02B umgesetzt.
 ADR-0032 konkretisiert ADR-0030 für den minimalen gemeinsamen Mehrbenutzer-Read-Pfad,
