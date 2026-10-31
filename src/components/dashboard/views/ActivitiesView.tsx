@@ -19,6 +19,7 @@ export function ActivitiesView({
   onEdit,
   onDelete,
   canEdit,
+  canViewBilling = false,
 }: {
   activities: Activity[];
   periodActivities: Activity[];
@@ -30,6 +31,8 @@ export function ActivitiesView({
   onDelete: (id: string) => void;
   /** RBAC: Schreibaktionen werden nur bei `activity.edit` angeboten. */
   canEdit: boolean;
+  /** RBAC (QS-06): Satz, Betrag und Abrechnungsstatus nur mit `billing.view`; sonst nur Stunden. */
+  canViewBilling?: boolean;
 }) {
   const [q, setQ] = useState("");
   const [billing, setBilling] = useState<"alle" | BillingStatus>("alle");
@@ -43,7 +46,7 @@ export function ActivitiesView({
 
   const source = periodOnly ? periodActivities : activities;
   const filtered = source.filter((a) => {
-    if (billing !== "alle" && a.billingStatus !== billing) return false;
+    if (canViewBilling && billing !== "alle" && a.billingStatus !== billing) return false;
     if (scope === "billable" && !a.billable) return false;
     if (scope === "non_billable" && a.billable) return false;
     if (scope === "ohne_wp" && a.workPackageId) return false;
@@ -76,7 +79,7 @@ export function ActivitiesView({
             {periodOnly
               ? `${periodLabel} · ${periodActivities.length} Einträge`
               : `Alle · ${activities.length} Einträge`}
-            {" · "}Abrechnung erfolgt ausschließlich hier
+            {canViewBilling && <>{" · "}Abrechnung erfolgt ausschließlich hier</>}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -102,19 +105,21 @@ export function ActivitiesView({
             <option value="ohne_wp">Ohne Arbeitspaket</option>
             <option value="projektlos">Projektlos (inkl. WP ohne Projekt)</option>
           </select>
-          <select
-            aria-label="Tätigkeiten nach Abrechnungsstatus filtern"
-            value={billing}
-            onChange={(e) => setBilling(e.target.value as typeof billing)}
-            className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"
-          >
-            <option value="alle">Alle Abr.-Status</option>
-            {(Object.keys(billingLabel) as BillingStatus[]).map((b) => (
-              <option key={b} value={b}>
-                {billingLabel[b]}
-              </option>
-            ))}
-          </select>
+          {canViewBilling && (
+            <select
+              aria-label="Tätigkeiten nach Abrechnungsstatus filtern"
+              value={billing}
+              onChange={(e) => setBilling(e.target.value as typeof billing)}
+              className="h-9 rounded-lg border border-input bg-secondary/40 px-3 text-sm outline-none focus:border-ring"
+            >
+              <option value="alle">Alle Abr.-Status</option>
+              {(Object.keys(billingLabel) as BillingStatus[]).map((b) => (
+                <option key={b} value={b}>
+                  {billingLabel[b]}
+                </option>
+              ))}
+            </select>
+          )}
           {canEdit && (
             <button
               onClick={onNew}
@@ -133,9 +138,13 @@ export function ActivitiesView({
               <th className="px-4 py-3">Tätigkeit</th>
               <th className="px-4 py-3">Zuordnung</th>
               <th className="px-4 py-3 text-right">Dauer</th>
-              <th className="px-4 py-3 text-right">Satz</th>
-              <th className="px-4 py-3 text-right">Betrag</th>
-              <th className="px-4 py-3">Abrechnung</th>
+              {canViewBilling && (
+                <>
+                  <th className="px-4 py-3 text-right">Satz</th>
+                  <th className="px-4 py-3 text-right">Betrag</th>
+                  <th className="px-4 py-3">Abrechnung</th>
+                </>
+              )}
               <th className="px-4 py-3 no-print" />
             </tr>
           </thead>
@@ -177,28 +186,32 @@ export function ActivitiesView({
                     )}
                   </td>
                   <td className="px-4 py-3 text-right font-mono">{a.duration.toFixed(2)} h</td>
-                  <td className="px-4 py-3 text-right font-mono text-xs text-muted-foreground">
-                    {a.billable ? fmtEuro(a.hourlyRate) : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-right font-mono font-semibold">
-                    {a.billable ? (
-                      fmtEuro(amount)
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-block rounded-md border px-2 py-1 text-[11px] font-medium ${billingStyles[a.billingStatus]}`}
-                    >
-                      {billingLabel[a.billingStatus]}
-                    </span>
-                    {!a.billable && (
-                      <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-                        nicht abr.
-                      </p>
-                    )}
-                  </td>
+                  {canViewBilling && (
+                    <>
+                      <td className="px-4 py-3 text-right font-mono text-xs text-muted-foreground">
+                        {a.billable ? fmtEuro(a.hourlyRate) : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-semibold">
+                        {a.billable ? (
+                          fmtEuro(amount)
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-block rounded-md border px-2 py-1 text-[11px] font-medium ${billingStyles[a.billingStatus]}`}
+                        >
+                          {billingLabel[a.billingStatus]}
+                        </span>
+                        {!a.billable && (
+                          <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                            nicht abr.
+                          </p>
+                        )}
+                      </td>
+                    </>
+                  )}
                   <td className="px-4 py-3 no-print">
                     <div className="flex justify-end gap-1">
                       {canEdit && (
@@ -218,7 +231,10 @@ export function ActivitiesView({
             })}
             {sorted.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-6 py-10 text-center text-sm text-muted-foreground">
+                <td
+                  colSpan={canViewBilling ? 8 : 5}
+                  className="px-6 py-10 text-center text-sm text-muted-foreground"
+                >
                   Keine Tätigkeiten in dieser Ansicht.
                 </td>
               </tr>

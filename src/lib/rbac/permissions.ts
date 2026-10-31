@@ -45,6 +45,7 @@ export type Permission =
   | "referencedata.manage"
   | "customer.responsibility.manage"
   | "project.controlling.view"
+  | "billing.view"
   | "performance.statement.manage"
   | "kiosk.view";
 
@@ -71,6 +72,7 @@ export const ALL_PERMISSIONS: readonly Permission[] = [
   "referencedata.manage",
   "customer.responsibility.manage",
   "project.controlling.view",
+  "billing.view",
   "performance.statement.manage",
   "kiosk.view",
 ] as const;
@@ -98,6 +100,7 @@ export const PERMISSION_LABEL: Record<Permission, string> = {
   "referencedata.manage": "Kataloge pflegen",
   "customer.responsibility.manage": "Kundenverantwortung verwalten",
   "project.controlling.view": "Projektcontrolling ansehen",
+  "billing.view": "Abrechnungsdaten ansehen",
   "performance.statement.manage": "Leistungsnachweise prüfen und finalisieren",
   "kiosk.view": "Info-Kiosk ansehen",
 };
@@ -137,6 +140,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "referencedata.manage",
     "customer.responsibility.manage",
     "project.controlling.view",
+    "billing.view",
     "performance.statement.manage",
   ],
   administrator: [
@@ -160,6 +164,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "referencedata.manage",
     "customer.responsibility.manage",
     "project.controlling.view",
+    "billing.view",
   ],
   teamlead: [
     "dashboard.view",
@@ -176,6 +181,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "referencedata.view",
     "customer.responsibility.manage",
     "project.controlling.view",
+    "billing.view",
     "performance.statement.manage",
   ],
   projectmanager: [
@@ -191,6 +197,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
     "avkk.management.view",
     "referencedata.view",
     "project.controlling.view",
+    "billing.view",
   ],
   engineer: [
     "dashboard.view",
