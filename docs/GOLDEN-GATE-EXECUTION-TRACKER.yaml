@@ -607,6 +607,10 @@ risiken:
       Publish deployt immer den Lovable-Projektstand (nicht main, kein Pinning); laut Support keine Wirkung außerhalb der Editor-Preview
       (von uns nicht gemessen). Entscheidung 2026-10-30: Weg B (Helper nach Anleitung des Supports entfernen), Weg A (Helper im
       Vertragstest erlauben, ADR-0036) als Rückfall. Publish bleibt No-Go bis Weg B oder A entschieden und nachgewiesen ist.
+      Befund 2026-10-31 (Weg 1, Prüfung der veröffentlichten App): Das ausgelieferte Bundle (index-B1N4K92k.js, App 1.69.0) enthält die Broker-Funktion
+      (Kennungen lovable-preview-auth:get, set, remove, result); der Broker ist in der veröffentlichten App also bereits vorhanden. Er greift laut Quelltext nur
+      im Editor-Rahmen mit Projekt-ID im Hostnamen, sonst localStorage (aus dem Quelltext gelesen, nicht im Betrieb gemessen). Veröffentlichungszeitpunkt und
+      Commit sind nicht ermittelbar. Ein Publish des Weg-B-Stands würde den Broker entfernen. Publish bleibt No-Go bis zur Freigabe des Owners.
   - id: R-08
     titel: Live-Datenbank weicht von den Migrationen ab (FK reference_value_history_systemhouse_fk)
     wirkung: Neuaufbau aus Migrationen liefert ein anderes Schema als Produktion
@@ -640,6 +644,12 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-31
+    ereignis: >-
+      Weg 1 (Publish-Quelle): Prompt D im Lovable-Chat: Veröffentlicht ist Version 1.69.0, Zeitpunkt und Commit nicht ermittelbar; Publish deployt den Lovable-Projektstand
+      (Support-Aussage); Lovable-HEAD 5a0fec0 liegt auf lovable-sync-1793449032 (main plus types.ts +5, client.ts unverändert, kein Broker). Prüfung der veröffentlichten
+      App im Browser: Das ausgelieferte Bundle enthält die Broker-Kennungen, der Broker ist in der Produktion bereits vorhanden (Wirkung nur aus dem Quelltext abgeleitet).
+    beleg: docs/LOVABLE-PUBLISH-PRUEFUNG.md (Befund veröffentlichte App), Branch lovable-sync-1793449032
   - datum: 2026-10-31
     ereignis: >-
       Weg B Kontrollmessung: Prompt B (README-Kommentarzeile) und Prompt C (lesend) im Lovable-Chat nach Re-check auf main daa5b1f. Neuer Sync-Branch

@@ -8,6 +8,7 @@ Das Golden Gate steht in der Testphase mit Demodaten (Bernd, Petra, Alex, Alexa)
 Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risiken),
 `docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md` (T1–T9, Mängel M1–M4) und
 `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md` (Reihenfolge der Merges und Tests nach dem Publish).
+Befund veröffentlichte App (2026-10-31): Das ausgelieferte Bundle (1.69.0) enthält den Broker; Lovable-Stand jetzt ohne Broker (main plus `types.ts`). Publish des heutigen Stands würde ihn entfernen; Freigabe und Wirkungsmessung stehen beim Owner. Publish bleibt No-Go.
 Weg B Kontrollmessung (2026-10-31, Prompt B und C): Broker nach einer Lovable-Änderung nicht zurückgekehrt, `client.ts` unverändert (Branch `lovable-sync-1793441453`); Messung, kein Dauernachweis. Nächster Schritt: Publish-Quelle belegen, Publish bleibt No-Go.
 Tägliche Lovable-Prompts (ab 2026-11-01): geplante Aufgabe 07:17 liefert einen kleinen, risikoarmen Prompt gegen verfallende Credits; Prompt B/C (S0-06) zuerst, nie Publish oder Datenbankänderung.
 S0-06 Teil 1 (2026-10-31): Speicher-Zeile in `client.ts` auf `window.localStorage` (Weg B), Vertragstest angepasst, PR offen und nicht gemergt; danach Sync nach Lovable und Prüfung, ob der Broker zurückkommt (`docs/LOVABLE-PUBLISH-PRUEFUNG.md`).

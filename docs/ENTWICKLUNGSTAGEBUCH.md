@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — Publish-Quelle: Broker in der veröffentlichten App
+
+Prompt D belegt den heutigen Lovable-Stand (`5a0fec0` auf `lovable-sync-1793449032`, main plus `types.ts`, kein Broker). Die Prüfung der veröffentlichten App zeigt dagegen die Broker-Kennungen im ausgelieferten Bundle: Der Broker ist in der Produktion bereits vorhanden. Laut Quelltext greift er nur im Editor-Rahmen, gemessen ist das nicht. Ein Publish des heutigen Stands würde ihn entfernen. Publish bleibt No-Go bis zur Freigabe des Owners.
+
 ## 2026-10-31 — Weg B: Kontrollmessung bestanden (Messung)
 
 Nach Re-check und Prompt B (README-Kommentarzeile) zeigt der neue Sync-Branch `lovable-sync-1793441453`: nur `README.md` und `types.ts` (+5) weichen von `main` ab, `client.ts` ist unverändert und es gibt keine Broker-Datei. Prompt C bestätigt das von Lovables Seite. Das stützt Weg B; es ist eine Messung, kein Dauernachweis. Offen: Publish-Quelle belegen. Publish bleibt No-Go (R-07). Der Sync-Branch wird nicht gemergt.
