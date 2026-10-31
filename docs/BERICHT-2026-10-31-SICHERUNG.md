@@ -92,5 +92,5 @@ Die Dateikopie unter `worktree-changes\` vor dem Zurückkopieren mit `sha256sum 
 
 - `backup/codex-2026-10-31` muss erhalten bleiben (Branches `backup/*` nie löschen) und darf nicht gemergt werden.
 - Der Ordner `C:\dev\_sicherung_sysingdashboard-codex` sollte erhalten bleiben, bis über die Übernahme der Codex-Inhalte entschieden ist (Backlog).
-- Vorschlag zum Aufräumen (Freigabe offen): Worktree `sysingdashboard-s0-05` abmelden, danach die Klone `sysingdashboard-codex` und `sysingdashboard-bsf03` unter OneDrive entfernen. Arbeitsklone künftig nur unter `C:\dev`.
+- Aufräumen nach Freigabe am 2026-10-31 ausgeführt: Worktree `sysingdashboard-s0-05` und die Klone `sysingdashboard-codex` und `sysingdashboard-bsf03` unter OneDrive entfernt (`docs/BERICHT-2026-10-31-AUFRAEUMEN-ONEDRIVE.md`).
 - Remote-Branches: 76 (Stand 2026-10-31, `git ls-remote --heads origin`).
