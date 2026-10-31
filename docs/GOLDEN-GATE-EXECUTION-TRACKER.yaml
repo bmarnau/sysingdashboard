@@ -610,7 +610,8 @@ risiken:
       Befund 2026-10-31 (Weg 1, Prüfung der veröffentlichten App): Das ausgelieferte Bundle (index-B1N4K92k.js, App 1.69.0) enthält die Broker-Funktion
       (Kennungen lovable-preview-auth:get, set, remove, result); der Broker ist in der veröffentlichten App also bereits vorhanden. Er greift laut Quelltext nur
       im Editor-Rahmen mit Projekt-ID im Hostnamen, sonst localStorage (aus dem Quelltext gelesen, nicht im Betrieb gemessen). Veröffentlichungszeitpunkt und
-      Commit sind nicht ermittelbar. Ein Publish des Weg-B-Stands würde den Broker entfernen. Publish bleibt No-Go bis zur Freigabe des Owners.
+      Commit sind nicht ermittelbar. Ein Publish des Weg-B-Stands würde den Broker entfernen. Messung angemeldet (2026-10-31): Sitzung
+      liegt im localStorage, nicht eingebettet, keine Projekt-ID im Host, Broker-Pfad inaktiv. Publish bleibt No-Go bis zur Freigabe des Owners.
   - id: R-08
     titel: Live-Datenbank weicht von den Migrationen ab (FK reference_value_history_systemhouse_fk)
     wirkung: Neuaufbau aus Migrationen liefert ein anderes Schema als Produktion
