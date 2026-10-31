@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — Plan aktualisiert
+
+Aus der Support-Antwort zu R-07 folgt ein neues Paket S0-06 (Auth-Broker aus dem Lovable-Projektstand entfernen, Weg B). Es liegt in Sprint 0, ist mit 1 bis 2 Arbeitstagen als Analogie geschätzt und in den 9 Paketen bis zur Internen Freigabe 1.0 nicht enthalten; die Zahlen bis zum BSF bleiben bei 15 Paketen und 51 bis 83 Arbeitstagen. Gearbeitet wird nur noch im Klon `C:\dev\sysingdashboard`. Die CI nutzt Node 22 und `bun install --frozen-lockfile`; die Auftragsvorlagen werden darauf umgestellt. Die Codex-ADR 0039 und 0040 dienen später als Vorlage für BSF-06 und werden nicht gemergt.
+
 ## 2026-10-31 — Arbeitsklone unter OneDrive aufgeräumt
 
 Nach der Prüfung der Sicherung sind die drei alten Arbeitskopien unter OneDrive entfernt: der Codex-Klon, sein Worktree für S0-05 und der Klon für BSF-03. Vorher war belegt, dass jeder ihrer Branches auf GitHub liegt und keine ungesicherte Arbeit darin steckt. Gearbeitet wird jetzt nur noch im Klon unter `C:\dev`. Bericht: `docs/BERICHT-2026-10-31-AUFRAEUMEN-ONEDRIVE.md`.
