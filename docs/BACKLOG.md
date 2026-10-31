@@ -294,3 +294,4 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 - `package.json`: `engines` (Node 22) und `packageManager` festlegen, damit lokale Umgebung und CI übereinstimmen.
 - Basisordner `C:\Users\bmarn\OneDrive\Dokumente\Dashboard` (alter Prototyp vom Juli, kein Repo): `data/` und `docs/` sichten, danach archivieren.
 - Codex-ADR 0039 und 0040 aus `backup/codex-2026-10-31` als Vorlage für BSF-06 nutzen (nicht mergen); bei einer Übernahme neu nummerieren.
+- Standard "Lovable-Grenzen" (bmarnau-standards): Ein Merge auf `main`, während Lovable eigene Commits hat, ersetzt diese und löst den Lovable-Dialog "Ein Push in dein Repository hat deine Arbeit ersetzt" aus (Beobachtung 2026-10-31 nach PR 254; Lovable sichert vorher ein Backup). Vor jedem Merge Lovable-Stand per Re-check abgleichen; Dialog mit "Repository-Version behalten" beantworten, sofern die Lovable-Commits nur Plattform-Änderungen (`types.ts`) enthalten.
