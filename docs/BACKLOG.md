@@ -1,6 +1,6 @@
 # Sysing Dashboard — Backlog
 
-Stand: 2026-10-29
+Stand: 2026-10-31
 Status: lebendes, chat-unabhängiges Backlog
 
 GitHub ist die maßgebliche Quelle. Neue Backlog-Einträge werden hier fachlich beschrieben und bei Einplanung in Sprint-/Meilensteinplanung mit `docs/ROADMAP-MVP-BSF.md` synchronisiert.
@@ -282,3 +282,7 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 
 - Hygiene-Skript: Squash-Erkennung per PR-Abgleich. `npm run git:hygiene` erkennt Squash-Merges nicht; "0 gemergte Branches" ist deshalb nicht aussagekräftig. Das Skript sollte Branches mit gemergtem PR (REST, `head.ref`) zusätzlich ausweisen und je Branch prüfen, ob der Dateistand mit `main` übereinstimmt. Beleg: `docs/BERICHT-2026-10-28-S0-05-AUFRAEUMEN-MERGE.md`.
 - Test `BackendAdminDialog.test.tsx` schlug unter Volllast zweimal fehl; Ursache nicht belegt. Zu klären: Ursache und Stabilisierung, vor einer Bewertung als instabil.
+
+## Ergänzung 2026-10-31 (Sicherung Codex-Arbeitsstand)
+
+- Codex-Inhalte aus `backup/codex-2026-10-31` (`2a0cf1d9`) sichten: ADR-Entwürfe 0036 bis 0040 (Nummern auf `main` anders belegt, bei Übernahme neu nummerieren), Dev-Container und Golden-Gate-Skripte, `management-cockpit-service.ts` mit Test (Abgleich mit L2-Cockpit P1 bis P3). Je Inhalt entscheiden: übernehmen (eigener PR) oder verwerfen. Bis dahin Branch und lokale Ordner `_sicherung_*` erhalten. Beleg: `docs/BERICHT-2026-10-31-SICHERUNG.md`.
