@@ -8,7 +8,7 @@ Das Golden Gate steht in der Testphase mit Demodaten (Bernd, Petra, Alex, Alexa)
 Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risiken),
 `docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md` (T1–T9, Mängel M1–M4) und
 `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md` (Reihenfolge der Merges und Tests nach dem Publish).
-S0-06 abgeschlossen (2026-10-31, `main` fb7c61b): Weg B hält bei der Kontrollmessung, Dauerbeobachtung über die täglichen Lovable-Prompts. Nächste Schritte: S0-04 (Owner) und erstes Entwicklungspaket, dann Publish mit N1 bis N5 nur nach ausdrücklicher Freigabe, dann Antwort an Lea.
+S0-06 abgeschlossen (2026-10-31, `main` fb7c61b): Weg B hält bei der Kontrollmessung, Dauerbeobachtung über die täglichen Lovable-Prompts. S0-04 erledigt (Owner: heutiger Lovable-Stand genügt). Nächster Schritt: erstes Entwicklungspaket nach ausdrücklicher Anweisung, dann Publish mit N1 bis N5 nur nach ausdrücklicher Freigabe, dann Antwort an Lea.
 Befund veröffentlichte App (2026-10-31): Das ausgelieferte Bundle (1.69.0) enthält den Broker; Lovable-Stand jetzt ohne Broker (main plus `types.ts`). Publish des heutigen Stands würde ihn entfernen; Freigabe und Wirkungsmessung stehen beim Owner. Publish bleibt No-Go.
 Weg B Kontrollmessung (2026-10-31, Prompt B und C): Broker nach einer Lovable-Änderung nicht zurückgekehrt, `client.ts` unverändert (Branch `lovable-sync-1793441453`); Messung, kein Dauernachweis. Nächster Schritt: Publish-Quelle belegen, Publish bleibt No-Go.
 Tägliche Lovable-Prompts (ab 2026-11-01): geplante Aufgabe 07:17 liefert einen kleinen, risikoarmen Prompt gegen verfallende Credits; Prompt B/C (S0-06) zuerst, nie Publish oder Datenbankänderung.
