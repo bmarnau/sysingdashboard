@@ -9,7 +9,15 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-30 · Dashboard-Version 1.69.0
+Stand: 2026-10-31 · Dashboard-Version 1.69.0
+
+## 2026-10-31 — Arbeitsklone unter OneDrive aufgeräumt
+
+Nach der Prüfung der Sicherung sind die drei alten Arbeitskopien unter OneDrive entfernt: der Codex-Klon, sein Worktree für S0-05 und der Klon für BSF-03. Vorher war belegt, dass jeder ihrer Branches auf GitHub liegt und keine ungesicherte Arbeit darin steckt. Gearbeitet wird jetzt nur noch im Klon unter `C:\dev`. Bericht: `docs/BERICHT-2026-10-31-AUFRAEUMEN-ONEDRIVE.md`.
+
+## 2026-10-31 — Sicherung des Codex-Arbeitsstands geprüft
+
+Der Arbeitsstand aus dem früheren Codex-Klon (2026-10-19/20) liegt jetzt dreifach vor: als Remote-Branch `backup/codex-2026-10-31`, als Git-Bundle und als Dateikopie mit Hashliste. Alle Prüfungen bestehen; die Dateikopie entspricht Datei für Datei dem Sicherungscommit. Der ursprüngliche Codex-Klon existiert weiterhin unter OneDrive; die erste Fassung des Berichts hatte ihn fälschlich als entfernt gemeldet. Der Branch wird nicht gemergt, weil seine ADR-Nummern 0036 bis 0039 auf `main` anders belegt sind. Über die Übernahme einzelner Inhalte entscheidet ein Backlog-Punkt. Bericht: `docs/BERICHT-2026-10-31-SICHERUNG.md`.
 
 ## 2026-10-30 — Antwort des Lovable-Supports zu R-07
 

@@ -1,6 +1,6 @@
 # Git aufräumen: gemergte Branches
 
-Stand: 2026-10-26. Zweck: Das Repository enthält viele Branches, die vollständig in `main` enthalten sind. Sie verdecken die offenen Arbeitsstände und erschweren die Prüfung gegen Lovable (R-07).
+Stand: 2026-10-31. Zweck: Das Repository enthält viele Branches, die vollständig in `main` enthalten sind. Sie verdecken die offenen Arbeitsstände und erschweren die Prüfung gegen Lovable (R-07).
 
 ## 1 Ausgangslage
 
@@ -164,3 +164,17 @@ Der Branch `docs/tracker-lovable-broker-ruecksetzung` ist verworfen, nicht gemer
 - Wiederherstellen: `git push origin archive/docs-tracker-lovable-broker-ruecksetzung^{commit}:refs/heads/docs/tracker-lovable-broker-ruecksetzung`.
 - Lokal: Der Branch gleichen Namens (`28bcd15b`) bleibt bestehen; `git branch -d` verweigert, weil der Commit nicht in `main` ist. `-D` wurde nicht verwendet; Entscheidung des Betreibers offen.
 - Worktree `sysingdashboard-gg-docs` entfernt (Stand sauber, nichts ungepusht); dessen Branch `docs/stand-2026-10-26-merge-abschluss` (`12c8fada`, PR #225, Vorfahre von `main`) mit `git branch -d` gelöscht.
+
+## 9 Durchführung 2026-10-31 (lokal, Claude Code, Freigabe des Betreibers 2026-10-31)
+
+Arbeitsklone unter `C:\Users\bmarn\OneDrive\Dokumente\Dashboard` entfernt; kein Remote-Branch gelöscht.
+
+| Ordner                  | Art                                  | Vorprüfung                                                   | Entscheidung          |
+| ----------------------- | ------------------------------------ | ------------------------------------------------------------ | --------------------- |
+| `sysingdashboard-s0-05` | Worktree von `sysingdashboard-codex` | sauber, `main` auf `d9996906`                                | `git worktree remove` |
+| `sysingdashboard-codex` | Klon                                 | 3 Branches auf `origin`, keine Stashes, sauber               | gelöscht              |
+| `sysingdashboard-bsf03` | Klon                                 | 1 Branch auf `origin` (PR #128), nur Zeilenumbruch und Cache | gelöscht              |
+
+- Erhalten: `backup/codex-2026-10-31` (`2a0cf1d9`) und `C:\dev\_sicherung_sysingdashboard-codex`.
+- Festlegung: Arbeitsklone nur unter `C:\dev`.
+- Bericht: `docs/BERICHT-2026-10-31-AUFRAEUMEN-ONEDRIVE.md`.

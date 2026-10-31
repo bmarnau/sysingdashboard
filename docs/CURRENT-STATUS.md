@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-10-30
+Stand: 2026-10-31
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
@@ -11,6 +11,7 @@ Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risike
 `main` zuletzt geprüft auf `d999690` (nach PR #248). **Publish bleibt No-Go.** Antwort des Lovable-Supports vom 2026-10-30:
 Publish deployt den Lovable-Projektstand (kein Pinning), der Broker ist nicht abschaltbar. Entscheidung: Weg B (Helper entfernen), Weg A als
 Rückfall; offen: Freigabe der Schreiboperation in Lovable (R-07, `docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
+Sicherung 2026-10-31: Codex-Arbeitsstand als Branch `backup/codex-2026-10-31` (`2a0cf1d9`, nicht mergen), Bundle und Dateikopie gesichert und geprüft; Bericht `docs/BERICHT-2026-10-31-SICHERUNG.md`, Übernahme der Inhalte im Backlog. Arbeitsklone unter OneDrive entfernt, einziger Arbeitsklon ist `C:\dev\sysingdashboard` (`docs/BERICHT-2026-10-31-AUFRAEUMEN-ONEDRIVE.md`).
 Kunde B: Verantwortliche per Datenauftrag gesetzt (2026-10-25, 17:49) und in der App bestätigt (Test T10, 2026-10-26). L0c ist abgeschlossen.
 Verbleibend bis zum Publish: Lovable-Antwort zu R-07, Sichtprüfung von TD-01 in der App, Test N1 bis N5 auf der veröffentlichten App. Git aufgeräumt (82 Remote-Branches, 0 gemergt, Auto-Delete aktiv): `docs/GIT-AUFRAEUMEN.md` Abschnitt 6.
 Offen: Draft-PR #222 (QS-06, `billing.view`) bleibt bis nach dem Golden Gate ungemergt; PR #155 und Draft-PR #124 unverändert. Konzept L2-Cockpit: `docs/L2-COCKPIT-SCHNITT-KONZEPT.md` (gemergt mit PR #223).

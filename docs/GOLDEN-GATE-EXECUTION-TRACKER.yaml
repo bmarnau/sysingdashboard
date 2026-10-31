@@ -10,7 +10,7 @@
 
 schema_version: 1
 document: golden-gate-execution-tracker
-stand: 2026-10-30
+stand: 2026-10-31
 base_main_sha: d9996906df41f93e033b2951c5548046c058ecd9
 repository: bmarnau/sysingdashboard
 tracker_issue: 175
@@ -614,6 +614,20 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-31
+    ereignis: >-
+      Arbeitsklone unter OneDrive nach Freigabe des Owners entfernt: Worktree sysingdashboard-s0-05 (git worktree remove), Klone sysingdashboard-codex und sysingdashboard-bsf03.
+      Vorprüfung: alle lokalen Branches auf origin enthalten, keine Stashes, keine ignorierten Dateien außer node_modules und Cache. Kein Remote-Branch gelöscht.
+      Einziger Arbeitsklon ist C:/dev/sysingdashboard; backup/codex-2026-10-31 und C:/dev/_sicherung_sysingdashboard-codex bleiben.
+    beleg: docs/BERICHT-2026-10-31-AUFRAEUMEN-ONEDRIVE.md, docs/GIT-AUFRAEUMEN.md (Abschnitt 9)
+  - datum: 2026-10-31
+    ereignis: >-
+      Sicherung des Codex-Arbeitsstands (sysingdashboard-codex, Stand 2026-10-19/20) als Remote-Branch backup/codex-2026-10-31 (2a0cf1d9),
+      Git-Bundle (111 Refs) und Dateikopie (33 Dateien mit SHA-256) nachgeprüft: Bundle verify ok, 33 von 33 Hashes ok und gleich dem Sicherungscommit.
+      Korrektur nach Bestandsaufnahme: Klon sysingdashboard-codex existiert unter OneDrive (mit Worktree sysingdashboard-s0-05), nicht entfernt; repo-cockpit aus dem Bericht genommen (eigenes Repo).
+      Aufräumen der OneDrive-Klone vorgeschlagen, Freigabe offen.
+      Branch wird nicht gemergt (ADR-Nummern 0036 bis 0039 kollidieren mit main). Nichts gemergt, nichts gelöscht.
+    beleg: docs/BERICHT-2026-10-31-SICHERUNG.md, Branch backup/codex-2026-10-31 (2a0cf1d9)
   - datum: 2026-10-30
     ereignis: >-
       Inhaltliche Antwort des Lovable-Supports zu R-07 eingegangen (Automatik-Antworten vom 2026-10-29 und 2026-10-30 ohne Inhalt).
