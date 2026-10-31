@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — S0-06 abgeschlossen
+
+Weg B hält bei der Kontrollmessung; die Pakete PR 253, 254, 256 und 257 sind gemergt (`main` fb7c61b). Der Broker bleibt in der veröffentlichten App wirkungslos. Die Dauerbeobachtung läuft über die täglichen Lovable-Prompts. Nächste Schritte laut Owner: S0-04 und das erste Entwicklungspaket, danach Publish mit N1 bis N5, danach die Antwort an Lea. Publish bleibt No-Go bis zur ausdrücklichen Freigabe.
+
 ## 2026-10-31 — Publish-Quelle: Broker in der veröffentlichten App
 
 Prompt D belegt den heutigen Lovable-Stand (`5a0fec0` auf `lovable-sync-1793449032`, main plus `types.ts`, kein Broker). Die Prüfung der veröffentlichten App zeigt dagegen die Broker-Kennungen im ausgelieferten Bundle: Der Broker ist in der Produktion bereits vorhanden. Laut Quelltext greift er nur im Editor-Rahmen, gemessen ist das nicht. Ein Publish des heutigen Stands würde ihn entfernen. Gemessen (angemeldet): Die Sitzung liegt im `localStorage`, der Broker-Pfad ist auf der Produktionsadresse inaktiv. Publish bleibt No-Go bis zur Freigabe des Owners.
