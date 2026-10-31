@@ -104,3 +104,5 @@ scripts/                 Qualitäts-, Doku- und Projektstatus-Gates
 ## Lizenz
 
 Dieses Projekt steht unter der [MIT-Lizenz](./LICENSE).
+
+<!-- Lovable-Kontrolländerung 2026-10-31, darf entfernt werden -->
