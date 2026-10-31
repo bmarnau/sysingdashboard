@@ -287,3 +287,10 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 
 - Codex-Inhalte aus `backup/codex-2026-10-31` (`2a0cf1d9`) sichten: ADR-Entwürfe 0036 bis 0040 (Nummern auf `main` anders belegt, bei Übernahme neu nummerieren), Dev-Container und Golden-Gate-Skripte, `management-cockpit-service.ts` mit Test (Abgleich mit L2-Cockpit P1 bis P3). Je Inhalt entscheiden: übernehmen (eigener PR) oder verwerfen. Bis dahin Branch und lokale Ordner `_sicherung_*` erhalten. Beleg: `docs/BERICHT-2026-10-31-SICHERUNG.md`.
 - ADR-0040 (Testziel-Abgleich, Regel AQGS-TCA-01) annehmen oder ablehnen (Owner). Nach Annahme: Regel in `docs/PROJECT-GOVERNANCE.md` aufnehmen und beim ersten Paket den Mehraufwand messen. Die übrigen Codex-Inhalte sind gesichtet und werden nicht übernommen (Entscheidung 2026-10-31).
+
+## Ergänzung 2026-10-31 (Arbeitsumgebung und Toolchain)
+
+- Auftragsvorlagen von `npm ci` auf `bun install --frozen-lockfile` und Node 22 umstellen (CI: `NODE_VERSION: "22"`, nur `bun.lock` im Repo).
+- `package.json`: `engines` (Node 22) und `packageManager` festlegen, damit lokale Umgebung und CI übereinstimmen.
+- Basisordner `C:\Users\bmarn\OneDrive\Dokumente\Dashboard` (alter Prototyp vom Juli, kein Repo): `data/` und `docs/` sichten, danach archivieren.
+- Codex-ADR 0039 und 0040 aus `backup/codex-2026-10-31` als Vorlage für BSF-06 nutzen (nicht mergen); bei einer Übernahme neu nummerieren.
