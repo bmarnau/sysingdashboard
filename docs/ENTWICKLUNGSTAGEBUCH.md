@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-10-31 · Dashboard-Version 1.69.0
 
+## 2026-10-31 — S0-06: Speicher-Zeile gegen erneutes Einfügen des Brokers
+
+Laut Lovable-Support schreibt die Plattform `client.ts` nur um, solange die Datei dem generierten Original gleicht. Die Speicher-Zeile verwendet deshalb jetzt `window.localStorage` statt `localStorage`; die Schutzabfrage und das Verhalten bleiben gleich. Der Vertragstest erwartet genau diese Form und verbietet weiterhin Import und Datei des Brokers. Ob die Plattform den Broker danach wirklich nicht mehr einfügt, zeigt erst der Sync nach Lovable; bis dahin bleibt Publish No-Go.
+
 ## 2026-10-31 — Plan aktualisiert
 
 Aus der Support-Antwort zu R-07 folgt ein neues Paket S0-06 (Auth-Broker aus dem Lovable-Projektstand entfernen, Weg B). Es liegt in Sprint 0, ist mit 1 bis 2 Arbeitstagen als Analogie geschätzt und in den 9 Paketen bis zur Internen Freigabe 1.0 nicht enthalten; die Zahlen bis zum BSF bleiben bei 15 Paketen und 51 bis 83 Arbeitstagen. Gearbeitet wird nur noch im Klon `C:\dev\sysingdashboard`. Die CI nutzt Node 22 und `bun install --frozen-lockfile`; die Auftragsvorlagen werden darauf umgestellt. Die Codex-ADR 0039 und 0040 dienen später als Vorlage für BSF-06 und werden nicht gemergt.

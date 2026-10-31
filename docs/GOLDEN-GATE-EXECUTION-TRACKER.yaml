@@ -136,13 +136,16 @@ sprint_0:
       akteur: Nutzer (Lovable-Oberfläche)
     - id: S0-06
       titel: Auth-Broker aus dem Lovable-Projektstand entfernen (Weg B)
-      status: planned
+      status: in_progress
       akteur: Nutzer (Freigabe) und Lovable-Oberfläche; Vorprüfung durch Claude Code
       abhaengig_von: [Freigabe Owner, Sync-Stand, Prüfung des Branches lovable-sync-1793295874]
       hinweis: >-
         Nach Anleitung des Lovable-Supports (2026-10-30): Import in client.ts entfernen, Auth-Speicher-Zeile ändern (z. B. storage: window.localStorage),
         previewAuthStorage.ts löschen, eine kleine Änderung in Lovable machen und prüfen, dass die Dateien nicht zurückkommen. Ungetestet am Projekt.
         Rückfall Weg A: Hilfsdatei im Vertragstest erlauben (ADR-0036 ändern, Wirkungslosigkeit in der veröffentlichten App prüfen).
+        Mechanismus: Die Plattform schreibt client.ts nur bei Originalform um. Teil 1 (2026-10-31): Speicher-Zeile auf
+        window.localStorage mit unveränderter Schutzabfrage, Vertragstest 2 auf die neue Form. Offen: Merge, Sync nach Lovable, Prüfschritte.
+      beleg: Branch fix/s0-06-auth-storage-form, PR (siehe Fortschritt 2026-10-31), docs/LOVABLE-PUBLISH-PRUEFUNG.md (Weg B Umsetzung)
     - id: S0-05
       titel: Zeitzonen-abhängige Tests in time-period.test.ts beheben (TEST-TZ)
       prioritaet: P3
@@ -636,6 +639,14 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-10-31
+    ereignis: >-
+      S0-06 Teil 1 nach Freigabe des Owners umgesetzt: client.ts Speicher-Zeile auf typeof window !== "undefined" ? window.localStorage : undefined
+      (Verhalten unverändert), Vertragstest 2 erwartet die neue Form, Test 1 und 3 unverändert. Test zuerst rot gegen die alte Zeile (1 von 3 rot), danach 3 von 3 grün.
+      Vollsuite lokal: Europe/Berlin 1155 bestanden, 4 rot (Timeouts unter Last); UTC 1140 bestanden, 19 rot (Timeouts, API-Harness).
+      Die 7 betroffenen Dateien gezielt: Branch 1 rot, main-Stand 2 rot (BackendAdminDialog); kein Fehler durch die Änderung. typecheck 0 Fehler, lint 0 Fehler (20 Warnungen).
+      Nicht gemergt; Sync nach Lovable und Prüfung, ob der Broker zurückkommt, stehen aus.
+    beleg: Branch fix/s0-06-auth-storage-form, docs/LOVABLE-PUBLISH-PRUEFUNG.md (Abschnitt Weg B Umsetzung)
   - datum: 2026-10-31
     ereignis: >-
       Plan aktualisiert: neues Paket S0-06 (Weg B, Analogieschätzung 1 bis 2 Arbeitstage, außerhalb der 9 Pakete bis zur Internen Freigabe 1.0), Zahlen bis BSF

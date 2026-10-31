@@ -99,3 +99,29 @@ die Hilfsdatei im Vertragstest erlauben.
 - Der Sync-Branch `lovable-sync-1793295874` (2 Commits vor `main`, enthält genau die drei Dateien) wird nicht gemergt.
 - Publish bleibt No-Go, bis Weg B oder A entschieden und nachgewiesen ist (kein Broker im Lovable-Projektstand, oder
   Vertragstest und ADR angepasst und Wirkungslosigkeit in der veröffentlichten App geprüft).
+
+## Weg B: Umsetzung (S0-06 Teil 1, 2026-10-31)
+
+Mechanismus laut Support: Die Plattform schreibt `client.ts` nur um, wenn die Datei dem generierten Original ähnelt. Teil 1 ändert deshalb nur die Form der Speicher-Zeile, nicht ihr Verhalten:
+
+```ts
+// vorher (generierter Standard)
+storage: typeof window !== "undefined" ? localStorage : undefined,
+// nachher (S0-06)
+storage: typeof window !== "undefined" ? window.localStorage : undefined,
+```
+
+Die Schutzabfrage bleibt; im Browser ist `localStorage` identisch mit `window.localStorage`. Der Vertragstest `src/__tests__/security/supabase-client-contract.test.ts` erwartet in Test 2 genau die neue Form; Test 1 (kein Import des Brokers) und Test 3 (keine Datei `previewAuthStorage.ts`) sind unverändert.
+
+Sync-Ablauf (jeder Schritt mit eigener Freigabe):
+
+1. PR mit der Zeilenänderung grün, Merge nach `main` erst nach ausdrücklicher Freigabe und wenn Lovable keine schreibenden Aufträge ausführt.
+2. Lovable übernimmt `main` in den Projektstand (Sync).
+3. Eine kleine, freigegebene Änderung in Lovable auslösen, damit die Plattform `client.ts` erneut verarbeitet.
+
+Prüfschritte nach dem Sync:
+
+- Im neuen Lovable-Sync-Branch und im Lovable-Projektstand: `client.ts` enthält die neue Zeile und keinen Import von `previewAuthStorage`; die Datei `previewAuthStorage.ts` fehlt (Diff gegen `main`, nur lesen).
+- Vertragstest gegen den Stand des Sync-Branches ausführen: 3 von 3.
+- Kommt der Broker zurück: Weg B gilt als gescheitert, Rückfall auf Weg A nach Entscheidung des Owners.
+- Ob die Plattform eine bereits vorhandene `previewAuthStorage.ts` im Projektstand von selbst entfernt, ist nicht belegt; das prüft Schritt 1 der Prüfschritte.
