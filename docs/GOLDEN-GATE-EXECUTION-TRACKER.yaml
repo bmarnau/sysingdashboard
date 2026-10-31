@@ -641,6 +641,12 @@ risiken:
 fortschritt:
   - datum: 2026-10-31
     ereignis: >-
+      ADR-0040 (Testziel-Abgleich, Regel AQGS-TCA-01) vom Owner mit "ADR-0040 annehmen" angenommen (Status Accepted); Regel in docs/PROJECT-GOVERNANCE.md Abschnitt 8a aufgenommen.
+      PR 252 (ADR-0040 Proposed, Merge-Commit 6f61ee9) und PR 253 (S0-06 Teil 1, Merge-Commit 8537eb3) zuvor gemergt, CI je 15 von 15 grün.
+      Weg B Teil 2 (Sync nach Lovable, Kontrolländerung, Lese-Prompt) vom Owner freigegeben ("Weg B freigegeben").
+    beleg: docs/ADR/0040-kontinuierlicher-testziel-abgleich.md, PR 252, PR 253
+  - datum: 2026-10-31
+    ereignis: >-
       S0-06 Teil 1 nach Freigabe des Owners umgesetzt: client.ts Speicher-Zeile auf typeof window !== "undefined" ? window.localStorage : undefined
       (Verhalten unverändert), Vertragstest 2 erwartet die neue Form, Test 1 und 3 unverändert. Test zuerst rot gegen die alte Zeile (1 von 3 rot), danach 3 von 3 grün.
       Vollsuite lokal: Europe/Berlin 1155 bestanden, 4 rot (Timeouts unter Last); UTC 1140 bestanden, 19 rot (Timeouts, API-Harness).

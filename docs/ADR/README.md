@@ -52,7 +52,7 @@ Windows kollidieren.
 | 0037 | [Kontrollierte Datenaufträge über den Work-/Lovable-Connector](./0037-kontrollierte-datenauftraege.md)                       | Accepted               |
 | 0038 | [BSF-Umfang und Meilensteindefinition (MVP, Golden Gate, BSF)](./0038-bsf-umfang-und-meilensteine.md)                        | Accepted               |
 | 0039 | [Claude Code ersetzt Codex als bevorzugtes lokales Werkzeug](./0039-claude-code-statt-codex.md)                              | Accepted               |
-| 0040 | [Kontinuierlicher Testziel-Abgleich und Testökonomie](./0040-kontinuierlicher-testziel-abgleich.md)                          | Proposed               |
+| 0040 | [Kontinuierlicher Testziel-Abgleich und Testökonomie](./0040-kontinuierlicher-testziel-abgleich.md)                          | Accepted               |
 
 Stand der Prüfung: 2026-10-13. ADR-0031 ist in BSF-02B umgesetzt.
 ADR-0032 konkretisiert ADR-0030 für den minimalen gemeinsamen Mehrbenutzer-Read-Pfad,

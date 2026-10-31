@@ -155,6 +155,20 @@ Ein Sprint gilt erst als abgeschlossen, wenn alle Punkte erfüllt und belegt sin
 Findings werden nicht stillschweigend ignoriert. Ein akzeptiertes Finding
 braucht Begründung, Ticket und Verfallsdatum.
 
+### 8a. Test-Ziel-Abgleich (AQGS-TCA-01, ADR-0040)
+
+1. Jedes Arbeitspaket muss seine Ziele, Risiken und Abnahmekriterien gegen die erforderlichen Tests und Gates abgleichen.
+2. Der Abgleich muss bei Planung, Ziel- oder Risikoänderung, vor Abnahme oder Release Candidate und bei auffälliger Laufzeit,
+   Instabilität oder Toolchain-Blockade wiederholt werden.
+3. Die Evidenz muss als kompakte Matrix `Ziel/Risiko → Testebene → konkreter Test/Gate → Ergebnis → Entscheidung` im Arbeits- oder
+   Abschlussbericht stehen.
+4. Tests dürfen nur mit dokumentierter gleichwertiger Ersatzabdeckung konsolidiert oder mit begründetem Wegfall des Schutzzwecks
+   ausgesondert werden.
+5. Schutztests für Security, RBAC/RLS, Datenintegrität, Providergrenzen und Golden Results dürfen nicht zur Laufzeitverkürzung
+   herabgestuft werden.
+6. Der schnelle, änderungsnahe Testpfad und die vollständigen Exact-Head-Gates bleiben getrennte Evidenzstufen.
+7. Ein nicht verfügbares Gate muss `BLOCKED` bleiben; es darf nicht zu `PASS` umgedeutet werden.
+
 ---
 
 ## 9. Sicherheitsregeln

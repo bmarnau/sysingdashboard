@@ -286,7 +286,7 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 ## Ergänzung 2026-10-31 (Sicherung Codex-Arbeitsstand)
 
 - Codex-Inhalte aus `backup/codex-2026-10-31` (`2a0cf1d9`) sichten: ADR-Entwürfe 0036 bis 0040 (Nummern auf `main` anders belegt, bei Übernahme neu nummerieren), Dev-Container und Golden-Gate-Skripte, `management-cockpit-service.ts` mit Test (Abgleich mit L2-Cockpit P1 bis P3). Je Inhalt entscheiden: übernehmen (eigener PR) oder verwerfen. Bis dahin Branch und lokale Ordner `_sicherung_*` erhalten. Beleg: `docs/BERICHT-2026-10-31-SICHERUNG.md`.
-- ADR-0040 (Testziel-Abgleich, Regel AQGS-TCA-01) annehmen oder ablehnen (Owner). Nach Annahme: Regel in `docs/PROJECT-GOVERNANCE.md` aufnehmen und beim ersten Paket den Mehraufwand messen. Die übrigen Codex-Inhalte sind gesichtet und werden nicht übernommen (Entscheidung 2026-10-31).
+- ADR-0040 ist am 2026-10-31 angenommen; Regel AQGS-TCA-01 steht in `docs/PROJECT-GOVERNANCE.md` (8a). Beim ersten Paket den Mehraufwand der Ziel-Test-Matrix mitmessen; CHANGELOG-Eintrag gemäß Governance Abschnitt 13 bei der nächsten Version.
 
 ## Ergänzung 2026-10-31 (Arbeitsumgebung und Toolchain)
 
