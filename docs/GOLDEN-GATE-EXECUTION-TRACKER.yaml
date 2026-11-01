@@ -649,6 +649,20 @@ risiken:
 fortschritt:
   - datum: 2026-11-01
     ereignis: >-
+      Owner hat die Entscheidungen E1 bis E5 zum L2-Plan nach Empfehlung getroffen (E1 Neuaufbau per Cherry-Pick, E2 P2b bestätigt nach bestandenen U3-Sicherheitstests,
+      E3 L2 nur in der Lovable-Vorschau, Publish bleibt No-Go, E4 keine Beträge und keine Personenbewertung, E5 Zeitrahmen als Richtwert). Lesender Lovable-Prompt
+      (07:01) beantwortet: Lovable-HEAD 1f37dc8 ist 1 Commit vor main 9ef617e (nur types.ts +5 Zeilen, bekannte Plattform-Abweichung, Branch lovable-sync-1793512857, nicht mergen);
+      Cockpit-Code und Route /managementcockpit sind in Lovable nicht vorhanden (entspricht dem Bestandsbericht); keine Edge Functions, audit_log serverseitig über auth-accounts.server.ts.
+    beleg: Lovable-Antwort 2026-11-01 07:01, git diff origin/main 1f37dc8, docs/L2-UMSETZUNGSPLAN.md Abschnitt 5, PR 261
+  - datum: 2026-11-01
+    ereignis: >-
+      L2 für den Start vorbereitet: Bestand der Drafts gemessen (P2b 51 und P3 74 Tests bestanden, tsc fehlerfrei; Konflikte gegen main nur in vier Doku-Dateien) und
+      mit dem Bericht der lokalen Bestandsaufnahme abgeglichen. Umsetzungsplan mit Integration in vier PRs (P1, P2, P2b, P3), Testzielen je Paket nach ADR-0040 und
+      den Entscheidungen E1 bis E5 liegt als Entwurf vor; Start der Umsetzung nach Freigabe des Owners. Lovable hat das zweite Ticket automatisch mit dem ursprünglichen zusammengeführt
+      (keine Aktion nötig).
+    beleg: docs/L2-UMSETZUNGSPLAN.md, docs/BERICHT-2026-11-01-L2-BESTAND.md, PR 261
+  - datum: 2026-11-01
+    ereignis: >-
       Antwort des Owners an den Lovable-Support (Lea) im ursprünglichen Ticket versendet, englisch: Backend-Art, Umsetzung der Formänderung in client.ts mit Ergebnis der
       Kontrollmessung vom 31.10., Bitte um Wiederaufnahme der Migrationsfragen zu R-10 (20260913213000, 20260917182000, 20260917190000, leere Statements).
       Wartezeit auf die Antwort; Erinnerung zur Nachfrage am 2026-11-05 bleibt bestehen. Ticketnummer weiterhin nicht erfasst.
