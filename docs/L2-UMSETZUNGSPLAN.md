@@ -1,6 +1,6 @@
 # L2 – Umsetzungsplan (Start 2026-11-02)
 
-Stand: 2026-11-01 · Status: **Entwurf zur Freigabe durch den Owner** · Grundlage: `docs/L2-COCKPIT-SCHNITT-KONZEPT.md`, Tracker-Paket L2, ADR-0040 (Testziel-Abgleich je Arbeitspaket).
+Stand: 2026-11-01 · Status: **Entwurf zur Freigabe durch den Owner** · Grundlage: `docs/L2-COCKPIT-SCHNITT-KONZEPT.md`, `docs/BERICHT-2026-11-01-L2-BESTAND.md`, Tracker-Paket L2, ADR-0040 (Testziel-Abgleich je Arbeitspaket).
 
 ## 1 Zweck
 
@@ -34,6 +34,14 @@ Befunde:
 - **Alter:** Die Drafts sind 69 bis 78 Commits hinter `main` und stammen vom 26. und 27.10.
 
 Nicht gemessen: ESLint, die gesamte Testsuite, E2E-Spec von P3, die einzelnen Tests von P1 und P2, CI-Lauf der Drafts auf aktuellem `main`, Vorschau in Lovable.
+
+Ergänzung aus dem Bericht `docs/BERICHT-2026-11-01-L2-BESTAND.md` (lesende Bestandsaufnahme über die GitHub-Schnittstelle, 2026-11-01):
+
+- Die CI war auf den Head-Commits aller vier Drafts vollständig grün (15 von 15, am 26. und 27.10., gegen den damaligen `main`). Nach dem Neuaufbau muss sie erneut laufen.
+- `mergeable_state`: PR 226 `behind`, PR 231, 233 und 234 `dirty` (nur die vier Doku-Dateien).
+- Einziger Eingriff in Bestandscode außerhalb der Cockpit-Pfade: `src/lib/avkk/work-package-work-view.ts` (+1/−1, `berlinDate` wird exportiert, ohne Verhaltensänderung). U2 muss ihn mitnehmen; er gilt nicht als Verstoß gegen die Pfadgrenze von U1.
+- P2b ersetzt den P2-Pfad nicht, sondern erweitert ihn um AVKK (ein Adapter, +360 Zeilen); P3 enthält P2b absichtlich nicht, AVKK ist dort UNAVAILABLE. Wird P3 vor P2b integriert, geht ein sichtbarer Funktionsrückschritt auf `main`. Deshalb die Reihenfolge P2b vor P3.
+- Offen laut Bericht: L2-12 (Hilfe und Handbuch) und P4 (Rollenabnahme live).
 
 ## 3 Vorschlag: Integration in vier PRs
 
