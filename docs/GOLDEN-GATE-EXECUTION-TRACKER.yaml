@@ -649,6 +649,14 @@ risiken:
 fortschritt:
   - datum: 2026-11-01
     ereignis: >-
+      L2 U1 (P1 Composer) neu aufgebaut: Branch feat/l2-u1-composer von origin/main 6f9871e, Cherry-Pick nur des Code-Commits 53a81f1 aus feat/l2-cockpit-p1
+      ohne Konflikte (neuer Commit 41d20ca). Pfadgrenze eingehalten (4 Dateien unter src/lib/management-cockpit/ und src/__tests__/lib/management-cockpit/);
+      keine neue Rolle, Permission, Tabelle oder Migration; keine Betragsfelder; nur Typ-Importe aus project-controlling-contract und work-package-work-view.types,
+      keine React- oder Supabase-Importe, keine Uhr (Stichtag als Parameter). Lokal: vitest compose.test.ts 20 von 20 bestanden, typecheck ohne Fehler,
+      lint 0 Fehler (20 Warnungen ausserhalb der Cockpit-Dateien), Prettier sauber. Draft-PR 226 bleibt ungemergt.
+    beleg: Branch feat/l2-u1-composer, Commit 41d20ca, lokaler Testlauf 2026-11-01 07:15, PR (U1) siehe CURRENT-STATUS
+  - datum: 2026-11-01
+    ereignis: >-
       Owner hat die Entscheidungen E1 bis E5 zum L2-Plan nach Empfehlung getroffen (E1 Neuaufbau per Cherry-Pick, E2 P2b bestätigt nach bestandenen U3-Sicherheitstests,
       E3 L2 nur in der Lovable-Vorschau, Publish bleibt No-Go, E4 keine Beträge und keine Personenbewertung, E5 Zeitrahmen als Richtwert). Lesender Lovable-Prompt
       (07:01) beantwortet: Lovable-HEAD 1f37dc8 ist 1 Commit vor main 9ef617e (nur types.ts +5 Zeilen, bekannte Plattform-Abweichung, Branch lovable-sync-1793512857, nicht mergen);
