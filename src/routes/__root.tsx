@@ -38,7 +38,7 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: ErrorComponentProps) {
   // Niemals das volle Error-Objekt in den Client-DevTools loggen (könnte in
   // Zukunft Tokens/PII in Messages enthalten). Nur eine gekürzte Message.
-  const msg = (error?.message ?? "Unbekannter Fehler").slice(0, 200);
+  const msg = ((error as Error | undefined)?.message ?? "Unbekannter Fehler").slice(0, 200);
   logger.error("Render-Fehler in Route-Boundary", undefined, { module: "__root", message: msg });
   const router = useRouter();
 
