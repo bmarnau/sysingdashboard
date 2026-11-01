@@ -4,6 +4,8 @@ Stand: 2026-11-01
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+L2 U1 (2026-11-01): Composer P1 neu aufgebaut auf Branch `feat/l2-u1-composer` (Cherry-Pick von `53a81f1`, konfliktfrei; lokal 20 von 20 Tests, Typecheck und Lint ohne Fehler). PR offen, nicht gemergt; Merge nur auf Befehl des Owners. Nächster Schritt: U2 (P2 Server-Lesepfad) nach `docs/L2-UMSETZUNGSPLAN.md` Abschnitt 3. Publish bleibt No-Go.
+
 Das Golden Gate steht in der Testphase mit Demodaten (Bernd, Petra, Alex, Alexa).
 Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risiken),
 `docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md` (T1–T9, Mängel M1–M4) und

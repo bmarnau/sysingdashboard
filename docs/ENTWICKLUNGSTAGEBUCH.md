@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-01 · Dashboard-Version 1.69.0
 
+## 2026-11-01 — L2 U1: Composer als neuer PR
+
+Der reine Composer des Management-Cockpits (P1) ist per Cherry-Pick des Code-Commits `53a81f1` neu auf `main` aufgebaut (Branch `feat/l2-u1-composer`, ohne Konflikte, ohne Doku-Commits des Drafts). Geprüft: nur Cockpit-Pfade, keine neue Rolle, Permission, Tabelle oder Migration, keine Beträge, keine React- oder Supabase-Importe. Lokal 20 von 20 Tests bestanden, Typecheck und Lint ohne Fehler. Der PR wird nicht gemergt, bis der Owner „Merge #N“ gibt.
+
 ## 2026-11-01 — L2 für den Start vorbereitet
 
 Der Bestand der vier L2-Drafts ist gemessen und mit dem Bericht der lokalen Bestandsaufnahme abgeglichen (`docs/BERICHT-2026-11-01-L2-BESTAND.md`). Der Plan (`docs/L2-UMSETZUNGSPLAN.md`) sieht die Integration in vier PRs vor (P1, P2, P2b, P3), je mit Testziel nach ADR-0040 und vollständiger CI. Entscheidungen E1 bis E5 liegen beim Owner. Das zweite Lovable-Ticket wurde automatisch mit dem ursprünglichen zusammengeführt, die Antwort kommt dort.

@@ -256,7 +256,7 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 - L2-Cockpit: Konzept `docs/L2-COCKPIT-SCHNITT-KONZEPT.md` freigegeben (2026-10-26); P1 und P2 liegen als Draft-PRs vor, Beträge bleiben bis QS-06 ausgeschlossen.
 - PW-01 bis PW-03 Passwort in der Anwendung ändern, PW-05 Passwort-Reset mit Textbeschriftung, siehe `docs/PW-01-PASSWORT-AENDERN.md`.
 - TD-01 Stufe b Live-Demo-Mandant auffrischen (relativ zu heute, entschieden 2026-10-26), ausgeführt am 2026-10-28 (Postflight 7 von 7 gleich Soll, `docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md` Abschnitt 9); offen: Sichtprüfung in der App. Wiederkehrende Auffrischung als geplante Aufgabe nach dem Golden Gate.
-- L2-Cockpit P3 und P4 (Route, Rollenabnahme, Hilfe); P1 liegt als Draft-PR #226, P2 als Draft-PR #231 vor.
+- L2-Cockpit P3 und P4 (Route, Rollenabnahme, Hilfe); P1 ist als U1 neu aufgebaut (Branch `feat/l2-u1-composer`, PR offen), danach U2 (P2, Code-Commit `f8199b7` aus Draft-PR #231), U3 (P2b), U4 (P3). Die Drafts #226, #231, #233, #234 werden nicht gemergt.
 - L2-Cockpit P2b: AVKK-Server-Lesepfad (Befunde hoch/kritisch je Kunde) ohne zweite Fachlogik; bis dahin meldet das Cockpit AVKK als UNAVAILABLE. Entscheidung siehe `docs/L2-COCKPIT-SCHNITT-KONZEPT.md` Abschnitt 11.
 - DOC-01 erledigt 2026-10-25: Prüfskripte `scripts/check-docs-sync.mjs` und `scripts/check-project-docs.mjs` nutzen `fileURLToPath` und laufen unter Windows. Offen (sollte): dieselbe Korrektur in `check-bundle.mjs`, `check-no-console.mjs`, `generate-test-report.mjs`, `test-example-files.mjs`.
 - B2 Verantwortlichen-Filter der Arbeitssicht: Stellvertretungen berücksichtigen? Fachliche Entscheidung nach dem Golden Gate (Beobachtung aus Test K-2).
