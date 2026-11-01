@@ -15,6 +15,8 @@ Stand: 2026-11-01 · Dashboard-Version 1.69.0
 
 Der Bestand der vier L2-Drafts ist gemessen und mit dem Bericht der lokalen Bestandsaufnahme abgeglichen (`docs/BERICHT-2026-11-01-L2-BESTAND.md`). Der Plan (`docs/L2-UMSETZUNGSPLAN.md`) sieht die Integration in vier PRs vor (P1, P2, P2b, P3), je mit Testziel nach ADR-0040 und vollständiger CI. Entscheidungen E1 bis E5 liegen beim Owner. Das zweite Lovable-Ticket wurde automatisch mit dem ursprünglichen zusammengeführt, die Antwort kommt dort.
 
+Entscheidungen E1 bis E5 (Owner, 2026-11-01): alle nach Empfehlung; E2 bestätigt erst nach bestandenen U3-Sicherheitstests. Lesender Lovable-Prompt: Lovable-HEAD 1f37dc8 liegt 1 Commit vor `main` (nur `types.ts` +5 Zeilen, bekannte Abweichung), Cockpit-Code und Route fehlen in Lovable wie erwartet.
+
 ## 2026-11-01 — Antwort an den Lovable-Support versendet
 
 Der Owner hat die Antwort an Lea im ursprünglichen Ticket versendet (englisch): Backend-Art, Ergebnis der Kontrollmessung zu Weg B und die Bitte, die Migrationsfragen zu R-10 wieder aufzunehmen. Nun gilt die Wartezeit auf die Antwort; die Nachfrage ist für den 2026-11-05 vorgesehen. Schreibende Migrationen und Datenänderungen am Live-System bleiben bis dahin ausgeschlossen.

@@ -69,6 +69,8 @@ Merge nur per REST nach `update-branch` und grüner CI, je auf Ihren Befehl „M
 
 ## 5 Entscheidungen des Owners vor dem Start
 
+Entschieden am 2026-11-01 (Owner): E1 bis E5 jeweils nach Empfehlung. Zu E2 gilt: Bestätigung erst nach bestandenen Sicherheitstests aus U3 (mit Beleg); P2b vor P3.
+
 | ID  | Entscheidung                                                                                                | Empfehlung                                                                                |
 | --- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | E1  | Integrationsweg: Neuaufbau mit Cherry-Pick (Abschnitt 3) oder die Drafts nach Konfliktlösung mergen         | Neuaufbau, weil die Drafts 69 bis 78 Commits hinter `main` liegen und nur Doku kollidiert |
