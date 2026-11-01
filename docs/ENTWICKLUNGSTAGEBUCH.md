@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-10-31 · Dashboard-Version 1.69.0
+Stand: 2026-11-01 · Dashboard-Version 1.69.0
+
+## 2026-11-01 — Antwort an den Lovable-Support versendet
+
+Der Owner hat die Antwort an Lea im ursprünglichen Ticket versendet (englisch): Backend-Art, Ergebnis der Kontrollmessung zu Weg B und die Bitte, die Migrationsfragen zu R-10 wieder aufzunehmen. Nun gilt die Wartezeit auf die Antwort; die Nachfrage ist für den 2026-11-05 vorgesehen. Schreibende Migrationen und Datenänderungen am Live-System bleiben bis dahin ausgeschlossen.
 
 ## 2026-10-31 — Tagesabschluss und Startdatei
 

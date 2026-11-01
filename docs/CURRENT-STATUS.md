@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-10-31
+Stand: 2026-11-01
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
@@ -8,6 +8,7 @@ Das Golden Gate steht in der Testphase mit Demodaten (Bernd, Petra, Alex, Alexa)
 Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risiken),
 `docs/GOLDEN-GATE-TESTPROTOKOLL-2026-10-25.md` (T1–T9, Mängel M1–M4) und
 `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md` (Reihenfolge der Merges und Tests nach dem Publish).
+Antwort an den Lovable-Support am 2026-11-01 versendet (Backend-Art laut Owner: Lovable Cloud; Weg-B-Ergebnis, Wiederaufnahme der Migrationsfragen R-10); Nachfrage vorgesehen am 2026-11-05.
 Tagesabschluss 2026-10-31 (`main` 7fc2393): Sprint 0 abgeschlossen; Startdatei `start-sysingboard.ps1` liegt beim Owner (C:\dev) und ist als Standard-Entwurf in ADG-Pull-Request 28 beschrieben; offen: Antwort an Lea, erstes Entwicklungspaket (L2) nach Anweisung, Publish nur nach Freigabe.
 S0-06 abgeschlossen (2026-10-31, `main` fb7c61b): Weg B hält bei der Kontrollmessung, Dauerbeobachtung über die täglichen Lovable-Prompts. S0-04 erledigt (Owner: heutiger Lovable-Stand genügt). Nächster Schritt: erstes Entwicklungspaket nach ausdrücklicher Anweisung, dann Publish mit N1 bis N5 nur nach ausdrücklicher Freigabe, dann Antwort an Lea.
 Befund veröffentlichte App (2026-10-31): Das ausgelieferte Bundle (1.69.0) enthält den Broker; Lovable-Stand jetzt ohne Broker (main plus `types.ts`). Publish des heutigen Stands würde ihn entfernen; Freigabe und Wirkungsmessung stehen beim Owner. Publish bleibt No-Go.
