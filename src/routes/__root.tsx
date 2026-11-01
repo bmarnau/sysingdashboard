@@ -7,6 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import type { ErrorComponentProps } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
 import { logger } from "@/lib/logger";
 
@@ -34,7 +35,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   // Niemals das volle Error-Objekt in den Client-DevTools loggen (könnte in
   // Zukunft Tokens/PII in Messages enthalten). Nur eine gekürzte Message.
   const msg = (error?.message ?? "Unbekannter Fehler").slice(0, 200);
