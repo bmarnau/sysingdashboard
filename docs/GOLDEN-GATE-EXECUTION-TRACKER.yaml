@@ -649,6 +649,12 @@ risiken:
 fortschritt:
   - datum: 2026-11-01
     ereignis: >-
+      L2 U1 (Composer, P1) gemergt: PR 262 per REST nach CI-Lauf 15 von 15 (Run 41280404054) und Gegenprüfung des Diffs (4 Code-Dateien unter src/lib/management-cockpit/ und
+      src/__tests__/lib/management-cockpit/, kein React, kein Supabase, keine Beträge, keine Uhrzeitabhängigkeit); 20 von 20 Tests laut Bericht von Claude Code und CI.
+      main steht auf 814c9cd. Nächster Schritt U2 (P2, Server-Lesepfad, Code-Commit f8199b7; berührt zusätzlich src/lib/avkk/work-package-work-view.ts und compose.ts, daher im Auftrag prüfen).
+    beleg: PR 262, Merge-Commit 814c9cd
+  - datum: 2026-11-01
+    ereignis: >-
       L2 U1 (P1 Composer) neu aufgebaut: Branch feat/l2-u1-composer von origin/main 6f9871e, Cherry-Pick nur des Code-Commits 53a81f1 aus feat/l2-cockpit-p1
       ohne Konflikte (neuer Commit 41d20ca). Pfadgrenze eingehalten (4 Dateien unter src/lib/management-cockpit/ und src/__tests__/lib/management-cockpit/);
       keine neue Rolle, Permission, Tabelle oder Migration; keine Betragsfelder; nur Typ-Importe aus project-controlling-contract und work-package-work-view.types,
