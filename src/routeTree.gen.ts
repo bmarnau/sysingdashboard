@@ -9,25 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiSyncRouteImport } from './routes/api/sync'
-import { Route as ApiStatusRouteImport } from './routes/api/status'
-import { Route as AuthenticatedVerantwortungenRouteImport } from './routes/_authenticated/verantwortungen'
-import { Route as AuthenticatedProjektcontrollingRouteImport } from './routes/_authenticated/projektcontrolling'
-import { Route as AuthenticatedLeistungsnachweisRouteImport } from './routes/_authenticated/leistungsnachweis'
-import { Route as AuthenticatedKioskRouteImport } from './routes/_authenticated/kiosk'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedMeineKundenIndexRouteImport } from './routes/_authenticated/meine-kunden/index'
+import { Route as AuthenticatedKioskRouteImport } from './routes/_authenticated/kiosk'
+import { Route as AuthenticatedLeistungsnachweisRouteImport } from './routes/_authenticated/leistungsnachweis'
+import { Route as AuthenticatedProjektcontrollingRouteImport } from './routes/_authenticated/projektcontrolling'
+import { Route as AuthenticatedVerantwortungenRouteImport } from './routes/_authenticated/verantwortungen'
+import { Route as ApiStatusRouteImport } from './routes/api/status'
+import { Route as ApiSyncRouteImport } from './routes/api/sync'
 import { Route as AuthenticatedKundenverantwortungIndexRouteImport } from './routes/_authenticated/kundenverantwortung/index'
+import { Route as AuthenticatedMeineKundenIndexRouteImport } from './routes/_authenticated/meine-kunden/index'
 import { Route as ApiPublicAuthConfigRouteImport } from './routes/api/public/auth-config'
 import { Route as AuthenticatedMeineKundenSystemhouseIdCustomerIdRouteImport } from './routes/_authenticated/meine-kunden/$systemhouseId.$customerId'
 
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -35,29 +39,25 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiSyncRoute = ApiSyncRouteImport.update({
-  id: '/api/sync',
-  path: '/api/sync',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedKioskRoute = AuthenticatedKioskRouteImport.update({
+  id: '/kiosk',
+  path: '/kiosk',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiStatusRoute = ApiStatusRouteImport.update({
-  id: '/api/status',
-  path: '/api/status',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedVerantwortungenRoute =
-  AuthenticatedVerantwortungenRouteImport.update({
-    id: '/verantwortungen',
-    path: '/verantwortungen',
+const AuthenticatedLeistungsnachweisRoute =
+  AuthenticatedLeistungsnachweisRouteImport.update({
+    id: '/leistungsnachweis',
+    path: '/leistungsnachweis',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedProjektcontrollingRoute =
@@ -66,32 +66,32 @@ const AuthenticatedProjektcontrollingRoute =
     path: '/projektcontrolling',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedLeistungsnachweisRoute =
-  AuthenticatedLeistungsnachweisRouteImport.update({
-    id: '/leistungsnachweis',
-    path: '/leistungsnachweis',
+const AuthenticatedVerantwortungenRoute =
+  AuthenticatedVerantwortungenRouteImport.update({
+    id: '/verantwortungen',
+    path: '/verantwortungen',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedKioskRoute = AuthenticatedKioskRouteImport.update({
-  id: '/kiosk',
-  path: '/kiosk',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const ApiStatusRoute = ApiStatusRouteImport.update({
+  id: '/api/status',
+  path: '/api/status',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const ApiSyncRoute = ApiSyncRouteImport.update({
+  id: '/api/sync',
+  path: '/api/sync',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedMeineKundenIndexRoute =
-  AuthenticatedMeineKundenIndexRouteImport.update({
-    id: '/meine-kunden/',
-    path: '/meine-kunden/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedKundenverantwortungIndexRoute =
   AuthenticatedKundenverantwortungIndexRouteImport.update({
     id: '/kundenverantwortung/',
     path: '/kundenverantwortung/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMeineKundenIndexRoute =
+  AuthenticatedMeineKundenIndexRouteImport.update({
+    id: '/meine-kunden/',
+    path: '/meine-kunden/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const ApiPublicAuthConfigRoute = ApiPublicAuthConfigRouteImport.update({
@@ -220,18 +220,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -241,46 +234,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/sync': {
-      id: '/api/sync'
-      path: '/api/sync'
-      fullPath: '/api/sync'
-      preLoaderRoute: typeof ApiSyncRouteImport
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/status': {
-      id: '/api/status'
-      path: '/api/status'
-      fullPath: '/api/status'
-      preLoaderRoute: typeof ApiStatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/verantwortungen': {
-      id: '/_authenticated/verantwortungen'
-      path: '/verantwortungen'
-      fullPath: '/verantwortungen'
-      preLoaderRoute: typeof AuthenticatedVerantwortungenRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/projektcontrolling': {
-      id: '/_authenticated/projektcontrolling'
-      path: '/projektcontrolling'
-      fullPath: '/projektcontrolling'
-      preLoaderRoute: typeof AuthenticatedProjektcontrollingRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/leistungsnachweis': {
-      id: '/_authenticated/leistungsnachweis'
-      path: '/leistungsnachweis'
-      fullPath: '/leistungsnachweis'
-      preLoaderRoute: typeof AuthenticatedLeistungsnachweisRouteImport
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/kiosk': {
@@ -290,11 +262,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedKioskRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+    '/_authenticated/leistungsnachweis': {
+      id: '/_authenticated/leistungsnachweis'
+      path: '/leistungsnachweis'
+      fullPath: '/leistungsnachweis'
+      preLoaderRoute: typeof AuthenticatedLeistungsnachweisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/projektcontrolling': {
+      id: '/_authenticated/projektcontrolling'
+      path: '/projektcontrolling'
+      fullPath: '/projektcontrolling'
+      preLoaderRoute: typeof AuthenticatedProjektcontrollingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/verantwortungen': {
+      id: '/_authenticated/verantwortungen'
+      path: '/verantwortungen'
+      fullPath: '/verantwortungen'
+      preLoaderRoute: typeof AuthenticatedVerantwortungenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/status': {
+      id: '/api/status'
+      path: '/api/status'
+      fullPath: '/api/status'
+      preLoaderRoute: typeof ApiStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sync': {
+      id: '/api/sync'
+      path: '/api/sync'
+      fullPath: '/api/sync'
+      preLoaderRoute: typeof ApiSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/kundenverantwortung/': {
+      id: '/_authenticated/kundenverantwortung/'
+      path: '/kundenverantwortung'
+      fullPath: '/kundenverantwortung/'
+      preLoaderRoute: typeof AuthenticatedKundenverantwortungIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/meine-kunden/': {
@@ -302,13 +309,6 @@ declare module '@tanstack/react-router' {
       path: '/meine-kunden'
       fullPath: '/meine-kunden/'
       preLoaderRoute: typeof AuthenticatedMeineKundenIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/kundenverantwortung/': {
-      id: '/_authenticated/kundenverantwortung/'
-      path: '/kundenverantwortung'
-      fullPath: '/kundenverantwortung/'
-      preLoaderRoute: typeof AuthenticatedKundenverantwortungIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/auth-config': {
