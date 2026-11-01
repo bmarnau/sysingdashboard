@@ -647,6 +647,13 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-01
+    ereignis: >-
+      Antwort des Owners an den Lovable-Support (Lea) im ursprünglichen Ticket versendet, englisch: Backend-Art, Umsetzung der Formänderung in client.ts mit Ergebnis der
+      Kontrollmessung vom 31.10., Bitte um Wiederaufnahme der Migrationsfragen zu R-10 (20260913213000, 20260917182000, 20260917190000, leere Statements).
+      Wartezeit auf die Antwort; Erinnerung zur Nachfrage am 2026-11-05 bleibt bestehen. Ticketnummer weiterhin nicht erfasst.
+      Backend-Art laut Owner (2026-11-01): Lovable Cloud (nicht ein eigenes Supabase-Projekt); Migrationsfragen R-10 gehen damit an den Lovable-Support für Lovable Cloud.
+    beleg: Owner-Aussage im Chat 2026-11-01 (Mail versendet), Entwurf im Chat; Ticket beim Lovable-Support
   - datum: 2026-10-31
     ereignis: >-
       Tagesabschluss: Sprint 0 abgeschlossen (S0-04, S0-05, S0-06 done), main 7fc2393. Startdatei für die lokale Arbeit (start-sysingboard.ps1) vom Owner erfolgreich getestet.
