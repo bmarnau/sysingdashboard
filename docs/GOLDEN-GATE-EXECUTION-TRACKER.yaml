@@ -649,6 +649,13 @@ risiken:
 fortschritt:
   - datum: 2026-11-01
     ereignis: >-
+      L2 für den Start vorbereitet: Bestand der Drafts gemessen (P2b 51 und P3 74 Tests bestanden, tsc fehlerfrei; Konflikte gegen main nur in vier Doku-Dateien) und
+      mit dem Bericht der lokalen Bestandsaufnahme abgeglichen. Umsetzungsplan mit Integration in vier PRs (P1, P2, P2b, P3), Testzielen je Paket nach ADR-0040 und
+      den Entscheidungen E1 bis E5 liegt als Entwurf vor; Start der Umsetzung nach Freigabe des Owners. Lovable hat das zweite Ticket automatisch mit dem ursprünglichen zusammengeführt
+      (keine Aktion nötig).
+    beleg: docs/L2-UMSETZUNGSPLAN.md, docs/BERICHT-2026-11-01-L2-BESTAND.md, PR 261
+  - datum: 2026-11-01
+    ereignis: >-
       Antwort des Owners an den Lovable-Support (Lea) im ursprünglichen Ticket versendet, englisch: Backend-Art, Umsetzung der Formänderung in client.ts mit Ergebnis der
       Kontrollmessung vom 31.10., Bitte um Wiederaufnahme der Migrationsfragen zu R-10 (20260913213000, 20260917182000, 20260917190000, leere Statements).
       Wartezeit auf die Antwort; Erinnerung zur Nachfrage am 2026-11-05 bleibt bestehen. Ticketnummer weiterhin nicht erfasst.
