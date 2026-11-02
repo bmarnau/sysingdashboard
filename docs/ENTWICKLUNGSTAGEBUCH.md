@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-02 · Dashboard-Version 1.69.0
 
+## 2026-11-02 — E2 bestätigt, Befunde zu Systemstatus und Wiederherstellung
+
+Der Owner hat E2 bestätigt (P2b als Antwort auf die AVKK-Frage; 142 von 142 Sicherheitstests, UTC-Fix gemergt), U4 ist freigegeben. Der Lovable-Abgleich nach den Merges von PR 265 bis 267 ist ohne Befund (HEAD nur `types.ts` +5 Zeilen, Serverfunktion in Lovable nicht erreichbar). Der Systemstatus der Vorschau meldet die GitHub-Prüfung wegen des Anfragelimits (HTTP 403) als nicht prüfbar und liefert keine Build-Commit- oder Publish-Metadaten; das bestätigt den Befund zu R-07. Aus Git ist der Code neu aufbaubar, nicht aber Live-Daten, Konfiguration und Secrets, und das Schema ist wegen R-10 nicht als identisch nachgewiesen; daraus entsteht R-14.
+
 ## 2026-11-02 — L2 U3b: Stichtag des AVKK-Adapters in Berliner Zeit
 
 Der AVKK-Adapter bildete den Stichtag aus dem UTC-Datum, der übrige Server aus Europe/Berlin. Er nutzt jetzt die vorhandene Funktion `berlinDate`. Drei neue Tests (Winterzeit, Sommerzeit, Mittag) waren vor dem Fix in zwei Fällen rot und sind jetzt grün. Lokal 54 von 54 Tests des Kernpakets und 142 von 142 Sicherheitstests bestanden. Die fehlende Obergrenze der Gesamtmenge bleibt im Backlog.

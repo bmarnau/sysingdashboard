@@ -657,11 +657,29 @@ risiken:
     wirkung: 30 lovable-sync-Branches und rund 40 Remote-Branches ohne gemergten PR; Löschen von Remote-Branches ist in der Cloud-Sitzung gesperrt.
     gegenmassnahme: Hygiene-Zeile zum Tagesabschluss; lokaler Aufräumauftrag docs/GIT-AUFRAEUMEN.md bei mehr als 10 gemergten Remote-Branches; lovable*, backup/* und audit/* nie löschen.
     stand: beobachten
+  - id: R-14
+    titel: Kein Nachweis für Wiederherstellung von Daten, Konfiguration und Schema
+    wirkung: >-
+      Aus Git ist der Code neu aufbaubar, nicht aber die Live-Daten in Lovable Cloud (Mandanten, Benutzerkonten, Rollen, Einstellungen), Secrets, Auth- und
+      Domain-Konfiguration. Das Schema ist wegen der Lücken der Migrationshistorie (R-10) aus den Migrationen nicht als identisch nachgewiesen. Ein Restore-Pfad
+      als Dokument liegt nicht vor (R-04 nennt ihn als Gegenmaßnahme).
+    gegenmassnahme: >-
+      Vorschlag, vom Owner noch nicht entschieden: vor dem ersten Publish ein einmaliger Datenexport und eine Wiederherstellungsprobe in einer zweiten Umgebung als
+      Vorgriff auf L8; QS-02 (Server-Backup) bleibt nach dem Golden Gate.
+    stand: offen
 
 # ---------------------------------------------------------------------------
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-02
+    ereignis: >-
+      Entscheidung E2 vom Owner bestätigt (06:40): P2b (AVKK-Server-Lesepfad über Adapter) gilt als Antwort auf die in P2 offene AVKK-Entscheidung; Grundlage sind 142 von 142
+      Sicherheitstests (CI-Lauf von PR 266) und der gemergte UTC-Fix (PR 267). U4 (Route) ist freigegeben. Weitere Befunde: Lovable-Abgleich nach PR 265 bis 267 ohne Befund
+      (HEAD 3dbd1a5 nur types.ts +5 Zeilen, Sync-Branch lovable-sync-1793597709; Serverfunktion nicht importiert, keine Route, berlinDate im Adapter). Systemstatus der Vorschau (Build
+      06:35, Version 1.69.0) meldet die GitHub-Prüfung wegen Anfragelimit (HTTP 403) als nicht prüfbar; Build-Commit und Publish-Metadaten stellt das Hosting nicht bereit; der Owner
+      hat nach eigener Angabe seit langer Zeit nichts veröffentlicht. Neues Risiko R-14 (kein Nachweis für die Wiederherstellung von Daten, Konfiguration und Schema).
+    beleg: Antwort des Owners 2026-11-02 06:40, PR 266, PR 267, Lovable-Antwort 06:35, docs/RISIKOREGISTER.yaml
   - datum: 2026-11-02
     ereignis: >-
       L2 U3b (Befund U3 (1) behoben): Der AVKK-Adapter bildet den Stichtag jetzt mit der vorhandenen Funktion berlinDate statt referenceInstant.slice(0, 10).

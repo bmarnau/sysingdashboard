@@ -1,6 +1,6 @@
 # Risikoregister Golden Gate
 
-Stand: 2026-11-02 · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung) · Texte zu R-01 bis R-13: Tracker, Abschnitt `risiken` · Status: **Entwurf, Bewertung vom Owner noch nicht bestätigt**
+Stand: 2026-11-02 · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung) · Texte zu R-01 bis R-14: Tracker, Abschnitt `risiken` · Status: **Entwurf, Bewertung vom Owner noch nicht bestätigt**
 
 ## 1 Methode
 
@@ -16,6 +16,7 @@ Stand: 2026-11-02 · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung)
 | R-04  | Einzelner Betreiber als SPoF für Freigaben und Supabase-Zugriff                                                        | 4   | 5   | 20    | hoch    | offen             | ja   | –    | 2026-11-09      |
 | R-11  | Terminrisiko durch knappe Kapazität des Betreibers                                                                     | 4   | 4   | 16    | hoch    | offen             | ja   | –    | 2026-11-09      |
 | R-07  | Lovable erzeugt den verbotenen Auth-Storage-Broker bei jeder Arbeitskopie neu                                          | 3   | 5   | 15    | hoch    | offen             | ja   | –    | 2026-11-05      |
+| R-14  | Kein Nachweis für Wiederherstellung von Daten, Konfiguration und Schema                                                | 3   | 5   | 15    | hoch    | offen             | ja   | ja   | 2026-11-09      |
 | L2-R3 | Fehlende Daten wirken wie „alles in Ordnung“                                                                           | 3   | 4   | 12    | mittel  | offen             | –    | ja   | 2026-11-02      |
 | R-01  | Lovable-Basis divergiert erneut von GitHub                                                                             | 4   | 3   | 12    | mittel  | beherrscht        | –    | –    | 2026-11-02      |
 | R-03  | Cockpit ist größter noch nicht begonnener Block                                                                        | 3   | 4   | 12    | mittel  | in_arbeit         | –    | –    | 2026-11-02      |
@@ -55,6 +56,7 @@ quadrantChart
     R-11: [0.7, 0.7]
     R-12: [0.7, 0.5]
     R-13: [0.5, 0.3]
+    R-14: [0.5, 0.9]
     L2-R1: [0.3, 0.9]
     L2-R2: [0.3, 0.9]
     L2-R3: [0.5, 0.7]
@@ -64,9 +66,9 @@ quadrantChart
 
 ## 4 Einordnung
 
-**Single Points of Failure:** R-04 (Einzelbetreiber), R-07 (Publish-Weg und Auth-Broker nur über den Lovable-Support klärbar), R-11 (Kapazität des Betreibers), R-12 (Lovable-Plattform), L2-R5 (Server-Read). R-04 und R-11 hängen zusammen: Fällt der Owner aus, stehen Freigaben, Merges und Datenaufträge still.
+**Single Points of Failure:** R-04 (Einzelbetreiber), R-07 (Publish-Weg und Auth-Broker nur über den Lovable-Support klärbar), R-11 (Kapazität des Betreibers), R-12 (Lovable-Plattform), R-14 (keine Wiederherstellungsprobe), L2-R5 (Server-Read). R-04 und R-11 hängen zusammen: Fällt der Owner aus, stehen Freigaben, Merges und Datenaufträge still.
 
-**Funktionale Sicherheit:** R-02 (unwiderrufliche Migrationen), L2-R1, L2-R2, L2-R3 und L2-R5 (falsche oder unberechtigte Anzeige im Cockpit). Gegenmaßnahmen sind die RED-Testmatrix und die Sicherheitstests aus U2 und U3 (Voraussetzung für Entscheidung E2).
+**Funktionale Sicherheit:** R-02 (unwiderrufliche Migrationen), R-14 (Daten nicht wiederherstellbar nachgewiesen), L2-R1, L2-R2, L2-R3 und L2-R5 (falsche oder unberechtigte Anzeige im Cockpit). Gegenmaßnahmen sind die RED-Testmatrix und die Sicherheitstests aus U2 und U3 (Voraussetzung für Entscheidung E2).
 
 **Schwerpunkte der nächsten sieben Tage:**
 
