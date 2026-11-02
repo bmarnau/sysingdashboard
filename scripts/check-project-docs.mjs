@@ -10,6 +10,7 @@
  *  4. `Stand:` im Entwicklungstagebuch ist nicht älter als der jüngste Eintrag
  *     des Trackers (Toleranz: 0 Tage).
  *  5. Die Version im Tagebuch-Kopf entspricht der obersten CHANGELOG-Version.
+ *  6. Jede Risiko-ID des Trackers steht im Risikoregister (docs/RISIKOREGISTER.yaml).
  *
  * Exitcode 0 = ok, 1 = Verstoß. Aufruf: `npm run docs:project`.
  */
@@ -74,6 +75,19 @@ const clTop = read("CHANGELOG.md").match(
 const diaryVersion = read(files.diary).match(/Dashboard-Version\s+([0-9][0-9A-Za-z.\-+]*)/)?.[1];
 if (clTop && diaryVersion && clTop !== diaryVersion)
   errors.push(`Tagebuch nennt Version ${diaryVersion}, CHANGELOG ${clTop}.`);
+
+// (6) Risikoregister deckt alle Tracker-Risiken ab
+try {
+  const register = parse(read("docs/RISIKOREGISTER.yaml"));
+  const regIds = new Set((register?.risiken ?? []).map((r) => r.id));
+  for (const r of tracker?.risiken ?? [])
+    if (!regIds.has(r.id)) errors.push(`Risiko ${r.id} fehlt in docs/RISIKOREGISTER.yaml.`);
+  for (const r of register?.risiken ?? [])
+    if (r.score !== r.w * r.a)
+      errors.push(`Risikoregister ${r.id}: score ${r.score} ist nicht w*a.`);
+} catch (e) {
+  errors.push(`Risikoregister nicht lesbar: ${e.message}`);
+}
 
 if (errors.length) {
   console.error("✗ Projektdoku nicht aktuell:");

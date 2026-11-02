@@ -23,6 +23,10 @@ Der AVKK-Server-Lesepfad (P2b) ist aus vier Commits des Drafts neu auf `main` au
 
 Der Server-Lesepfad des Management-Cockpits (P2) ist per Cherry-Pick des Code-Commits `f8199b7` neu auf `main` aufgebaut (Branch `feat/l2-u2-server-read`, ohne Konflikte, ohne Doku-Commits des Drafts). Die Serverfunktion liest mit dem User-JWT des Aufrufers, prüft Capabilities und Kundenkreis serverseitig und meldet Teilausfälle je Quelle als Datenzustand. Bestehender Code ändert sich nur additiv (zwei Exporte, ein Kommentar). Keine neue Rolle, Permission, Tabelle oder Migration, keine Beträge. Lokal 94 von 94 Tests der betroffenen Pakete und 142 von 142 Sicherheitstests bestanden, Typecheck und Lint ohne Fehler. AVKK bleibt bis U3 UNAVAILABLE.
 
+## 2026-11-02 — Risikoregister angelegt
+
+Das Risikoregister bündelt 18 Risiken (R-01 bis R-13 aus dem Tracker, R-12 und R-13 neu, L2-R1 bis L2-R5 aus dem Konzept) mit Wahrscheinlichkeit, Auswirkung, Score, Status, Kennzeichen für Single Point of Failure und funktionale Sicherheit, Frühindikator und nächster Prüfung (`docs/RISIKOREGISTER.md`, Daten in `docs/RISIKOREGISTER.yaml`). Die Bewertung ist eine Einschätzung und wartet auf die Bestätigung des Owners. `npm run docs:project` prüft nun, dass jede Tracker-Risiko-ID im Register steht und der Score gleich Wahrscheinlichkeit mal Auswirkung ist. Hoch bewertet sind R-04 (Einzelbetreiber), R-11 (Kapazität) und R-07 (Publish-Weg und Auth-Broker).
+
 ## 2026-11-01 — L2 U1: Composer als neuer PR
 
 Der reine Composer des Management-Cockpits (P1) ist per Cherry-Pick des Code-Commits `53a81f1` neu auf `main` aufgebaut (Branch `feat/l2-u1-composer`, ohne Konflikte, ohne Doku-Commits des Drafts). Geprüft: nur Cockpit-Pfade, keine neue Rolle, Permission, Tabelle oder Migration, keine Beträge, keine React- oder Supabase-Importe. Lokal 20 von 20 Tests bestanden, Typecheck und Lint ohne Fehler. Der PR wird nicht gemergt, bis der Owner „Merge #N“ gibt.
