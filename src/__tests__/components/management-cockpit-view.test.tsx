@@ -2,9 +2,14 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   ManagementCockpitView,
+  PARTIAL_HINT,
   type ManagementCockpitViewState,
 } from "@/components/management-cockpit/ManagementCockpitView";
-import type { CockpitDataState, CockpitResult } from "@/lib/management-cockpit/types";
+import type {
+  CockpitDataState,
+  CockpitReason,
+  CockpitResult,
+} from "@/lib/management-cockpit/types";
 
 const SH = "11111111-1111-4111-8111-111111111111";
 const CUSTOMER = "22222222-2222-4222-8222-222222222222";
@@ -150,5 +155,93 @@ describe("L2 P3 — schreibgeschützte Cockpit-Präsentation", () => {
     render(<ManagementCockpitView state={{ kind: "ready", result: data }} />);
     expect(screen.queryByText(CUSTOMER)).not.toBeInTheDocument();
     expect(screen.getByText("Autorisierter Kunde")).toBeInTheDocument();
+  });
+});
+
+describe("L2 U6 — PARTIAL und UNKNOWN (E-U6-1)", () => {
+  function single(reason: Partial<CockpitReason>, overrides: Partial<CockpitResult> = {}) {
+    const base = result();
+    const item = {
+      ...base.items[0],
+      reasons: [{ ...base.items[0].reasons[2], ...reason }],
+    };
+    return result({ items: [item], ...overrides });
+  }
+
+  function attentionList() {
+    return screen.getByRole("region", { name: "Handlungsbedarf" });
+  }
+
+  it("(a) Grund mit Zustand UNKNOWN zeigt „Nicht ermittelbar“ und keine 0", () => {
+    render(
+      <ManagementCockpitView
+        state={{ kind: "ready", result: single({ count: null, dataState: "UNKNOWN" }) }}
+      />,
+    );
+    const reason = within(attentionList()).getByText("Controlling-Lücke").closest("li")!;
+    expect(within(reason).getByText("Nicht ermittelbar")).toBeInTheDocument();
+    expect(within(reason).queryByText("0")).not.toBeInTheDocument();
+    expect(within(reason).queryByText(PARTIAL_HINT)).not.toBeInTheDocument();
+  });
+
+  it("(b) Grund mit Zustand PARTIAL und Zähler 0 zeigt die 0 nur mit Hinweis", () => {
+    render(
+      <ManagementCockpitView
+        state={{ kind: "ready", result: single({ count: 0, dataState: "PARTIAL" }) }}
+      />,
+    );
+    const reason = within(attentionList()).getByText("Controlling-Lücke").closest("li")!;
+    expect(within(reason).getByText("0")).toBeInTheDocument();
+    expect(within(reason).getByText(PARTIAL_HINT)).toBeInTheDocument();
+  });
+
+  it("(c) Grund mit Zustand PARTIAL und Zähler > 0 zeigt Zahl und Hinweis", () => {
+    render(
+      <ManagementCockpitView
+        state={{ kind: "ready", result: single({ count: 3, dataState: "PARTIAL" }) }}
+      />,
+    );
+    const reason = within(attentionList()).getByText("Controlling-Lücke").closest("li")!;
+    expect(within(reason).getByText("3")).toBeInTheDocument();
+    expect(within(reason).getByText(PARTIAL_HINT)).toBeInTheDocument();
+  });
+
+  it("(d) Gesamtzustand PARTIAL: Kennzahl zeigt Zahl mit Hinweis", () => {
+    render(
+      <ManagementCockpitView
+        state={{
+          kind: "ready",
+          result: result({
+            dataState: "PARTIAL",
+            items: [],
+            counters: { attentionItems: 0, reasonsByCode: {} },
+          }),
+        }}
+      />,
+    );
+    const metric = within(screen.getByRole("region", { name: "Kennzahlen" }))
+      .getByText("Einträge mit Handlungsbedarf")
+      .closest("div")!;
+    expect(within(metric).getByText("0")).toBeInTheDocument();
+    expect(within(metric).getByText(PARTIAL_HINT)).toBeInTheDocument();
+  });
+
+  it("AVAILABLE und EMPTY zeigen keinen Hinweis", () => {
+    for (const dataState of ["AVAILABLE", "EMPTY"] as const) {
+      const { unmount } = render(
+        <ManagementCockpitView
+          state={{
+            kind: "ready",
+            result: result({
+              dataState,
+              items: [],
+              counters: { attentionItems: 0, reasonsByCode: {} },
+            }),
+          }}
+        />,
+      );
+      expect(screen.queryByText(PARTIAL_HINT)).not.toBeInTheDocument();
+      unmount();
+    }
   });
 });

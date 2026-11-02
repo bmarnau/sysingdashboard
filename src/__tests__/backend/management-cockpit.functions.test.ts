@@ -76,9 +76,14 @@ function candidate(systemhouseId: string, customerId: string, name: string): MyC
 
 function customersRepo(
   candidates: readonly MyCustomerCandidate[],
-  options: { listError?: boolean } = {},
+  options: { listError?: boolean; unconfirmed?: readonly string[] } = {},
 ): MyCustomersRepository {
-  const confirmed = new Set(candidates.map((c) => `${c.systemhouseId}:${c.customerId}`));
+  const unconfirmed = new Set(options.unconfirmed ?? []);
+  const confirmed = new Set(
+    candidates
+      .map((c) => `${c.systemhouseId}:${c.customerId}`)
+      .filter((key) => !unconfirmed.has(key)),
+  );
   return {
     async listCandidates() {
       if (options.listError) throw new Error("synthetic customers failure");
@@ -212,6 +217,28 @@ describe("L2 P2 — Autorisierung (fail-closed)", () => {
     expect(result.items.map((i) => i.customerId)).toEqual([KB]);
     expect(result.items[0].reasons.map((r) => r.code)).toContain("WP_OVERDUE");
     expect(JSON.stringify(result)).not.toContain(KA);
+  });
+
+  it("Systemadministrator (ADR-0041): nur Kunden aus „Meine Kunden“, kein Gesamtblick ohne eigene Verantwortung", async () => {
+    // Alle Cockpit-Rechte; die Quellen liefern Zeilen für Kunde A und B (breite Leserechte).
+    // Kunde B ist lesbar, aber ohne eigene Verantwortung: is_my_customer bestätigt ihn nicht.
+    const result = await run(
+      { permissions: ALL_PERMISSIONS },
+      deps({
+        customers: customersRepo([candidate(SH, KA, "Kunde A"), candidate(SH, KB, "Kunde B")], {
+          unconfirmed: [`${SH}:${KB}`],
+        }),
+        workPackages: workPackagesRepo([wpRow("wp-a", SH, KA), wpRow("wp-b", SH, KB)]),
+        controlling: controllingRepo([
+          controllingRow({ customerId: KA, customerName: "Kunde A", workPackageSourceId: null }),
+          controllingRow({ customerId: KB, workPackageSourceId: null }),
+        ]),
+      }),
+    );
+    expect(result.dataState).not.toBe("DENIED");
+    expect(result.items.length).toBeGreaterThan(0);
+    expect(new Set(result.items.map((i) => i.customerId))).toEqual(new Set([KA]));
+    expect(JSON.stringify(result)).not.toContain(KB);
   });
 
   it("Cross-Systemhouse: gleiche Customer-ID in fremdem Systemhaus liefert nichts", async () => {

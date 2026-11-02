@@ -44,6 +44,20 @@ function valueLabel(value: number | null | undefined, state: CockpitDataState): 
   return USABLE.has(state) && value != null ? String(value) : "Nicht ermittelbar";
 }
 
+export const PARTIAL_HINT = "Teilweise ermittelt, Quelle unvollständig";
+
+/** E-U6-1: Eine bei PARTIAL angezeigte Zahl (auch 0) steht nie ohne diesen Hinweis. */
+function PartialHint({
+  value,
+  state,
+}: {
+  value: number | null | undefined;
+  state: CockpitDataState;
+}) {
+  if (state !== "PARTIAL" || value == null) return null;
+  return <span className="text-xs text-muted-foreground">{PARTIAL_HINT}</span>;
+}
+
 /** Reine Darstellung des Serverergebnisses; keine lokale Datenquelle oder neue KPI-Ableitung. */
 export function ManagementCockpitView({ state }: { state: ManagementCockpitViewState }) {
   if (state.kind === "loading") return <p role="status">Managementcockpit wird geladen …</p>;
@@ -117,6 +131,7 @@ export function ManagementCockpitView({ state }: { state: ManagementCockpitViewS
                               ? " Tage"
                               : ""}
                           </span>
+                          <PartialHint value={reason.count} state={reason.dataState} />
                           <StateLabel state={reason.dataState} />
                         </li>
                       ))}
@@ -140,8 +155,11 @@ export function ManagementCockpitView({ state }: { state: ManagementCockpitViewS
         <dl className="grid gap-3 sm:grid-cols-2">
           <div>
             <dt>Einträge mit Handlungsbedarf</dt>
-            <dd className="font-semibold">
-              {valueLabel(result.counters.attentionItems, result.dataState)}
+            <dd className="flex flex-wrap items-baseline gap-2">
+              <span className="font-semibold">
+                {valueLabel(result.counters.attentionItems, result.dataState)}
+              </span>
+              <PartialHint value={result.counters.attentionItems} state={result.dataState} />
             </dd>
           </div>
           <div>
