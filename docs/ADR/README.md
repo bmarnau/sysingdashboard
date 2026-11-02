@@ -6,7 +6,7 @@ unveränderlich — Kurskorrekturen entstehen als **neues** ADR mit
 
 ## Index
 
-Vollständig und lückenlos ADR-0001 bis ADR-0040. Alle ADRs liegen ausschließlich
+Vollständig und lückenlos ADR-0001 bis ADR-0041. Alle ADRs liegen ausschließlich
 in diesem Verzeichnis (`docs/ADR/`); das frühere zweite Verzeichnis `docs/adr/`
 wurde in Sprint 09B aufgelöst, weil zwei Verzeichnisse mit gleichem Namen unter
 Windows kollidieren.
@@ -53,6 +53,7 @@ Windows kollidieren.
 | 0038 | [BSF-Umfang und Meilensteindefinition (MVP, Golden Gate, BSF)](./0038-bsf-umfang-und-meilensteine.md)                        | Accepted               |
 | 0039 | [Claude Code ersetzt Codex als bevorzugtes lokales Werkzeug](./0039-claude-code-statt-codex.md)                              | Accepted               |
 | 0040 | [Kontinuierlicher Testziel-Abgleich und Testökonomie](./0040-kontinuierlicher-testziel-abgleich.md)                          | Accepted               |
+| 0041 | [Cockpit-Kundenkreis = „Meine Kunden“](./0041-cockpit-kundenkreis-meine-kunden.md)                                           | Accepted               |
 
 Stand der Prüfung: 2026-10-13. ADR-0031 ist in BSF-02B umgesetzt.
 ADR-0032 konkretisiert ADR-0030 für den minimalen gemeinsamen Mehrbenutzer-Read-Pfad,

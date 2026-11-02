@@ -674,6 +674,18 @@ risiken:
 fortschritt:
   - datum: 2026-11-02
     ereignis: >-
+      Entscheidungen des Owners nach U5 (Auswahlfragen im Chat): E-U6-1: Bei Zustand PARTIAL bleibt die Zahl sichtbar, daneben steht der Hinweis "Teilweise ermittelt, Quelle unvollständig";
+      eine 0 erscheint bei PARTIAL nie ohne diesen Hinweis. E-U6-2: Das Cockpit zeigt auch dem Systemadministrator nur die eigenen Kunden ("Meine Kunden", is_my_customer), kein Gesamtblick
+      (ADR-0041). Kachel "Umsatz gesamt" (QS-06, Draft-PR 222) wird vor dem ersten Publish behoben, Gate, Umsetzung als Paket U7. Demo-Konten Administrator und Customer: Lücke dokumentiert,
+      Anlage nur als Datenauftrag nach ADR-0037. Sam nicht einzeln geprüft, gleiche Rolle wie Alex. Umsetzung U6 auf Branch feat/l2-u6-partial-hinweis: ManagementCockpitView.tsx zeigt den
+      Hinweis als Text hinter jedem bei PARTIAL angezeigten Zähler (Grund-Zähler und Kennzahl "Einträge mit Handlungsbedarf"); AVAILABLE und EMPTY unverändert, UNKNOWN und UNAVAILABLE weiter
+      "Nicht ermittelbar". Neue Tests: fünf Komponententests (UNKNOWN-Grund, PARTIAL mit 0, PARTIAL mit Zahl, Kennzahl bei PARTIAL, kein Hinweis bei AVAILABLE und EMPTY) und ein Servertest
+      für den Systemadministrator ohne eigene Verantwortung. Keine Änderung an Serverfunktion, Migration, Scope oder routeTree.gen.ts. Lokal: Cockpit-Tests 4 Dateien 73 von 73,
+      Sicherheitstests 142 von 142, E2E management-cockpit 10 von 10, Typprüfung ohne Fehler, Lint 0 Fehler. Eine Gate-Liste vor dem Publish gibt es im Tracker nicht; das Gate
+      "Umsatz-Kachel QS-06" steht in docs/CURRENT-STATUS.md (Verbleibend bis zum Publish) und im Backlog (U7).
+    beleg: Owner-Antworten im Chat 2026-11-02, PR 271, PR U6 (siehe CURRENT-STATUS), docs/ADR/0041-cockpit-kundenkreis-meine-kunden.md
+  - datum: 2026-11-02
+    ereignis: >-
       L2 U5: Rollenabnahme des Managementcockpits durch den Owner in der Lovable-Vorschau (14:08 bis 14:20). Positiv: Petra (Projektmanager, Kunde B, 3 Einträge), Georg (Teamleiter,
       Leerzustand, alle Quellen Leer), Bernd (Systemadministrator, Kunde A, 4 Einträge); jeweils kein Euro-Betrag, keine Personenbewertung, keine Schreib-Knöpfe. Negativ: Alex (Systemingenieur)
       und Alexa (Viewer): Tab fehlt, Direktaufruf zeigt "Keine Berechtigung für das Managementcockpit". Info-Kiosk: kein Tab, Direktaufruf bleibt in der Kiosk-Ansicht (Aussage des Owners,
