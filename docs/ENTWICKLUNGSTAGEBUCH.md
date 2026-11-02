@@ -21,6 +21,8 @@ Der Bestand der vier L2-Drafts ist gemessen und mit dem Bericht der lokalen Best
 
 Entscheidungen E1 bis E5 (Owner, 2026-11-01): alle nach Empfehlung; E2 bestätigt erst nach bestandenen U3-Sicherheitstests. Lesender Lovable-Prompt: Lovable-HEAD 1f37dc8 liegt 1 Commit vor `main` (nur `types.ts` +5 Zeilen, bekannte Abweichung), Cockpit-Code und Route fehlen in Lovable wie erwartet.
 
+U1 umgesetzt und gemergt (2026-11-01): PR 262 mit dem Composer (Cherry-Pick 53a81f1, 4 Code-Dateien, 20 Tests, CI 15 von 15), `main` 814c9cd. U2 berührt außerdem `work-package-work-view.ts` und `compose.ts` und wird entsprechend geprüft.
+
 ## 2026-11-01 — Antwort an den Lovable-Support versendet
 
 Der Owner hat die Antwort an Lea im ursprünglichen Ticket versendet (englisch): Backend-Art, Ergebnis der Kontrollmessung zu Weg B und die Bitte, die Migrationsfragen zu R-10 wieder aufzunehmen. Nun gilt die Wartezeit auf die Antwort; die Nachfrage ist für den 2026-11-05 vorgesehen. Schreibende Migrationen und Datenänderungen am Live-System bleiben bis dahin ausgeschlossen.
