@@ -674,6 +674,16 @@ risiken:
 fortschritt:
   - datum: 2026-11-02
     ereignis: >-
+      Vorschau-Anmeldemaske ohne Gestaltung reproduziert: Die CSS-Verarbeitung scheitert beim Lesen von devSourcemap.
+      Eng begrenzte Korrektur setzt den Vite-Standard css.devSourcemap=false ausdrücklich; keine Änderung der Anmeldelogik,
+      Berechtigungen, Datenbank oder Veröffentlichung. Keine neue Produktfunktion und kein Versionssprung; U5 bleibt offen.
+    beleg: >-
+      Browserprüfung /auth: Gestaltung aktiv bei 1234x1188 und 390x844, Registrierung und Reset erreichbar,
+      kein horizontaler Überlauf, keine Laufzeitfehler (nur Darstellung geprüft, keine Anmeldung oder E-Mail ausgelöst).
+      docs:check und docs:project erfolgreich, Prettier der geänderten Dateien erfolgreich;
+      Vorschau-Buildprotokoll 2026-11-02T13:02:18Z build OK. vite.config.ts.
+  - datum: 2026-11-02
+    ereignis: >-
       Entscheidungen des Owners (13:30, nacheinander mit Auswahloptionen): (1) U5, die Rollenabnahme des Cockpits in der Lovable-Vorschau, läuft als Checkliste Rolle für Rolle
       (positiv Projektmanager, Teamlead, Administration; negativ Viewer, Customer, Kiosk, Engineer); (2) CHANGELOG-Eintrag und Versionssprung erst nach U5 zusammen mit Hilfe und
       Handbuch (L2-12); (3) das Risikoregister wird mit den vier hoch bewerteten Risiken einzeln durchgegangen (R-04, R-11, R-07, R-14), die übrigen gelten als bestätigt, wenn der Owner nichts ändert;
