@@ -664,14 +664,21 @@ risiken:
       Domain-Konfiguration. Das Schema ist wegen der Lücken der Migrationshistorie (R-10) aus den Migrationen nicht als identisch nachgewiesen. Ein Restore-Pfad
       als Dokument liegt nicht vor (R-04 nennt ihn als Gegenmaßnahme).
     gegenmassnahme: >-
-      Vorschlag, vom Owner noch nicht entschieden: vor dem ersten Publish ein einmaliger Datenexport und eine Wiederherstellungsprobe in einer zweiten Umgebung als
-      Vorgriff auf L8; QS-02 (Server-Backup) bleibt nach dem Golden Gate.
+      Entscheidung des Owners 2026-11-02: Datenexport und Wiederherstellungsprobe in einer zweiten Umgebung sind Gate vor dem ersten Publish (Vorgriff auf L8). Dazu
+      kommt ein dokumentierter Restore-Pfad (R-04). QS-02 (Server-Backup) bleibt nach dem Golden Gate.
     stand: offen
 
 # ---------------------------------------------------------------------------
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-02
+    ereignis: >-
+      Entscheidungen des Owners (13:30, nacheinander mit Auswahloptionen): (1) U5, die Rollenabnahme des Cockpits in der Lovable-Vorschau, läuft als Checkliste Rolle für Rolle
+      (positiv Projektmanager, Teamlead, Administration; negativ Viewer, Customer, Kiosk, Engineer); (2) CHANGELOG-Eintrag und Versionssprung erst nach U5 zusammen mit Hilfe und
+      Handbuch (L2-12); (3) das Risikoregister wird mit den vier hoch bewerteten Risiken einzeln durchgegangen (R-04, R-11, R-07, R-14), die übrigen gelten als bestätigt, wenn der Owner nichts ändert;
+      (4) Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish (R-14). Stand: PR 269 (U4) gemergt, main 2be2d6c.
+    beleg: Antworten des Owners 2026-11-02 13:30, PR 269, docs/RISIKOREGISTER.yaml
   - datum: 2026-11-02
     ereignis: >-
       L2 U4 (P3 Route /managementcockpit) neu aufgebaut: Voraussetzungen geprüft (E2 bestätigt laut Tracker 06:40, PR 267 gemergt c24c4a5). Branch feat/l2-u4-route von origin/main fe77cf4,

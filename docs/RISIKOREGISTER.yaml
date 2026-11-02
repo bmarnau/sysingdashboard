@@ -15,6 +15,7 @@
 version: 1
 stand: 2026-11-02
 bestaetigt_durch_owner: false
+abnahme_ablauf: "Owner 2026-11-02: die vier hoch bewerteten Risiken (R-04, R-11, R-07, R-14) werden einzeln durchgegangen; die übrigen gelten als bestätigt, wenn der Owner nichts ändert."
 pruefrhythmus: "Bei jedem Tagesabschluss die Spalten status und nächste_prüfung durchsehen; Neubewertung nach jedem gemergten L2-Schritt und bei jeder Antwort des Lovable-Supports."
 skala:
   stufe_hoch: 15
@@ -203,7 +204,7 @@ risiken:
     funktionale_sicherheit: true
     betroffene_pakete: [L8, BSF-06, Publish]
     naechste_pruefung: 2026-11-09
-    anmerkung: "Vorschlag Datenexport und Wiederherstellungsprobe vor dem ersten Publish; Entscheidung des Owners steht aus."
+    anmerkung: "Entscheidung des Owners 2026-11-02: Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish."
   # L2-Cockpit (Konzept Abschnitt Risiken)
   - id: L2-R1
     kategorie: Sicherheit
