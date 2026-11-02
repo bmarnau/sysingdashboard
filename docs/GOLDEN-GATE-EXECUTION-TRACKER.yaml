@@ -649,6 +649,14 @@ risiken:
 fortschritt:
   - datum: 2026-11-02
     ereignis: >-
+      L2 U3b (Befund U3 (1) behoben): Der AVKK-Adapter bildet den Stichtag jetzt mit der vorhandenen Funktion berlinDate statt referenceInstant.slice(0, 10).
+      Branch fix/l2-u3b-avkk-berlin-date von origin/main 7ab6313; Test zuerst (drei Fälle Winterzeit, Sommerzeit, Mittag; Spy auf buildRows mit echter Fachlogik, da der Stichtag
+      bei due null im Ergebnis nicht beobachtbar ist): vor dem Fix 2 rot und 1 grün (erhalten 2026-11-01 und 2026-07-01), danach 12 von 12 im Adaptertest.
+      Nur Adapter und dessen Test geändert; Serverfunktion unverändert; keine Rolle, Permission, Tabelle, Migration, keine Beträge. Lokal: Kernpaket 54 von 54 (51 plus 3),
+      Sicherheitstests 142 von 142, typecheck ohne Fehler, lint 0 Fehler (20 Warnungen außerhalb), Prettier sauber. Befund (2) bleibt im Backlog.
+    beleg: Branch fix/l2-u3b-avkk-berlin-date, Commits Test und Fix, PR siehe CURRENT-STATUS
+  - datum: 2026-11-02
+    ereignis: >-
       L2 U3 (P2b AVKK-Server-Lesepfad) neu aufgebaut: Branch feat/l2-u3-avkk-read von origin/main 755614a, Code und Tests der Commits 503e590, bfe94aa, 5853d58, 8d7033f
       per cherry-pick -n (Konflikte nur in docs/, verworfen; Plan docs/superpowers/plans/* nicht übernommen), neuer Commit 574be12, 4 Dateien +652/-4, inhaltlich identisch mit 8d7033f.
       test-report/api-matrix.json nicht übernommen (Quell-Commits wechseln nur das Zeilenende, netto keine Änderung); Datei entsteht bei npm run test:api neu, CI lädt sie als Artefakt
