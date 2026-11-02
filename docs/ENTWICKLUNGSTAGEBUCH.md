@@ -13,7 +13,7 @@ Stand: 2026-11-02 · Dashboard-Version 1.69.0
 
 ## 2026-11-02 — Vorschau: fehlende Gestaltung der Anmeldemaske
 
-Die Anmeldemaske wurde in einem frischen Browser ohne Gestaltung angezeigt. Die ausgelieferte CSS-Antwort und das Vorschau-Prozessprotokoll nennen `Cannot read properties of undefined (reading 'devSourcemap')`. `vite.config.ts` setzt deshalb den bestehenden Vite-Standard `css.devSourcemap: false` ausdrücklich. Das repariert die Verarbeitung der unveränderten Gestaltung, nicht die Authentifizierung. Kein Versionssprung, keine neue Funktion, keine Datenbankänderung, kein Publish; die Rollenabnahme U5 bleibt offen. Sichtprüfung der Korrektur erfolgt separat.
+Die Anmeldemaske wurde in einem frischen Browser ohne Gestaltung angezeigt. Die ausgelieferte CSS-Antwort und das Vorschau-Prozessprotokoll nennen `Cannot read properties of undefined (reading 'devSourcemap')`. `vite.config.ts` setzt deshalb den bestehenden Vite-Standard `css.devSourcemap: false` ausdrücklich, auch über den Konfigurationshook des Vorschau-Plugin-Hosts. Das repariert die Verarbeitung der unveränderten Gestaltung, nicht die Authentifizierung. Kein Versionssprung, keine neue Funktion, keine Datenbankänderung, kein Publish; die Rollenabnahme U5 bleibt offen. Browserprüfung: Gestaltung bei 1234x1188 und 390x844 aktiv, Registrierung und Reset sichtbar, kein horizontaler Überlauf und keine Laufzeitfehler; keine Anmeldung oder E-Mail ausgelöst. Dokumentationsprüfungen und Prettier erfolgreich; Vorschau-Buildprotokoll 2026-11-02T13:02:18Z: build OK.
 
 ## 2026-11-02 — L2 U4: Route Managementcockpit als neuer PR
 
