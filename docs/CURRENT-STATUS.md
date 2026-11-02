@@ -4,7 +4,9 @@ Stand: 2026-11-02
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
-L2 U2 (2026-11-02): P2 Server-Lesepfad neu aufgebaut auf Branch `feat/l2-u2-server-read` (Cherry-Pick von `f8199b7`, konfliktfrei; lokal 94 von 94 Tests der betroffenen Pakete, Sicherheitstests 142 von 142, Typecheck und Lint ohne Fehler). PR offen, nicht gemergt; Merge nur auf Befehl des Owners. Nächster Schritt nach Merge: U3 (P2b AVKK-Server-Lesepfad). Publish bleibt No-Go.
+L2 U3 (2026-11-02): P2b AVKK-Server-Lesepfad neu aufgebaut auf Branch `feat/l2-u3-avkk-read` (Code und Tests aus vier Commits, ohne Doku; lokal 51 von 51 Tests des Kernpakets, Sicherheitstests 142 von 142, Typecheck und Lint ohne Fehler). PR offen, nicht gemergt. E2 gilt erst nach Bestätigung durch den Owner. Nächster Schritt nach Merge: U4 (Route `/managementcockpit`). Publish bleibt No-Go.
+
+L2 U2 (2026-11-02, gemergt mit PR 264): P2 Server-Lesepfad neu aufgebaut auf Branch `feat/l2-u2-server-read` (Cherry-Pick von `f8199b7`, konfliktfrei; lokal 94 von 94 Tests der betroffenen Pakete, Sicherheitstests 142 von 142, Typecheck und Lint ohne Fehler). PR offen, nicht gemergt; Merge nur auf Befehl des Owners. Nächster Schritt nach Merge: U3 (P2b AVKK-Server-Lesepfad). Publish bleibt No-Go.
 
 L2 U1 (2026-11-01, gemergt mit PR 262 und Doku-PR 263): Composer P1 neu aufgebaut auf Branch `feat/l2-u1-composer` (Cherry-Pick von `53a81f1`, konfliktfrei; lokal 20 von 20 Tests, Typecheck und Lint ohne Fehler). PR offen, nicht gemergt; Merge nur auf Befehl des Owners. Nächster Schritt: U2 (P2 Server-Lesepfad) nach `docs/L2-UMSETZUNGSPLAN.md` Abschnitt 3. Publish bleibt No-Go.
 
