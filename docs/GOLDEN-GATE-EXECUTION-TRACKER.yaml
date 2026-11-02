@@ -674,6 +674,20 @@ risiken:
 fortschritt:
   - datum: 2026-11-02
     ereignis: >-
+      L2 U4 (P3 Route /managementcockpit) neu aufgebaut: Voraussetzungen geprüft (E2 bestätigt laut Tracker 06:40, PR 267 gemergt c24c4a5). Branch feat/l2-u4-route von origin/main fe77cf4,
+      Code und Tests der Commits a02ab26 und a565a21 per cherry-pick -n (Konflikte nur in docs/, verworfen; Plan unter docs/superpowers/ nicht übernommen), Commit 0026100, 13 Dateien +810/-7.
+      src/routeTree.gen.ts nicht aus dem Draft, sondern per vite build (TanStack-Router-Plugin) neu erzeugt: nur die Route /managementcockpit kommt hinzu (+22, keine Löschung).
+      Befund: src/components/dashboard/search.ts und dashboard-search.test.ts sind neue Dateien (nicht Bestand). Bestandsdateien: dashboard.tsx (Suchschema tab, Reiterwahl per tab, Navigationspunkt
+      im Gate), verantwortungen.tsx (Suchschema tab für den Reiter Arbeitspakete), CustomerPageShell.tsx (nur Layout-Klassen min-w-0, shrink-0, truncate). Route und Navigationspunkt nur mit
+      project.controlling.view oder avkk.management.view, Server prüft erneut; keine schreibende Aktion; Handlungsbedarf vor Kennzahlen; sechs Datenzustände benannt, UNAVAILABLE als "Nicht ermittelbar".
+      Keine neue Rolle, Permission, Tabelle, Migration, keine Beträge, keine Personenbewertung, audit_log unberührt. Lokal: P3-Messumfang 6 Dateien 75 von 75 (74 laut Bestandsmessung plus 1 Test aus U3),
+      Adaptertest 12 von 12, gesamte Unit-Suite 178 Dateien 1246 bestanden und 4 todo, Sicherheitstests 142 von 142, E2E (chromium) 24 von 24, davon management-cockpit.spec.ts 10 von 10
+      (4 Rollen positiv, 4 negativ, Layout und Drill-down), navigation.spec.ts 4 von 4, work-package-work-view.spec.ts 10 von 10; typecheck ohne Fehler, lint 0 Fehler (Warnung in dashboard.tsx
+      besteht schon auf main), Prettier sauber. Veröffentlichung bleibt No-Go; L2 wird nur in der Lovable-Vorschau geprüft (E3). Nächster Schritt: U5 (Rollenabnahme durch den Owner).
+      Draft-PR 234 bleibt ungemergt.
+    beleg: Branch feat/l2-u4-route, Commit 0026100, lokaler Testlauf 2026-11-02, PR (U4) siehe CURRENT-STATUS
+  - datum: 2026-11-02
+    ereignis: >-
       Entscheidung E2 vom Owner bestätigt (06:40): P2b (AVKK-Server-Lesepfad über Adapter) gilt als Antwort auf die in P2 offene AVKK-Entscheidung; Grundlage sind 142 von 142
       Sicherheitstests (CI-Lauf von PR 266) und der gemergte UTC-Fix (PR 267). U4 (Route) ist freigegeben. Weitere Befunde: Lovable-Abgleich nach PR 265 bis 267 ohne Befund
       (HEAD 3dbd1a5 nur types.ts +5 Zeilen, Sync-Branch lovable-sync-1793597709; Serverfunktion nicht importiert, keine Route, berlinDate im Adapter). Systemstatus der Vorschau (Build
