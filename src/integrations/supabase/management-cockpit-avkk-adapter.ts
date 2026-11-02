@@ -15,6 +15,7 @@ import {
   type AvkkSubject,
   type RiskThreshold,
 } from "@/lib/avkk/types";
+import { berlinDate } from "@/lib/avkk/work-package-work-view";
 import { buildRows, taskKey, type AvkkTask } from "@/lib/avkk/workspace";
 import type { AvkkSignalRepository } from "@/lib/management-cockpit-runtime/management-cockpit.functions";
 import type { AvkkCustomerSignal } from "@/lib/management-cockpit/types";
@@ -301,7 +302,8 @@ export function createSupabaseManagementCockpitAvkkRepository(
         groups.set(key, [...(groups.get(key) ?? []), subject]);
       }
 
-      const today = referenceInstant.slice(0, 10);
+      // Stichtag wie im übrigen Server in Europe/Berlin, nicht als UTC-Datum.
+      const today = berlinDate(referenceInstant);
       return [...groups.values()]
         .map((group): AvkkCustomerSignal => {
           const dossiers = new Map<string, AvkkDossier>();
