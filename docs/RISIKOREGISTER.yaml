@@ -1,6 +1,6 @@
 # Risikoregister Golden Gate (Interne Freigabe 1.0)
 # Stand: 2026-11-02. Führend für Bewertung, Verantwortung und Prüfrhythmus.
-# Beschreibung, Wirkung und Gegenmaßnahmen der Risiken R-01 bis R-13 stehen im Tracker
+# Beschreibung, Wirkung und Gegenmaßnahmen der Risiken R-01 bis R-14 stehen im Tracker
 # (docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml, Abschnitt risiken) und werden hier nicht wiederholt.
 # L2-R1 bis L2-R5 stehen in docs/L2-COCKPIT-SCHNITT-KONZEPT.md (Abschnitt Risiken).
 #
@@ -190,6 +190,20 @@ risiken:
     funktionale_sicherheit: false
     betroffene_pakete: [Git-Hygiene]
     naechste_pruefung: 2026-11-09
+  - id: R-14
+    kategorie: Betrieb
+    w: 3
+    a: 5
+    score: 15
+    stufe: hoch
+    status: offen
+    eigner: Owner
+    fruehindikator: "Ausfall oder Verlust von Lovable Cloud, fehlerhafter Datenauftrag oder Plattform-Änderung ohne aktuellen Export"
+    spof: true
+    funktionale_sicherheit: true
+    betroffene_pakete: [L8, BSF-06, Publish]
+    naechste_pruefung: 2026-11-09
+    anmerkung: "Vorschlag Datenexport und Wiederherstellungsprobe vor dem ersten Publish; Entscheidung des Owners steht aus."
   # L2-Cockpit (Konzept Abschnitt Risiken)
   - id: L2-R1
     kategorie: Sicherheit
@@ -260,6 +274,6 @@ risiken:
     naechste_pruefung: 2026-11-02
 
 einordnung:
-  spof_gesamt: [R-04, R-07, R-11, R-12, L2-R5]
-  funktionale_sicherheit: [R-02, L2-R1, L2-R2, L2-R3, L2-R5]
+  spof_gesamt: [R-04, R-07, R-11, R-12, R-14, L2-R5]
+  funktionale_sicherheit: [R-02, R-14, L2-R1, L2-R2, L2-R3, L2-R5]
   hinweis: "R-04 (Einzelbetreiber) und R-11 (Kapazität) hängen zusammen: Fällt der Owner aus, stehen Freigaben, Merges und Datenaufträge still."

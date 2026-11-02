@@ -4,6 +4,8 @@ Stand: 2026-11-02
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+L2 Stand 2026-11-02 (mittags): U1 bis U3b gemergt (`main` bfb5fce); Entscheidung E2 vom Owner um 06:40 bestätigt, U4 (Route) freigegeben, Wiederanlaufpunkt: Auftrag U4. Neues Risiko R-14 (kein Nachweis für Wiederherstellung von Daten, Konfiguration und Schema; Vorschlag Datenexport und Wiederherstellungsprobe vor dem ersten Publish, Entscheidung offen).
+
 L2 U3b (2026-11-02): Befund U3 (1) behoben, der AVKK-Adapter bildet den Stichtag in Europe/Berlin (`berlinDate`); Branch `fix/l2-u3b-avkk-berlin-date`, lokal Kernpaket 54 von 54, Sicherheitstests 142 von 142. PR offen, nicht gemergt. Nächster Schritt: U4 (Route `/managementcockpit`). Publish bleibt No-Go.
 
 L2 U3 (2026-11-02, gemergt mit PR 266): P2b AVKK-Server-Lesepfad neu aufgebaut auf Branch `feat/l2-u3-avkk-read` (Code und Tests aus vier Commits, ohne Doku; lokal 51 von 51 Tests des Kernpakets, Sicherheitstests 142 von 142, Typecheck und Lint ohne Fehler). PR offen, nicht gemergt. E2 gilt erst nach Bestätigung durch den Owner. Nächster Schritt nach Merge: U4 (Route `/managementcockpit`). Publish bleibt No-Go.
