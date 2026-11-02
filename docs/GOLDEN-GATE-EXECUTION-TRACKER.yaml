@@ -664,6 +664,14 @@ risiken:
 fortschritt:
   - datum: 2026-11-02
     ereignis: >-
+      L2 U3b (Befund U3 (1) behoben): Der AVKK-Adapter bildet den Stichtag jetzt mit der vorhandenen Funktion berlinDate statt referenceInstant.slice(0, 10).
+      Branch fix/l2-u3b-avkk-berlin-date von origin/main 7ab6313; Test zuerst (drei Fälle Winterzeit, Sommerzeit, Mittag; Spy auf buildRows mit echter Fachlogik, da der Stichtag
+      bei due null im Ergebnis nicht beobachtbar ist): vor dem Fix 2 rot und 1 grün (erhalten 2026-11-01 und 2026-07-01), danach 12 von 12 im Adaptertest.
+      Nur Adapter und dessen Test geändert; Serverfunktion unverändert; keine Rolle, Permission, Tabelle, Migration, keine Beträge. Lokal: Kernpaket 54 von 54 (51 plus 3),
+      Sicherheitstests 142 von 142, typecheck ohne Fehler, lint 0 Fehler (20 Warnungen außerhalb), Prettier sauber. Befund (2) bleibt im Backlog.
+    beleg: Branch fix/l2-u3b-avkk-berlin-date, Commits Test und Fix, PR siehe CURRENT-STATUS
+  - datum: 2026-11-02
+    ereignis: >-
       Risikoregister angelegt: 18 Risiken (R-01 bis R-13 aus dem Tracker, R-12 und R-13 neu, L2-R1 bis L2-R5 aus dem Konzept) mit Wahrscheinlichkeit, Auswirkung, Score,
       Status, SPoF- und Sicherheitskennzeichen, Frühindikator und nächster Prüfung. Bewertung ist eine Einschätzung und wartet auf die Bestätigung des Owners.
     beleg: docs/RISIKOREGISTER.yaml, docs/RISIKOREGISTER.md
