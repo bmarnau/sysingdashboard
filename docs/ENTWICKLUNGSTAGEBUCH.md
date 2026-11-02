@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-02 · Dashboard-Version 1.69.0
 
+## 2026-11-02 — L2 U5: Rollenabnahme des Managementcockpits
+
+Der Owner hat das Cockpit in der Lovable-Vorschau Rolle für Rolle geprüft (Screenshots im Chat, 14:08 bis 14:20). Projektmanager, Teamleiter und Systemadministrator sehen das Cockpit mit ihrem Kundenkreis, ohne Beträge, ohne Personenbewertung und ohne Schreib-Knöpfe. Systemingenieur und Viewer sehen keinen Tab, der Direktaufruf zeigt „Keine Berechtigung für das Managementcockpit“; der Kiosk bleibt laut Owner in seiner Ansicht. Administrator und Customer sind mangels Demo-Konto nicht geprüft. „Nicht ermittelbar“ statt 0 lässt sich in der Vorschau nicht herbeiführen und ist nur über Tests belegt; dabei fehlen ein Test für Gründe mit Zustand UNKNOWN, und der Zustand PARTIAL zeigt Zahlen. Der Systemadministrator sieht nur seine eigenen Kunden, weil das Cockpit den Kundenkreis „Meine Kunden“ nutzt; ob das so gewollt ist, steht als Klärung im Backlog.
+
 ## 2026-11-02 — L2 U4: Route Managementcockpit als neuer PR
 
 Die schreibgeschützte Route `/managementcockpit` (P3) ist aus zwei Commits des Drafts neu auf `main` aufgebaut, der Routenbaum wurde mit dem Generator des Projekts neu erzeugt. Route und Navigationspunkt erscheinen nur für Rollen mit Projektcontrolling- oder AVKK-Management-Recht, die Serverfunktion prüft erneut. Die Seite zeigt den Handlungsbedarf vor den Kennzahlen und benennt alle Datenzustände; fehlende Daten erscheinen als „Nicht ermittelbar“. Lokal 75 von 75 Tests im Cockpit-Umfang, 142 von 142 Sicherheitstests und 24 von 24 E2E-Tests bestanden. Veröffentlicht wird nicht; geprüft wird in der Lovable-Vorschau (U5).

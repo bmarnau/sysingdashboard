@@ -674,6 +674,23 @@ risiken:
 fortschritt:
   - datum: 2026-11-02
     ereignis: >-
+      L2 U5: Rollenabnahme des Managementcockpits durch den Owner in der Lovable-Vorschau (14:08 bis 14:20). Positiv: Petra (Projektmanager, Kunde B, 3 Einträge), Georg (Teamleiter,
+      Leerzustand, alle Quellen Leer), Bernd (Systemadministrator, Kunde A, 4 Einträge); jeweils kein Euro-Betrag, keine Personenbewertung, keine Schreib-Knöpfe. Negativ: Alex (Systemingenieur)
+      und Alexa (Viewer): Tab fehlt, Direktaufruf zeigt "Keine Berechtigung für das Managementcockpit". Info-Kiosk: kein Tab, Direktaufruf bleibt in der Kiosk-Ansicht (Aussage des Owners,
+      kein Screenshot). Nicht geprüft: Sam (gleiche Rolle wie Alex, nicht einzeln geprüft); Administrator und Customer (kein Demo-Konto, Lücke). "Nicht ermittelbar" statt 0: in der Vorschau
+      nicht provozierbar, Beleg nur über Tests. Prüfung der Tests (lokal 2026-11-02 14:23, 4 Dateien, 67 von 67): Die Anzeige belegt allein der Komponententest
+      src/__tests__/components/management-cockpit-view.test.tsx "zeigt unbekannte Zähler nie als Null" (Gesamtzustand PARTIAL, Zähler null, Bereich Kennzahlen zeigt "Nicht ermittelbar" und
+      keine 0); er stammt aus U4 (PR 269, Commit 0026100), nicht aus PR 264 oder 266. PR 264 und 266 belegen serverseitig, dass Zähler null statt 0 bleiben
+      (management-cockpit.functions.test.ts: "Rolle ohne jede Capability", "Kundenkreis nicht ermittelbar", "alle Quellen fallen aus: UNAVAILABLE, keine Zähler",
+      "AVKK ohne Server-Provider: UNAVAILABLE, nicht als 0 Befunde dargestellt"; compose.test.ts: "fehlender Veröffentlichungszeitpunkt ist UNKNOWN, kein Grund und keine 0",
+      "Quelle PARTIAL: Zustand bleibt PARTIAL, nicht AVAILABLE"). Lücken: Kein Test prüft, dass ein Grund mit Zustand UNKNOWN in der Liste Handlungsbedarf "Nicht ermittelbar" zeigt.
+      PARTIAL zeigt laut Code Zahlen (USABLE umfasst AVAILABLE, EMPTY, PARTIAL; ManagementCockpitView.tsx Zeile 33, compose.ts Zeile 239), eine 0 bei PARTIAL ist damit möglich; Klärung im Backlog.
+      Weitere Prüfungen: RBAC-Matrix kennt keine Zeile für die Kachel "Umsatz gesamt" und kein billing.view; über dashboard.view sehen Systemingenieur und Viewer die Kachel
+      (dashboard.tsx ohne Prüfung), entgegen der Entscheidung vom 2026-10-25 (QS-06, Draft-PR 222). Kundenkreis im Cockpit ist "Meine Kunden" (is_my_customer verlangt eigene Verantwortung
+      und Kundenzugriff, keine Ausnahme für Systemadministratoren); damit erklärt sich Bernd nur Kunde A, Petra nur Kunde B; keine ADR und kein Test für den Fall Systemadministrator.
+    beleg: Owner-Screenshots im Chat vom 2026-11-02, 14:08 bis 14:20 Uhr (keine Dateien); lokaler Testlauf 2026-11-02 14:23; PR 269; supabase/migrations/20260908032151_de29e3b1-88ac-45c2-b58f-abbc20d7a077.sql
+  - datum: 2026-11-02
+    ereignis: >-
       Entscheidungen des Owners (13:30, nacheinander mit Auswahloptionen): (1) U5, die Rollenabnahme des Cockpits in der Lovable-Vorschau, läuft als Checkliste Rolle für Rolle
       (positiv Projektmanager, Teamlead, Administration; negativ Viewer, Customer, Kiosk, Engineer); (2) CHANGELOG-Eintrag und Versionssprung erst nach U5 zusammen mit Hilfe und
       Handbuch (L2-12); (3) das Risikoregister wird mit den vier hoch bewerteten Risiken einzeln durchgegangen (R-04, R-11, R-07, R-14), die übrigen gelten als bestätigt, wenn der Owner nichts ändert;
