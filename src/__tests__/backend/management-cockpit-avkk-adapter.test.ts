@@ -1,9 +1,16 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createSupabaseManagementCockpitAvkkRepository } from "@/integrations/supabase/management-cockpit-avkk-adapter";
 import type { Database } from "@/integrations/supabase/types";
+import { buildRows } from "@/lib/avkk/workspace";
+
+// Echte Fachlogik bleibt aktiv; der Spy macht nur den übergebenen Stichtag sichtbar.
+vi.mock("@/lib/avkk/workspace", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/avkk/workspace")>();
+  return { ...actual, buildRows: vi.fn(actual.buildRows) };
+});
 
 const SH = "11111111-1111-4111-8111-111111111111";
 const SH_FOREIGN = "99999999-9999-4999-8999-999999999999";
@@ -173,6 +180,30 @@ function fixture(): Data {
 }
 
 describe("L2 P2b — AVKK Supabase server adapter", () => {
+  it.each([
+    [
+      "Winterzeit, 23:30 UTC ist in Berlin schon der Folgetag",
+      "2026-11-01T23:30:00Z",
+      "2026-11-02",
+    ],
+    [
+      "Sommerzeit, 22:30 UTC ist in Berlin schon der Folgetag",
+      "2026-07-01T22:30:00Z",
+      "2026-07-02",
+    ],
+    ["Mittag, Berlin und UTC haben dasselbe Datum", "2026-11-02T12:00:00Z", "2026-11-02"],
+  ])("bildet den Stichtag in Europe/Berlin (%s)", async (_case, referenceInstant, expected) => {
+    const spy = vi.mocked(buildRows);
+    spy.mockClear();
+    const repository = createSupabaseManagementCockpitAvkkRepository(
+      fakeClient(fixture()),
+      referenceInstant,
+    );
+    await repository.listCustomerSignals();
+    expect(spy).toHaveBeenCalled();
+    for (const [, , options] of spy.mock.calls) expect(options.today).toBe(expected);
+  });
+
   it("bricht bei fehlender Kundenzuordnung ab statt vorhandene Dossiers als leer zu melden", async () => {
     const data = fixture();
     data.avkk_subject = [{ ...data.avkk_subject[0], customer_id: null }];
