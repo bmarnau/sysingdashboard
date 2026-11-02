@@ -4,6 +4,8 @@ Stand: 2026-11-02
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+Vorschau-Befund 2026-11-02: Die Anmeldemaske wird ohne Gestaltung ausgeliefert, weil die CSS-Verarbeitung mit `Cannot read properties of undefined (reading 'devSourcemap')` abbricht. Eng begrenzte Korrektur in `vite.config.ts`: den vorhandenen Vite-Standard `css.devSourcemap: false` ausdrücklich setzen. Anmeldelogik, Berechtigungen, Datenbank und Veröffentlichung bleiben unverändert. U5 bleibt der fachliche Wiederanlaufpunkt; Sichtprüfung der Korrektur separat, kein Release- oder Cockpit-Statuswechsel.
+
 L2 Stand 2026-11-02 (nachmittags): U1 bis U4 gemergt (`main` 2be2d6c). Wiederanlaufpunkt: U5, Rollenabnahme durch den Owner in der Lovable-Vorschau (Checkliste Rolle für Rolle); CHANGELOG und Version erst nach U5 mit Hilfe und Handbuch (L2-12). Entschieden: Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish (R-14). Risikoregister: vom Owner am 2026-11-02 bestätigt (die vier hoch bewerteten Risiken einzeln, ohne Änderung).
 
 L2 Stand 2026-11-02 (mittags): U1 bis U3b gemergt (`main` bfb5fce); Entscheidung E2 vom Owner um 06:40 bestätigt, U4 (Route) freigegeben, Wiederanlaufpunkt: Auftrag U4. Neues Risiko R-14 (kein Nachweis für Wiederherstellung von Daten, Konfiguration und Schema; Vorschlag Datenexport und Wiederherstellungsprobe vor dem ersten Publish, Entscheidung offen).

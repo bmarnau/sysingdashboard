@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-02 · Dashboard-Version 1.69.0
 
+## 2026-11-02 — Vorschau: fehlende Gestaltung der Anmeldemaske
+
+Die Anmeldemaske wurde in einem frischen Browser ohne Gestaltung angezeigt. Die ausgelieferte CSS-Antwort und das Vorschau-Prozessprotokoll nennen `Cannot read properties of undefined (reading 'devSourcemap')`. `vite.config.ts` setzt deshalb den bestehenden Vite-Standard `css.devSourcemap: false` ausdrücklich. Das repariert die Verarbeitung der unveränderten Gestaltung, nicht die Authentifizierung. Kein Versionssprung, keine neue Funktion, keine Datenbankänderung, kein Publish; die Rollenabnahme U5 bleibt offen. Sichtprüfung der Korrektur erfolgt separat.
+
 ## 2026-11-02 — L2 U4: Route Managementcockpit als neuer PR
 
 Die schreibgeschützte Route `/managementcockpit` (P3) ist aus zwei Commits des Drafts neu auf `main` aufgebaut, der Routenbaum wurde mit dem Generator des Projekts neu erzeugt. Route und Navigationspunkt erscheinen nur für Rollen mit Projektcontrolling- oder AVKK-Management-Recht, die Serverfunktion prüft erneut. Die Seite zeigt den Handlungsbedarf vor den Kennzahlen und benennt alle Datenzustände; fehlende Daten erscheinen als „Nicht ermittelbar“. Lokal 75 von 75 Tests im Cockpit-Umfang, 142 von 142 Sicherheitstests und 24 von 24 E2E-Tests bestanden. Veröffentlicht wird nicht; geprüft wird in der Lovable-Vorschau (U5).

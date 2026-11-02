@@ -46,6 +46,9 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    // The preview plugin host does not supply Vite's default CSS config.
+    // Tailwind reads css.devSourcemap when transforming every stylesheet.
+    css: { devSourcemap: false },
     define: {
       __BUILD_INFO__: JSON.stringify(buildInfo),
     },
