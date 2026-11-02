@@ -1,0 +1,265 @@
+# Risikoregister Golden Gate (Interne Freigabe 1.0)
+# Stand: 2026-11-02. Führend für Bewertung, Verantwortung und Prüfrhythmus.
+# Beschreibung, Wirkung und Gegenmaßnahmen der Risiken R-01 bis R-13 stehen im Tracker
+# (docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml, Abschnitt risiken) und werden hier nicht wiederholt.
+# L2-R1 bis L2-R5 stehen in docs/L2-COCKPIT-SCHNITT-KONZEPT.md (Abschnitt Risiken).
+#
+# Methode
+#   w = Eintrittswahrscheinlichkeit 1 (unwahrscheinlich) bis 5 (praktisch sicher)
+#   a = Auswirkung 1 (gering) bis 5 (Golden Gate oder Datenschutz gefährdet)
+#   score = w * a; stufe: hoch ab 15, mittel 8 bis 14, niedrig bis 7
+#   Die Bewertung ist eine Einschätzung von Claude (Analogie, keine Messung) und
+#   gilt erst mit der Bestätigung des Owners (bestaetigt_durch_owner).
+#   Wirkt ein Risiko auf mehrere Pakete, steht es unter betroffene_pakete.
+
+version: 1
+stand: 2026-11-02
+bestaetigt_durch_owner: false
+pruefrhythmus: "Bei jedem Tagesabschluss die Spalten status und nächste_prüfung durchsehen; Neubewertung nach jedem gemergten L2-Schritt und bei jeder Antwort des Lovable-Supports."
+skala:
+  stufe_hoch: 15
+  stufe_mittel: 8
+
+risiken:
+  - id: R-01
+    kategorie: Plattform
+    w: 4
+    a: 3
+    score: 12
+    stufe: mittel
+    status: beherrscht
+    eigner: Owner
+    fruehindikator: "Neuer lovable-sync-Branch oder Dialog 'Repository-Version behalten' nach einem Merge"
+    spof: false
+    funktionale_sicherheit: false
+    betroffene_pakete: [alle]
+    naechste_pruefung: 2026-11-02
+  - id: R-02
+    kategorie: Daten
+    w: 2
+    a: 5
+    score: 10
+    stufe: mittel
+    status: beherrscht
+    eigner: Owner
+    fruehindikator: "Datenauftrag ohne zwei Freigaben, feste IDs oder Rollback"
+    spof: false
+    funktionale_sicherheit: true
+    betroffene_pakete: [L0c, L5]
+    naechste_pruefung: 2026-11-09
+  - id: R-03
+    kategorie: Termin
+    w: 3
+    a: 4
+    score: 12
+    stufe: mittel
+    status: in_arbeit
+    eigner: Owner
+    fruehindikator: "Ein L2-Schritt (U2 bis U5) braucht mehr als zwei Arbeitstage oder zwei Nacharbeitsrunden"
+    spof: false
+    funktionale_sicherheit: false
+    betroffene_pakete: [L2, L3, L4, L5, L7]
+    naechste_pruefung: 2026-11-02
+  - id: R-04
+    kategorie: Betrieb
+    w: 4
+    a: 5
+    score: 20
+    stufe: hoch
+    status: offen
+    eigner: Owner
+    fruehindikator: "Owner nicht erreichbar, wenn eine Freigabe, ein Merge oder ein Datenauftrag ansteht"
+    spof: true
+    funktionale_sicherheit: false
+    betroffene_pakete: [BSF-06, alle Freigaben]
+    naechste_pruefung: 2026-11-09
+  - id: R-05
+    kategorie: Qualität
+    w: 2
+    a: 3
+    score: 6
+    stufe: niedrig
+    status: beherrscht
+    eigner: Claude
+    fruehindikator: "Aussage 'bestanden' ohne PR, Commit oder CI-Lauf im Tracker"
+    spof: false
+    funktionale_sicherheit: false
+    betroffene_pakete: [alle]
+    naechste_pruefung: 2026-11-09
+  - id: R-06
+    kategorie: Daten
+    w: 3
+    a: 3
+    score: 9
+    stufe: mittel
+    status: beobachten
+    eigner: Owner
+    fruehindikator: "Cockpit oder Verantwortungen zeigen in der Vorschau EMPTY statt Daten"
+    spof: false
+    funktionale_sicherheit: false
+    betroffene_pakete: [L0b, L2]
+    naechste_pruefung: 2026-11-02
+  - id: R-07
+    kategorie: Plattform
+    w: 3
+    a: 5
+    score: 15
+    stufe: hoch
+    status: offen
+    eigner: Owner
+    fruehindikator: "Bundle der veröffentlichten App ändert sich, oder Support widerspricht der Aussage 'Publish deployt den Projektstand'"
+    spof: true
+    funktionale_sicherheit: false
+    betroffene_pakete: [Publish, L2, L8]
+    naechste_pruefung: 2026-11-05
+  - id: R-08
+    kategorie: Daten
+    w: 1
+    a: 3
+    score: 3
+    stufe: niedrig
+    status: geschlossen
+    eigner: Claude
+    fruehindikator: "Neues Schema-Delta zwischen Migrationen und Live-Datenbank"
+    spof: false
+    funktionale_sicherheit: false
+    betroffene_pakete: []
+    naechste_pruefung: null
+  - id: R-09
+    kategorie: Daten
+    w: 3
+    a: 3
+    score: 9
+    stufe: mittel
+    status: beobachten
+    eigner: Owner
+    fruehindikator: "Zweiter echter Mandant soll angelegt werden"
+    spof: false
+    funktionale_sicherheit: false
+    betroffene_pakete: [L0c, L5]
+    naechste_pruefung: 2026-11-16
+  - id: R-10
+    kategorie: Plattform
+    w: 3
+    a: 3
+    score: 9
+    stufe: mittel
+    status: wartet_auf_dritte
+    eigner: Lovable-Support
+    fruehindikator: "Antwort des Supports bleibt bis 2026-11-05 aus"
+    spof: false
+    funktionale_sicherheit: false
+    betroffene_pakete: [Publish]
+    naechste_pruefung: 2026-11-05
+  - id: R-11
+    kategorie: Termin
+    w: 4
+    a: 4
+    score: 16
+    stufe: hoch
+    status: offen
+    eigner: Owner
+    fruehindikator: "Weniger als ein Arbeitstag pro Woche für das Projekt"
+    spof: true
+    funktionale_sicherheit: false
+    betroffene_pakete: [L2 bis L8]
+    naechste_pruefung: 2026-11-09
+  - id: R-12
+    kategorie: Plattform
+    w: 4
+    a: 3
+    score: 12
+    stufe: mittel
+    status: beobachten
+    eigner: Owner
+    fruehindikator: "Lovable-Credits laufen aus, die Plattform ändert Dateien (z. B. types.ts +5 Zeilen) oder verlangt Sync-Entscheidungen"
+    spof: true
+    funktionale_sicherheit: false
+    betroffene_pakete: [alle mit Lovable-Prompts]
+    naechste_pruefung: 2026-11-09
+  - id: R-13
+    kategorie: Qualität
+    w: 3
+    a: 2
+    score: 6
+    stufe: niedrig
+    status: beobachten
+    eigner: Owner
+    fruehindikator: "Mehr als 10 gemergte Remote-Branches oder mehr als 40 ungeprüfte Branches"
+    spof: false
+    funktionale_sicherheit: false
+    betroffene_pakete: [Git-Hygiene]
+    naechste_pruefung: 2026-11-09
+  # L2-Cockpit (Konzept Abschnitt Risiken)
+  - id: L2-R1
+    kategorie: Sicherheit
+    w: 2
+    a: 5
+    score: 10
+    stufe: mittel
+    status: beherrscht
+    eigner: Claude
+    fruehindikator: "Review findet Rechte- oder KPI-Logik im Composer, die nicht aus vorhandenen Ergebnistypen stammt"
+    spof: false
+    funktionale_sicherheit: true
+    betroffene_pakete: [L2]
+    naechste_pruefung: 2026-11-02
+    anmerkung: "U1 gemergt (PR 262), Pfadgrenze und Verbote geprüft."
+  - id: L2-R2
+    kategorie: Sicherheit
+    w: 2
+    a: 5
+    score: 10
+    stufe: mittel
+    status: beherrscht
+    eigner: Owner
+    fruehindikator: "Betragsfeld oder Personenbewertung im Diff"
+    spof: false
+    funktionale_sicherheit: true
+    betroffene_pakete: [L2, L3]
+    naechste_pruefung: 2026-11-02
+    anmerkung: "E4: Beträge und Personenbewertung ausgeschlossen; QS-06 offen."
+  - id: L2-R3
+    kategorie: Sicherheit
+    w: 3
+    a: 4
+    score: 12
+    stufe: mittel
+    status: offen
+    eigner: Claude
+    fruehindikator: "Ein RED-Test (PARTIAL, UNAVAILABLE, DENIED) fehlt oder ist grün ohne Beleg"
+    spof: false
+    funktionale_sicherheit: true
+    betroffene_pakete: [L2]
+    naechste_pruefung: 2026-11-02
+  - id: L2-R4
+    kategorie: Plattform
+    w: 3
+    a: 3
+    score: 9
+    stufe: mittel
+    status: beobachten
+    eigner: Owner
+    fruehindikator: "Wunsch nach Auslieferung von L2 vor Klärung von R-07"
+    spof: false
+    funktionale_sicherheit: false
+    betroffene_pakete: [L2, Publish]
+    naechste_pruefung: 2026-11-05
+  - id: L2-R5
+    kategorie: Sicherheit
+    w: 2
+    a: 4
+    score: 8
+    stufe: mittel
+    status: offen
+    eigner: Claude
+    fruehindikator: "Server-Read liefert bei einem Quellenfehler einen Rohfehler statt je Quelle UNAVAILABLE"
+    spof: true
+    funktionale_sicherheit: true
+    betroffene_pakete: [L2]
+    naechste_pruefung: 2026-11-02
+
+einordnung:
+  spof_gesamt: [R-04, R-07, R-11, R-12, L2-R5]
+  funktionale_sicherheit: [R-02, L2-R1, L2-R2, L2-R3, L2-R5]
+  hinweis: "R-04 (Einzelbetreiber) und R-11 (Kapazität) hängen zusammen: Fällt der Owner aus, stehen Freigaben, Merges und Datenaufträge still."

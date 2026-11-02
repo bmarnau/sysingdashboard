@@ -643,10 +643,30 @@ risiken:
     betroffene_pakete: L2 bis L8
     stand: offen
 
+  - id: R-12
+    titel: Abhängigkeit von der Lovable-Plattform (Credits, Plattform-Änderungen, Sync-Dialoge)
+    wirkung: >-
+      Credits verfallen ohne tägliche Nutzung; die Plattform ändert Dateien (types.ts +5 Zeilen) und legt Sync-Branches an; Dialoge nach Merges können
+      Repository-Stand überschreiben, wenn sie falsch beantwortet werden.
+    gegenmassnahme: >-
+      Täglicher lesender Lovable-Prompt (geplante Aufgabe 07:17); nach Merges Dialog "Repository-Version behalten", danach Re-check; lovable-sync-Branches nie mergen;
+      Standard-Eintrag "Lovable-Grenzen" (Backlog).
+    stand: beobachten
+  - id: R-13
+    titel: Branch-Wildwuchs erschwert Überblick und Aufräumen
+    wirkung: 30 lovable-sync-Branches und rund 40 Remote-Branches ohne gemergten PR; Löschen von Remote-Branches ist in der Cloud-Sitzung gesperrt.
+    gegenmassnahme: Hygiene-Zeile zum Tagesabschluss; lokaler Aufräumauftrag docs/GIT-AUFRAEUMEN.md bei mehr als 10 gemergten Remote-Branches; lovable*, backup/* und audit/* nie löschen.
+    stand: beobachten
+
 # ---------------------------------------------------------------------------
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-02
+    ereignis: >-
+      Risikoregister angelegt: 18 Risiken (R-01 bis R-13 aus dem Tracker, R-12 und R-13 neu, L2-R1 bis L2-R5 aus dem Konzept) mit Wahrscheinlichkeit, Auswirkung, Score,
+      Status, SPoF- und Sicherheitskennzeichen, Frühindikator und nächster Prüfung. Bewertung ist eine Einschätzung und wartet auf die Bestätigung des Owners.
+    beleg: docs/RISIKOREGISTER.yaml, docs/RISIKOREGISTER.md
   - datum: 2026-11-01
     ereignis: >-
       L2 U1 (Composer, P1) gemergt: PR 262 per REST nach CI-Lauf 15 von 15 (Run 41280404054) und Gegenprüfung des Diffs (4 Code-Dateien unter src/lib/management-cockpit/ und

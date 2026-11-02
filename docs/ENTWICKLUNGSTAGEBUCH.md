@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-01 · Dashboard-Version 1.69.0
+Stand: 2026-11-02 · Dashboard-Version 1.69.0
+
+## 2026-11-02 — Risikoregister angelegt
+
+Das Risikoregister bündelt 18 Risiken (R-01 bis R-13 aus dem Tracker, R-12 und R-13 neu, L2-R1 bis L2-R5 aus dem Konzept) mit Wahrscheinlichkeit, Auswirkung, Score, Status, Kennzeichen für Single Point of Failure und funktionale Sicherheit, Frühindikator und nächster Prüfung (`docs/RISIKOREGISTER.md`, Daten in `docs/RISIKOREGISTER.yaml`). Die Bewertung ist eine Einschätzung und wartet auf die Bestätigung des Owners. `npm run docs:project` prüft nun, dass jede Tracker-Risiko-ID im Register steht und der Score gleich Wahrscheinlichkeit mal Auswirkung ist. Hoch bewertet sind R-04 (Einzelbetreiber), R-11 (Kapazität) und R-07 (Publish-Weg und Auth-Broker).
 
 ## 2026-11-01 — L2 U1: Composer als neuer PR
 
