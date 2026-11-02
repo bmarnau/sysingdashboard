@@ -52,8 +52,14 @@ export default defineConfig({
     define: {
       __BUILD_INFO__: JSON.stringify(buildInfo),
     },
-    plugins: analyze
-      ? [
+    plugins: [
+      {
+        name: "preview-css-defaults",
+        enforce: "pre",
+        config: () => ({ css: { devSourcemap: false } }),
+      },
+      ...(analyze
+        ? [
           visualizer({
             filename: "dist/stats.html",
             template: "treemap",
@@ -61,7 +67,8 @@ export default defineConfig({
             brotliSize: true,
             open: false,
           }),
-        ]
-      : [],
+          ]
+        : []),
+    ],
   },
 });
