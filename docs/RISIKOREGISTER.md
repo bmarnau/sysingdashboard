@@ -1,11 +1,11 @@
 # Risikoregister Golden Gate
 
-Stand: 2026-11-02 · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung) · Texte zu R-01 bis R-14: Tracker, Abschnitt `risiken` · Status: **Entwurf, Bewertung vom Owner noch nicht bestätigt**
+Stand: 2026-11-02 · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung) · Texte zu R-01 bis R-14: Tracker, Abschnitt `risiken` · Status: **Bewertung vom Owner am 2026-11-02 bestätigt** (R-04, R-11, R-07 und R-14 einzeln, die übrigen nach der vereinbarten Regel)
 
 ## 1 Methode
 
 - Wahrscheinlichkeit `w` und Auswirkung `a` je 1 bis 5; Score = `w` × `a`. Stufen: **hoch** ab 15, **mittel** 8 bis 14, **niedrig** bis 7.
-- Die Bewertung ist eine Einschätzung (Analogie, keine Messung). Der Owner bestätigt oder ändert sie; danach wird `bestaetigt_durch_owner` auf `true` gesetzt.
+- Die Bewertung ist eine Einschätzung (Analogie, keine Messung). Der Owner hat sie am 2026-11-02 bestätigt (`bestaetigt_durch_owner: true`); Änderungen sind jederzeit möglich.
 - Die Spalte SPoF kennzeichnet einen Single Point of Failure, FuSi einen Bezug zur funktionalen Sicherheit (falsche oder unberechtigte Anzeige, Datenverlust).
 - Prüfrhythmus: bei jedem Tagesabschluss Status und nächste Prüfung ansehen; Neubewertung nach jedem gemergten L2-Schritt und bei jeder Antwort des Lovable-Supports.
 

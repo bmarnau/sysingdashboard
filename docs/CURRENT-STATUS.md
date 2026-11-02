@@ -4,7 +4,7 @@ Stand: 2026-11-02
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
-L2 Stand 2026-11-02 (nachmittags): U1 bis U4 gemergt (`main` 2be2d6c). Wiederanlaufpunkt: U5, Rollenabnahme durch den Owner in der Lovable-Vorschau (Checkliste Rolle für Rolle); CHANGELOG und Version erst nach U5 mit Hilfe und Handbuch (L2-12). Entschieden: Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish (R-14). Risikoregister: die vier hoch bewerteten Risiken werden einzeln durchgegangen.
+L2 Stand 2026-11-02 (nachmittags): U1 bis U4 gemergt (`main` 2be2d6c). Wiederanlaufpunkt: U5, Rollenabnahme durch den Owner in der Lovable-Vorschau (Checkliste Rolle für Rolle); CHANGELOG und Version erst nach U5 mit Hilfe und Handbuch (L2-12). Entschieden: Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish (R-14). Risikoregister: vom Owner am 2026-11-02 bestätigt (die vier hoch bewerteten Risiken einzeln, ohne Änderung).
 
 L2 Stand 2026-11-02 (mittags): U1 bis U3b gemergt (`main` bfb5fce); Entscheidung E2 vom Owner um 06:40 bestätigt, U4 (Route) freigegeben, Wiederanlaufpunkt: Auftrag U4. Neues Risiko R-14 (kein Nachweis für Wiederherstellung von Daten, Konfiguration und Schema; Vorschlag Datenexport und Wiederherstellungsprobe vor dem ersten Publish, Entscheidung offen).
 

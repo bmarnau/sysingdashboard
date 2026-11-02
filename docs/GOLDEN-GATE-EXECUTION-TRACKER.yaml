@@ -677,7 +677,7 @@ fortschritt:
       Entscheidungen des Owners (13:30, nacheinander mit Auswahloptionen): (1) U5, die Rollenabnahme des Cockpits in der Lovable-Vorschau, läuft als Checkliste Rolle für Rolle
       (positiv Projektmanager, Teamlead, Administration; negativ Viewer, Customer, Kiosk, Engineer); (2) CHANGELOG-Eintrag und Versionssprung erst nach U5 zusammen mit Hilfe und
       Handbuch (L2-12); (3) das Risikoregister wird mit den vier hoch bewerteten Risiken einzeln durchgegangen (R-04, R-11, R-07, R-14), die übrigen gelten als bestätigt, wenn der Owner nichts ändert;
-      (4) Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish (R-14). Stand: PR 269 (U4) gemergt, main 2be2d6c.
+      (4) Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish (R-14). Danach durchgegangen: R-04 (20), R-11 (16), R-07 (15) und R-14 (15) vom Owner ohne Änderung übernommen; das Risikoregister gilt damit als bestätigt. Stand: PR 269 (U4) gemergt, main 2be2d6c.
     beleg: Antworten des Owners 2026-11-02 13:30, PR 269, docs/RISIKOREGISTER.yaml
   - datum: 2026-11-02
     ereignis: >-

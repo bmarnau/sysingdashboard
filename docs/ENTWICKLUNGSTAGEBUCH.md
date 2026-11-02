@@ -17,7 +17,7 @@ Die schreibgeschützte Route `/managementcockpit` (P3) ist aus zwei Commits des 
 
 ## 2026-11-02 — Entscheidungen zu U5, CHANGELOG, Risikoregister und Wiederherstellung
 
-Der Owner hat vier Entscheidungen getroffen: U5 (Rollenabnahme in der Lovable-Vorschau) läuft als Checkliste Rolle für Rolle; CHANGELOG und Version folgen nach U5 mit Hilfe und Handbuch (L2-12); die vier hoch bewerteten Risiken (R-04, R-11, R-07, R-14) werden einzeln durchgegangen; Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish (R-14). PR 269 (U4, Route `/managementcockpit`) ist gemergt (`main` 2be2d6c).
+Der Owner hat vier Entscheidungen getroffen: U5 (Rollenabnahme in der Lovable-Vorschau) läuft als Checkliste Rolle für Rolle; CHANGELOG und Version folgen nach U5 mit Hilfe und Handbuch (L2-12); die vier hoch bewerteten Risiken (R-04, R-11, R-07, R-14) wurden einzeln durchgegangen und ohne Änderung übernommen, das Risikoregister gilt damit als bestätigt; Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish (R-14). PR 269 (U4, Route `/managementcockpit`) ist gemergt (`main` 2be2d6c).
 
 ## 2026-11-02 — E2 bestätigt, Befunde zu Systemstatus und Wiederherstellung
 
