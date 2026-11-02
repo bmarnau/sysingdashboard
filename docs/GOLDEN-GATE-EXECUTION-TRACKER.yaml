@@ -667,6 +667,26 @@ fortschritt:
       Risikoregister angelegt: 18 Risiken (R-01 bis R-13 aus dem Tracker, R-12 und R-13 neu, L2-R1 bis L2-R5 aus dem Konzept) mit Wahrscheinlichkeit, Auswirkung, Score,
       Status, SPoF- und Sicherheitskennzeichen, Frühindikator und nächster Prüfung. Bewertung ist eine Einschätzung und wartet auf die Bestätigung des Owners.
     beleg: docs/RISIKOREGISTER.yaml, docs/RISIKOREGISTER.md
+  - datum: 2026-11-02
+    ereignis: >-
+      L2 U3 (P2b AVKK-Server-Lesepfad) neu aufgebaut: Branch feat/l2-u3-avkk-read von origin/main 755614a, Code und Tests der Commits 503e590, bfe94aa, 5853d58, 8d7033f
+      per cherry-pick -n (Konflikte nur in docs/, verworfen; Plan docs/superpowers/plans/* nicht übernommen), neuer Commit 574be12, 4 Dateien +652/-4, inhaltlich identisch mit 8d7033f.
+      test-report/api-matrix.json nicht übernommen (Quell-Commits wechseln nur das Zeilenende, netto keine Änderung); Datei entsteht bei npm run test:api neu, CI lädt sie als Artefakt
+      hoch und prüft den eingecheckten Stand nicht; lokaler Neulauf ohne Inhaltsänderung. Adapter liest nur, mit dem User-JWT-Client, seitenweise (500) und in ID-Bündeln (100);
+      fehlende Kundenzuordnung und nicht bewertbare Schweregrade führen zu UNAVAILABLE. Lokal: Kernpaket 3 Dateien 51 von 51 (wie Bestandsmessung), AVKK-Umfeld 17 Dateien 121 von 121,
+      Sicherheitstests src/__tests__/security 19 Dateien 142 von 142, API-Runner 59 bestanden und 4 todo, typecheck ohne Fehler, lint 0 Fehler (20 Warnungen außerhalb), Prettier sauber.
+      E2 (P2b bestätigen) gilt erst nach ausdrücklicher Bestätigung durch den Owner. Draft-PR 233 bleibt ungemergt.
+    beleg: Branch feat/l2-u3-avkk-read, Commit 574be12, lokaler Testlauf 2026-11-02, PR (U3) siehe CURRENT-STATUS
+  - datum: 2026-11-02
+    ereignis: >-
+      L2 U2 (P2 Server-Lesepfad) neu aufgebaut: Branch feat/l2-u2-server-read von origin/main 1b9cc8c, Cherry-Pick nur des Code-Commits f8199b7 aus feat/l2-cockpit-p2
+      ohne Konflikte (neuer Commit 154186d, 6 Dateien, +631/-10). Bestandsänderungen rein additiv: berlinDate in work-package-work-view.ts exportiert (ohne Verhaltensänderung),
+      scopeKey in compose.ts als cockpitScopeKey exportiert und in index.ts mitexportiert, Kommentar in types.ts. Server-Funktion nutzt requireSupabaseAuth (Publishable Key plus
+      Bearer-Token des Aufrufers, kein Service-Role-Schlüssel), Capabilities und Kundenkreis serverseitig (has_permission, is_account_active, listMyCustomers), fail-closed,
+      nur Lesezugriffe; keine neue Rolle, Permission, Tabelle oder Migration; keine Beträge, keine Personenbewertung; audit_log unberührt. Lokal: 9 betroffene Testdateien
+      94 von 94 (davon management-cockpit.functions.test.ts 21 von 21), Sicherheitstests src/__tests__/security 19 Dateien 142 von 142, typecheck ohne Fehler, lint 0 Fehler
+      (20 Warnungen außerhalb der geänderten Dateien), Prettier sauber. Draft-PR 231 bleibt ungemergt.
+    beleg: Branch feat/l2-u2-server-read, Commit 154186d, lokaler Testlauf 2026-11-02 05:00, PR (U2) siehe CURRENT-STATUS
   - datum: 2026-11-01
     ereignis: >-
       L2 U1 (Composer, P1) gemergt: PR 262 per REST nach CI-Lauf 15 von 15 (Run 41280404054) und Gegenprüfung des Diffs (4 Code-Dateien unter src/lib/management-cockpit/ und
