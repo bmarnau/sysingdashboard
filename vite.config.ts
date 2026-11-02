@@ -60,13 +60,13 @@ export default defineConfig({
       },
       ...(analyze
         ? [
-          visualizer({
-            filename: "dist/stats.html",
-            template: "treemap",
-            gzipSize: true,
-            brotliSize: true,
-            open: false,
-          }),
+            visualizer({
+              filename: "dist/stats.html",
+              template: "treemap",
+              gzipSize: true,
+              brotliSize: true,
+              open: false,
+            }),
           ]
         : []),
     ],
