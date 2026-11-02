@@ -1,10 +1,12 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-11-01
+Stand: 2026-11-02
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
-L2 U1 (2026-11-01): Composer P1 neu aufgebaut auf Branch `feat/l2-u1-composer` (Cherry-Pick von `53a81f1`, konfliktfrei; lokal 20 von 20 Tests, Typecheck und Lint ohne Fehler). PR offen, nicht gemergt; Merge nur auf Befehl des Owners. Nächster Schritt: U2 (P2 Server-Lesepfad) nach `docs/L2-UMSETZUNGSPLAN.md` Abschnitt 3. Publish bleibt No-Go.
+L2 U2 (2026-11-02): P2 Server-Lesepfad neu aufgebaut auf Branch `feat/l2-u2-server-read` (Cherry-Pick von `f8199b7`, konfliktfrei; lokal 94 von 94 Tests der betroffenen Pakete, Sicherheitstests 142 von 142, Typecheck und Lint ohne Fehler). PR offen, nicht gemergt; Merge nur auf Befehl des Owners. Nächster Schritt nach Merge: U3 (P2b AVKK-Server-Lesepfad). Publish bleibt No-Go.
+
+L2 U1 (2026-11-01, gemergt mit PR 262 und Doku-PR 263): Composer P1 neu aufgebaut auf Branch `feat/l2-u1-composer` (Cherry-Pick von `53a81f1`, konfliktfrei; lokal 20 von 20 Tests, Typecheck und Lint ohne Fehler). PR offen, nicht gemergt; Merge nur auf Befehl des Owners. Nächster Schritt: U2 (P2 Server-Lesepfad) nach `docs/L2-UMSETZUNGSPLAN.md` Abschnitt 3. Publish bleibt No-Go.
 
 Das Golden Gate steht in der Testphase mit Demodaten (Bernd, Petra, Alex, Alexa).
 Maßgeblich sind `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml` (Plan, Pakete, Risiken),

@@ -44,7 +44,8 @@ function parseDay(day: string): number {
   return Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
 }
 
-function scopeKey(systemhouseId: string, customerId: string): string {
+/** Einziger Schlüsselbau für den Kundenkreis (`systemhouseId:customerId`); Server und Composer nutzen ihn gemeinsam. */
+export function cockpitScopeKey(systemhouseId: string, customerId: string): string {
   return `${systemhouseId}:${customerId}`;
 }
 
@@ -95,10 +96,10 @@ export function composeManagementCockpit(input: CockpitInput): CockpitResult {
     customerId: string,
     projectKey: string | null,
   ): Builder | null {
-    if (!authorized.has(scopeKey(systemhouseId, customerId))) return null;
+    if (!authorized.has(cockpitScopeKey(systemhouseId, customerId))) return null;
     const key = projectKey
-      ? `${scopeKey(systemhouseId, customerId)}:${projectKey}`
-      : scopeKey(systemhouseId, customerId);
+      ? `${cockpitScopeKey(systemhouseId, customerId)}:${projectKey}`
+      : cockpitScopeKey(systemhouseId, customerId);
     let entry = builders.get(key);
     if (!entry) {
       entry = {
@@ -138,7 +139,7 @@ export function composeManagementCockpit(input: CockpitInput): CockpitResult {
   if (workPackages.value) {
     const perCustomer = new Map<string, { overdue: number; unassigned: number }>();
     for (const row of workPackages.value) {
-      if (!authorized.has(scopeKey(row.systemhouseId, row.customerId))) continue;
+      if (!authorized.has(cockpitScopeKey(row.systemhouseId, row.customerId))) continue;
       const entry = builder(row.systemhouseId, row.customerId, null);
       if (!entry) continue;
       entry.customerName ??= row.customerName;
@@ -180,8 +181,8 @@ export function composeManagementCockpit(input: CockpitInput): CockpitResult {
       { gaps: number; latest: number | null; first: (typeof controlling.value)[number] }
     >();
     for (const row of controlling.value) {
-      if (!authorized.has(scopeKey(row.systemhouseId, row.customerId))) continue;
-      const key = `${scopeKey(row.systemhouseId, row.customerId)}:${row.projectSourceId ?? ""}`;
+      if (!authorized.has(cockpitScopeKey(row.systemhouseId, row.customerId))) continue;
+      const key = `${cockpitScopeKey(row.systemhouseId, row.customerId)}:${row.projectSourceId ?? ""}`;
       const group = groups.get(key) ?? { gaps: 0, latest: null, first: row };
       if (row.workPackageSourceId === null || row.categoryState === "unknown") group.gaps += 1;
       for (const published of [

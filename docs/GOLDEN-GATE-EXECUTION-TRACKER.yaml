@@ -647,6 +647,16 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-02
+    ereignis: >-
+      L2 U2 (P2 Server-Lesepfad) neu aufgebaut: Branch feat/l2-u2-server-read von origin/main 1b9cc8c, Cherry-Pick nur des Code-Commits f8199b7 aus feat/l2-cockpit-p2
+      ohne Konflikte (neuer Commit 154186d, 6 Dateien, +631/-10). Bestandsänderungen rein additiv: berlinDate in work-package-work-view.ts exportiert (ohne Verhaltensänderung),
+      scopeKey in compose.ts als cockpitScopeKey exportiert und in index.ts mitexportiert, Kommentar in types.ts. Server-Funktion nutzt requireSupabaseAuth (Publishable Key plus
+      Bearer-Token des Aufrufers, kein Service-Role-Schlüssel), Capabilities und Kundenkreis serverseitig (has_permission, is_account_active, listMyCustomers), fail-closed,
+      nur Lesezugriffe; keine neue Rolle, Permission, Tabelle oder Migration; keine Beträge, keine Personenbewertung; audit_log unberührt. Lokal: 9 betroffene Testdateien
+      94 von 94 (davon management-cockpit.functions.test.ts 21 von 21), Sicherheitstests src/__tests__/security 19 Dateien 142 von 142, typecheck ohne Fehler, lint 0 Fehler
+      (20 Warnungen außerhalb der geänderten Dateien), Prettier sauber. Draft-PR 231 bleibt ungemergt.
+    beleg: Branch feat/l2-u2-server-read, Commit 154186d, lokaler Testlauf 2026-11-02 05:00, PR (U2) siehe CURRENT-STATUS
   - datum: 2026-11-01
     ereignis: >-
       L2 U1 (Composer, P1) gemergt: PR 262 per REST nach CI-Lauf 15 von 15 (Run 41280404054) und Gegenprüfung des Diffs (4 Code-Dateien unter src/lib/management-cockpit/ und
