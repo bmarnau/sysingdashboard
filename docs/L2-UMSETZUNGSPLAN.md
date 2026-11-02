@@ -79,6 +79,10 @@ Entschieden am 2026-11-01 (Owner): E1 bis E5 jeweils nach Empfehlung. Zu E2 gilt
 | E4  | Beträge und Personenbewertung bleiben ausgeschlossen (L2-06, QS-06 offen)                                   | bestätigen                                                                                |
 | E5  | Zeitrahmen: 7 bis 12 Claude-Code-Aufträge, 4 bis 7 Lovable-Prompts, 3 bis 5 Arbeitstage (Analogieschätzung) | bei 1 bis 2 Tagen pro Woche etwa 2 bis 4 Wochen Laufzeit                                  |
 
+### 5a Anforderung an das Handbuch (Owner, 2026-11-02)
+
+Zum Auftrag L2-12 gehört: Das Handbuch (`src/lib/help-documentation.ts`) muss die Bewertungskriterien mit je einem durchgerechneten Beispiel erklären, und zwar (1) die Risikobewertung des Projekts (Skala 1 bis 5, Score = Wahrscheinlichkeit × Auswirkung, Stufen hoch ab 15, mittel 8 bis 14, niedrig bis 7; Beispiel R-07 mit 3 × 5 = 15, hoch) und (2) die AVKK-Schweregrade im Cockpit (Entstehung von Schweregrad, Risikoschwelle und Handlungsbedarf). Die Beispiele müssen mit den Werten in `docs/RISIKOREGISTER.yaml` und im Cockpit übereinstimmen. Umsetzung nach U5 zusammen mit CHANGELOG und Versionssprung.
+
 ## 6 Risiken
 
 | ID    | Risiko                                                                                  | Gegenmaßnahme                                                       |

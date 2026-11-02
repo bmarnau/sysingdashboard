@@ -4,6 +4,8 @@ Stand: 2026-11-02
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+L2 Stand 2026-11-02 (nachmittags): U1 bis U4 gemergt (`main` 2be2d6c). Wiederanlaufpunkt: U5, Rollenabnahme durch den Owner in der Lovable-Vorschau (Checkliste Rolle für Rolle); CHANGELOG und Version erst nach U5 mit Hilfe und Handbuch (L2-12). Entschieden: Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish (R-14). Risikoregister: vom Owner am 2026-11-02 bestätigt (die vier hoch bewerteten Risiken einzeln, ohne Änderung).
+
 L2 Stand 2026-11-02 (mittags): U1 bis U3b gemergt (`main` bfb5fce); Entscheidung E2 vom Owner um 06:40 bestätigt, U4 (Route) freigegeben, Wiederanlaufpunkt: Auftrag U4. Neues Risiko R-14 (kein Nachweis für Wiederherstellung von Daten, Konfiguration und Schema; Vorschlag Datenexport und Wiederherstellungsprobe vor dem ersten Publish, Entscheidung offen).
 
 L2 U4 (2026-11-02): P3 Route `/managementcockpit` neu aufgebaut auf Branch `feat/l2-u4-route` (Code und Tests aus zwei Commits, Routenbaum neu erzeugt; lokal 75 von 75 im P3-Messumfang, Unit-Suite 1246 bestanden, Sicherheitstests 142 von 142, E2E 24 von 24). PR offen, nicht gemergt. Veröffentlichung bleibt No-Go; L2 wird nur in der Lovable-Vorschau geprüft (E3). Nächster Schritt: U5 (Rollenabnahme durch den Owner), danach Hilfe und Handbuch (L2-12).
