@@ -6,7 +6,9 @@ Stand: 2026-11-02
 
 L2 Stand 2026-11-02 (mittags): U1 bis U3b gemergt (`main` bfb5fce); Entscheidung E2 vom Owner um 06:40 bestätigt, U4 (Route) freigegeben, Wiederanlaufpunkt: Auftrag U4. Neues Risiko R-14 (kein Nachweis für Wiederherstellung von Daten, Konfiguration und Schema; Vorschlag Datenexport und Wiederherstellungsprobe vor dem ersten Publish, Entscheidung offen).
 
-L2 U3b (2026-11-02): Befund U3 (1) behoben, der AVKK-Adapter bildet den Stichtag in Europe/Berlin (`berlinDate`); Branch `fix/l2-u3b-avkk-berlin-date`, lokal Kernpaket 54 von 54, Sicherheitstests 142 von 142. PR offen, nicht gemergt. Nächster Schritt: U4 (Route `/managementcockpit`). Publish bleibt No-Go.
+L2 U4 (2026-11-02): P3 Route `/managementcockpit` neu aufgebaut auf Branch `feat/l2-u4-route` (Code und Tests aus zwei Commits, Routenbaum neu erzeugt; lokal 75 von 75 im P3-Messumfang, Unit-Suite 1246 bestanden, Sicherheitstests 142 von 142, E2E 24 von 24). PR offen, nicht gemergt. Veröffentlichung bleibt No-Go; L2 wird nur in der Lovable-Vorschau geprüft (E3). Nächster Schritt: U5 (Rollenabnahme durch den Owner), danach Hilfe und Handbuch (L2-12).
+
+L2 U3b (2026-11-02, gemergt mit PR 267): Befund U3 (1) behoben, der AVKK-Adapter bildet den Stichtag in Europe/Berlin (`berlinDate`); Branch `fix/l2-u3b-avkk-berlin-date`, lokal Kernpaket 54 von 54, Sicherheitstests 142 von 142. PR offen, nicht gemergt. Nächster Schritt: U4 (Route `/managementcockpit`). Publish bleibt No-Go.
 
 L2 U3 (2026-11-02, gemergt mit PR 266): P2b AVKK-Server-Lesepfad neu aufgebaut auf Branch `feat/l2-u3-avkk-read` (Code und Tests aus vier Commits, ohne Doku; lokal 51 von 51 Tests des Kernpakets, Sicherheitstests 142 von 142, Typecheck und Lint ohne Fehler). PR offen, nicht gemergt. E2 gilt erst nach Bestätigung durch den Owner. Nächster Schritt nach Merge: U4 (Route `/managementcockpit`). Publish bleibt No-Go.
 

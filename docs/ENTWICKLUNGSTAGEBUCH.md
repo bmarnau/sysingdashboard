@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-02 · Dashboard-Version 1.69.0
 
+## 2026-11-02 — L2 U4: Route Managementcockpit als neuer PR
+
+Die schreibgeschützte Route `/managementcockpit` (P3) ist aus zwei Commits des Drafts neu auf `main` aufgebaut, der Routenbaum wurde mit dem Generator des Projekts neu erzeugt. Route und Navigationspunkt erscheinen nur für Rollen mit Projektcontrolling- oder AVKK-Management-Recht, die Serverfunktion prüft erneut. Die Seite zeigt den Handlungsbedarf vor den Kennzahlen und benennt alle Datenzustände; fehlende Daten erscheinen als „Nicht ermittelbar“. Lokal 75 von 75 Tests im Cockpit-Umfang, 142 von 142 Sicherheitstests und 24 von 24 E2E-Tests bestanden. Veröffentlicht wird nicht; geprüft wird in der Lovable-Vorschau (U5).
+
 ## 2026-11-02 — E2 bestätigt, Befunde zu Systemstatus und Wiederherstellung
 
 Der Owner hat E2 bestätigt (P2b als Antwort auf die AVKK-Frage; 142 von 142 Sicherheitstests, UTC-Fix gemergt), U4 ist freigegeben. Der Lovable-Abgleich nach den Merges von PR 265 bis 267 ist ohne Befund (HEAD nur `types.ts` +5 Zeilen, Serverfunktion in Lovable nicht erreichbar). Der Systemstatus der Vorschau meldet die GitHub-Prüfung wegen des Anfragelimits (HTTP 403) als nicht prüfbar und liefert keine Build-Commit- oder Publish-Metadaten; das bestätigt den Befund zu R-07. Aus Git ist der Code neu aufbaubar, nicht aber Live-Daten, Konfiguration und Secrets, und das Schema ist wegen R-10 nicht als identisch nachgewiesen; daraus entsteht R-14.
