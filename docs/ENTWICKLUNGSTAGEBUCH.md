@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-01 · Dashboard-Version 1.69.0
+Stand: 2026-11-02 · Dashboard-Version 1.69.0
+
+## 2026-11-02 — L2 U2: Server-Lesepfad als neuer PR
+
+Der Server-Lesepfad des Management-Cockpits (P2) ist per Cherry-Pick des Code-Commits `f8199b7` neu auf `main` aufgebaut (Branch `feat/l2-u2-server-read`, ohne Konflikte, ohne Doku-Commits des Drafts). Die Serverfunktion liest mit dem User-JWT des Aufrufers, prüft Capabilities und Kundenkreis serverseitig und meldet Teilausfälle je Quelle als Datenzustand. Bestehender Code ändert sich nur additiv (zwei Exporte, ein Kommentar). Keine neue Rolle, Permission, Tabelle oder Migration, keine Beträge. Lokal 94 von 94 Tests der betroffenen Pakete und 142 von 142 Sicherheitstests bestanden, Typecheck und Lint ohne Fehler. AVKK bleibt bis U3 UNAVAILABLE.
 
 ## 2026-11-01 — L2 U1: Composer als neuer PR
 
