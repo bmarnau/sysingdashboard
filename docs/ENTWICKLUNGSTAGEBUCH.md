@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-03 · Dashboard-Version 1.69.0
 
+## 2026-11-03 — Vorschau-Absturz durch react-pdf-Stylesheets
+
+Die Lovable-Vorschau brach beim Laden der react-pdf-Stylesheets mit `reading 'devSourcemap'` ab. Lovable hat dagegen ohne Auftrag Pakete aktualisiert und ein zusätzliches Vite-Plugin eingebaut. Übernommen wird nur die kleinste Absicherung: ein explizites `css`-Objekt in `vite.config.ts` (PR 275). Der Produktions-Build bleibt bei der CSS bytegleich. Bei der Prüfung der TanStack-Versionen fiel ein kritischer Sicherheitshinweis auf (GHSA-qx66-fv34-fjm8): Die in `main` eingesetzte Version von TanStack Start ist betroffen. Das Anheben folgt in einem eigenen PR.
+
 ## 2026-11-03 — Artefaktverzeichnis
 
 Alle Arbeitsmittel des Projekts stehen jetzt an einer Stelle: `docs/ARTEFAKTE.yaml` führt Repository, Ziel-Issue, Tracker, Status, Register, Notfalldokumente, gemergte Pull Requests, App-Adressen und externe Grundlagen. Die Regeln dazu sind als Modul M-9 im Standard zur Projektplanung abgelegt (TDF, PR 46). Der Arbeitsplan selbst, der Standard Wiederherstellbarkeit und das Notfallhandbuch liegen noch nicht in Git und sind als solche gekennzeichnet.

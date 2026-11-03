@@ -674,6 +674,17 @@ risiken:
 fortschritt:
   - datum: 2026-11-03
     ereignis: >-
+      Befund R-12: Lovable hat ohne Auftrag Pakete aktualisiert (Branch lovable-sync-1793685568: @tanstack/react-router 1.170.41, react-start 1.168.60, router-plugin 1.168.42
+      fest gepinnt, bun.lock, routeTree.gen.ts, __root.tsx, vite.config.ts mit Plugin sysing:ensure-css-config). Der Branch wird nicht gemergt und nicht cherry-gepickt.
+      Übernommen wird nur die Vorschau-Absicherung als PR 275 (fix/vite-css-devsourcemap, Commit e074ec9, offen, nicht gemergt): vite.config.ts css.devSourcemap false gegen den
+      Absturz "reading 'devSourcemap'" bei den react-pdf-Stylesheets in PdfCanvasViewer. Lokal: Build grün, Build-CSS bytegleich zu main, Lint 0 Fehler, Typecheck grün,
+      Vitest mit TZ=Europe/Berlin 179 Dateien und 1263 Tests grün. Der Fehler ist lokal auch auf main nicht reproduzierbar; Wirksamkeit erst in der Lovable-Vorschau nachweisbar.
+      Cloudflare-Build läuft über Nitro-Preset cloudflare-module, @cloudflare/vite-plugin wird nicht geladen; unschädlich. Sicherheitsbefund: main nutzt
+      @tanstack/react-start 1.168.26 und start-server-core 1.169.15, betroffen von GHSA-qx66-fv34-fjm8 / CVE-2026-102989 (kritisch, reflektiertes XSS in
+      Server-Function-Antworten, behoben ab 1.168.60 / 1.169.39). npm audit nicht möglich (kein package-lock.json, ENOLOCK); bun audit: 67 Befunde, davon 5 kritisch.
+    beleg: PR 275 (Commit e074ec9), Branch lovable-sync-1793685568 (Commit 82ea30e), GHSA-qx66-fv34-fjm8, bun audit vom 03.11.2026
+  - datum: 2026-11-03
+    ereignis: >-
       Artefaktverzeichnis: docs/ARTEFAKTE.yaml angelegt (30 Einträge aus dem Reiter Artefakte des Arbeitsplans, Vorlage des Owners vom 03.11.2026). Alle 11 Git-Pfade auf main vorhanden,
       Issue 175 offen; Vorlage korrigiert: ort "[offen]" beim Lovable-Projekt war eine YAML-Liste, jetzt Text mit Hinweis; Eintrag Standardergänzung verweist auf den TDF-PR statt auf eine
       lokale Datei. Standard: Standardergänzung als Modul M-9 (TDF-Datei artifact-register.md, ART-01 bis ART-17) in bmarnau-standards/technical-documentation-framework abgelegt, PR 46 offen,
