@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
 import { logger } from "@/lib/logger";
@@ -34,10 +35,13 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   // Niemals das volle Error-Objekt in den Client-DevTools loggen (könnte in
   // Zukunft Tokens/PII in Messages enthalten). Nur eine gekürzte Message.
-  const msg = (error?.message ?? "Unbekannter Fehler").slice(0, 200);
+  // Ab @tanstack/react-router 1.170.41 ist error als unknown typisiert. Auch
+  // Fehlerobjekte ohne Error-Klasse (z. B. Supabase) liefern ein message-Feld.
+  const raw = (error as { message?: unknown } | null | undefined)?.message;
+  const msg = (typeof raw === "string" ? raw : "Unbekannter Fehler").slice(0, 200);
   logger.error("Render-Fehler in Route-Boundary", undefined, { module: "__root", message: msg });
   const router = useRouter();
 
