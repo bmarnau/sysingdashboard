@@ -46,6 +46,10 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    // Preview-Absicherung: Ohne explizites css-Objekt stürzt die Tailwind-Verarbeitung
+    // bei eingebundenen Paket-Stylesheets (react-pdf) mit "reading 'devSourcemap'" ab,
+    // und die Vorschau liefert gar keine Formatierungen aus.
+    css: { devSourcemap: false },
     define: {
       __BUILD_INFO__: JSON.stringify(buildInfo),
     },
