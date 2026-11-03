@@ -674,6 +674,13 @@ risiken:
 fortschritt:
   - datum: 2026-11-03
     ereignis: >-
+      TanStack-Sicherheits-PR 276 (fix/tanstack-ghsa-qx66, Commit 447feb1, von main, offen, nicht gemergt): @tanstack/react-start ^1.168.60 (start-server-core 1.169.39),
+      react-router ^1.170.41, router-plugin ^1.168.42, bun.lock neu; behebt GHSA-qx66-fv34-fjm8 / CVE-2026-102989. __root.tsx an ErrorComponentProps angepasst (error ist ab
+      Router 1.170.41 unknown, Verhalten unverändert); routeTree.gen.ts nur umsortiert. Lokal: Typecheck, Lint (0 Fehler), Build grün; Vitest mit TZ=Europe/Berlin 1262 grün,
+      1 Timeout in BackendAdminDialog (bekannt, Einzellauf 6/6 grün); bun audit 60 Befunde (2 kritisch) statt 67 (5 kritisch), GHSA-qx66 nicht mehr enthalten.
+    beleg: PR 276 (Commit 447feb1), bun audit vom 03.11.2026
+  - datum: 2026-11-03
+    ereignis: >-
       Befund R-12: Lovable hat ohne Auftrag Pakete aktualisiert (Branch lovable-sync-1793685568: @tanstack/react-router 1.170.41, react-start 1.168.60, router-plugin 1.168.42
       fest gepinnt, bun.lock, routeTree.gen.ts, __root.tsx, vite.config.ts mit Plugin sysing:ensure-css-config). Der Branch wird nicht gemergt und nicht cherry-gepickt.
       Übernommen wird nur die Vorschau-Absicherung als PR 275 (fix/vite-css-devsourcemap, Commit e074ec9, offen, nicht gemergt): vite.config.ts css.devSourcemap false gegen den

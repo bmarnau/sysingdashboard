@@ -4,7 +4,7 @@ Stand: 2026-11-03
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
-Vorschau-Absturz react-pdf (2026-11-03): PR 275 setzt `css.devSourcemap: false` in `vite.config.ts` (offen, nicht gemergt; Wirksamkeit erst in der Lovable-Vorschau prüfbar). Lovable hat ohne Auftrag TanStack-Pakete angehoben (`lovable-sync-1793685568`, nicht mergen). `main` ist von GHSA-qx66-fv34-fjm8 (kritisch) betroffen; das Anheben von TanStack Start folgt in einem eigenen PR (Backlog).
+Vorschau-Absturz react-pdf (2026-11-03): PR 275 setzt `css.devSourcemap: false` in `vite.config.ts` (offen, nicht gemergt; Wirksamkeit erst in der Lovable-Vorschau prüfbar). Lovable hat ohne Auftrag TanStack-Pakete angehoben (`lovable-sync-1793685568`, nicht mergen). `main` ist von GHSA-qx66-fv34-fjm8 (kritisch) betroffen; das Anheben von TanStack Start liegt als PR 276 vor (offen, nicht gemergt; beseitigt den Hinweis laut `bun audit`).
 
 Artefaktverzeichnis (2026-11-03): `docs/ARTEFAKTE.yaml` angelegt (30 Einträge, Grundlage TDF Modul M-9, ART-01 bis ART-17, PR 46 in technical-documentation-framework offen). Der Arbeitsplan liegt nicht in Git (ART-09, Backlog). Doku-PR des Tages auf Branch `docs/2026-11-03-artefakte-qs6-4`, gebündelt mit der QS6-4-Doku.
 
