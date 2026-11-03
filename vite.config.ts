@@ -46,6 +46,10 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    // Vorschau-Absicherung: Ohne explizites css-Objekt bricht die CSS-Verarbeitung
+    // bei Paket-Stylesheets (react-pdf in PdfCanvasViewer) mit
+    // "Cannot read properties of undefined (reading 'devSourcemap')" ab.
+    css: { devSourcemap: false },
     define: {
       __BUILD_INFO__: JSON.stringify(buildInfo),
     },
