@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-02 · Dashboard-Version 1.69.0
 
+## 2026-11-02 — L2 U6: Hinweis bei PARTIAL und Kundenkreis als ADR
+
+Nach der Rollenabnahme hat der Owner entschieden: Bei teilweise ermittelten Daten bleibt die Zahl sichtbar, daneben steht „Teilweise ermittelt, Quelle unvollständig“; eine 0 erscheint dann nie ohne diesen Hinweis. Das Cockpit zeigt auch dem Systemadministrator nur die eigenen Kunden; das hält ADR-0041 fest. Neue Tests sichern beides ab, darunter erstmals ein Test für Gründe mit unbekanntem Zustand und einer für den Systemadministrator. Die Kachel „Umsatz gesamt“ wird vor dem ersten Publish behoben (Paket U7). Lokal 73 von 73 Cockpit-Tests, 142 von 142 Sicherheitstests und 10 von 10 E2E-Tests des Cockpits bestanden.
+
 ## 2026-11-02 — L2 U5: Rollenabnahme des Managementcockpits
 
 Der Owner hat das Cockpit in der Lovable-Vorschau Rolle für Rolle geprüft (Screenshots im Chat, 14:08 bis 14:20). Projektmanager, Teamleiter und Systemadministrator sehen das Cockpit mit ihrem Kundenkreis, ohne Beträge, ohne Personenbewertung und ohne Schreib-Knöpfe. Systemingenieur und Viewer sehen keinen Tab, der Direktaufruf zeigt „Keine Berechtigung für das Managementcockpit“; der Kiosk bleibt laut Owner in seiner Ansicht. Administrator und Customer sind mangels Demo-Konto nicht geprüft. „Nicht ermittelbar“ statt 0 lässt sich in der Vorschau nicht herbeiführen und ist nur über Tests belegt; dabei fehlen ein Test für Gründe mit Zustand UNKNOWN, und der Zustand PARTIAL zeigt Zahlen. Der Systemadministrator sieht nur seine eigenen Kunden, weil das Cockpit den Kundenkreis „Meine Kunden“ nutzt; ob das so gewollt ist, steht als Klärung im Backlog.
