@@ -39,6 +39,19 @@ const buildInfo = {
 // Nutzung: `bun run analyze` → schreibt dist/stats.html (gitignored).
 const analyze = process.env.ANALYZE === "1";
 
+// Preview-Absicherung: Der Vorschau-Server reicht teils kein css-Objekt an die
+// Tailwind-Verarbeitung weiter. Dieses vorgezogene Plugin stellt es sicher.
+const ensureCssConfig = {
+  name: "sysing:ensure-css-config",
+  enforce: "pre" as const,
+  config() {
+    return { css: { devSourcemap: false } };
+  },
+  configResolved(config: { css?: { devSourcemap?: boolean } }) {
+    if (!config.css) (config as { css: { devSourcemap: boolean } }).css = { devSourcemap: false };
+  },
+};
+
 // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
 // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
 export default defineConfig({
@@ -46,11 +59,16 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    // Preview-Absicherung: Ohne explizites css-Objekt stürzt die Tailwind-Verarbeitung
+    // bei eingebundenen Paket-Stylesheets (react-pdf) mit "reading 'devSourcemap'" ab,
+    // und die Vorschau liefert gar keine Formatierungen aus.
+    css: { devSourcemap: false },
     define: {
       __BUILD_INFO__: JSON.stringify(buildInfo),
     },
     plugins: analyze
       ? [
+          ensureCssConfig,
           visualizer({
             filename: "dist/stats.html",
             template: "treemap",
@@ -59,6 +77,6 @@ export default defineConfig({
             open: false,
           }),
         ]
-      : [],
+      : [ensureCssConfig],
   },
 });
