@@ -4,6 +4,8 @@ Stand: 2026-11-03
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+Artefaktverzeichnis (2026-11-03): `docs/ARTEFAKTE.yaml` angelegt (30 Einträge, Grundlage TDF Modul M-9, ART-01 bis ART-17, PR 46 in technical-documentation-framework offen). Der Arbeitsplan liegt nicht in Git (ART-09, Backlog). Doku-PR des Tages auf Branch `docs/2026-11-03-artefakte-qs6-4`, gebündelt mit der QS6-4-Doku.
+
 L2 U7 Stand 2026-11-03: QS-06 (`billing.view`) auf aktuellem `main` neu aufgebaut und mit PR 273 gemergt (`main` 2d3299a, CI 15 von 15 grün). Umsatz-Kachel, Reiter „Abrechnung“, Filter Abrechnungsstatus und Betragsspalten nur für Systemadministrator, Administrator, Teamlead und Projektmanager; Cockpit unverändert. Offen: QS6-4 (Server liefert Beträge weiter aus) und QS6-5 (Export, Leistungsnachweis). Wiederanlaufpunkt: Abnahme durch den Owner in der Vorschau mit Petra, Georg, Alex und Alexa, dann L2-12 (CHANGELOG, Version, Handbuch mit Bewertungskriterien, PARTIAL-Anzeige und QS-06). Publish bleibt No-Go.
 
 L2 U6 Stand 2026-11-02 (abends): Entscheidungen E-U6-1 (PARTIAL zeigt die Zahl mit dem Hinweis „Teilweise ermittelt, Quelle unvollständig“) und E-U6-2 (Cockpit-Kundenkreis „Meine Kunden“ auch für Systemadministratoren, ADR-0041) umgesetzt auf Branch `feat/l2-u6-partial-hinweis` (PR offen, nicht gemergt). Entschieden: Kachel „Umsatz gesamt“ (QS-06) ist Gate vor dem ersten Publish, Umsetzung als Paket U7. Wiederanlaufpunkt: Merge U6, dann Auftrag U7; danach CHANGELOG, Version und Handbuch L2-12 inklusive Bewertungskriterien; das Handbuch muss die PARTIAL-Anzeige beschreiben. Publish bleibt No-Go.
