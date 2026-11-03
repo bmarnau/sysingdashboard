@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-02 · Dashboard-Version 1.69.0
+Stand: 2026-11-03 · Dashboard-Version 1.69.0
+
+## 2026-11-03 — L2 U7: Abrechnungsdaten nur mit billing.view (QS-06)
+
+Die neue Berechtigung `billing.view` steuert, wer Beträge sieht: Systemadministrator, Administrator, Teamlead und Projektmanager. Systemingenieur, Viewer, Customer und Kiosk sehen die Kachel „Umsatz gesamt“, den Reiter „Abrechnung“, den Filter nach Abrechnungsstatus und die Spalten Satz, Betrag und Abrechnung nicht mehr; der Systemingenieur sieht nur Stunden. Der Code stammt aus Draft-PR 222 und ließ sich ohne Konflikt auf den aktuellen Stand übernehmen; die Änderungen aus U4 und das Managementcockpit bleiben unberührt. Ein neuer E2E-Test prüft Kachel und Reiter je Rolle. Lokal 152 von 152 Sicherheitstests und 7 von 7 E2E-Tests zu QS-06 bestanden. Offen bleibt, dass der Server Beträge weiter ausliefert (QS6-4), sowie Export und Leistungsnachweis (QS6-5).
 
 ## 2026-11-02 — L2 U6: Hinweis bei PARTIAL und Kundenkreis als ADR
 

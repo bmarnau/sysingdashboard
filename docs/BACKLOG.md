@@ -252,7 +252,7 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 ## Ergänzungen 2026-10-25 (Golden Gate, nach dem Golden Gate)
 
 - QS-04 Domain und Auth-Mail (eigene Absenderdomäne, Vorlagen, Versandroute mit Review).
-- QS-06 Abrechnungsdaten nach Rolle (`billing.view`; Teamlead ja, Engineer nur Stunden), siehe `docs/QS-06-VIEWER-ABRECHNUNG.md`. Umsetzung als Draft-PR #222 vorbereitet; offen: QS6-4 (serverseitig), QS6-5 (Export), CHANGELOG nach Merge von PR #220.
+- QS-06 Abrechnungsdaten nach Rolle (`billing.view`; Teamlead ja, Engineer nur Stunden), siehe `docs/QS-06-VIEWER-ABRECHNUNG.md`. QS6-1 bis QS6-3 mit Paket U7 umgesetzt (2026-11-03); Draft-PR #222 bleibt unverändert.
 - L2-Cockpit: Konzept `docs/L2-COCKPIT-SCHNITT-KONZEPT.md` freigegeben (2026-10-26); P1 und P2 liegen als Draft-PRs vor, Beträge bleiben bis QS-06 ausgeschlossen.
 - PW-01 bis PW-03 Passwort in der Anwendung ändern, PW-05 Passwort-Reset mit Textbeschriftung, siehe `docs/PW-01-PASSWORT-AENDERN.md`.
 - TD-01 Stufe b Live-Demo-Mandant auffrischen (relativ zu heute, entschieden 2026-10-26), ausgeführt am 2026-10-28 (Postflight 7 von 7 gleich Soll, `docs/DATENAUFTRAG-TD01-AUFFRISCHUNG.md` Abschnitt 9); offen: Sichtprüfung in der App. Wiederkehrende Auffrischung als geplante Aufgabe nach dem Golden Gate.
@@ -306,8 +306,13 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 - Cockpit U5, Beobachtung (2026-11-02, kein Blocker): Der Leertext „Keine Aufmerksamkeitsgründe in den verfügbaren Quellen“ ist missverständlich, wenn dem Konto kein Kundenbereich zugeordnet ist.
 - Cockpit U5, Lücke (2026-11-02): Demo-Konten für Administrator und Customer fehlen, beide Rollen sind in der Vorschau nicht geprüft; Anlage nur als Datenauftrag nach ADR-0037, falls gewünscht. Entschieden 2026-11-02: Lücke bleibt dokumentiert; Sam gilt als nicht einzeln geprüft (gleiche Rolle wie Alex).
 - Cockpit U5, „Nicht ermittelbar“ und PARTIAL: entschieden 2026-11-02 (E-U6-1), umgesetzt in U6: PARTIAL zeigt die Zahl mit dem Hinweis „Teilweise ermittelt, Quelle unvollständig“, UNKNOWN zeigt „Nicht ermittelbar“; Tests ergänzt. Das Handbuch (L2-12) muss die PARTIAL-Anzeige beschreiben.
-- RBAC-Matrix (Befund U5, 2026-11-02): `docs/RBAC-MATRIX.md` enthält weder `billing.view` noch eine Regel für die Kachel „Umsatz gesamt“; wird mit Paket U7 ergänzt.
+- RBAC-Matrix (Befund U5, 2026-11-02): erledigt mit Paket U7, `billing.view` steht in `docs/RBAC-MATRIX.md`.
 - Cockpit-Kundenkreis: entschieden 2026-11-02 (E-U6-2), Cockpit zeigt auch Systemadministratoren nur „Meine Kunden“, siehe ADR-0041; Test für den Systemadministrator in U6 ergänzt. Ein Gesamtblick für Administratoren wäre ein eigenes Paket mit Migration und Sicherheitstests.
-- Paket U7 Umsatz-Kachel (entschieden 2026-11-02, Gate vor dem ersten Publish): QS-06 (`billing.view`) auf aktuellem `main` neu aufbauen statt Draft-PR 222 zu mergen, Kachel „Umsatz gesamt“, Reiter „Abrechnung“ und Betragsspalten nur mit `billing.view` (Systemingenieur, Customer, Viewer, Kiosk ohne); `docs/RBAC-MATRIX.md` um QS-06 ergänzen; Anforderungen QS6-1 bis QS6-3 aus `docs/QS-06-VIEWER-ABRECHNUNG.md`.
+- Paket U7 Umsatz-Kachel: umgesetzt 2026-11-03 (Branch `feat/l2-u7-qs06-billing-view`), QS6-1 bis QS6-3; Abnahme durch den Owner in der Vorschau mit Petra, Georg, Alex und Alexa steht aus.
+- QS6-4 (offen): Der Server liefert Beträge für Rollen ohne `billing.view` weiter aus; das UI-Gating ist keine Sicherheitsgrenze (R-QS6-3, im Register L2-R2). Read-only Prüfbericht zu RLS und Projektion, danach ggf. Datenauftrag nach ADR-0037.
+- QS6-5 (offen): Exporte und Leistungsnachweis müssen Beträge nach `billing.view` behandeln (Tests `leistungsnachweis`, `ExportSummary`).
+- QS-06 in L2-12: Hilfetext und CHANGELOG nennen, dass Systemingenieur, Viewer und Customer keine Beträge mehr sehen (Engineer nur Stunden); Handbuch entsprechend ergänzen.
+- `scripts/check-rbac.mjs` (Befund U7): prüft nur die Gleichheit von Frontend- und Backend-Matrix; die in `docs/RBAC-MATRIX.md` genannten Invarianten für `billing.view` und `project.controlling.view` fehlen im Skript. Ergänzen oder Matrix-Text berichtigen.
+- Vitest mit `TZ=Europe/Berlin` (Befund U7): Im Gesamtlauf überschreiten zwei Tests in `BackendAdminDialog.test.tsx` das Zeitlimit von 5000 ms (einzeln grün, auch auf `main`); Zeitlimit oder Testaufbau prüfen.
 - Cockpit-Zugang (Befund U4): Die Browser-Prüfung verlangt eines der beiden Management-Rechte, der Server zusätzlich `dashboard.view`; bei U5 beobachten und die Prüfungen angleichen.
 - Handbuch zu den Bewertungskriterien (Owner, 2026-11-02): Risikobewertung des Projekts (Skala, Score, Stufen, Beispiel R-07) und AVKK-Schweregrade im Cockpit mit je einem durchgerechneten Beispiel in `src/lib/help-documentation.ts`; Umsetzung nach U5 zusammen mit CHANGELOG und Version (L2-12), Beispiele gegen `docs/RISIKOREGISTER.yaml` und das Cockpit prüfen.
