@@ -674,6 +674,11 @@ risiken:
 fortschritt:
   - datum: 2026-11-03
     ereignis: >-
+      PR 273 (L2 U7, QS-06 billing.view) gemergt, main 2d3299a; CI vor dem Merge 15 von 15 grün. Offen bleiben die Abnahme durch den Owner in der Vorschau (Petra, Georg, Alex,
+      Alexa), QS6-4 (Server liefert Beträge weiter aus) und QS6-5 (Export, Leistungsnachweis). Draft-PR 222 unverändert.
+    beleg: PR 273, main 2d3299a, Hinweis des Owners 2026-11-03
+  - datum: 2026-11-03
+    ereignis: >-
       L2 U7 (QS-06 billing.view, Gate vor dem ersten Publish) neu aufgebaut auf Branch feat/l2-u7-qs06-billing-view von origin/main faf9cfd. Vorabprüfung: Seit 1dd9c84 ist von den
       sieben betroffenen Dateien nur dashboard.tsx auf main geändert (U4, +16). Commit 90d127a aus Draft-PR 222 per cherry-pick -n übernommen, ohne Konflikt; dashboard.tsx automatisch
       zusammengeführt: U4 vollständig erhalten (Suchschema, Tab aus der URL, Navigationspunkt Managementcockpit), hinzu kamen nur canViewBilling und die Prüfung bei Umsatz-Kachel, Reiter

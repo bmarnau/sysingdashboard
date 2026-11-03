@@ -308,7 +308,7 @@ SYSING-001 soll diese AVKK-Entwicklungslogik ab der nächsten passenden Baseline
 - Cockpit U5, „Nicht ermittelbar“ und PARTIAL: entschieden 2026-11-02 (E-U6-1), umgesetzt in U6: PARTIAL zeigt die Zahl mit dem Hinweis „Teilweise ermittelt, Quelle unvollständig“, UNKNOWN zeigt „Nicht ermittelbar“; Tests ergänzt. Das Handbuch (L2-12) muss die PARTIAL-Anzeige beschreiben.
 - RBAC-Matrix (Befund U5, 2026-11-02): erledigt mit Paket U7, `billing.view` steht in `docs/RBAC-MATRIX.md`.
 - Cockpit-Kundenkreis: entschieden 2026-11-02 (E-U6-2), Cockpit zeigt auch Systemadministratoren nur „Meine Kunden“, siehe ADR-0041; Test für den Systemadministrator in U6 ergänzt. Ein Gesamtblick für Administratoren wäre ein eigenes Paket mit Migration und Sicherheitstests.
-- Paket U7 Umsatz-Kachel: umgesetzt 2026-11-03 (Branch `feat/l2-u7-qs06-billing-view`), QS6-1 bis QS6-3; Abnahme durch den Owner in der Vorschau mit Petra, Georg, Alex und Alexa steht aus.
+- Paket U7 Umsatz-Kachel: umgesetzt und gemergt 2026-11-03 (PR 273, `main` 2d3299a), QS6-1 bis QS6-3; Abnahme durch den Owner in der Vorschau mit Petra, Georg, Alex und Alexa steht aus.
 - QS6-4 (offen): Der Server liefert Beträge für Rollen ohne `billing.view` weiter aus; das UI-Gating ist keine Sicherheitsgrenze (R-QS6-3, im Register L2-R2). Read-only Prüfbericht zu RLS und Projektion, danach ggf. Datenauftrag nach ADR-0037.
 - QS6-5 (offen): Exporte und Leistungsnachweis müssen Beträge nach `billing.view` behandeln (Tests `leistungsnachweis`, `ExportSummary`).
 - QS-06 in L2-12: Hilfetext und CHANGELOG nennen, dass Systemingenieur, Viewer und Customer keine Beträge mehr sehen (Engineer nur Stunden); Handbuch entsprechend ergänzen.
