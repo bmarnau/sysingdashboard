@@ -676,9 +676,9 @@ fortschritt:
     ereignis: >-
       Artefaktverzeichnis: docs/ARTEFAKTE.yaml angelegt (30 Einträge aus dem Reiter Artefakte des Arbeitsplans, Vorlage des Owners vom 03.11.2026). Alle 11 Git-Pfade auf main vorhanden,
       Issue 175 offen; Vorlage korrigiert: ort "[offen]" beim Lovable-Projekt war eine YAML-Liste, jetzt Text mit Hinweis; Eintrag Standardergänzung verweist auf den TDF-PR statt auf eine
-      lokale Datei. Standard: Standardergänzung als Modul M-9 docs/artifact-register.md (ART-01 bis ART-17) in bmarnau-standards/technical-documentation-framework abgelegt, PR 46 offen,
+      lokale Datei. Standard: Standardergänzung als Modul M-9 (TDF-Datei artifact-register.md, ART-01 bis ART-17) in bmarnau-standards/technical-documentation-framework abgelegt, PR 46 offen,
       nicht gemergt (PPS-01 0.3.0-draft, Framework 1.6.0-draft, check_manifest PASS, markdownlint 0 Befunde). Die Vorlage enthält 17 statt der zunächst genannten 9 Anforderungen;
-      übernommen wurden alle 17. Lücken gegenüber M-9: ART-03 (26 von 30 Einträgen ohne eigenes Feld stand), ART-17 (Nachweisregister docs/NACHWEISE.yaml existiert nicht),
+      übernommen wurden alle 17. Lücken gegenüber M-9: ART-03 (26 von 30 Einträgen ohne eigenes Feld stand), ART-17 (Nachweisregister NACHWEISE.yaml noch nicht angelegt),
       ART-09 (Arbeitsplan, Standard Wiederherstellbarkeit, Notfallhandbuch nicht in Git, im Backlog), ART-05 (Seite wird weder aus der YAML erzeugt noch dagegen geprüft).
       Recherche (nur lesend): Die Stand-der-Technik-Bibliothek des BSI (CC BY-SA 4.0, OSCAL JSON, Commit c3f3785) enthält keinen Katalog zu BSI 200-4; Notfallmanagement steht in
       Grundschutz++ als Praktik NOT (NOT.1 bis NOT.4, 37 Anforderungen); IT-Grundschutz 2023 nur als Mapping-Entwurf (DER.4 lückenhaft, CON.3 fehlt). Für ein Mapping REST-01 bis REST-24
