@@ -672,6 +672,22 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-03
+    ereignis: >-
+      L2 U7 (QS-06 billing.view, Gate vor dem ersten Publish) neu aufgebaut auf Branch feat/l2-u7-qs06-billing-view von origin/main faf9cfd. Vorabprüfung: Seit 1dd9c84 ist von den
+      sieben betroffenen Dateien nur dashboard.tsx auf main geändert (U4, +16). Commit 90d127a aus Draft-PR 222 per cherry-pick -n übernommen, ohne Konflikt; dashboard.tsx automatisch
+      zusammengeführt: U4 vollständig erhalten (Suchschema, Tab aus der URL, Navigationspunkt Managementcockpit), hinzu kamen nur canViewBilling und die Prüfung bei Umsatz-Kachel, Reiter
+      "Abrechnung" und BillingView; Filter Abrechnungsstatus sowie Satz, Betrag und Abrechnung in ActivitiesView.tsx, Beträge in ProjectDetailView.tsx. billing.view: ALLOW systemadministrator,
+      administrator, teamlead, projectmanager; DENY engineer (nur Stunden), viewer, customer, kiosk; Prüfung clientseitig über ROLE_PERMISSIONS, keine Datenbankänderung. Managementcockpit,
+      src/lib/management-cockpit* und routeTree.gen.ts unverändert. Neu: E2E e2e/specs/rbac/qs06-billing-view.spec.ts (Kachel und Reiter je Rolle). Lokal: qs06-billing-view-permission und
+      crud-view-gating 13 von 13, Sicherheitstests 152 von 152 (142 plus 10 QS-06), E2E QS-06 7 von 7, E2E management-cockpit 10 von 10, rbac:check grün, Typprüfung ohne Fehler, Lint 0 Fehler
+      (20 Warnungen wie auf main). Vitest gesamt ohne TZ 179 Dateien, 1263 bestanden und 4 todo; mit TZ=Europe/Berlin zweimal 2 Fehler in BackendAdminDialog.test.tsx (Timeout 5000 ms,
+      einzeln 6 von 6 grün), auf main mit TZ gleicher Fehler plus Laufzeittest in compose.test.ts, also unabhängig von U7; time-period.test.ts mit TZ 21 von 21. Befund: check-rbac.mjs prüft
+      nur die Gleichheit von Frontend- und Backend-Matrix, nicht den Rollenkreis von billing.view (ebenso nicht von project.controlling.view), obwohl RBAC-MATRIX.md beides als Invariante
+      des Skripts nennt; den Rollenkreis sichert qs06-billing-view-permission.test.ts. Offen: QS6-4 (Server liefert Beträge für Rollen ohne billing.view weiter aus; read-only Prüfbericht,
+      ggf. Datenauftrag nach ADR-0037) und QS6-5 (Export, Leistungsnachweis). R-QS6-3 (reines UI-Gating täuscht Sicherheit vor, solange QS6-4 offen ist) ist im Risikoregister durch L2-R2
+      abgedeckt, daher dort keine Änderung. Draft-PR 222 unverändert.
+    beleg: Branch feat/l2-u7-qs06-billing-view, Commit 90d127a (Draft-PR 222), lokaler Testlauf 2026-11-03, PR U7 (siehe CURRENT-STATUS)
   - datum: 2026-11-02
     ereignis: >-
       Entscheidungen des Owners nach U5 (Auswahlfragen im Chat): E-U6-1: Bei Zustand PARTIAL bleibt die Zahl sichtbar, daneben steht der Hinweis "Teilweise ermittelt, Quelle unvollständig";

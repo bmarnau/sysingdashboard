@@ -1,6 +1,6 @@
 # QS-06 – Abrechnungsdaten rollenabhängig anzeigen (Befund M4)
 
-Stand: 2026-10-25 · Status: Analyse abgeschlossen, Umsetzung nach dem Golden Gate (vor BSF-06) · Quelle: Test T9 (Alexa, Viewer)
+Stand: 2026-11-03 · Status: QS6-1 bis QS6-3 umgesetzt (Paket U7, Gate vor dem ersten Publish seit 2026-11-02), QS6-4 und QS6-5 offen · Quelle: Test T9 (Alexa, Viewer)
 
 ## 1 Befund
 
@@ -44,4 +44,5 @@ Einordnung: Im Test sind es lokale Demodaten im Browser. Bei Team-Daten (Datenba
 ## 5 Entscheidungen
 
 - Nutzer 2026-10-25: `engineer` sieht keine Beträge, nur Stunden. `teamlead` sieht Beträge. `customer` und `viewer` sehen keine Beträge.
-- Offen: keine fachliche Frage mehr; Umsetzung nach dem Golden Gate (vor BSF-06).
+- Owner 2026-11-02: QS-06 ist Gate vor dem ersten Publish; Umsetzung als Paket U7 (Neuaufbau auf aktuellem `main`, Draft-PR 222 bleibt unverändert).
+- Offen: QS6-4 (serverseitig) und QS6-5 (Export, Leistungsnachweis).

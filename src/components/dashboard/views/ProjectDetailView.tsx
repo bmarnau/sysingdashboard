@@ -102,6 +102,8 @@ export function ProjectDetailView({
   const activities = useActivities();
   const currentUser = useCurrentUser();
   const canViewAvkk = usePermission("avkk.view");
+  /** QS-06: Beträge und Abrechnungsstatus nur mit `billing.view`. */
+  const canViewBilling = usePermission("billing.view");
   const [showReports, setShowReports] = useState(false);
 
   const projectWorkPackages = useMemo(
@@ -207,7 +209,9 @@ export function ProjectDetailView({
           <Kpi label="Tätigkeiten" value={operations.activities} />
           <Kpi label="Ist-Aufwand" value={`${operations.actualHours.toFixed(1)} h`} />
           <Kpi label="Abrechenbar" value={`${operations.billableHours.toFixed(1)} h`} />
-          <Kpi label="Abrechenbarer Betrag" value={fmtEuro(operations.billableAmount)} />
+          {canViewBilling && (
+            <Kpi label="Abrechenbarer Betrag" value={fmtEuro(operations.billableAmount)} />
+          )}
           <Kpi label="Budget / Sollstunden" value={project.budget ? `${project.budget} h` : "—"} />
         </div>
 
@@ -307,8 +311,12 @@ export function ProjectDetailView({
                 <th className="px-4 py-3">Tätigkeit</th>
                 <th className="px-4 py-3">Arbeitspaket</th>
                 <th className="px-4 py-3 text-right">Dauer</th>
-                <th className="px-4 py-3 text-right">Betrag</th>
-                <th className="px-4 py-3">Abrechnung</th>
+                {canViewBilling && (
+                  <>
+                    <th className="px-4 py-3 text-right">Betrag</th>
+                    <th className="px-4 py-3">Abrechnung</th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -330,16 +338,23 @@ export function ProjectDetailView({
                     <td className="px-4 py-3 text-right font-mono">
                       {activity.duration.toFixed(2)} h
                     </td>
-                    <td className="px-4 py-3 text-right font-mono">
-                      {activity.billable ? fmtEuro(amount) : "—"}
-                    </td>
-                    <td className="px-4 py-3">{billingLabel[activity.billingStatus]}</td>
+                    {canViewBilling && (
+                      <>
+                        <td className="px-4 py-3 text-right font-mono">
+                          {activity.billable ? fmtEuro(amount) : "—"}
+                        </td>
+                        <td className="px-4 py-3">{billingLabel[activity.billingStatus]}</td>
+                      </>
+                    )}
                   </tr>
                 );
               })}
               {projectActivities.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-sm text-muted-foreground">
+                  <td
+                    colSpan={canViewBilling ? 6 : 4}
+                    className="px-6 py-8 text-center text-sm text-muted-foreground"
+                  >
                     Keine Tätigkeiten für dieses Projekt.
                   </td>
                 </tr>
