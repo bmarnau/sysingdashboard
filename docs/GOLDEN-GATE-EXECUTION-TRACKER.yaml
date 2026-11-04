@@ -674,6 +674,14 @@ risiken:
 fortschritt:
   - datum: 2026-11-04
     ereignis: >-
+      Datenauftrag Kiosk-Konto angelegt (Weg A: kiosk@ UID 35a51562-30b6-403c-adfa-566c575d1244, Rolle viewer, nie angemeldet, löschen und über "Kiosk-Konto anlegen" neu
+      anlegen; Ziel Rolle kiosk, nur Demodaten). Freigabe 1 vom Owner am Abend im Chat erteilt. Freigabe 2 mit Abweichung von ADR-0037: Owner gibt allein frei (Bus-Faktor 1,
+      R-04), kein Connector-Preflight, weil nur Fachfunktionen mit Audit genutzt werden und das Konto ohne Anmeldung und ohne Daten ist; nachträgliche Bestätigung durch eine
+      zweite Person offen. Mailweg: kiosk@ ist Alias auf info@, Leser nur der Owner. Hinweis: info@ ist in EV-0005 als Administrator geprüft, nicht als Systemadministrator;
+      vor dem Archivieren von bm@ klären. Ausführung offen.
+    beleg: docs/DATENAUFTRAG-KIOSK-KONTO.md, Freigabe 1 im Chat (Owner, 04.11.2026)
+  - datum: 2026-11-04
+    ereignis: >-
       Kiosk-Konto: Owner hat kiosk@ in der Auth-Verwaltung angelegt; Rolle kiosk im Admin-Dialog nicht wählbar. Read-only-Prüfung: kiosk ist in der Datenbank vollständig
       vorhanden (app_role, kiosk.view, Exklusivitäts-Trigger, Migrationen BSF-KIOSK-01), keine Migration nötig. Der Dialog filtert kiosk bewusst aus (UserManagementDialog.tsx:525).
       handle_new_user vergibt neuen Konten viewer, kiosk@ hat daher die Rolle viewer. Rolle kiosk leitet auf /kiosk und zeigt nur Demodaten; die interne Kiosk-Sicht braucht

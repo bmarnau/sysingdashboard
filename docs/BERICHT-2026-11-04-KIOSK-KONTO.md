@@ -72,7 +72,7 @@ Das Ergebnis wird als neuer Nachweis in `docs/NACHWEISE.yaml` eingetragen.
 
 ## 6 Rückbau und bm@
 
-bm@ bleibt unverändert, bis kiosk@ nach Abschnitt 5 geprüft ist. Danach entscheidet der Owner, ob bm@ den Status „archiviert“ erhält oder eine andere Rolle. Ein Konto zu löschen ist nicht vorgesehen. Vorher ist zu prüfen, ob dann noch mindestens ein anderer aktiver Systemadministrator besteht. Oberfläche und Datenbank verhindern, den letzten zu entfernen (`users-supabase-service.ts:121–137`, Trigger `protect_last_sysadmin_roles`). `audit_log` wird nie gelöscht.
+bm@ bleibt unverändert, bis kiosk@ nach Abschnitt 5 geprüft ist. Danach entscheidet der Owner, ob bm@ den Status „archiviert“ erhält oder eine andere Rolle. Ein Konto zu löschen ist nicht vorgesehen. Vorher ist zu prüfen, ob dann noch mindestens ein anderer aktiver Systemadministrator besteht. Die Datenbank verhindert, den letzten zu deaktivieren oder herabzustufen (Trigger `protect_last_sysadmin_profile` und `protect_last_sysadmin_roles`); beim Rollenwechsel prüft zusätzlich die Oberfläche (`users-supabase-service.ts:121–137`). `audit_log` wird nie gelöscht.
 
 ## 7 Offene Fragen an den Owner
 

@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-04 · Dashboard-Version 1.69.0
 
+## 2026-11-04 — Datenauftrag Kiosk-Konto
+
+Der Owner hat entschieden: Das Anzeigegerät läuft künftig mit einem eigenen Kiosk-Konto und zeigt nur Demodaten. Das bisherige Konto wird gelöscht und über das Formular „Kiosk-Konto anlegen“ neu angelegt, weil nur dieses Formular die Rolle kiosk richtig setzt. Der Auftrag weicht von der Regel ab, dass zwei Personen freigeben: Es gibt heute nur den Owner, und das Konto war nie angemeldet und hat keine Daten. Eine zweite Person soll die Abweichung nachträglich bestätigen. Das Systemadministrator-Konto bm@ bleibt, bis die Prüfung am Anzeigegerät bestanden ist; danach wird es archiviert, nicht gelöscht (`docs/DATENAUFTRAG-KIOSK-KONTO.md`).
+
 ## 2026-11-04 — Kiosk-Konto: Rolle vorhanden, aber nicht wählbar
 
 Der Owner hat ein eigenes Konto für das Anzeigegerät angelegt. Die Rolle kiosk ließ sich im Admin-Dialog nicht auswählen. Die Prüfung zeigt: Die Rolle ist in der Datenbank vollständig vorhanden, der Dialog blendet sie absichtlich aus. Neue Konten erhalten automatisch die Rolle viewer; für Kiosk-Konten gibt es in der Backend-Administration ein eigenes Formular, das die Rolle richtig setzt. Ein Kiosk-Konto zeigt nur Demodaten. Ob das Anzeigegerät Demodaten oder interne Zahlen zeigen soll, entscheidet der Owner (`docs/BERICHT-2026-11-04-KIOSK-KONTO.md`).
