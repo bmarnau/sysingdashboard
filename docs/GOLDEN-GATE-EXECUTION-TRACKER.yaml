@@ -674,6 +674,14 @@ risiken:
 fortschritt:
   - datum: 2026-11-04
     ereignis: >-
+      Kiosk-Konto: Owner hat kiosk@ in der Auth-Verwaltung angelegt; Rolle kiosk im Admin-Dialog nicht wählbar. Read-only-Prüfung: kiosk ist in der Datenbank vollständig
+      vorhanden (app_role, kiosk.view, Exklusivitäts-Trigger, Migrationen BSF-KIOSK-01), keine Migration nötig. Der Dialog filtert kiosk bewusst aus (UserManagementDialog.tsx:525).
+      handle_new_user vergibt neuen Konten viewer, kiosk@ hat daher die Rolle viewer. Rolle kiosk leitet auf /kiosk und zeigt nur Demodaten; die interne Kiosk-Sicht braucht
+      project.controlling.view. Empfehlung Weg A: kiosk@ löschen und über "Kiosk-Konto anlegen" neu anlegen. Entscheidung des Owners offen, ebenso Demodaten oder interne Zahlen
+      auf dem Anzeigegerät. bm@ bleibt unverändert.
+    beleg: docs/BERICHT-2026-11-04-KIOSK-KONTO.md
+  - datum: 2026-11-04
+    ereignis: >-
       U7/QS-06 Abnahme in der Lovable-Vorschau (v1.69.0) durch den Owner, Nachweis EV-0005 im neu angelegten docs/NACHWEISE.yaml (ART-17): info@ (Administrator) Beträge
       sichtbar; alexa@ (Viewer) keine Beträge in Startseite, Tab-Leiste, Projektdetail, Projektbericht SYSING-102 V1.0.0 und Tätigkeiten; bm@ im Anzeigemodus ohne Beträge.
       Einschränkungen: nur Oberfläche, Engineer ungeprüft, serverseitig offen (QS6-4). QS-06: Kiosk laut Owner Anzeigemodus, keine Rolle; Konto bm@ hat Rolle Systemadministrator

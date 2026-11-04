@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-04 · Dashboard-Version 1.69.0
 
+## 2026-11-04 — Kiosk-Konto: Rolle vorhanden, aber nicht wählbar
+
+Der Owner hat ein eigenes Konto für das Anzeigegerät angelegt. Die Rolle kiosk ließ sich im Admin-Dialog nicht auswählen. Die Prüfung zeigt: Die Rolle ist in der Datenbank vollständig vorhanden, der Dialog blendet sie absichtlich aus. Neue Konten erhalten automatisch die Rolle viewer; für Kiosk-Konten gibt es in der Backend-Administration ein eigenes Formular, das die Rolle richtig setzt. Ein Kiosk-Konto zeigt nur Demodaten. Ob das Anzeigegerät Demodaten oder interne Zahlen zeigen soll, entscheidet der Owner (`docs/BERICHT-2026-11-04-KIOSK-KONTO.md`).
+
 ## 2026-11-04 — L2 U7: Abnahme der Abrechnungssicht in der Vorschau
 
 Der Owner hat QS-06 in der Lovable-Vorschau geprüft. Der Administrator sieht Beträge. Die Viewerin Alexa sieht auf der Startseite, in der Tab-Leiste, im Projektdetail, im Projektbericht SYSING-102 und in den Tätigkeiten keine Beträge. Im Anzeigemodus erscheinen ebenfalls keine Beträge. Das Ergebnis steht als erster Eintrag im neuen Nachweisregister `docs/NACHWEISE.yaml` (EV-0005). Geprüft ist nur die Oberfläche; der Server liefert Beträge weiter aus (QS6-4), die Rolle Engineer ist nicht geprüft. Der Anzeigemodus lief auf einem Konto mit der Rolle Systemadministrator; ob das so bleibt, ist offen. Neu aufgefallen: Ein Projekt mit Deadline 30.06.2026 ist überfällig, wird aber als „Im Plan“ angezeigt (F-U7-03).
