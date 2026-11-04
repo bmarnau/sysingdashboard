@@ -674,6 +674,13 @@ risiken:
 fortschritt:
   - datum: 2026-11-04
     ereignis: >-
+      Datenauftrag Kiosk-Konto korrigiert: kiosk@ war gegen 20:33 einmal als Viewer angemeldet (Normal-Dashboard ohne Beträge); Vorbedingung V lautet nun "keine fachlichen
+      Daten und keine Zuordnungen". info@ ist aktiver System-Administrator (Benutzerliste Owner), Archivieren von bm@ wird nicht blockiert; EV-0005 "Administrator" meint die
+      Prüferwartung, nicht die Rolle. Anzeigegerät zeigt /kiosk mit Demo-Kennzeichnung und "Kiosk-Demodaten sind auf diesem Gerät nicht geladen" (Screenshot 20:32). KK-07 (nur
+      dokumentiert) und KK-08 ergänzt. Backlog: F-U7-04 (kiosk@ 7/11/12 gegen alexa@ 10/30/63) und gemeinsamer Ladeweg für Kiosk-Demodaten.
+    beleg: docs/DATENAUFTRAG-KIOSK-KONTO.md, Screenshots Owner 20:32 und 20:33, Benutzerliste Owner 04.11.2026
+  - datum: 2026-11-04
+    ereignis: >-
       Anforderung 1 (Owner, abends): Handbuch um QS-06 (billing.view), Kiosk-Konto anlegen, Kiosk-Demodatensatz laden und "Bei Störungen" ergänzt, RBAC-Matrix auf 25 Rechte
       berichtigt; CHANGELOG 1.70.0 (2026-11-04), Handbuch 1.25.0, PROJECT-STATUS.yaml auf 1.70.0. Vitest TZ=Europe/Berlin 1260 bestanden, zwei Zeitlimits in BackendAdminDialog
       nur im Gesamtlauf (einzeln grün, bekannt); Typecheck und docs:check grün. Offen: Version 1.70.0 gegen geplanten Tag v1.69.0. Anforderung 2 (Demodaten monatlich aktuell)
