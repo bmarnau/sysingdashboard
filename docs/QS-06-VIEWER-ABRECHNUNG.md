@@ -45,4 +45,5 @@ Einordnung: Im Test sind es lokale Demodaten im Browser. Bei Team-Daten (Datenba
 
 - Nutzer 2026-10-25: `engineer` sieht keine Beträge, nur Stunden. `teamlead` sieht Beträge. `customer` und `viewer` sehen keine Beträge.
 - Owner 2026-11-02: QS-06 ist Gate vor dem ersten Publish; Umsetzung als Paket U7 (Neuaufbau auf aktuellem `main`, Draft-PR 222 bleibt unverändert).
+- Owner 2026-11-04 (Abnahme U7, Nachweis EV-0005 in `docs/NACHWEISE.yaml`): Kiosk ist ein Anzeigemodus, keine Rolle. Das in der Abnahme genutzte Konto bm@ hat die Rolle Systemadministrator; im Anzeigemodus erscheinen keine Beträge. Befund: Im Code existiert `kiosk` weiter als Rolle (`app_role`, Migration `20260914062000_bsf_kiosk_01_add_role.sql`, `src/lib/rbac/permissions.ts`); QS6-2 und `docs/RBAC-MATRIX.md` nennen Kiosk als Rolle. Restrisiko: Ein Systemadministrator-Konto im Anzeigemodus hat außerhalb des Anzeigemodus volle Rechte einschließlich `billing.view`. Entscheidung offen (eigenes Kiosk-Konto oder Restrisiko annehmen; Begriff in QS6-2 und RBAC-Matrix angleichen).
 - Offen: QS6-4 (serverseitig) und QS6-5 (Export, Leistungsnachweis).

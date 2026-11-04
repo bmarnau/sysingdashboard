@@ -674,6 +674,14 @@ risiken:
 fortschritt:
   - datum: 2026-11-04
     ereignis: >-
+      U7/QS-06 Abnahme in der Lovable-Vorschau (v1.69.0) durch den Owner, Nachweis EV-0005 im neu angelegten docs/NACHWEISE.yaml (ART-17): info@ (Administrator) Beträge
+      sichtbar; alexa@ (Viewer) keine Beträge in Startseite, Tab-Leiste, Projektdetail, Projektbericht SYSING-102 V1.0.0 und Tätigkeiten; bm@ im Anzeigemodus ohne Beträge.
+      Einschränkungen: nur Oberfläche, Engineer ungeprüft, serverseitig offen (QS6-4). QS-06: Kiosk laut Owner Anzeigemodus, keine Rolle; Konto bm@ hat Rolle Systemadministrator
+      (Restrisiko, Entscheidung offen). Befund: Im Code ist kiosk weiter eine Rolle (app_role, permissions.ts), QS6-2 und RBAC-Matrix nennen sie als Rolle. Neuer Befund F-U7-03:
+      Projekt mit Deadline 30.06.2026 ist überfällig, Status zeigt "Im Plan". EV-0001 bis EV-0004 liegen nicht in Git.
+    beleg: docs/NACHWEISE.yaml (EV-0005), Owner-Abnahme vom 04.11.2026
+  - datum: 2026-11-04
+    ereignis: >-
       Vorschau-Absturz react-pdf, Folge: PR 275 (css.devSourcemap false, gemergt am 03.11.2026) reicht in der Lovable-Vorschau nicht; der Fehler "Cannot read properties of
       undefined (reading 'devSourcemap')" bei src/styles.css und den react-pdf-Stylesheets kehrt zurück (Meldung des Owners). PR 277 (fix/vite-ensure-css-config, von main e948e93,
       offen, nicht gemergt): Plugin sysing:ensure-css-config (enforce pre, config() liefert css.devSourcemap false, configResolved() setzt css, falls nicht vorhanden) in beiden
