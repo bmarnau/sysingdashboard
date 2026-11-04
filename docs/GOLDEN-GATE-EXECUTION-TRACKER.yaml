@@ -672,6 +672,15 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-04
+    ereignis: >-
+      Vorschau-Absturz react-pdf, Folge: PR 275 (css.devSourcemap false, gemergt am 03.11.2026) reicht in der Lovable-Vorschau nicht; der Fehler "Cannot read properties of
+      undefined (reading 'devSourcemap')" bei src/styles.css und den react-pdf-Stylesheets kehrt zurück (Meldung des Owners). PR 277 (fix/vite-ensure-css-config, von main e948e93,
+      offen, nicht gemergt): Plugin sysing:ensure-css-config (enforce pre, config() liefert css.devSourcemap false, configResolved() setzt css, falls nicht vorhanden) in beiden
+      Pluginlisten (analyze und Normalfall); Fassung aus lovable-sync-1793685568 nur gelesen, nicht cherry-gepickt. css.devSourcemap false bleibt. Keine Änderung an package.json,
+      bun.lock, routeTree.gen.ts, __root.tsx. Lokal: Build grün, Lint 0 Fehler (20 Warnungen), Vitest mit TZ=Europe/Berlin 1262 grün, 1 Timeout in BackendAdminDialog (bekannt,
+      Backlog). Dauerhafte Lösung als Draft-PR 278 (fix/react-pdf-css-url): react-pdf-CSS als Kopie in public/vendor/react-pdf/ per link-Element, ohne Tailwind-Verarbeitung (?url umgeht die Pipeline nicht, styles.css ist bereits ?url und stürzt ebenfalls ab); Plugin bleibt voraussichtlich nötig; Merge erst nach Prüfung in der Vorschau.
+    beleg: PR 277 (Commit 08780fa), Draft-PR 278 (Commit 281c665), Testlauf vom 04.11.2026
   - datum: 2026-11-03
     ereignis: >-
       TanStack-Sicherheits-PR 276 (fix/tanstack-ghsa-qx66, Commit 447feb1, von main, offen, nicht gemergt): @tanstack/react-start ^1.168.60 (start-server-core 1.169.39),

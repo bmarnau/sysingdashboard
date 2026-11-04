@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-03 · Dashboard-Version 1.69.0
+Stand: 2026-11-04 · Dashboard-Version 1.69.0
+
+## 2026-11-04 — Vorschau-Absturz: Plugin zurück, dauerhafte Lösung als Entwurf
+
+Die Absicherung aus PR 275 genügte in der Lovable-Vorschau nicht: Der Fehler `reading 'devSourcemap'` trat bei `src/styles.css` und den react-pdf-Stylesheets erneut auf. Mit dem Plugin `sysing:ensure-css-config`, das Lovable eingebaut hatte, lief die Vorschau. Dieses Plugin wird jetzt gezielt in `vite.config.ts` übernommen, ohne die übrigen Änderungen des Lovable-Branches. Dauerhaft sollen die react-pdf-Stylesheets gar nicht mehr durch die Tailwind-Verarbeitung laufen; das liegt als Entwurf vor und wird erst nach einer Prüfung in der Vorschau gemergt.
 
 ## 2026-11-03 — Vorschau-Absturz durch react-pdf-Stylesheets
 
