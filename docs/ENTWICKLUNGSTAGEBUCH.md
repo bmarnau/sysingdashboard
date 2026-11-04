@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-04 · Dashboard-Version 1.69.0
+Stand: 2026-11-04 · Dashboard-Version 1.70.0
+
+## 2026-11-04 — Handbuch Kiosk und Abrechnung, Demodaten veralten
+
+Das Handbuch erklärt jetzt, wer Beträge sieht, wie das Kiosk-Konto angelegt wird, dass der Kiosk-Datensatz auf dem Anzeigegerät selbst geladen werden muss und was bei Störungen zu tun ist. Das CHANGELOG führt das als Version 1.70.0; ob es bei dieser Nummer bleibt, entscheidet der Owner. Außerdem fiel auf, dass die Monatskacheln im November 0.0 h zeigen: Die Demodaten liegen im Mai und Oktober und werden nicht nachgeführt. Die Analyse zeigt drei getrennte Quellen und einen Zeitzonenfehler beim Einspielen der Demodaten kurz nach Mitternacht. Die Anforderungen für monatlich aktuelle Demodaten liegen vor (`docs/BERICHT-2026-11-04-HANDBUCH-DEMODATEN.md`).
 
 ## 2026-11-04 — Datenauftrag Kiosk-Konto
 

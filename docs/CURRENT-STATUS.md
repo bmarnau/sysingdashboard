@@ -4,6 +4,8 @@ Stand: 2026-11-04
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+Handbuch und Demodaten (2026-11-04, abends): Handbuch um QS-06, Kiosk-Konto, Kiosk-Demodaten und „Bei Störungen“ ergänzt; CHANGELOG 1.70.0, Handbuch 1.25.0 (PR 280, nicht gemergt). Entscheidung offen: Version 1.70.0 oder zurück auf 1.69.0 (Tag v1.69.0 in der Merge-Checkliste). Demodaten monatlich aktuell: analysiert, Anforderungen DM-01 bis DM-14 und Aufwand in `docs/BERICHT-2026-11-04-HANDBUCH-DEMODATEN.md`; Umsetzung nach Entscheidung des Owners.
+
 Kiosk-Konto (2026-11-04): Konto kiosk@ angelegt, hat aber die Startrolle viewer. Die Rolle kiosk ist in der Datenbank vorhanden, im Admin-Dialog bewusst nicht wählbar; keine Migration nötig (Bericht `docs/BERICHT-2026-11-04-KIOSK-KONTO.md`). Entschieden: Weg A, Anzeigegerät zeigt nur Demodaten. Datenauftrag `docs/DATENAUFTRAG-KIOSK-KONTO.md`: Freigabe 1 erteilt, Freigabe 2 mit Abweichung von ADR-0037 (Bus-Faktor 1, Bestätigung durch eine zweite Person offen). Wiederanlaufpunkt: Schritte (a) bis (d) durch den Owner, neue UID eintragen, Prüfung KK-01 bis KK-06; vor (e) klären, ob info@ Systemadministrator ist (laut EV-0005 Administrator). bm@ bleibt bis dahin unverändert.
 
 L2 U7 Abnahme (2026-11-04): QS-06 in der Lovable-Vorschau (v1.69.0) für Administrator, Viewer und Anzeigemodus abgenommen, Nachweis EV-0005 in `docs/NACHWEISE.yaml` (nur Oberfläche, Engineer ungeprüft, QS6-4 offen). Offen: Entscheidung zum Anzeigemodus auf einem Systemadministrator-Konto (bm@, Restrisiko) und Befund F-U7-03 (überfälliges Projekt zeigt „Im Plan“). Wiederanlaufpunkt: L2-12 (CHANGELOG, Version, Handbuch). Publish bleibt No-Go.

@@ -84,7 +84,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.24.1";
+export const DOCUMENTATION_VERSION = "1.25.0";
 /** Aktuelle Dashboard-Version. Wird zentral aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CURRENT_DASHBOARD_VERSION;
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -407,8 +407,12 @@ Abnahmebericht.`,
       "Datenstand",
       "Infrastruktur",
       "Support",
+      "Kiosk-Konto",
+      "Anzeigegerät",
+      "Kiosk-Demodaten",
+      "Störung",
     ],
-    lastUpdated: "2026-09-19",
+    lastUpdated: "2026-11-04",
     content: `## Zweck
 Der Info-Kiosk ist eine ausschließlich lesende Großbildansicht mit zwei klar getrennten Betriebsarten.
 
@@ -434,6 +438,37 @@ Der Datenstand stammt aus der Source-/Projection-Freshness der verwendeten inter
 Die Großbildsicht zeigt keine Tätigkeitstitel, Personennamen, Engineer-IDs, internen Datenbank-IDs, Eurobeträge, Nachrichteninhalte oder Gesundheitsdaten. Kundenspezifische Detailausgaben werden in KIOSK-02 nicht eingeführt.
 
 Das technische Kiosk-Konto erhält keine internen Controlling-Rechte. Normale Rollen erhalten umgekehrt nicht automatisch \`kiosk.view\`. Scope-, RBAC- und RLS-Prüfungen erfolgen serverseitig und bleiben fail-closed.
+
+## Kiosk-Konto für das Anzeigegerät
+Das Anzeigegerät sollte mit einem eigenen Konto mit der Rolle **Kiosk** laufen, nicht mit einem persönlichen oder administrativen Konto.
+
+- **Anlegen nur über das Formular:** Servicemenü → *Backend & Auth-Konten…* → **Kiosk-Konto anlegen**. Dafür sind \`users.manage\` und \`roles.manage\` nötig, also die Rolle System-Administrator. Das Formular legt das Konto mit bestätigter Adresse an und vergibt die Rolle Kiosk.
+- **Nicht über die Auth-Verwaltung der Plattform:** Ein dort angelegtes Konto erhält automatisch die Standardrolle **Viewer** und sieht dann das Dashboard statt der Kiosk-Ansicht.
+- **Rolle nachträglich ändern geht nicht:** In der Benutzerverwaltung ist die Rolle Kiosk bewusst nicht wählbar. Ein falsch angelegtes Konto löschen Sie unter *Backend & Auth-Konten…* und legen es über das Formular neu an.
+- **Verhalten nach der Anmeldung:** Jede Seite führt auf \`/kiosk\`. Das Konto zeigt nur Demodaten und wird bei fehlender Eingabe nicht automatisch abgemeldet.
+
+## Kiosk-Demodatensatz laden
+Der Kiosk-Demodatensatz liegt im Browser des Anzeigegeräts, nicht in der Datenbank. Er muss deshalb **auf dem Gerät selbst** geladen werden:
+
+1. Am Anzeigegerät mit einem Konto anmelden, das \`users.manage\` besitzt (System-Administrator oder Administrator).
+2. Servicemenü → *Demo-Datensatz…* → Abschnitt **Kiosk-Demodatensatz** → **Beispieldatensatz laden**. Die Meldung „Kiosk-Demodatensatz geladen.“ bestätigt das.
+3. Abmelden und mit dem Kiosk-Konto anmelden. Der Datensatz bleibt beim Abmelden erhalten.
+
+Fehlt der Datensatz, zeigt die Kiosk-Ansicht **„Kiosk-Demodaten sind auf diesem Gerät nicht geladen.“** Das ist kein Fehler des Kontos, sondern ein fehlender Datensatz auf diesem Gerät. Ein anderer Browser, ein privates Fenster oder gelöschte Browserdaten bedeuten ebenfalls: neu laden.
+
+Über denselben Abschnitt lassen sich eine Kiosk-Demo-JSON importieren und die Kiosk-Demodaten wieder entfernen.
+
+## Bei Störungen
+| Anzeige oder Verhalten | Ursache | Abhilfe |
+| --- | --- | --- |
+| „Kiosk-Demodaten sind auf diesem Gerät nicht geladen.“ | Datensatz fehlt im Browser des Geräts | Datensatz auf dem Gerät laden (siehe oben) |
+| „Kiosk-Daten konnten nicht geladen werden“ | Sitzung abgelaufen oder Datenquelle nicht lesbar | Seite neu laden; bei Wiederholung ab- und wieder anmelden |
+| Nach der Anmeldung erscheint das Dashboard statt des Kiosks | Konto hat nicht die Rolle Kiosk (z. B. Standardrolle Viewer) | Rolle unter *Backend & Auth-Konten…* prüfen; Konto löschen und über **Kiosk-Konto anlegen** neu anlegen |
+| Anmeldung wird abgewiesen | Konto deaktiviert, archiviert oder Passwort falsch | Status prüfen; Passwort unter *Backend & Auth-Konten…* zurücksetzen oder administrativ setzen |
+| Interne Zahlen fehlen | Kiosk-Konten zeigen nur Demodaten | Gewollt; interne Daten nur im internen Modus mit \`project.controlling.view\` |
+| Anzeige bleibt auf altem Stand | Gerät ohne Netz oder Seite eingefroren | Netzwerk prüfen, Seite neu laden |
+
+Hilft das nicht, Uhrzeit, Anzeige im Wortlaut und angemeldetes Konto notieren und an die Administration melden. Zugangsdaten nie in Meldungen oder Tickets schreiben.
 
 ## Externe Integrationen
 KIOSK-02 enthält weiterhin keine produktive Microsoft-Graph-, SharePoint-, Exchange-, PRTG-, MCP- oder Agenten-Anbindung. Die UI arbeitet ausschließlich über die providerneutrale \`KioskDataProvider\`-Grenze.`,
@@ -629,7 +664,7 @@ verändert.`,
       "Systemhaus",
       "Referenzdaten verwalten",
     ],
-    lastUpdated: "2026-09-13",
+    lastUpdated: "2026-11-04",
     content: `## Aufruf
 Service-Menü → **Arbeitspaket-Kategorien**. Der Eintrag erscheint nur für
 Benutzer mit dem Recht „Referenzdaten verwalten" (Administration,
@@ -714,6 +749,11 @@ angezeigt noch im Dashboard gespeichert.
   zehn Minuten möglich (Dialog \`SetPasswordDialog\`).
 - **Löschen** — entfernt ein fehlerhaft angelegtes Konto. Das eigene Konto und
   der letzte aktive Systemadministrator sind gesperrt.
+- **Kiosk-Konto anlegen** — legt ein technisches Konto für das Anzeigegerät mit
+  der Rolle Kiosk an (nur mit \`roles.manage\`, also System-Administrator). Das
+  Passwort wird zweifach eingegeben und nirgends gespeichert. Nur dieses
+  Formular vergibt die Rolle Kiosk; ein Konto aus der Auth-Verwaltung der
+  Plattform erhält die Standardrolle Viewer (siehe „Info-Kiosk“).
 
 Jede Aktion wird serverseitig auf die Berechtigung geprüft und im
 Prüfprotokoll erfasst.
@@ -1763,8 +1803,10 @@ Backups ab Version 1.14 enthalten zusätzlich eine kanonische \`dashboard.json\`
       "Kiosk",
       "Kundenverantwortung",
       "Entra",
+      "Abrechnung",
+      "Beträge",
     ],
-    lastUpdated: "2026-09-18",
+    lastUpdated: "2026-11-04",
     content: `## Rollen
 Acht Rollen sind in der aktuellen Matrix definiert:
 1. **System-Administrator** — höchste administrative Rolle; als einzige Rolle mit \`roles.manage\` und \`azure.database.build\`.
@@ -1776,7 +1818,7 @@ Acht Rollen sind in der aktuellen Matrix definiert:
 7. **Viewer** — allgemeine read-only Rolle; keine Edit-, Azure-, Manage- oder Backup-Rechte.
 8. **Kiosk** — technische Sonderrolle mit ausschließlich \`kiosk.view\`; kein Dashboard-, Dokumentations-, Fach- oder Administrationsrecht.
 
-## Permission-Matrix (23 atomare Rechte)
+## Permission-Matrix (25 atomare Rechte)
 Die aktuelle Source of Truth enthält:
 - Basis: \`dashboard.view\`, \`documentation.view\`, \`systemstatus.view\`
 - Fachbearbeitung: \`project.edit\`, \`workpackage.edit\`, \`activity.edit\`
@@ -1785,6 +1827,7 @@ Die aktuelle Source of Truth enthält:
 - AVKK: \`avkk.view\`, \`avkk.edit\`, \`avkk.responsibility.assign\`, \`avkk.management.view\`
 - Referenzdaten: \`referencedata.view\`, \`referencedata.manage\`
 - BSF: \`customer.responsibility.manage\`, \`project.controlling.view\`
+- Abrechnung: \`billing.view\`, \`performance.statement.manage\`
 - Kiosk: \`kiosk.view\`
 
 Single Source of Truth ist \`src/lib/rbac/permissions.ts\`; der Server-Mirror wird durch \`scripts/check-rbac.mjs\` in CI auf Drift geprüft.
@@ -1795,6 +1838,17 @@ Single Source of Truth ist \`src/lib/rbac/permissions.ts\`; der Server-Mirror wi
 - \`customer.responsibility.manage\` verwaltet die fachliche Verantwortung, erzeugt aber keinen operativen Customer Access.
 - Die technische \`kiosk\`-Rolle ist exklusiv: Sie besitzt nur \`kiosk.view\` und keine internen Leistungs- oder Administrationsrechte.
 - Viewer besitzt keine Edit-, Azure-, Manage- oder Backup-Permission; Customer sieht keinen Systemstatus.
+
+## Beträge und Abrechnung (QS-06)
+Beträge sind nur mit \`billing.view\` sichtbar. Dieses Recht haben **System-Administrator, Administrator, Teamleiter und Projektmanager**.
+
+Ohne \`billing.view\` (Systemingenieur, Kunde, Viewer, Kiosk) gilt:
+- Die Kachel **Umsatz gesamt** auf der Startseite fehlt.
+- Der Reiter **Abrechnung** fehlt.
+- In **Tätigkeiten** fehlen Stundensatz, Betrag, Abrechnungsstatus und der Filter nach Abrechnungsstatus; Stunden bleiben sichtbar.
+- Im **Projektdetail** und im **Projektbericht** erscheinen keine Beträge.
+
+Das Managementcockpit zeigt unabhängig davon keine Beträge. Die Ausblendung wirkt in der Oberfläche; die zusätzliche serverseitige Absicherung der Beträge ist in Arbeit (QS6-4).
 
 ## Schutz vor Self-Lockout
 Der letzte aktive System-Administrator kann nicht degradiert, deaktiviert oder gelöscht werden. Rollenänderungen bleiben an \`roles.manage\` gebunden.
