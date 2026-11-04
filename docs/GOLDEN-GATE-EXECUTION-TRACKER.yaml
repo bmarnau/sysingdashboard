@@ -674,6 +674,14 @@ risiken:
 fortschritt:
   - datum: 2026-11-04
     ereignis: >-
+      PR 278 lokal im Browser geprüft (Branch tmp/pr278-lokal = PR 278 + main f836ee8, nicht gepusht, danach gelöscht). Viewer über Dev-Server-Module in /auth eingehängt
+      (lokal keine .env, keine Anmeldung), Test-PDF per jsPDF mit Text und Link. Fall A (mit Plugin) und B (ohne Plugin): Stylesheets aus /vendor/react-pdf/ (46 und 18
+      Regeln), Text markierbar, Link klickbar, Konsole und Dev-Server-Log ohne devSourcemap. Fall C (main ohne PR 278, ohne Plugin) und C2 (zusätzlich ohne
+      css.devSourcemap): kein Absturz, Fehler lokal nicht nachstellbar. Empfehlung: PR 278 nach Prüfung in der Lovable-Vorschau, update-branch und CI mergen; Plugin
+      behalten. CI PR 280 nach update-branch (0e3c721): 14 von 14 CI-Jobs und Security grün.
+    beleg: docs/BERICHT-2026-11-04-PR278-LOKALTEST.md, CI-Lauf 41902426986
+  - datum: 2026-11-04
+    ereignis: >-
       Datenauftrag Kiosk-Konto korrigiert: kiosk@ war gegen 20:33 einmal als Viewer angemeldet (Normal-Dashboard ohne Beträge); Vorbedingung V lautet nun "keine fachlichen
       Daten und keine Zuordnungen". info@ ist aktiver System-Administrator (Benutzerliste Owner), Archivieren von bm@ wird nicht blockiert; EV-0005 "Administrator" meint die
       Prüferwartung, nicht die Rolle. Anzeigegerät zeigt /kiosk mit Demo-Kennzeichnung und "Kiosk-Demodaten sind auf diesem Gerät nicht geladen" (Screenshot 20:32). KK-07 (nur

@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-04 · Dashboard-Version 1.70.0
 
+## 2026-11-04 — PDF-Viewer lokal geprüft
+
+Die geplante Lösung für den Absturz der Lovable-Vorschau beim Öffnen von PDFs (PR 278) wurde lokal im Browser geprüft. Der PDF-Viewer lädt seine Stylesheets jetzt als feste Dateien, Text lässt sich markieren und Links funktionieren, mit und ohne die Absicherung aus PR 277. Den eigentlichen Absturz konnte der lokale Testserver nicht auslösen, auch ohne jede Absicherung; er tritt nur in der Lovable-Vorschau auf. Die letzte Prüfung muss deshalb dort erfolgen (`docs/BERICHT-2026-11-04-PR278-LOKALTEST.md`).
+
 ## 2026-11-04 — Handbuch Kiosk und Abrechnung, Demodaten veralten
 
 Das Handbuch erklärt jetzt, wer Beträge sieht, wie das Kiosk-Konto angelegt wird, dass der Kiosk-Datensatz auf dem Anzeigegerät selbst geladen werden muss und was bei Störungen zu tun ist. Das CHANGELOG führt das als Version 1.70.0; ob es bei dieser Nummer bleibt, entscheidet der Owner. Außerdem fiel auf, dass die Monatskacheln im November 0.0 h zeigen: Die Demodaten liegen im Mai und Oktober und werden nicht nachgeführt. Die Analyse zeigt drei getrennte Quellen und einen Zeitzonenfehler beim Einspielen der Demodaten kurz nach Mitternacht. Die Anforderungen für monatlich aktuelle Demodaten liegen vor (`docs/BERICHT-2026-11-04-HANDBUCH-DEMODATEN.md`).
