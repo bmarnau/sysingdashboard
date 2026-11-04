@@ -4,6 +4,8 @@ Stand: 2026-11-04
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+L2 U7 Abnahme (2026-11-04): QS-06 in der Lovable-Vorschau (v1.69.0) für Administrator, Viewer und Anzeigemodus abgenommen, Nachweis EV-0005 in `docs/NACHWEISE.yaml` (nur Oberfläche, Engineer ungeprüft, QS6-4 offen). Offen: Entscheidung zum Anzeigemodus auf einem Systemadministrator-Konto (bm@, Restrisiko) und Befund F-U7-03 (überfälliges Projekt zeigt „Im Plan“). Wiederanlaufpunkt: L2-12 (CHANGELOG, Version, Handbuch). Publish bleibt No-Go.
+
 Vorschau-Absturz react-pdf, Folge (2026-11-04): PR 275 (gemergt) reicht in der Lovable-Vorschau nicht, der Fehler `reading 'devSourcemap'` kehrt zurück. PR 277 (`fix/vite-ensure-css-config`) stellt das Plugin `sysing:ensure-css-config` (aus `lovable-sync-1793685568`, nur gelesen) in `vite.config.ts` wieder her (offen, nicht gemergt). Dauerhafte Lösung als Draft-PR 278: react-pdf-Stylesheets als Kopie in `public/vendor/react-pdf/`, ohne Tailwind-Verarbeitung (nicht mergen vor Prüfung in der Vorschau). Wiederanlaufpunkt: PR 277 nach CI und Owner-Freigabe mergen, Vorschau prüfen; danach Draft in der Vorschau prüfen.
 
 Vorschau-Absturz react-pdf (2026-11-03): PR 275 setzt `css.devSourcemap: false` in `vite.config.ts` (offen, nicht gemergt; Wirksamkeit erst in der Lovable-Vorschau prüfbar). Lovable hat ohne Auftrag TanStack-Pakete angehoben (`lovable-sync-1793685568`, nicht mergen). `main` ist von GHSA-qx66-fv34-fjm8 (kritisch) betroffen; das Anheben von TanStack Start liegt als PR 276 vor (offen, nicht gemergt; beseitigt den Hinweis laut `bun audit`).

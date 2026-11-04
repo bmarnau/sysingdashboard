@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-04 · Dashboard-Version 1.69.0
 
+## 2026-11-04 — L2 U7: Abnahme der Abrechnungssicht in der Vorschau
+
+Der Owner hat QS-06 in der Lovable-Vorschau geprüft. Der Administrator sieht Beträge. Die Viewerin Alexa sieht auf der Startseite, in der Tab-Leiste, im Projektdetail, im Projektbericht SYSING-102 und in den Tätigkeiten keine Beträge. Im Anzeigemodus erscheinen ebenfalls keine Beträge. Das Ergebnis steht als erster Eintrag im neuen Nachweisregister `docs/NACHWEISE.yaml` (EV-0005). Geprüft ist nur die Oberfläche; der Server liefert Beträge weiter aus (QS6-4), die Rolle Engineer ist nicht geprüft. Der Anzeigemodus lief auf einem Konto mit der Rolle Systemadministrator; ob das so bleibt, ist offen. Neu aufgefallen: Ein Projekt mit Deadline 30.06.2026 ist überfällig, wird aber als „Im Plan“ angezeigt (F-U7-03).
+
 ## 2026-11-04 — Vorschau-Absturz: Plugin zurück, dauerhafte Lösung als Entwurf
 
 Die Absicherung aus PR 275 genügte in der Lovable-Vorschau nicht: Der Fehler `reading 'devSourcemap'` trat bei `src/styles.css` und den react-pdf-Stylesheets erneut auf. Mit dem Plugin `sysing:ensure-css-config`, das Lovable eingebaut hatte, lief die Vorschau. Dieses Plugin wird jetzt gezielt in `vite.config.ts` übernommen, ohne die übrigen Änderungen des Lovable-Branches. Dauerhaft sollen die react-pdf-Stylesheets gar nicht mehr durch die Tailwind-Verarbeitung laufen; das liegt als Entwurf vor und wird erst nach einer Prüfung in der Vorschau gemergt.

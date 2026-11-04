@@ -1,0 +1,35 @@
+# Nachweisregister sysingdashboard (TDF M-9 ART-17, Standard Wiederherstellbarkeit REST-26)
+# Ein Eintrag je Nachweis: was geprüft wurde, womit, mit welchem Ergebnis und welchen Einschränkungen.
+# Konten nur mit lokalem Teil (zum Beispiel "alexa@"), keine vollständigen E-Mail-Adressen, keine Zugangsdaten.
+# Hinweis: EV-0001 bis EV-0004 liegen nicht in Git (vermutlich im Arbeitsplan, ART-09); Nachtrag offen (Backlog).
+stand: 2026-11-04
+nachweise:
+  - id: EV-0005
+    titel: U7/QS-06 Abnahme Vorschau 04.11.2026, v1.69.0
+    datum: 2026-11-04
+    umgebung: Lovable-Vorschau
+    version: 1.69.0
+    bezug: [QS-06, QS6-2, QS6-3, L2 U7, PR 273]
+    pruefer: Owner
+    art: manuelle Oberflächenprüfung je Konto
+    ergebnisse:
+      - konto: info@
+        rolle: Administrator
+        erwartung: Beträge sichtbar
+        ergebnis: bestanden, Beträge sichtbar
+      - konto: alexa@
+        rolle: Viewer
+        erwartung: keine Beträge
+        ergebnis: >-
+          bestanden, keine Beträge in Startseite, Tab-Leiste, Projektdetail, Projektbericht SYSING-102 V1.0.0 und Tätigkeiten
+      - konto: bm@
+        rolle: Systemadministrator
+        modus: Anzeigemodus (Kiosk)
+        erwartung: keine Beträge im Anzeigemodus
+        ergebnis: bestanden, Anzeigemodus ohne Beträge
+    einschraenkungen:
+      - Nur Oberfläche geprüft; der Server liefert Beträge weiter aus (QS6-4 offen).
+      - Rolle Engineer nicht geprüft.
+      - Kiosk als Anzeigemodus des Kontos bm@ (Rolle Systemadministrator) geprüft, nicht als eigenes Kiosk-Konto.
+    befunde: [F-U7-03]
+    beleg: Owner-Abnahme in der Lovable-Vorschau am 04.11.2026 (Meldung im Chat)

@@ -2,7 +2,7 @@
 # Grundlage: TDF Modul M-9 Artefaktverzeichnis, ART-01 bis ART-17 (bmarnau-standards/technical-documentation-framework, PR 46, offen).
 # art: git = führende Quelle, kopie = Anzeige mit Datum, extern = externe Quelle. in_git: false = nicht in Git (ART-09, Backlog).
 # Keine Zugangsdaten, Tokens oder Einmal-Links (ART-06).
-stand: 2026-11-03
+stand: 2026-11-04
 artefakte:
   - id: repo
     titel: Repository bmarnau/sysingdashboard
@@ -33,6 +33,11 @@ artefakte:
     titel: Statusdatei
     zweck: Stand und Wiederanlaufpunkt
     ort: docs/CURRENT-STATUS.md
+    art: git
+  - id: doc-nachweise
+    titel: Nachweisregister
+    zweck: Nachweise zu Abnahmen und Tests (ART-17, REST-26)
+    ort: docs/NACHWEISE.yaml
     art: git
   - id: doc-golden-gate-execution-tracker
     titel: Tracker
