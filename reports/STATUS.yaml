@@ -1,6 +1,7 @@
-stand: 2026-11-05T07:10+01:00
-laufender_auftrag: {id: A15, start: 2026-11-05T07:10+01:00}
-letzter_auftrag: {id: A06, status: erledigt, bericht: reports/A06-BERICHT.md}
-naechste_pruefung: nach Abschluss A15, dann A16
-tagesbuendel: {pr: 282, head: 92bf1d3b, ci: "15/15 grün"}
+stand: 2026-11-05T08:03+01:00
+laufender_auftrag: keiner
+letzter_auftrag: {id: A15, status: erledigt, bericht: reports/A15-BERICHT.md}
+naechste_pruefung: "Pause auf Anordnung des Owners; A16 bereit, nicht begonnen"
+betrieb: pause
+offene_prs: {"282": "A06, CI 15/15, zuerst mergen", "283": "A15, CI 15/15, enthält 282"}
 fehler: []
