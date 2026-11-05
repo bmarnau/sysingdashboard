@@ -1,5 +1,5 @@
-stand: 2026-11-05T05:52+01:00
-laufender_auftrag: {id: A10, start: 2026-11-05T05:52+01:00}
-letzter_auftrag: {id: A03, status: erledigt, bericht: reports/A03-BERICHT.md}
-naechste_pruefung: nach Abschluss A10
+stand: 2026-11-05T05:54+01:00
+laufender_auftrag: {id: A04, start: 2026-11-05T05:54+01:00}
+letzter_auftrag: {id: A10, status: erledigt, bericht: reports/A10-BERICHT.md}
+naechste_pruefung: nach Abschluss A04
 fehler: []
