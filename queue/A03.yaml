@@ -1,0 +1,16 @@
+id: A03
+titel: F-U7-03 und F-U7-04 Ursachenanalyse
+art: lesen
+gate: nein
+abhaengig_von: []
+ziel: Zwei Beobachtungen aufklären.
+schritte:
+- 'F-U7-03: Projekte P-101 (Deadline 30.06.2026) und P-103 (15.07.2026) stehen auf ''Im Plan'', obwohl die Deadline
+  überschritten ist; der Projektbericht führt P-101 als überfällig. Wie wird der Projektstatus abgeleitet (eingegeben
+  oder berechnet)? Wo steht die Regel?'
+- 'F-U7-04: Viewer kiosk@ sieht 7 Projekte, 11 Arbeitspakete, 12 Tätigkeiten; Viewer alexa@ sah 10, 30, 63. Welche
+  Regel (Zuordnung, Team, Scope, RLS) erklärt den Unterschied?'
+- 'Je Befund: Fehler, gewollte Regel oder Doku-Lücke? Fundstelle, Vorschlag, Aufwand.'
+nachweis: Bericht docs/BERICHT-F-U7-03-04.md.
+grenzen: Nur lesen. Keine Abfragen am Live-System. Nur Code und Migrationen auswerten.
+status: bereit

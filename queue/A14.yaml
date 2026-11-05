@@ -1,0 +1,15 @@
+id: A14
+titel: types.ts-Abweichung (Plattformergänzung __InternalSupabase) prüfen
+art: lesen
+gate: nein
+abhaengig_von: []
+ziel: Entscheidungsvorlage, ob die 5 Zeilen in src/integrations/supabase/types.ts per PR übernommen werden.
+schritte:
+- Prüfen, ob die Ergänzung __InternalSupabase { PostgrestVersion } mit der verwendeten supabase-js- und PostgREST-Version
+  zusammenpasst und ob Tests oder Typprüfung berührt sind.
+- Prüfen, ob die Plattform die Zeilen bei jeder Typgenerierung wieder anlegt (R-12) und ob eine Übernahme das Rauschen
+  bei Sync-Dialogen mindert.
+- 'Vorschlag: übernehmen (kleiner PR) oder bewusst ignorieren, mit Begründung.'
+nachweis: Bericht in reports/A14-BERICHT.md.
+grenzen: Nur lesen. Kein PR, solange der Owner nicht entschieden hat.
+status: bereit

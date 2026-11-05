@@ -1,0 +1,17 @@
+id: A02
+titel: 'bun audit: zwei verbleibende kritische Funde'
+art: lesen
+gate: vor Publish
+abhaengig_von: []
+ziel: Die zwei kritischen Funde (von 60) benennen und Behebung vorschlagen.
+schritte:
+- bun audit ausführen (Repo nutzt bun.lock, kein package-lock.json). Die zwei kritischen Funde mit Paket, Pfad der
+  Abhängigkeit, Advisory-ID, betroffene und behobene Versionen auflisten.
+- 'Je Fund: Ist das Paket in der Laufzeit (Server oder Client) oder nur im Build/Test? Ist der Angriffspfad in dieser
+  App erreichbar?'
+- 'Vorschlag: Version, Kompatibilitätsrisiko, Prüfumfang (Build, Tests, E2E). Ein Update pro PR, Lockfile mitführen.'
+- 'Frage klären: Welcher Stand ist veröffentlicht (1.69.0)? Ist dort eine ältere, verwundbare TanStack-Version enthalten?
+  Nur aus dem Repository belegbar ableiten, sonst als nicht ermittelbar kennzeichnen.'
+nachweis: Bericht docs/BERICHT-AUDIT-2026-11-04.md mit Ausgabe von bun audit (gekürzt).
+grenzen: Nur lesen. Pakete nicht ändern. Updates nur nach Beauftragung (Standard Lovable-Grenzen LG-05 bis LG-08).
+status: bereit

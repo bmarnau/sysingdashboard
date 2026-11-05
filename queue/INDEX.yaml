@@ -1,0 +1,117 @@
+stand: 2026-11-05 05:40
+planer: Claude (Planer-Session)
+mindestbestand_bereit: 3
+hoechstbestand_offen: 10
+statuswerte:
+- bereit
+- in_arbeit
+- erledigt
+- blockiert
+- geplant
+- wartet_auf_entscheidung
+regel: Claude Code führt nur Aufträge mit status bereit aus, in der Reihenfolge dieser Liste, einen zur Zeit.
+gemeinsame_regeln:
+- Sprache Deutsch, sachlich, Anforderungen mit muss/sollte. Daten als JSON oder YAML, Diagramme als Mermaid.
+- 'Zu Beginn lesen: docs/CURRENT-STATUS.md, docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml, docs/MERGE-CHECKLISTE-GOLDEN-GATE.md.'
+- Kein Merge, kein Publish. Nichts nach main, solange Lovable schreibende Aufträge ausführt. Keine lovable-sync-Branches.
+- Keine Zugangsdaten in Dateien oder Commits. audit_log nie löschen. Änderungen am Live-System nur als Datenauftrag
+  nach ADR-0037.
+- Aussagen wie 'bestanden' nur mit Beleg (PR, Commit, Testprotokoll, CI-Lauf, Screenshot mit Datum).
+- 'Doku-Änderungen eines Tages in einem PR bündeln. Vor Abschluss: Tracker (fortschritt), CURRENT-STATUS, ENTWICKLUNGSTAGEBUCH,
+  BACKLOG; npm run docs:check, docs:project, Prettier; pushen und mit git ls-remote prüfen.'
+- 'Abschluss jedes Berichts: Hygiene in einer Zeile (gemergte Remote-Branches, offene PRs, Drafts) und YAML-Block
+  mit Reifegrad, Projektstatus, Offene_Fragen, Roadmap.'
+auftraege:
+- id: A01
+  titel: 'QS6-4 Ist-Analyse: Beträge serverseitig'
+  art: lesen
+  gate: vor Publish
+  status: bereit
+  abhaengig_von: []
+- id: A02
+  titel: 'bun audit: zwei verbleibende kritische Funde'
+  art: lesen
+  gate: vor Publish
+  status: bereit
+  abhaengig_von: []
+- id: A03
+  titel: F-U7-03 und F-U7-04 Ursachenanalyse
+  art: lesen
+  gate: nein
+  status: bereit
+  abhaengig_von: []
+- id: A10
+  titel: 'TDF-PR #46 (Modul M-9 Artefakte) prüfen'
+  art: lesen
+  gate: nein
+  status: bereit
+  abhaengig_von: []
+- id: A04
+  titel: 'Nachweisregister: EV-0001 bis EV-0004 übernehmen'
+  art: doku-pr
+  gate: nein
+  status: bereit
+  abhaengig_von: []
+- id: A07
+  titel: Standards in docs/ ablegen
+  art: doku-pr
+  gate: nein
+  status: bereit
+  abhaengig_von: []
+- id: A05
+  titel: Engineer-Abnahme (QS-06) planen
+  art: plan-dann-pr
+  gate: QS-06
+  status: geplant
+  abhaengig_von:
+  - A01
+- id: A08
+  titel: 'R-14 Teil 1: ADR zu RTO, RPO und Schutzklassen (Entwurf)'
+  art: doku-pr
+  gate: vor Publish
+  status: geplant
+  abhaengig_von:
+  - A07
+- id: A09
+  titel: 'R-04: Zugänge und Notfallkonto dokumentieren'
+  art: doku-pr
+  gate: vor Publish
+  status: geplant
+  abhaengig_von:
+  - A07
+- id: A06
+  titel: 'L2-12 Rest: Version, Bewertungskriterien, Cockpit-Einträge'
+  art: doku-pr
+  gate: vor Publish
+  status: geplant
+  abhaengig_von:
+  - PR 280 gemergt
+- id: A11
+  titel: 'Datenauftrag-Vorlage: Live-Demodaten monatlich nachführen (2c)'
+  art: doku-pr
+  gate: vor dem Monatswechsel 01.12.2026
+  status: bereit
+  abhaengig_von: []
+- id: A12
+  titel: 'Doku-Nachtrag: Entscheidungen 04. und 05.11., Aufräumregel ops/*'
+  art: doku-pr
+  gate: nein
+  status: bereit
+  abhaengig_von: []
+- id: A13
+  titel: Zwei QA-Befunde von Lovable klären (Fällig-Datum, Kiosk Infrastruktur)
+  art: lesen
+  gate: nein
+  status: bereit
+  abhaengig_von: []
+- id: A14
+  titel: types.ts-Abweichung (Plattformergänzung __InternalSupabase) prüfen
+  art: lesen
+  gate: nein
+  status: bereit
+  abhaengig_von: []
+entscheidungen_owner:
+- 2026-11-05 Version 1.70.0 bleibt
+- 2026-11-05 Demodaten Verschiebung in ganzen Tagen
+- 2026-11-05 Demodaten-Paket 2a/2b nach dem Publish
+- 2026-11-05 Monatslauf 2c per Datenauftrag mit Vorlage

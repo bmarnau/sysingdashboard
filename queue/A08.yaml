@@ -1,0 +1,16 @@
+id: A08
+titel: 'R-14 Teil 1: ADR zu RTO, RPO und Schutzklassen (Entwurf)'
+art: doku-pr
+gate: vor Publish
+abhaengig_von:
+- A07
+ziel: Entscheidungsvorlage für Wiederanlaufzeit und Datenverlust.
+schritte:
+- ADR-Entwurf mit Optionen für RTO und RPO je Schutzklasse (normal, hoch, kritisch), Bewertung der Szenarien N1
+  bis N10 (REST-16 bis REST-19), Kosten und Aufwand je Option.
+- Empfehlung kennzeichnen, aber nicht als beschlossen darstellen. Entscheidungsfelder für den Owner.
+- 'Abhängigkeiten nennen: Backup nach W2 (Dump), TeamDrive-Eignung (REST-15), Restore-Probe S1 bis S6 in getrennter
+  Umgebung (REST-22).'
+nachweis: docs/adr/ADR-00xx-rto-rpo.md im Status 'vorgeschlagen' (Nummer nach Repo-Konvention vergeben).
+grenzen: Keine Entscheidung treffen. Kein Zugriff auf Live-Backends.
+status: geplant

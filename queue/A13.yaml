@@ -1,0 +1,16 @@
+id: A13
+titel: Zwei QA-Befunde von Lovable klären (Fällig-Datum, Kiosk Infrastruktur)
+art: lesen
+gate: nein
+abhaengig_von: []
+ziel: 'Die zwei früher gemeldeten, noch unbearbeiteten QA-Befunde einordnen: Fällig-Datum und Kiosk Infrastruktur.'
+schritte:
+- In docs/BACKLOG.md, Tracker, CURRENT-STATUS und den Berichten der letzten Tage nach den beiden Befunden suchen.
+  Wortlaut, Quelle und Datum nennen. Fehlen Angaben, das ausdrücklich als offene Frage an den Owner melden (nicht
+  raten).
+- 'Je Befund nur lesend prüfen: Ist der Fehler im Code nachvollziehbar (Datei und Zeile)? Fehler, gewollte Regel
+  oder Doku-Lücke? Aufwand und Vorschlag.'
+- 'Beziehung zur Demodaten-Analyse (DM-01 bis DM-14) und zu F-U7-03 prüfen: gleiche Ursache?'
+nachweis: Bericht in reports/A13-BERICHT.md.
+grenzen: Nur lesen, keine Änderung, keine Abfragen am Live-System.
+status: bereit

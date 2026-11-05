@@ -1,0 +1,18 @@
+id: A01
+titel: 'QS6-4 Ist-Analyse: Beträge serverseitig'
+art: lesen
+gate: vor Publish
+abhaengig_von: []
+ziel: Feststellen, welche Server-Endpunkte und Funktionen Beträge (Umsatz, Satz, Betrag) ausliefern und ob sie billing.view
+  prüfen.
+schritte:
+- Alle serverseitigen Lesepfade und API-Routen auflisten, die Beträge, Stundensätze oder abgeleitete Umsätze zurückgeben
+  (Server-Funktionen, RPC, Views, Exporte, Berichte, Backup).
+- 'Je Pfad: prüft er billing.view oder has_permission() serverseitig? Was sieht ein Viewer in der Netzwerkantwort
+  (nicht nur in der Oberfläche)?'
+- Export (QS6-5) und Projektbericht (PDF) mitprüfen.
+- 'Ergebnis als Tabelle: Pfad | Datei | liefert Betrag | serverseitige Prüfung | Lücke | Aufwand (Stunden) | Risiko.'
+- Empfehlung für Umsetzungsschnitte (ein PR je Pfad oder gebündelt) und Testkonzept (E2E mit Viewer-Konto).
+nachweis: Bericht docs/BERICHT-QS6-4-ANALYSE.md mit Fundstellen (Datei:Zeile).
+grenzen: Nur lesen, kein Zugriff auf Live-Daten, keine Änderung am Code.
+status: bereit

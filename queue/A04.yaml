@@ -1,0 +1,15 @@
+id: A04
+titel: 'Nachweisregister: EV-0001 bis EV-0004 übernehmen'
+art: doku-pr
+gate: nein
+abhaengig_von: []
+ziel: Frühere Nachweise in docs/NACHWEISE.yaml aufnehmen, damit das Register vollständig ist.
+schritte:
+- Vom Owner bereitgestellte Entwurfsdatei NACHWEISE.yaml (Einträge EV-0001 bis EV-0004) lesen. Format an das vorhandene
+  Register (EV-0005) angleichen.
+- 'EV-0001 PR #273, EV-0002 PR #272, EV-0003 PR #271 mit Beleg (PR, Commit, CI). EV-0004 Restore-Probe: Status ''nicht
+  bestanden'' (Abbruch wegen fehlender Testumgebung) unverändert lassen.'
+- Jeden Eintrag gegen GitHub prüfen (PR-Nummer, Merge-Commit, CI 15/15). Abweichungen melden, nicht glätten.
+nachweis: Diff der NACHWEISE.yaml, Prüftabelle Eintrag | Beleg | Befund.
+grenzen: Nur Doku. Im Tagesbündel-PR.
+status: bereit

@@ -1,0 +1,13 @@
+id: A10
+titel: 'TDF-PR #46 (Modul M-9 Artefakte) prüfen'
+art: lesen
+gate: nein
+abhaengig_von: []
+ziel: Merge-Reife des Standards-PRs in bmarnau-standards feststellen.
+schritte:
+- 'PR #46 in bmarnau-standards lesen: Inhalt gegen STANDARD-ERGAENZUNG-ARTEFAKTE.md (ART-01 bis ART-17) abgleichen.'
+- CI, Konflikte, Verweise, Strukturregeln der Standardfamilie prüfen.
+- 'Merge-Reife als Tabelle: Prüfpunkt | Ergebnis | Beleg. Empfehlung.'
+nachweis: Kurzbericht im Tagesbündel-PR; Beleg PR-Nummer, Commit, CI.
+grenzen: 'Nur lesen. Kein Merge in bmarnau-standards ohne ausdrückliches ''Merge #46''.'
+status: bereit

@@ -1,0 +1,18 @@
+id: A07
+titel: Standards in docs/ ablegen
+art: doku-pr
+gate: nein
+abhaengig_von: []
+ziel: Drei Standard-Entwürfe versionierbar im Repository ablegen.
+schritte:
+- 'Vom Owner bereitgestellt: Standard Wiederherstellbarkeit (Fassung 7, REST-01 bis REST-26, N1 bis N10), Notfallhandbuch,
+  Standard Lovable-Grenzen (LG-01 bis LG-12), Standardergänzung Artefakte (ART-01 bis ART-17), BSI-MAPPING.yaml,
+  ARTEFAKTE.yaml.'
+- Ablage in docs/standards/ (Dateinamen großgeschrieben, Status 'Entwurf'), Verweise im Artefaktverzeichnis (docs/ARTEFAKTE.yaml)
+  ergänzen.
+- BSI-Einordnung nur als Zuordnung, keine Konformitätsbehauptung (REST-23, REST-24).
+- 'Offene Punkte im Kopf jedes Dokuments: RTO/RPO, TeamDrive-Nachweis, zweite Person, Zuordnung REST zu Grundschutz++
+  am Volltext.'
+nachweis: Diff, docs:check grün; Linkprüfung der Verweise.
+grenzen: Nur Doku. Standards werden erst nach der ersten bestandenen Restore-Probe in bmarnau-standards übernommen.
+status: bereit

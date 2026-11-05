@@ -1,0 +1,19 @@
+id: A11
+titel: 'Datenauftrag-Vorlage: Live-Demodaten monatlich nachführen (2c)'
+art: doku-pr
+gate: vor dem Monatswechsel 01.12.2026
+abhaengig_von: []
+ziel: 'Wiederholbare Vorlage nach ADR-0037, mit der die Live-Demodaten jeden Monat in ganzen Tagen auf den aktuellen
+  Monat verschoben werden. Entscheidung des Owners 05.11.: ja, mit Vorlage.'
+schritte:
+- Das Muster des Datenauftrags TD-01 (28.10.) lesen und als Vorlage übernehmen.
+- 'Vorlage docs/DATENAUFTRAG-DEMODATEN-MONAT.md entwerfen: Ziel, feste IDs (nur Demo-Zeilen, belegte IDs; offene
+  markieren), Verschiebung in ganzen Tagen (Wochentage bleiben erhalten), Basisdatum in Europe/Berlin (nicht UTC),
+  Prüfung vorher und nachher, Rollback, zwei Freigaben (Felder) je Lauf.'
+- 'Ausdrücklich ausschließen: Nicht-Demo-Zeilen, audit_log, Konten, Rechte. Prüfpunkte 30.11. 23:59 und 01.12. 00:00
+  Berlin aus dem Bericht DM-01 bis DM-14 und ZP-01 bis ZP-06 übernehmen.'
+- 'Zeitplan: Lauf spätestens am 30.11., Dauer etwa 1 Stunde je Monat; Ergebnisfelder für UID/IDs-Liste, Datum, Nachweis
+  leer lassen.'
+nachweis: Vorlage im Tagesbündel-PR; docs:check grün; Verweis im Backlog und im Tracker.
+grenzen: Nur Dokument. Nichts ausführen, keine Abfragen am Live-System, keine Zugangsdaten.
+status: bereit

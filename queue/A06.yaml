@@ -1,0 +1,16 @@
+id: A06
+titel: 'L2-12 Rest: Version, Bewertungskriterien, Cockpit-Einträge'
+art: doku-pr
+gate: vor Publish
+abhaengig_von:
+- PR 280 gemergt
+ziel: Handbuch und CHANGELOG nach L2-12 abschließen.
+schritte:
+- 'Version ist entschieden: 1.70.0 bleibt (Owner 05.11.). docs/MERGE-CHECKLISTE-GOLDEN-GATE.md anpassen: Tag nach
+  dem Publish v1.70.0 statt v1.69.0.'
+- 'Handbuch: Bewertungskriterien mit Beispiel (Risikobewertung des Projekts, AVKK-Schweregrade im Cockpit).'
+- 'CHANGELOG: Cockpit-Punkte U1 bis U7 nachtragen (nutzersichtbar).'
+- 'Tests: help-documentation-version, app-version.'
+nachweis: PR mit CI 15/15; docs:check und docs:project grün.
+grenzen: Kein Publish, kein Tag. Der bekannte Zeitüberlauf in BackendAdminDialog bleibt im Backlog.
+status: geplant

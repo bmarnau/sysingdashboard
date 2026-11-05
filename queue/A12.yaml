@@ -1,0 +1,19 @@
+id: A12
+titel: 'Doku-Nachtrag: Entscheidungen 04. und 05.11., Aufräumregel ops/*'
+art: doku-pr
+gate: nein
+abhaengig_von: []
+ziel: Entscheidungen des Owners festhalten und die Aufräumregel anpassen.
+schritte:
+- 'Tracker (fortschritt), CURRENT-STATUS, ENTWICKLUNGSTAGEBUCH, BACKLOG: Version 1.70.0 bleibt (05.11.); Demodaten
+  werden in ganzen Tagen verschoben; Demodaten-Paket 2a/2b nach dem Publish (kein Gate); Monatslauf 2c als Datenauftrag
+  mit Vorlage (A11); Kiosk Variante A mit kiosk@ (04.11.).'
+- 'Backlog: gemeinsamer Ladeweg der Demodaten (Anforderung 04.11.) und Demodaten 2a/2b mit DM-01 bis DM-14, nach
+  dem Publish.'
+- 'CLAUDE.md: Branches ops/* in die Liste der nie zu löschenden Branches aufnehmen (neben lovable*, backup/*, audit/*);
+  docs/GIT-AUFRAEUMEN.md anpassen.'
+- 'Teilautomatikbetrieb kurz dokumentieren (docs/BETRIEB-TEILAUTOMATIK.md): Branches ops/queue und ops/reports,
+  Rollen, Grenzen, Berichtsformat.'
+nachweis: Diff; docs:check und docs:project grün.
+grenzen: Nur Doku, im Tagesbündel-PR.
+status: bereit
