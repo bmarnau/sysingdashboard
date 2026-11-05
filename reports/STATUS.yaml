@@ -1,11 +1,6 @@
-stand: 2026-11-05T06:33+01:00
-laufender_auftrag: keiner
-letzter_auftrag: {id: A14, status: erledigt, bericht: reports/A14-BERICHT.md}
-leerlauf: 2026-11-05T06:33+01:00
-naechste_pruefung: 2026-11-05T06:58+01:00
-tagesbuendel: {pr: 281, head: 348bf775, ci: "15/15 grün, Lauf 41973539463", merge: "offen, nur durch den Owner"}
-uebersicht:
-  erledigt: [A01, A02, A03, A10, A04, A11, A12, A13, A14]
-  blockiert: [{id: A07, grund: Notfallhandbuch und Standard Lovable-Grenzen nicht bereitgestellt}]
-  geplant_nicht_bearbeitet: [A05, A06, A08, A09]
+stand: 2026-11-05T06:36+01:00
+laufender_auftrag: {id: A06, start: 2026-11-05T06:36+01:00}
+letzter_auftrag: {id: QUEUE-UPDATE, status: erledigt, bericht: reports/BERICHT-QUEUE-UPDATE.md}
+naechste_pruefung: nach Abschluss A06, dann A15, A16
+tagesbuendel: {pr: 281, head: 348bf775, ci: "15/15 grün"}
 fehler: []
