@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-04 · Dashboard-Version 1.70.0
+Stand: 2026-11-05 · Dashboard-Version 1.70.0
+
+## 2026-11-05 — Teilautomatik: Analysen und Datenauftrag-Vorlage
+
+Claude Code arbeitet jetzt eine Warteschlange ab, die eine zweite Claude-Sitzung anlegt. Erste Ergebnisse: Der Server gibt keine Stundensätze oder Beträge heraus; die Lücke sind die Exporte im Browser, die Beträge auch ohne Recht enthalten (QS6-5). Die zwei kritischen Funde aus `bun audit` sind in dieser App nicht erreichbar. Der Status „Im Plan“ bei überfälligen Projekten ist eine Eingabe und wird nicht aus der Deadline abgeleitet. Die unterschiedlichen Mengen bei zwei Viewer-Konten erklären sich durch verschiedene Demodaten im Browser. Für das monatliche Nachführen der Live-Demodaten liegt eine getestete Vorlage vor (`docs/DATENAUFTRAG-DEMODATEN-MONAT.md`).
 
 ## 2026-11-04 — PDF-Viewer lokal geprüft
 
