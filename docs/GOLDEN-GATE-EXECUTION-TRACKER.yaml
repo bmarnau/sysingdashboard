@@ -672,6 +672,22 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-05
+    ereignis: >-
+      Entscheidungen des Owners festgehalten (A12): Version 1.70.0 bleibt (05.11.); Demodaten werden in ganzen Tagen verschoben (05.11.); Demodaten-Paket 2a/2b nach dem
+      Publish, kein Gate (05.11.); Monatslauf 2c als Datenauftrag mit Vorlage docs/DATENAUFTRAG-DEMODATEN-MONAT.md (05.11.); Kiosk Weg A mit kiosk@ (04.11.).
+      Branches ops/* in CLAUDE.md und GIT-AUFRAEUMEN.md (GA-3) als nie zu löschen aufgenommen; Teilautomatik in docs/BETRIEB-TEILAUTOMATIK.md beschrieben.
+    beleg: queue/INDEX.yaml (entscheidungen_owner, origin/ops/queue 8bf15d68), CLAUDE.md, docs/GIT-AUFRAEUMEN.md, docs/BETRIEB-TEILAUTOMATIK.md
+  - datum: 2026-11-05
+    ereignis: >-
+      Teilautomatikbetrieb eingerichtet (Branches ops/queue und ops/reports, Warteschlange A01 bis A14). Lesende Aufträge erledigt: A01 QS6-4 (kein Server-Pfad liefert
+      Beträge; Lücke sind Exporte im Browser, QS6-5), A02 bun audit (2 kritische Funde, beide in dieser App nicht erreichbar; veröffentlichter Stand 1.69.0 vermutlich
+      von GHSA-qx66-fv34-fjm8 betroffen), A03 (F-U7-03 Status ist Eingabe, keine Ableitung aus der Deadline; F-U7-04 erklärt durch lokale Demodaten 2.2.0 und 2.1.0),
+      A10 (TDF-PR 46 bereits gemergt). Doku: A04 EV-0001 bis EV-0004 im Nachweisregister, A07 Standards in docs/standards/ (teilweise, Notfallhandbuch und
+      Lovable-Grenzen fehlen), A11 Vorlage Datenauftrag Demodaten Monat (lokal gegen PostgreSQL 16.15 und PGlite getestet, T1 bis T8).
+    beleg: >-
+      docs/BERICHT-QS6-4-ANALYSE.md, docs/BERICHT-AUDIT-2026-11-04.md, docs/BERICHT-F-U7-03-04.md, docs/BERICHT-TDF-PR46.md, docs/NACHWEISE.yaml,
+      docs/standards/, docs/DATENAUFTRAG-DEMODATEN-MONAT.md, Branch docs/2026-11-05-teilautomatik, origin/ops/reports
   - datum: 2026-11-04
     ereignis: >-
       PR 278 lokal im Browser geprüft (Branch tmp/pr278-lokal = PR 278 + main f836ee8, nicht gepusht, danach gelöscht). Viewer über Dev-Server-Module in /auth eingehängt

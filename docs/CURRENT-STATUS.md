@@ -1,8 +1,12 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-11-04
+Stand: 2026-11-05
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
+
+Entscheidungen des Owners (2026-11-05): Version 1.70.0 bleibt; Demodaten in ganzen Tagen verschieben; Paket 2a/2b nach dem Publish (kein Gate); Monatslauf 2c per Datenauftrag mit Vorlage (erster Lauf bis 2026-11-30). Kiosk Weg A mit kiosk@ (2026-11-04). Branches `ops/*` werden nie gelöscht.
+
+Teilautomatik (2026-11-05, `docs/BETRIEB-TEILAUTOMATIK.md`): Warteschlange `origin/ops/queue` (A01 bis A14), Berichte und Status in `origin/ops/reports`. Erledigt: A01 (QS6-4: kein Server-Pfad liefert Beträge, Lücke sind Exporte im Browser, QS6-5; `docs/BERICHT-QS6-4-ANALYSE.md`), A02 (`docs/BERICHT-AUDIT-2026-11-04.md`), A03 (`docs/BERICHT-F-U7-03-04.md`), A10 (TDF-PR 46 bereits gemergt), A04 (EV-0001 bis EV-0004), A11 (Vorlage `docs/DATENAUFTRAG-DEMODATEN-MONAT.md`, erster Lauf bis 2026-11-30). A07 blockiert: Notfallhandbuch und Standard Lovable-Grenzen nicht bereitgestellt. Doku-Bündel auf Branch `docs/2026-11-05-teilautomatik` (PR noch offen). Wiederanlaufpunkt: nächster bereiter Auftrag laut `queue/INDEX.yaml`.
 
 Handbuch und Demodaten (2026-11-04, abends): Handbuch um QS-06, Kiosk-Konto, Kiosk-Demodaten und „Bei Störungen“ ergänzt; CHANGELOG 1.70.0, Handbuch 1.25.0 (PR 280, nicht gemergt). Entscheidung offen: Version 1.70.0 oder zurück auf 1.69.0 (Tag v1.69.0 in der Merge-Checkliste). Demodaten monatlich aktuell: analysiert, Anforderungen DM-01 bis DM-14 und Aufwand in `docs/BERICHT-2026-11-04-HANDBUCH-DEMODATEN.md`; Umsetzung nach Entscheidung des Owners.
 

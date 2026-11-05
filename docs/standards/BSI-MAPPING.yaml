@@ -1,0 +1,37 @@
+# Status: Entwurf (Auftrag A07, abgelegt 2026-11-05). Zuordnung, keine Konformitätsbehauptung (REST-23, REST-24, REST-25).
+# Offene Punkte: Zuordnung am Volltext prüfen; RTO/RPO; TeamDrive-Eignungsnachweis; zweite berechtigte Person.
+# Entwurf: Zuordnung der Anforderungen REST-xx zu Grundschutz++ (BSI Stand-der-Technik-Bibliothek)
+# Nur ID und Titel. Keine Textkopie (Lizenz CC BY-SA 4.0). Nicht am Volltext geprüft.
+quelle: https://github.com/BSI-Bund/Stand-der-Technik-Bibliothek
+katalog: control_layer/Grundschutz++/Grundschutz++-resolved_catalog.json
+geprueft_commit: c3f3785
+geprueft_stand: 2026-10-30
+status: Vorschlag
+zuordnung:
+  - rest: [REST-02, REST-03]
+    gspp:
+      [
+        { id: NOT.4.2, titel: Sicherung des Systems },
+        { id: BES.5.13, titel: Bereitstellung von Datensicherungen },
+      ]
+  - rest: [REST-07]
+    gspp: [{ id: ASST.7.4, titel: Wiederherstelltest }]
+  - rest: [REST-12]
+    gspp: [{ id: NOT.3.1, titel: Wiederanlaufplan }]
+  - rest: [N3, N4, N5]
+    gspp: [{ id: NOT.3.2, titel: Geschäftsfortführungsplan }]
+  - rest: [REST-15]
+    gspp: [{ id: NOT.4, titel: Datensicherung }]
+  - rest: [REST-16, REST-17]
+    gspp: [{ id: NOT.1, titel: Grundlagen }]
+  - rest: [REST-20, REST-21]
+    gspp:
+      [
+        { id: BER.3.22, titel: Notfallzugang },
+        { id: NOT.2, titel: Besondere Aufbauorganisation },
+        { id: NOT.2.1.2, titel: Alarmierung },
+      ]
+  - rest: [REST-24]
+    gspp: [{ id: NOT.1.1.4, titel: Business Continuity Management System }]
+  - rest: [N1]
+    gspp: [{ id: TEST.4.4, titel: Geregelte Notfalländerungen }]

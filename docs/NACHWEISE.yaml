@@ -1,9 +1,58 @@
 # Nachweisregister sysingdashboard (TDF M-9 ART-17, Standard Wiederherstellbarkeit REST-26)
 # Ein Eintrag je Nachweis: was geprüft wurde, womit, mit welchem Ergebnis und welchen Einschränkungen.
 # Konten nur mit lokalem Teil (zum Beispiel "alexa@"), keine vollständigen E-Mail-Adressen, keine Zugangsdaten.
-# Hinweis: EV-0001 bis EV-0004 liegen nicht in Git (vermutlich im Arbeitsplan, ART-09); Nachtrag offen (Backlog).
-stand: 2026-11-04
+# EV-0001 bis EV-0004 am 2026-11-05 aus dem Entwurf des Owners übernommen (Auftrag A04) und gegen GitHub geprüft.
+stand: 2026-11-05
 nachweise:
+  - id: EV-0001
+    titel: L2 U7 QS-06 billing.view, Code gemergt
+    datum: 2026-11-03
+    umgebung: GitHub (CI)
+    version: main 2d3299ab
+    bezug: [L2 U7, QS-06, PR 273]
+    pruefer: Owner
+    art: PR mit CI
+    ergebnis: bestanden
+    einschraenkungen:
+      - Nur Code und CI; Abnahme in der Vorschau getrennt (EV-0005).
+      - Serverfilter QS6-4 im Entwurf als offen geführt; Ist-Analyse vom 2026-11-05 findet keinen Server-Pfad mit Beträgen (docs/BERICHT-QS6-4-ANALYSE.md).
+    beleg: https://github.com/bmarnau/sysingdashboard/pull/273, Merge 2d3299ab am 2026-11-03T04:52Z, CI Head 77efe750 15/15
+  - id: EV-0002
+    titel: L2 U6 Hinweis bei PARTIAL, ADR-0041 Kundenkreis
+    datum: 2026-11-02
+    umgebung: GitHub (CI)
+    version: main faf9cfdb
+    bezug: [L2 U6, PR 272]
+    pruefer: Owner
+    art: PR mit CI
+    ergebnis: bestanden
+    einschraenkungen:
+      - Nur Code und CI.
+    abweichung: Datum laut Entwurf 2026-11-02; PR 272 wurde am 2026-11-03T04:05Z (05:05 Berlin) gemergt. Nicht angeglichen, Entscheidung des Owners.
+    beleg: https://github.com/bmarnau/sysingdashboard/pull/272, Merge faf9cfdb am 2026-11-03T04:05Z, CI Head 068fac3a 15/15
+  - id: EV-0003
+    titel: L2 U5 Rollenabnahme Managementcockpit
+    datum: 2026-11-02
+    umgebung: Lovable-Vorschau
+    bezug: [L2 U5, PR 271]
+    pruefer: Owner
+    art: Abnahme, dokumentiert per Doku-PR
+    ergebnis: teilweise
+    einschraenkungen:
+      - Administrator und Customer ohne Demo-Konto nicht geprüft.
+      - Sam nicht geprüft.
+    beleg: https://github.com/bmarnau/sysingdashboard/pull/271 (Doku-PR), Merge b558655a am 2026-11-02T14:19Z, CI Head 317098de 15/15; Owner-Screenshots im Chat 14:08 bis 14:20
+  - id: EV-0004
+    titel: Restore-Probe
+    datum: null
+    umgebung: offen
+    bezug: [REST-07, S1..S6, R-14]
+    pruefer: offen
+    art: Probe-Protokoll
+    ergebnis: nicht bestanden
+    einschraenkungen:
+      - Noch keine Restore-Probe durchgeführt (R-14), Abbruch wegen fehlender Testumgebung.
+    beleg: offen
   - id: EV-0005
     titel: U7/QS-06 Abnahme Vorschau 04.11.2026, v1.69.0
     datum: 2026-11-04
