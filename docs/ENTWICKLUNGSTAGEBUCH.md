@@ -9,7 +9,23 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-04 · Dashboard-Version 1.69.0
+Stand: 2026-11-04 · Dashboard-Version 1.70.0
+
+## 2026-11-04 — PDF-Viewer lokal geprüft
+
+Die geplante Lösung für den Absturz der Lovable-Vorschau beim Öffnen von PDFs (PR 278) wurde lokal im Browser geprüft. Der PDF-Viewer lädt seine Stylesheets jetzt als feste Dateien, Text lässt sich markieren und Links funktionieren, mit und ohne die Absicherung aus PR 277. Den eigentlichen Absturz konnte der lokale Testserver nicht auslösen, auch ohne jede Absicherung; er tritt nur in der Lovable-Vorschau auf. Die letzte Prüfung muss deshalb dort erfolgen (`docs/BERICHT-2026-11-04-PR278-LOKALTEST.md`).
+
+## 2026-11-04 — Handbuch Kiosk und Abrechnung, Demodaten veralten
+
+Das Handbuch erklärt jetzt, wer Beträge sieht, wie das Kiosk-Konto angelegt wird, dass der Kiosk-Datensatz auf dem Anzeigegerät selbst geladen werden muss und was bei Störungen zu tun ist. Das CHANGELOG führt das als Version 1.70.0; ob es bei dieser Nummer bleibt, entscheidet der Owner. Außerdem fiel auf, dass die Monatskacheln im November 0.0 h zeigen: Die Demodaten liegen im Mai und Oktober und werden nicht nachgeführt. Die Analyse zeigt drei getrennte Quellen und einen Zeitzonenfehler beim Einspielen der Demodaten kurz nach Mitternacht. Die Anforderungen für monatlich aktuelle Demodaten liegen vor (`docs/BERICHT-2026-11-04-HANDBUCH-DEMODATEN.md`).
+
+## 2026-11-04 — Datenauftrag Kiosk-Konto
+
+Der Owner hat entschieden: Das Anzeigegerät läuft künftig mit einem eigenen Kiosk-Konto und zeigt nur Demodaten. Das bisherige Konto wird gelöscht und über das Formular „Kiosk-Konto anlegen“ neu angelegt, weil nur dieses Formular die Rolle kiosk richtig setzt. Der Auftrag weicht von der Regel ab, dass zwei Personen freigeben: Es gibt heute nur den Owner, und das Konto war nie angemeldet und hat keine Daten. Eine zweite Person soll die Abweichung nachträglich bestätigen. Das Systemadministrator-Konto bm@ bleibt, bis die Prüfung am Anzeigegerät bestanden ist; danach wird es archiviert, nicht gelöscht (`docs/DATENAUFTRAG-KIOSK-KONTO.md`). Nachtrag am Abend: Das neue Konto war einmal als Viewer angemeldet und sah das normale Dashboard ohne Beträge; das ist erlaubt, weil es keine Daten angelegt hat. info@ ist System-Administrator, das Archivieren von bm@ ist damit möglich. Am Anzeigegerät fehlt noch der Kiosk-Demodatensatz; wie er künftig geladen wird, ist offen.
+
+## 2026-11-04 — Kiosk-Konto: Rolle vorhanden, aber nicht wählbar
+
+Der Owner hat ein eigenes Konto für das Anzeigegerät angelegt. Die Rolle kiosk ließ sich im Admin-Dialog nicht auswählen. Die Prüfung zeigt: Die Rolle ist in der Datenbank vollständig vorhanden, der Dialog blendet sie absichtlich aus. Neue Konten erhalten automatisch die Rolle viewer; für Kiosk-Konten gibt es in der Backend-Administration ein eigenes Formular, das die Rolle richtig setzt. Ein Kiosk-Konto zeigt nur Demodaten. Ob das Anzeigegerät Demodaten oder interne Zahlen zeigen soll, entscheidet der Owner (`docs/BERICHT-2026-11-04-KIOSK-KONTO.md`).
 
 ## 2026-11-04 — L2 U7: Abnahme der Abrechnungssicht in der Vorschau
 

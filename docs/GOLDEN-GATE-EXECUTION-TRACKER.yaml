@@ -674,6 +674,45 @@ risiken:
 fortschritt:
   - datum: 2026-11-04
     ereignis: >-
+      PR 278 lokal im Browser geprüft (Branch tmp/pr278-lokal = PR 278 + main f836ee8, nicht gepusht, danach gelöscht). Viewer über Dev-Server-Module in /auth eingehängt
+      (lokal keine .env, keine Anmeldung), Test-PDF per jsPDF mit Text und Link. Fall A (mit Plugin) und B (ohne Plugin): Stylesheets aus /vendor/react-pdf/ (46 und 18
+      Regeln), Text markierbar, Link klickbar, Konsole und Dev-Server-Log ohne devSourcemap. Fall C (main ohne PR 278, ohne Plugin) und C2 (zusätzlich ohne
+      css.devSourcemap): kein Absturz, Fehler lokal nicht nachstellbar. Empfehlung: PR 278 nach Prüfung in der Lovable-Vorschau, update-branch und CI mergen; Plugin
+      behalten. CI PR 280 nach update-branch (0e3c721): 14 von 14 CI-Jobs und Security grün.
+    beleg: docs/BERICHT-2026-11-04-PR278-LOKALTEST.md, CI-Lauf 41902426986
+  - datum: 2026-11-04
+    ereignis: >-
+      Datenauftrag Kiosk-Konto korrigiert: kiosk@ war gegen 20:33 einmal als Viewer angemeldet (Normal-Dashboard ohne Beträge); Vorbedingung V lautet nun "keine fachlichen
+      Daten und keine Zuordnungen". info@ ist aktiver System-Administrator (Benutzerliste Owner), Archivieren von bm@ wird nicht blockiert; EV-0005 "Administrator" meint die
+      Prüferwartung, nicht die Rolle. Anzeigegerät zeigt /kiosk mit Demo-Kennzeichnung und "Kiosk-Demodaten sind auf diesem Gerät nicht geladen" (Screenshot 20:32). KK-07 (nur
+      dokumentiert) und KK-08 ergänzt. Backlog: F-U7-04 (kiosk@ 7/11/12 gegen alexa@ 10/30/63) und gemeinsamer Ladeweg für Kiosk-Demodaten.
+    beleg: docs/DATENAUFTRAG-KIOSK-KONTO.md, Screenshots Owner 20:32 und 20:33, Benutzerliste Owner 04.11.2026
+  - datum: 2026-11-04
+    ereignis: >-
+      Anforderung 1 (Owner, abends): Handbuch um QS-06 (billing.view), Kiosk-Konto anlegen, Kiosk-Demodatensatz laden und "Bei Störungen" ergänzt, RBAC-Matrix auf 25 Rechte
+      berichtigt; CHANGELOG 1.70.0 (2026-11-04), Handbuch 1.25.0, PROJECT-STATUS.yaml auf 1.70.0. Vitest TZ=Europe/Berlin 1260 bestanden, zwei Zeitlimits in BackendAdminDialog
+      nur im Gesamtlauf (einzeln grün, bekannt); Typecheck und docs:check grün. Offen: Version 1.70.0 gegen geplanten Tag v1.69.0. Anforderung 2 (Demodaten monatlich aktuell)
+      analysiert, nicht umgesetzt: 0.0 h im November aus drei Quellen (dashboard.json fest im Mai, Systemhaus-Seed relativ nur beim Einspielen, Live-Demo-Mandant seit TD-01
+      am 2026-10-28 fest); Seed bildet das Basisdatum in UTC (Befund wie U3b). Anforderungen DM-01 bis DM-14, Prüfpunkte ZP-01 bis ZP-06, Aufwand je Teil.
+    beleg: docs/BERICHT-2026-11-04-HANDBUCH-DEMODATEN.md, CHANGELOG.md
+  - datum: 2026-11-04
+    ereignis: >-
+      Datenauftrag Kiosk-Konto angelegt (Weg A: kiosk@ UID 35a51562-30b6-403c-adfa-566c575d1244, Rolle viewer, nie angemeldet, löschen und über "Kiosk-Konto anlegen" neu
+      anlegen; Ziel Rolle kiosk, nur Demodaten). Freigabe 1 vom Owner am Abend im Chat erteilt. Freigabe 2 mit Abweichung von ADR-0037: Owner gibt allein frei (Bus-Faktor 1,
+      R-04), kein Connector-Preflight, weil nur Fachfunktionen mit Audit genutzt werden und das Konto ohne Anmeldung und ohne Daten ist; nachträgliche Bestätigung durch eine
+      zweite Person offen. Mailweg: kiosk@ ist Alias auf info@, Leser nur der Owner. Hinweis: info@ ist in EV-0005 als Administrator geprüft, nicht als Systemadministrator;
+      vor dem Archivieren von bm@ klären. Ausführung offen.
+    beleg: docs/DATENAUFTRAG-KIOSK-KONTO.md, Freigabe 1 im Chat (Owner, 04.11.2026)
+  - datum: 2026-11-04
+    ereignis: >-
+      Kiosk-Konto: Owner hat kiosk@ in der Auth-Verwaltung angelegt; Rolle kiosk im Admin-Dialog nicht wählbar. Read-only-Prüfung: kiosk ist in der Datenbank vollständig
+      vorhanden (app_role, kiosk.view, Exklusivitäts-Trigger, Migrationen BSF-KIOSK-01), keine Migration nötig. Der Dialog filtert kiosk bewusst aus (UserManagementDialog.tsx:525).
+      handle_new_user vergibt neuen Konten viewer, kiosk@ hat daher die Rolle viewer. Rolle kiosk leitet auf /kiosk und zeigt nur Demodaten; die interne Kiosk-Sicht braucht
+      project.controlling.view. Empfehlung Weg A: kiosk@ löschen und über "Kiosk-Konto anlegen" neu anlegen. Entscheidung des Owners offen, ebenso Demodaten oder interne Zahlen
+      auf dem Anzeigegerät. bm@ bleibt unverändert.
+    beleg: docs/BERICHT-2026-11-04-KIOSK-KONTO.md
+  - datum: 2026-11-04
+    ereignis: >-
       U7/QS-06 Abnahme in der Lovable-Vorschau (v1.69.0) durch den Owner, Nachweis EV-0005 im neu angelegten docs/NACHWEISE.yaml (ART-17): info@ (Administrator) Beträge
       sichtbar; alexa@ (Viewer) keine Beträge in Startseite, Tab-Leiste, Projektdetail, Projektbericht SYSING-102 V1.0.0 und Tätigkeiten; bm@ im Anzeigemodus ohne Beträge.
       Einschränkungen: nur Oberfläche, Engineer ungeprüft, serverseitig offen (QS6-4). QS-06: Kiosk laut Owner Anzeigemodus, keine Rolle; Konto bm@ hat Rolle Systemadministrator

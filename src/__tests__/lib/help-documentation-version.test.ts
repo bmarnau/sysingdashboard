@@ -4,7 +4,7 @@ import { DOCUMENTATION_VERSION } from "@/lib/help-documentation";
 
 describe("help documentation release contract", () => {
   it("publishes the BSF-03E P3a/P3b handbook increment", () => {
-    expect(DOCUMENTATION_VERSION).toBe("1.24.1");
+    expect(DOCUMENTATION_VERSION).toBe("1.25.0");
 
     const workView = avkkHelpTopics.find((topic) => topic.id === "avkk-arbeitspaket-arbeitssicht");
     expect(workView?.lastUpdated).toBe("2026-10-15");

@@ -68,6 +68,8 @@ quadrantChart
 
 **Single Points of Failure:** R-04 (Einzelbetreiber), R-07 (Publish-Weg und Auth-Broker nur über den Lovable-Support klärbar), R-11 (Kapazität des Betreibers), R-12 (Lovable-Plattform), R-14 (keine Wiederherstellungsprobe), L2-R5 (Server-Read). R-04 und R-11 hängen zusammen: Fällt der Owner aus, stehen Freigaben, Merges und Datenaufträge still.
 
+**Hinweis R-04 (2026-11-04):** Der Datenauftrag Kiosk-Konto weicht von ADR-0037 ab. Der Owner gibt beide Stufen allein frei; die nachträgliche Bestätigung durch eine zweite Person ist offen (`docs/DATENAUFTRAG-KIOSK-KONTO.md`). Mails an kiosk@ erreichen nur den Owner.
+
 **Funktionale Sicherheit:** R-02 (unwiderrufliche Migrationen), R-14 (Daten nicht wiederherstellbar nachgewiesen), L2-R1, L2-R2, L2-R3 und L2-R5 (falsche oder unberechtigte Anzeige im Cockpit). Gegenmaßnahmen sind die RED-Testmatrix und die Sicherheitstests aus U2 und U3 (Voraussetzung für Entscheidung E2).
 
 **Schwerpunkte der nächsten sieben Tage:**
