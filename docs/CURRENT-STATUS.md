@@ -4,7 +4,7 @@ Stand: 2026-11-05
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
-L2-12 abgeschlossen (2026-11-05, A06): Handbuch 1.26.0 mit Kapitel Managementcockpit und Bewertungskriterien, CHANGELOG 1.70.0 mit Cockpit-Punkten (Datum 2026-11-05), Merge-Checkliste Tag v1.70.0; Branch `docs/2026-11-05-l2-12-abschluss`. Entschieden: `types.ts`-Plattformergänzung bleibt bis nach dem Publish unberücksichtigt (Backlog). Wiederanlaufpunkt: A15 (QS6-5 Exporte), dann A16.
+L2-12 abgeschlossen (2026-11-05, A06): Handbuch 1.26.0 mit Kapitel Managementcockpit und Bewertungskriterien, CHANGELOG 1.70.0 mit Cockpit-Punkten (Datum 2026-11-05), Merge-Checkliste Tag v1.70.0; Branch `docs/2026-11-05-l2-12-abschluss`. Entschieden: `types.ts`-Plattformergänzung bleibt bis nach dem Publish unberücksichtigt (Backlog). QS6-5 umgesetzt (A15, Branch `fix/qs6-5-export-billing-view`, Draft-PR, enthält PR 282). Wiederanlaufpunkt: Merge PR 282, dann A15-PR; danach A16 (Audit K1/K2, nicht begonnen).
 
 Entscheidungen des Owners (2026-11-05): Version 1.70.0 bleibt; Demodaten in ganzen Tagen verschieben; Paket 2a/2b nach dem Publish (kein Gate); Monatslauf 2c per Datenauftrag mit Vorlage (erster Lauf bis 2026-11-30). Kiosk Weg A mit kiosk@ (2026-11-04). Branches `ops/*` werden nie gelöscht.
 

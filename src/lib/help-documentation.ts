@@ -1927,7 +1927,9 @@ Ohne \`billing.view\` (Systemingenieur, Kunde, Viewer, Kiosk) gilt:
 - In **Tätigkeiten** fehlen Stundensatz, Betrag, Abrechnungsstatus und der Filter nach Abrechnungsstatus; Stunden bleiben sichtbar.
 - Im **Projektdetail** und im **Projektbericht** erscheinen keine Beträge.
 
-Das Managementcockpit zeigt unabhängig davon keine Beträge. Die Server-Lesepfade liefern ohne \`billing.view\` keine Beträge (Prüfung QS6-4). Exporte werden noch angeglichen (QS6-5).
+Das Managementcockpit zeigt unabhängig davon keine Beträge. Die Server-Lesepfade liefern ohne \`billing.view\` keine Beträge (Prüfung QS6-4).
+
+**Exporte (QS6-5):** Ohne \`billing.view\` enthalten CSV, JSON, Azure-Table und PDF aus „Export…“ keine Stundensätze, Beträge oder Summen; die Spalten fehlen ganz, Stunden und Abrechenbarkeit bleiben. „Import / Export…“ verweigert ohne das Recht den Gesamtexport sowie die Bereiche Tätigkeiten, Zeitbuchungen und Leistungsnachweise, weil diese Datei je Tätigkeit einen Stundensatz verlangt.
 
 ## Schutz vor Self-Lockout
 Der letzte aktive System-Administrator kann nicht degradiert, deaktiviert oder gelöscht werden. Rollenänderungen bleiben an \`roles.manage\` gebunden.

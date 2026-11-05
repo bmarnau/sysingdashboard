@@ -674,6 +674,12 @@ risiken:
 fortschritt:
   - datum: 2026-11-05
     ereignis: >-
+      A15 QS6-5 umgesetzt (Branch fix/qs6-5-export-billing-view): createExportDTO verlangt den Rechte-Kontext; ohne billing.view fehlen Satz, Betrag und Summe in
+      CSV, JSON, Azure-Table, PDF und Vorschau. JsonExportService (Import / Export) verweigert ohne Recht Gesamtexport und Bereiche mit Beträgen (Schema verlangt
+      hourlyRate). 19 Unit-Fälle und 3 E2E-Fälle (viewer, engineer ohne, teamlead mit Beträgen) lokal grün. PR enthält PR 282 bis zu dessen Merge.
+    beleg: src/__tests__/security/qs6-5-export-billing.test.ts, e2e/specs/rbac/qs06-billing-view.spec.ts, Commit a8c7ad05
+  - datum: 2026-11-05
+    ereignis: >-
       A06 (L2-12 Rest): Handbuch-Kapitel management-cockpit mit Gründen, Datenzuständen und Bewertungskriterien (AVKK-Schweregrade Rang 1 bis 4, hoch ab 3, kritisch
       ab 4, Risikoschwelle 1 nicht vorhanden oder 2 teilweise; Risikobewertung W × A, Beispiel R-07 3 × 5 = 15 hoch), Handbuch 1.26.0, CHANGELOG 1.70.0 um die
       Cockpit-Punkte ergänzt und auf 2026-11-05 datiert, Merge-Checkliste Tag v1.70.0. Owner-Entscheidung 05.11.: types.ts-Plattformergänzung (__InternalSupabase)
