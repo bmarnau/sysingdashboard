@@ -1,0 +1,26 @@
+--- T1 Preflight vorher
+0 Datum Europe/Berlin = 2026-11-05 (soll >= s_neu)
+1 Verschiebung in Tagen = 28 (soll Vielfaches von 7, > 0)
+2 audit_log = 329 (soll Wert merken (a_soll))
+3 Arbeitspakete auf s_alt + Versatz (aktiv, nicht erledigt) = 14 (soll 14)
+4 Taetigkeiten auf s_alt + Versatz (aktiv) = 47 (soll 47)
+5 Arbeitspakete schon auf s_neu (Doppellauf) = 0 (soll 0)
+6 Arbeitspakete des Auftrags mit abweichendem Wert (source_id) = keine (soll keine)
+7 Taetigkeiten des Auftrags mit abweichendem Wert (Anzahl) = 0 (soll 0)
+OK   T2 Schreiben 28 Tage
+     Postflight alle 61 Zeilen auf s_neu + Versatz: true | erledigte/ohne Faelligkeit unveraendert: true | audit_log 329
+--- T3 Preflight nach Lauf (Doppellauf erkennen)
+3 Arbeitspakete auf s_alt + Versatz (aktiv, nicht erledigt) = 0 (soll 14)
+4 Taetigkeiten auf s_alt + Versatz (aktiv) = 0 (soll 47)
+5 Arbeitspakete schon auf s_neu (Doppellauf) = 14 (soll 0)
+6 Arbeitspakete des Auftrags mit abweichendem Wert (source_id) = demo-wp-virt-migration, demo-wp-m365-schulung, demo-wp-m365-migration, demo-wp-netz-rollout, demo-wp-netz-doku, demo-wp-frei-admin, demo-wp-m365-berechtigungen, demo-wp-backup-konzept, demo-wp-virt-storage, demo-wp-fil-rollout, demo-wp-fil-firewall, demo-wp-backup-test, demo-wp-virt-cluster, demo-wp-frei-vertrieb (soll keine)
+7 Taetigkeiten des Auftrags mit abweichendem Wert (Anzahl) = 47 (soll 0)
+EXC  T4 zweiter Lauf (muss abbrechen) -> Arbeitspakete: erwartet 14, geaendert 0
+     unveraendert nach Abbruch: true
+EXC  T5 Versatz 27 Tage (muss abbrechen) -> Verschiebung 27 Tage: muss positiv und ein Vielfaches von 7 sein (Wochentage bleiben erhalten)
+EXC  T6 Stichtag in der Zukunft (muss abbrechen) -> Stichtag 2026-12-03 liegt nach dem heutigen Datum in Europe/Berlin
+OK   T7 Rueckbau
+     Stand gleich vor dem Lauf: true
+EXC  T8 audit_log weicht ab (muss abbrechen) -> audit_log vor Lauf: erwartet 329, gefunden 330
+     unveraendert nach Abbruch: true
+Datum Europe/Berlin in PGlite: 2026-11-05

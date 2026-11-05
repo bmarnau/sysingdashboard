@@ -1,5 +1,5 @@
-stand: 2026-11-05T05:59+01:00
-laufender_auftrag: {id: A11, start: 2026-11-05T05:59+01:00}
-letzter_auftrag: {id: A07, status: blockiert, grund: Notfallhandbuch und Standard Lovable-Grenzen nicht bereitgestellt, bericht: reports/A07-BERICHT.md}
-naechste_pruefung: nach Abschluss A11
+stand: 2026-11-05T06:08+01:00
+laufender_auftrag: {id: A12, start: 2026-11-05T06:08+01:00}
+letzter_auftrag: {id: A11, status: erledigt, bericht: reports/A11-BERICHT.md}
+naechste_pruefung: nach Abschluss A12
 fehler: []
