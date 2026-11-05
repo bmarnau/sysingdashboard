@@ -16,4 +16,4 @@ schritte:
   leer lassen.'
 nachweis: Vorlage im Tagesbündel-PR; docs:check grün; Verweis im Backlog und im Tracker.
 grenzen: Nur Dokument. Nichts ausführen, keine Abfragen am Live-System, keine Zugangsdaten.
-status: bereit
+status: erledigt

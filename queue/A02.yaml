@@ -14,4 +14,4 @@ schritte:
   Nur aus dem Repository belegbar ableiten, sonst als nicht ermittelbar kennzeichnen.'
 nachweis: Bericht docs/BERICHT-AUDIT-2026-11-04.md mit Ausgabe von bun audit (gekürzt).
 grenzen: Nur lesen. Pakete nicht ändern. Updates nur nach Beauftragung (Standard Lovable-Grenzen LG-05 bis LG-08).
-status: bereit
+status: erledigt

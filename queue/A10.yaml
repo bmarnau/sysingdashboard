@@ -10,4 +10,4 @@ schritte:
 - 'Merge-Reife als Tabelle: Prüfpunkt | Ergebnis | Beleg. Empfehlung.'
 nachweis: Kurzbericht im Tagesbündel-PR; Beleg PR-Nummer, Commit, CI.
 grenzen: 'Nur lesen. Kein Merge in bmarnau-standards ohne ausdrückliches ''Merge #46''.'
-status: bereit
+status: erledigt

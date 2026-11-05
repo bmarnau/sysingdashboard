@@ -1,0 +1,18 @@
+id: A16
+titel: 'bun audit K1 und K2: dompurify und shell-quote anheben'
+art: code-pr
+gate: vor Publish
+abhaengig_von:
+- A02 erledigt
+ziel: Die zwei kritischen Funde aus A02 per overrides beheben (je ein PR).
+schritte:
+- Lies docs/BERICHT-AUDIT-2026-11-04.md.
+- 'PR 1, Branch fix/audit-dompurify: overrides dompurify auf 3.4.17 (GHSA-cg2g-xh64-v4q7). Lockfile (bun.lock) mitführen.'
+- 'PR 2, Branch fix/audit-shell-quote: overrides shell-quote auf 1.12.0 (GHSA-pqg4-j6r4-53mv). Lockfile mitführen.'
+- 'Je PR prüfen: bun install, Build, Unit-Tests, E2E soweit lokal möglich, PDF-Export (jspdf) einmal erzeugen, Dev-Server
+  startet. bun audit vorher und nachher (gekürzt) in den Bericht.'
+- Prüfen, ob die PRs sich gegenseitig in bun.lock stören; falls ja, zweiten PR nach dem ersten neu aufsetzen und das berichten.
+nachweis: Zwei Draft-PRs mit CI 15/15, bun audit vorher/nachher, Bericht reports/A16-BERICHT.md.
+grenzen: Kein Merge, kein Publish. Keine weiteren Paketupdates (die 58 übrigen Funde sind nicht beauftragt). Bei Build- oder
+  Testfehlern nach dem Update stoppen und berichten, nicht umgehen.
+status: bereit

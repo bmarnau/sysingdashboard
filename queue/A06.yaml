@@ -13,4 +13,4 @@ schritte:
 - 'Tests: help-documentation-version, app-version.'
 nachweis: PR mit CI 15/15; docs:check und docs:project grün.
 grenzen: Kein Publish, kein Tag. Der bekannte Zeitüberlauf in BackendAdminDialog bleibt im Backlog.
-status: geplant
+status: bereit

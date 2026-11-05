@@ -15,4 +15,4 @@ schritte:
 - Empfehlung für Umsetzungsschnitte (ein PR je Pfad oder gebündelt) und Testkonzept (E2E mit Viewer-Konto).
 nachweis: Bericht docs/BERICHT-QS6-4-ANALYSE.md mit Fundstellen (Datei:Zeile).
 grenzen: Nur lesen, kein Zugriff auf Live-Daten, keine Änderung am Code.
-status: bereit
+status: erledigt

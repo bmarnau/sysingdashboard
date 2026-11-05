@@ -1,4 +1,4 @@
-stand: 2026-11-05 05:40
+stand: 2026-11-05 06:40
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -14,49 +14,48 @@ gemeinsame_regeln:
 - Sprache Deutsch, sachlich, Anforderungen mit muss/sollte. Daten als JSON oder YAML, Diagramme als Mermaid.
 - 'Zu Beginn lesen: docs/CURRENT-STATUS.md, docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml, docs/MERGE-CHECKLISTE-GOLDEN-GATE.md.'
 - Kein Merge, kein Publish. Nichts nach main, solange Lovable schreibende Aufträge ausführt. Keine lovable-sync-Branches.
-- Keine Zugangsdaten in Dateien oder Commits. audit_log nie löschen. Änderungen am Live-System nur als Datenauftrag
-  nach ADR-0037.
+- Keine Zugangsdaten in Dateien oder Commits. audit_log nie löschen. Änderungen am Live-System nur als Datenauftrag nach ADR-0037.
 - Aussagen wie 'bestanden' nur mit Beleg (PR, Commit, Testprotokoll, CI-Lauf, Screenshot mit Datum).
 - 'Doku-Änderungen eines Tages in einem PR bündeln. Vor Abschluss: Tracker (fortschritt), CURRENT-STATUS, ENTWICKLUNGSTAGEBUCH,
   BACKLOG; npm run docs:check, docs:project, Prettier; pushen und mit git ls-remote prüfen.'
-- 'Abschluss jedes Berichts: Hygiene in einer Zeile (gemergte Remote-Branches, offene PRs, Drafts) und YAML-Block
-  mit Reifegrad, Projektstatus, Offene_Fragen, Roadmap.'
+- 'Abschluss jedes Berichts: Hygiene in einer Zeile (gemergte Remote-Branches, offene PRs, Drafts) und YAML-Block mit Reifegrad,
+  Projektstatus, Offene_Fragen, Roadmap.'
 auftraege:
 - id: A01
   titel: 'QS6-4 Ist-Analyse: Beträge serverseitig'
   art: lesen
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A02
   titel: 'bun audit: zwei verbleibende kritische Funde'
   art: lesen
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A03
   titel: F-U7-03 und F-U7-04 Ursachenanalyse
   art: lesen
   gate: nein
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A10
   titel: 'TDF-PR #46 (Modul M-9 Artefakte) prüfen'
   art: lesen
   gate: nein
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A04
   titel: 'Nachweisregister: EV-0001 bis EV-0004 übernehmen'
   art: doku-pr
   gate: nein
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A07
   titel: Standards in docs/ ablegen
   art: doku-pr
   gate: nein
-  status: bereit
+  status: wartet_auf_entscheidung
   abhaengig_von: []
 - id: A05
   titel: Engineer-Abnahme (QS-06) planen
@@ -83,31 +82,42 @@ auftraege:
   titel: 'L2-12 Rest: Version, Bewertungskriterien, Cockpit-Einträge'
   art: doku-pr
   gate: vor Publish
-  status: geplant
-  abhaengig_von:
-  - PR 280 gemergt
+  status: bereit
+  abhaengig_von: []
 - id: A11
   titel: 'Datenauftrag-Vorlage: Live-Demodaten monatlich nachführen (2c)'
   art: doku-pr
   gate: vor dem Monatswechsel 01.12.2026
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A12
   titel: 'Doku-Nachtrag: Entscheidungen 04. und 05.11., Aufräumregel ops/*'
   art: doku-pr
   gate: nein
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A13
   titel: Zwei QA-Befunde von Lovable klären (Fällig-Datum, Kiosk Infrastruktur)
   art: lesen
   gate: nein
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A14
   titel: types.ts-Abweichung (Plattformergänzung __InternalSupabase) prüfen
   art: lesen
   gate: nein
+  status: erledigt
+  abhaengig_von: []
+- id: A15
+  titel: 'QS6-5: Beträge in Exporten nur mit billing.view'
+  art: code-pr
+  gate: vor Publish
+  status: bereit
+  abhaengig_von: []
+- id: A16
+  titel: 'bun audit K1 und K2: dompurify und shell-quote anheben'
+  art: code-pr
+  gate: vor Publish
   status: bereit
   abhaengig_von: []
 entscheidungen_owner:
@@ -115,3 +125,4 @@ entscheidungen_owner:
 - 2026-11-05 Demodaten Verschiebung in ganzen Tagen
 - 2026-11-05 Demodaten-Paket 2a/2b nach dem Publish
 - 2026-11-05 Monatslauf 2c per Datenauftrag mit Vorlage
+- 2026-11-05 A15 (QS6-5) und A16 (K1/K2) beauftragt, A06 freigegeben

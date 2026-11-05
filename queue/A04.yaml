@@ -12,4 +12,4 @@ schritte:
 - Jeden Eintrag gegen GitHub prüfen (PR-Nummer, Merge-Commit, CI 15/15). Abweichungen melden, nicht glätten.
 nachweis: Diff der NACHWEISE.yaml, Prüftabelle Eintrag | Beleg | Befund.
 grenzen: Nur Doku. Im Tagesbündel-PR.
-status: bereit
+status: erledigt

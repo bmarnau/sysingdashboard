@@ -1,0 +1,24 @@
+id: A15
+titel: 'QS6-5: Beträge in Exporten nur mit billing.view'
+art: code-pr
+gate: vor Publish
+abhaengig_von:
+- A01 erledigt
+ziel: Exporte und Import/Export dürfen ohne Recht billing.view keine Sätze, Beträge oder Umsätze ausgeben (Befund QS6-5 aus
+  A01).
+schritte:
+- 'Lies docs/BERICHT-QS6-4-ANALYSE.md (Stellen: ServiceMenu.tsx:102-110, export-data.ts:74-75, json-export-service.ts:204).'
+- 'Branch fix/qs6-5-export-billing-view von aktuellem main. Alle Exportwege prüfen: Export…, Import / Export…, Text-Export,
+  JSON-Export, Projektbericht/PDF, falls dort Beträge stehen.'
+- 'Anforderung: Ohne billing.view MUSS jeder Export frei von hourlyRate, Beträgen und Umsätzen sein (Felder weglassen, nicht
+  nur ausblenden). Mit billing.view bleibt das Verhalten unverändert.'
+- Rechteprüfung zentral am Datenaufbau des Exports (nicht nur im Menü), damit keine Umgehung über andere Einstiege möglich
+  ist.
+- 'Tests: Unit-Tests je Exportweg mit und ohne Recht; E2E-Erweiterung von e2e/specs/rbac/qs06-billing-view.spec.ts für viewer
+  und engineer (kein Betrag im Export) und teamlead (Betrag vorhanden).'
+- CHANGELOG-Eintrag (nutzersichtbar), Handbuch-Hinweis in src/lib/help-documentation.ts, Tracker, CURRENT-STATUS, ENTWICKLUNGSTAGEBUCH.
+- 'Aufwand laut A01: 7 bis 11 h. Bei Überschreitung von 12 h oder bei unklarer Lage stoppen und berichten.'
+nachweis: PR als Draft mit CI 15/15, Testausgaben je Rolle, Liste der geänderten Dateien; Bericht reports/A15-BERICHT.md.
+grenzen: 'Kein Merge, kein Publish, keine Datenänderung am Live-System. Keine Änderungen an Rollenmatrix oder Datenbank. Lovable-Hinweis
+  beachten: kein Merge nach main, solange Lovable schreibt.'
+status: bereit
