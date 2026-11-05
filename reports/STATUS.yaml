@@ -1,5 +1,5 @@
-stand: 2026-11-05T06:12+01:00
-laufender_auftrag: {id: A14, start: 2026-11-05T06:12+01:00}
-letzter_auftrag: {id: A13, status: erledigt, bericht: reports/A13-BERICHT.md}
-naechste_pruefung: nach Abschluss A14
+stand: 2026-11-05T06:20+01:00
+laufender_auftrag: keiner
+letzter_auftrag: {id: A14, status: erledigt, bericht: reports/A14-BERICHT.md}
+naechste_pruefung: Tagesbündel-PR anlegen, danach Leerlauf (kein bereiter Auftrag mehr; A05, A06, A08, A09 geplant)
 fehler: []
