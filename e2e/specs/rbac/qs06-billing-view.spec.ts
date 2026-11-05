@@ -54,7 +54,7 @@ for (const role of ["viewer", "engineer"] as const) {
     test.use({ role });
     test("CSV ohne Stundensatz und Betrag", async ({ page }) => {
       const csv = await exportCsv(page);
-      const [header] = csv.replace(/^﻿/, "").split("\r\n");
+      const [header] = csv.replace(/^\uFEFF/, "").split("\r\n");
       expect(header).toContain("durationHours");
       expect(header).not.toMatch(/hourlyRate|amountEur/);
       expect(csv).not.toMatch(/;14[05];|;135;/);
