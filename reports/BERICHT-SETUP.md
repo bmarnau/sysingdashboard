@@ -27,7 +27,7 @@ A01 war zu diesem Zeitpunkt schon erledigt, A02 lief.
 | ops/queue Commit 1 | f22bced4 „ops(queue): Warteschlange anlegen (INDEX und A01 bis A14)“, Autor Bernd Marnau (bmarnau) | `git log` |
 | ops/queue Commit 2 | 8bf15d68 „ops: Warteschlange A01-A14 einrichten“, README nach `queue/README.md`, Branch enthält nur `queue/` | `git ls-files` |
 | ls-remote ops/queue | `8bf15d685973652844d90234ecc21b760b65d77e	refs/heads/ops/queue` | gleich lokalem HEAD 8bf15d68 |
-| ops/reports | be6c35fc (Anlage), 7213406x (A01 Start), 44a803bd (A01 erledigt), e0be4e52 (Felder umgestellt) | `git log` |
+| ops/reports | be6c35fc (Anlage), 72134063 (A01 Start), 44a803bd (A01 erledigt), e0be4e52 (Felder umgestellt) | `git log` |
 | ls-remote ops/reports vor diesem Bericht | `e0be4e52919a4d012e5fdd32fe24a92e8cdb8776	refs/heads/ops/reports` | gleich lokalem HEAD |
 
 ## Offene Fragen, Risiken, Abweichungen
