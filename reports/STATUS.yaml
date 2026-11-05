@@ -1,6 +1,6 @@
-stand: 2026-11-05T06:36+01:00
-laufender_auftrag: {id: A06, start: 2026-11-05T06:36+01:00}
-letzter_auftrag: {id: QUEUE-UPDATE, status: erledigt, bericht: reports/BERICHT-QUEUE-UPDATE.md}
-naechste_pruefung: nach Abschluss A06, dann A15, A16
-tagesbuendel: {pr: 281, head: 348bf775, ci: "15/15 grün"}
+stand: 2026-11-05T07:10+01:00
+laufender_auftrag: {id: A15, start: 2026-11-05T07:10+01:00}
+letzter_auftrag: {id: A06, status: erledigt, bericht: reports/A06-BERICHT.md}
+naechste_pruefung: nach Abschluss A15, dann A16
+tagesbuendel: {pr: 282, head: 92bf1d3b, ci: "15/15 grün"}
 fehler: []
