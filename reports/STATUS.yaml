@@ -1,6 +1,6 @@
-stand: 2026-11-05T06:00+01:00
-aktueller_auftrag: keiner
-start: null
+stand: 2026-11-05T04:38+00:00
+aktueller_auftrag: A01
+start: 2026-11-05T04:38+00:00
 letzter_auftrag: null
 leerlauf: null
 fehler: []
