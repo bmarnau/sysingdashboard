@@ -34,6 +34,24 @@ artefakte:
     zweck: Stand und Wiederanlaufpunkt
     ort: docs/CURRENT-STATUS.md
     art: git
+  - id: doc-betrieb-teilautomatik
+    titel: Teilautomatikbetrieb
+    zweck: Rollen, Branches ops/queue und ops/reports, Zyklus, Grenzen, Berichtsformat
+    ort: docs/BETRIEB-TEILAUTOMATIK.md
+    art: git
+    stand: 2026-11-05
+  - id: ops-reports
+    titel: Berichte und Status der Teilautomatik
+    zweck: reports/STATUS.yaml und Auftragsberichte
+    ort: https://github.com/bmarnau/sysingdashboard/tree/ops/reports
+    art: git
+    stand: 2026-11-05
+  - id: doc-datenauftrag-demodaten-monat
+    titel: Datenauftrag-Vorlage Demodaten Monat (2c)
+    zweck: Monatlicher Lauf für den Live-Demo-Mandanten, ADR-0037
+    ort: docs/DATENAUFTRAG-DEMODATEN-MONAT.md
+    art: git
+    stand: 2026-11-05
   - id: doc-nachweise
     titel: Nachweisregister
     zweck: Nachweise zu Abnahmen und Tests (ART-17, REST-26)
