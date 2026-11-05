@@ -13,8 +13,13 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
-## 1.70.0 - 2026-11-04
+## 1.70.0 - 2026-11-05
 
+- **Managementcockpit (L2)**: Neue schreibgeschützte Seite „Managementcockpit“ zeigt je Kunde und Projekt den Handlungsbedarf im eigenen Kundenbereich: überfällige offene Arbeitspakete, Arbeitspakete ohne Verantwortlichen, hohe oder kritische AVKK-Folgen, Controlling-Lücken und veraltete Veröffentlichungsstände. Jeder Grund verlinkt in die Fachansicht. Sichtbar mit Führungs- oder Controllingrecht, ohne Beträge.
+- **Cockpit liest vom Server**: Arbeitspakete, Projektcontrolling und AVKK-Befunde kommen aus der gemeinsamen Datenbasis; der Stichtag gilt in Europe/Berlin.
+- **Cockpit zeigt Unsicherheit an**: Bei unvollständigen Quellen steht neben der Zahl „Teilweise ermittelt, Quelle unvollständig“; ist ein Wert nicht ermittelbar, steht „Nicht ermittelbar“ statt 0.
+- **Cockpit-Kundenkreis**: Das Cockpit zeigt auch Systemadministratoren nur die Kunden aus „Meine Kunden“.
+- **Handbuch Managementcockpit**: Neues Kapitel mit Gründen, Datenzuständen und Bewertungskriterien, je mit durchgerechnetem Beispiel (AVKK-Schweregrade, Risikobewertung W × A).
 - **Beträge nur mit Abrechnungsrecht (QS-06)**: Umsatz-Kachel, Reiter „Abrechnung“, Stundensatz, Betrag und Abrechnungsstatus in Tätigkeiten sowie Beträge in Projektdetail und Projektbericht sind nur für System-Administrator, Administrator, Teamleiter und Projektmanager sichtbar (`billing.view`). Systemingenieure sehen weiter ihre Stunden.
 - **Handbuch Kiosk-Konto**: Beschreibt das Anlegen über „Kiosk-Konto anlegen“ in Backend & Auth-Konten. Ein Konto aus der Auth-Verwaltung der Plattform erhält die Standardrolle Viewer; die Rolle Kiosk vergibt nur das Formular.
 - **Handbuch Kiosk-Demodaten**: Beschreibt das Laden des Kiosk-Demodatensatzes im Servicebereich auf dem Anzeigegerät selbst und die Meldung „Kiosk-Demodaten sind auf diesem Gerät nicht geladen.“

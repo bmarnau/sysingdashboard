@@ -674,6 +674,15 @@ risiken:
 fortschritt:
   - datum: 2026-11-05
     ereignis: >-
+      A06 (L2-12 Rest): Handbuch-Kapitel management-cockpit mit Gründen, Datenzuständen und Bewertungskriterien (AVKK-Schweregrade Rang 1 bis 4, hoch ab 3, kritisch
+      ab 4, Risikoschwelle 1 nicht vorhanden oder 2 teilweise; Risikobewertung W × A, Beispiel R-07 3 × 5 = 15 hoch), Handbuch 1.26.0, CHANGELOG 1.70.0 um die
+      Cockpit-Punkte ergänzt und auf 2026-11-05 datiert, Merge-Checkliste Tag v1.70.0. Owner-Entscheidung 05.11.: types.ts-Plattformergänzung (__InternalSupabase)
+      bleibt mindestens bis nach dem Publish unberücksichtigt; Drift-Normalisierung (1 bis 2 h) im Backlog nach dem Golden Gate.
+    beleg: >-
+      src/lib/help-documentation.ts, CHANGELOG.md, docs/MERGE-CHECKLISTE-GOLDEN-GATE.md, docs/BACKLOG.md, reports/A14-BERICHT.md (origin/ops/reports 8f00c918),
+      Branch docs/2026-11-05-l2-12-abschluss
+  - datum: 2026-11-05
+    ereignis: >-
       Entscheidungen des Owners festgehalten (A12): Version 1.70.0 bleibt (05.11.); Demodaten werden in ganzen Tagen verschoben (05.11.); Demodaten-Paket 2a/2b nach dem
       Publish, kein Gate (05.11.); Monatslauf 2c als Datenauftrag mit Vorlage docs/DATENAUFTRAG-DEMODATEN-MONAT.md (05.11.); Kiosk Weg A mit kiosk@ (04.11.).
       Branches ops/* in CLAUDE.md und GIT-AUFRAEUMEN.md (GA-3) als nie zu löschen aufgenommen; Teilautomatik in docs/BETRIEB-TEILAUTOMATIK.md beschrieben.

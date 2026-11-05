@@ -4,6 +4,8 @@ Stand: 2026-11-05
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+L2-12 abgeschlossen (2026-11-05, A06): Handbuch 1.26.0 mit Kapitel Managementcockpit und Bewertungskriterien, CHANGELOG 1.70.0 mit Cockpit-Punkten (Datum 2026-11-05), Merge-Checkliste Tag v1.70.0; Branch `docs/2026-11-05-l2-12-abschluss`. Entschieden: `types.ts`-Plattformergänzung bleibt bis nach dem Publish unberücksichtigt (Backlog). Wiederanlaufpunkt: A15 (QS6-5 Exporte), dann A16.
+
 Entscheidungen des Owners (2026-11-05): Version 1.70.0 bleibt; Demodaten in ganzen Tagen verschieben; Paket 2a/2b nach dem Publish (kein Gate); Monatslauf 2c per Datenauftrag mit Vorlage (erster Lauf bis 2026-11-30). Kiosk Weg A mit kiosk@ (2026-11-04). Branches `ops/*` werden nie gelöscht.
 
 Teilautomatik (2026-11-05, `docs/BETRIEB-TEILAUTOMATIK.md`): Warteschlange `origin/ops/queue` (A01 bis A14), Berichte und Status in `origin/ops/reports`. Erledigt: A01 (QS6-4: kein Server-Pfad liefert Beträge, Lücke sind Exporte im Browser, QS6-5; `docs/BERICHT-QS6-4-ANALYSE.md`), A02 (`docs/BERICHT-AUDIT-2026-11-04.md`), A03 (`docs/BERICHT-F-U7-03-04.md`), A10 (TDF-PR 46 bereits gemergt), A04 (EV-0001 bis EV-0004), A11 (Vorlage `docs/DATENAUFTRAG-DEMODATEN-MONAT.md`, erster Lauf bis 2026-11-30). A07 blockiert: Notfallhandbuch und Standard Lovable-Grenzen nicht bereitgestellt. Doku-Bündel auf Branch `docs/2026-11-05-teilautomatik` (PR noch offen). Wiederanlaufpunkt: nächster bereiter Auftrag laut `queue/INDEX.yaml`.
