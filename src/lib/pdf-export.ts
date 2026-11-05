@@ -307,9 +307,11 @@ export const PdfExportService = {
       depth: number;
       label: string;
       hours: number;
-      amount: number;
+      amount: number | undefined;
       level: string;
     }> = [];
+    // QS6-5: Betragsspalte und Gesamtbetrag nur mit billing.view.
+    const billing = exportData.includeBilling;
     const walk = (nodes: ExportGroupNode[], depth: number) => {
       for (const n of nodes) {
         groupRows.push({
@@ -327,15 +329,15 @@ export const PdfExportService = {
     autoTable(doc, {
       startY: margin + 14,
       margin: { left: margin, right: margin },
-      head: [["Ebene", "Bezeichnung", "Stunden", "Betrag"]],
+      head: [["Ebene", "Bezeichnung", "Stunden", ...(billing ? ["Betrag"] : [])]],
       body: groupRows.length
         ? groupRows.map((g) => [
             g.level,
             `${"   ".repeat(g.depth)}${g.label}`,
             fmtHours(g.hours),
-            fmtCurrency(g.amount),
+            ...(billing ? [fmtCurrency(g.amount ?? 0)] : []),
           ])
-        : [["—", "Keine Daten", "0 h", fmtCurrency(0)]],
+        : [["—", "Keine Daten", "0 h", ...(billing ? [fmtCurrency(0)] : [])]],
       theme: "grid",
       headStyles: { fillColor: [30, 64, 175], textColor: 255, fontSize: 9 },
       styles: { fontSize: 8, cellPadding: 1.5 },
@@ -378,7 +380,7 @@ export const PdfExportService = {
         ["Gesamtstunden", fmtHours(s.totalHours)],
         ["Billable Stunden", fmtHours(s.billableHours)],
         ["Non-Billable Stunden", fmtHours(s.nonBillableHours)],
-        ["Gesamtbetrag", fmtCurrency(s.totalAmount)],
+        ...(billing ? [["Gesamtbetrag", fmtCurrency(s.totalAmount ?? 0)]] : []),
         ["Anzahl Tätigkeiten", String(s.activities)],
         ["Anzahl Zeitbuchungen", String(s.timeEntries)],
       ],

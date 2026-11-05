@@ -111,6 +111,9 @@ export async function buildZip(snapshot: Snapshot): Promise<Uint8Array> {
   // brechen das Archiv NICHT — der Backup-Pfad bleibt funktionsfähig.
   try {
     const res = JsonExportService.exportFullJson({
+      // Sicherungen erstellen nur Rollen mit `backup.restore`; diese haben alle
+      // `billing.view` (Invariante geprüft in qs6-5-export-billing.test.ts).
+      includeBilling: true,
       exportedBy: "backup-service",
       avkk: snapshot.avkk ?? undefined,
       performanceStatements: snapshot.performanceStatements ?? undefined,

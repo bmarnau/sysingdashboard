@@ -36,7 +36,8 @@ function GroupNode({ node, depth }: { node: ExportGroupNode; depth: number }) {
       <div className="flex items-baseline gap-2" style={{ paddingLeft: `${depth * 12}px` }}>
         <span className="truncate font-medium">{node.label}</span>
         <span className="ml-auto whitespace-nowrap text-muted-foreground">
-          {formatHours(node.hours)} h · {formatCurrency(node.amount)}
+          {formatHours(node.hours)} h
+          {node.amount !== undefined && <> · {formatCurrency(node.amount)}</>}
         </span>
       </div>
       {node.children.length > 0 && (
@@ -119,8 +120,12 @@ export function ExportSummaryPanels({
           <dd>{formatHours(exportData.summary.billableHours)} h</dd>
           <dt className="text-muted-foreground">Nicht abrechnungsfähig</dt>
           <dd>{formatHours(exportData.summary.nonBillableHours)} h</dd>
-          <dt className="text-muted-foreground">Gesamtbetrag</dt>
-          <dd className="font-semibold">{formatCurrency(exportData.summary.totalAmount)}</dd>
+          {exportData.summary.totalAmount !== undefined && (
+            <>
+              <dt className="text-muted-foreground">Gesamtbetrag</dt>
+              <dd className="font-semibold">{formatCurrency(exportData.summary.totalAmount)}</dd>
+            </>
+          )}
         </dl>
         {exportData.groups.length > 0 && (
           <details className="mt-3">
