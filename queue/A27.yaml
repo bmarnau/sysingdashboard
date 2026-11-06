@@ -1,0 +1,17 @@
+id: A27
+titel: 'QS-06 Gates G07, G08, G09: Konflikt in #282/#283 lösen, Engineer-Befunde in #283 beheben'
+art: code-pr
+gate: vor Publish
+abhaengig_von: []
+ziel: 'PR 283 (QS6-5 Exporte) mergefähig machen: Konflikt in docs/CURRENT-STATUS.md auflösen (283 enthält 282) und die beiden Engineer-Befunde im selben PR beheben (Owner-Entscheidung D2, 2026-11-06). F-QS6-ENG-01: Tätigkeitsdialog zeigt dem Engineer Stundensatz und Betrag (src/components/dashboard/dialogs/ActivityDialog.tsx:33, :134-146). F-QS6-ENG-02: JSON-Backup enthält hourlyRate (src/routes/_authenticated/dashboard.tsx:335-352, :1168).'
+schritte:
+- Zustand von 283 und 282 per REST prüfen (mergeable, CI, Head). Basis main 7dc4699d.
+- 'Konflikt in docs/CURRENT-STATUS.md lösen: Einträge beider Seiten behalten, chronologisch, keine Aussage von main streichen; vermerken, dass 278 und 287 gemergt sind. Kein Force-Push; main in den Branch mergen.'
+- 'G08: Der Tätigkeitsdialog zeigt ohne billing.view weder Stundensatz noch Betrag (Felder entfallen, nicht als 0 darstellen). Komponententest je Rolle: ohne Recht Engineer, Viewer, Customer, Kiosk; mit Recht Systemadministrator, Administrator, Teamlead, Projektmanager.'
+- 'G09: JSON-Export und Backup enthalten ohne billing.view keinen hourlyRate. Import darf das Feld weiter lesen (Rückwärtskompatibilität prüfen). Test dazu.'
+- Widerspruch in CHANGELOG.md:18 und Handbuchtext zu Engineer und Beträgen auflösen, soweit der Code dies ändert.
+- npm test, Lint, docs:check, Prettier; CI 15/15 auf dem exakten Head.
+- Bericht reports/A27-BERICHT.md mit Befund, Änderung, Tests und YAML-Block mit Reifegrad, Projektstatus, Offene_Fragen, Roadmap.
+nachweis: Bericht reports/A27-BERICHT.md; PR 283 (Draft), mergeable, CI 15/15 auf dem Head.
+grenzen: Kein Merge, kein Publish, keine Datenänderung. PR 283 bleibt Draft bis zur Freigabe des Owners. Die Engineer-Abnahme (G10) ist ein eigener Schritt und wird hier nicht behauptet. Nichts nach main, solange Lovable schreibende Aufträge ausführt.
+status: bereit

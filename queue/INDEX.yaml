@@ -1,4 +1,4 @@
-stand: 2026-11-06 07:23
+stand: 2026-11-06 08:40
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -183,6 +183,31 @@ auftraege:
   status: bereit
   abhaengig_von:
   - A23
+- id: A27
+  titel: 'QS-06 Gates G07, G08, G09: Konflikt in #282/#283 lösen, Engineer-Befunde in #283 beheben'
+  art: code-pr
+  gate: vor Publish
+  status: bereit
+  abhaengig_von: []
+- id: A28
+  titel: Publish-Runbook und Owner-Entscheidungen D3, D4, D5 dokumentieren
+  art: doku-pr
+  gate: vor Publish
+  status: bereit
+  abhaengig_von:
+  - A23
+- id: A29
+  titel: Nachweis G19 (PR 278) und lesende Prüfung QS-01 B/C und Migrationsanwendung
+  art: doku-pr
+  gate: vor Publish
+  status: bereit
+  abhaengig_von: []
+- id: A30
+  titel: 'Plan: lokale Restore-Probe im Docker-Container (R-14, G03, Minimalprobe S1 bis S4)'
+  art: plan-dann-pr
+  gate: vor Publish
+  status: bereit
+  abhaengig_von: []
 entscheidungen_owner:
 - 2026-11-05 Version 1.70.0 bleibt
 - 2026-11-05 Demodaten Verschiebung in ganzen Tagen
@@ -197,3 +222,4 @@ entscheidungen_owner:
 - '2026-11-06 Projektdoku: A23 Nachtrag im Tagesbündel (bereit), A24 automatische PR-Prüfung (geplant); Höchstbestand dadurch überschritten, Owner-Entscheidung 1'
 - '2026-11-06 Owner: geordnete Pause gegen 07:00; Pausenabschluss als Auftrag A25 (startet nicht vor 06:45)'
 - '2026-11-06 Owner: Roadmap-Neubewertung als A26 nach der Pause (nach A23)'
+- '2026-11-06 Owner: Publish-Plan 1.70.0; D1 Restore-Probe minimal lokal in Docker (Export per lesendem Datenauftrag), D2 Engineer-Befunde G08 und G09 in PR 283, D3 zod 3 befristet akzeptieren, D4 QS6-4 schließen, D5 types.ts als Go-Ausnahme; Aufträge A27 bis A30'

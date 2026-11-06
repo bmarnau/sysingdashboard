@@ -1,0 +1,14 @@
+id: A29
+titel: Nachweis G19 (PR 278) und lesende Prüfung QS-01 B/C und Migrationsanwendung
+art: doku-pr
+gate: vor Publish
+abhaengig_von: []
+ziel: 'Zwei Lücken schließen: (1) die Vorschau-Prüfung von PR 278 durch den Owner am 2026-11-06 im Nachweisregister ablegen (G19); (2) lesend klären, ob QS-01 Migration B (Bootstrap-Admin) und C (Default-Privilegien) angewendet sind und was bei offener Selbstregistrierung für die veröffentlichte App gilt.'
+schritte:
+- 'docs/NACHWEISE.yaml: nächste freie ID prüfen (EV-0006 ist für den Kiosk-Datenauftrag als Entwurf reserviert). Eintrag zur Vorschau-Prüfung von PR 278: Umgebung Lovable-Vorschau, Branch fix/react-pdf-css-url, Prüfer Owner, Datum 2026-11-06, Beleg Screenshots im Chat. Nur festhalten, was die Screenshots zeigen: Vorschau war zunächst leer und nach Wartezeit vollständig; Dialog Export mit PDF-Vorschau (Leistungsnachweis) lädt; Textebene und Textauswahl funktionieren; Konsole im App-Rahmen ohne Meldung zu devSourcemap. Einschränkungen: Netzwerk-Reiter, Formularfelder und Link nicht geprüft.'
+- 'Lesend aus Code und Doku (keine Live-Abfrage): Welche QS-01-Migrationen liegen in supabase/migrations, welche gelten laut Berichten und Datenaufträgen als angewendet (Beleg je Migration), Stand von Bootstrap-Admin und Default-Rechten. Selbstregistrierung und E-Mail-Bestätigung: Was kann ein fremdes Konto in der veröffentlichten App sehen oder tun?'
+- 'Ob Lovable Migrationen aus dem Repository beim Publish anwendet: aus Doku und Support-Antworten belegen; sonst als Frage für den Lese-Prompt (A28) vormerken.'
+- Bericht reports/A29-BERICHT.md mit Befundtabelle und Empfehlung, ob ein zusätzliches Gate G23 (QS-01 B/C vor Publish) nötig ist.
+nachweis: Bericht reports/A29-BERICHT.md; Eintrag in docs/NACHWEISE.yaml im Tagesbündel (Draft 286).
+grenzen: Nur Doku und Lesen. Keine Live-Abfrage, keine Datenänderung, keine Zugangsdaten. Nachweis nur mit Beleg, nichts über die Screenshots hinaus behaupten. Kein Merge, kein Publish.
+status: bereit

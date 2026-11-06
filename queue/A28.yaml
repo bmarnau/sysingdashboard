@@ -1,0 +1,18 @@
+id: A28
+titel: Publish-Runbook und Owner-Entscheidungen D3, D4, D5 dokumentieren
+art: doku-pr
+gate: vor Publish
+abhaengig_von:
+- A23
+ziel: 'Den Publish-Plan 1.70.0 als versionierte Doku ablegen und drei Owner-Entscheidungen vom 2026-11-06 mit Beleg festschreiben: D3 zod 3 befristet akzeptieren (G13), D4 QS6-4 als kein Serverbefund schließen (G06), D5 types.ts als Go-Ausnahme (G02).'
+schritte:
+- 'docs/PUBLISH-PLAN.md anlegen: Phasen P0 bis P5 (Entscheidungen, Code-Stau, Restore-Probe, Vorbereitung, Go und Publish, Nachlauf), Muss-Gates (G01 bis G10, G13, G15, G17, G19), Anforderungen mit muss/sollte (Restore-Probe getrennt von der Produktion; Rücknahme vor dem Go belegt; Schreibpause für Lovable zwischen Re-check und Publish; Datenexport am Go-Tag höchstens 24 Stunden alt; Smoke-Test N1 bis N5; Bundle ohne Broker-Kennungen und TanStack ab 1.168.60; Rücknahme bei Fehlschlag innerhalb von 60 Minuten eingeleitet), Terminlage (Go frühestens KW 48; nicht in die Nacht zum 01.12., Demodaten-UTC-Fehlerbild), Rollen. Ablauf als Mermaid.'
+- 'D3: Risikoakzeptanz zod 3.25.76 befristet bis nach dem Publish. Eintrag im Risikoregister (RISIKOREGISTER.yaml und .md) und im BACKLOG (Migration auf zod 4.6.6, 8 bis 16 Stunden, nach dem Publish). G13 mit Beleg Owner-Entscheidung 2026-11-06.'
+- 'D4: docs/QS-06-VIEWER-ABRECHNUNG.md: QS6-4 als kein Serverbefund schließen (Verweis docs/BERICHT-QS6-4-ANALYSE.md, A01). In docs/MERGE-CHECKLISTE-GOLDEN-GATE.md den Smoke-Test um eine Netzwerkprüfung mit Viewer-Konto erweitern (Antwort der Projektion ohne Felder hourly, rate, amount). G06 mit Beleg.'
+- 'D5: docs/LOVABLE-PUBLISH-PRUEFUNG.md, Go-Kriterien: Abweichung ausschließlich types.ts (+5 Zeilen, Block __InternalSupabase, PostgrestVersion 14.5) zulässig; jede weitere Abweichung bleibt No-Go. G02 mit Beleg.'
+- 'Lese-Prompt am Ziel-Commit um zwei Fragen ergänzen: Werden Migrationen aus supabase/migrations beim Publish oder Sync angewendet (QS-01 Migration A 1ed6b920, FK cefa25aa)? Wie ist die veröffentlichte App erreichbar (öffentlich, Selbstregistrierung)?'
+- Tracker (fortschritt), CURRENT-STATUS, ENTWICKLUNGSTAGEBUCH, BACKLOG im Tagesbündel (Draft 286) nachziehen; npm run docs:check, docs:project, Prettier.
+- Bericht reports/A28-BERICHT.md.
+nachweis: Bericht reports/A28-BERICHT.md; Doku im Tagesbündel (Draft 286), CI 15/15.
+grenzen: Nur Doku. Entscheidungen nur mit Datum und Owner als Quelle. Kein Gate als erfüllt melden, das nur dokumentiert, aber nicht belegt ist (G02, G06 und G13 gelten mit dem Beleg Entscheidung des Owners). Kein Merge, kein Publish.
+status: bereit

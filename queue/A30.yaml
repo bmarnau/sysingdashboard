@@ -1,0 +1,14 @@
+id: A30
+titel: 'Plan: lokale Restore-Probe im Docker-Container (R-14, G03, Minimalprobe S1 bis S4)'
+art: plan-dann-pr
+gate: vor Publish
+abhaengig_von: []
+ziel: 'Owner-Entscheidung D1 und D1a (2026-11-06): minimale Restore-Probe, Wiederherstellung lokal in einem Docker-Container, Export per lesendem Datenauftrag nach ADR-0037, Ausführung durch den Owner über den Lovable-Connector. Dieser Auftrag liefert nur den Plan und die Entscheidungsvorlage.'
+schritte:
+- 'docs/PLAN-RESTORE-PROBE-LOKAL.md: Ziel, Abgrenzung (S5 Domain, Auth-Provider und Hosting lokal nicht belegbar, bleibt dokumentierte Lücke), Umgebung (Docker, Postgres-Version passend zur Live-Datenbank, Supabase lokal oder reines Postgres mit Auth-Schema; Entscheidung begründen), Eingänge (Schema aus supabase/migrations, Daten aus dem Lese-Export), Stufen S1 bis S4 mit Abnahmekriterien (Zeilenzahlen je Tabelle, Stichproben, audit_log vollständig, Auth-Nutzer), Rollenabnahme (App lokal gegen die Probe-Datenbank, Anmeldung je Rolle), Dauer je Schritt, Protokollvorlage für EV-0004.'
+- 'Entwurf des lesenden Datenauftrags (ADR-0037): nur SELECT, Tabellenliste, Format, Prüfsummen, keine Geheimnisse. Offen markieren, ob Auth-Nutzer samt Passwort-Hashes exportierbar sind; sonst Konten in der Probe neu anlegen. Den Auftrag führt der Owner aus, Claude Code führt keinen Datenauftrag aus.'
+- 'Offene Fragen und Risiken ausweisen: Export von Schema und Auth-Daten aus Lovable Cloud, Versionsunterschiede, Aufwand in Stunden (Gate-Bericht schätzt G03 mit 8 bis 32 Stunden).'
+- Bericht reports/A30-BERICHT.md mit Plan, Aufwand, Risiken und Entscheidungsvorlage; Code und Skripte erst nach Freigabe.
+nachweis: Plan-Dokument im Draft-PR (oder im Tagesbündel), Bericht reports/A30-BERICHT.md.
+grenzen: Nur Plan. Nichts ausführen, was die Produktion berührt. Keine Zugangsdaten in Dateien. Kein Datenauftrag ausführen, kein Merge, kein Publish. Alle Pfade außerhalb von OneDrive (C:\dev).
+status: bereit
