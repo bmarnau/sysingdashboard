@@ -164,5 +164,9 @@
     "vitest": "^4.1.9",
     "vitest-axe": "^0.1.0",
     "yaml": "^2.9.0"
+  },
+  "overrides": {
+    "dompurify": "3.4.17",
+    "shell-quote": "1.12.0"
   }
 }
