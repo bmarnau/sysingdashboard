@@ -2,16 +2,15 @@ id: A05
 titel: Engineer-Abnahme (QS-06) planen
 art: plan-dann-pr
 gate: QS-06
-abhaengig_von:
-- A01
+abhaengig_von: []
 ziel: Rolle Engineer (alex@, sam@) wie Admin und Viewer prüfen, möglichst automatisiert.
 schritte:
-- 'Prüfpunkte aus EV-0005 für Engineer ableiten: Startseite, Tab-Leiste, Projektdetail, Projektbericht, Tätigkeiten,
-  Abrechnung, Export.'
+- 'Prüfpunkte aus EV-0005 für Engineer ableiten: Startseite, Tab-Leiste, Projektdetail, Projektbericht, Tätigkeiten, Abrechnung,
+  Export.'
 - Prüfen, ob die vorhandenen E2E-Tests (e2e/specs) eine Rollenmatrix für billing.view abdecken. Lücken benennen.
-- 'Vorschlag: E2E-Test je Rolle (Admin, Teamleiter, Projektmanager mit Beträgen; Engineer, Viewer, Customer ohne).
-  Aufwand und Risiko.'
+- 'Vorschlag: E2E-Test je Rolle (Admin, Teamleiter, Projektmanager mit Beträgen; Engineer, Viewer, Customer ohne). Aufwand
+  und Risiko.'
 - Zusätzlich Handliste für den Owner (Schritt für Schritt), falls ein E2E-Test nicht möglich ist.
 nachweis: Plan in docs/QS-06-VIEWER-ABRECHNUNG.md ergänzen; Testfälle benennen.
 grenzen: Erst Plan, Umsetzung nach Freigabe. Keine Testkonten am Live-System anlegen.
-status: geplant
+status: bereit

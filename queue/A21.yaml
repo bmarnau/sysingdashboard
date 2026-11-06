@@ -1,0 +1,20 @@
+id: A21
+titel: 'Publish-Gate-Bericht: alle Bedingungen vor dem ersten Publish mit Beleg'
+art: doku-pr
+gate: nein
+abhaengig_von: []
+ziel: Eine belegte Übersicht, was vor dem Publish von 1.70.0 noch fehlt, damit der Owner entscheiden kann. Keine Freigabe
+  aussprechen.
+schritte:
+- Lies docs/LOVABLE-PUBLISH-PRUEFUNG.md, docs/MERGE-CHECKLISTE-GOLDEN-GATE.md, Tracker, RISIKOREGISTER, die Berichte A01 bis
+  A03, A15, A16 aus ops/reports und die PR-Stände (282, 283, 278) per gh.
+- 'Tabelle je Gate: Gate, Quelle der Forderung, Stand (erfüllt, in PR, offen, extern), Beleg (PR, Commit, Bericht), Verantwortlicher,
+  Aufwand. Mindestens: R-07 Publish-Quelle und Auth-Broker, R-14 Datenexport und Restore-Probe, QS6-4, QS6-5, K1 und K2, TanStack-Befund
+  im veröffentlichten Stand 1.69.0, Kiosk-Datenauftrag, Handbuch und CHANGELOG, Tag v1.70.0, Lovable-Sync, Smoke-Test nach
+  Publish, Rückfall.'
+- Mermaid-Diagramm der Abhängigkeiten und der kritische Pfad. Schätzung der Dauer mit Unsicherheit, getrennt nach Teilen,
+  die der Owner oder Lovable bestimmen.
+- Keine Aussage "bestanden" ohne Beleg; was nicht ermittelbar ist, so kennzeichnen.
+nachweis: docs/PUBLISH-GATE-BERICHT.md in einem Draft-PR (CI 15/15) und reports/A21-BERICHT.md.
+grenzen: Kein Publish, kein Tag, keine Freigabe. Nur Doku.
+status: bereit

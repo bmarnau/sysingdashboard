@@ -1,0 +1,34 @@
+id: A17
+titel: Datenauftrag Kiosk-Konto korrigieren (Weg B) und Kiosk-Befunde analysieren
+art: doku-pr
+gate: nein
+abhaengig_von: []
+ziel: docs/DATENAUFTRAG-KIOSK-KONTO.md an den tatsächlichen Ablauf anpassen und drei Beobachtungen vom 05.11. nur lesend klären.
+schritte:
+- 'Befund: Das Löschen von kiosk@ (UID 35a51562-30b6-403c-adfa-566c575d1244) in der Auth-Verwaltung schlug am 05.11. fehl
+  ("still linked to data"). Ursache laut Planer: audit_log.actor_id REFERENCES auth.users(id) ohne ON DELETE (20260717041306_...sql:133),
+  der Trigger handle_new_user schreibt auth.bootstrap mit actor_id = NEW.id (20260720031101_...sql:43-50). Bitte unabhängig
+  bestätigen oder widerlegen, mit Dateien und Zeilen.'
+- 'Datenauftrag korrigieren: Weg A (Konto löschen, neu anlegen) ist wegen audit_log nicht ausführbar. Dokumentiere Weg B:
+  neues Konto anzeige@ (Alias auf info@) über Backend-Administration "Kiosk-Konto anlegen" mit Rolle kiosk, altes Konto kiosk@
+  später archivieren, bm@ erst danach. Annahme "auth.bootstrap bleibt nach dem Löschen" streichen. Die Konten stehen nur mit
+  dem Teil vor dem @ im Dokument. Die neue UID trägt der Owner ein (Feld offen lassen).'
+- 'Lesen, F-KK-01: Warum zeigt /kiosk?mode=internal mit der Rolle kiosk die Kennzeichnung "INTERNE DATEN" und "Kiosk-Daten
+  konnten nicht geladen werden"? Wird die Anfrage serverseitig wegen fehlendem project.controlling.view abgelehnt, oder liegt
+  ein technischer Fehler vor? Empfehlung: Rolle kiosk bleibt in der Demo-Anzeige oder erhält eine klare Meldung (Aufwand schätzen).'
+- 'Lesen, Rollenwiderspruch: Die Kontenliste der Backend-Administration zeigt bm@ mit Rolle kiosk, die Benutzerliste zeigt
+  bm@ als System-Administrator (Info-Kiosk). Welche Tabelle und Abfrage liefert jede Liste? Wo kann der Widerspruch entstehen?
+  Wirkt er auf Schritt (e) und auf protect_last_sysadmin_profile?'
+- 'Lesen, deleteUser: Prüfe, ob der Aufruf admin.auth.admin.deleteUser in src/lib/admin/auth-accounts.functions.ts (um Zeile
+  172) im Fehlerfall von "Kiosk-Konto anlegen" ebenfalls an audit_log scheitert und was dann geschieht (Konto bleibt halb
+  angelegt?).'
+- 'Prüfliste im Datenauftrag nachführen (Stand Owner-Beobachtung 05.11.): KK-02 bestanden, KK-03 Abweichung F-KK-01 (nicht
+  blockierend), KK-04 bestanden, KK-05 bestanden (geringe Aussagekraft ohne Demodaten), KK-07 dokumentiert, KK-01 und KK-08
+  ohne Beleg, KK-06 läuft (Owner meldet nach einer Stunde Leerlauf). Nichts als bestanden eintragen, was nur eine Beobachtung
+  ohne Screenshot ist, ohne "Beobachtung Owner" zu vermerken.'
+- Tracker (fortschritt), CURRENT-STATUS, ENTWICKLUNGSTAGEBUCH, BACKLOG; Nachweis nur als Entwurf in NACHWEISE.yaml (EV-0006,
+  Status offen, bis KK-06 gemeldet ist).
+nachweis: Draft-PR mit CI 15/15, Bericht reports/A17-BERICHT.md mit Dateien und Zeilen zu allen vier Lesefragen.
+grenzen: Nur lesen und Doku ändern. Keine Änderung an audit_log, am Schema oder am Live-System. Keine Konten ändern, kein
+  Löschen. Keine Zugangsdaten.
+status: bereit

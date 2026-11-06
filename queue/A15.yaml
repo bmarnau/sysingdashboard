@@ -21,4 +21,4 @@ schritte:
 nachweis: PR als Draft mit CI 15/15, Testausgaben je Rolle, Liste der geänderten Dateien; Bericht reports/A15-BERICHT.md.
 grenzen: 'Kein Merge, kein Publish, keine Datenänderung am Live-System. Keine Änderungen an Rollenmatrix oder Datenbank. Lovable-Hinweis
   beachten: kein Merge nach main, solange Lovable schreibt.'
-status: bereit
+status: erledigt

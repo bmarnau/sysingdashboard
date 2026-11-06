@@ -1,0 +1,17 @@
+id: A20
+titel: 'Audit-Sammelbewertung: die 58 weiteren bun-audit-Funde'
+art: lesen
+gate: nein
+abhaengig_von: []
+ziel: Die in A02 nicht bewerteten 58 Funde (25 hoch, 24 mittel, 9 niedrig; u. a. sharp 2 x hoch) einordnen und priorisieren.
+schritte:
+- bun audit auf aktuellem main ausführen. Lies docs/BERICHT-AUDIT-2026-11-04.md.
+- 'Je Fund oder Fundgruppe: Paket, Pfad (Laufzeit Client, Laufzeit Server, nur Build/Test/Dev), Advisory, behobene Version,
+  Erreichbarkeit in dieser App (belegt mit Dateien und Zeilen oder "nicht ermittelbar").'
+- 'Priorisierung in vier Klassen: vor Publish, nach Publish, Dev-only beobachten, ignorieren (begründet). Je Klasse Aufwand
+  in Stunden und Prüfumfang.'
+- Ergebnis als docs/BERICHT-AUDIT-SAMMELBEWERTUNG.md mit YAML-Tabelle und Backlog-Eintrag. Bezug zu den Standard-Regeln LG-05
+  bis LG-08 (keine ungeprüften Paketänderungen durch die Plattform).
+nachweis: Bericht reports/A20-BERICHT.md und Doku-PR (Draft) mit CI 15/15.
+grenzen: Nur lesen und Bericht. Keine Pakete ändern, keine Lockfiles anfassen.
+status: bereit

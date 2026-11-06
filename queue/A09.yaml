@@ -3,14 +3,14 @@ titel: 'R-04: Zugänge und Notfallkonto dokumentieren'
 art: doku-pr
 gate: vor Publish
 abhaengig_von:
-- A07
+- A19
 ziel: 'Bus-Faktor 1 mindern: zweite berechtigte Person und Notfallkonto je Dienst beschreiben.'
 schritte:
-- 'Dienste auflisten (GitHub, Lovable, Lovable Cloud/Backend, Domain/Mail, TeamDrive, OneDrive). Je Dienst: Konto,
-  Wiederherstellungsadresse, Notfallkonto (break-glass), zweite Person (Rolle benennbar, Person offen).'
+- 'Dienste auflisten (GitHub, Lovable, Lovable Cloud/Backend, Domain/Mail, TeamDrive, OneDrive). Je Dienst: Konto, Wiederherstellungsadresse,
+  Notfallkonto (break-glass), zweite Person (Rolle benennbar, Person offen).'
 - Mail-Aliase festhalten, z. B. kiosk@ als Alias auf info@ (Leser nur Owner).
 - Kein Passwort, kein Token, keine Wiederherstellungscodes in der Datei. Nur Orte und Zuständigkeiten.
 - Prüfliste für die Notfallmappe (REST-20, REST-21; N7, N9).
 nachweis: docs/ZUGAENGE-UND-NOTFALLKONTO.md; Verweis im Risikoregister R-04.
 grenzen: Keine Zugangsdaten. Offene Felder als 'offen' markieren.
-status: geplant
+status: bereit

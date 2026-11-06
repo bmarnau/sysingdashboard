@@ -1,0 +1,17 @@
+id: A19
+titel: 'A07 abschließen: Notfallhandbuch und Standard Lovable-Grenzen in docs/ ablegen'
+art: doku-pr
+gate: nein
+abhaengig_von: []
+ziel: Die zwei in A07 fehlenden Entwürfe sind jetzt als Dateien vorhanden und werden versionierbar abgelegt.
+schritte:
+- 'Quellen (Entwürfe vom 03.11.): C:\Users\bmarn\Downloads\NOTFALL-HANDBUCH.md und C:\Users\bmarn\Downloads\STANDARD-ENTWURF-LOVABLE-GRENZEN.md.
+  Beide lesen, auf Zugangsdaten prüfen (Treffer nur als Wörter wie Passwort-Tresor erlaubt), Prettier-Prüfung.'
+- Ablegen als docs/NOTFALL-HANDBUCH.md (so nennt es das Handbuch selbst) und docs/standards/STANDARD-LOVABLE-GRENZEN.md. Kopfzeile
+  Status Entwurf beibehalten, nichts inhaltlich ändern. Offene Punkte im Kopf (zu belegen) stehen lassen.
+- 'docs/ARTEFAKTE.yaml: beide Einträge von "nicht bereitgestellt" auf bereitgestellt (Entwurf) mit Pfad und Datum umstellen;
+  Verweise im Notfallhandbuch (Standard Wiederherstellbarkeit) auf Pfade prüfen und Abweichungen berichten, nicht still korrigieren.'
+- Tracker (fortschritt), CURRENT-STATUS, ENTWICKLUNGSTAGEBUCH, BACKLOG. Gebündelt im Tagespaket der Doku-PRs (ein PR).
+nachweis: Draft-PR mit CI 15/15; Bericht reports/A19-BERICHT.md mit Dateigrößen und Prüfung auf Zugangsdaten.
+grenzen: Nur Doku. Standards erst nach der ersten bestandenen Restore-Probe nach bmarnau-standards übernehmen. Keine Zugangsdaten.
+status: bereit

@@ -1,0 +1,18 @@
+id: A18
+titel: 'Gemeinsamer Ladeweg für alle Demodaten inkl. Kiosk: Analyse und Vorschlag'
+art: lesen
+gate: nein
+abhaengig_von: []
+ziel: 'Owner-Wunsch 04./05.11.: Kiosk-Demodaten sollen wie alle Demodaten behandelt werden (ein Ladeweg, jeden Monat aktuell).
+  Ist-Zustand und Umsetzungsvorschlag.'
+schritte:
+- 'Ist: Wie werden die Demodaten je Gerät und Browser geladen (Service → Demo-Datensatz…, buildDemoDataset, localStorage-Schlüssel
+  je Konto), wie der Kiosk-Datensatz (Version 1.1.0)? Wer darf laden (users.manage), warum kann die Rolle kiosk es nicht?'
+- 'Soll: ein gemeinsamer Ladeweg, der auch auf einem Gerät mit Rolle kiosk den synthetischen Datensatz ohne Adminrechte bereitstellt
+  (ohne Live-Daten und ohne Beträge). Varianten mit Aufwand in Stunden, Rechtefolgen, Test (KK-07).'
+- 'Zeitbezug: Wie werden die Demodaten zeitlich aktuell gehalten (Verschiebung in ganzen Tagen, Vielfaches von 7), lokal beim
+  Laden relativ, Live-Demodaten monatlich per Datenauftrag (A11)? Kiosk einbeziehen.'
+- Empfehlung mit Reihenfolge und Abgrenzung zu DM-01 bis DM-14 und ZP-01 bis ZP-06.
+nachweis: Bericht reports/A18-BERICHT.md mit Dateien und Zeilen, Varianten als YAML-Tabelle.
+grenzen: Nur lesen. Keine Codeänderung, kein PR. Nach dem Publish ist Paket 2a/2b geplant (Owner-Entscheidung 05.11.).
+status: bereit
