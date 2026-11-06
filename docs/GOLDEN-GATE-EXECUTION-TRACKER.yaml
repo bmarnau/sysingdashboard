@@ -674,6 +674,12 @@ risiken:
 fortschritt:
   - datum: 2026-11-06
     ereignis: >-
+      A08: ADR-0042 „RTO, RPO und Schutzklassen“ als Entwurf (Status Proposed, nichts beschlossen): je Schutzklasse drei Optionen, Bewertung N1 bis N10,
+      Empfehlung normal N-B, hoch H-B, kritisch K-A; Entscheidungsfelder D1 bis D10 offen. Widersprüche benannt (Probe-Umfang S1 bis S6 oder S4, Skala 1 bis 3
+      gegen 1 bis 5 im Risikoregister, Bezug R-10).
+    beleg: docs/ADR/0042-rto-rpo-schutzklassen.md, docs/ADR/README.md, ops/reports reports/A08-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
       A21: Publish-Gate-Bericht (nur lesen, keine Freigabe). 22 Gates: 1 erfüllt (TD-01, Tracker widersprüchlich), 4 in PR (282, 283, 285, 287), 1 extern
       (TanStack im veröffentlichten Stand 1.69.0), 16 offen. Kritischer Pfad R-14 (Umfang, zweite Umgebung, Datenexport, Restore-Probe). Schätzung bis Tag
       v1.70.0: 1 bis 6 Wochen, wahrscheinlich 3. Widersprüche: CHANGELOG 1.70.0 gegen F-QS6-ENG-01; Standard Wiederherstellbarkeit :59 (S1 bis S6) gegen :194 (mindestens S4).

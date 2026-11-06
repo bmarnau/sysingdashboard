@@ -4,6 +4,8 @@ Stand: 2026-11-06
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+A08 (2026-11-06): ADR-0042 (RTO, RPO, Schutzklassen) liegt als Entwurf vor; die Entscheidungsfelder D1 bis D10 sind offen und bestimmen den Umfang von R-14.
+
 A21 (2026-11-06): Publish-Gate-Bericht `docs/PUBLISH-GATE-BERICHT.md` – 16 von 22 Gates offen, kritischer Pfad R-14 (Restore-Probe); neun Entscheidungen des Owners nötig (Abschnitt Offene Fragen). Publish bleibt No-Go.
 
 A20 (2026-11-06): Nach PR 285 und 287 bleiben 54 Audit-Funde ohne kritischen; vor dem Publish ist nur eine Entscheidung zu zod 3 nötig (Risikoakzeptanz oder Migration), keine Paketänderung (`docs/BERICHT-AUDIT-SAMMELBEWERTUNG.md`).
