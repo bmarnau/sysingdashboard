@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-06 · Dashboard-Version 1.70.0
 
+## 2026-11-06 — Engineer-Abnahme geplant, Lücke im Tätigkeitsdialog
+
+Für die Prüfung der Rolle Systemingenieur liegt ein Plan mit automatischen Tests je Rolle und einer Handliste vor. Dabei fiel auf, dass der Dialog zum Anlegen und Bearbeiten einer Tätigkeit Stundensatz und Betrag auch Systemingenieuren zeigt, die keine Beträge sehen sollen. Außerdem enthält die vollständige JSON-Sicherung Stundensätze für jede Rolle.
+
 ## 2026-11-06 — Notfallhandbuch in Git
 
 Das Notfallhandbuch und die Regeln für die Zusammenarbeit mit Lovable liegen jetzt als Entwurf im Repository und sind damit auch ohne Chat und ohne Lovable-Zugang lesbar. Für die Kiosk-Demodaten liegt ein Vorschlag vor: Das Anzeigegerät erzeugt den synthetischen Datensatz selbst, ohne dass ein Administrator ihn dort laden muss.

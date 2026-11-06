@@ -674,6 +674,12 @@ risiken:
 fortschritt:
   - datum: 2026-11-06
     ereignis: >-
+      A05: Plan Engineer-Abnahme QS-06 in docs/QS-06-VIEWER-ABRECHNUNG.md Abschnitt 6 (Prüfpunkte, E2E-Lücken, Testfälle QS6-E2E-01 bis -11, Handliste
+      QS6-ENG-01 bis -14; Aufwand 8 bis 12 h). Neue Befunde: F-QS6-ENG-01 (Tätigkeitsdialog zeigt dem Engineer Stundensatz und Betrag, kein billing.view-Gate,
+      ActivityDialog.tsx:33, :134-146) und F-QS6-ENG-02 (JSON-Backup enthält hourlyRate für jede Rolle). Umsetzung nach Freigabe.
+    beleg: docs/QS-06-VIEWER-ABRECHNUNG.md, src/components/dashboard/dialogs/ActivityDialog.tsx, ops/reports reports/A05-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
       A19: Notfallhandbuch (docs/NOTFALL-HANDBUCH.md) und Standard Lovable-Grenzen (docs/standards/STANDARD-LOVABLE-GRENZEN.md) als Entwurf abgelegt, Wortlaut
       unverändert, nur Prettier-Formatierung; keine Zugangsdaten. ARTEFAKTE.yaml umgestellt. Abweichungen im Handbuch gemeldet, nicht korrigiert: Grundlage heißt
       docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md, N2/N6/N10 nennen package-lock.json und npm ci (Repo nutzt bun.lock). A18 (Analyse Ladeweg Demodaten):
