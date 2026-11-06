@@ -4,6 +4,8 @@ Stand: 2026-11-06
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+A09 (2026-11-06): Kontenübersicht `docs/ZUGAENGE-UND-NOTFALLKONTO.md` (Entwurf, ohne Werte); zweite Person, Notfallkonto und Wiederherstellungsadressen sind für alle Dienste offen (R-04). Wiederanlaufpunkt: Warteschlange leer, Entscheidungen des Owners laut `docs/PUBLISH-GATE-BERICHT.md` (Offene Fragen), Merge-Freigaben 285, 287 und 286.
+
 A08 (2026-11-06): ADR-0042 (RTO, RPO, Schutzklassen) liegt als Entwurf vor; die Entscheidungsfelder D1 bis D10 sind offen und bestimmen den Umfang von R-14.
 
 A21 (2026-11-06): Publish-Gate-Bericht `docs/PUBLISH-GATE-BERICHT.md` – 16 von 22 Gates offen, kritischer Pfad R-14 (Restore-Probe); neun Entscheidungen des Owners nötig (Abschnitt Offene Fragen). Publish bleibt No-Go.

@@ -78,6 +78,14 @@ risiken:
     hinweis: >-
       2026-11-04: Datenauftrag Kiosk-Konto mit Abweichung von ADR-0037 (Owner gibt beide Stufen allein frei, nachträgliche Bestätigung durch eine zweite Person offen;
       docs/DATENAUFTRAG-KIOSK-KONTO.md). Mails an kiosk@ gehen nur an den Owner.
+      2026-11-06: Kontenübersicht ohne Werte in docs/ZUGAENGE-UND-NOTFALLKONTO.md (Entwurf, A09). Für keinen Dienst ist eine zweite Person oder ein Notfallkonto belegt;
+      Wiederherstellungsadressen offen. RTO nach ADR-0042 nur bei Verfügbarkeit des Owners.
+    verweise:
+      - docs/ZUGAENGE-UND-NOTFALLKONTO.md
+      - docs/NOTFALL-HANDBUCH.md (Abschnitte 3, 4, 6, 7; N7, N9)
+      - docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md (REST-20, REST-21)
+      - docs/ADR/0042-rto-rpo-schutzklassen.md (RTO-Vorbehalt)
+      - docs/DATENAUFTRAG-KIOSK-KONTO.md
   - id: R-05
     kategorie: Qualität
     w: 2

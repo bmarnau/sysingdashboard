@@ -674,6 +674,12 @@ risiken:
 fortschritt:
   - datum: 2026-11-06
     ereignis: >-
+      A09: Kontenübersicht ohne Werte docs/ZUGAENGE-UND-NOTFALLKONTO.md (Entwurf; 10 Dienste, Mail-Aliase, Prüfliste ZN-01 bis ZN-18). Für keinen Dienst ist eine
+      zweite Person, ein Notfallkonto oder eine Wiederherstellungsadresse belegt. Risikoregister R-04 um Hinweis und Verweise ergänzt, Bewertung unverändert.
+      Warteschlange: alle bereiten Aufträge (A16 bis A21, A05, A08, A09) abgearbeitet.
+    beleg: docs/ZUGAENGE-UND-NOTFALLKONTO.md, docs/RISIKOREGISTER.md, docs/RISIKOREGISTER.yaml, ops/reports reports/A09-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
       A08: ADR-0042 „RTO, RPO und Schutzklassen“ als Entwurf (Status Proposed, nichts beschlossen): je Schutzklasse drei Optionen, Bewertung N1 bis N10,
       Empfehlung normal N-B, hoch H-B, kritisch K-A; Entscheidungsfelder D1 bis D10 offen. Widersprüche benannt (Probe-Umfang S1 bis S6 oder S4, Skala 1 bis 3
       gegen 1 bis 5 im Risikoregister, Bezug R-10).

@@ -70,13 +70,15 @@ quadrantChart
 
 **Hinweis R-04 (2026-11-04):** Der Datenauftrag Kiosk-Konto weicht von ADR-0037 ab. Der Owner gibt beide Stufen allein frei; die nachträgliche Bestätigung durch eine zweite Person ist offen (`docs/DATENAUFTRAG-KIOSK-KONTO.md`). Mails an kiosk@ erreichen nur den Owner.
 
+**Hinweis R-04 (2026-11-06):** Zugänge, zweite berechtigte Person und Notfallkonto je Dienst stehen ohne Werte in `docs/ZUGAENGE-UND-NOTFALLKONTO.md` (Entwurf, A09; Prüfliste ZN-01 bis ZN-18, REST-20, REST-21, N7, N9). Stand: für keinen Dienst ist eine zweite Person oder ein Notfallkonto belegt; Wiederherstellungsadressen sind offen; Auth-Mails der App-Konten und der Aliase kiosk@ und anzeige@ erreichen nur das Postfach info@. RTO-Werte nach ADR-0042 gelten bis dahin nur bei Verfügbarkeit des Owners.
+
 **Funktionale Sicherheit:** R-02 (unwiderrufliche Migrationen), R-14 (Daten nicht wiederherstellbar nachgewiesen), L2-R1, L2-R2, L2-R3 und L2-R5 (falsche oder unberechtigte Anzeige im Cockpit). Gegenmaßnahmen sind die RED-Testmatrix und die Sicherheitstests aus U2 und U3 (Voraussetzung für Entscheidung E2).
 
 **Schwerpunkte der nächsten sieben Tage:**
 
 1. R-07/R-10: Nachfrage beim Lovable-Support am 2026-11-05; Publish bleibt No-Go.
 2. R-03/L2-R3/L2-R5: Sicherheitstests und RED-Fälle in U2 und U3 mit Beleg.
-3. R-04/R-11: Betreiberhoheit (BSF-06) als Konzept einplanen; Tempo nach drei L2-Schritten neu messen.
+3. R-04/R-11: Betreiberhoheit (BSF-06) als Konzept einplanen; zweite berechtigte Person benennen und offene Felder in `docs/ZUGAENGE-UND-NOTFALLKONTO.md` füllen; Tempo nach drei L2-Schritten neu messen.
 
 ## 5 Pflege
 
