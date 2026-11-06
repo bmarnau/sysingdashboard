@@ -674,6 +674,12 @@ risiken:
 fortschritt:
   - datum: 2026-11-06
     ereignis: >-
+      A20: Sammelbewertung bun audit (main 02cb3d28: 60 Funde; mit PR 287: 54, 0 kritisch). Nur zod@3.25.76 (GHSA-mrhx-c7xc-m3w5, hoch) liegt im
+      ausgelieferten Code (Server, nach Anmeldung); Klasse vor Publish: dokumentierte Entscheidung (Risikoakzeptanz oder Migration auf zod 4). vite und
+      launch-editor nach Publish per overrides; 38 Funde Dev-only beobachten, 7 ignorieren (nur Lint).
+    beleg: docs/BERICHT-AUDIT-SAMMELBEWERTUNG.md, ops/reports reports/A20-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
       A05: Plan Engineer-Abnahme QS-06 in docs/QS-06-VIEWER-ABRECHNUNG.md Abschnitt 6 (Prüfpunkte, E2E-Lücken, Testfälle QS6-E2E-01 bis -11, Handliste
       QS6-ENG-01 bis -14; Aufwand 8 bis 12 h). Neue Befunde: F-QS6-ENG-01 (Tätigkeitsdialog zeigt dem Engineer Stundensatz und Betrag, kein billing.view-Gate,
       ActivityDialog.tsx:33, :134-146) und F-QS6-ENG-02 (JSON-Backup enthält hourlyRate für jede Rolle). Umsetzung nach Freigabe.
