@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-05 · Dashboard-Version 1.70.0
+Stand: 2026-11-06 · Dashboard-Version 1.70.0
+
+## 2026-11-06 — Automatisches Aufräumen beim Sitzungsstart
+
+Claude Code räumt zu Beginn jeder Sitzung lokal auf: Branches, die schon in `main` gemergt sind, werden gelöscht, verwaiste Worktree-Einträge entfernt. Nichts davon betrifft den Server; Remote-Branches löscht weiter nur der Owner. Nicht eingecheckte Dateien werden gemeldet, aber nie gelöscht. Die Ausgaben lokaler Browsertests landen nicht mehr als offene Dateien im Arbeitsverzeichnis.
 
 ## 2026-11-05 — Teilautomatik: Analysen und Datenauftrag-Vorlage
 
