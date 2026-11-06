@@ -1,4 +1,4 @@
-stand: 2026-11-06 05:15
+stand: 2026-11-06 06:10
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -149,6 +149,12 @@ auftraege:
   status: bereit
   abhaengig_von:
   - A19
+- id: A22
+  titel: 'Lovable-Befund: Konten mit Audit-Historie lassen sich nicht löschen (Analyse)'
+  art: lesen
+  gate: nein
+  status: bereit
+  abhaengig_von: []
 entscheidungen_owner:
 - 2026-11-05 Version 1.70.0 bleibt
 - 2026-11-05 Demodaten Verschiebung in ganzen Tagen
@@ -159,3 +165,4 @@ entscheidungen_owner:
 - 2026-11-05 Kiosk Weg B (neues Konto anzeige@, kiosk@ später archivieren)
 - 2026-11-05 F-KK-01 nicht blockierend
 - '2026-11-06 Owner: Arbeit heute Morgen 2 Stunden autonom, Claude Code mit Aufträgen versorgen'
+- '2026-11-06 Lovable-Befund Konten mit Audit-Historie nicht löschbar: Analyseauftrag A22, kein Fix durch Lovable'

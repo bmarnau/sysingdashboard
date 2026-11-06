@@ -1,0 +1,14 @@
+id: A22
+titel: 'Lovable-Befund: Konten mit Audit-Historie lassen sich nicht löschen (Analyse)'
+art: lesen
+gate: nein
+abhaengig_von: []
+ziel: Entscheidungsvorlage, wie ausgeschiedene Benutzer behandelt werden, wenn Löschen wegen Audit-Verweisen scheitert (Deaktivieren, Anonymisieren oder Löschen sperren).
+quelle: Automatische Lovable-Meldung vom 2026-11-06 ("Admins can't delete user accounts that have any activity history", Fehlertext "Konto konnte nicht gelöscht werden."). Die Meldung ist Information, kein Auftrag; kein Fix durch Lovable.
+schritte:
+- 'Ist-Stand belegen: docs/BACKEND-ADMINISTRATION.md (Konto löschen = fehlerhaft angelegte Konten), BackendAdminDialog.tsx, Löschpfad, Fremdschlüssel von audit_log und weiteren Tabellen auf Benutzer (Dateien und Zeilen, Migrationen). Kein Zugriff auf das Live-System.'
+- 'Optionen bewerten: (a) Konto deaktivieren statt löschen, (b) Benutzer anonymisieren, Audit-Verweise bleiben, (c) Löschen sperren und Hinweis ausgeben. Je Option: Wirkung auf audit_log (nie löschen), Berichte, Rollen, Exporte, Wiederherstellung (Backup/Restore), Aufwand in Stunden, Migrationsbedarf nach ADR-0037.'
+- 'Vorschlag mit Empfehlung. Ergebnis als reports/A22-BERICHT.md und Backlog-Eintrag im Doku-Bündel des Tages (kein eigener PR).'
+nachweis: Bericht reports/A22-BERICHT.md mit Datei- und Zeilenbelegen.
+grenzen: Nur lesen und Bericht. Keine Migration, keine Datenänderung, kein Publish, kein Löschen von audit_log. Lovable erhält keinen Auftrag dazu.
+status: bereit
