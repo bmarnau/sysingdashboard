@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-06 · Dashboard-Version 1.70.0
 
+## 2026-11-06 — Sicherheitsfunde behoben, Kiosk-Konto neu geplant
+
+Die zwei kritischen Funde aus der Paketprüfung sind in zwei Entwürfen behoben (PDF-Bibliothek und ein Werkzeug des Entwicklungsservers); die CI ist grün, gemergt wird nach Freigabe. Das alte Kiosk-Konto lässt sich nicht löschen, weil das Änderungsprotokoll jedes Konto ab der Anlage festhält und nie geändert wird. Der Plan heißt jetzt: ein neues Anzeigekonto anlegen und die alten Konten archivieren. Dabei fiel auf, dass die Benutzerliste die Rolle Kiosk nicht anzeigen kann und stattdessen „System-Administrator“ zeigt.
+
 ## 2026-11-06 — Bestand offener Pull Requests
 
 Von zehn offenen Pull Requests sind fünf alte Entwürfe inzwischen vollständig durch neuere, gemergte Pakete ersetzt (Managementcockpit und Abrechnungsrechte). Sie können geschlossen werden, sobald der Owner zustimmt. Die PDF-Korrektur (#278) wartet nur noch auf die Prüfung in der Lovable-Vorschau. Zwei ältere Dokumentationsvorschläge (Kiosk-Schnittstelle, Management-Wallboard) brauchen eine Entscheidung.

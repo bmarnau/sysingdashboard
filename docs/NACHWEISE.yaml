@@ -2,7 +2,7 @@
 # Ein Eintrag je Nachweis: was geprüft wurde, womit, mit welchem Ergebnis und welchen Einschränkungen.
 # Konten nur mit lokalem Teil (zum Beispiel "alexa@"), keine vollständigen E-Mail-Adressen, keine Zugangsdaten.
 # EV-0001 bis EV-0004 am 2026-11-05 aus dem Entwurf des Owners übernommen (Auftrag A04) und gegen GitHub geprüft.
-stand: 2026-11-05
+stand: 2026-11-06
 nachweise:
   - id: EV-0001
     titel: L2 U7 QS-06 billing.view, Code gemergt
@@ -82,3 +82,18 @@ nachweise:
       - Kiosk als Anzeigemodus des Kontos bm@ (Rolle Systemadministrator) geprüft, nicht als eigenes Kiosk-Konto.
     befunde: [F-U7-03]
     beleg: Owner-Abnahme in der Lovable-Vorschau am 04.11.2026 (Meldung im Chat)
+  - id: EV-0006
+    titel: Kiosk-Konto Weg B, Prüfliste KK-01 bis KK-08 am Anzeigegerät (Entwurf)
+    datum: offen
+    umgebung: Anzeigegerät, veröffentlichte App oder Lovable-Vorschau (offen)
+    version: offen
+    bezug: [DATENAUFTRAG-KIOSK-KONTO, KK-01 bis KK-08, F-KK-01]
+    pruefer: Owner
+    art: manuelle Prüfung am Anzeigegerät
+    status: offen
+    ergebnis: offen
+    einschraenkungen:
+      - Entwurf; bleibt offen, bis KK-06 gemeldet und die Prüfliste mit anzeige@ wiederholt ist.
+      - Stand 2026-11-05 nur Beobachtungen des Owners ohne Screenshot; Konto der Beobachtung nicht belegt.
+    befunde: [F-KK-01]
+    beleg: offen

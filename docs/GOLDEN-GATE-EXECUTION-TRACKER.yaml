@@ -674,6 +674,18 @@ risiken:
 fortschritt:
   - datum: 2026-11-06
     ereignis: >-
+      A17: Weg A für das Kiosk-Konto ist nicht ausführbar (audit_log.actor_id ohne ON DELETE, handle_new_user schreibt auth.bootstrap; bestätigt). Datenauftrag
+      auf Weg B umgestellt (anzeige@ mit Rolle kiosk anlegen, kiosk@ und bm@ archivieren; Freigaben offen). Befunde: F-KK-01 ist eine Rechteablehnung,
+      Kennzeichnung aus URL-Parameter; bm@ hat sehr wahrscheinlich Rolle kiosk (Auswahlfeld der Benutzerliste ohne Option kiosk); Rückabwicklung von
+      „Kiosk-Konto anlegen“ scheitert still. EV-0006 als Entwurf.
+    beleg: docs/DATENAUFTRAG-KIOSK-KONTO.md, docs/NACHWEISE.yaml, ops/reports reports/A17-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
+      A16: K1 und K2 per overrides behoben, dompurify 3.4.17 (PR 285) und shell-quote 1.12.0 (PR 287, enthält 285), beide Draft mit CI 15/15. bun audit 60 → 54
+      Funde, 0 kritisch. Lokale E2E-Starttests (3) auch auf main rot.
+    beleg: PR 285, PR 287, ops/reports reports/A16-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
       PR-Bestand bewertet (nur lesen, Grundlage origin/main 34f20a3): #226, #231, #233, #234 und #222 inhaltlich auf main (Ersatz-PRs 262, 264, 266, 267,
       269, 272, 273), Empfehlung ersetzt und schließen; #278 mergen nach Vorschau-Prüfung (Plugin sysing:ensure-css-config auf main vorhanden);
       #155 und #124 Entscheidung des Owners. Keine PRs geschlossen oder kommentiert.
