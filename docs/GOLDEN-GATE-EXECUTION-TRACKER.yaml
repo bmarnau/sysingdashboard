@@ -674,6 +674,13 @@ risiken:
 fortschritt:
   - datum: 2026-11-06
     ereignis: >-
+      A19: Notfallhandbuch (docs/NOTFALL-HANDBUCH.md) und Standard Lovable-Grenzen (docs/standards/STANDARD-LOVABLE-GRENZEN.md) als Entwurf abgelegt, Wortlaut
+      unverändert, nur Prettier-Formatierung; keine Zugangsdaten. ARTEFAKTE.yaml umgestellt. Abweichungen im Handbuch gemeldet, nicht korrigiert: Grundlage heißt
+      docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md, N2/N6/N10 nennen package-lock.json und npm ci (Repo nutzt bun.lock). A18 (Analyse Ladeweg Demodaten):
+      Empfehlung Variante A (Kiosk-Datensatz aus eingebautem Generator) mit Paket 2b nach dem Publish.
+    beleg: docs/NOTFALL-HANDBUCH.md, docs/standards/STANDARD-LOVABLE-GRENZEN.md, docs/ARTEFAKTE.yaml, ops/reports reports/A18-BERICHT.md, reports/A19-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
       A17: Weg A für das Kiosk-Konto ist nicht ausführbar (audit_log.actor_id ohne ON DELETE, handle_new_user schreibt auth.bootstrap; bestätigt). Datenauftrag
       auf Weg B umgestellt (anzeige@ mit Rolle kiosk anlegen, kiosk@ und bm@ archivieren; Freigaben offen). Befunde: F-KK-01 ist eine Rechteablehnung,
       Kennzeichnung aus URL-Parameter; bm@ hat sehr wahrscheinlich Rolle kiosk (Auswahlfeld der Benutzerliste ohne Option kiosk); Rückabwicklung von

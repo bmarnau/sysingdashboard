@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-06 · Dashboard-Version 1.70.0
 
+## 2026-11-06 — Notfallhandbuch in Git
+
+Das Notfallhandbuch und die Regeln für die Zusammenarbeit mit Lovable liegen jetzt als Entwurf im Repository und sind damit auch ohne Chat und ohne Lovable-Zugang lesbar. Für die Kiosk-Demodaten liegt ein Vorschlag vor: Das Anzeigegerät erzeugt den synthetischen Datensatz selbst, ohne dass ein Administrator ihn dort laden muss.
+
 ## 2026-11-06 — Sicherheitsfunde behoben, Kiosk-Konto neu geplant
 
 Die zwei kritischen Funde aus der Paketprüfung sind in zwei Entwürfen behoben (PDF-Bibliothek und ein Werkzeug des Entwicklungsservers); die CI ist grün, gemergt wird nach Freigabe. Das alte Kiosk-Konto lässt sich nicht löschen, weil das Änderungsprotokoll jedes Konto ab der Anlage festhält und nie geändert wird. Der Plan heißt jetzt: ein neues Anzeigekonto anlegen und die alten Konten archivieren. Dabei fiel auf, dass die Benutzerliste die Rolle Kiosk nicht anzeigen kann und stattdessen „System-Administrator“ zeigt.

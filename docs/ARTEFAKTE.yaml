@@ -174,18 +174,19 @@ artefakte:
   - id: standard-lovable-grenzen
     titel: Standard Lovable-Grenzen (LG-01 bis LG-12)
     zweck: Plattformgrenzen Sync-Dialog, Credits, Plattformdateien, Publish-Quelle
-    ort: offen
-    art: kopie
-    in_git: false
-    hinweis: Datei nicht bereitgestellt (A07); Inhalte bisher nur in docs/BACKLOG.md
+    ort: docs/standards/STANDARD-LOVABLE-GRENZEN.md
+    art: git
+    in_git: true
+    stand: 2026-11-03
+    hinweis: bereitgestellt (Entwurf) am 2026-11-06 (A19); Übernahme in bmarnau-standards erst nach bestandener Restore-Probe
   - id: notfall-handbuch
     titel: Notfallhandbuch (Entwurf)
     zweck: Runbooks N1 bis N10
-    ort: NOTFALL-HANDBUCH.md (Ablage in docs/ offen)
-    art: kopie
-    in_git: false
+    ort: docs/NOTFALL-HANDBUCH.md
+    art: git
+    in_git: true
     stand: 2026-11-03
-    hinweis: Datei nicht bereitgestellt (A07); Katalog N1 bis N10 steht in docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md Abschnitt 12
+    hinweis: bereitgestellt (Entwurf) am 2026-11-06 (A19); Katalog N1 bis N10 auch in docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md Abschnitt 12
   - id: standard-artefakte
     titel: Standardergänzung Artefaktverzeichnis (Entwurf)
     zweck: ART-01 bis ART-17

@@ -4,6 +4,8 @@ Stand: 2026-11-06
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+A18 und A19 (2026-11-06): Kiosk-Demodaten sollen nach dem Publish aus dem eingebauten Generator entstehen (Variante A mit Paket 2b, Entscheidung offen). Notfallhandbuch und Standard Lovable-Grenzen liegen als Entwurf in Git; A07 ist damit inhaltlich abgeschlossen, A08 und A09 sind frei.
+
 Teilautomatik 2026-11-06: A16 erledigt, K1 und K2 behoben in Draft-PR 285 und 287 (CI 15/15, Merge-Reihenfolge 285, dann 287). A17 erledigt: Kiosk-Konto nur über Weg B (anzeige@ neu, kiosk@ und bm@ archivieren), Freigaben offen; Rolle von bm@ vor dem Archivieren in der Kontenliste belegen, Auswahlfeld der Benutzerliste nicht benutzen (`docs/DATENAUFTRAG-KIOSK-KONTO.md`).
 
 PR-Bestand (2026-11-06): Fünf Alt-Drafts (#222, #226, #231, #233, #234) sind durch gemergte PRs ersetzt, Schließen nach Owner-Entscheidung; #278 nach Prüfung in der Lovable-Vorschau mergen; #155 und #124 brauchen eine Entscheidung (`docs/BERICHT-PR-BESTAND-2026-11-06.md`). Teilautomatik läuft wieder (Warteschlange Planer-Stand 06.11. 05:15, A16 in Arbeit).
