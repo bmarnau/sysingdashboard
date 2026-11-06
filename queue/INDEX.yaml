@@ -1,4 +1,4 @@
-stand: 2026-11-06 18:25
+stand: 2026-11-06 18:50
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -106,12 +106,6 @@ auftraege:
   gate: nein
   status: erledigt
   abhaengig_von: []
-- id: A23
-  titel: 'Doku-Nachtrag 2026-11-06: PR-Stand, Warteschlange, #278 im Tagesbündel'
-  art: doku-pr
-  gate: nein
-  status: bereit
-  abhaengig_von: []
 - id: A18
   titel: 'Gemeinsamer Ladeweg für alle Demodaten inkl. Kiosk: Analyse und Vorschlag'
   art: lesen
@@ -129,13 +123,6 @@ auftraege:
   art: plan-dann-pr
   gate: QS-06
   status: erledigt
-  abhaengig_von: []
-- id: A25
-  titel: 'Pausenabschluss 2026-11-06 (geordnete Pause ca. 07:00)'
-  art: doku-pr
-  gate: nein
-  status: bereit
-  startet_nicht_vor: '2026-11-06T06:45+01:00'
   abhaengig_von: []
 - id: A20
   titel: 'Audit-Sammelbewertung: die 58 weiteren bun-audit-Funde'
@@ -163,12 +150,6 @@ auftraege:
   status: erledigt
   abhaengig_von:
   - A19
-- id: A22
-  titel: 'Lovable-Befund: Konten mit Audit-Historie lassen sich nicht löschen (Analyse)'
-  art: lesen
-  gate: nein
-  status: bereit
-  abhaengig_von: []
 - id: A24
   titel: 'Automatische Prüfung: PR-Aussagen in CURRENT-STATUS gegen GitHub (Vorschlag)'
   art: plan-dann-pr
@@ -176,10 +157,42 @@ auftraege:
   status: geplant
   abhaengig_von:
   - A23
+- id: A25
+  titel: 'Pausenabschluss 2026-11-06 (geordnete Pause ca. 07:00)'
+  art: doku-pr
+  gate: nein
+  status: bereit
+  startet_nicht_vor: '2026-11-06T06:45+01:00'
+  abhaengig_von: []
+- id: A23
+  titel: 'Doku-Nachtrag 2026-11-06: PR-Stand, Warteschlange, #278 im Tagesbündel'
+  art: doku-pr
+  gate: nein
+  status: bereit
+  abhaengig_von: []
+- id: A22
+  titel: 'Lovable-Befund: Konten mit Audit-Historie lassen sich nicht löschen (Analyse)'
+  art: lesen
+  gate: nein
+  status: bereit
+  abhaengig_von: []
+- id: A29
+  titel: Nachweis G19 (PR 278) und lesende Prüfung QS-01 B/C und Migrationsanwendung
+  art: doku-pr
+  gate: vor Publish
+  status: bereit
+  abhaengig_von: []
 - id: A26
   titel: 'Roadmap-Neubewertung: Gates, Tempo, Schätzung (Stand 2026-11-06)'
   art: doku-pr
   gate: nein
+  status: bereit
+  abhaengig_von:
+  - A23
+- id: A28
+  titel: Publish-Runbook und Owner-Entscheidungen D3, D4, D5 dokumentieren
+  art: doku-pr
+  gate: vor Publish
   status: bereit
   abhaengig_von:
   - A23
@@ -189,25 +202,13 @@ auftraege:
   gate: vor Publish
   status: bereit
   abhaengig_von: []
-- id: A28
-  titel: Publish-Runbook und Owner-Entscheidungen D3, D4, D5 dokumentieren
-  art: doku-pr
-  gate: vor Publish
-  status: bereit
-  abhaengig_von:
-  - A23
-- id: A29
-  titel: Nachweis G19 (PR 278) und lesende Prüfung QS-01 B/C und Migrationsanwendung
-  art: doku-pr
-  gate: vor Publish
-  status: bereit
-  abhaengig_von: []
 - id: A30
   titel: 'Plan: lokale Restore-Probe im Docker-Container (R-14, G03, Minimalprobe S1 bis S4)'
   art: plan-dann-pr
   gate: vor Publish
   status: bereit
   abhaengig_von: []
+
 entscheidungen_owner:
 - 2026-11-05 Version 1.70.0 bleibt
 - 2026-11-05 Demodaten Verschiebung in ganzen Tagen
@@ -224,3 +225,4 @@ entscheidungen_owner:
 - '2026-11-06 Owner: Roadmap-Neubewertung als A26 nach der Pause (nach A23)'
 - '2026-11-06 Owner: Publish-Plan 1.70.0; D1 Restore-Probe minimal lokal in Docker (Export per lesendem Datenauftrag), D2 Engineer-Befunde G08 und G09 in PR 283, D3 zod 3 befristet akzeptieren, D4 QS6-4 schließen, D5 types.ts als Go-Ausnahme; Aufträge A27 bis A30'
 - '2026-11-06 Owner: Erstantwort des Lovable-Supports als Nachweis (A29) und im Risikoregister R-07/R-10 (A28) festhalten'
+- '2026-11-06 Planer: Paket 1 fuer 2026-11-07 (Schaetzung ca. 3 Stunden Laufzeit, nicht gemessen): A25 15 min, A23 25 min, A22 20 min, A29 30 min, A26 35 min, A28 45 min. Paket 2 danach: A27 (60 bis 90 min) und A30 (40 min). Reihenfolge in dieser Liste ist verbindlich.'
