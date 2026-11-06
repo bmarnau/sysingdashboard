@@ -1,7 +1,7 @@
-stand: 2026-11-06T06:43+01:00
-laufender_auftrag: {id: A08, start: 2026-11-06T06:43+01:00}
-letzter_auftrag: {id: A21, status: erledigt, bericht: reports/A21-BERICHT.md}
-naechste_pruefung: "nach Abschluss A08, dann A09"
+stand: 2026-11-06T06:50+01:00
+laufender_auftrag: {id: A09, start: 2026-11-06T06:50+01:00}
+letzter_auftrag: {id: A08, status: erledigt, bericht: reports/A08-BERICHT.md}
+naechste_pruefung: "nach Abschluss A09 (letzter bereiter Auftrag)"
 betrieb: normal
 offene_prs: {"282": "A06, Draft", "283": "A15, Draft, enthält 282", "285": "A16 K1, Draft, CI 15/15", "287": "A16 K2, Draft, enthält 285, CI 15/15", "286": "Doku-Bündel 2026-11-06, Draft"}
 fehler: []
