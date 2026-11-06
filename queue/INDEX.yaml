@@ -1,4 +1,4 @@
-stand: 2026-11-06 08:40
+stand: 2026-11-06 18:25
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -223,3 +223,4 @@ entscheidungen_owner:
 - '2026-11-06 Owner: geordnete Pause gegen 07:00; Pausenabschluss als Auftrag A25 (startet nicht vor 06:45)'
 - '2026-11-06 Owner: Roadmap-Neubewertung als A26 nach der Pause (nach A23)'
 - '2026-11-06 Owner: Publish-Plan 1.70.0; D1 Restore-Probe minimal lokal in Docker (Export per lesendem Datenauftrag), D2 Engineer-Befunde G08 und G09 in PR 283, D3 zod 3 befristet akzeptieren, D4 QS6-4 schließen, D5 types.ts als Go-Ausnahme; Aufträge A27 bis A30'
+- '2026-11-06 Owner: Erstantwort des Lovable-Supports als Nachweis (A29) und im Risikoregister R-07/R-10 (A28) festhalten'
