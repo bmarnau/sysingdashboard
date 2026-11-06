@@ -7,6 +7,8 @@ Git ist die führende Quelle (Single Source of Truth). Vollständiger Dauerauftr
 
 Zu Beginn lesen: `docs/CURRENT-STATUS.md`, `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml`, `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md`.
 
+Danach automatisch aufräumen: `npm run git:hygiene -- --fix`. Das löscht nur lokale, in `origin/main` gemergte Branches (`git branch -d`, nie den aktuellen Branch, nie Branches in Worktrees, nie geschützte Muster) und verwaiste Worktree-Einträge. Steht der aktuelle Branch auf einem gemergten Stand mit gelöschtem Remote (`[gone]`), zuerst auf `main` wechseln und `git pull --ff-only` ausführen. Nicht eingecheckte Dateien, Remote-Branches und fremde Worktrees nur melden, nie ungefragt löschen. Ergebnis in einer Zeile berichten.
+
 ## Verbindliche Regeln
 
 - Publish bleibt No-Go, bis die Auth-Broker-Abweichung und die Publish-Quelle geklärt sind (R-07, `docs/LOVABLE-PUBLISH-PRUEFUNG.md`).

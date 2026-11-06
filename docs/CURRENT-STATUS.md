@@ -1,8 +1,10 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-11-05
+Stand: 2026-11-06
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
+
+Startroutine (2026-11-06): Zu Beginn jeder Sitzung räumt `npm run git:hygiene -- --fix` lokal gemergte Branches und verwaiste Worktree-Einträge auf; Remote-Branches, nicht eingecheckte Dateien und fremde Worktrees werden nur gemeldet. Playwright-Ausgaben sind ignoriert.
 
 Entscheidungen des Owners (2026-11-05): Version 1.70.0 bleibt; Demodaten in ganzen Tagen verschieben; Paket 2a/2b nach dem Publish (kein Gate); Monatslauf 2c per Datenauftrag mit Vorlage (erster Lauf bis 2026-11-30). Kiosk Weg A mit kiosk@ (2026-11-04). Branches `ops/*` werden nie gelöscht.
 
