@@ -1,7 +1,8 @@
-stand: 2026-11-06T06:50+01:00
-laufender_auftrag: {id: A09, start: 2026-11-06T06:50+01:00}
-letzter_auftrag: {id: A08, status: erledigt, bericht: reports/A08-BERICHT.md}
-naechste_pruefung: "nach Abschluss A09 (letzter bereiter Auftrag)"
-betrieb: normal
-offene_prs: {"282": "A06, Draft", "283": "A15, Draft, enthält 282", "285": "A16 K1, Draft, CI 15/15", "287": "A16 K2, Draft, enthält 285, CI 15/15", "286": "Doku-Bündel 2026-11-06, Draft"}
+stand: 2026-11-06T06:57+01:00
+laufender_auftrag: keiner
+letzter_auftrag: {id: A09, status: erledigt, bericht: reports/A09-BERICHT.md}
+naechste_pruefung: "Warteschlange leer (Planer-Stand 2026-11-06 05:15); A07 wartet auf Entscheidung; neue Aufträge vom Planer"
+betrieb: normal, leerlauf
+offene_prs: {"282": "A06, Draft", "283": "A15, Draft, enthält 282", "285": "A16 K1, Draft, CI 15/15", "287": "A16 K2, Draft, enthält 285, CI 15/15", "286": "Doku-Bündel 2026-11-06 (A05, A08, A09, A16-A21, PR-Bestand), Draft"}
+erledigt_heute: [QUEUE-UPDATE-2, PR-BESTAND, A16, A17, A18, A19, A05, A20, A21, A08, A09]
 fehler: []
