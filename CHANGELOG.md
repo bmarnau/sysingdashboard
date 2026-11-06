@@ -13,6 +13,14 @@ Format pro Eintrag:
 - Kurzbeschreibung der Änderung (eine Zeile pro Bullet).
 ```
 
+## 1.70.0 - 2026-11-04
+
+- **Beträge nur mit Abrechnungsrecht (QS-06)**: Umsatz-Kachel, Reiter „Abrechnung“, Stundensatz, Betrag und Abrechnungsstatus in Tätigkeiten sowie Beträge in Projektdetail und Projektbericht sind nur für System-Administrator, Administrator, Teamleiter und Projektmanager sichtbar (`billing.view`). Systemingenieure sehen weiter ihre Stunden.
+- **Handbuch Kiosk-Konto**: Beschreibt das Anlegen über „Kiosk-Konto anlegen“ in Backend & Auth-Konten. Ein Konto aus der Auth-Verwaltung der Plattform erhält die Standardrolle Viewer; die Rolle Kiosk vergibt nur das Formular.
+- **Handbuch Kiosk-Demodaten**: Beschreibt das Laden des Kiosk-Demodatensatzes im Servicebereich auf dem Anzeigegerät selbst und die Meldung „Kiosk-Demodaten sind auf diesem Gerät nicht geladen.“
+- **Handbuch „Bei Störungen“**: Neue Tabelle im Kapitel Info-Kiosk mit Anzeige, Ursache und Abhilfe.
+- **Handbuch Rollen & Berechtigungen**: Matrix um `billing.view` und `performance.statement.manage` ergänzt (25 Rechte).
+
 ## 1.69.0 - 2026-10-21
 
 - **Monatsdiagramm**: Aktivitäten am letzten Tag eines Monats werden wieder mitgezählt; Datumsangaben gelten unabhängig von der Zeitzone des Browsers als lokaler Kalendertag (S0-05).

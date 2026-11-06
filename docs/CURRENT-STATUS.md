@@ -1,8 +1,22 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-11-03
+Stand: 2026-11-06
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
+
+Startroutine (2026-11-06): Zu Beginn jeder Sitzung räumt `npm run git:hygiene -- --fix` lokal gemergte Branches und verwaiste Worktree-Einträge auf; Remote-Branches, nicht eingecheckte Dateien und fremde Worktrees werden nur gemeldet. Playwright-Ausgaben sind ignoriert.
+
+Entscheidungen des Owners (2026-11-05): Version 1.70.0 bleibt; Demodaten in ganzen Tagen verschieben; Paket 2a/2b nach dem Publish (kein Gate); Monatslauf 2c per Datenauftrag mit Vorlage (erster Lauf bis 2026-11-30). Kiosk Weg A mit kiosk@ (2026-11-04). Branches `ops/*` werden nie gelöscht.
+
+Teilautomatik (2026-11-05, `docs/BETRIEB-TEILAUTOMATIK.md`): Warteschlange `origin/ops/queue` (A01 bis A14), Berichte und Status in `origin/ops/reports`. Erledigt: A01 (QS6-4: kein Server-Pfad liefert Beträge, Lücke sind Exporte im Browser, QS6-5; `docs/BERICHT-QS6-4-ANALYSE.md`), A02 (`docs/BERICHT-AUDIT-2026-11-04.md`), A03 (`docs/BERICHT-F-U7-03-04.md`), A10 (TDF-PR 46 bereits gemergt), A04 (EV-0001 bis EV-0004), A11 (Vorlage `docs/DATENAUFTRAG-DEMODATEN-MONAT.md`, erster Lauf bis 2026-11-30). A07 blockiert: Notfallhandbuch und Standard Lovable-Grenzen nicht bereitgestellt. Doku-Bündel auf Branch `docs/2026-11-05-teilautomatik` (PR noch offen). Wiederanlaufpunkt: nächster bereiter Auftrag laut `queue/INDEX.yaml`.
+
+Handbuch und Demodaten (2026-11-04, abends): Handbuch um QS-06, Kiosk-Konto, Kiosk-Demodaten und „Bei Störungen“ ergänzt; CHANGELOG 1.70.0, Handbuch 1.25.0 (PR 280, nicht gemergt). Entscheidung offen: Version 1.70.0 oder zurück auf 1.69.0 (Tag v1.69.0 in der Merge-Checkliste). Demodaten monatlich aktuell: analysiert, Anforderungen DM-01 bis DM-14 und Aufwand in `docs/BERICHT-2026-11-04-HANDBUCH-DEMODATEN.md`; Umsetzung nach Entscheidung des Owners.
+
+Kiosk-Konto (2026-11-04): Konto kiosk@ angelegt, hat aber die Startrolle viewer. Die Rolle kiosk ist in der Datenbank vorhanden, im Admin-Dialog bewusst nicht wählbar; keine Migration nötig (Bericht `docs/BERICHT-2026-11-04-KIOSK-KONTO.md`). Entschieden: Weg A, Anzeigegerät zeigt nur Demodaten. Datenauftrag `docs/DATENAUFTRAG-KIOSK-KONTO.md`: Freigabe 1 erteilt, Freigabe 2 mit Abweichung von ADR-0037 (Bus-Faktor 1, Bestätigung durch eine zweite Person offen). Wiederanlaufpunkt: Schritte (a) bis (d) durch den Owner, neue UID eintragen, Prüfung KK-01 bis KK-06 und KK-08 (KK-07 nur dokumentiert); info@ ist als aktiver System-Administrator bestätigt, (e) ist damit nicht blockiert. bm@ bleibt bis dahin unverändert.
+
+L2 U7 Abnahme (2026-11-04): QS-06 in der Lovable-Vorschau (v1.69.0) für Administrator, Viewer und Anzeigemodus abgenommen, Nachweis EV-0005 in `docs/NACHWEISE.yaml` (nur Oberfläche, Engineer ungeprüft, QS6-4 offen). Offen: Entscheidung zum Anzeigemodus auf einem Systemadministrator-Konto (bm@, Restrisiko) und Befund F-U7-03 (überfälliges Projekt zeigt „Im Plan“). Wiederanlaufpunkt: L2-12 (CHANGELOG, Version, Handbuch). Publish bleibt No-Go.
+
+Vorschau-Absturz react-pdf, Folge (2026-11-04): PR 275 (gemergt) reicht in der Lovable-Vorschau nicht, der Fehler `reading 'devSourcemap'` kehrt zurück. PR 277 (`fix/vite-ensure-css-config`) stellt das Plugin `sysing:ensure-css-config` (aus `lovable-sync-1793685568`, nur gelesen) in `vite.config.ts` wieder her (gemergt 2026-11-04, `main` 8efb91d). Dauerhafte Lösung als Draft-PR 278: react-pdf-Stylesheets als Kopie in `public/vendor/react-pdf/`, ohne Tailwind-Verarbeitung. Lokaler Browsertest am 2026-11-04 abends (`docs/BERICHT-2026-11-04-PR278-LOKALTEST.md`): PR 278 funktioniert mit und ohne Plugin (Text markierbar, Link klickbar, keine Fehlermeldung); der Absturz lässt sich lokal auch ohne jede Absicherung nicht nachstellen. Wiederanlaufpunkt: PR 278 in der Lovable-Vorschau prüfen, dann update-branch, CI, Merge nach Owner-Freigabe; Plugin bleibt bis zu einem eigenen Folge-PR.
 
 Vorschau-Absturz react-pdf (2026-11-03): PR 275 setzt `css.devSourcemap: false` in `vite.config.ts` (offen, nicht gemergt; Wirksamkeit erst in der Lovable-Vorschau prüfbar). Lovable hat ohne Auftrag TanStack-Pakete angehoben (`lovable-sync-1793685568`, nicht mergen). `main` ist von GHSA-qx66-fv34-fjm8 (kritisch) betroffen; das Anheben von TanStack Start liegt als PR 276 vor (offen, nicht gemergt; beseitigt den Hinweis laut `bun audit`).
 

@@ -1,6 +1,6 @@
 # Git aufräumen: gemergte Branches
 
-Stand: 2026-10-31. Zweck: Das Repository enthält viele Branches, die vollständig in `main` enthalten sind. Sie verdecken die offenen Arbeitsstände und erschweren die Prüfung gegen Lovable (R-07).
+Stand: 2026-11-05 (GA-3 um `ops/*` ergänzt). Zweck: Das Repository enthält viele Branches, die vollständig in `main` enthalten sind. Sie verdecken die offenen Arbeitsstände und erschweren die Prüfung gegen Lovable (R-07).
 
 ## 1 Ausgangslage
 
@@ -14,7 +14,7 @@ Stand: 2026-10-31. Zweck: Das Repository enthält viele Branches, die vollständ
 | ---- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | GA-1 | Es dürfen nur Branches gelöscht werden, die vollständig in `origin/main` enthalten sind (`git branch -r --merged origin/main`).               |
 | GA-2 | Branches mit offenem Pull Request (`#219`, `#220`, `#221`, `#155`, `#124`) dürfen nicht gelöscht werden.                                      |
-| GA-3 | Branches mit Präfix `backup/`, `audit/` und der Branch `aqgs-pilot` bleiben erhalten (Evidenz).                                               |
+| GA-3 | Branches mit Präfix `backup/`, `audit/`, `ops/` und der Branch `aqgs-pilot` bleiben erhalten (Evidenz, Teilautomatik).                        |
 | GA-4 | Lovable-verwaltete Branches (`lovable-sync-*`, `merge/lovable-sync-*`, `lovable/*`) dürfen nur nach Rückfrage beim Betreiber gelöscht werden. |
 | GA-5 | Vor dem Löschen muss die Liste mit Commit-Kennung vorliegen (Abschnitt 3), damit jeder Branch aus `main` rekonstruierbar bleibt.              |
 
@@ -79,7 +79,7 @@ Zusätzlich existieren weitere `lovable-sync-*`-Branches, die nicht in `main` en
 ```text
 Aufgabe: Gemergte Remote-Branches aufräumen, Regeln GA-1 bis GA-5 aus docs/GIT-AUFRAEUMEN.md.
 1. git fetch origin --prune; git checkout main; git pull --ff-only.
-2. Liste: git branch -r --merged origin/main, ohne main, backup/*, audit/*, aqgs-pilot, lovable*, merge/lovable*.
+2. Liste: git branch -r --merged origin/main, ohne main, backup/*, audit/*, ops/*, aqgs-pilot, lovable*, merge/lovable*.
 3. Schnittmenge mit den Branches offener Pull Requests muss leer sein (gh pr list --state open).
 4. Zeige mir die Liste und warte auf mein "OK".
 5. Nach OK: git push origin --delete <Branch> je Eintrag; danach git remote prune origin und
@@ -97,6 +97,7 @@ Aufgabe: Gemergte Remote-Branches aufräumen, Regeln GA-1 bis GA-5 aus docs/GIT-
 
 - Remote-Branches: 152 vorher, 83 nachher. Offene PRs #219, #220, #221, #155 und #124 unberührt.
 - Danach: Einstellung „Automatically delete head branches“ aktiviert (`delete_branch_on_merge=true`). Nach dem Merge von #221, #224 und #223 `fix/arbeitssicht-erledigt-nicht-ueberfaellig` (`43647cf`) gelöscht; Remote 82, `npm run git:hygiene` meldet 0 gemergte Branches.
+- 2026-11-06: Startroutine `npm run git:hygiene -- --fix` löscht lokal gemergte Branches (`git branch -d`, ohne aktuellen Branch, Worktree-Branches und geschützte Muster) und verwaiste Worktree-Einträge. Remote-Branches bleiben Aufgabe des Nutzers.
 - Wiederherstellen eines archivierten Branches: `git push origin archive/<branch>^{commit}:refs/heads/<branch>`.
 - Behalten bis zur Klärung mit dem Lovable-Team (R-07): 4 gemergte `lovable-sync-*` (`1792495837`, `1792496228`, `1792500399`, `1792520819`) und 20 nicht gemergte Lovable-Branches (Inventar unten).
 

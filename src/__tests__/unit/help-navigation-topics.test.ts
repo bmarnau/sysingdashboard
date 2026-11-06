@@ -67,7 +67,7 @@ describe("Dashboard-Navigation im Benutzerhandbuch", () => {
     const topic = HelpDocumentationService.getTopicById("rbac-rollen-berechtigungen");
 
     expect(topic?.content).toContain("Acht Rollen");
-    expect(topic?.content).toContain("23 atomare Rechte");
+    expect(topic?.content).toContain("25 atomare Rechte");
     expect(topic?.content).toContain("project.controlling.view");
     expect(topic?.content).toContain("customer.responsibility.manage");
     expect(topic?.content).toContain("kiosk.view");

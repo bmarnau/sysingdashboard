@@ -1,8 +1,8 @@
 # Artefaktverzeichnis sysingdashboard (abgeleitet aus dem Reiter Artefakte des Arbeitsplans)
-# Grundlage: TDF Modul M-9 Artefaktverzeichnis, ART-01 bis ART-17 (bmarnau-standards/technical-documentation-framework, PR 46, offen).
+# Grundlage: TDF Modul M-9 Artefaktverzeichnis, ART-01 bis ART-17 (bmarnau-standards/technical-documentation-framework, PR 46, gemergt 2026-11-03, 61443174).
 # art: git = führende Quelle, kopie = Anzeige mit Datum, extern = externe Quelle. in_git: false = nicht in Git (ART-09, Backlog).
 # Keine Zugangsdaten, Tokens oder Einmal-Links (ART-06).
-stand: 2026-11-03
+stand: 2026-11-05
 artefakte:
   - id: repo
     titel: Repository bmarnau/sysingdashboard
@@ -33,6 +33,29 @@ artefakte:
     titel: Statusdatei
     zweck: Stand und Wiederanlaufpunkt
     ort: docs/CURRENT-STATUS.md
+    art: git
+  - id: doc-betrieb-teilautomatik
+    titel: Teilautomatikbetrieb
+    zweck: Rollen, Branches ops/queue und ops/reports, Zyklus, Grenzen, Berichtsformat
+    ort: docs/BETRIEB-TEILAUTOMATIK.md
+    art: git
+    stand: 2026-11-05
+  - id: ops-reports
+    titel: Berichte und Status der Teilautomatik
+    zweck: reports/STATUS.yaml und Auftragsberichte
+    ort: https://github.com/bmarnau/sysingdashboard/tree/ops/reports
+    art: git
+    stand: 2026-11-05
+  - id: doc-datenauftrag-demodaten-monat
+    titel: Datenauftrag-Vorlage Demodaten Monat (2c)
+    zweck: Monatlicher Lauf für den Live-Demo-Mandanten, ADR-0037
+    ort: docs/DATENAUFTRAG-DEMODATEN-MONAT.md
+    art: git
+    stand: 2026-11-05
+  - id: doc-nachweise
+    titel: Nachweisregister
+    zweck: Nachweise zu Abnahmen und Tests (ART-17, REST-26)
+    ort: docs/NACHWEISE.yaml
     art: git
   - id: doc-golden-gate-execution-tracker
     titel: Tracker
@@ -136,12 +159,25 @@ artefakte:
     hinweis: Adresse des Lovable-Editors noch nachzutragen
     art: extern
   - id: standard-restore
-    titel: Standard Wiederherstellbarkeit (Entwurf Fassung 4)
-    zweck: Restore und Notfall, REST-01 bis REST-22
-    ort: STANDARD-ENTWURF-WIEDERHERSTELLBARKEIT.md (Ablage in docs/ offen)
+    titel: Standard Wiederherstellbarkeit (Entwurf Fassung 7, Teil B)
+    zweck: Restore und Notfall, REST-01 bis REST-26, Notfallkatalog N1 bis N10
+    ort: docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md
+    art: git
+    stand: 2026-11-05
+    hinweis: Teil A (Pilotprojekt) nur in der PDF-Fassung 7 beim Owner; Übernahme in bmarnau-standards erst nach bestandener Restore-Probe
+  - id: bsi-mapping
+    titel: Zuordnung REST zu Grundschutz++ (Entwurf)
+    zweck: ID und Titel je Anforderung, ohne Textkopie, keine Konformitätsbehauptung (REST-25)
+    ort: docs/standards/BSI-MAPPING.yaml
+    art: git
+    stand: 2026-11-05
+  - id: standard-lovable-grenzen
+    titel: Standard Lovable-Grenzen (LG-01 bis LG-12)
+    zweck: Plattformgrenzen Sync-Dialog, Credits, Plattformdateien, Publish-Quelle
+    ort: offen
     art: kopie
     in_git: false
-    stand: 2026-11-03
+    hinweis: Datei nicht bereitgestellt (A07); Inhalte bisher nur in docs/BACKLOG.md
   - id: notfall-handbuch
     titel: Notfallhandbuch (Entwurf)
     zweck: Runbooks N1 bis N10
@@ -149,14 +185,14 @@ artefakte:
     art: kopie
     in_git: false
     stand: 2026-11-03
+    hinweis: Datei nicht bereitgestellt (A07); Katalog N1 bis N10 steht in docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md Abschnitt 12
   - id: standard-artefakte
     titel: Standardergänzung Artefaktverzeichnis (Entwurf)
     zweck: ART-01 bis ART-17
-    ort: https://github.com/bmarnau-standards/technical-documentation-framework/pull/46
+    ort: https://github.com/bmarnau-standards/technical-documentation-framework/blob/main/docs/artifact-register.md
     art: extern
-    in_git: false
     stand: 2026-11-03
-    hinweis: Abgelegt als TDF Modul M-9 docs/artifact-register.md (PR 46, nicht gemergt); im Projekt nur als Verweis
+    hinweis: TDF Modul M-9, PR 46 gemergt 2026-11-03 (61443174); Ursprungsentwurf als Kopie in docs/standards/STANDARD-ERGAENZUNG-ARTEFAKTE.md
   - id: arbeitsplan
     titel: Arbeitsplan (Reiter Fortschritt, Notfall, Artefakte)
     zweck: Planungsseite, Version 26
