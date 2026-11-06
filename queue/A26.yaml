@@ -1,0 +1,16 @@
+id: A26
+titel: 'Roadmap-Neubewertung: Gates, Tempo, Schätzung (Stand 2026-11-06)'
+art: doku-pr
+gate: nein
+abhaengig_von:
+- A23
+ziel: Gate-Zählung, Tempo und Gesamtschätzung (Golden Gate, BSF) auf den Stand von main bringen. Der Tracker sieht die Neubewertung nach zwei bis drei Wochen am gemessenen Tempo vor; roadmap_schaetzung steht auf 2026-10-31.
+schritte:
+- 'Gate-Zählung aus docs/PUBLISH-GATE-BERICHT.md (Grundlage 02cb3d28: 1 erfüllt, 4 in PR, 16 offen, 1 extern) auf dem heutigen main neu ableiten. Änderungen belegen: G11 und G12 (K1 dompurify, K2 shell-quote) mit PR 287 gemergt (main 7dc4699d); G19 (react-pdf) mit PR 278 gemergt (main 02cb3d28), Owner-Prüfung in der Lovable-Vorschau am 2026-11-06 (Screenshots im Chat, Nachweis nur mit Beleg). Abweichung zum Gate-Bericht ausweisen.'
+- 'Tempo messen: gemergte PRs je Kalenderwoche seit 2026-10-01 per GitHub-REST, getrennt nach Fach- und Doku-PRs, Vergleich mit tempo_historie im Tracker (1 bis 1,5 Sprints pro Woche). Einheit Arbeitstag nach den ersten Paketen nachmessen (Entscheidung 2026-10-28).'
+- 'Schätzung neu herleiten: offene Lieferpakete (L0, L0b, L2, L3 bis L8, S0-06-Stand) und Pakete bis BSF; Aufwand der offenen Publish-Gates aus dem Gate-Bericht. Ergebnis als Spanne (minimal, erwartet, maximal) in Sprints und Arbeitstagen, Kalenderdauer bei 1 bis 2 Owner-Arbeitstagen pro Woche. Annahmen und Unsicherheiten ausweisen.'
+- 'docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml: roadmap_schaetzung (stand, sprints_bis_bsf, bis_golden_gate, belastbarkeit) fortschreiben; CURRENT-STATUS und Backlog nachziehen. npm run docs:check, docs:project und Prettier.'
+- 'Bericht reports/A26-BERICHT.md mit Gate-Tabelle (alt, neu, Beleg), Tempo-Tabelle, Schätzung und YAML-Block mit Reifegrad, Projektstatus, Offene_Fragen, Roadmap.'
+nachweis: Bericht reports/A26-BERICHT.md und Doku-PR (Draft) mit CI 15/15.
+grenzen: Nur Doku. Keine Terminzusage, Werte als grob kennzeichnen. Kein Merge, kein Publish. Keine Nachweise erfinden.
+status: bereit

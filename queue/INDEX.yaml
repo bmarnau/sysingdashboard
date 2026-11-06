@@ -1,4 +1,4 @@
-stand: 2026-11-06 06:19
+stand: 2026-11-06 07:22
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -176,6 +176,13 @@ auftraege:
   status: geplant
   abhaengig_von:
   - A23
+- id: A26
+  titel: 'Roadmap-Neubewertung: Gates, Tempo, Schätzung (Stand 2026-11-06)'
+  art: doku-pr
+  gate: nein
+  status: bereit
+  abhaengig_von:
+  - A23
 entscheidungen_owner:
 - 2026-11-05 Version 1.70.0 bleibt
 - 2026-11-05 Demodaten Verschiebung in ganzen Tagen
@@ -189,3 +196,4 @@ entscheidungen_owner:
 - '2026-11-06 Lovable-Befund Konten mit Audit-Historie nicht löschbar: Analyseauftrag A22, kein Fix durch Lovable'
 - '2026-11-06 Projektdoku: A23 Nachtrag im Tagesbündel (bereit), A24 automatische PR-Prüfung (geplant); Höchstbestand dadurch überschritten, Owner-Entscheidung 1'
 - '2026-11-06 Owner: geordnete Pause gegen 07:00; Pausenabschluss als Auftrag A25 (startet nicht vor 06:45)'
+- '2026-11-06 Owner: Roadmap-Neubewertung als A26 nach der Pause (nach A23)'
