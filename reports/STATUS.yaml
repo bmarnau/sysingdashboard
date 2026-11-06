@@ -1,7 +1,9 @@
-stand: 2026-11-05T08:03+01:00
-laufender_auftrag: keiner
+stand: 2026-11-06T09:00+01:00
+laufender_auftrag: {id: A16, start: 2026-11-06T09:00+01:00}
 letzter_auftrag: {id: A15, status: erledigt, bericht: reports/A15-BERICHT.md}
-naechste_pruefung: "Pause auf Anordnung des Owners; A16 bereit, nicht begonnen"
-betrieb: pause
-offene_prs: {"282": "A06, CI 15/15, zuerst mergen", "283": "A15, CI 15/15, enthält 282"}
+naechste_pruefung: "nach Abschluss A16"
+betrieb: aktiv (Pause am 2026-11-06 vom Owner aufgehoben)
+offene_prs: {"282": "A06, Draft", "283": "A15, Draft, enthält 282", "284": "Startroutine git:hygiene --fix (außerhalb der Warteschlange)"}
+hinweise:
+  - "INDEX.yaml (Planer-Stand 2026-11-05 06:40) führt A06 und A15 noch als bereit; beide sind laut Bericht erledigt. Aktualisierung durch den Planer nötig."
 fehler: []
