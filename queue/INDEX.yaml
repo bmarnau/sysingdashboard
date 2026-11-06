@@ -1,4 +1,4 @@
-stand: 2026-11-06 06:15
+stand: 2026-11-06 06:20
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -97,13 +97,13 @@ auftraege:
   titel: 'bun audit K1 und K2: dompurify und shell-quote anheben'
   art: code-pr
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A17
   titel: Datenauftrag Kiosk-Konto korrigieren (Weg B) und Kiosk-Befunde analysieren
   art: doku-pr
   gate: nein
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A23
   titel: 'Doku-Nachtrag 2026-11-06: PR-Stand, Warteschlange, #278 im Tagesbündel'
@@ -115,19 +115,19 @@ auftraege:
   titel: 'Gemeinsamer Ladeweg für alle Demodaten inkl. Kiosk: Analyse und Vorschlag'
   art: lesen
   gate: nein
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A19
   titel: 'A07 abschließen: Notfallhandbuch und Standard Lovable-Grenzen in docs/ ablegen'
   art: doku-pr
   gate: nein
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A05
   titel: Engineer-Abnahme (QS-06) planen
   art: plan-dann-pr
   gate: QS-06
-  status: bereit
+  status: in_arbeit
   abhaengig_von: []
 - id: A20
   titel: 'Audit-Sammelbewertung: die 58 weiteren bun-audit-Funde'
