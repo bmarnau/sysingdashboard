@@ -42,3 +42,7 @@ dist-ssr
 
 # Technical report history snapshots (Sprint 04)
 test-report/release-override.audit.log
+
+# Playwright-Ausgaben (lokale Browsertests)
+/playwright-report/
+/test-results/
