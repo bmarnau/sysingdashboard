@@ -1,4 +1,4 @@
-stand: 2026-11-06 06:20
+stand: 2026-11-06 06:19
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -20,6 +20,7 @@ gemeinsame_regeln:
   BACKLOG; npm run docs:check, docs:project, Prettier; pushen und mit git ls-remote prüfen.'
 - 'Abschluss jedes Berichts: Hygiene in einer Zeile (gemergte Remote-Branches, offene PRs, Drafts) und YAML-Block mit Reifegrad,
   Projektstatus, Offene_Fragen, Roadmap.'
+- 'Hat ein Auftrag das Feld startet_nicht_vor, wird er übersprungen, bis diese Uhrzeit (Europe/Berlin) erreicht ist; ab dann hat er Vorrang vor allen weiteren bereiten Aufträgen.'
 auftraege:
 - id: A01
   titel: 'QS6-4 Ist-Analyse: Beträge serverseitig'
@@ -129,6 +130,13 @@ auftraege:
   gate: QS-06
   status: in_arbeit
   abhaengig_von: []
+- id: A25
+  titel: 'Pausenabschluss 2026-11-06 (geordnete Pause ca. 07:00)'
+  art: doku-pr
+  gate: nein
+  status: bereit
+  startet_nicht_vor: '2026-11-06T06:45+01:00'
+  abhaengig_von: []
 - id: A20
   titel: 'Audit-Sammelbewertung: die 58 weiteren bun-audit-Funde'
   art: lesen
@@ -180,3 +188,4 @@ entscheidungen_owner:
 - '2026-11-06 Owner: Arbeit heute Morgen 2 Stunden autonom, Claude Code mit Aufträgen versorgen'
 - '2026-11-06 Lovable-Befund Konten mit Audit-Historie nicht löschbar: Analyseauftrag A22, kein Fix durch Lovable'
 - '2026-11-06 Projektdoku: A23 Nachtrag im Tagesbündel (bereit), A24 automatische PR-Prüfung (geplant); Höchstbestand dadurch überschritten, Owner-Entscheidung 1'
+- '2026-11-06 Owner: geordnete Pause gegen 07:00; Pausenabschluss als Auftrag A25 (startet nicht vor 06:45)'

@@ -1,0 +1,17 @@
+id: A25
+titel: 'Pausenabschluss 2026-11-06 (geordnete Pause ca. 07:00)'
+art: doku-pr
+gate: nein
+abhaengig_von: []
+startet_nicht_vor: '2026-11-06T06:45+01:00'
+ziel: Die Arbeit gegen 07:00 geordnet anhalten, sodass nichts halb fertig, ungepusht oder unbelegt zurückbleibt und der Wiederanlauf eindeutig ist.
+vorgaben:
+- 'Ab 06:45 Berlin wird kein neuer Auftrag mehr gestartet, ausser A25. Ein zu diesem Zeitpunkt laufender Auftrag wird zu Ende geführt, wenn er voraussichtlich bis 06:55 fertig ist, sonst sauber abgebrochen und im Bericht mit Stand und Wiederanlaufpunkt vermerkt.'
+schritte:
+- 'Alle lokalen Änderungen committen und pushen; Kontrolle mit git ls-remote. Keine nicht eingecheckten Dateien zurücklassen, git:hygiene lokal ausführen.'
+- 'Tagesbündel (Draft-PR 286): Tracker, CURRENT-STATUS, ENTWICKLUNGSTAGEBUCH und BACKLOG auf den Stand dieses Auftrags bringen; npm run docs:check, docs:project und Prettier; CI-Stand des Heads notieren (laufend oder grün).'
+- 'reports/STATUS.yaml: betrieb auf pause setzen, laufender_auftrag leer, letzter_auftrag, naechster_auftrag laut Liste, Wiederanlaufpunkt in einem Satz.'
+- 'Bericht reports/A25-BERICHT.md: Stand der Aufträge (erledigt, abgebrochen, offen), offene PRs mit Draft und CI, Entscheidungen, die der Owner nach der Pause treffen muss, Hygiene in einer Zeile, YAML-Block mit Reifegrad, Projektstatus, Offene_Fragen, Roadmap.'
+nachweis: Bericht reports/A25-BERICHT.md; aktualisierter Draft-PR 286.
+grenzen: Kein Merge, kein Publish, keine Branches löschen, keine neuen Aufträge starten. Keine Nachweise erfinden.
+status: bereit
