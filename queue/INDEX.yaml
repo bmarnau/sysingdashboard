@@ -1,4 +1,4 @@
-stand: 2026-11-06 07:22
+stand: 2026-11-06 07:23
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -128,7 +128,7 @@ auftraege:
   titel: Engineer-Abnahme (QS-06) planen
   art: plan-dann-pr
   gate: QS-06
-  status: in_arbeit
+  status: erledigt
   abhaengig_von: []
 - id: A25
   titel: 'Pausenabschluss 2026-11-06 (geordnete Pause ca. 07:00)'
@@ -141,26 +141,26 @@ auftraege:
   titel: 'Audit-Sammelbewertung: die 58 weiteren bun-audit-Funde'
   art: lesen
   gate: nein
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A21
   titel: 'Publish-Gate-Bericht: alle Bedingungen vor dem ersten Publish mit Beleg'
   art: doku-pr
   gate: nein
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A08
   titel: 'R-14 Teil 1: ADR zu RTO, RPO und Schutzklassen (Entwurf)'
   art: doku-pr
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von:
   - A19
 - id: A09
   titel: 'R-04: Zugänge und Notfallkonto dokumentieren'
   art: doku-pr
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von:
   - A19
 - id: A22
