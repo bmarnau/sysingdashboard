@@ -4,6 +4,8 @@ Stand: 2026-11-06
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+PR-Bestand (2026-11-06): Fünf Alt-Drafts (#222, #226, #231, #233, #234) sind durch gemergte PRs ersetzt, Schließen nach Owner-Entscheidung; #278 nach Prüfung in der Lovable-Vorschau mergen; #155 und #124 brauchen eine Entscheidung (`docs/BERICHT-PR-BESTAND-2026-11-06.md`). Teilautomatik läuft wieder (Warteschlange Planer-Stand 06.11. 05:15, A16 in Arbeit).
+
 Startroutine (2026-11-06): Zu Beginn jeder Sitzung räumt `npm run git:hygiene -- --fix` lokal gemergte Branches und verwaiste Worktree-Einträge auf; Remote-Branches, nicht eingecheckte Dateien und fremde Worktrees werden nur gemeldet. Playwright-Ausgaben sind ignoriert.
 
 Entscheidungen des Owners (2026-11-05): Version 1.70.0 bleibt; Demodaten in ganzen Tagen verschieben; Paket 2a/2b nach dem Publish (kein Gate); Monatslauf 2c per Datenauftrag mit Vorlage (erster Lauf bis 2026-11-30). Kiosk Weg A mit kiosk@ (2026-11-04). Branches `ops/*` werden nie gelöscht.

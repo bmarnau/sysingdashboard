@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-06 · Dashboard-Version 1.70.0
 
+## 2026-11-06 — Bestand offener Pull Requests
+
+Von zehn offenen Pull Requests sind fünf alte Entwürfe inzwischen vollständig durch neuere, gemergte Pakete ersetzt (Managementcockpit und Abrechnungsrechte). Sie können geschlossen werden, sobald der Owner zustimmt. Die PDF-Korrektur (#278) wartet nur noch auf die Prüfung in der Lovable-Vorschau. Zwei ältere Dokumentationsvorschläge (Kiosk-Schnittstelle, Management-Wallboard) brauchen eine Entscheidung.
+
 ## 2026-11-06 — Automatisches Aufräumen beim Sitzungsstart
 
 Claude Code räumt zu Beginn jeder Sitzung lokal auf: Branches, die schon in `main` gemergt sind, werden gelöscht, verwaiste Worktree-Einträge entfernt. Nichts davon betrifft den Server; Remote-Branches löscht weiter nur der Owner. Nicht eingecheckte Dateien werden gemeldet, aber nie gelöscht. Die Ausgaben lokaler Browsertests landen nicht mehr als offene Dateien im Arbeitsverzeichnis.

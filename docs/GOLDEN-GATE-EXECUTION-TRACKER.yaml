@@ -674,6 +674,12 @@ risiken:
 fortschritt:
   - datum: 2026-11-06
     ereignis: >-
+      PR-Bestand bewertet (nur lesen, Grundlage origin/main 34f20a3): #226, #231, #233, #234 und #222 inhaltlich auf main (Ersatz-PRs 262, 264, 266, 267,
+      269, 272, 273), Empfehlung ersetzt und schließen; #278 mergen nach Vorschau-Prüfung (Plugin sysing:ensure-css-config auf main vorhanden);
+      #155 und #124 Entscheidung des Owners. Keine PRs geschlossen oder kommentiert.
+    beleg: docs/BERICHT-PR-BESTAND-2026-11-06.md, ops/reports reports/PR-BESTAND-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
       Startroutine um automatisches Aufräumen ergänzt: `npm run git:hygiene -- --fix` löscht nur lokale, gemergte Branches (git branch -d, ohne aktuellen
       Branch, Worktree-Branches und geschützte Muster inkl. ops/*) und verwaiste Worktree-Einträge; meldet nicht eingecheckte Dateien. Remote-Löschung bleibt
       beim Nutzer. Lokal geprüft mit Probe-Branch (gelöscht, aktueller Branch blieb). Playwright-Ausgaben in .gitignore aufgenommen; lokaler Branch
