@@ -3,7 +3,7 @@ id: A17
 titel: "Datenauftrag Kiosk-Konto korrigieren (Weg B) und Kiosk-Befunde analysieren"
 status: erledigt
 start: 2026-11-06T05:58+01:00
-ende: 2026-11-06T06:25+01:00
+ende: 2026-11-06T06:06+01:00
 branch: docs/2026-11-06-tagesbuendel
 pr: "286 (Draft, Tagesbündel)"
 commit: "ff8c6c71"
