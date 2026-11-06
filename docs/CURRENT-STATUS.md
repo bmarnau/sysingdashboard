@@ -4,6 +4,8 @@ Stand: 2026-11-06
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
+A21 (2026-11-06): Publish-Gate-Bericht `docs/PUBLISH-GATE-BERICHT.md` – 16 von 22 Gates offen, kritischer Pfad R-14 (Restore-Probe); neun Entscheidungen des Owners nötig (Abschnitt Offene Fragen). Publish bleibt No-Go.
+
 A20 (2026-11-06): Nach PR 285 und 287 bleiben 54 Audit-Funde ohne kritischen; vor dem Publish ist nur eine Entscheidung zu zod 3 nötig (Risikoakzeptanz oder Migration), keine Paketänderung (`docs/BERICHT-AUDIT-SAMMELBEWERTUNG.md`).
 
 A05 (2026-11-06): Plan für die Engineer-Abnahme QS-06 liegt vor (`docs/QS-06-VIEWER-ABRECHNUNG.md` Abschnitt 6). Neuer Befund vor dem Publish: Der Tätigkeitsdialog zeigt dem Engineer Stundensatz und Betrag (F-QS6-ENG-01); das JSON-Backup enthält Stundensätze für jede Rolle (F-QS6-ENG-02). Entscheidung zur Paketierung (in PR 283 oder eigenes Paket) offen.

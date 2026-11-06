@@ -674,6 +674,12 @@ risiken:
 fortschritt:
   - datum: 2026-11-06
     ereignis: >-
+      A21: Publish-Gate-Bericht (nur lesen, keine Freigabe). 22 Gates: 1 erfüllt (TD-01, Tracker widersprüchlich), 4 in PR (282, 283, 285, 287), 1 extern
+      (TanStack im veröffentlichten Stand 1.69.0), 16 offen. Kritischer Pfad R-14 (Umfang, zweite Umgebung, Datenexport, Restore-Probe). Schätzung bis Tag
+      v1.70.0: 1 bis 6 Wochen, wahrscheinlich 3. Widersprüche: CHANGELOG 1.70.0 gegen F-QS6-ENG-01; Standard Wiederherstellbarkeit :59 (S1 bis S6) gegen :194 (mindestens S4).
+    beleg: docs/PUBLISH-GATE-BERICHT.md, ops/reports reports/A21-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
       A20: Sammelbewertung bun audit (main 02cb3d28: 60 Funde; mit PR 287: 54, 0 kritisch). Nur zod@3.25.76 (GHSA-mrhx-c7xc-m3w5, hoch) liegt im
       ausgelieferten Code (Server, nach Anmeldung); Klasse vor Publish: dokumentierte Entscheidung (Risikoakzeptanz oder Migration auf zod 4). vite und
       launch-editor nach Publish per overrides; 38 Funde Dev-only beobachten, 7 ignorieren (nur Lint).
