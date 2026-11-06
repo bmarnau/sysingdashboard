@@ -1,4 +1,4 @@
-stand: 2026-11-06 06:10
+stand: 2026-11-06 06:15
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -105,6 +105,12 @@ auftraege:
   gate: nein
   status: bereit
   abhaengig_von: []
+- id: A23
+  titel: 'Doku-Nachtrag 2026-11-06: PR-Stand, Warteschlange, #278 im Tagesbündel'
+  art: doku-pr
+  gate: nein
+  status: bereit
+  abhaengig_von: []
 - id: A18
   titel: 'Gemeinsamer Ladeweg für alle Demodaten inkl. Kiosk: Analyse und Vorschlag'
   art: lesen
@@ -155,6 +161,13 @@ auftraege:
   gate: nein
   status: bereit
   abhaengig_von: []
+- id: A24
+  titel: 'Automatische Prüfung: PR-Aussagen in CURRENT-STATUS gegen GitHub (Vorschlag)'
+  art: plan-dann-pr
+  gate: nein
+  status: geplant
+  abhaengig_von:
+  - A23
 entscheidungen_owner:
 - 2026-11-05 Version 1.70.0 bleibt
 - 2026-11-05 Demodaten Verschiebung in ganzen Tagen
@@ -166,3 +179,4 @@ entscheidungen_owner:
 - 2026-11-05 F-KK-01 nicht blockierend
 - '2026-11-06 Owner: Arbeit heute Morgen 2 Stunden autonom, Claude Code mit Aufträgen versorgen'
 - '2026-11-06 Lovable-Befund Konten mit Audit-Historie nicht löschbar: Analyseauftrag A22, kein Fix durch Lovable'
+- '2026-11-06 Projektdoku: A23 Nachtrag im Tagesbündel (bereit), A24 automatische PR-Prüfung (geplant); Höchstbestand dadurch überschritten, Owner-Entscheidung 1'

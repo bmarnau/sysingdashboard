@@ -1,0 +1,14 @@
+id: A24
+titel: 'Automatische Prüfung: PR-Aussagen in CURRENT-STATUS gegen GitHub (Vorschlag)'
+art: plan-dann-pr
+gate: nein
+abhaengig_von:
+- A23
+ziel: Vorschlag und, nach Freigabe des Owners, ein kleines Prüfskript, das Aussagen wie "PR n nicht gemergt" in docs/CURRENT-STATUS.md gegen den GitHub-Stand abgleicht und Abweichungen meldet.
+schritte:
+- 'Plan zuerst (Bericht reports/A24-PLAN.md): Welche Satzmuster erkennt das Skript, wie wird zwischen Historie (datierter Absatz) und aktuellem Stand unterschieden, wie wird die Warteschlangenspanne (A01 bis An) gegen queue/INDEX.yaml geprüft.'
+- 'Randbedingungen im Plan klären: nur lesender Zugriff über die GitHub-REST-API, kein Token im Repository, Verhalten ohne Netz, Einbindung als eigener npm-Skriptaufruf, nicht als Pflicht in docs:check (Vorschlag: nur Warnung, kein CI-Fehler).'
+- 'Nach Freigabe des Owners: Skript, Test und Handbuchhinweis als Draft-PR.'
+nachweis: Plan als Bericht; nach Freigabe Draft-PR mit CI 15/15.
+grenzen: Ohne Freigabe nur Plan. Kein Schreibzugriff auf GitHub, keine Zugangsdaten in Dateien oder Commits.
+status: geplant

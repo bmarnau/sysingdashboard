@@ -1,0 +1,17 @@
+id: A23
+titel: 'Doku-Nachtrag 2026-11-06: PR-Stand, Warteschlange, #278 im Tagesbündel'
+art: doku-pr
+gate: nein
+abhaengig_von: []
+ziel: Die Projektdoku auf den Stand vom 2026-11-06 bringen, im bestehenden Tagesbündel (Draft-PR 286, Branch docs/2026-11-06-tagesbuendel), ohne Historie zu löschen.
+quelle: Prüfung des Planers am 2026-11-06 (CURRENT-STATUS.md gegen GitHub).
+schritte:
+- 'docs/CURRENT-STATUS.md: Überschrift "Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)" auf den heutigen Stand setzen. Warteschlange "A01 bis A14" auf die tatsächliche Spanne aus queue/INDEX.yaml ändern (zum Prüfzeitpunkt A01 bis A24).'
+- 'Überholte Zustandsangaben nicht löschen, sondern mit "(inzwischen gemergt, Stand 2026-11-06)" ergänzen: PR 275, PR 276 und PR 280 stehen als "nicht gemergt", sind aber gemergt. Danach alle weiteren PR-Aussagen mit gh api gegen den GitHub-Stand abgleichen und im Bericht auflisten.'
+- 'Heutige Ereignisse nachtragen: PR 284 gemergt (main 34f20a3); PR 278 per Squash gemergt (main 02cb3d28, CI 15 von 15, Vorschau-Prüfung des Owners am 2026-11-06 ca. 05:45 bis 06:00 Berlin: Vorschau lädt, Viewer zeigt PDF, Text markierbar, keine devSourcemap-Meldung; nicht geprüft: Netzwerk-Reiter, Formularfelder, Link); Plugin sysing:ensure-css-config bleibt bis zu einem eigenen Folge-PR; fünf Alt-PRs 222, 226, 231, 233, 234 als ersetzt geschlossen, Branches bleiben (Planungsdateien der Branches feat/l2-cockpit-p2b und p3); A22 angelegt; PR 285 und 287 aus A16.'
+- 'docs/NACHWEISE.yaml: Eintrag für die Vorschau-Prüfung von PR 278 nur mit Beleg (Owner-Screenshots im Chat, Datum, Commit 4aad97a8, Merge 02cb3d28); nicht geprüfte Punkte als offen vermerken. Keine Nachweise erfinden.'
+- 'docs/GIT-AUFRAEUMEN.md GA-2: die Beispielnummern #219, #220, #221 (gemergt) durch aktuell offene Beispiele ersetzen oder ohne Nummern formulieren.'
+- 'Tracker, Backlog und Entwicklungstagebuch im Tagesbündel fortschreiben. Vor Abschluss npm run docs:check, npm run docs:project und Prettier; pushen und mit git ls-remote prüfen.'
+nachweis: Bericht reports/A23-BERICHT.md und aktualisierter Draft-PR 286 mit CI 15/15.
+grenzen: Nur Doku. Keine Codeänderung, kein Merge, keine Branches löschen, keine Historie löschen. Aussagen wie bestanden nur mit Beleg.
+status: bereit
