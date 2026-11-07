@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-07 · Dashboard-Version 1.70.0
 
+## 2026-11-07 — Rechte in der Datenbank geprüft
+
+Die Auswertung der Datenbankabfrage vom Morgen zeigt: Die Datenbank ist heute durch ihre Zugriffsregeln geschützt, aber nur durch diese eine Schicht; nicht angemeldete Zugriffe hätten ohne sie weitreichende Tabellenrechte. Außerdem kann jedes Leserkonto ein Personenverzeichnis abrufen, das mehr zeigt als nötig. Beides ist zur Entscheidung vorgelegt; der Plan für die Wiederherstellungsprobe hat jetzt konkrete Prüfkriterien.
+
 ## 2026-11-07 — Ablaufplan für die Veröffentlichung
 
 Für die erste Veröffentlichung seit Version 1.69.0 gibt es jetzt einen schriftlichen Ablaufplan: Er legt die Reihenfolge der Schritte fest, was vorher geprüft sein muss und wie eine fehlerhafte Veröffentlichung binnen einer Stunde zurückgenommen wird. Drei Entscheidungen des Owners vom Vortag sind jetzt festgehalten: eine bekannte Schwachstelle in einer Prüfbibliothek nehmen wir bis nach der Veröffentlichung in Kauf, der Server gibt keine Beträge an Leser heraus, und eine kleine automatisch erzeugte Abweichung von Lovable ist erlaubt.

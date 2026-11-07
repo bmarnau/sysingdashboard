@@ -716,6 +716,18 @@ risiken:
 fortschritt:
   - datum: 2026-11-07
     ereignis: >-
+      A38 (lesend, Agent) wertet RP-02 aus (Owner, 2026-11-07 05:44 bis 05:45 +01:00): anon hat auf 9 Tabellen (u. a. profiles, user_roles, audit_log)
+      SELECT/INSERT/UPDATE/DELETE, Schutz allein durch RLS (25/25 aktiv, Policies nur authenticated); Ursache Default-Privilegien, im Git-Snapshot identisch.
+      QS-01 Migration C nicht angewendet und zu eng (nur TRUNCATE/REFERENCES/TRIGGER); Vorschlag C′ vor L8 und lesendes Gate „RLS-Invariante“ (G24, da G23
+      durch A29 belegt). Befund avkk_people_directory: jedes viewer-Konto sieht Name, Rolle, Status aller Personen mit aktiver AVKK-Verantwortung ohne
+      Mandantenbezug. Vorabvergleich Repo/Live: 302/302 Spalten, 65/65 Policy-md5, 37/41 Funktions-md5 (4 aus 20260913150000 abweichend). A30-Nachtrag:
+      Plan Abschnitt 15 (Soll, Abnahme S3/S4, Wege W1/W2, pg_restore --list durch Owner), RP-02 als ausgeführt vermerkt. Nichts ausgeführt.
+    beleg: >-
+      ops/queue queue/anlagen/RP-02-ergebnis-2026-11-07.md (Teile E, G, H, J2); ops/reports reports/A38-BERICHT.md; supabase/schema/public-schema.sql:3860-3988,
+      :3994-4017; supabase/migrations/20260822110427_2dd06fe8-b4fc-418f-bd4c-e37f52826a1d.sql:9-56; docs/PLAN-RESTORE-PROBE-LOKAL.md Abschnitt 15,
+      docs/DATENAUFTRAG-RESTORE-PROBE.md Abschnitt 3
+  - datum: 2026-11-07
+    ereignis: >-
       A31 (Notfallhandbuch, Agent): Abschnitt 6 klassifiziert und als Tabelle neu gefasst (12 alte, 5 neue Lücken; geschlossen 3, 16, 17; 6 brauchen
       Beleg, 8 Owner-Entscheidung). Neu: N8a Rotation je Secret (Inventar S-01 bis S-15 ohne Werte, Lovable-Cloud-Schritte zu belegen), Abschnitt 3 als
       Feldtabelle mit Verweis auf ZUGAENGE-UND-NOTFALLKONTO, Bezugsdokumente ADR-0042 und Restore-Probe. N3 und N5 mit RP-01, RP-02 und A37 abgeglichen:

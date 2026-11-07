@@ -1,7 +1,7 @@
 # Datenaufträge Restore-Probe RP-01 bis RP-03 (nur lesen)
 
-Stand: 2026-11-07. Grundlage: `docs/ADR/0037-kontrollierte-datenauftraege.md`, Plan `docs/PLAN-RESTORE-PROBE-LOKAL.md`, `docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md` (REST-04, REST-06, REST-22), Nachweis EV-0004 (`docs/NACHWEISE.yaml`), Risiko R-14, Gate G03, Auftrag A30.
-Status: **RP-01 ausgeführt (2026-11-06). RP-02 freigabebereit, nicht ausgeführt. RP-03 Entwurf, keine Freigabe.**
+Stand: 2026-11-07, 07:10 +01:00. Grundlage: `docs/ADR/0037-kontrollierte-datenauftraege.md`, Plan `docs/PLAN-RESTORE-PROBE-LOKAL.md`, `docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md` (REST-04, REST-06, REST-22), Nachweis EV-0004 (`docs/NACHWEISE.yaml`), Risiko R-14, Gate G03, Auftrag A30.
+Status: **RP-01 ausgeführt (2026-11-06). RP-02 ausgeführt (Owner, 2026-11-07 04:44 bis 04:45 UTC = 05:44 bis 05:45 +01:00), Ergebnis in der Anlage `queue/anlagen/RP-02-ergebnis-2026-11-07.md`. RP-03 Entwurf, keine Freigabe.**
 
 Alle drei Aufträge sind rein lesend (nur SELECT). Der Owner führt sie über den Lovable-Connector aus; Claude Code führt keinen Datenauftrag aus. E-Mail-Adressen, Passwort-Hashes, Tokens, Werte aus `app_settings` und andere Zugangsdaten stehen nicht in dieser Datei, nicht in den Ergebnissen und dürfen auch nicht nachgetragen werden.
 
@@ -84,9 +84,42 @@ rp01:
 
 Abgleich mit Git (Claude Code, A30): Alle Objektzahlen in `public` stimmen mit `supabase/schema/public-schema.sql` auf main `7dc4699d` überein (Plan Abschnitt 3). Folge aus der Migrationshistorie: Das Schema für die Probe darf nicht allein aus `supabase/migrations` als gleich gelten; Gleichheit ist über RP-02 zu belegen.
 
-## 3 RP-02 Strukturvergleich (Auftragstext, freigabebereit)
+## 3 RP-02 Strukturvergleich (ausgeführt)
 
-Quelle: `queue/anlagen/RP-02-datenauftrag.txt` (Branch `ops/queue`), wörtlich übernommen. Prüfung und Änderungsvorschläge V-01 bis V-13: Plan Abschnitt 10.
+| Punkt      | Wert                                                                                                                                                              |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ausführung | Owner, 2026-11-07, 04:44 bis 04:45 UTC (05:44 bis 05:45 +01:00), Lovable-Connector, nur SELECT; Fassung unverändert (nicht RP-02a)                                |
+| Ergebnis   | Alle Teile A bis J2 vollständig (Teil K der Anlage); drei Abfragen scheiterten im ersten Versuch an SQL-Fehlern und liefen korrigiert erneut, Wortlaut in Teil K  |
+| Beleg      | Anlage `queue/anlagen/RP-02-ergebnis-2026-11-07.md` (Branch `ops/queue`, 873 Zeilen); keine E-Mail-Adressen, Hashes, Tokens oder `app_settings`-Werte laut Anlage |
+| Prüfwerte  | J2: Zeilenzahl und md5 je Tabelle, `now()` = 2026-11-07 04:45:08 UTC; Soll-Werte und Abnahmekriterien im Plan, Abschnitt 15                                       |
+| Auswertung | Auftrag A38 (Tabellenrechte `anon`, QS-01 Migration C, Soll für die Probe) und Plan Abschnitt 15.2 (Vorabvergleich mit dem Git-Snapshot)                          |
+| Freigaben  | durch den Owner; Datum der Freigaben nicht in Git                                                                                                                 |
+
+Kernaussagen (Zählwerte, keine Rohdaten):
+
+```yaml
+rp02:
+  zeitpunkt: 2026-11-07T05:44+01:00
+  j2_zeitpunkt: 2026-11-07T05:45:08+01:00
+  teil_a: alle Objekte A1 bis A10 live vorhanden
+  spalten: 302
+  constraints: 153
+  indizes: 74
+  funktionen: { anzahl: 41, security_definer: 15, md5: Anlage Teil E }
+  funktionsrechte:
+    {
+      zeilen: 109,
+      anon_und_public: [bsf02c_projection_identity_guard, customer_responsibility_identity_guard],
+    }
+  trigger: 41
+  policies: { anzahl: 65, rollen: [authenticated] }
+  tabellenrechte: { zeilen: 59, anon_tabellen: 9, rls_aktiv: 25, force_rls: 0 }
+  sequenzen: 0
+  j2: { tabellen: 25, zeilen_gesamt: 728, leer: 5 }
+  zeilen_gleich_rp01: [audit_log 336, profiles 9, user_roles 9]
+```
+
+Auftragstext: Quelle `queue/anlagen/RP-02-datenauftrag.txt` (Branch `ops/queue`), wörtlich übernommen. Prüfung und Änderungsvorschläge V-01 bis V-13: Plan Abschnitt 10; Folgen der unveränderten Fassung: Plan Abschnitt 15.6.
 
 ```text
 Datenauftrag RP-02 (nur lesen) nach ADR-0037, Projekt SysIng Dashboard.
@@ -150,7 +183,7 @@ K. Bericht: je Teil Status (vollstaendig, teilweise, nicht ausgefuehrt), Fehlerm
    Zahl der ausgegebenen Zeilen. Nichts schreiben, keine Dateien, keine Migrationen.
 ```
 
-Prüfergebnis in Kurzform: lesend ja, ohne Geheimnisse ja, für den Strukturvergleich weitgehend vollständig. Vor der Ausführung sollten mindestens V-01 (SQL-Text im Wortlaut), V-02 (Zielbindung), V-03 (Sitzungseinstellungen) und V-04 (`jsonb` in die Prüfsumme) übernommen werden, sonst ist der Vergleich mit der lokalen Probe nicht reproduzierbar und `audit_log` nicht vollständig prüfbar. Die Anlage bleibt unverändert; eine geänderte Fassung heißt RP-02a und braucht eine eigene Freigabe 1.
+Prüfergebnis in Kurzform (vor der Ausführung): lesend ja, ohne Geheimnisse ja, für den Strukturvergleich weitgehend vollständig. Vor der Ausführung sollten mindestens V-01 (SQL-Text im Wortlaut), V-02 (Zielbindung), V-03 (Sitzungseinstellungen) und V-04 (`jsonb` in die Prüfsumme) übernommen werden, sonst ist der Vergleich mit der lokalen Probe nicht reproduzierbar und `audit_log` nicht vollständig prüfbar. Die Anlage bleibt unverändert; eine geänderte Fassung heißt RP-02a und braucht eine eigene Freigabe 1. Nachtrag 2026-11-07: RP-02 lief unverändert; die offenen Punkte (V-01 bis V-04, dazu TRUNCATE/REFERENCES/TRIGGER, `pg_default_acl`, Schema `private`) sollten in einem lesenden Ergänzungsauftrag RP-02b oder in RP-03 nachgeholt werden (Plan Abschnitt 15.6).
 
 ## 4 RP-03 Prüfwerte zum Exportzeitpunkt (Entwurf)
 
@@ -212,14 +245,14 @@ Offen im Entwurf:
 
 ## 5 Freigaben
 
-| Auftrag | Stufe      | Inhalt                        | Wer   | Datum      | Status              |
-| ------- | ---------- | ----------------------------- | ----- | ---------- | ------------------- |
-| RP-01   | Freigabe 1 | Auftragstext                  | Owner | 2026-11-06 | erteilt im Chat     |
-| RP-01   | Freigabe 2 | „Go“                          | Owner | 2026-11-06 | erteilt, ausgeführt |
-| RP-02   | Freigabe 1 | Auftragstext (oder RP-02a)    | Owner | _offen_    | offen               |
-| RP-02   | Freigabe 2 | „Go“ nach Prüfung Zielbindung | Owner | _offen_    | offen               |
-| RP-03   | Freigabe 1 | Auftragstext, Variante V1/V2  | Owner | _offen_    | offen               |
-| RP-03   | Freigabe 2 | „Go“                          | Owner | _offen_    | offen               |
+| Auftrag | Stufe      | Inhalt                       | Wer   | Datum      | Status                                   |
+| ------- | ---------- | ---------------------------- | ----- | ---------- | ---------------------------------------- |
+| RP-01   | Freigabe 1 | Auftragstext                 | Owner | 2026-11-06 | erteilt im Chat                          |
+| RP-01   | Freigabe 2 | „Go“                         | Owner | 2026-11-06 | erteilt, ausgeführt                      |
+| RP-02   | Freigabe 1 | Auftragstext (unverändert)   | Owner | 2026-11-07 | erteilt, Datum der Freigabe nicht in Git |
+| RP-02   | Freigabe 2 | „Go“                         | Owner | 2026-11-07 | erteilt, ausgeführt 04:44 bis 04:45 UTC  |
+| RP-03   | Freigabe 1 | Auftragstext, Variante V1/V2 | Owner | _offen_    | offen                                    |
+| RP-03   | Freigabe 2 | „Go“                         | Owner | _offen_    | offen                                    |
 
 Eine zweite Person gibt es heute nicht (R-04). Weil die Aufträge nur lesen, ist der Schaden bei einem Fehler gering; die Abweichung „beide Freigaben durch den Owner“ ist wie beim Kiosk-Konto im Tracker zu vermerken.
 
@@ -229,6 +262,7 @@ Entfällt: Die Aufträge schreiben nichts. Prüfung nach der Ausführung: Zeilen
 
 ## 7 Bericht und Ablage
 
+- Das Ergebnis von RP-02 liegt als Anlage `queue/anlagen/RP-02-ergebnis-2026-11-07.md` auf Branch `ops/queue`; eine Übernahme nach `docs/probe/` ist offen.
 - Ergebnisse von RP-02 und RP-03 legt der Owner als Textdatei unter `C:\dev\restore-probe\auftraege\` ab, mit Datum und SHA-256. Ergebnisse ohne Werte (Katalog, Prüfsummen, Zählungen) dürfen nach Sichtung durch Claude Code in Git (Vorschlag `docs/probe/RP-02-ERGEBNIS-<Datum>.md`).
 - Ergebnisse mit Daten (Teil E) dürfen nie in Git, OneDrive oder den Tracker.
 - Fehler im Wortlaut, Zeitpunkt (+01:00) und Status je Teil gehören in den Bericht und in den Tracker (`fortschritt`).

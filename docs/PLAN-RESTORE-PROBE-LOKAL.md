@@ -1,7 +1,7 @@
 # Plan: lokale Restore-Probe im Docker-Container (Minimalprobe S1 bis S4)
 
-Stand: 2026-11-07, 06:30 +01:00. Auftrag A30 (Warteschlange `ops/queue`), Entwurf durch Claude Code.
-Status: **Entwurf, nichts ausgeführt, keine Freigabe.** Code und Skripte entstehen erst nach Freigabe durch den Owner (Abschnitt 13).
+Stand: 2026-11-07, 07:10 +01:00. Auftrag A30 (Warteschlange `ops/queue`), Entwurf durch Claude Code; Nachtrag A30/A38 mit Abnahmekriterien aus RP-02 in Abschnitt 15.
+Status: **Entwurf, keine Freigabe. RP-02 ist ausgeführt (Owner, 2026-11-07 05:44 bis 05:45 +01:00); die Probe selbst ist nicht ausgeführt.** Code und Skripte entstehen erst nach Freigabe durch den Owner (Abschnitt 13).
 
 Grundlage: Owner-Entscheidung D1 und D1a vom 2026-11-06 (`queue/A30.yaml`, Feld `ziel`), `docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md` (REST-04, REST-06, REST-07, REST-11, REST-22, Stufen S1 bis S6, Abschnitt 8), `docs/ADR/0037-kontrollierte-datenauftraege.md`, ADR-0042 (Entwurf, Proposed, Branch `docs/2026-11-06-tagesbuendel`), `docs/NOTFALL-HANDBUCH.md` (Branch `docs/2026-11-06-tagesbuendel`), `docs/NACHWEISE.yaml` (EV-0004), Datenaufträge RP-01 und RP-02 (`docs/DATENAUFTRAG-RESTORE-PROBE.md`).
 
@@ -24,17 +24,18 @@ Grundlage: Owner-Entscheidung D1 und D1a vom 2026-11-06 (`queue/A30.yaml`, Feld 
 
 ## 3 Ausgangslage (belegt)
 
-| Merkmal                          | Wert                                                                                                                                                                         | Beleg                                                                   |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Live-Version                     | PostgreSQL 17.6, Lovable-Anzeige 17.6.1.147, Region Europa (Irland)                                                                                                          | RP-01, 2026-11-06 19:21 bis 19:23 +01:00                                |
-| Erweiterungen live               | pg_stat_statements 1.11, pgcrypto 1.3, plpgsql 1.0, supabase_vault 0.3.1, uuid-ossp 1.1                                                                                      | RP-01                                                                   |
-| Objektzahlen live (`public`)     | 25 Tabellen, 302 Spalten, 66 FK, 21 Unique, 41 Check, 74 Indizes, 41 Trigger, 41 Funktionen, 65 Policies, RLS auf 25 Tabellen, kein FORCE RLS, Enums 8 und 4                 | RP-01                                                                   |
-| Objektzahlen Git-Snapshot        | 25 Tabellen, 302 Spalten, 66 FK, 21 Unique, 41 Check, 74 Indizes (23 + 5 + 25 PK + 21 Unique), 41 Trigger, 41 Funktionen, 65 Policies, 25 × RLS, Enums 8 und 4               | Zählung in `supabase/schema/public-schema.sql` auf main `7dc4699d`      |
-| Zeilen live (Auszug)             | profiles 9, user_roles 9, auth.users 9, audit_log 336, shared_activity_projection 47, shared_work_package_projection 20, shared_project_projection 5                         | RP-01                                                                   |
-| Migrationshistorie               | 30 Einträge live (10 mit `statements` NULL), 33 Dateien im Repo; 4 nur im Repo, 1 nur live                                                                                   | RP-01 (Feld `eingaenge`)                                                |
-| Datenexport                      | Über Lovable „Export data“ am 2026-11-06 abends ausgelöst, lokal unter `C:\dev\restore-probe`; Inhalt, Format und Umfang unbekannt                                           | Angabe Owner; zu belegen                                                |
-| FK von `public` auf `auth.users` | 19 Fremdschlüssel                                                                                                                                                            | `public-schema.sql`, `REFERENCES "auth"."users"`                        |
-| Trigger auf `auth.users`         | `on_auth_user_created` (AFTER INSERT) ruft `public.handle_new_user()`; legt Profil, Rolle (erstes Konto `systemadministrator`, sonst `viewer`) und eine Zeile `audit_log` an | `supabase/migrations/20260717041306_…sql:187`, `public-schema.sql:1434` |
+| Merkmal                          | Wert                                                                                                                                                                                                                                                                 | Beleg                                                                                 |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Live-Version                     | PostgreSQL 17.6, Lovable-Anzeige 17.6.1.147, Region Europa (Irland)                                                                                                                                                                                                  | RP-01, 2026-11-06 19:21 bis 19:23 +01:00                                              |
+| Erweiterungen live               | pg_stat_statements 1.11, pgcrypto 1.3, plpgsql 1.0, supabase_vault 0.3.1, uuid-ossp 1.1                                                                                                                                                                              | RP-01                                                                                 |
+| Objektzahlen live (`public`)     | 25 Tabellen, 302 Spalten, 66 FK, 21 Unique, 41 Check, 74 Indizes, 41 Trigger, 41 Funktionen, 65 Policies, RLS auf 25 Tabellen, kein FORCE RLS, Enums 8 und 4                                                                                                         | RP-01                                                                                 |
+| Objektzahlen Git-Snapshot        | 25 Tabellen, 302 Spalten, 66 FK, 21 Unique, 41 Check, 74 Indizes (23 + 5 + 25 PK + 21 Unique), 41 Trigger, 41 Funktionen, 65 Policies, 25 × RLS, Enums 8 und 4                                                                                                       | Zählung in `supabase/schema/public-schema.sql` auf main `7dc4699d`                    |
+| Zeilen live (Auszug)             | profiles 9, user_roles 9, auth.users 9, audit_log 336, shared_activity_projection 47, shared_work_package_projection 20, shared_project_projection 5                                                                                                                 | RP-01                                                                                 |
+| Migrationshistorie               | 30 Einträge live (10 mit `statements` NULL), 33 Dateien im Repo; 4 nur im Repo, 1 nur live                                                                                                                                                                           | RP-01 (Feld `eingaenge`)                                                              |
+| Datenexport                      | Über Lovable „Export data“ am 2026-11-06 ausgelöst (Datei 19:06 +01:00): `sysingdashboard_261106.backup.zip` mit einem Eintrag `sysingdashboard_261106.backup` (664586 Bytes), Dateikopf `PGDMP` = pg_dump Custom-Format; Inhalt (u. a. Schema `auth`) nicht gelesen | Angabe Owner (`queue/A30.yaml`, Feld `eingaenge`); Inhalt zu belegen (Abschnitt 15.5) |
+| Struktur und Prüfwerte live      | RP-02 vollständig, nur SELECT, 2026-11-07 05:44 bis 05:45 +01:00; Soll-Werte Abschnitt 15.1                                                                                                                                                                          | Anlage `queue/anlagen/RP-02-ergebnis-2026-11-07.md` (Branch `ops/queue`)              |
+| FK von `public` auf `auth.users` | 19 Fremdschlüssel                                                                                                                                                                                                                                                    | `public-schema.sql`, `REFERENCES "auth"."users"`                                      |
+| Trigger auf `auth.users`         | `on_auth_user_created` (AFTER INSERT) ruft `public.handle_new_user()`; legt Profil, Rolle (erstes Konto `systemadministrator`, sonst `viewer`) und eine Zeile `audit_log` an                                                                                         | `supabase/migrations/20260717041306_…sql:187`, `public-schema.sql:1434`               |
 
 **Befund:** Alle neun Objektzahlen aus RP-01 stimmen mit dem aus den Git-Migrationen erzeugten Snapshot überein. Das ist ein starkes Indiz, aber kein Nachweis der Gleichheit; Definitionen (Funktionskörper, Policies, Defaults) prüft erst RP-02 über Prüfsummen.
 
@@ -86,13 +87,13 @@ Fehlt und muss nach Freigabe entstehen (Abschnitt 13, Folgeauftrag):
 
 ## 6 Eingänge
 
-| Eingang     | Quelle                                                                 | Verwendung                       | Status                                         |
-| ----------- | ---------------------------------------------------------------------- | -------------------------------- | ---------------------------------------------- |
-| Schema      | `supabase/migrations` auf dem geprüften Commit (heute main `7dc4699d`) | S3 Aufbau                        | vorhanden                                      |
-| Schema live | RP-02 (Katalog und Prüfsummen, ohne Werte)                             | S3 Vergleich                     | Auftrag liegt vor, nicht ausgeführt            |
-| Daten       | Lovable „Export data“ unter `C:\dev\restore-probe`                     | S4 Import                        | Inhalt, Format, Umfang zu belegen (Schritt S0) |
-| Prüfwerte   | RP-02 Teil J (Zeilenzahl, Prüfsumme je Tabelle); RP-03 (Entwurf)       | S4 Abnahme                       | offen                                          |
-| Auth-Konten | RP-03 Teil C (IDs und Metadaten ohne E-Mail und Hash)                  | Konten neu anlegen (Abschnitt 8) | offen                                          |
+| Eingang     | Quelle                                                                             | Verwendung                       | Status                                                                              |
+| ----------- | ---------------------------------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------- |
+| Schema      | `supabase/migrations` auf dem geprüften Commit (heute main `7dc4699d`)             | S3 Aufbau                        | vorhanden                                                                           |
+| Schema live | RP-02 (Katalog und Prüfsummen, ohne Werte)                                         | S3 Vergleich                     | ausgeführt 2026-11-07, Anlage `RP-02-ergebnis-2026-11-07.md`                        |
+| Daten       | Lovable „Export data“ unter `C:\dev\restore-probe` (pg_dump Custom-Format)         | S4 Import                        | Format belegt (`PGDMP`); Inhalt per `pg_restore --list` zu belegen (Abschnitt 15.5) |
+| Prüfwerte   | RP-02 Teil J2 (Zeilenzahl, md5 je Tabelle, Stand 05:45:08 +01:00); RP-03 (Entwurf) | S4 Abnahme                       | J2 liegt vor; RP-03 offen                                                           |
+| Auth-Konten | RP-03 Teil C (IDs und Metadaten ohne E-Mail und Hash)                              | Konten neu anlegen (Abschnitt 8) | offen                                                                               |
 
 Die Migrationshistorie weicht ab (4 Dateien nur im Repo, 1 Eintrag nur live, 10 Einträge ohne `statements`). Das Schema darf deshalb nicht allein mit dem Aufbau aus `supabase/migrations` als gleich gelten; Gleichheit muss über RP-02 belegt werden.
 
@@ -142,6 +143,8 @@ Ablauf (nach Freigabe als Skript):
 | S6 (Teil) | App lokal (`npm run dev`) gegen die Probe; Anmeldung je Konto; Sicht je Rolle nach `docs/RBAC-MATRIX.md`; RLS-Sichtprobe je Rolle als SQL                                                                                                                                         | Anmeldung für alle 9 Konten; je Rolle sichtbare Zeilen entsprechen der Erwartung (z. B. `viewer` ohne Beträge, `kiosk` nur `/kiosk`); keine Rolle sieht mehr als im Betrieb (REST-11)                                                                                                                                                                               | 1–3 h             |
 | Protokoll | Protokoll nach Abschnitt 11, EV-0004 fortschreiben, Export nach Löschfrist löschen                                                                                                                                                                                                | Protokoll im Git, Beleg im Tracker                                                                                                                                                                                                                                                                                                                                  | 1 h               |
 
+Die Abnahmekriterien für S3 und S4 sind seit RP-02 konkret: Abschnitt 15.3 ist für S3 und S4 maßgeblich und ersetzt die allgemeinen Kriterien oben, soweit sie sich widersprechen.
+
 Hinweise zu S4:
 
 - Prüfsummen sind nur vergleichbar, wenn live und lokal derselbe SQL-Text und dieselben Sitzungseinstellungen gelten (`TimeZone`, `DateStyle`, `IntervalStyle`, `extra_float_digits`, Sortierung). RP-02 und RP-03 müssen diese Werte ausgeben (Änderungsvorschläge, Abschnitt 10).
@@ -167,6 +170,8 @@ Ergebnis: Der Auftragstext ist **lesend** (nur SELECT, Abbruchregel bei Schreibe
 | V-11 | Views und materialisierte Views werden nicht abgefragt (Git-Snapshot: 0).                                                                                                                                           | Zählung in Teil 0 aufnehmen.                                                                                                                                                                                   | niedrig |
 | V-12 | Migrationshistorie nur in RP-01 erfasst.                                                                                                                                                                            | Optional Teil N: `version`, `name`, `statements IS NULL`, md5(`statements`) je Eintrag.                                                                                                                        | niedrig |
 | V-13 | Teil B hat 302 Zeilen, also 3 Blöcke.                                                                                                                                                                               | Erwartete Zeilenzahl je Teil nennen (B 302, C 25 PK + 66 + 21 + 41, D 74, E 41, F 41, G 65, H 75 bei 3 Rollen), damit Kürzungen auffallen.                                                                     | niedrig |
+
+Nachtrag 2026-11-07: RP-02 lief in der ursprünglichen Fassung, nicht als RP-02a. V-01 (SQL-Text), V-02 (Zielbindung), V-03 (Sitzungseinstellungen) und V-04 (`jsonb` in J2) sind damit nicht umgesetzt; die Folgen für die Abnahme stehen in Abschnitt 15.6. H lieferte 59 statt der in V-13 angenommenen 75 Zeilen, weil `anon` nur auf 9 von 25 Tabellen Rechte hat (Abschnitt 15.1).
 
 ## 11 Protokollvorlage EV-0004
 
@@ -257,14 +262,113 @@ Gesamt 14 bis 37 Stunden, erwartet etwa 20 Stunden. Der Gate-Bericht schätzt G0
 
 ## 14 Entscheidungsvorlage
 
-| Nr. | Frage                                              | Optionen                                                                                       | Empfehlung                                                      |
-| --- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| E1  | Umgebung und Image                                 | A Supabase CLI lokal, B `postgres:17`, C Einzelcontainer `supabase/postgres:17.6.1.147`        | A, C als Rückfall                                               |
-| E2  | Auth-Konten                                        | a neu mit Live-UUIDs, Probe-Adressen, lokalen Kennwörtern; b Export samt Hashes; c ohne Konten | a                                                               |
-| E3  | Datenquelle S4                                     | V1 Lovable „Export data“ plus RP-03 als Prüfwerte; V2 Export über SELECT                       | V1, V2 nur bei Lücke in S0                                      |
-| E4  | RP-02                                              | unverändert ausführen; Fassung RP-02a mit V-01 bis V-07                                        | RP-02a                                                          |
-| E5  | Ablage und Löschfrist des Exports                  | lokal verschlüsselt mit Löschung nach Protokoll; TeamDrive nach REST-15                        | lokal verschlüsselt, Löschung spätestens 14 Tage nach Protokoll |
-| E6  | Umfang Rollenabnahme                               | alle 9 Konten; je Rolle ein Konto (8 Rollen, soweit belegt)                                    | alle 9 Konten                                                   |
-| E7  | Freigabe für Skripte (Abschnitt 5, Punkte 1 bis 5) | jetzt als Folgeauftrag; nach RP-02                                                             | jetzt, damit RP-02a die feste SQL-Datei nutzt                   |
+| Nr. | Frage                                              | Optionen                                                                                       | Empfehlung                                                                                            |
+| --- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| E1  | Umgebung und Image                                 | A Supabase CLI lokal, B `postgres:17`, C Einzelcontainer `supabase/postgres:17.6.1.147`        | A, C als Rückfall                                                                                     |
+| E2  | Auth-Konten                                        | a neu mit Live-UUIDs, Probe-Adressen, lokalen Kennwörtern; b Export samt Hashes; c ohne Konten | a                                                                                                     |
+| E3  | Datenquelle S4                                     | V1 Lovable „Export data“ plus RP-03 als Prüfwerte; V2 Export über SELECT                       | V1, V2 nur bei Lücke in S0                                                                            |
+| E4  | RP-02                                              | unverändert ausführen; Fassung RP-02a mit V-01 bis V-07                                        | erledigt: RP-02 unverändert ausgeführt (2026-11-07); Lücken über RP-02b nach Abschnitt 15.6 schließen |
+| E8  | Weg für die Struktur                               | W1 Aufbau aus Migrationen plus Datenimport; W2 `pg_restore` aus dem Dump; beide                | beide, W2 führend für R-14 (Abschnitt 15.4)                                                           |
+| E5  | Ablage und Löschfrist des Exports                  | lokal verschlüsselt mit Löschung nach Protokoll; TeamDrive nach REST-15                        | lokal verschlüsselt, Löschung spätestens 14 Tage nach Protokoll                                       |
+| E6  | Umfang Rollenabnahme                               | alle 9 Konten; je Rolle ein Konto (8 Rollen, soweit belegt)                                    | alle 9 Konten                                                                                         |
+| E7  | Freigabe für Skripte (Abschnitt 5, Punkte 1 bis 5) | jetzt als Folgeauftrag; nach RP-02                                                             | jetzt, damit RP-02a die feste SQL-Datei nutzt                                                         |
 
-Ohne Entscheidung zu E1, E2, E4 und E7 darf die Probe nicht beginnen.
+Ohne Entscheidung zu E1, E2, E7 und E8 darf die Probe nicht beginnen.
+
+## 15 Nachtrag 2026-11-07: Abnahmekriterien aus RP-02 (A30, A38)
+
+Grundlage: Ergebnis RP-02 (Owner, 2026-11-07 05:44 bis 05:45 +01:00, nur SELECT, alle Teile vollständig), Anlage `queue/anlagen/RP-02-ergebnis-2026-11-07.md` auf Branch `ops/queue` (873 Zeilen). Dieser Abschnitt übernimmt nur Zählwerte und Verweise, keine Rohdaten. Maßgeblich für jeden Einzelwert ist die Anlage.
+
+Begriffe: Der Auftragstext A30 nennt die Struktur „S1/S2“ und die Daten „S3“. Dieser Plan behält die Stufen des Standards (`STANDARD-WIEDERHERSTELLBARKEIT.md`): Struktur ist **S3**, Daten sind **S4**.
+
+### 15.1 Soll-Werte aus RP-02 (Stand live 2026-11-07)
+
+| Teil | Objekt                                              | Soll live                                                                                                               | Fundstelle in der Anlage                      |
+| ---- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| A    | Objekte der vier Repo-Migrationen ohne Live-Eintrag | A1 bis A10 alle vorhanden, FK validiert, `has_permission` SECURITY INVOKER                                              | Teil A                                        |
+| B    | Spalten                                             | 302 (25 Tabellen)                                                                                                       | Teil B, 3 Blöcke                              |
+| C    | Constraints                                         | 153 = 25 PK + 66 FK + 21 Unique + 41 Check, alle validiert                                                              | Teil C, 2 Blöcke                              |
+| D    | Indizes                                             | 74                                                                                                                      | Teil D                                        |
+| E    | Funktionen                                          | 41, je ein md5 von `pg_get_functiondef`; 15 SECURITY DEFINER                                                            | Teil E                                        |
+| E    | Funktionsrechte                                     | 109 Zeilen; `postgres` und `service_role` bei 41; `authenticated` bei 21; `anon` und PUBLIC bei 2                       | Teil E, Absatz „Funktionsrechte“              |
+| F    | Trigger (nicht intern)                              | 41, alle aktiviert (`O`)                                                                                                | Teil F                                        |
+| G    | Policies                                            | 65, Rollen durchgehend `{authenticated}`; je Policy md5 und Länge von `qual` und `with_check`                           | Teil G                                        |
+| H    | Tabellenrechte                                      | 59 Zeilen: `service_role` 25, `authenticated` 25, `anon` 9; RLS 25 von 25, FORCE RLS 0                                  | Teil H                                        |
+| I    | Sequenzen, Identität                                | 0                                                                                                                       | Teil I                                        |
+| J1   | Ausgeschlossene Spalten                             | 12 (alle `jsonb`, Namen mit `hash`, `email`, `phone`)                                                                   | Teil J1                                       |
+| J2   | Zeilen und md5 je Tabelle                           | 25 Tabellen, 728 Zeilen gesamt, 5 Tabellen leer (md5 von `'LEER'`); z. B. `audit_log` 336, `profiles` 9, `user_roles` 9 | Teil J2, Zeitpunkt 2026-11-07 05:45:08 +01:00 |
+
+Hinweis zur Vergleichbarkeit: Die md5-Werte von `pg_get_functiondef` sind nur bei **gleicher Postgres-Hauptversion (17)** vergleichbar, weil die Ausgabe der Funktion zwischen Hauptversionen abweichen kann. Die md5-Werte von J2 hängen zusätzlich von der Sitzungszeitzone ab (`to_jsonb` von `timestamptz`). RP-02 gibt `now()` mit `+00` aus; die Sitzung lief also in UTC. Lokal muss deshalb `SET TimeZone = 'UTC'` gelten.
+
+### 15.2 Vorabvergleich Git-Snapshot gegen RP-02 (ohne lokalen Aufbau)
+
+Claude Code hat die Anlage gegen `supabase/schema/public-schema.sql` (Rekonstruktion aus den Migrationen, Stand Tagesbündel `72a85f49`) abgeglichen. Das ist ein Textvergleich, kein Probelauf.
+
+| Prüfung                                                                 | Ergebnis                                                                                                                                                                                                                                                                                    |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Spalten (Tabelle, Position, Name, NULL)                                 | 302 von 302 gleich                                                                                                                                                                                                                                                                          |
+| Constraint-, Index-, Trigger-, Policy-, Funktionsnamen                  | 153, 74, 41, 65, 41 gleich; zwei Constraint-Namen unterscheiden sich nur durch die Kürzung auf 63 Zeichen in der Anzeige                                                                                                                                                                    |
+| Policy-Ausdrücke (md5 von `qual` und `with_check`)                      | 65 von 65 gleich, nach Entfernen der Anführungszeichen und des Präfixes `public.` aus dem Dump                                                                                                                                                                                              |
+| Funktions-md5 (Text von `pg_get_functiondef` aus dem Dump nachgebildet) | 37 von 41 gleich; **ungleich: `customer_responsibility_management_candidates`, `customer_responsibility_management_overview`, `end_customer_responsibility`, `set_customer_responsibility`** (alle aus `20260913150000_bsf03_p5_responsibility_management.sql`, live mit `statements` NULL) |
+| Funktionsrechte                                                         | `anon`/PUBLIC bei denselben 2 Funktionen; `reference_value_validate_scope`: Git-Snapshot mit EXECUTE für `authenticated`, live ohne                                                                                                                                                         |
+| Tabellenrechte `anon`                                                   | dieselben 9 Tabellen im Git-Snapshot (`GRANT ALL`) und live (SELECT, INSERT, UPDATE, DELETE); TRUNCATE, REFERENCES, TRIGGER fragt RP-02 nicht ab                                                                                                                                            |
+
+Die vier abweichenden Funktions-md5 sind ein **Befund (Drift Repo gegen Live), kein Fehler der Probe**. Ob nur Leerzeichen oder auch Logik abweichen, ist ohne den Funktionstext nicht belegbar; der lokale Aufbau W1 liefert den Repo-Text, RP-02b (Abschnitt 15.6) sollte für diese vier Funktionen die Länge und einen zeilenweisen md5 liefern.
+
+### 15.3 Abnahmekriterien
+
+| Stufe | Prüfung                                                                                                                                                    | Abnahmekriterium (muss)                                                                                                                                                                                                                                                        |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| S3    | Dieselben Katalogabfragen wie RP-02 Teile B bis H lokal mit `psql` (feste SQL-Datei, Abschnitt 5 Punkt 1), Postgres 17                                     | Zählwerte = Abschnitt 15.1; jede Zeile aus B bis H gleich der Anlage oder als Unterschied einzeln bewertet; Funktions-md5 41 von 41 gleich bei W2; bei W1 sind genau die vier Funktionen aus 15.2 als bekannter Befund zugelassen, jede weitere Abweichung ist neu zu bewerten |
+| S3    | Teil H und Funktionsrechte                                                                                                                                 | Tabellenrechte und EXECUTE-Rechte je Rolle gleich der Anlage; Abweichungen (z. B. `reference_value_validate_scope` bei W1) einzeln vermerkt                                                                                                                                    |
+| S3    | Version                                                                                                                                                    | `select version()` lokal mit Hauptversion 17; sonst sind die Funktions-md5 nicht vergleichbar und S3 gilt nur für Zählwerte                                                                                                                                                    |
+| S4    | J2 lokal: `md5(coalesce(jsonb_agg(to_jsonb(t) - <Ausschluss J1> ORDER BY <Primärschlüssel>)::text, 'LEER'))` und Zeilenzahl je Tabelle, `TimeZone = 'UTC'` | 25 von 25 Tabellen mit gleicher Zeilenzahl und gleichem md5 wie J2. Gleichheit belegt zugleich, dass Export (2026-11-06 19:06 +01:00) und RP-02 (2026-11-07 05:45 +01:00) denselben Datenstand hatten                                                                          |
+| S4    | Abweichung in J2                                                                                                                                           | Ungleiche Tabellen einzeln klären: Datenänderung zwischen Export und RP-02 (jüngster Zeitstempel, RP-03 Teil B) oder Importfehler. Ohne Klärung gilt S4 als nicht bestanden                                                                                                    |
+| S4    | Nicht durch J2 gedeckt                                                                                                                                     | `jsonb`-Spalten (u. a. `audit_log.payload`), Spalten mit `hash`, `email`, `phone`: über RP-02b oder RP-03 Teil D prüfen; bis dahin „audit_log vollständig“ nur für Zeilenzahl und übrige Spalten belegt                                                                        |
+| S4    | Auth                                                                                                                                                       | `auth.users` = 9 mit den Live-UUIDs (RP-01); Herkunft nach Abschnitt 15.5 (aus dem Dump oder neu angelegt)                                                                                                                                                                     |
+
+### 15.4 Zwei Wege für die Struktur
+
+| Merkmal             | W1: Aufbau aus `supabase/migrations` (`npm run db:schema:rebuild`), danach Daten aus dem Dump (`pg_restore --data-only`) | W2: `pg_restore` aus dem Dump (Schema und Daten)                                                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Belegt              | Git ist als Quelle des Schemas tragfähig (REST-06)                                                                       | Die Sicherung selbst ist wiederherstellbar (R-14, G03)                                                                                                              |
+| Erwartung S3        | 4 Funktions-md5 und 1 Funktionsrecht ungleich (15.2); übrige Teile gleich                                                | alle Teile gleich, falls der Dump vollständig ist                                                                                                                   |
+| Risiken             | Datenimport scheitert, wenn Spalten oder Constraints abweichen; Trigger feuern beim Import ohne Triggerschutz            | Konflikte mit plattformverwalteten Objekten (Schemas `auth`, `storage`, `extensions`, Rollen, Eigentümer `supabase_admin`); Version von `pg_restore` muss ≥ 17 sein |
+| Optionen            | `--data-only --schema=public` und Triggerschutz (Abschnitt 9)                                                            | `--schema=public` (und ggf. `--schema=auth --data-only`), `--no-owner`; **nicht** `--no-privileges`, sonst fehlen die Rechte aus Teil H                             |
+| Aufwand (Schätzung) | wie Abschnitt 13                                                                                                         | zusätzlich 1 bis 3 h für Konfliktbehandlung                                                                                                                         |
+
+Empfehlung: Beide Wege sollten laufen, W2 zuerst und führend für R-14. W1 läuft danach auf einer neu aufgebauten Instanz. Unterschiede zwischen W1 und W2 in S3 sind Drift zwischen Repo und Live und gehen als Befund in das Protokoll, nicht als Fehler der Probe.
+
+```mermaid
+flowchart LR
+  D[Dump Custom-Format] --> L[Owner: pg_restore --list]
+  L --> W2[W2: pg_restore Schema und Daten]
+  G[supabase/migrations] --> W1[W1: db:schema:rebuild]
+  D --> W1D[W1: pg_restore --data-only]
+  W1 --> W1D
+  W2 --> K2[RP-02 B bis H und J2 lokal]
+  W1D --> K1[RP-02 B bis H und J2 lokal]
+  K2 --> V[Vergleich mit Anlage RP-02]
+  K1 --> V
+  V --> P[Protokoll EV-0004]
+```
+
+### 15.5 Owner-Schritt: Verzeichnis des Dumps lesen
+
+Claude Code öffnet den Export nicht. Der Owner muss vor S3 das Inhaltsverzeichnis lesen, ohne Daten auszugeben:
+
+1. ZIP in ein verschlüsseltes Arbeitsverzeichnis außerhalb von OneDrive entpacken; SHA-256 von ZIP und `.backup` mit `Get-FileHash` notieren.
+2. `pg_restore` in Version 17 nutzen, z. B. im Container: `docker run --rm -v C:\dev\restore-probe:/probe:ro postgres:17 pg_restore --list /probe/sysingdashboard_261106.backup > C:\dev\restore-probe\auftraege\rp-dump-list.txt`. Die Liste enthält nur Objektnamen, keine Datenwerte.
+3. Ins Protokoll übernehmen (nur Zählwerte): Kopfzeilen „Dumped from database version“, „Dumped by pg_dump version“, „Format“, „TOC Entries“; Anzahl `TABLE DATA public` (Soll 25); ob `SCHEMA - auth` und `TABLE DATA auth users`, `auth identities` vorhanden sind; Anzahl `ACL`-Einträge und `DEFAULT ACL`; Anzahl `FUNCTION public` (Soll 41), `POLICY` (Soll 65), `TRIGGER` (Soll 41).
+4. Ergebnis entscheidet E2 (Abschnitt 14): Enthält der Dump `auth.users` samt Hashes, darf die Probe die Konten trotzdem nicht mit Produktiv-Hashes anmelden (REST-22); die UUIDs sind dann aus dem Dump belegt, die Kennwörter werden lokal neu gesetzt. Fehlt `auth`, gilt Abschnitt 8 unverändert.
+5. Die Liste bleibt lokal; nur die Zählwerte aus Schritt 3 dürfen ins Protokoll.
+
+### 15.6 Folgen der unveränderten Fassung von RP-02
+
+| Lücke | Wirkung auf die Abnahme                                                                      | Abhilfe                                                                                                                   |
+| ----- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| V-01  | SQL-Text nicht ausgegeben; J2 ist nur über die Formel im Auftragstext nachzubilden           | Feste SQL-Datei (Abschnitt 5 Punkt 1); stimmen lokal 25 von 25 md5, ist die Nachbildung belegt                            |
+| V-02  | Keine Zielbindung im Ergebnis                                                                | In RP-02b oder RP-03 Teil 0 nachholen                                                                                     |
+| V-03  | Sitzungseinstellungen nicht ausgegeben; Zeitzone UTC nur aus `now()` abgeleitet              | Lokal UTC setzen; RP-03 Teil 0 belegt die Werte                                                                           |
+| V-04  | `jsonb`-Spalten nicht in J2                                                                  | RP-03 Teil D (mit `jsonb`) oder RP-02b mit md5 nur über die `jsonb`-Spalten                                               |
+| neu   | TRUNCATE, REFERENCES, TRIGGER, `pg_default_acl`, Schema `private` und `auth` nicht abgefragt | RP-02b: Tabellenrechte mit allen sieben Rechten, `pg_default_acl` je Grantor, Funktionen in `private` mit md5 und Rechten |
