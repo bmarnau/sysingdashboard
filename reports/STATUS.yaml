@@ -1,7 +1,10 @@
-stand: 2026-11-07T07:24+01:00
-laufender_auftrag: keiner
+stand: 2026-11-07T08:05+01:00
+laufender_auftrag:
+  - {id: A40, start: "2026-11-07T08:02+01:00", art: Agent, "Doku im Worktree, Übernahme ins Tagesbündel"}
+  - {id: A41, start: "2026-11-07T08:02+01:00", art: Agent, "nur Plan"}
+  - {id: A39, start: "2026-11-07T08:05+01:00", art: Hauptsitzung, "Restore-Probe lokal, Docker nur localhost"}
 letzter_auftrag: {id: A38, status: erledigt, bericht: reports/A38-BERICHT.md}
-betrieb: "pausiert; Sitzungsende 2026-11-07 07:24 auf Anweisung des Owners (kontrollierter Abschluss)"
+betrieb: "normal; Auftrag des Owners 2026-11-07 ca. 08:00: A40, A41, A39"
 betriebsart: "Owner-Vorgabe 2026-11-07 (dauerhaft): Aufträge parallel mit Agenten, nicht auf Merge warten, Stand kommentieren, Bericht je Auftrag mit eigenen Ideen. Agenten arbeiten lesend oder auf eigenem Worktree; Commits auf Tagesbündel und ops/reports nur durch die Hauptsitzung."
 erledigt_heute: [A23, A32, A36, A26, A22, A29, A30, A37, A33, A28, A31, A27, A38]
 offen_in_warteschlange: {A34: "bereit (A28 erledigt)", A35: "bereit (A30, A38 erledigt)", A39: "wartet auf Freigabe", A07: wartet_auf_entscheidung, A24: geplant}
