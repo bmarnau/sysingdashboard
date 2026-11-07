@@ -11,6 +11,14 @@ dieser Datei.
 
 Stand: 2026-11-07 · Dashboard-Version 1.70.0
 
+## 2026-11-07 — Nachtrag nach dem Merge von PR 283
+
+Der Owner hat PR 283 um 07:08 Z gemergt. Alle 15 Prüfungen waren grün, auch auf `main` danach. PR 282 zeigt GitHub ebenfalls als gemergt. Er wurde aber nicht eigens gemergt: Sein Inhalt steckte schon in PR 283. Der Planer schrieb „PR 282 ist geschlossen“. Das stimmt nur halb, GitHub sagt „gemergt“.
+
+Damit sind zwei weitere Gates erfüllt: Exporte ohne Abrechnungsrecht zeigen keine Beträge mehr (G07). Das JSON-Backup aus „Export…“ enthält ohne dieses Recht keinen Stundensatz (G09). Zwei Gates bleiben offen. Im Tätigkeitsdialog sieht der Engineer noch den Schalter „abrechenbar“ und den Abrechnungsstatus. Ob das so bleiben darf, muss der Owner sagen (G08). Im CHANGELOG fehlen noch die Paket-Updates K1 und K2 und die PDF-Korrektur aus PR 278 (G15). Jetzt sind 9 von 22 Gates vor dem Publish erfüllt, keines liegt mehr in einem PR.
+
+Neu im Risikoregister ist die Annahme AN-01. Die automatische Sicherung (ZIP) enthält immer den Stundensatz. Das ist nur in Ordnung, solange jeder, der Sicherungen wiederherstellen darf, auch Abrechnungsdaten sehen darf. Heute sind das nur Systemadministrator und Administrator, ein Test prüft das. Aufgefallen ist: Die tägliche Sicherung läuft für jede Rolle im Browser. Öffnen kann sie aber nur, wer das Recht `backup.restore` hat. Ein eigener Vertragstest folgt als A42. Publish bleibt No-Go.
+
 ## 2026-11-07 — Entscheidungen vom 7. November
 
 Der Owner hat am 7. November entschieden, dass vor jeder Veröffentlichung geprüft wird, ob der Datenbankschutz für alle 25 Tabellen eingeschaltet ist; die Prüfung von heute zeigt das, gilt aber nur eine Woche und muss kurz vor der Veröffentlichung wiederholt werden. Das eigene Anzeigekonto für das Wandgerät kommt erst nach der Veröffentlichung, bis dahin trägt der Owner das Restrisiko bewusst für höchstens 30 Tage, und für den Notfall ist eine zweite Vertrauensperson aus der Familie benannt, deren Name nur im Notfallumschlag steht (Umschlag und Zugang sind noch einzurichten). Auf die Antwort des Lovable-Supports zu den leeren Migrationseinträgen wartet der Owner noch bis Montag, 9. November.

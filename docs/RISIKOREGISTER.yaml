@@ -1,5 +1,5 @@
 # Risikoregister Golden Gate (Interne Freigabe 1.0)
-# Stand: 2026-11-07 (Bewertung vom 2026-11-02 unverändert; Ergänzungen R-07, R-10, RA-01; A40: R-04 Hinweis, RA-02). Führend für Bewertung, Verantwortung und Prüfrhythmus.
+# Stand: 2026-11-07 (Bewertung vom 2026-11-02 unverändert; Ergänzungen R-07, R-10, RA-01; A40: R-04 Hinweis, RA-02, Annahme AN-01). Führend für Bewertung, Verantwortung und Prüfrhythmus.
 # Beschreibung, Wirkung und Gegenmaßnahmen der Risiken R-01 bis R-14 stehen im Tracker
 # (docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml, Abschnitt risiken) und werden hier nicht wiederholt.
 # L2-R1 bis L2-R5 stehen in docs/L2-COCKPIT-SCHNITT-KONZEPT.md (Abschnitt Risiken).
@@ -221,7 +221,7 @@ risiken:
     funktionale_sicherheit: true
     betroffene_pakete: [L8, BSF-06, Publish]
     naechste_pruefung: 2026-11-09
-    anmerkung: "Entscheidung des Owners 2026-11-02: Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish."
+    anmerkung: "Entscheidung des Owners 2026-11-02: Datenexport und Wiederherstellungsprobe sind Gate vor dem ersten Publish. Annahme AN-01 (2026-11-07): Das ZIP-Backup 2.0 enthält hourlyRate immer; zulässig nur, solange jede Rolle mit backup.restore auch billing.view hat."
   # L2-Cockpit (Konzept Abschnitt Risiken)
   - id: L2-R1
     kategorie: Sicherheit
@@ -319,6 +319,26 @@ risikoakzeptanzen:
     eigner: Owner
     status: akzeptiert
     naechste_pruefung: "30 Tage nach dem Publish 1.70.0"
+
+# Annahmen: Bedingungen, unter denen eine Entscheidung oder ein Code-Pfad zulässig ist. Bricht eine Annahme, gilt die Entscheidung nicht mehr.
+annahmen:
+  - id: AN-01
+    titel: "ZIP-Backup 2.0 enthält hourlyRate immer; zulässig nur, solange jede Rolle mit backup.restore auch billing.view hat"
+    kategorie: Sicherheit
+    entschieden_durch: Owner
+    datum: 2026-11-07
+    quelle: "Entscheidung des Owners 2026-11-07, dokumentiert im Planer-Auftrag A40 (origin/ops/queue, queue/A40.yaml)"
+    code: "src/lib/backup/zip.ts:114-116 (buildZip, JsonExportService.exportFullJson mit includeBilling: true, seit PR 283, main be712548)"
+    rollenmatrix: "src/lib/rbac/permissions.ts: backup.restore nur systemadministrator (:131) und administrator (:156); beide haben billing.view (:143, :167). Ohne backup.restore: teamlead, projectmanager, engineer, customer, viewer, kiosk."
+    beleg_test: "src/__tests__/security/qs6-5-export-billing.test.ts:179-191 (für jede Rolle in ROLE_PERMISSIONS mit backup.restore oder azure.export wird billing.view erwartet); läuft im CI-Job 7 RBAC & Security, am Head 9c60a92f grün"
+    grenze_des_belegs: "Der Test prüft die statische Rollenmatrix, nicht die Einstiegspunkte. Die automatische Tagessicherung (BackupService.scheduleDaily, src/routes/_authenticated/dashboard.tsx:309) läuft für jede angemeldete Rolle ohne Rechteprüfung und legt das ZIP im IndexedDB des Browsers ab. Herunterladen und Wiederherstellen nur über den Dialog Backup (src/components/dashboard/header/ServiceMenu.tsx:174, backup.restore) und Aus Azure importieren (src/components/azure/AzureActionsPanel.tsx:98, azure.import oder backup.restore). Inhalt ist der localStorage-Stand desselben Browsers (src/lib/backup/snapshot.ts), keine neue Datenquelle. billing.view gibt es nur im Client, nicht in supabase/schema/public-schema.sql."
+    bruch_wenn: "eine Rolle backup.restore ohne billing.view erhält, ein neuer Einstieg zum Herunterladen gespeicherter Sicherungen ohne backup.restore entsteht oder billing.view serverseitig eingeführt wird"
+    vertragstest: "A42, Draft-PR folgt: Rolle mit backup.restore ohne billing.view muss den Test rot machen (Negativfall mit manipulierter Matrix); Einstiegspunkte zu gespeicherten Sicherungen nur mit backup.restore"
+    bezug: [R-14, G07, G09, QS-06]
+    hinweis: "ops/reports reports/A36-BERICHT.md (hourlyRate auf dem Veröffentlichungsweg, Option A) berührt das ZIP-Backup nicht; AN-01 gilt unabhängig davon"
+    eigner: Owner
+    status: gilt
+    naechste_pruefung: "bei jeder Änderung an src/lib/rbac/permissions.ts oder src/lib/backup/"
 
 einordnung:
   spof_gesamt: [R-04, R-07, R-11, R-12, R-14, L2-R5]

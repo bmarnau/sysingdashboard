@@ -1,6 +1,6 @@
 # Publish-Plan 1.70.0 (Runbook)
 
-Stand: 2026-11-07 · Auftrag A28, ergänzt A40 · Status: Plan, keine Freigabe · Publish bleibt No-Go (R-07, `CLAUDE.md`) bis zum Go des Owners für genau einen geprüften Commit · Bezug: `docs/PUBLISH-GATE-BERICHT.md` (Gates G01 bis G22 und G24, Nachträge 2026-11-07), `docs/LOVABLE-PUBLISH-PRUEFUNG.md`, `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md`, `docs/NOTFALL-HANDBUCH.md` (N1a)
+Stand: 2026-11-07 · Auftrag A28, ergänzt A40 (mit Nachtrag 2 nach dem Merge von PR 283) · Status: Plan, keine Freigabe · Publish bleibt No-Go (R-07, `CLAUDE.md`) bis zum Go des Owners für genau einen geprüften Commit · Bezug: `docs/PUBLISH-GATE-BERICHT.md` (Gates G01 bis G22 und G24, Nachträge 2026-11-07), `docs/LOVABLE-PUBLISH-PRUEFUNG.md`, `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md`, `docs/NOTFALL-HANDBUCH.md` (N1a)
 
 Dieser Plan legt Reihenfolge, Muss-Gates und Anforderungen für den ersten Publish seit 1.69.0 fest. Er ersetzt keine Prüfung: „erfüllt“ steht nur mit Beleg im Gate-Bericht.
 
@@ -59,7 +59,7 @@ Jeder Merge nach `main` und jede Lovable-Änderung nach dem Lese-Prompt macht di
 
 ## 3 Muss-Gates
 
-Stand laut `docs/PUBLISH-GATE-BERICHT.md`, Nachtrag 2026-11-07 (inkl. A28 und A40). Zählung A40: 23 geführte Gates, davon 22 vor dem Publish (7 erfüllt, 2 in PR, 1 extern, 12 offen) und 1 Folgepunkt (G20); G23 ist Vorschlag und nicht gezählt. Muss-Gates: 15, davon 4 erfüllt (G02, G06, G13, G24), 2 in PR, 9 offen. Ohne Beleg „erfüllt“ kein Go.
+Stand laut `docs/PUBLISH-GATE-BERICHT.md`, Nachtrag 2026-11-07 (inkl. A28, A40 und A40 Nachtrag 2). Zählung nach dem Merge von PR 283 (`be712548`): 23 geführte Gates, davon 22 vor dem Publish (9 erfüllt, 0 in PR, 1 extern, 12 offen) und 1 Folgepunkt (G20); G23 ist Vorschlag und nicht gezählt. Muss-Gates: 15, davon 6 erfüllt (G02, G06, G07, G09, G13, G24), 0 in PR, 9 offen. P1 ist damit bis auf G08 (Frage 1 zum Abrechnungsstatus) und G15 (CHANGELOG-Einträge K1/K2 und PR 278) abgeschlossen. Ohne Beleg „erfüllt“ kein Go.
 
 ```yaml
 muss_gates:
@@ -81,9 +81,27 @@ muss_gates:
       stand: erfüllt,
       beleg: "Entscheidung des Owners 2026-11-06 (laut Auftrag A28)",
     }
-  - { gate: G07, inhalt: QS6-5 Exporte, phase: P1, stand: in PR }
-  - { gate: G08, inhalt: F-QS6-ENG-01 Tätigkeitsdialog, phase: P1, stand: offen }
-  - { gate: G09, inhalt: F-QS6-ENG-02 JSON-Backup, phase: P1, stand: offen }
+  - {
+      gate: G07,
+      inhalt: QS6-5 Exporte,
+      phase: P1,
+      stand: erfüllt,
+      beleg: "PR 283 gemergt be712548 (2026-11-07), 15/15 Checks am Head 9c60a92f",
+    }
+  - {
+      gate: G08,
+      inhalt: F-QS6-ENG-01 Tätigkeitsdialog,
+      phase: P1,
+      stand: offen,
+      hinweis: "teilweise belegt; Satz und Betrag ausgeblendet, Abrechnungsstatus sichtbar, Frage 1 offen",
+    }
+  - {
+      gate: G09,
+      inhalt: F-QS6-ENG-02 JSON-Backup,
+      phase: P1,
+      stand: erfüllt,
+      beleg: "Fix 9c60a92f, gemergt be712548; qs6-ga09-json-backup.test.ts",
+    }
   - { gate: G10, inhalt: Engineer-Abnahme QS-06, phase: P3, stand: offen }
   - {
       gate: G13,
@@ -92,7 +110,13 @@ muss_gates:
       stand: erfüllt,
       beleg: "Entscheidung des Owners 2026-11-06 (laut Auftrag A28)",
     }
-  - { gate: G15, inhalt: L2-12 Handbuch und CHANGELOG 1.70.0, phase: P1, stand: in PR }
+  - {
+      gate: G15,
+      inhalt: L2-12 Handbuch und CHANGELOG 1.70.0,
+      phase: P1,
+      stand: offen,
+      hinweis: "Inhalt PR 282 auf main; Einträge K1/K2 und PR 278 fehlen",
+    }
   - { gate: G17, inhalt: Lovable-Sync nach letztem Merge, phase: P3, stand: offen }
   - {
       gate: G19,

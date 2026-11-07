@@ -1,6 +1,6 @@
 # Risikoregister Golden Gate
 
-Stand: 2026-11-07 (Bewertung vom 2026-11-02 unverändert; A40: Hinweis R-04, RA-02) · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung) · Texte zu R-01 bis R-14: Tracker, Abschnitt `risiken` · Status: **Bewertung vom Owner am 2026-11-02 bestätigt** (R-04, R-11, R-07 und R-14 einzeln, die übrigen nach der vereinbarten Regel)
+Stand: 2026-11-07 (Bewertung vom 2026-11-02 unverändert; A40: Hinweis R-04, RA-02, Annahme AN-01) · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung) · Texte zu R-01 bis R-14: Tracker, Abschnitt `risiken` · Status: **Bewertung vom Owner am 2026-11-02 bestätigt** (R-04, R-11, R-07 und R-14 einzeln, die übrigen nach der vereinbarten Regel)
 
 ## 1 Methode
 
@@ -94,6 +94,20 @@ quadrantChart
 Nach dem Publish folgt die Migration auf `zod@4.6.6` (8 bis 16 h, `docs/BACKLOG.md`). Die Akzeptanz endet mit dem Merge dieser Migration oder mit einer neuen Entscheidung des Owners.
 
 RA-02 endet mit der Ausführung des Datenauftrags Weg B (`docs/DATENAUFTRAG-KIOSK-KONTO.md`, zwei Freigaben nach ADR-0037) oder mit einer neuen Entscheidung des Owners. Läuft die Nachfrist ohne Ausführung ab, muss der Owner neu entscheiden.
+
+## 5a Annahmen
+
+Eine Annahme beschreibt die Bedingung, unter der eine Entscheidung oder ein Code-Pfad zulässig ist. Bricht sie, gilt die Entscheidung nicht mehr und der Owner muss neu entscheiden.
+
+| ID    | Annahme                                                                                                                      | Quelle                                                  | Beleg                                                                                                                                      | Bezug                 | Status |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- | ------ |
+| AN-01 | Das ZIP-Backup 2.0 enthält `hourlyRate` immer; zulässig nur, solange jede Rolle mit `backup.restore` auch `billing.view` hat | Entscheidung des Owners 2026-11-07 (Planer-Auftrag A40) | Rollenmatrix `src/lib/rbac/permissions.ts:131`, `:143`, `:156`, `:167`; Test `src/__tests__/security/qs6-5-export-billing.test.ts:179-191` | R-14, G07, G09, QS-06 | gilt   |
+
+Code: `src/lib/backup/zip.ts:114-116` (`buildZip`, `includeBilling: true` seit PR 283, `main` `be712548`). `backup.restore` haben nur Systemadministrator und Administrator, beide haben `billing.view`.
+
+Grenze des Belegs: Der Test prüft die statische Rollenmatrix, nicht die Einstiegspunkte. Die automatische Tagessicherung (`BackupService.scheduleDaily`, `src/routes/_authenticated/dashboard.tsx:309`) läuft für jede angemeldete Rolle und legt das ZIP im IndexedDB des Browsers ab. Herunterladen und Wiederherstellen gehen nur über den Dialog „Backup…“ (`backup.restore`, `ServiceMenu.tsx:174`) und „Aus Azure importieren“ (`azure.import` oder `backup.restore`, `AzureActionsPanel.tsx:98`). Der Inhalt stammt aus dem `localStorage` desselben Browsers (`src/lib/backup/snapshot.ts`), es entsteht keine neue Datenquelle.
+
+AN-01 bricht, wenn eine Rolle `backup.restore` ohne `billing.view` erhält, ein Einstieg zu gespeicherten Sicherungen ohne `backup.restore` entsteht oder `billing.view` serverseitig eingeführt wird. Vertragstest: A42, Draft-PR folgt (Negativfall: Rolle mit `backup.restore` ohne `billing.view` muss den Test rot machen). Hinweis: `reports/A36-BERICHT.md` (`origin/ops/reports`, `hourlyRate` auf dem Veröffentlichungsweg) berührt das ZIP-Backup nicht.
 
 ## 6 Pflege
 

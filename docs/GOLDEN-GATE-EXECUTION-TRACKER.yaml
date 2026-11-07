@@ -716,6 +716,22 @@ risiken:
 fortschritt:
   - datum: 2026-11-07
     ereignis: >-
+      A40 Nachtrag 2 nach dem Merge von PR 283: PR 283 gemergt 2026-11-07T07:08:08Z (main be712548, Merge durch den Owner), 15/15 Checks
+      am Head 9c60a92f, CI und Security auf main be712548 success. PR 282 in gh MERGED (07:08:10Z, mergeCommit be712548, mergedBy leer),
+      weil sein Head 92bf1d3b über 34fc41a6 in PR 283 enthalten war; kein eigener Merge (Abweichung zur Planer-Aussage "PR 282 ist
+      geschlossen"). G07 und G09 erfüllt, G08 offen und teilweise belegt (Abrechnungsstatus für den Engineer sichtbar, Frage 1 offen), G15
+      offen statt in PR (CHANGELOG ohne K1/K2 und PR 278). Neue Zählung: 23 Gates, 22 vor dem Publish: 9 erfüllt, 0 in PR, 1 extern,
+      12 offen, 1 Folgepunkt (G20); Muss-Gates 6 von 15 erfüllt. Annahme AN-01 im Risikoregister (Owner 2026-11-07): ZIP-Backup 2.0
+      enthält hourlyRate immer, zulässig nur, solange jede Rolle mit backup.restore auch billing.view hat; Vertragstest als A42 (Draft-PR
+      folgt). Befund: automatische Tagessicherung läuft für jede Rolle (dashboard.tsx:309), Zugriff nur mit backup.restore; neuer
+      Sync-Branch lovable-sync-1793985842 (436ce690, Basis 7dc4699d) enthält be712548 nicht (G17 offen).
+    beleg: >-
+      gh pr view 283 --json statusCheckRollup (15/15 SUCCESS, Head 9c60a92f); gh pr view 282 --json state,mergedAt,mergeCommit; gh run list
+      --commit be712548 (CI 42349983730, Security 42349983737); src/__tests__/security/qs6-5-export-billing.test.ts:179-191;
+      src/lib/rbac/permissions.ts:131, :143, :156, :167; docs/PUBLISH-GATE-BERICHT.md (Ergänzung A40, Nachtrag 2); docs/PUBLISH-PLAN.md
+      Abschnitt 3; docs/RISIKOREGISTER.yaml annahmen AN-01
+  - datum: 2026-11-07
+    ereignis: >-
       A41 (Plan, Agent): avkk_people_directory (A38 E2) und fünf Aufrufer beschrieben; UI braucht nur Namen zu RLS-sichtbaren
       Verantwortungen und die Halterauswahl für assign, die Spalte role wird nicht angezeigt. Varianten a1 (Scope wie avkk_subject_read,
       Aufrufer aktiv, globaler Zweig nur mit Mitgliedschaft), a2, b, c1, c2, d bewertet; Empfehlung a1 + d als eine Migration (6 bis 7 h,
