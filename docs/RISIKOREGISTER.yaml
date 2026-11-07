@@ -1,5 +1,5 @@
 # Risikoregister Golden Gate (Interne Freigabe 1.0)
-# Stand: 2026-11-07 (Bewertung vom 2026-11-02 unverändert; Ergänzungen R-07, R-10, RA-01). Führend für Bewertung, Verantwortung und Prüfrhythmus.
+# Stand: 2026-11-07 (Bewertung vom 2026-11-02 unverändert; Ergänzungen R-07, R-10, RA-01; A40: R-04 Hinweis, RA-02). Führend für Bewertung, Verantwortung und Prüfrhythmus.
 # Beschreibung, Wirkung und Gegenmaßnahmen der Risiken R-01 bis R-14 stehen im Tracker
 # (docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml, Abschnitt risiken) und werden hier nicht wiederholt.
 # L2-R1 bis L2-R5 stehen in docs/L2-COCKPIT-SCHNITT-KONZEPT.md (Abschnitt Risiken).
@@ -80,6 +80,9 @@ risiken:
       docs/DATENAUFTRAG-KIOSK-KONTO.md). Mails an kiosk@ gehen nur an den Owner.
       2026-11-06: Kontenübersicht ohne Werte in docs/ZUGAENGE-UND-NOTFALLKONTO.md (Entwurf, A09). Für keinen Dienst ist eine zweite Person oder ein Notfallkonto belegt;
       Wiederherstellungsadressen offen. RTO nach ADR-0042 nur bei Verfügbarkeit des Owners.
+      2026-11-07 (Owner, Planer-Auftrag A40): Eine zweite Vertrauensperson ist in der Rolle Familie/Lebenspartner benannt; der Name steht nur im
+      Notfallumschlag, nicht im Git. Umschlag und Zugang sind offen (Notfallhandbuch Lücke 2). Die ADR-0037-Abweichung kiosk@ bleibt offen, bis
+      diese Person sie bestätigt (ZN-18). Bewertung unverändert.
     verweise:
       - docs/ZUGAENGE-UND-NOTFALLKONTO.md
       - docs/NOTFALL-HANDBUCH.md (Abschnitte 3, 4, 6, 7; N7, N9)
@@ -303,6 +306,19 @@ risikoakzeptanzen:
     eigner: Owner
     status: akzeptiert
     naechste_pruefung: "nach dem Publish 1.70.0"
+  - id: RA-02
+    titel: "Konto bm@ nutzt den Anzeigemodus mit Rolle Systemadministrator (volle Rechte außerhalb des Anzeigemodus)"
+    kategorie: Sicherheit
+    entscheidung: "Restrisiko bm@ befristet akzeptiert; Kiosk-Datenauftrag Weg B (G20) ist Folgepunkt nach dem Publish 1.70.0"
+    entschieden_durch: Owner
+    datum: 2026-11-07
+    quelle: "Entscheidung des Owners 2026-11-07, dokumentiert im Planer-Auftrag A40 (origin/ops/queue, queue/A40.yaml)"
+    befristung: "Nachfrist 30 Tage nach dem Publish 1.70.0; bis dahin Datenauftrag Weg B (docs/DATENAUFTRAG-KIOSK-KONTO.md) ausführen oder neu entscheiden"
+    einordnung: "Gerät im Anzeigemodus mit angemeldetem Systemadministrator; Restrisiko laut docs/QS-06-VIEWER-ABRECHNUNG.md:48; R-04 (Abweichung ADR-0037 kiosk@)"
+    gate: G20
+    eigner: Owner
+    status: akzeptiert
+    naechste_pruefung: "30 Tage nach dem Publish 1.70.0"
 
 einordnung:
   spof_gesamt: [R-04, R-07, R-11, R-12, R-14, L2-R5]

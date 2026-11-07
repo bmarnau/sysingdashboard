@@ -716,6 +716,37 @@ risiken:
 fortschritt:
   - datum: 2026-11-07
     ereignis: >-
+      A41 (Plan, Agent): avkk_people_directory (A38 E2) und fünf Aufrufer beschrieben; UI braucht nur Namen zu RLS-sichtbaren
+      Verantwortungen und die Halterauswahl für assign, die Spalte role wird nicht angezeigt. Varianten a1 (Scope wie avkk_subject_read,
+      Aufrufer aktiv, globaler Zweig nur mit Mitgliedschaft), a2, b, c1, c2, d bewertet; Empfehlung a1 + d als eine Migration (6 bis 7 h,
+      gleiche Signatur, kein Rollenwechsel, kein Datenauftrag), c1 als Option in G23; Zeitpunkt hängt an R-10/PP-10. Befunde: "PGlite wie
+      A11" nicht tragfähig (A11 ohne RLS und Trigger), Alternative CI-Job Database Schema Drift; sec01-Verträge zur Funktion nicht in ci.yml;
+      Recht avkk.manage existiert nicht. Testplan T01 bis T13 (viewer, engineer, projectmanager, administrator, fremdes und gesperrtes Konto).
+    beleg: >-
+      ops/reports reports/A41-BERICHT.md; supabase/migrations/20260822110427_2dd06fe8-b4fc-418f-bd4c-e37f52826a1d.sql:9-56;
+      supabase/schema/public-schema.sql:3340-3342, :3384, :1654-1676; .github/workflows/ci.yml:80-142; origin/ops/queue queue/A41.yaml
+  - datum: 2026-11-07
+    ereignis: >-
+      Befund Hauptsitzung (2026-11-07 08:30): PR 282 und PR 283 wurden am 2026-11-07 um 07:08 Z gemergt (main be712548). G07 und G15 stehen in dieser Zählung noch als „in PR“, G08 und G09 als offen; ihr Code liegt jetzt auf main, G10 (Engineer-Abnahme) bleibt offen. Ob G07, G08, G09 und G15 damit erfüllt sind, hängt von der Gate-Definition ab und wird nicht geraten; die Zählung ist im nächsten Gate-Nachtrag neu abzuleiten.
+    beleg: gh pr view 282 und 283 (MERGED 2026-11-07T07:08Z, Merge be712548)
+  - datum: 2026-11-07
+    ereignis: >-
+      A40 Owner-Entscheidungen 2026-11-07 ins Git (Quelle Planer-Auftrag A40): Neues Muss-Gate G24 „RLS-Invariante vor Publish belegt“
+      (RLS 25/25, keine Policy für public/anon, anon-Rechte nur auf der bekannten Liste mit 9 Tabellen oder leer); erfüllt laut RP-02
+      vom 2026-11-07 (Teile G und H geprüft), gültig bis 2026-11-14, Wiederholung höchstens 7 Tage vor dem Publish (P4, PP-11).
+      G20 Kiosk-Datenauftrag Weg B wird Folgepunkt nach dem Publish; Restrisiko bm@ befristet akzeptiert als RA-02 (Nachfrist 30 Tage
+      nach dem Publish). QS-01 Migration C′ Folgepunkt vor L8, kein Publish-Gate. R-04: zweite Vertrauensperson in der Rolle
+      Familie/Lebenspartner benannt, Name nur im Notfallumschlag, Umschlag und Zugang offen, ADR-0037-Abweichung kiosk@ offen (ZN-18).
+      PR 155 und PR 124 nach dem Publish, A07 nach der Restore-Probe A39. Gate-Zählung: 23 geführte Gates, davon 22 vor dem Publish
+      (7 erfüllt, 2 in PR, 1 extern, 12 offen), 1 Folgepunkt (G20); G23 Vorschlag A29, nicht gezählt. R-07/R-10 unverändert;
+      Support-Antwort zu den leeren Migrations-Statements offen, Owner wartet bis 2026-11-09.
+    beleg: >-
+      docs/PUBLISH-GATE-BERICHT.md (Nachtrag A40, Tabelle, YAML); docs/PUBLISH-PLAN.md (D6 bis D8, PP-11, muss_gates);
+      docs/RISIKOREGISTER.yaml und .md (RA-02, Hinweis R-04); docs/ZUGAENGE-UND-NOTFALLKONTO.md; docs/NOTFALL-HANDBUCH.md (Lücke 2);
+      docs/BACKLOG.md; origin/ops/queue queue/A40.yaml und queue/anlagen/RP-02-ergebnis-2026-11-07.md; Bericht reports/A40-BERICHT.md;
+      Tagesbündel PR 286
+  - datum: 2026-11-07
+    ereignis: >-
       A38 (lesend, Agent) wertet RP-02 aus (Owner, 2026-11-07 05:44 bis 05:45 +01:00): anon hat auf 9 Tabellen (u. a. profiles, user_roles, audit_log)
       SELECT/INSERT/UPDATE/DELETE, Schutz allein durch RLS (25/25 aktiv, Policies nur authenticated); Ursache Default-Privilegien, im Git-Snapshot identisch.
       QS-01 Migration C nicht angewendet und zu eng (nur TRUNCATE/REFERENCES/TRIGGER); Vorschlag C′ vor L8 und lesendes Gate „RLS-Invariante“ (G24, da G23

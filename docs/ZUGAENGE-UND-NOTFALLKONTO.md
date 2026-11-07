@@ -1,6 +1,6 @@
 # Zugänge und Notfallkonto (R-04)
 
-Stand: 2026-11-07 (Verweise auf das Notfallhandbuch auf Abschnitte umgestellt, A31) · Auftrag A09 · Status: Entwurf · Keine Zugangsdaten in dieser Datei
+Stand: 2026-11-07 (Verweise auf das Notfallhandbuch auf Abschnitte umgestellt, A31; zweite Vertrauensperson als Rolle benannt, A40) · Auftrag A09 · Status: Entwurf · Keine Zugangsdaten in dieser Datei
 
 ## 1 Zweck
 
@@ -54,8 +54,16 @@ Belege:
 # Zugänge und Notfallkonto (R-04), Entwurf A09, Stand 2026-11-06.
 # Keine Werte: nur Rollen, lokaler Teil von Konten und Orte. Unbekanntes = offen.
 version: 1
-stand: 2026-11-06
+stand: 2026-11-07
 status: entwurf
+zweite_vertrauensperson:
+  rolle: Familie/Lebenspartner
+  benannt: "Owner 2026-11-07 (Planer-Auftrag A40)"
+  name: nur im Notfallumschlag, nicht im Git
+  notfallumschlag: offen
+  zugang: offen
+  annahme_der_rolle: offen (ZN-03)
+  bestaetigung_kiosk_abweichung_adr_0037: offen (ZN-18)
 dienste:
   - dienst: GitHub
     zweck: Git als führende Quelle, CI, PRs, Merge per REST
@@ -199,7 +207,7 @@ Ergänzt den Inhalt der Notfallmappe (`docs/NOTFALL-HANDBUCH.md` (Abschnitt 4)).
 
 - [ ] **ZN-01** Diese Übersicht liegt als datierte Kopie in der Notfallmappe (TeamDrive und lokaler Datenträger außerhalb von OneDrive), mit SHA-256. Bezug N7, `docs/NOTFALL-HANDBUCH.md` (Abschnitt 4).
 - [ ] **ZN-02** Je Dienst der Schutzklasse kritisch ist ein zweiter, unabhängiger Zugangsweg eingetragen: zweite berechtigte Person oder Notfallkonto. Bezug REST-20, N7, `docs/NOTFALL-HANDBUCH.md` (Kontenregel 1).
-- [ ] **ZN-03** Die zweite berechtigte Person ist mit Rolle benannt und hat ihre Rolle schriftlich angenommen (Ort des Belegs: offen). Bezug REST-20, N7.
+- [ ] **ZN-03** Die zweite berechtigte Person ist mit Rolle benannt und hat ihre Rolle schriftlich angenommen (Ort des Belegs: offen). Bezug REST-20, N7. Stand 2026-11-07: Rolle Familie/Lebenspartner benannt (Owner, Planer-Auftrag A40); Annahme, Notfallumschlag und Zugang offen.
 - [ ] **ZN-04** Jedes Notfallkonto ist getrennt vom Alltagszugang: anderer Tresor, anderes Gerät, andere Wiederherstellungsadresse, anderer zweiter Faktor. Bezug REST-21, `docs/NOTFALL-HANDBUCH.md` (Kontenregel 2).
 - [ ] **ZN-05** Ort der Wiederherstellungscodes für den zweiten Faktor je Dienst ist eingetragen (nur Ort, keine Codes). Bezug REST-21, N7.
 - [ ] **ZN-06** Je Konto ist die Wiederherstellungsadresse eingetragen (nur lokaler Teil oder Rolle). Bezug N9, Lücke 12 (`docs/NOTFALL-HANDBUCH.md` (Lücke 12)).
@@ -214,11 +222,11 @@ Ergänzt den Inhalt der Notfallmappe (`docs/NOTFALL-HANDBUCH.md` (Abschnitt 4)).
 - [ ] **ZN-15** Kontakt- und Support-Wege je Dienst sind eingetragen, inklusive offener Ticketvorgänge (nur Vorgangsbezug, keine Inhalte). Bezug N7, `docs/NOTFALL-HANDBUCH.md` (N7, Abschnitt 4).
 - [ ] **ZN-16** Notfallprotokoll (`docs/NOTFALL-HANDBUCH.md` (Abschnitt 5)) ist für die Nutzung eines Notfallkontos vorbereitet; nach jeder Nutzung werden Passwörter und Schlüssel erneuert. Bezug REST-21.
 - [ ] **ZN-17** Planübung N7 halbjährlich und N9 jährlich durchgeführt, Protokoll im Git. Bezug REST-13, REST-19, `docs/NOTFALL-HANDBUCH.md` (Abschnitt 7, N7, Abschnitt 7, N9).
-- [ ] **ZN-18** Nachträgliche Bestätigung der Kiosk-Abweichung von ADR-0037 durch die zweite Person liegt vor. Bezug R-04, `docs/DATENAUFTRAG-KIOSK-KONTO.md:47`, `:54`.
+- [ ] **ZN-18** Nachträgliche Bestätigung der Kiosk-Abweichung von ADR-0037 durch die zweite Person liegt vor. Bezug R-04, `docs/DATENAUFTRAG-KIOSK-KONTO.md:47`, `:54`. Stand 2026-11-07: offen bis zur Bestätigung durch die Vertrauensperson (Rolle Familie/Lebenspartner).
 
 ## 6 Offene Punkte
 
-1. Zweite berechtigte Person: Rolle benennbar, Person offen (`docs/NOTFALL-HANDBUCH.md` (Lücke 2)). Owner-Entscheidung nötig.
+1. Zweite berechtigte Person: Rolle benannt, Umschlag und Zugang offen (`docs/NOTFALL-HANDBUCH.md` (Lücke 2)). Der Owner hat am 2026-11-07 eine zweite Vertrauensperson in der Rolle Familie/Lebenspartner benannt (Planer-Auftrag A40); der Name steht nur im Notfallumschlag, nicht im Git. Offen: Notfallumschlag anlegen, Zugang je kritischem Dienst einrichten, Annahme der Rolle (ZN-03), Bestätigung der ADR-0037-Abweichung kiosk@ (ZN-18). Die Spalte „Zweite Person“ der Dienstetabelle bleibt „Person offen“, bis ein Zugang je Dienst eingerichtet ist.
 2. Notfallkonto (Break-Glass): für keinen Dienst belegt.
 3. Wiederherstellungsadressen aller Konten: offen (Lücke 12).
 4. Mail-Anbieter des Postfachs info@: im Repo nicht belegt; ob df.eu auch Mail betreibt, ist offen.

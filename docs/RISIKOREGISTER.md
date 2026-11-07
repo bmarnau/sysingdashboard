@@ -1,6 +1,6 @@
 # Risikoregister Golden Gate
 
-Stand: 2026-11-07 (Bewertung vom 2026-11-02 unverändert) · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung) · Texte zu R-01 bis R-14: Tracker, Abschnitt `risiken` · Status: **Bewertung vom Owner am 2026-11-02 bestätigt** (R-04, R-11, R-07 und R-14 einzeln, die übrigen nach der vereinbarten Regel)
+Stand: 2026-11-07 (Bewertung vom 2026-11-02 unverändert; A40: Hinweis R-04, RA-02) · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung) · Texte zu R-01 bis R-14: Tracker, Abschnitt `risiken` · Status: **Bewertung vom Owner am 2026-11-02 bestätigt** (R-04, R-11, R-07 und R-14 einzeln, die übrigen nach der vereinbarten Regel)
 
 ## 1 Methode
 
@@ -72,6 +72,8 @@ quadrantChart
 
 **Hinweis R-04 (2026-11-06):** Zugänge, zweite berechtigte Person und Notfallkonto je Dienst stehen ohne Werte in `docs/ZUGAENGE-UND-NOTFALLKONTO.md` (Entwurf, A09; Prüfliste ZN-01 bis ZN-18, REST-20, REST-21, N7, N9). Stand: für keinen Dienst ist eine zweite Person oder ein Notfallkonto belegt; Wiederherstellungsadressen sind offen; Auth-Mails der App-Konten und der Aliase kiosk@ und anzeige@ erreichen nur das Postfach info@. RTO-Werte nach ADR-0042 gelten bis dahin nur bei Verfügbarkeit des Owners.
 
+**Hinweis R-04 (2026-11-07):** Der Owner hat eine zweite Vertrauensperson in der Rolle Familie/Lebenspartner benannt (Entscheidung des Owners 2026-11-07, Planer-Auftrag A40). Der Name steht nur im Notfallumschlag, nicht im Git. Umschlag und Zugang sind offen (`docs/NOTFALL-HANDBUCH.md`, Lücke 2); die ADR-0037-Abweichung kiosk@ bleibt offen, bis diese Person sie bestätigt (ZN-18). Die Bewertung bleibt unverändert.
+
 **Hinweis R-07 und R-10 (2026-11-06):** Der Lovable-Support hat am 2026-11-06 geantwortet (EV-0008 in `docs/NACHWEISE.yaml`): Die Änderung der Speicherzeile in `client.ts` wirkte, der Auth-Storage-Helper kam nach der README-Änderung nicht zurück. Die inhaltliche Antwort zu den Migrationsversionen (20260913213000, 20260917182000, 20260917190000) und den leeren Statements ist zugesagt und offen. Die Bewertung bleibt unverändert, bis die Antwort vorliegt. Ergänzung A29: Ob Lovable beim Publish oder Sync Repo-Migrationen anwendet, ist nicht belegt; `20260917182000` wäre bei Anwendung kein No-Op. Die Frage steht als Frage 6 im Lese-Prompt (`docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
 
 **Funktionale Sicherheit:** R-02 (unwiderrufliche Migrationen), R-14 (Daten nicht wiederherstellbar nachgewiesen), L2-R1, L2-R2, L2-R3 und L2-R5 (falsche oder unberechtigte Anzeige im Cockpit). Gegenmaßnahmen sind die RED-Testmatrix und die Sicherheitstests aus U2 und U3 (Voraussetzung für Entscheidung E2).
@@ -84,11 +86,14 @@ quadrantChart
 
 ## 5 Risikoakzeptanzen
 
-| ID    | Risiko                                                                     | Entscheidung                                     | Quelle                                                      | Frist                   | Gate | Status     |
-| ----- | -------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------- | ----------------------- | ---- | ---------- |
-| RA-01 | `zod@3.25.76` im Server-Code (GHSA-mrhx-c7xc-m3w5, hoch), behoben in 4.6.6 | befristet akzeptiert bis nach dem Publish 1.70.0 | Entscheidung des Owners 2026-11-06 (Planer-Auftrag A28, D3) | nach dem Publish 1.70.0 | G13  | akzeptiert |
+| ID    | Risiko                                                                     | Entscheidung                                                                   | Quelle                                                      | Frist                           | Gate | Status     |
+| ----- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------- | ------------------------------- | ---- | ---------- |
+| RA-01 | `zod@3.25.76` im Server-Code (GHSA-mrhx-c7xc-m3w5, hoch), behoben in 4.6.6 | befristet akzeptiert bis nach dem Publish 1.70.0                               | Entscheidung des Owners 2026-11-06 (Planer-Auftrag A28, D3) | nach dem Publish 1.70.0         | G13  | akzeptiert |
+| RA-02 | Konto bm@ im Anzeigemodus mit Rolle Systemadministrator                    | befristet akzeptiert; Kiosk-Datenauftrag Weg B als Folgepunkt nach dem Publish | Entscheidung des Owners 2026-11-07 (Planer-Auftrag A40)     | 30 Tage nach dem Publish 1.70.0 | G20  | akzeptiert |
 
 Nach dem Publish folgt die Migration auf `zod@4.6.6` (8 bis 16 h, `docs/BACKLOG.md`). Die Akzeptanz endet mit dem Merge dieser Migration oder mit einer neuen Entscheidung des Owners.
+
+RA-02 endet mit der Ausführung des Datenauftrags Weg B (`docs/DATENAUFTRAG-KIOSK-KONTO.md`, zwei Freigaben nach ADR-0037) oder mit einer neuen Entscheidung des Owners. Läuft die Nachfrist ohne Ausführung ab, muss der Owner neu entscheiden.
 
 ## 6 Pflege
 

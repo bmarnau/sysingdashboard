@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-07 · Dashboard-Version 1.70.0
 
+## 2026-11-07 — Entscheidungen vom 7. November
+
+Der Owner hat am 7. November entschieden, dass vor jeder Veröffentlichung geprüft wird, ob der Datenbankschutz für alle 25 Tabellen eingeschaltet ist; die Prüfung von heute zeigt das, gilt aber nur eine Woche und muss kurz vor der Veröffentlichung wiederholt werden. Das eigene Anzeigekonto für das Wandgerät kommt erst nach der Veröffentlichung, bis dahin trägt der Owner das Restrisiko bewusst für höchstens 30 Tage, und für den Notfall ist eine zweite Vertrauensperson aus der Familie benannt, deren Name nur im Notfallumschlag steht (Umschlag und Zugang sind noch einzurichten). Auf die Antwort des Lovable-Supports zu den leeren Migrationseinträgen wartet der Owner noch bis Montag, 9. November.
+
 ## 2026-11-07 — Rechte in der Datenbank geprüft
 
 Die Auswertung der Datenbankabfrage vom Morgen zeigt: Die Datenbank ist heute durch ihre Zugriffsregeln geschützt, aber nur durch diese eine Schicht; nicht angemeldete Zugriffe hätten ohne sie weitreichende Tabellenrechte. Außerdem kann jedes Leserkonto ein Personenverzeichnis abrufen, das mehr zeigt als nötig. Beides ist zur Entscheidung vorgelegt; der Plan für die Wiederherstellungsprobe hat jetzt konkrete Prüfkriterien.

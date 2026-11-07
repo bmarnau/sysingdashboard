@@ -1,6 +1,6 @@
 # Publish-Plan 1.70.0 (Runbook)
 
-Stand: 2026-11-07 · Auftrag A28 · Status: Plan, keine Freigabe · Publish bleibt No-Go (R-07, `CLAUDE.md`) bis zum Go des Owners für genau einen geprüften Commit · Bezug: `docs/PUBLISH-GATE-BERICHT.md` (Gates G01 bis G22, Nachtrag 2026-11-07), `docs/LOVABLE-PUBLISH-PRUEFUNG.md`, `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md`, `docs/NOTFALL-HANDBUCH.md` (N1a)
+Stand: 2026-11-07 · Auftrag A28, ergänzt A40 · Status: Plan, keine Freigabe · Publish bleibt No-Go (R-07, `CLAUDE.md`) bis zum Go des Owners für genau einen geprüften Commit · Bezug: `docs/PUBLISH-GATE-BERICHT.md` (Gates G01 bis G22 und G24, Nachträge 2026-11-07), `docs/LOVABLE-PUBLISH-PRUEFUNG.md`, `docs/MERGE-CHECKLISTE-GOLDEN-GATE.md`, `docs/NOTFALL-HANDBUCH.md` (N1a)
 
 Dieser Plan legt Reihenfolge, Muss-Gates und Anforderungen für den ersten Publish seit 1.69.0 fest. Er ersetzt keine Prüfung: „erfüllt“ steht nur mit Beleg im Gate-Bericht.
 
@@ -8,24 +8,29 @@ Dieser Plan legt Reihenfolge, Muss-Gates und Anforderungen für den ersten Publi
 
 Quelle: Entscheidung des Owners 2026-11-06, dokumentiert im Planer-Auftrag A28 (`origin/ops/queue`, `queue/A28.yaml`).
 
-| ID  | Entscheidung                                                                                                                       | Gate | Ablage                                                       |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------ |
-| D3  | `zod@3.25.76` (GHSA-mrhx-c7xc-m3w5) wird befristet bis nach dem Publish akzeptiert; Migration auf `zod@4.6.6` danach (8 bis 16 h). | G13  | `docs/RISIKOREGISTER.yaml` (RA-01), `docs/RISIKOREGISTER.md` |
-| D4  | QS6-4 wird als „kein Serverbefund“ geschlossen (A01); der Smoke-Test erhält eine Netzwerkprüfung mit Viewer-Konto.                 | G06  | `docs/QS-06-VIEWER-ABRECHNUNG.md`, Merge-Checkliste N4a      |
-| D5  | Die Abweichung `types.ts` (+5 Zeilen, Block `__InternalSupabase`, `PostgrestVersion` "14.5") ist eine Go-Ausnahme.                 | G02  | `docs/LOVABLE-PUBLISH-PRUEFUNG.md`, Go-Kriterien             |
+| ID  | Entscheidung                                                                                                                             | Gate | Ablage                                                       |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------------------ |
+| D3  | `zod@3.25.76` (GHSA-mrhx-c7xc-m3w5) wird befristet bis nach dem Publish akzeptiert; Migration auf `zod@4.6.6` danach (8 bis 16 h).       | G13  | `docs/RISIKOREGISTER.yaml` (RA-01), `docs/RISIKOREGISTER.md` |
+| D4  | QS6-4 wird als „kein Serverbefund“ geschlossen (A01); der Smoke-Test erhält eine Netzwerkprüfung mit Viewer-Konto.                       | G06  | `docs/QS-06-VIEWER-ABRECHNUNG.md`, Merge-Checkliste N4a      |
+| D5  | Die Abweichung `types.ts` (+5 Zeilen, Block `__InternalSupabase`, `PostgrestVersion` "14.5") ist eine Go-Ausnahme.                       | G02  | `docs/LOVABLE-PUBLISH-PRUEFUNG.md`, Go-Kriterien             |
+| D6  | Neues Muss-Gate G24 „RLS-Invariante vor Publish belegt“; Beleg durch Wiederholung RP-02 Teile G und H höchstens 7 Tage vor dem Publish.  | G24  | `docs/PUBLISH-GATE-BERICHT.md` (Nachtrag A40)                |
+| D7  | G20 (Kiosk-Datenauftrag Weg B) ist Folgepunkt nach dem Publish; Restrisiko bm@ befristet akzeptiert, Nachfrist 30 Tage nach dem Publish. | G20  | `docs/RISIKOREGISTER.yaml` (RA-02), `docs/RISIKOREGISTER.md` |
+| D8  | QS-01 Migration C′ (Rechtebereinigung, A38) ist Folgepunkt vor L8, kein Publish-Gate.                                                    | –    | `docs/BACKLOG.md`                                            |
+
+D6 bis D8: Entscheidung des Owners 2026-11-07, dokumentiert im Planer-Auftrag A40 (`origin/ops/queue`, `queue/A40.yaml`).
 
 D1 (Restore-Minimalprobe S1 bis S4 lokal) und D2 (Engineer-Befunde in PR 283) stehen im Tracker (`reihenfolge_owner`, Ergänzung 2026-11-07) und werden in A27 und A30 dokumentiert.
 
 ## 2 Phasen
 
-| Phase | Inhalt             | Ergebnis (Abnahme)                                                                                                    | Verantwortlich             |
-| ----- | ------------------ | --------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| P0    | Entscheidungen     | D1 bis D5 mit Datum und Owner in `docs/`; Gate-Bericht nachgezogen                                                    | Owner, Claude Code         |
-| P1    | Code-Stau auflösen | PR 282 (L2-12) und PR 283 (QS6-5, F-QS6-ENG-01/02) gemergt, CI 15/15; CHANGELOG und Handbuch 1.70.0 endgültig         | Claude Code, Owner (Merge) |
-| P2    | Restore-Probe      | Probe S1 bis S4 in getrennter Umgebung mit Protokoll, neuer EV-Eintrag „bestanden“ (G03, G04)                         | Owner, Claude Code         |
-| P3    | Vorbereitung       | Rücknahme belegt (G05, RB-01 bis RB-04, RB-07); Lovable-Sync (G17); Vorschau-Abnahmen (G10, G19); Lese-Prompt (G01)   | Owner, Lovable             |
-| P4    | Go und Publish     | Re-check, Schreibpause, Datenexport, Bookmark, Go für einen Commit, Publish (G21)                                     | Owner                      |
-| P5    | Nachlauf           | Smoke-Test N1 bis N5 und N4a, Bundle-Prüfung (G22), Tag `v1.70.0` (G16), Dokupflege; danach zod-4-Migration (Backlog) | Owner, Claude Code         |
+| Phase | Inhalt             | Ergebnis (Abnahme)                                                                                                                          | Verantwortlich             |
+| ----- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| P0    | Entscheidungen     | D1 bis D5 mit Datum und Owner in `docs/`; Gate-Bericht nachgezogen                                                                          | Owner, Claude Code         |
+| P1    | Code-Stau auflösen | PR 282 (L2-12) und PR 283 (QS6-5, F-QS6-ENG-01/02) gemergt, CI 15/15; CHANGELOG und Handbuch 1.70.0 endgültig                               | Claude Code, Owner (Merge) |
+| P2    | Restore-Probe      | Probe S1 bis S4 in getrennter Umgebung mit Protokoll, neuer EV-Eintrag „bestanden“ (G03, G04)                                               | Owner, Claude Code         |
+| P3    | Vorbereitung       | Rücknahme belegt (G05, RB-01 bis RB-04, RB-07); Lovable-Sync (G17); Vorschau-Abnahmen (G10, G19); Lese-Prompt (G01)                         | Owner, Lovable             |
+| P4    | Go und Publish     | Re-check, Schreibpause, Datenexport, RLS-Invariante (G24, RP-02 G und H höchstens 7 Tage alt), Bookmark, Go für einen Commit, Publish (G21) | Owner                      |
+| P5    | Nachlauf           | Smoke-Test N1 bis N5 und N4a, Bundle-Prüfung (G22), Tag `v1.70.0` (G16), Dokupflege; danach zod-4-Migration (Backlog)                       | Owner, Claude Code         |
 
 ```mermaid
 flowchart TD
@@ -39,7 +44,8 @@ flowchart TD
   LP --> RC["P4 Re-check: In sync with GitHub"]
   RC --> PAUSE["P4 Schreibpause Lovable bis Publish"]
   PAUSE --> EXP["P4 Datenexport, höchstens 24 h alt"]
-  EXP --> BM["P4 Bookmark Live-Version notieren"]
+  EXP --> RLS["P4 RLS-Invariante G24: RP-02 G und H, höchstens 7 Tage alt"]
+  RLS --> BM["P4 Bookmark Live-Version notieren"]
   BM --> GO{"P4 Go des Owners für einen Commit"}
   GO -- nein --> STOP["No-Go: Befund, zurück zu P1 oder P3"]
   GO -- ja --> PUB["P4 Publish 1.70.0"]
@@ -53,7 +59,7 @@ Jeder Merge nach `main` und jede Lovable-Änderung nach dem Lese-Prompt macht di
 
 ## 3 Muss-Gates
 
-Stand laut `docs/PUBLISH-GATE-BERICHT.md`, Nachtrag 2026-11-07 (inkl. A28). Ohne Beleg „erfüllt“ kein Go.
+Stand laut `docs/PUBLISH-GATE-BERICHT.md`, Nachtrag 2026-11-07 (inkl. A28 und A40). Zählung A40: 23 geführte Gates, davon 22 vor dem Publish (7 erfüllt, 2 in PR, 1 extern, 12 offen) und 1 Folgepunkt (G20); G23 ist Vorschlag und nicht gezählt. Muss-Gates: 15, davon 4 erfüllt (G02, G06, G13, G24), 2 in PR, 9 offen. Ohne Beleg „erfüllt“ kein Go.
 
 ```yaml
 muss_gates:
@@ -95,24 +101,36 @@ muss_gates:
       stand: offen,
       hinweis: teilweise belegt (EV-0007),
     }
+  - {
+      gate: G24,
+      inhalt: RLS-Invariante vor Publish belegt,
+      phase: P4,
+      stand: erfüllt,
+      beleg: "RP-02 vom 2026-11-07, Teile G und H (Entscheidung des Owners 2026-11-07, Planer-Auftrag A40)",
+      gueltig_bis: 2026-11-14,
+      hinweis: Wiederholung RP-02 G und H höchstens 7 Tage vor dem Publish,
+    }
 weitere_schritte: [G16 Tag, G21 Go und Publish, G22 Smoke-Test und Bundle-Prüfung]
+folgepunkte_nach_publish:
+  ["G20 Kiosk-Datenauftrag Weg B (Owner 2026-11-07, RA-02, Nachfrist 30 Tage nach dem Publish)"]
 vorschlag_offen: G23 Migrationsanwendung beim Publish geklärt und Selbstregistrierung entschieden (A29, Entscheidung des Owners offen)
 ```
 
 ## 4 Anforderungen
 
-| ID    | Anforderung                                                                                                                                                                                                                          | Abnahme                                                    |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| PP-01 | Die Restore-Probe muss in einer von der Produktion getrennten Umgebung laufen; sie darf die Live-Datenbank nicht schreiben.                                                                                                          | Protokoll mit Umgebung, EV-Eintrag                         |
-| PP-02 | Die Rücknahme muss vor dem Go belegt sein (N1a, RB-01 bis RB-04 und RB-07, Messwert RB-04 unter 60 Minuten).                                                                                                                         | Screenshots mit Uhrzeit, EV-Eintrag                        |
-| PP-03 | Zwischen Re-check und Publish muss für Lovable eine Schreibpause gelten: keine Prompts mit Schreibwirkung, kein Merge nach `main`.                                                                                                   | Notiz Beginn und Ende der Pause im Protokoll               |
-| PP-04 | Der Datenexport muss am Go-Tag vorliegen und darf zum Zeitpunkt des Publish höchstens 24 Stunden alt sein.                                                                                                                           | Dateiname mit Zeitstempel, Ablageort ohne Zugangsdaten     |
-| PP-05 | Nach dem Publish muss der Smoke-Test N1 bis N5 und N4a (Viewer-Netzwerkprüfung) mit allen Rollen laufen.                                                                                                                             | Protokoll je Zeile mit Uhrzeit                             |
-| PP-06 | Das veröffentlichte Bundle muss frei von Broker-Kennungen (`lovable-preview-auth:get`, `:set`, `:remove`, `:result`) sein und `@tanstack/react-start` ab 1.168.60 enthalten (GHSA-qx66-fv34-fjm8).                                   | Lesende Bundle-Prüfung, Dateiname und Fundstellen          |
-| PP-07 | Bei Fehlschlag des Smoke-Tests muss die Rücknahme innerhalb von 60 Minuten nach Feststellung eingeleitet sein (N1a).                                                                                                                 | Protokoll t0, Entscheidung, Unpublish oder Publish changes |
-| PP-08 | Das Go muss für genau einen Commit gelten; der Lese-Prompt (G01) muss an diesem Commit beantwortet sein, einschließlich der Fragen 6 (Migrationen) und 7 (Erreichbarkeit).                                                           | Antwort im Lovable-Chat, Abgleich mit Git                  |
-| PP-09 | Der Owner sollte nach dem Publish mindestens zwei Stunden erreichbar sein, damit PP-07 einhaltbar bleibt.                                                                                                                            | Zeitfenster im Protokoll                                   |
-| PP-10 | Bestätigt der Lese-Prompt, dass Lovable beim Publish oder Sync Repo-Migrationen anwendet, muss vor dem Go geklärt sein, dass `20260917182000` nicht erneut läuft (würde `has_permission` und den Projektions-Snapshot zurücksetzen). | Antwort Frage 6, Entscheidung des Owners                   |
+| ID    | Anforderung                                                                                                                                                                                                                                                   | Abnahme                                                    |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| PP-01 | Die Restore-Probe muss in einer von der Produktion getrennten Umgebung laufen; sie darf die Live-Datenbank nicht schreiben.                                                                                                                                   | Protokoll mit Umgebung, EV-Eintrag                         |
+| PP-02 | Die Rücknahme muss vor dem Go belegt sein (N1a, RB-01 bis RB-04 und RB-07, Messwert RB-04 unter 60 Minuten).                                                                                                                                                  | Screenshots mit Uhrzeit, EV-Eintrag                        |
+| PP-03 | Zwischen Re-check und Publish muss für Lovable eine Schreibpause gelten: keine Prompts mit Schreibwirkung, kein Merge nach `main`.                                                                                                                            | Notiz Beginn und Ende der Pause im Protokoll               |
+| PP-04 | Der Datenexport muss am Go-Tag vorliegen und darf zum Zeitpunkt des Publish höchstens 24 Stunden alt sein.                                                                                                                                                    | Dateiname mit Zeitstempel, Ablageort ohne Zugangsdaten     |
+| PP-05 | Nach dem Publish muss der Smoke-Test N1 bis N5 und N4a (Viewer-Netzwerkprüfung) mit allen Rollen laufen.                                                                                                                                                      | Protokoll je Zeile mit Uhrzeit                             |
+| PP-06 | Das veröffentlichte Bundle muss frei von Broker-Kennungen (`lovable-preview-auth:get`, `:set`, `:remove`, `:result`) sein und `@tanstack/react-start` ab 1.168.60 enthalten (GHSA-qx66-fv34-fjm8).                                                            | Lesende Bundle-Prüfung, Dateiname und Fundstellen          |
+| PP-07 | Bei Fehlschlag des Smoke-Tests muss die Rücknahme innerhalb von 60 Minuten nach Feststellung eingeleitet sein (N1a).                                                                                                                                          | Protokoll t0, Entscheidung, Unpublish oder Publish changes |
+| PP-08 | Das Go muss für genau einen Commit gelten; der Lese-Prompt (G01) muss an diesem Commit beantwortet sein, einschließlich der Fragen 6 (Migrationen) und 7 (Erreichbarkeit).                                                                                    | Antwort im Lovable-Chat, Abgleich mit Git                  |
+| PP-09 | Der Owner sollte nach dem Publish mindestens zwei Stunden erreichbar sein, damit PP-07 einhaltbar bleibt.                                                                                                                                                     | Zeitfenster im Protokoll                                   |
+| PP-10 | Bestätigt der Lese-Prompt, dass Lovable beim Publish oder Sync Repo-Migrationen anwendet, muss vor dem Go geklärt sein, dass `20260917182000` nicht erneut läuft (würde `has_permission` und den Projektions-Snapshot zurücksetzen).                          | Antwort Frage 6, Entscheidung des Owners                   |
+| PP-11 | Vor dem Go muss die RLS-Invariante (G24) mit einem lesenden Datenauftrag (Wiederholung RP-02 Teile G und H) belegt sein, der höchstens 7 Tage alt ist: RLS 25/25, keine Policy für `public` oder `anon`, `anon`-Rechte nur auf der bekannten Liste oder leer. | Ergebnisdatei mit Datum, Auswertung im Gate-Bericht        |
 
 ## 5 Terminlage
 
