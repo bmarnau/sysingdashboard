@@ -20,3 +20,6 @@ src/integrations/supabase/types.ts
 
 # Coverage-Artefakte (Maschinenausgabe)
 coverage
+
+# Unveränderte Kopien von Paketdateien (bytegleich zu node_modules halten)
+public/vendor/

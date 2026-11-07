@@ -1,8 +1,12 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-11-05
+Stand: 2026-11-06
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
+
+A27 (2026-11-07): `main` (7dc4699d, enthält PR 278 und 287 gemergt) in `fix/qs6-5-export-billing-view` gemergt; F-QS6-ENG-01/02 in PR 283 behoben (Tätigkeitsdialog und JSON-Backup ohne `billing.view` ohne Stundensatz und Betrag). PR 283 bleibt Draft, G10 (Engineer-Abnahme) offen.
+
+Startroutine (2026-11-06): Zu Beginn jeder Sitzung räumt `npm run git:hygiene -- --fix` lokal gemergte Branches und verwaiste Worktree-Einträge auf; Remote-Branches, nicht eingecheckte Dateien und fremde Worktrees werden nur gemeldet. Playwright-Ausgaben sind ignoriert.
 
 L2-12 abgeschlossen (2026-11-05, A06): Handbuch 1.26.0 mit Kapitel Managementcockpit und Bewertungskriterien, CHANGELOG 1.70.0 mit Cockpit-Punkten (Datum 2026-11-05), Merge-Checkliste Tag v1.70.0; Branch `docs/2026-11-05-l2-12-abschluss`. Entschieden: `types.ts`-Plattformergänzung bleibt bis nach dem Publish unberücksichtigt (Backlog). QS6-5 umgesetzt (A15, Branch `fix/qs6-5-export-billing-view`, Draft-PR, enthält PR 282). Wiederanlaufpunkt: Merge PR 282, dann A15-PR; danach A16 (Audit K1/K2, nicht begonnen).
 
