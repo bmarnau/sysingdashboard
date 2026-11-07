@@ -9,11 +9,23 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-06 · Dashboard-Version 1.70.0
+Stand: 2026-11-07 · Dashboard-Version 1.70.0
+
+## 2026-11-07 — Tätigkeitsdialog und JSON-Backup ohne Beträge
+
+Wer das Recht „Abrechnungsdaten ansehen“ nicht hat, sieht im Dialog einer Tätigkeit keinen Stundensatz und keinen Betrag mehr; die Felder fehlen ganz. Der hinterlegte Satz bleibt beim Speichern trotzdem erhalten. Auch das JSON-Backup aus dem Exportdialog enthält ohne das Recht keinen Stundensatz. Die automatische Sicherung bleibt vollständig, weil sie die einzige Sicherung dieses Werts ist.
 
 ## 2026-11-06 — Automatisches Aufräumen beim Sitzungsstart
 
 Claude Code räumt zu Beginn jeder Sitzung lokal auf: Branches, die schon in `main` gemergt sind, werden gelöscht, verwaiste Worktree-Einträge entfernt. Nichts davon betrifft den Server; Remote-Branches löscht weiter nur der Owner. Nicht eingecheckte Dateien werden gemeldet, aber nie gelöscht. Die Ausgaben lokaler Browsertests landen nicht mehr als offene Dateien im Arbeitsverzeichnis.
+
+## 2026-11-05 — Exporte ohne Beträge ohne Abrechnungsrecht
+
+Wer Beträge in der Oberfläche nicht sieht, bekommt sie jetzt auch in keiner Exportdatei. CSV, JSON, Azure-Table und PDF verlieren ohne das Recht „Abrechnungsdaten ansehen“ die Spalten für Stundensatz, Betrag und Summe; die Stunden bleiben. Die Prüfung sitzt an einer Stelle beim Aufbau der Exportdaten, damit kein anderer Einstieg sie umgeht. Der vollständige JSON-Export wird ohne das Recht verweigert, weil seine Datei sonst nicht wieder importierbar wäre.
+
+## 2026-11-05 — Handbuch Managementcockpit und Bewertungskriterien
+
+Das Handbuch hat ein eigenes Kapitel zum Managementcockpit. Es erklärt die fünf Gründe für Handlungsbedarf, was „Teilweise ermittelt“ und „Nicht ermittelbar“ bedeuten und wie Schweregrade und Gefährdung entstehen, jeweils mit einem durchgerechneten Beispiel. Dazu kommt die Risikobewertung des Projekts mit Wahrscheinlichkeit mal Auswirkung am Beispiel R-07. Der Eintrag 1.70.0 im CHANGELOG nennt jetzt auch das Cockpit. Eine kleine Ergänzung, die die Plattform in die Datenbanktypen schreibt, bleibt bis nach dem Publish bewusst unberücksichtigt.
 
 ## 2026-11-05 — Teilautomatik: Analysen und Datenauftrag-Vorlage
 
