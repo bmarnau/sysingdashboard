@@ -9,6 +9,7 @@ schritte:
 - 'Wirkung auf Datenbank (Spalten in shared_*_projection), Tests, Export und Demodaten bewerten; Abgrenzung zu #283 und A27 (kein Konflikt in denselben Dateien).'
 - 'Plan reports/A36-PLAN.md: Option A (nur Schema und Typen), Option B (zusätzlich Spalte per Datenauftrag nach ADR-0037, nicht ohne Freigabe), Empfehlung, Aufwand in Stunden, Risiko für den Publish.'
 - 'Nach Freigabe des Owners: Draft-PR; ohne Freigabe nur der Plan.'
+- 'Owner 2026-11-07: Invariante dokumentieren: Das ZIP-Backup 2.0 (src/lib/backup/zip.ts, buildZip, includeBilling: true seit PR 283, be712548) enthaelt hourlyRate immer; das ist nur zulaessig, solange jede Rolle mit backup.restore auch billing.view hat (Beleg qs6-5-export-billing.test.ts). Als Annahme im Risikoregister (RISIKOREGISTER.yaml und .md, bei R-14 oder neuer Eintrag) und im Plan eintragen; Vertragstest vorschlagen: Rolle mit backup.restore ohne billing.view schlaegt fehl.'
 nachweis: Plan reports/A36-PLAN.md mit Zeilenbelegen.
 grenzen: Kein Merge, kein Publish, keine Datenänderung, keine Zugangsdaten. Nichts nach main, solange Lovable schreibende Aufträge ausführt. Keine Nachweise erfinden; Aussagen zu Lovable und Supabase nur mit Beleg, sonst "zu belegen". Keine Datenbankänderung.
 status: bereit
