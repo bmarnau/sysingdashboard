@@ -1,0 +1,59 @@
+Datenauftrag RP-02 (nur lesen) nach ADR-0037, Projekt SysIng Dashboard.
+Zweck: Fehlende Teile von RP-01 fuer die lokale Restore-Probe (R-14, G03): Schema in kleinen Stuecken,
+gezielte Pruefung von vier Repo-Migrationen ohne Gegenstueck in der Live-Tabelle, Pruefsummen.
+Schreibe nichts. Verwende ausschliesslich SELECT. Brich ab, falls eine Anweisung schreiben wuerde.
+Gib keine E-Mail-Adressen, Passwort-Hashes, Tokens oder Werte aus app_settings aus.
+Liefere jeden Teil als eigene Tabelle in kompakter Form (eine Zeile je Objekt, keine Freitextbloecke).
+Wenn ein Teil mehr als 120 Zeilen hat, gib ihn in Bloecken zu je 120 Zeilen aus und nenne die Blocknummer.
+Kuerze nichts stillschweigend. Meldet die Anzeige eine Kuerzung, nenne das wortlich und gib den Rest als naechsten Block aus.
+
+A. Gezielte Pruefung (je Zeile: Objekt, vorhanden ja/nein, Befund in einem Satz)
+ A1 public.reference_catalog.scope_type (Typ, NOT NULL, Default).
+ A2 public.reference_value.systemhouse_id (Typ).
+ A3 Indizes reference_value_global_key_unique, reference_value_systemhouse_key_unique,
+    reference_value_systemhouse_idx, reference_value_history_systemhouse_idx (pg_get_indexdef).
+ A4 Funktionen public.reference_value_validate_scope und public.reference_value_track_change
+    (vorhanden, prosecdef, md5 von pg_get_functiondef).
+ A5 Trigger reference_value_validate_scope auf public.reference_value.
+ A6 Policies reference_value_read, reference_value_insert, reference_value_update auf reference_value und
+    reference_value_history_read auf reference_value_history (Befehl, Rollen).
+ A7 public.shared_work_package_projection: Spalten category_key (text, null) und category_observed
+    (boolean, NOT NULL, Default false); Index shared_work_package_projection_active_category_idx
+    (pg_get_indexdef).
+ A8 Funktion public.has_permission(uuid, text): prosecdef (soll false sein = SECURITY INVOKER), Rechte
+    (EXECUTE fuer PUBLIC, anon, authenticated, service_role), md5 von pg_get_functiondef.
+ A9 Funktion public.bsf02c_publish_shared_projection_snapshot: vorhanden, Argumente, prosecdef,
+    Rechte, md5 von pg_get_functiondef.
+ A10 Constraint reference_value_history_systemhouse_fk auf public.reference_value_history
+     (pg_get_constraintdef, validiert ja/nein).
+
+B. Spalten je Tabelle in public: Tabelle, Spaltenposition, Spalte, Typ, nullable, Default.
+   Je Block 120 Zeilen, sortiert nach Tabelle und Position.
+
+C. Constraints in public: Tabelle, Name, Typ, pg_get_constraintdef, validiert.
+
+D. Indizes in public: Tabelle, Name, pg_get_indexdef.
+
+E. Funktionen in public: Name, Argumente, Sprache, prosecdef, Rechte (aclexplode vereinfacht:
+   Rolle, EXECUTE ja/nein), md5(pg_get_functiondef). Keine Funktionskoerper.
+
+F. Trigger in public (tgisinternal = false): Tabelle, Name, Zeitpunkt, Ereignis, Funktion, aktiviert.
+
+G. Policies in public: Tabelle, Name, Befehl, Rollen, md5(qual), md5(with_check), Laenge von qual und with_check.
+
+H. Rechte auf Tabellen in public fuer anon, authenticated und service_role
+   (Tabelle, Rolle, SELECT/INSERT/UPDATE/DELETE ja/nein). RLS und FORCE RLS je Tabelle.
+
+I. Sequenzen und Identitaetsspalten in public: Name, aktueller Wert (last_value), Zyklus.
+
+J. Pruefsummen in zwei Schritten.
+ J1 Ausschlussliste: Liste alle Spalten in public (Tabelle, Spalte, Typ), deren Name email, hash, password,
+    token, secret oder phone enthaelt, sowie alle Spalten vom Typ json oder jsonb, sowie
+    app_settings.value. Nur Namen und Typen, keine Werte.
+ J2 Pro Tabelle in public: md5(coalesce(jsonb_agg(to_jsonb(t) - <Ausschlussliste der Tabelle> ORDER BY
+    <Primaerschluessel>)::text, 'LEER')). Nenne je Tabelle die ausgeschlossenen Spalten. Bei Tabellen
+    ohne Primaerschluessel sortiere nach allen verbleibenden Spalten. Gib zusaetzlich die Zeilenzahl aus.
+    Nenne den Zeitpunkt (now()) und weise darauf hin, dass die Abfragen keinen gemeinsamen Snapshot haben.
+
+K. Bericht: je Teil Status (vollstaendig, teilweise, nicht ausgefuehrt), Fehlermeldungen im Wortlaut,
+   Zahl der ausgegebenen Zeilen. Nichts schreiben, keine Dateien, keine Migrationen.
