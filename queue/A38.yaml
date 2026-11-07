@@ -1,0 +1,15 @@
+id: A38
+titel: 'RP-02 auswerten: anon-Tabellenrechte, QS-01 Migration C, Schema-Soll für die Probe'
+art: lesen
+gate: vor Publish
+abhaengig_von: []
+ziel: 'Das Ergebnis des Datenauftrags RP-02 (Anlage queue/anlagen/RP-02-ergebnis-2026-11-07.md, Owner 2026-11-07) bewerten. Schwerpunkt: Tabellenrechte der Rolle anon und Verhältnis zu QS-01 Migration C (Default-Privilegien); außerdem das Schema als Soll für die Restore-Probe festhalten.'
+schritte:
+- 'Teil H lesen: anon besitzt rohe Tabellenrechte (SELECT, INSERT, UPDATE, DELETE) auf neun Tabellen (app_settings, audit_log, avkk_competence, avkk_consequence, avkk_responsibility, avkk_responsibility_type, avkk_subject, profiles, user_roles); Policies existieren nur für authenticated, RLS ist überall aktiv, FORCE RLS nirgends. Gegen die QS-01-Migrationen und docs/ (QS-01, Berichte) prüfen: Ist Migration C (Default-Privilegien) angewendet oder nicht, was sollte sie ändern, welche Wirkung hat der Ist-Stand (Schutz allein durch RLS, Defense in Depth fehlt)? Empfehlung, ob ein Gate G23 nötig ist und wie die Änderung als Datenauftrag nach ADR-0037 aussähe (nur beschreiben, nicht erstellen).'
+- 'Teil E: EXECUTE für anon und PUBLIC bei bsf02c_projection_identity_guard und customer_responsibility_identity_guard bewerten (Trigger-Funktionen). Außerdem SECURITY-DEFINER-Funktionen mit EXECUTE für authenticated (avkk_can_write, avkk_people_directory u. a.) kurz auf fehlende Rechteprüfung ansehen.'
+- 'Schema als Soll: Zeilen-, Spalten-, Constraint-, Index-, Trigger- und Policy-Zahlen sowie Funktions-md5 aus der Anlage in eine kurze Soll-Tabelle für docs/PLAN-RESTORE-PROBE-LOKAL.md übernehmen (Verweis auf die Anlage, keine Kopie der Rohdaten). Hinweis im Bericht, dass die md5-Werte von pg_get_functiondef nur bei gleicher Postgres-Hauptversion (17) vergleichbar sind.'
+- Abweichungen zwischen supabase/migrations (33 Dateien) und Live aus Teil A bis G benennen, soweit ohne lokalen Aufbau erkennbar; ein lokaler Aufbau ist Teil von A30.
+- Bericht reports/A38-BERICHT.md mit Befundtabelle (Befund, Beleg, Schwere nach Risikoskala 1 bis 5, Empfehlung) und YAML-Block.
+nachweis: Bericht reports/A38-BERICHT.md mit Verweisen auf Anlage und Quelldateien.
+grenzen: Kein Merge, kein Publish, keine Datenänderung, keine Zugangsdaten. Keine Nachweise erfinden; Aussagen zu Lovable und Supabase nur mit Beleg, sonst "zu belegen".
+status: bereit
