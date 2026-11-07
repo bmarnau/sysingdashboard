@@ -674,6 +674,13 @@ risiken:
 fortschritt:
   - datum: 2026-11-07
     ereignis: >-
+      A32 (Rücknahme eines Publish, Agent): Lovable dokumentiert kein Wiederherstellen einer früheren Veröffentlichung; Rücknahme nur per Revert im Verlauf und
+      erneutem Publish oder per Unpublish. Revert setzt nur Code zurück, keine Daten. Notfallhandbuch um N1a (Ablauf, 60-Minuten-Kriterium, Belegplan RB-01
+      bis RB-10) ergänzt, Merge-Checkliste Abschnitt 5 korrigiert. Ausnahme zu Grundregel 4 nur als Vorschlag; Rücknahme auf 1.69.0 enthielte den Broker
+      (Entscheidung des Owners offen). G05 bleibt offen bis zum Beleg.
+    beleg: docs.lovable.dev features/publish, features/projects/history, features/hosting, integrations/git-sync-overview, features/database-backups (abgerufen 2026-11-07); ops/reports reports/A32-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
       A23 (Doku-Nachtrag 2026-11-06): Wiederanlaufpunkt auf 2026-11-07, Spanne der Warteschlange A01 bis A37. Überholte PR-Aussagen in CURRENT-STATUS
       ergänzt statt gelöscht (275, 276, 280, 262, 264, 266, 267, 269, 272, 253, 278, 281, TDF 46 gemergt; 222, 226, 231, 233, 234 geschlossen).
       Ereignisse 06.11. nachgetragen (PR 284, PR 278 mit Vorschauprüfung, Alt-PRs geschlossen, A22). EV-0007 für G19 mit Ergebnis teilweise

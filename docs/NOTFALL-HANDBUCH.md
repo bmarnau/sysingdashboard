@@ -33,7 +33,7 @@ Grundregeln für jeden Notfall:
 1. **Nicht überstürzt schreiben.** Vor jeder Wiederherstellung den aktuellen Zustand sichern (Dump, Bundle, Screenshot), auch wenn er fehlerhaft ist.
 2. **Nichts löschen.** Insbesondere nie `audit_log` löschen und keine `lovable*`-, `backup/*`- oder `audit/*`-Branches.
 3. **Keine Datenänderung am Live-System ohne Datenauftrag** nach ADR-0037 (zwei Freigaben, feste IDs, Rollback), außer im dokumentierten Notfall mit Begründung im Protokoll.
-4. **Kein Publish im Notfall**, solange die Ursache nicht verstanden ist.
+4. **Kein Publish im Notfall**, solange die Ursache nicht verstanden ist. Vorschlag A32 (Entscheidung des Owners offen): Ausnahme für den Rücknahme-Publish einer per Bookmark markierten, vorher veröffentlichten Version nach N1a.
 5. **Protokoll führen:** Uhrzeit, Beobachtung, Maßnahme, Ergebnis. Vorlage Abschnitt 5.
 
 ## 2 Szenarien
@@ -50,10 +50,121 @@ Erste Stunde:
 
 Wiederherstellung:
 
-- **Codefehler:** Letzten guten Commit bestimmen. Fix per PR auf `main` oder Rücksetzen der Projektversion im Lovable-Editor (zu belegen). Danach Re-check der Git-Seite in Lovable („In sync with GitHub“) und erneuter Publish nur nach Freigabe des Owners.
+- **Codefehler:** Rücknahme nach N1a (innerhalb von 60 Minuten eingeleitet: Unpublish oder Revert auf die zuletzt gute Version und erneuter Publish; Revert allein ändert die Live-App nicht; zu belegen, RB-01 ff.). Danach Fix per PR auf `main`, Re-check der Git-Seite in Lovable („In sync with GitHub“) und erneuter Publish nur nach Freigabe des Owners.
 - **Datenfehler:** Weiter bei N5.
 
 Rückkehr in den Normalbetrieb: Smoke-Test mit je einem Konto der Rollen Projektmanager, Teamleiter, Viewer; Cockpit und Dashboard öffnen.
+
+### N1a Rücknahme eines Publish
+
+Gilt, wenn ein Defekt nach N1 auf den letzten Publish zurückgeht (Codefehler in der veröffentlichten App). Datenfehler laufen über N5, Anmeldefehler über N9.
+
+Entscheidungskriterium: Die Rücknahme **muss innerhalb von 60 Minuten** nach der Feststellung (Zeitpunkt t0 im Protokoll, Abschnitt 5) **eingeleitet** sein. Eingeleitet heißt: Unpublish ausgeführt **oder** Revert auf die zuletzt gute Version ausgeführt und „Publish changes“ ausgelöst. Wird t0 + 60 Minuten erreicht, ohne dass der Revert-Weg bereit ist, gilt Unpublish als Pflichtmaßnahme, sofern der Owner nicht dokumentiert anders entscheidet.
+
+Plattformverhalten laut öffentlicher Lovable-Dokumentation (abgerufen 2026-11-07), **am Projekt zu belegen** (Belegplan RB-01 ff.):
+
+- Publish liefert einen Schnappschuss der **aktuellen** Projektversion aus; spätere Änderungen gehen erst mit „Publish changes“ live ([Publish](https://docs.lovable.dev/features/publish), [Hosting](https://docs.lovable.dev/features/hosting)). Das deckt sich mit der Support-Aussage „kein Pinning auf Commit oder Branch“ (`docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
+- Eine Funktion „frühere Veröffentlichung wiederherstellen“ (Instant Rollback) ist nicht dokumentiert. Rücknahme heißt daher: Projektstand auf die gute Version zurücksetzen und erneut veröffentlichen.
+- Revert im Verlauf (History) setzt nur den **Code** zurück und stellt Edge Functions passend neu bereit; Datenbankdaten und bereits ausgeführte Migrationen bleiben ([History](https://docs.lovable.dev/features/projects/history)). Ob die Neubereitstellung der Edge Functions die veröffentlichte App **vor** dem erneuten Publish trifft, ist zu belegen (RB-08).
+- Die gerade veröffentlichte Version trägt im Verlauf das Kennzeichen „Published“. Versionsnummern gibt es nicht, Versionen erscheinen mit Datum. Sehr alte Versionen lassen sich ansehen, aber nicht mehr zurücksetzen („Cannot revert this far back in history“, Grenze nicht beziffert) ([History](https://docs.lovable.dev/features/projects/history)).
+- Unpublish macht die Live-Adresse unerreichbar, das Projekt bleibt im Editor; Recht wie beim Publish ([Publish](https://docs.lovable.dev/features/publish)).
+- GitHub: Ein Push oder Merge ändert die Live-App nicht; sie ändert sich nur mit einem Publish aus Lovable. Rücknahme über Git erfolgt mit einem Revert-Commit, kein Force-Push ([Git-Sync](https://docs.lovable.dev/integrations/git-sync-overview)). Ob ein Revert in Lovable einen Commit nach GitHub schreibt, ist nicht dokumentiert (RB-05).
+- Datenbank (Lovable Cloud): tägliche Sicherung, etwa 14 Tage, kein Point-in-Time, Wiederherstellung unumkehrbar und mit Schema, wenige Minuten Ausfall ([Backups](https://docs.lovable.dev/features/database-backups)). Das ist **kein** Teil der Publish-Rücknahme, sondern N5 mit Datenauftrag nach ADR-0037.
+
+#### Vorbereitung vor jedem Publish (Pflicht)
+
+1. Die bisher veröffentlichte Version (Kennzeichen „Published“) mit Datum und Uhrzeit notieren und als Bookmark „Live bis JJJJ-MM-TT“ markieren.
+2. Die neue Version nach dem Publish als Bookmark „Publish JJJJ-MM-TT, main <SHA>“ markieren.
+3. Prüfen, dass die Rücknahme-Version nicht gegen ADR-0036 verstößt (Auth-Broker). Hinweis: Die am 2026-10-31 veröffentlichte Version 1.69.0 enthält den Broker; eine Rücknahme auf diesen Stand stellt den Verstoß wieder her und braucht eine dokumentierte Entscheidung des Owners.
+
+#### Ablauf
+
+```mermaid
+flowchart TD
+  A[Defekt nach Publish bemerkt] --> B[t0 im Protokoll notieren]
+  B --> C[Ist-Zustand sichern: Screenshot Live-App und Verlauf, Kennzeichen Published, git log origin/main]
+  C --> D{Ursache im letzten Publish? Prüfung bis t0 + 15 min}
+  D -- nein, Daten --> N5[N5 Datenfehler, Datenauftrag ADR-0037]
+  D -- nein, Anmeldung --> N9[N9 Auth-Konfiguration]
+  D -- ja oder unklar --> E{Akuter Schaden? Datenabfluss, falsche Rechte, Sicherheitsfund}
+  E -- ja --> U[Unpublish sofort, Live-Adresse aus]
+  E -- nein --> F{Bookmark letzte gute Version vorhanden und zurücksetzbar?}
+  F -- nein --> U
+  F -- ja --> G[Owner entscheidet Rücknahme, Uhrzeit notieren]
+  G --> H[Revert im Verlauf auf die gute Version]
+  H --> I[Lesende Publish-Prüfung R-07: Broker, Abweichungen]
+  I -- Abweichung --> U
+  I -- ohne Befund --> J[Publish changes]
+  U --> K{Rücknahme bis t0 + 60 min eingeleitet?}
+  J --> K
+  K -- nein --> X[Abweichung im Protokoll, Eskalation Owner, Befund Risikoregister]
+  K -- ja --> L[Smoke-Test je Rolle, Bundle auf Broker-Kennungen prüfen]
+  X --> L
+  L --> M[Git abgleichen: Re-check, Sync-Branch prüfen, Fix per PR auf main]
+  M --> N[Erneuter Publish nur nach Go laut LOVABLE-PUBLISH-PRUEFUNG]
+```
+
+#### Nach der Rücknahme
+
+1. Git-Seite in Lovable prüfen (Re-check). Entstandene `lovable-sync-*`-Branches nicht mergen, nur lesen und im Tracker festhalten.
+2. Den Fehler über einen PR auf `main` beheben (CI grün, Merge per REST). Danach Sync, Publish-Prüfung, Go des Owners.
+3. Daten und Schema bleiben vom Revert unberührt. Hat der fehlerhafte Stand Daten geschrieben oder Migrationen ausgeführt: weiter bei N5.
+4. Protokoll abschließen: t0, Uhrzeit Entscheidung, Uhrzeit Unpublish oder Publish, Dauer bis eingeleitet, Ergebnis Smoke-Test.
+
+#### Belegplan RB (nur Wegwerfprojekt oder lesende Sicht, nie Produktion)
+
+Voraussetzung: ein **neu angelegtes** Lovable-Wegwerfprojekt (kein Remix des Produktivprojekts), eigenes eingebautes Backend ohne echte Daten, für RB-05 und RB-06 ein privates Wegwerf-Repository außerhalb von `bmarnau/sysingdashboard`. Keine Produktiv-Secrets. Beleg je Schritt: Screenshot mit sichtbarem Datum und Uhrzeit, Versionsdatum aus dem Verlauf (Lovable hat keine Versionsnummern), sichtbare Markierung in der App (Text „Version A“ oder „Version B“), bei Git der Commit-SHA. Ablage im Nachweisregister `docs/NACHWEISE.yaml` (neue EV-Nummer).
+
+```yaml
+belegplan_ruecknahme:
+  owner: Owner (Bernd)
+  umgebung: Lovable-Wegwerfprojekt, nie Produktion
+  schritte:
+    - id: RB-01
+      schritt: Wegwerfprojekt neu anlegen, Version A mit Text "Version A", Bookmark setzen, Publish
+      beleg: Screenshot Verlauf mit Kennzeichen Published und Datum; Screenshot Live-Adresse mit "Version A"
+      dauer_min: 15
+    - id: RB-02
+      schritt: Version B mit Text "Version B fehlerhaft", Publish changes
+      beleg: Screenshot Verlauf (Published an B), Live-Adresse zeigt B
+      dauer_min: 10
+    - id: RB-03
+      schritt: Revert auf Bookmark A, noch kein Publish
+      beleg: Live-Adresse zeigt weiter B; Punkt am Publish-Button sichtbar; Verlauf zeigt Published weiter an B
+      dauer_min: 10
+    - id: RB-04
+      schritt: Publish changes nach dem Revert; Zeit von Entscheidung bis Live-Anzeige A messen
+      beleg: Screenshots mit Uhrzeit vor und nach; Messwert in Minuten (Ziel deutlich unter 60)
+      dauer_min: 10
+    - id: RB-05
+      schritt: Wegwerfprojekt mit privatem Wegwerf-Repo verbinden, Version C, dann Revert auf B
+      beleg: git log des Repos; entsteht ein Commit auf main, ein lovable-sync-Branch oder nichts
+      dauer_min: 20
+    - id: RB-06
+      schritt: Rücknahme über Git, git revert auf main des Wegwerf-Repos pushen
+      beleg: Commit-SHA; Lovable übernimmt; Live-Adresse ändert sich erst nach Publish
+      dauer_min: 20
+    - id: RB-07
+      schritt: Unpublish, Live-Adresse prüfen, erneut Publish
+      beleg: Screenshot Fehlerseite mit Uhrzeit; danach gleiche Adresse wieder erreichbar; Dauer
+      dauer_min: 10
+    - id: RB-08
+      schritt: Tabelle und Edge Function in Version D, Datensatz anlegen, Revert auf C ohne Publish
+      beleg: Datensatz und Spalte bleiben; Antwort der Edge Function vor dem Publish (Wirkung auf Live)
+      dauer_min: 30
+    - id: RB-09
+      schritt: Revert auf eine alte Version versuchen (Grenze "Cannot revert this far back")
+      beleg: Screenshot Tooltip und Alter der Version; nur beobachtbar, wenn ein alter Stand existiert
+      dauer_min: 5
+    - id: RB-10
+      schritt: Produktivprojekt nur ansehen, Verlauf öffnen, keine Aktion
+      beleg: Screenshot Kennzeichen Published (welche Version, Datum); Revert-Schaltfläche aktiv oder gesperrt
+      dauer_min: 5
+      hinweis: nur lesen, keine Klicks auf Revert oder Publish, nur nach Freigabe
+  summe_min: 135
+```
+
+Gilt als belegt, wenn RB-01 bis RB-04 und RB-07 mit Beleg vorliegen und der Messwert aus RB-04 unter 60 Minuten liegt. RB-05, RB-06 und RB-08 klären das Verhältnis zu GitHub und zu den Edge Functions; bis dahin bleiben diese Punkte „zu belegen“. Danach REST-10 (Teil Rücknahme) im Standard und Lücke 7 in Abschnitt 6 aktualisieren.
 
 ### N2 Claude nicht mehr erreichbar
 
@@ -187,7 +298,7 @@ Abschluss: Ursache, Dauer der Störung, Datenverlust (ja oder nein, Umfang), Fol
 4. Auth-, Domain- und Hosting-Inventar (S5) fehlt (N9).
 5. Offline-Cache oder Mirror für npm fehlt (N10).
 6. Auftragstexte, Planungsseite und Startdatei liegen nicht in Git (N2, N6).
-7. Plattformfunktionen (Rücksetzen, Supabase-Backup, Neuanbindung) sind nicht durch ein Probe-Protokoll belegt.
+7. Plattformfunktionen (Rücksetzen, Supabase-Backup, Neuanbindung) sind nicht durch ein Probe-Protokoll belegt. Belegplan für die Rücknahme eines Publish: N1a, RB-01 bis RB-10.
 8. Das Handbuch wurde noch nicht in einer Planübung (Tabletop) erprobt (REST-13).
 9. Eignung und Konfiguration von TeamDrive als Ablagemedium (Vertrag, Standort, Versionierung, Rechte) sind nicht belegt (REST-15).
 10. Bewertung der Szenarien und Schutzklassen ist ein Vorschlag und noch nicht vom Owner bestätigt (REST-16, REST-17).
