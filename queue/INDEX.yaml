@@ -1,4 +1,4 @@
-stand: 2026-11-06 18:50
+stand: 2026-11-07 05:05
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 10
@@ -161,7 +161,7 @@ auftraege:
   titel: 'Pausenabschluss 2026-11-06 (geordnete Pause ca. 07:00)'
   art: doku-pr
   gate: nein
-  status: bereit
+  status: blockiert
   startet_nicht_vor: '2026-11-06T06:45+01:00'
   abhaengig_von: []
 - id: A23
@@ -226,3 +226,4 @@ entscheidungen_owner:
 - '2026-11-06 Owner: Publish-Plan 1.70.0; D1 Restore-Probe minimal lokal in Docker (Export per lesendem Datenauftrag), D2 Engineer-Befunde G08 und G09 in PR 283, D3 zod 3 befristet akzeptieren, D4 QS6-4 schließen, D5 types.ts als Go-Ausnahme; Aufträge A27 bis A30'
 - '2026-11-06 Owner: Erstantwort des Lovable-Supports als Nachweis (A29) und im Risikoregister R-07/R-10 (A28) festhalten'
 - '2026-11-06 Planer: Paket 1 fuer 2026-11-07 (Schaetzung ca. 3 Stunden Laufzeit, nicht gemessen): A25 15 min, A23 25 min, A22 20 min, A29 30 min, A26 35 min, A28 45 min. Paket 2 danach: A27 (60 bis 90 min) und A30 (40 min). Reihenfolge in dieser Liste ist verbindlich.'
+- '2026-11-07 Planer: A25 (Pausenabschluss 06.11.) verworfen, status blockiert, weil ueberholt und ihre Vorgabe (ab 06:45 keine Auftraege starten) Paket 1 blockieren wuerde. Paket 1 fuer 2026-11-07 (ca. 150 Minuten, Schaetzung): A23 (um STATUS.yaml erweitert) 30 min, A22 20 min, A29 30 min, A26 35 min, A28 45 min. Paket 2: A27 und A30.'

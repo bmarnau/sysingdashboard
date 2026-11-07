@@ -14,4 +14,5 @@ schritte:
 - 'Bericht reports/A25-BERICHT.md: Stand der Aufträge (erledigt, abgebrochen, offen), offene PRs mit Draft und CI, Entscheidungen, die der Owner nach der Pause treffen muss, Hygiene in einer Zeile, YAML-Block mit Reifegrad, Projektstatus, Offene_Fragen, Roadmap.'
 nachweis: Bericht reports/A25-BERICHT.md; aktualisierter Draft-PR 286.
 grenzen: Kein Merge, kein Publish, keine Branches löschen, keine neuen Aufträge starten. Keine Nachweise erfinden.
-status: bereit
+hinweis: 'Überholt am 2026-11-07 durch den Planer: Die Pause vom 2026-11-06 ist vorbei. Die Vorgabe, ab 06:45 keine Aufträge mehr zu starten, würde Paket 1 blockieren. Nützliche Teile (STATUS.yaml, Tagesbündel) übernimmt A23.'
+status: blockiert
