@@ -1,0 +1,15 @@
+id: A31
+titel: 'Notfallhandbuch: offene Lücken schließen (G04, REST-01, REST-05)'
+art: doku-pr
+gate: vor Publish
+abhaengig_von: []
+ziel: docs/NOTFALL-HANDBUCH.md (Entwurf mit 12 offenen Lücken, Abschnitt 6) so weit vervollständigen, wie es ohne Plattformbelege geht. Was Belege oder Entscheidungen des Owners braucht, bleibt "zu belegen" und wird als Frageliste ausgewiesen.
+schritte:
+- 'Abschnitt 6 (Offene Lücken, Stand 2026-11-03) lesen; je Lücke klassifizieren: sofort schließbar, braucht Beleg (Probe, Lovable-Aussage), braucht Entscheidung des Owners.'
+- 'Sofort schließbare Lücken schließen: Rotationsanleitung je Secret als Verfahren ohne Werte (REST-05: Datenbank-Schlüssel, Auth-Schlüssel, GitHub-Token, Lovable- und Supabase-Zugang, Reihenfolge, Prüfschritt danach); Kontenübersicht (Abschnitt 3) als Tabelle mit Feldern, ohne reale Adressen oder Nummern; Verweise auf ADR-0042 (RTO, RPO) und die Restore-Probe (A30).'
+- 'Szenario Datenverlust und Ausfall Lovable: Weg W2 (Backup) und W4 (Plattform-Backup) mit dem Stand aus RP-01 abgleichen (PostgreSQL 17.6, 25 Tabellen, Datenbank 0,27 GB, Storage leer).'
+- Frageliste für den Owner (Entscheidungen, Belege) am Ende des Berichts; Reihenfolge nach Wirkung auf G04 und R-04.
+- Doku im Tagesbündel; npm run docs:check, docs:project, Prettier; Bericht reports/A31-BERICHT.md mit YAML-Block.
+nachweis: Bericht reports/A31-BERICHT.md; Änderung im Tagesbündel, CI grün.
+grenzen: Kein Merge, kein Publish, keine Datenänderung, keine Zugangsdaten. Nichts nach main, solange Lovable schreibende Aufträge ausführt. Keine Nachweise erfinden; Aussagen zu Lovable und Supabase nur mit Beleg, sonst "zu belegen".
+status: bereit

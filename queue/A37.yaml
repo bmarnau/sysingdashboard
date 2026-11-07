@@ -1,0 +1,14 @@
+id: A37
+titel: 'App-Backup (Format 2.0): Deckt es die Datenbanktabellen ab? (Weg W2, R-14)'
+art: lesen
+gate: vor Publish
+abhaengig_von: []
+ziel: 'Offene Frage der Projektseite zu Weg W2: Deckt das anwendungseigene Backup (Format 2.0) die Team-Daten in der Datenbank ab? Abgleich gegen die 25 Tabellen im Schema public (RP-01).'
+schritte:
+- 'Backup- und Importcode lesen (src/**/backup*, dashboard.tsx:335-352, :1168, src/__tests__/backup): welche Datenarten und Tabellen werden exportiert, welche nicht; Schlüssel, Versionsformat, Prüfsummen, Wiederherstellung (Import).'
+- 'Tabellenabgleich: 25 Tabellen aus RP-01 (app_settings, audit_log, avkk_*, customer*, profiles, reference_*, shared_*, systemhouse*, user_roles) gegen die Backupinhalte; Ergebnis als Matrix (abgedeckt, teilweise, nicht abgedeckt) mit Datei- und Zeilenbelegen.'
+- Befunde zu F-QS6-ENG-02 (hourlyRate im JSON-Backup) einordnen, ohne G09 zu ändern (das macht A27).
+- Bewertung für RTO und RPO (ADR-0042) und Empfehlung, ob W2 mit dem App-Backup erreichbar ist oder ein Datenbank-Dump nötig bleibt. Bericht reports/A37-BERICHT.md.
+nachweis: Bericht reports/A37-BERICHT.md mit Matrix und Belegen.
+grenzen: Kein Merge, kein Publish, keine Datenänderung, keine Zugangsdaten. Nichts nach main, solange Lovable schreibende Aufträge ausführt. Keine Nachweise erfinden; Aussagen zu Lovable und Supabase nur mit Beleg, sonst "zu belegen".
+status: bereit

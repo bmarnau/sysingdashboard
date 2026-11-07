@@ -1,0 +1,14 @@
+id: A36
+titel: hourlyRate aus der gemeinsamen Projektion entfernen? Analyse und Plan (QS6-4 Härtung)
+art: plan-dann-pr
+gate: nein
+abhaengig_von: []
+ziel: Entscheidung D4 hat QS6-4 geschlossen. Die Analyse (docs/BERICHT-QS6-4-ANALYSE.md) nennt als optionale Härtung das Entfernen von hourlyRate aus shared-projection.schema.ts. Plan mit Nutzen, Risiko und Aufwand; Umsetzung erst nach Freigabe.
+schritte:
+- Fundstellen von hourlyRate in shared-projection.schema.ts, Veröffentlichungsfunktion (bsf02c_publish_shared_projection_snapshot) und Lesepfaden belegen (Datei, Zeile).
+- 'Wirkung auf Datenbank (Spalten in shared_*_projection), Tests, Export und Demodaten bewerten; Abgrenzung zu #283 und A27 (kein Konflikt in denselben Dateien).'
+- 'Plan reports/A36-PLAN.md: Option A (nur Schema und Typen), Option B (zusätzlich Spalte per Datenauftrag nach ADR-0037, nicht ohne Freigabe), Empfehlung, Aufwand in Stunden, Risiko für den Publish.'
+- 'Nach Freigabe des Owners: Draft-PR; ohne Freigabe nur der Plan.'
+nachweis: Plan reports/A36-PLAN.md mit Zeilenbelegen.
+grenzen: Kein Merge, kein Publish, keine Datenänderung, keine Zugangsdaten. Nichts nach main, solange Lovable schreibende Aufträge ausführt. Keine Nachweise erfinden; Aussagen zu Lovable und Supabase nur mit Beleg, sonst "zu belegen". Keine Datenbankänderung.
+status: bereit

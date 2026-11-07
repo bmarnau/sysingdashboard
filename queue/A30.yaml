@@ -11,6 +11,7 @@ schritte:
 - 'Offene Fragen und Risiken ausweisen: Export von Schema und Auth-Daten aus Lovable Cloud, Versionsunterschiede, Aufwand in Stunden (Gate-Bericht schätzt G03 mit 8 bis 32 Stunden).'
 - Bericht reports/A30-BERICHT.md mit Plan, Aufwand, Risiken und Entscheidungsvorlage; Code und Skripte erst nach Freigabe.
 - 'Image-Wahl begründen: supabase/postgres mit passendem Tag (Lovable zeigt 17.6.1.147) gegen reines Postgres 17 (supabase_vault, Auth-Schema, Rollen anon, authenticated, service_role). Auth-Konten (9) in der Probe neu anlegen oder nicht, Rollen aus user_roles und profiles zuordnen.'
+- 'Vorhandene Werkzeuge prüfen und als Basis nutzen: npm run db:schema:rebuild (supabase db reset --local), db:schema:snapshot, supabase/schema/public-schema.generated.sql und der CI-Job Database Schema Drift. Klären, was davon die Restore-Probe (Struktur aus Migrationen, Vergleich mit Live per RP-02) abdeckt und was fehlt.'
 nachweis: Plan-Dokument im Draft-PR (oder im Tagesbündel), Bericht reports/A30-BERICHT.md.
 grenzen: Nur Plan. Nichts ausführen, was die Produktion berührt. Keine Zugangsdaten in Dateien. Kein Datenauftrag ausführen, kein Merge, kein Publish. Alle Pfade außerhalb von OneDrive (C:\dev).
 status: bereit

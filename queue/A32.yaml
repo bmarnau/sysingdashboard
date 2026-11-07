@@ -1,0 +1,15 @@
+id: A32
+titel: 'Rücknahme eines Publish: Recherche und Belegplan (G05, REST-10)'
+art: doku-pr
+gate: vor Publish
+abhaengig_von: []
+ziel: Klären, wie ein fehlerhafter Publish zurückgenommen wird (Rücksetzen im Lovable-Editor "zu belegen"), und einen Belegplan entwerfen, mit dem der Owner das vor dem Go nachweisen kann, ohne die Produktion zu berühren.
+schritte:
+- 'Öffentliche Lovable-Dokumentation lesen (WebSearch und WebFetch, nur öffentliche Seiten): Versionsverlauf, Zurücksetzen, Publish, Veröffentlichungsstand. Quellen mit URL und Abrufdatum im Bericht; Aussagen als belegt nur mit Fundstelle.'
+- docs/MERGE-CHECKLISTE-GOLDEN-GATE.md:48-51 und docs/NOTFALL-HANDBUCH.md (Rücksetzen) gegenlesen; Widersprüche und Lücken nennen.
+- 'Belegplan RB-01 bis RB-0n: Welche Schritte kann der Owner an einem Wegwerfprojekt oder in der Vorschau ausführen, welches Ergebnis gilt als Beleg (Screenshot mit Datum, Versionsnummer), Dauer je Schritt. Kein Test in der Produktion.'
+- Entwurf des Rücknahmeablaufs als Mermaid und als Abschnitt im Notfallhandbuch, mit Entscheidungskriterium "Rücknahme innerhalb von 60 Minuten eingeleitet".
+- Bericht reports/A32-BERICHT.md; Änderung im Tagesbündel; docs:check, docs:project, Prettier.
+nachweis: Bericht reports/A32-BERICHT.md mit Fundstellen; Belegplan im Tagesbündel.
+grenzen: Kein Merge, kein Publish, keine Datenänderung, keine Zugangsdaten. Nichts nach main, solange Lovable schreibende Aufträge ausführt. Keine Nachweise erfinden; Aussagen zu Lovable und Supabase nur mit Beleg, sonst "zu belegen". Keine Anmeldung bei Lovable, nur öffentliche Seiten.
+status: bereit

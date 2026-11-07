@@ -1,0 +1,15 @@
+id: A33
+titel: 'Skript: Bundle-Prüfung nach dem Publish (G22, G14)'
+art: code-pr
+gate: vor Publish
+abhaengig_von: []
+ziel: 'Ein lokales, lesendes Prüfskript (npm run check:bundle), das nach dem Build prüft: (a) keine Broker-Kennungen lovable-preview-auth:get, :set, :remove, :result im Bundle, (b) @tanstack/react-start im Lockfile mindestens 1.168.60 (GHSA-qx66-fv34-fjm8). Es ersetzt die Handprüfung aus docs/LOVABLE-PUBLISH-PRUEFUNG.md:160 ff.'
+schritte:
+- 'Ist-Stand lesen: LOVABLE-PUBLISH-PRUEFUNG.md (Bundle-Prüfpunkt, veröffentlichtes Bundle index-B1N4K92k.js), MERGE-CHECKLISTE-GOLDEN-GATE.md (N1 bis N5), vorhandene Skripte unter scripts/ (Stil, Tests).'
+- 'scripts/check-bundle.mjs: Eingaben dist-Verzeichnis oder URL-Liste lokal gespeicherter Skriptdateien; Prüfung (a) und (b); Ausgabe als Tabelle und JSON (ok, gefundene Kennungen, Version); Exitcode 1 bei Fund. Kein Netzwerkzugriff, keine Zugangsdaten.'
+- Unit-Tests mit kleinen Fixtures (sauberes Bundle, Bundle mit Kennung, Lockfile mit zu alter Version); npm run test, lint, typecheck, Prettier.
+- Aufruf in docs/LOVABLE-PUBLISH-PRUEFUNG.md und MERGE-CHECKLISTE (G22) eintragen. Draft-PR, CI 15/15 auf dem exakten Head, kein Merge.
+- Bericht reports/A33-BERICHT.md.
+nachweis: Draft-PR mit CI 15/15; Bericht reports/A33-BERICHT.md.
+grenzen: Kein Merge, kein Publish, keine Datenänderung, keine Zugangsdaten. Nichts nach main, solange Lovable schreibende Aufträge ausführt. Keine Nachweise erfinden; Aussagen zu Lovable und Supabase nur mit Beleg, sonst "zu belegen". Nicht in die Pflichtprüfungen der CI einbinden, nur als eigener npm-Aufruf.
+status: bereit

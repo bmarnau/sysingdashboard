@@ -1,0 +1,15 @@
+id: A35
+titel: 'Lehren aus R-14: Datenbank, Backup und Notfall als Standardentwurf'
+art: doku-pr
+gate: nein
+abhaengig_von:
+- A30
+ziel: 'Owner-Anforderung 2026-11-06 (D3): Aus dem Thema Datenbank für Notfall und Backup lernen. Die Lehren als Entwurf für docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md und als Vorschlag für die Standardfamilie bmarnau-standards (Übernahme erst nach bestandener Restore-Probe).'
+schritte:
+- 'Eingänge: reports/A30-BERICHT.md, RP-01 (Feld eingaenge in queue/A30.yaml), EV-0004 (Probe nicht bestanden, keine Testumgebung), Befund Migrationen (33 Dateien, 30 Live-Einträge, 10 leere statements).'
+- 'Lehren als prüfbare Anforderungen (muss/sollte) formulieren, z. B.: Schema muss aus Migrationen reproduzierbar sein; Migrationstabelle und Repository müssen abgleichbar sein; Datenexport und Restore-Probe vor jeder Veröffentlichung mit Datenbankänderung; Probeumgebung getrennt von der Produktion; lesende Datenaufträge für Nachweise; Export lokal ablegen, nicht in OneDrive oder Git.'
+- Als Entwurf in den Standard einarbeiten (Version, Änderungsvermerk); Übernahme in bmarnau-standards nur vorbereiten, nicht ausführen.
+- Bericht reports/A35-BERICHT.md mit Verweisen und YAML-Block.
+nachweis: Bericht reports/A35-BERICHT.md; Entwurf im Tagesbündel.
+grenzen: Kein Merge, kein Publish, keine Datenänderung, keine Zugangsdaten. Nichts nach main, solange Lovable schreibende Aufträge ausführt. Keine Nachweise erfinden; Aussagen zu Lovable und Supabase nur mit Beleg, sonst "zu belegen". Kein Eintrag in bmarnau-standards.
+status: bereit

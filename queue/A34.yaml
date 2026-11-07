@@ -1,0 +1,15 @@
+id: A34
+titel: Smoke-Test N1 bis N5 als Checkliste mit Protokollvorlage (G22)
+art: doku-pr
+gate: vor Publish
+abhaengig_von:
+- A28
+ziel: Nach dem Publish soll der Owner in etwa 30 Minuten N1 bis N5 abarbeiten können, mit Protokoll als Beleg (EV-Eintrag).
+schritte:
+- 'MERGE-CHECKLISTE-GOLDEN-GATE.md:38-46 und docs/PUBLISH-PLAN.md (A28) lesen. N4 ("Abrechnung bleibt bis QS-06 offen") an den Stand nach D2 und D4 anpassen: Netzwerkprüfung mit Viewer-Konto, Antwort der Projektion ohne hourly, rate, amount; Engineer-Konto sieht in Tätigkeitsdialog und Backup keine Beträge (G08, G09, nach A27).'
+- 'docs/SMOKE-TEST-PUBLISH.md: je Schritt Konto und Rolle, Aktion, erwartetes Ergebnis, Beleg (Screenshot mit Datum), Abbruchkriterium, Dauer. Reihenfolge so, dass Rücknahme bei Fehlschlag früh eingeleitet wird.'
+- Protokollvorlage als YAML (Vorlage für docs/NACHWEISE.yaml, nächste freie EV-ID prüfen, EV-0006 ist für Kiosk reserviert); keine ausgefüllten Ergebnisse.
+- Verweis auf A33 (Bundle-Prüfung) und auf die Rücknahme (A32). Doku im Tagesbündel; docs:check, docs:project, Prettier; Bericht reports/A34-BERICHT.md.
+nachweis: Bericht reports/A34-BERICHT.md; docs/SMOKE-TEST-PUBLISH.md im Tagesbündel.
+grenzen: Kein Merge, kein Publish, keine Datenänderung, keine Zugangsdaten. Nichts nach main, solange Lovable schreibende Aufträge ausführt. Keine Nachweise erfinden; Aussagen zu Lovable und Supabase nur mit Beleg, sonst "zu belegen".
+status: bereit
