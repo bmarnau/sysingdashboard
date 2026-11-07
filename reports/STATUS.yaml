@@ -1,9 +1,12 @@
-stand: 2026-11-07T05:53+01:00
+stand: 2026-11-07T05:58+01:00
 laufender_auftrag:
+  - {id: A28, start: "2026-11-07T05:57+01:00", art: Agent, "Doku im Worktree, Übernahme ins Tagesbündel"}
+  - {id: A31, start: "2026-11-07T05:57+01:00", art: Agent, "Doku im Worktree"}
+  - {id: A38, start: "2026-11-07T05:57+01:00", art: Agent, "lesen, mit Nachtrag A30 (RP-02, Export)"}
   - {id: A33, start: "2026-11-07T05:12+01:00", art: Agent, "Code-PR, Branch feat/a33-check-bundle"}
   - {id: A27, start: "2026-11-07T05:12+01:00", art: Agent, "Code-PR 283"}
 betriebsart: "Owner-Vorgabe 2026-11-07: Aufträge parallel mit Agenten, nicht auf Merge warten, Stand kommentieren, Bericht je Auftrag mit eigenen Ideen. Agenten arbeiten lesend oder auf eigenem Branch; Commits auf Tagesbündel und ops/reports nur durch die Hauptsitzung."
-zurueckgestellt: {A28: "nach A23, ändert viele Dateien im Tagesbündel; nach Integration der ersten Agentenergebnisse", A31: "nach A32 (gleiche Datei NOTFALL-HANDBUCH)", A34: "abhängig von A28", A35: "abhängig von A30"}
+zurueckgestellt: {A34: "abhängig von A28", A35: "abhängig von A30 und A38"}
 letzter_auftrag: {id: A37, status: erledigt, bericht: reports/A37-BERICHT.md}
 naechste_pruefung: "laufend; Sitzungsende ca. 07:15"
 betrieb: normal; Pause vom 2026-11-06 beendet, A25 vom Planer verworfen
