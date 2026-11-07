@@ -1,4 +1,4 @@
-stand: 2026-11-07 07:45
+stand: 2026-11-07 07:30
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 18
@@ -289,3 +289,4 @@ entscheidungen_owner:
 - '2026-11-07 Planer: A22, A23, A26, A29, A32, A36 laut STATUS.yaml von Claude Code erledigt (Berichte liegen vor; Pruefung der Berichte durch den Planer steht aus). RP-02 vom Owner ausgefuehrt und freigegeben ausgewertet; neuer Auftrag A38 fuer anon-Rechte und Schema-Soll.'
 - '2026-11-07 Owner: Docker laeuft lokal (ca. 06:04). Planer: A39 (Restore-Probe lokal, S1 bis S4) vorbereitet, Status wartet_auf_entscheidung bis zur Freigabe nach Pruefung des Plans aus A30.'
 - '2026-11-07 Owner: Restore-Probe E1 bis E7 entschieden (E1 Supabase CLI lokal, E2 neu mit Live-UUIDs, E5 lokal verschluesselt mit Loeschung spaetestens 14 Tage nach Protokoll, E6 alle 9 Konten, E7 Skripte und Ausfuehrung freigegeben). Planer: A39 auf bereit, Start nach Abschluss A38.'
+- '2026-11-07 Owner (Fragenrunde): PR 283 erst Diff-Vorpruefung durch den Planer (erfolgt: ActivityDialog und JSON-Backup stimmig, zip.ts und export-data.ts nicht gelesen), Draft und Merge beim Owner. G23 (anon-Rechte) erst nach Auswertung A38. G20 Kiosk Weg B ist Folgepunkt nach dem Publish (Restrisiko bm@ befristet akzeptieren, Datum im Risikoregister). R-04: Owner benennt eine zweite Vertrauensperson (Name noch offen). PR 155 und 124 nach dem Publish. A07 nach der Restore-Probe (A39).'
