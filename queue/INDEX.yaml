@@ -1,4 +1,4 @@
-stand: 2026-11-07 08:05
+stand: 2026-11-07 08:20
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 18
@@ -303,3 +303,4 @@ entscheidungen_owner:
 - '2026-11-07 Owner: Restore-Probe E1 bis E7 entschieden (E1 Supabase CLI lokal, E2 neu mit Live-UUIDs, E5 lokal verschluesselt mit Loeschung spaetestens 14 Tage nach Protokoll, E6 alle 9 Konten, E7 Skripte und Ausfuehrung freigegeben). Planer: A39 auf bereit, Start nach Abschluss A38.'
 - '2026-11-07 Owner (Fragenrunde): PR 283 erst Diff-Vorpruefung durch den Planer (erfolgt: ActivityDialog und JSON-Backup stimmig, zip.ts und export-data.ts nicht gelesen), Draft und Merge beim Owner. G23 (anon-Rechte) erst nach Auswertung A38. G20 Kiosk Weg B ist Folgepunkt nach dem Publish (Restrisiko bm@ befristet akzeptieren, Datum im Risikoregister). R-04: Owner benennt eine zweite Vertrauensperson (Name noch offen). PR 155 und 124 nach dem Publish. A07 nach der Restore-Probe (A39).'
 - '2026-11-07 Owner (Fragenrunde 2): G24 (RLS-Invariante) als Muss-Gate anlegen; avkk_people_directory zuerst als Plan (A41), Fix vor Publish danach entscheiden; zweite Vertrauensperson in der Rolle Familie/Lebenspartner (Name nur im Notfallumschlag); Support-Nachfrage bis Montag 2026-11-09 zurueckgestellt. Planer: A40 (Dokumentation) und A41 (Plan) eingestellt.'
+- '2026-11-07 Owner: RA-02 (bm@) gilt bis 30 Tage nach dem Publish. Claude Code wird fuer A39, A40, A41 jetzt vom Owner gestartet (Auftragstext vom Planer).'
