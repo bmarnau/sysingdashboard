@@ -672,6 +672,12 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-07
+    ereignis: >-
+      Statuskorrektur: PR 278 gemergt 2026-11-06T05:11Z (02cb3d28), PR 287 gemergt 2026-11-06T06:10Z (7dc4699d, CI 15/15, enthält K1 und K2), PR 285 als
+      enthalten geschlossen. bun audit auf main 7dc4699d: 54 Funde (24 hoch, 24 mittel, 6 niedrig), 0 kritisch, dompurify und shell-quote nicht gemeldet.
+      Gates G11 und G12 erfüllt; G19 (Vorschauprüfung PR 278) bleibt offen. CURRENT-STATUS und Publish-Gate-Bericht (Nachtrag) korrigiert.
+    beleg: PR 278, PR 285 (Kommentar beim Schließen), PR 287, bun audit am 2026-11-07 auf main 7dc4699d (Worktree, nur lesen)
   - datum: 2026-11-06
     ereignis: >-
       A09: Kontenübersicht ohne Werte docs/ZUGAENGE-UND-NOTFALLKONTO.md (Entwurf; 10 Dienste, Mail-Aliase, Prüfliste ZN-01 bis ZN-18). Für keinen Dienst ist eine

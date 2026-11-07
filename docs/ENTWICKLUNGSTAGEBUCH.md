@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-06 · Dashboard-Version 1.70.0
+Stand: 2026-11-07 · Dashboard-Version 1.70.0
+
+## 2026-11-07 — Statuskorrektur Sicherheitsfunde und PDF-Korrektur
+
+Die Behebung der zwei kritischen Paketfunde und die PDF-Korrektur (#278) sind bereits am 06.11. gemergt; die Doku nannte sie noch als offen. Eine neue Paketprüfung auf dem aktuellen Stand meldet keinen kritischen Fund mehr. Offen bleibt die Prüfung der PDF-Korrektur in der Lovable-Vorschau.
 
 ## 2026-11-06 — Engineer-Abnahme geplant, Lücke im Tätigkeitsdialog
 

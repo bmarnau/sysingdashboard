@@ -1,10 +1,12 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-11-06
+Stand: 2026-11-07
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 
-A09 (2026-11-06): Kontenübersicht `docs/ZUGAENGE-UND-NOTFALLKONTO.md` (Entwurf, ohne Werte); zweite Person, Notfallkonto und Wiederherstellungsadressen sind für alle Dienste offen (R-04). Wiederanlaufpunkt: Warteschlange leer, Entscheidungen des Owners laut `docs/PUBLISH-GATE-BERICHT.md` (Offene Fragen), Merge-Freigaben 285, 287 und 286.
+Statuskorrektur (2026-11-07): PR 278 ist am 2026-11-06 um 05:11 Z gemergt (`02cb3d28`), PR 287 um 06:10 Z (`7dc4699d`, CI 15/15, enthält K1 und K2). PR 285 ist als in 287 enthalten geschlossen, ohne Merge. `bun audit` auf `main` `7dc4699d` (07.11.): 54 Funde (24 hoch, 24 mittel, 6 niedrig), kein kritischer; `dompurify` und `shell-quote` nicht mehr gemeldet. Gates G11 und G12 sind damit erfüllt, G19 bleibt offen (Vorschauprüfung von PR 278 ohne Beleg). Offene PRs: 286, 283, 282 (Drafts), 155, 124 (Draft). Wiederanlaufpunkt: Entscheidungen des Owners laut `docs/PUBLISH-GATE-BERICHT.md` (Offene Fragen), Merge-Freigabe 286.
+
+A09 (2026-11-06): Kontenübersicht `docs/ZUGAENGE-UND-NOTFALLKONTO.md` (Entwurf, ohne Werte); zweite Person, Notfallkonto und Wiederherstellungsadressen sind für alle Dienste offen (R-04). Wiederanlaufpunkt: Warteschlange leer, Entscheidungen des Owners laut `docs/PUBLISH-GATE-BERICHT.md` (Offene Fragen), Merge-Freigabe 286 (285 und 287 erledigt, siehe Statuskorrektur 2026-11-07).
 
 A08 (2026-11-06): ADR-0042 (RTO, RPO, Schutzklassen) liegt als Entwurf vor; die Entscheidungsfelder D1 bis D10 sind offen und bestimmen den Umfang von R-14.
 
@@ -16,9 +18,9 @@ A05 (2026-11-06): Plan für die Engineer-Abnahme QS-06 liegt vor (`docs/QS-06-VI
 
 A18 und A19 (2026-11-06): Kiosk-Demodaten sollen nach dem Publish aus dem eingebauten Generator entstehen (Variante A mit Paket 2b, Entscheidung offen). Notfallhandbuch und Standard Lovable-Grenzen liegen als Entwurf in Git; A07 ist damit inhaltlich abgeschlossen, A08 und A09 sind frei.
 
-Teilautomatik 2026-11-06: A16 erledigt, K1 und K2 behoben in Draft-PR 285 und 287 (CI 15/15, Merge-Reihenfolge 285, dann 287). A17 erledigt: Kiosk-Konto nur über Weg B (anzeige@ neu, kiosk@ und bm@ archivieren), Freigaben offen; Rolle von bm@ vor dem Archivieren in der Kontenliste belegen, Auswahlfeld der Benutzerliste nicht benutzen (`docs/DATENAUFTRAG-KIOSK-KONTO.md`).
+Teilautomatik 2026-11-06: A16 erledigt, K1 und K2 behoben in PR 285 und 287 (CI 15/15); PR 287 gemergt, PR 285 als enthalten geschlossen (Korrektur 2026-11-07). A17 erledigt: Kiosk-Konto nur über Weg B (anzeige@ neu, kiosk@ und bm@ archivieren), Freigaben offen; Rolle von bm@ vor dem Archivieren in der Kontenliste belegen, Auswahlfeld der Benutzerliste nicht benutzen (`docs/DATENAUFTRAG-KIOSK-KONTO.md`).
 
-PR-Bestand (2026-11-06): Fünf Alt-Drafts (#222, #226, #231, #233, #234) sind durch gemergte PRs ersetzt, Schließen nach Owner-Entscheidung; #278 nach Prüfung in der Lovable-Vorschau mergen; #155 und #124 brauchen eine Entscheidung (`docs/BERICHT-PR-BESTAND-2026-11-06.md`). Teilautomatik läuft wieder (Warteschlange Planer-Stand 06.11. 05:15, A16 in Arbeit).
+PR-Bestand (2026-11-06): Fünf Alt-Drafts (#222, #226, #231, #233, #234) sind durch gemergte PRs ersetzt, Schließen nach Owner-Entscheidung; #278 am 2026-11-06 gemergt (`02cb3d28`), Vorschauprüfung ohne Beleg (G19, Korrektur 2026-11-07); #155 und #124 brauchen eine Entscheidung (`docs/BERICHT-PR-BESTAND-2026-11-06.md`). Teilautomatik läuft wieder (Warteschlange Planer-Stand 06.11. 05:15, A16 in Arbeit).
 
 Startroutine (2026-11-06): Zu Beginn jeder Sitzung räumt `npm run git:hygiene -- --fix` lokal gemergte Branches und verwaiste Worktree-Einträge auf; Remote-Branches, nicht eingecheckte Dateien und fremde Worktrees werden nur gemeldet. Playwright-Ausgaben sind ignoriert.
 
