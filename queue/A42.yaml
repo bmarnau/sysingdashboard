@@ -1,0 +1,14 @@
+id: A42
+titel: 'Vertragstest: jede Rolle mit backup.restore hat billing.view'
+art: code-pr
+gate: nein
+abhaengig_von: []
+ziel: 'Die Annahme aus PR 283 (zip.ts, includeBilling: true) absichern: Das ZIP-Backup enthaelt hourlyRate immer, zulaessig nur solange jede Rolle mit backup.restore auch billing.view hat.'
+schritte:
+- 'Rollenmatrix im Code lesen (src/lib/rbac, Rechtekatalog) und den bestehenden Test src/__tests__/security/qs6-5-export-billing.test.ts ansehen; pruefen, ob die Invariante dort schon geprueft wird.'
+- 'Falls nicht oder nur indirekt: Vertragstest ergaenzen, der fuer alle Rollen mit backup.restore billing.view verlangt und mit klarer Meldung (Verweis auf zip.ts, QS-06) fehlschlaegt.'
+- 'Neuer Branch von main (nach Merge PR 283, be712548), Draft-PR, nur Test und Verweis im Handbuch/Backlog falls noetig; npm run lint, typecheck, test, docs:check.'
+- Bericht reports/A42-BERICHT.md.
+nachweis: Draft-PR mit CI 15/15; Bericht reports/A42-BERICHT.md.
+grenzen: Nur Test. Keine Rollenaenderung, keine Migration, kein Merge, kein Publish.
+status: bereit

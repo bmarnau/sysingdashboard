@@ -1,4 +1,4 @@
-stand: 2026-11-07 08:30
+stand: 2026-11-07 08:40
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 18
@@ -279,6 +279,12 @@ auftraege:
   gate: vor Publish prüfen
   status: bereit
   abhaengig_von: []
+- id: A42
+  titel: 'Vertragstest: jede Rolle mit backup.restore hat billing.view'
+  art: code-pr
+  gate: nein
+  status: bereit
+  abhaengig_von: []
 entscheidungen_owner:
 - 2026-11-05 Version 1.70.0 bleibt
 - 2026-11-05 Demodaten Verschiebung in ganzen Tagen
@@ -305,3 +311,4 @@ entscheidungen_owner:
 - '2026-11-07 Owner (Fragenrunde 2): G24 (RLS-Invariante) als Muss-Gate anlegen; avkk_people_directory zuerst als Plan (A41), Fix vor Publish danach entscheiden; zweite Vertrauensperson in der Rolle Familie/Lebenspartner (Name nur im Notfallumschlag); Support-Nachfrage bis Montag 2026-11-09 zurueckgestellt. Planer: A40 (Dokumentation) und A41 (Plan) eingestellt.'
 - '2026-11-07 Owner: RA-02 (bm@) gilt bis 30 Tage nach dem Publish. Claude Code wird fuer A39, A40, A41 jetzt vom Owner gestartet (Auftragstext vom Planer).'
 - '2026-11-07 Owner: PR 283 gemergt (be712548), PR 282 geschlossen. Invariante backup.restore und billing.view in A36 und Risikoregister dokumentieren. avkk_people_directory: Fix vor dem Publish, wenn klein und sicher (hoechstens 8 h, keine Rollenaenderung, Test-Beleg), Pruefung in A41.'
+- '2026-11-07 Owner: Vertragstest zur Invariante backup.restore und billing.view als Auftrag A42.'
