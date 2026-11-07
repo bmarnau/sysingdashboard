@@ -177,3 +177,16 @@ Messung der Sitzungsablage in der veröffentlichten App (2026-10-31, angemeldet,
 | Sitzung im `localStorage` | Eintrag `sb-<Projektreferenz>-auth-token` vorhanden (Länge 2476), 15 Einträge insgesamt           |
 
 Bewertung: In der veröffentlichten App liegt die Sitzung im `localStorage`; der ausgelieferte Broker ist wirkungslos. Das stützt die Support-Aussage durch eine eigene Messung (eine Sitzung, ein Browser). Der Verstoß gegen ADR-0036 bleibt als Befund bestehen und wird mit einem Publish des Weg-B-Stands beseitigt; danach das Bundle erneut auf die Broker-Kennungen prüfen.
+
+### Bundle-Prüfung per Skript (A33, ab 2026-11-07)
+
+Die Handprüfung oben wird durch ein lesendes Skript ersetzt. Es muss nach jedem Build und nach jedem Publish laufen; es ist bewusst nicht Teil der Pflicht-CI.
+
+| Aufruf                                                            | Zweck                                                                                  |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `npm run build && npm run check:bundle`                           | eigener Build (`dist/`, sonst `.output/`)                                              |
+| `npm run check:bundle -- --dist <verzeichnis>`                    | anderes Build-Verzeichnis                                                              |
+| `npm run check:bundle -- <datei1.js> <datei2.js> …`               | lokal gespeicherte Skripte der veröffentlichten App (z. B. `index-<hash>.js`, alle 13) |
+| `npm run check:bundle -- --json test-report/bundle-security.json` | Ergebnis zusätzlich als JSON-Datei für den Nachweis                                    |
+
+Prüfpunkte: (a) keine Kennung `lovable-preview-auth:get`, `:set`, `:remove`, `:result` (ADR-0036, R-07); (b) `@tanstack/react-start` im Lockfile (`bun.lock`, sonst `package-lock.json`) mindestens 1.168.60 (GHSA-qx66-fv34-fjm8). Ausgabe als Tabelle und JSON; Exitcode 0 = ok, 1 = Fund, 2 = Eingabe fehlt. Das Skript greift nicht auf das Netz zu: Die Skripte der veröffentlichten App werden vorher von Hand im Browser gespeichert. Das Lockfile beschreibt den Repository-Stand, nicht zwingend den Lovable-Build; für die veröffentlichte App zählt Prüfpunkt (a). Quelltext: `scripts/check-bundle-security.mjs` (`scripts/check-bundle.mjs` bleibt die Größenmessung `test:perf`).

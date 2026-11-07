@@ -2395,6 +2395,7 @@ Die Testinstanz prüft den **aktuellen Buildstand** des Dashboards — sie ist k
 | Accessibility | \`bun run test:a11y\` | vitest-axe |
 | Security/RBAC | \`bun run test:security\` | RBAC-Matrix + Secret-Scan + Docs |
 | Performance/Bundle | \`bun run test:perf\` | \`dist/\`-Chunk-Analyse |
+| Bundle-Sicherheit | \`bun run check:bundle\` | Broker-Kennungen im Bundle, Mindestversion \`@tanstack/react-start\` (nicht in der CI) |
 | Doku/Version | \`bun run test:docs\` | CHANGELOG ↔ Handbuch |
 | Technical Debt | \`bun run test:debt\` | TODO/HACK/ts-ignore-Trend |
 | UI-E2E | \`bun run test:e2e\` | Playwright Smoke + Gating |

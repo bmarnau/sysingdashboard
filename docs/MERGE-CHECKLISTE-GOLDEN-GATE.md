@@ -37,13 +37,14 @@ flowchart TD
 
 ## 4 Test nach dem Publish (veröffentlichte App)
 
-| ID  | Rolle | Erwartung                                                  |
-| --- | ----- | ---------------------------------------------------------- |
-| N1  | Bernd | Anmeldung, Arbeitssicht, Veröffentlichen für Kunde A und B |
-| N2  | Petra | Kunde B, Veröffentlichen, Verantwortliche sichtbar         |
-| N3  | Alex  | kein Veröffentlichen, keine Kunden                         |
-| N4  | Alexa | nur Ansicht; Abrechnung (M4) bleibt bis QS-06 offen        |
-| N5  | alle  | erledigte Pakete nicht „Überfällig“ (Fix #220)             |
+| ID  | Rolle | Erwartung                                                                   |
+| --- | ----- | --------------------------------------------------------------------------- |
+| N1  | Bernd | Anmeldung, Arbeitssicht, Veröffentlichen für Kunde A und B                  |
+| N2  | Petra | Kunde B, Veröffentlichen, Verantwortliche sichtbar                          |
+| N3  | Alex  | kein Veröffentlichen, keine Kunden                                          |
+| N4  | Alexa | nur Ansicht; Abrechnung (M4) bleibt bis QS-06 offen                         |
+| N5  | alle  | erledigte Pakete nicht „Überfällig“ (Fix #220)                              |
+| N6  | Owner | Bundle-Prüfung G22: `npm run check:bundle -- <gespeicherte Skripte>` Exit 0 |
 
 ## 5 Rücknahme
 
