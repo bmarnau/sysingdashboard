@@ -153,3 +153,41 @@ nachweise:
       - Uhrzeit nur als "abends" überliefert; die Antwort liegt nur im Chat des Owners, nicht in Git.
       - Aussagen des Supports, keine eigene Messung; über den genannten Inhalt hinaus wird nichts behauptet.
     beleg: Chat des Owners am 2026-11-06 abends (nicht in Git)
+  - id: EV-0009
+    titel: Restore-Probe lokal (Entwurf), Export 2026-11-06 in Einzelcontainer, Struktur und Daten
+    datum: 2026-11-07
+    umgebung: >-
+      lokal, Docker Desktop; supabase/postgres:17.6.1.147 ohne veröffentlichte Ports, Client postgres:18 (pg_restore 18.6) im internen
+      Netz; Datenverzeichnis nur im Arbeitsspeicher (tmpfs)
+    version: main be712548 (Migrationen); Export pg_dump 18.6 aus Datenbank 17.6, erstellt 2026-11-06 17:27:58 UTC
+    bezug: [EV-0004, G03, R-14, REST-07, A39, A30, RP-02]
+    pruefer: Claude Code (Auftrag A39, Freigabe Owner E7 2026-11-07)
+    art: Probe-Protokoll (Entwurf)
+    ergebnisse:
+      - punkt: Struktur aus Migrationen (Plan S3, Weg W1)
+        ergebnis: >-
+          33/33 Migrationen ohne Fehler; RP-02 B bis H gleich, ausgenommen die 4 bekannten Funktions-md5 aus 20260913150000 und eine
+          zusätzliche EXECUTE-Zeile authenticated auf reference_value_validate_scope (beide in Plan 15.3 für W1 erwartet)
+      - punkt: Wiederherstellung aus dem Export (Plan S3, Weg W2)
+        ergebnis: >-
+          0 Fehler, 0 Warnungen im dritten Lauf; Spalten, Constraints, Indizes, Trigger, Policies, Funktionen (41/41 md5), EXECUTE (109)
+          und Tabellenrechte gleich RP-02; RLS 25/25
+      - punkt: Daten J2 (Plan S4)
+        ergebnis: 25/25 Tabellen mit gleicher Zeilenzahl und gleichem md5 wie RP-02 J2; 66/66 Fremdschlüssel angelegt und validiert
+      - punkt: auth.users
+        ergebnis: 9 Platzhalter mit Live-UUIDs und Probe-Adressen, 0 Passwort-Hashes; Auth-Daten des Exports nicht verwendet (E2)
+      - punkt: Rollenabnahme
+        ergebnis: nicht ausgeführt (Abbruch wegen Speichermangel; ohne Auth-Dienst keine App-Anmeldung)
+    status: entwurf
+    ergebnis: teilweise
+    einschraenkungen:
+      - Rückfall nach E1 (Einzelcontainer statt Supabase CLI), Begründung im Bericht A39.
+      - Spalten aus der J2-Ausschlussliste (u. a. audit_log.payload, jsonb, hash, email, phone) nicht geprüft; Stichproben je Kerntabelle offen.
+      - >-
+        Fehlerfreier Restore nur mit drei Vorschritten: Auswahl per TOC-Liste (pg_restore -n legt das Schema private nicht an), Rolle
+        sandbox_exec vorab, Default-Privilegien des Images in public entziehen und ACL getrennt einspielen; ohne Letzteres ist der Stand
+        offener als live.
+      - Export unter C:\dev\restore-probe, EFS-verschlüsselt; Löschung spätestens 2026-11-21, Löschung hier zu vermerken.
+    beleg: >-
+      ops/reports reports/A39-BERICHT.md; lokale Protokolle unter C:\dev\restore-probe\work (nicht in Git); Vergleichsbasis
+      ops/queue queue/anlagen/RP-02-ergebnis-2026-11-07.md

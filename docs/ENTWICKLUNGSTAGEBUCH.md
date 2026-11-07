@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-07 · Dashboard-Version 1.70.0
 
+## 2026-11-07 — Datenbank lokal wiederhergestellt
+
+Der Datenexport aus Lovable vom 6. November ließ sich auf dem eigenen Rechner in eine leere Datenbank zurückspielen. Tabellen, Zugriffsregeln, Funktionen und alle Datenzeilen stimmen mit dem Live-Stand vom 7. November überein. Die Anmeldekonten wurden dabei bewusst nicht übernommen, sondern als Platzhalter ohne Passwort neu angelegt. Dabei zeigten sich drei Handgriffe, ohne die die Wiederherstellung scheitert oder zu offen ausfällt: Das Schema `private` muss ausdrücklich mit ausgewählt werden, eine Lovable-eigene Rolle muss vorher angelegt werden, und die Standardrechte der leeren Datenbank müssen vorher entzogen werden. Sonst hätten nicht angemeldete Zugriffe volle Tabellenrechte. Die Prüfung der Rollen steht noch aus, weil der Speicher des Rechners knapp wurde. Ein neuer Test (PR 289) sichert ab, dass nur Rollen mit Abrechnungsrecht Sicherungen wiederherstellen dürfen. Publish bleibt No-Go.
+
 ## 2026-11-07 — Nachtrag nach dem Merge von PR 283
 
 Der Owner hat PR 283 um 07:08 Z gemergt. Alle 15 Prüfungen waren grün, auch auf `main` danach. PR 282 zeigt GitHub ebenfalls als gemergt. Er wurde aber nicht eigens gemergt: Sein Inhalt steckte schon in PR 283. Der Planer schrieb „PR 282 ist geschlossen“. Das stimmt nur halb, GitHub sagt „gemergt“.
