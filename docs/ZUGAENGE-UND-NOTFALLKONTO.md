@@ -1,12 +1,12 @@
 # Zugänge und Notfallkonto (R-04)
 
-Stand: 2026-11-06 · Auftrag A09 · Status: Entwurf · Keine Zugangsdaten in dieser Datei
+Stand: 2026-11-07 (Verweise auf das Notfallhandbuch auf Abschnitte umgestellt, A31) · Auftrag A09 · Status: Entwurf · Keine Zugangsdaten in dieser Datei
 
 ## 1 Zweck
 
 Diese Übersicht mindert den Bus-Faktor 1 aus R-04 („Einzelner Betreiber als SPoF für Freigaben und Supabase-Zugriff“, Score 20, `docs/RISIKOREGISTER.md:16`). Sie beschreibt je Dienst, wer Zugang hat, wie ein Konto wiederhergestellt wird, ob ein Notfallkonto (Break-Glass) besteht und wer als zweite berechtigte Person vorgesehen ist.
 
-Sie füllt die Vorlage „Konten und Zugänge“ des Notfallhandbuchs (`docs/NOTFALL-HANDBUCH.md:143-152`) und schließt, sobald alle Felder belegt sind, die Lücken 2 und 12 (`docs/NOTFALL-HANDBUCH.md:185`, `:195`). Anforderungen: REST-20 und REST-21 (`docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md:40-41`). Szenarien: N7 Kontoinhaber nicht verfügbar (`docs/NOTFALL-HANDBUCH.md:116-122`) und N9 Domain, DNS, Auth-Konfiguration (`docs/NOTFALL-HANDBUCH.md:131-135`).
+Sie füllt die Vorlage „Konten und Zugänge“ des Notfallhandbuchs (`docs/NOTFALL-HANDBUCH.md` (Abschnitt 3)) und schließt, sobald alle Felder belegt sind, die Lücken 2 und 12 (`docs/NOTFALL-HANDBUCH.md` (Lücke 2, Lücke 12)). Anforderungen: REST-20 und REST-21 (`docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md:40-41`). Szenarien: N7 Kontoinhaber nicht verfügbar (`docs/NOTFALL-HANDBUCH.md` (N7)) und N9 Domain, DNS, Auth-Konfiguration (`docs/NOTFALL-HANDBUCH.md` (N9)).
 
 Nach ADR-0042 (Entwurf) gelten die RTO-Werte nur „bei Verfügbarkeit des Owners“, bis eine zweite berechtigte Person oder ein Notfallkonto besteht (`docs/ADR/0042-rto-rpo-schutzklassen.md:210`, `:234`).
 
@@ -17,8 +17,8 @@ Nach ADR-0042 (Entwurf) gelten die RTO-Werte nur „bei Verfügbarkeit des Owner
 3. Für Zugangsdaten steht nur der Ort: „Passwort-Tresor, Eintrag: …“. Der Eintragsname darf keinen Wert verraten.
 4. Unbekannte Angaben müssen als „offen“ stehen. Nichts darf geschätzt oder ergänzt werden, was nicht belegt ist.
 5. Für jeden Dienst der Schutzklasse kritisch muss es zwei unabhängige Zugangswege geben (REST-20). Zugänge zu Konten sind nach ADR-0042 als kritisch vorgeschlagen (`docs/ADR/0042-rto-rpo-schutzklassen.md:42`; Entscheidung D1 offen, `:259`).
-6. Das Notfallkonto muss getrennt vom Alltagszugang geführt werden: anderer Tresor, anderes Gerät, andere Wiederherstellungsadresse, anderer zweiter Faktor. Jede Nutzung muss im Notfallprotokoll (`docs/NOTFALL-HANDBUCH.md:174-180`) vermerkt werden; danach werden Passwörter und Schlüssel erneuert (REST-21, `docs/NOTFALL-HANDBUCH.md:217`).
-7. Das Postfach info@ darf nicht die einzige Wiederherstellungsadresse sein (`docs/NOTFALL-HANDBUCH.md:218`, `docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md:249`).
+6. Das Notfallkonto muss getrennt vom Alltagszugang geführt werden: anderer Tresor, anderes Gerät, andere Wiederherstellungsadresse, anderer zweiter Faktor. Jede Nutzung muss im Notfallprotokoll (`docs/NOTFALL-HANDBUCH.md` (Abschnitt 5)) vermerkt werden; danach werden Passwörter und Schlüssel erneuert (REST-21, `docs/NOTFALL-HANDBUCH.md` (Kontenregel 2)).
+7. Das Postfach info@ darf nicht die einzige Wiederherstellungsadresse sein (`docs/NOTFALL-HANDBUCH.md` (Kontenregel 3), `docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md:249`).
 
 ## 3 Dienste
 
@@ -39,16 +39,16 @@ Schutzklasse ist ein Vorschlag nach ADR-0042 (nicht beschlossen). „Owner“ me
 
 Belege:
 
-- GitHub: Repository-Name und REST-Merge (`CLAUDE.md:16`); Vorlage `docs/NOTFALL-HANDBUCH.md:147`.
-- Lovable: `docs/NOTFALL-HANDBUCH.md:148`; Support per E-Mail im Ticket zu R-07 (`docs/LOVABLE-PUBLISH-PRUEFUNG.md:76-79`); Publish nur aus Lovable (`docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml:1354-1355`).
-- Lovable Cloud: Backend-Art laut Owner und Support Lovable Cloud, kein eigenes Supabase-Projekt (`docs/CURRENT-STATUS.md:64`, `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml:978`, `:1354`); plattformverwalteter Auth-Mailversand (`docs/BACKLOG.md:17`); Vorlage `docs/NOTFALL-HANDBUCH.md:149`.
+- GitHub: Repository-Name und REST-Merge (`CLAUDE.md:16`); Vorlage `docs/NOTFALL-HANDBUCH.md` (Abschnitt 3).
+- Lovable: `docs/NOTFALL-HANDBUCH.md` (Abschnitt 3); Support per E-Mail im Ticket zu R-07 (`docs/LOVABLE-PUBLISH-PRUEFUNG.md:76-79`); Publish nur aus Lovable (`docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml:1354-1355`).
+- Lovable Cloud: Backend-Art laut Owner und Support Lovable Cloud, kein eigenes Supabase-Projekt (`docs/CURRENT-STATUS.md:64`, `docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml:978`, `:1354`); plattformverwalteter Auth-Mailversand (`docs/BACKLOG.md:17`); Vorlage `docs/NOTFALL-HANDBUCH.md` (Abschnitt 3).
 - Anwendung: info@ aktiver Systemadministrator (`docs/DATENAUFTRAG-KIOSK-KONTO.md:77`, `:88`); Rolle von bm@ ungeklärt (`docs/DATENAUFTRAG-KIOSK-KONTO.md:29`, abweichend `docs/NACHWEISE.yaml:74-75`); Schutz des letzten Systemadministrators durch den Trigger `protect_last_sysadmin_profile` (`docs/DATENAUFTRAG-KIOSK-KONTO.md:77`).
-- Domain und DNS: Registrar df.eu (`docs/BACKLOG.md:13`, `:17`); Vorlage `docs/NOTFALL-HANDBUCH.md:151`.
-- Mail: Aliase und Leser (`docs/DATENAUFTRAG-KIOSK-KONTO.md:35-38`); Wiederherstellungsadresse nicht dokumentiert (`docs/NOTFALL-HANDBUCH.md:195`).
-- TeamDrive: Entscheidung des Owners 2026-11-03 (`docs/NOTFALL-HANDBUCH.md:167-172`, `docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md:108`); Eignung REST-15 offen (`docs/NOTFALL-HANDBUCH.md:192`).
-- Passwort-Tresor: als Ort genannt (`docs/NOTFALL-HANDBUCH.md:11`, `:169`); Kosten nicht ermittelt (`docs/ADR/0042-rto-rpo-schutzklassen.md:147`).
-- Claude: `docs/NOTFALL-HANDBUCH.md:150`, Szenario N2 (`docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md:205`); ADR-0039.
-- OneDrive: Arbeitsklone entfernt (`docs/CURRENT-STATUS.md:75`); alter Prototyp (`docs/BACKLOG.md:298`); Notfallmappe außerhalb von OneDrive (`docs/NOTFALL-HANDBUCH.md:7`, `:154`).
+- Domain und DNS: Registrar df.eu (`docs/BACKLOG.md:13`, `:17`); Vorlage `docs/NOTFALL-HANDBUCH.md` (Abschnitt 3).
+- Mail: Aliase und Leser (`docs/DATENAUFTRAG-KIOSK-KONTO.md:35-38`); Wiederherstellungsadresse nicht dokumentiert (`docs/NOTFALL-HANDBUCH.md` (Lücke 12)).
+- TeamDrive: Entscheidung des Owners 2026-11-03 (`docs/NOTFALL-HANDBUCH.md` (Abschnitt 4), `docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md:108`); Eignung REST-15 offen (`docs/NOTFALL-HANDBUCH.md` (Lücke 9)).
+- Passwort-Tresor: als Ort genannt (`docs/NOTFALL-HANDBUCH.md` (Vorspann, Abschnitt 4)); Kosten nicht ermittelt (`docs/ADR/0042-rto-rpo-schutzklassen.md:147`).
+- Claude: `docs/NOTFALL-HANDBUCH.md` (Abschnitt 3), Szenario N2 (`docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md:205`); ADR-0039.
+- OneDrive: Arbeitsklone entfernt (`docs/CURRENT-STATUS.md:75`); alter Prototyp (`docs/BACKLOG.md:298`); Notfallmappe außerhalb von OneDrive (`docs/NOTFALL-HANDBUCH.md` (Vorspann, Abschnitt 4)).
 
 ```yaml
 # Zugänge und Notfallkonto (R-04), Entwurf A09, Stand 2026-11-06.
@@ -66,7 +66,7 @@ dienste:
     zugang_ort: "Passwort-Tresor, Eintrag: offen"
     support: offen
     schutzklasse_vorschlag: kritisch
-    beleg: ["CLAUDE.md:16", "docs/NOTFALL-HANDBUCH.md:147"]
+    beleg: ["CLAUDE.md:16", "docs/NOTFALL-HANDBUCH.md Abschnitt 3"]
     stand: 2026-11-06
   - dienst: Lovable
     zweck: Editor, Preview, Publish, Sync mit GitHub
@@ -77,7 +77,7 @@ dienste:
     zugang_ort: "Passwort-Tresor, Eintrag: offen"
     support: Ticket im bestehenden Vorgang (E-Mail an den Lovable-Support)
     schutzklasse_vorschlag: kritisch
-    beleg: ["docs/NOTFALL-HANDBUCH.md:148", "docs/LOVABLE-PUBLISH-PRUEFUNG.md:76-79"]
+    beleg: ["docs/NOTFALL-HANDBUCH.md Abschnitt 3", "docs/LOVABLE-PUBLISH-PRUEFUNG.md:76-79"]
     stand: 2026-11-06
   - dienst: Lovable Cloud (Backend, Supabase)
     zweck: Daten, Auth, plattformverwalteter Auth-Mailversand
@@ -118,7 +118,7 @@ dienste:
     zugang_ort: "Passwort-Tresor, Eintrag: offen"
     support: "df.eu-Support, Weg offen"
     schutzklasse_vorschlag: kritisch
-    beleg: ["docs/BACKLOG.md:13", "docs/BACKLOG.md:17", "docs/NOTFALL-HANDBUCH.md:151"]
+    beleg: ["docs/BACKLOG.md:13", "docs/BACKLOG.md:17", "docs/NOTFALL-HANDBUCH.md Abschnitt 3"]
     stand: 2026-11-06
   - dienst: Mail (Postfach info@)
     zweck: Kontakt, Wiederherstellungsadresse der App-Konten, Ziel der Aliase kiosk@ und anzeige@
@@ -129,7 +129,7 @@ dienste:
     zugang_ort: "Passwort-Tresor, Eintrag: offen"
     support: offen
     schutzklasse_vorschlag: kritisch
-    beleg: ["docs/DATENAUFTRAG-KIOSK-KONTO.md:35-38", "docs/NOTFALL-HANDBUCH.md:195"]
+    beleg: ["docs/DATENAUFTRAG-KIOSK-KONTO.md:35-38", "docs/NOTFALL-HANDBUCH.md Lücke 12"]
     stand: 2026-11-06
   - dienst: TeamDrive
     zweck: Ablage von Backups (W2) und Notfallmappe (W5)
@@ -141,7 +141,10 @@ dienste:
     support: offen
     schutzklasse_vorschlag: kritisch
     beleg:
-      ["docs/NOTFALL-HANDBUCH.md:167-172", "docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md:108"]
+      [
+        "docs/NOTFALL-HANDBUCH.md Abschnitt 4",
+        "docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md:108",
+      ]
     stand: 2026-11-06
   - dienst: Passwort-Tresor
     zweck: Ablage aller Zugangsdaten und des Dump-Schlüssels
@@ -152,7 +155,7 @@ dienste:
     zugang_ort: entfällt (ist selbst der Ort)
     support: offen
     schutzklasse_vorschlag: kritisch
-    beleg: ["docs/NOTFALL-HANDBUCH.md:11", "docs/NOTFALL-HANDBUCH.md:169"]
+    beleg: ["docs/NOTFALL-HANDBUCH.md Vorspann", "docs/NOTFALL-HANDBUCH.md Abschnitt 4"]
     stand: 2026-11-06
   - dienst: Claude (Chat und Claude Code)
     zweck: Aufträge, Review, Planung
@@ -163,7 +166,7 @@ dienste:
     zugang_ort: "Passwort-Tresor, Eintrag: offen"
     support: offen
     schutzklasse_vorschlag: nicht eingestuft
-    beleg: ["docs/NOTFALL-HANDBUCH.md:150", "docs/ADR/0039-claude-code-statt-codex.md"]
+    beleg: ["docs/NOTFALL-HANDBUCH.md Abschnitt 3", "docs/ADR/0039-claude-code-statt-codex.md"]
     stand: 2026-11-06
   - dienst: OneDrive
     zweck: Persönliche Dateiablage des Owners; alter Prototyp; keine Arbeitsklone, keine Notfallmappe
@@ -174,7 +177,7 @@ dienste:
     zugang_ort: "Passwort-Tresor, Eintrag: offen"
     support: offen
     schutzklasse_vorschlag: nicht eingestuft
-    beleg: ["docs/CURRENT-STATUS.md:75", "docs/BACKLOG.md:298", "docs/NOTFALL-HANDBUCH.md:7"]
+    beleg: ["docs/CURRENT-STATUS.md:75", "docs/BACKLOG.md:298", "docs/NOTFALL-HANDBUCH.md Vorspann"]
     stand: 2026-11-06
 ```
 
@@ -192,30 +195,30 @@ Folge: Alle Auth-Mails der App-Konten landen im Postfach info@, das nur der Owne
 
 ## 5 Prüfliste Notfallmappe
 
-Ergänzt den Inhalt der Notfallmappe (`docs/NOTFALL-HANDBUCH.md:154-172`). Jeder Punkt gilt erst mit Beleg (Datum, Ablageort, bei Kopien SHA-256) als erledigt.
+Ergänzt den Inhalt der Notfallmappe (`docs/NOTFALL-HANDBUCH.md` (Abschnitt 4)). Jeder Punkt gilt erst mit Beleg (Datum, Ablageort, bei Kopien SHA-256) als erledigt.
 
-- [ ] **ZN-01** Diese Übersicht liegt als datierte Kopie in der Notfallmappe (TeamDrive und lokaler Datenträger außerhalb von OneDrive), mit SHA-256. Bezug N7, `docs/NOTFALL-HANDBUCH.md:156`, `:167`.
-- [ ] **ZN-02** Je Dienst der Schutzklasse kritisch ist ein zweiter, unabhängiger Zugangsweg eingetragen: zweite berechtigte Person oder Notfallkonto. Bezug REST-20, N7, `docs/NOTFALL-HANDBUCH.md:216`.
+- [ ] **ZN-01** Diese Übersicht liegt als datierte Kopie in der Notfallmappe (TeamDrive und lokaler Datenträger außerhalb von OneDrive), mit SHA-256. Bezug N7, `docs/NOTFALL-HANDBUCH.md` (Abschnitt 4).
+- [ ] **ZN-02** Je Dienst der Schutzklasse kritisch ist ein zweiter, unabhängiger Zugangsweg eingetragen: zweite berechtigte Person oder Notfallkonto. Bezug REST-20, N7, `docs/NOTFALL-HANDBUCH.md` (Kontenregel 1).
 - [ ] **ZN-03** Die zweite berechtigte Person ist mit Rolle benannt und hat ihre Rolle schriftlich angenommen (Ort des Belegs: offen). Bezug REST-20, N7.
-- [ ] **ZN-04** Jedes Notfallkonto ist getrennt vom Alltagszugang: anderer Tresor, anderes Gerät, andere Wiederherstellungsadresse, anderer zweiter Faktor. Bezug REST-21, `docs/NOTFALL-HANDBUCH.md:217`.
+- [ ] **ZN-04** Jedes Notfallkonto ist getrennt vom Alltagszugang: anderer Tresor, anderes Gerät, andere Wiederherstellungsadresse, anderer zweiter Faktor. Bezug REST-21, `docs/NOTFALL-HANDBUCH.md` (Kontenregel 2).
 - [ ] **ZN-05** Ort der Wiederherstellungscodes für den zweiten Faktor je Dienst ist eingetragen (nur Ort, keine Codes). Bezug REST-21, N7.
-- [ ] **ZN-06** Je Konto ist die Wiederherstellungsadresse eingetragen (nur lokaler Teil oder Rolle). Bezug N9, Lücke 12 (`docs/NOTFALL-HANDBUCH.md:195`).
-- [ ] **ZN-07** Mindestens ein Konto je kritischem Dienst hat eine Wiederherstellungsadresse außerhalb des Postfachs info@ und außerhalb der eigenen Domain. Bezug N9, `docs/NOTFALL-HANDBUCH.md:218`.
-- [ ] **ZN-08** Domain beim Registrar df.eu: Inhaber, Kundenkonto (nur Rolle), Ablauf und Verlängerung, Support-Weg eingetragen. Bezug N9, `docs/NOTFALL-HANDBUCH.md:151`.
-- [ ] **ZN-09** Inventar S5 (Domain, DNS, Redirect-URLs, Auth-Provider, Lovable-Verbindung; nur Namen) liegt vor. Bezug N9, `docs/NOTFALL-HANDBUCH.md:134-135`, `:187`.
+- [ ] **ZN-06** Je Konto ist die Wiederherstellungsadresse eingetragen (nur lokaler Teil oder Rolle). Bezug N9, Lücke 12 (`docs/NOTFALL-HANDBUCH.md` (Lücke 12)).
+- [ ] **ZN-07** Mindestens ein Konto je kritischem Dienst hat eine Wiederherstellungsadresse außerhalb des Postfachs info@ und außerhalb der eigenen Domain. Bezug N9, `docs/NOTFALL-HANDBUCH.md` (Kontenregel 3).
+- [ ] **ZN-08** Domain beim Registrar df.eu: Inhaber, Kundenkonto (nur Rolle), Ablauf und Verlängerung, Support-Weg eingetragen. Bezug N9, `docs/NOTFALL-HANDBUCH.md` (Abschnitt 3).
+- [ ] **ZN-09** Inventar S5 (Domain, DNS, Redirect-URLs, Auth-Provider, Lovable-Verbindung; nur Namen) liegt vor. Bezug N9, `docs/NOTFALL-HANDBUCH.md` (N9, Lücke 4).
 - [ ] **ZN-10** Notfallzugriff auf den Passwort-Tresor selbst ist geregelt (zweite Person oder versiegelter Notfallzugang; Ort eingetragen). Bezug REST-20, REST-21.
-- [ ] **ZN-11** TeamDrive ist von einem zweiten Gerät oder durch eine zweite Person erreichbar. Bezug REST-20, N7, `docs/NOTFALL-HANDBUCH.md:170`.
-- [ ] **ZN-12** Der Dump-Schlüssel liegt im Passwort-Tresor, nicht im TeamDrive-Bereich der Dumps. Bezug REST-21, `docs/NOTFALL-HANDBUCH.md:169`.
+- [ ] **ZN-11** TeamDrive ist von einem zweiten Gerät oder durch eine zweite Person erreichbar. Bezug REST-20, N7, `docs/NOTFALL-HANDBUCH.md` (Abschnitt 4).
+- [ ] **ZN-12** Der Dump-Schlüssel liegt im Passwort-Tresor, nicht im TeamDrive-Bereich der Dumps. Bezug REST-21, `docs/NOTFALL-HANDBUCH.md` (Abschnitt 4).
 - [ ] **ZN-13** In der App besteht ein zweites aktives Systemadministrator-Konto oder eine dokumentierte Begründung, warum nicht. Bezug REST-20, N7.
 - [ ] **ZN-14** Mail-Aliase (Abschnitt 4) sind mit Ziel und Lesern aktuell; die Einrichtung von anzeige@ ist belegt. Bezug N9.
-- [ ] **ZN-15** Kontakt- und Support-Wege je Dienst sind eingetragen, inklusive offener Ticketvorgänge (nur Vorgangsbezug, keine Inhalte). Bezug N7, `docs/NOTFALL-HANDBUCH.md:121`, `:163`.
-- [ ] **ZN-16** Notfallprotokoll (`docs/NOTFALL-HANDBUCH.md:174-180`) ist für die Nutzung eines Notfallkontos vorbereitet; nach jeder Nutzung werden Passwörter und Schlüssel erneuert. Bezug REST-21.
-- [ ] **ZN-17** Planübung N7 halbjährlich und N9 jährlich durchgeführt, Protokoll im Git. Bezug REST-13, REST-19, `docs/NOTFALL-HANDBUCH.md:209`, `:211`.
+- [ ] **ZN-15** Kontakt- und Support-Wege je Dienst sind eingetragen, inklusive offener Ticketvorgänge (nur Vorgangsbezug, keine Inhalte). Bezug N7, `docs/NOTFALL-HANDBUCH.md` (N7, Abschnitt 4).
+- [ ] **ZN-16** Notfallprotokoll (`docs/NOTFALL-HANDBUCH.md` (Abschnitt 5)) ist für die Nutzung eines Notfallkontos vorbereitet; nach jeder Nutzung werden Passwörter und Schlüssel erneuert. Bezug REST-21.
+- [ ] **ZN-17** Planübung N7 halbjährlich und N9 jährlich durchgeführt, Protokoll im Git. Bezug REST-13, REST-19, `docs/NOTFALL-HANDBUCH.md` (Abschnitt 7, N7, Abschnitt 7, N9).
 - [ ] **ZN-18** Nachträgliche Bestätigung der Kiosk-Abweichung von ADR-0037 durch die zweite Person liegt vor. Bezug R-04, `docs/DATENAUFTRAG-KIOSK-KONTO.md:47`, `:54`.
 
 ## 6 Offene Punkte
 
-1. Zweite berechtigte Person: Rolle benennbar, Person offen (`docs/NOTFALL-HANDBUCH.md:185`). Owner-Entscheidung nötig.
+1. Zweite berechtigte Person: Rolle benennbar, Person offen (`docs/NOTFALL-HANDBUCH.md` (Lücke 2)). Owner-Entscheidung nötig.
 2. Notfallkonto (Break-Glass): für keinen Dienst belegt.
 3. Wiederherstellungsadressen aller Konten: offen (Lücke 12).
 4. Mail-Anbieter des Postfachs info@: im Repo nicht belegt; ob df.eu auch Mail betreibt, ist offen.
@@ -235,6 +238,6 @@ Diese Datei muss aktualisiert werden:
 - nach jeder Nutzung eines Notfallkontos (mit Verweis auf das Notfallprotokoll);
 - nach jeder Planübung N7 oder N9 und nach jedem Vorfall;
 - bei der Prüfung von R-04 im Risikoregister (nächste Prüfung laut `docs/RISIKOREGISTER.md:16`: 2026-11-09);
-- zusammen mit der Notfallmappe: nach jedem Release, mindestens einmal im Quartal (`docs/NOTFALL-HANDBUCH.md:165`).
+- zusammen mit der Notfallmappe: nach jedem Release, mindestens einmal im Quartal (`docs/NOTFALL-HANDBUCH.md` (Abschnitt 4)).
 
 Bei jeder Aktualisierung müssen `Stand:` und der YAML-Wert `stand` angepasst und die Kopie in der Notfallmappe erneuert werden (ZN-01).
