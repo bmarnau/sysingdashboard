@@ -1,8 +1,20 @@
-stand: 2026-11-07T04:58+01:00
-laufender_auftrag: {id: A23, start: "2026-11-07T04:58+01:00"}
+stand: 2026-11-07T05:15+01:00
+laufender_auftrag:
+  - {id: A23, start: "2026-11-07T04:58+01:00", stand: "Doku gepusht (PR 286, 56c97606), CI läuft"}
+  - {id: A22, start: "2026-11-07T05:12+01:00", art: Agent, lesen}
+  - {id: A37, start: "2026-11-07T05:12+01:00", art: Agent, lesen}
+  - {id: A36, start: "2026-11-07T05:12+01:00", art: Agent, Plan}
+  - {id: A30, start: "2026-11-07T05:12+01:00", art: Agent, Plan}
+  - {id: A32, start: "2026-11-07T05:12+01:00", art: Agent, Recherche}
+  - {id: A29, start: "2026-11-07T05:12+01:00", art: Agent, lesen}
+  - {id: A26, start: "2026-11-07T05:12+01:00", art: Agent, lesen}
+  - {id: A33, start: "2026-11-07T05:12+01:00", art: Agent, "Code-PR, Branch feat/a33-check-bundle"}
+  - {id: A27, start: "2026-11-07T05:12+01:00", art: Agent, "Code-PR 283"}
+betriebsart: "Owner-Vorgabe 2026-11-07: Aufträge parallel mit Agenten, nicht auf Merge warten, Stand kommentieren, Bericht je Auftrag mit eigenen Ideen. Agenten arbeiten lesend oder auf eigenem Branch; Commits auf Tagesbündel und ops/reports nur durch die Hauptsitzung."
+zurueckgestellt: {A28: "nach A23, ändert viele Dateien im Tagesbündel; nach Integration der ersten Agentenergebnisse", A31: "nach A32 (gleiche Datei NOTFALL-HANDBUCH)", A34: "abhängig von A28", A35: "abhängig von A30"}
 letzter_auftrag: {id: A09, status: erledigt, bericht: reports/A09-BERICHT.md}
-naechste_pruefung: "nach A23: nächster bereiter Auftrag laut queue/INDEX.yaml (Planer-Stand 2026-11-07 05:30); Sitzungsende ca. 07:15"
+naechste_pruefung: "laufend; Sitzungsende ca. 07:15"
 betrieb: normal; Pause vom 2026-11-06 beendet, A25 vom Planer verworfen
-offene_prs: {"286": "Doku-Bündel 2026-11-06, Draft", "283": "A15 QS6-5, Draft, enthält 282", "282": "A06 L2-12, Draft", "155": "Kiosk-Schnittstellendokument, offen, Entscheidung", "124": "Wallboard 0.7.1, Draft, Entscheidung"}
+offene_prs: {"286": "Doku-Bündel 2026-11-06, Draft", "283": "A15 QS6-5, Draft, enthält 282 (A27 in Arbeit)", "282": "A06 L2-12, Draft", "155": "Kiosk-Schnittstellendokument, offen, Entscheidung", "124": "Wallboard 0.7.1, Draft, Entscheidung"}
 erledigt_heute: []
 fehler: []
