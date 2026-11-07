@@ -7,7 +7,8 @@ abhaengig_von:
 - A38
 ziel: 'G03 und R-14: Nachweis, dass sich Schema und Daten der Live-Datenbank aus dem Export (sysingdashboard_261106.backup, pg_dump Custom-Format) lokal wiederherstellen lassen. Stufen S1 bis S4; S5 (Domain, Auth-Provider, Hosting) bleibt dokumentierte Lücke. Start erst nach Prüfung des Plans aus A30 und ausdrücklicher Freigabe des Owners.'
 vorgaben:
-- 'Der Owner hat am 2026-11-07 ca. 06:04 bestätigt: Docker läuft lokal. Freigabe für die Ausführung steht noch aus; der Planer setzt den Status auf bereit, sobald sie vorliegt.'
+- 'Der Owner hat am 2026-11-07 ca. 06:04 bestätigt: Docker läuft lokal. Freigabe zur Ausführung durch den Owner am 2026-11-07 (E7). Start erst, wenn A38 abgeschlossen ist (abhaengig_von).'
+- 'Entscheidungen des Owners 2026-11-07: E1 Supabase CLI lokal (Rückfall: Einzelcontainer supabase/postgres:17.6.1.147, nur mit Begründung im Bericht); E2 Auth-Konten neu mit Live-UUIDs und Probe-Adressen, keine Produktions-Hashes; E5 Export lokal verschlüsselt, Löschung spätestens 14 Tage nach Protokoll, Löschung im Protokoll vermerken; E6 alle 9 Konten; E7 Skripte und Ausführung freigegeben.'
 schritte:
 - Plan aus reports/A30-BERICHT.md und docs/PLAN-RESTORE-PROBE-LOKAL.md lesen; Abweichungen vom Plan nur mit Begründung im Bericht.
 - 'Vorprüfung ohne Wiederherstellung: ZIP entpacken in C:\dev\restore-probe\work, pg_restore --list (nur Inhaltsverzeichnis) auswerten: Schemas (public, auth, storage, supabase_vault?), Tabellen, Erweiterungen, Besitzer und Rollen. Ergebnis als Tabelle; keine Dateiinhalte in den Bericht.'
@@ -20,4 +21,4 @@ schritte:
 - Bericht reports/A39-BERICHT.md mit YAML-Block (Reifegrad, Projektstatus, Offene_Fragen, Roadmap) und Aufwand je Stufe.
 nachweis: Bericht reports/A39-BERICHT.md; Protokoll als Entwurf für NACHWEISE.yaml im Tagesbündel; Messwerte aus den lokalen Läufen.
 grenzen: Kein Merge, kein Publish, keine Änderung an Lovable Cloud oder der Produktion, keine Zugangsdaten in Dateien oder Commits. Der Export und alle daraus entstehenden Dateien bleiben unter C:\dev\restore-probe (nicht in Git, nicht in OneDrive). Datenbank-Container nur auf localhost.
-status: wartet_auf_entscheidung
+status: bereit

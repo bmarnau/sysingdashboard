@@ -1,4 +1,4 @@
-stand: 2026-11-07 06:12
+stand: 2026-11-07 06:30
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 18
@@ -263,7 +263,7 @@ auftraege:
   titel: 'Restore-Probe lokal im Docker-Container ausführen (S1 bis S4, EV-0004)'
   art: plan-dann-pr
   gate: vor Publish
-  status: wartet_auf_entscheidung
+  status: bereit
   abhaengig_von:
   - A30
   - A38
@@ -288,3 +288,4 @@ entscheidungen_owner:
 - '2026-11-07 Owner: Genuegend Arbeitspakete einstellen; Hoechstbestand offen von 10 auf 18. Planer: Paket 3 mit A37, A33, A31, A32, A34 (nach A28), A35 (nach A30), A36 in dieser Reihenfolge; Schaetzung zusammen ca. 5 bis 6 Stunden Laufzeit, nicht gemessen.'
 - '2026-11-07 Planer: A22, A23, A26, A29, A32, A36 laut STATUS.yaml von Claude Code erledigt (Berichte liegen vor; Pruefung der Berichte durch den Planer steht aus). RP-02 vom Owner ausgefuehrt und freigegeben ausgewertet; neuer Auftrag A38 fuer anon-Rechte und Schema-Soll.'
 - '2026-11-07 Owner: Docker laeuft lokal (ca. 06:04). Planer: A39 (Restore-Probe lokal, S1 bis S4) vorbereitet, Status wartet_auf_entscheidung bis zur Freigabe nach Pruefung des Plans aus A30.'
+- '2026-11-07 Owner: Restore-Probe E1 bis E7 entschieden (E1 Supabase CLI lokal, E2 neu mit Live-UUIDs, E5 lokal verschluesselt mit Loeschung spaetestens 14 Tage nach Protokoll, E6 alle 9 Konten, E7 Skripte und Ausfuehrung freigegeben). Planer: A39 auf bereit, Start nach Abschluss A38.'
