@@ -1,0 +1,15 @@
+id: A41
+titel: 'Plan: avkk_people_directory (Befund E2, Schwere 3) entschaerfen'
+art: plan
+gate: vor Publish pruefen
+abhaengig_von: []
+ziel: 'Aus reports/A38-BERICHT.md Befund E2: avkk_people_directory (SECURITY DEFINER) gibt jedem Konto mit avkk.view, auch jedem selbst registrierten viewer, Anzeigename, Rolle und Status aller Personen mit aktiver AVKK-Verantwortung aus, ohne Mandantenbezug und ohne Kontostatuspruefung. Nur Plan; der Owner entscheidet danach, ob der Fix vor dem Publish kommt.'
+schritte:
+- 'Funktion und Aufrufer im Repo lesen (supabase/migrations, src/lib/avkk, Komponenten die die Funktion nutzen); beschreiben, welche Zweige welche Daten liefern und wer sie in der UI braucht.'
+- 'Varianten mit Aufwand in Stunden, Migrationsbedarf und Risiko: (a) Mandanten-/Systemhausbezug und Kontostatus in der Funktion pruefen; (b) nur Konten mit avkk.manage oder Rolle ab engineer; (c) Selbstregistrierung schliessen oder neue Konten ohne avkk.view starten (Verhaeltnis zu G23/A29); (d) Daten maskieren.'
+- 'Testplan (RLS- und Funktions-Vertragstests, PGlite wie A11, Rollen viewer/engineer/admin) und Nachweis, dass kein Rollenwechsel noetig ist.'
+- 'Entscheidungsvorlage: Empfehlung mit Begruendung, Folgen fuer G23 und den kritischen Pfad (Migration beim Publish: R-10).'
+- Bericht reports/A41-BERICHT.md.
+nachweis: Bericht reports/A41-BERICHT.md mit Variantentabelle und Testplan.
+grenzen: Nur lesen und planen. Keine Migration, kein Code-PR, kein Datenauftrag, kein Merge, kein Publish. Keine personenbezogenen Daten aus der Live-Datenbank.
+status: bereit

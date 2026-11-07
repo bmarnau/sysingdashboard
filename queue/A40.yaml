@@ -1,0 +1,18 @@
+id: A40
+titel: 'Entscheidungen 2026-11-07 ins Git: Gate G24, bm@-Restrisiko, R-04, Folgepunkte'
+art: doku-pr
+gate: vor Publish
+abhaengig_von: []
+ziel: 'Die Owner-Entscheidungen der Fragenrunde vom 2026-11-07 mit Datum und Owner als Quelle in Gate-Bericht, Publish-Plan, Risikoregister und Backlog festschreiben.'
+schritte:
+- 'Neues Gate G24 "RLS-Invariante vor Publish belegt" in docs/PUBLISH-GATE-BERICHT.md und docs/PUBLISH-PLAN.md (Muss-Gate): RLS auf 25 von 25 Tabellen aktiv; keine Policy mit Rolle public oder anon; anon-Tabellenrechte nur auf der bekannten Liste (heute 9: app_settings, audit_log, avkk_competence, avkk_consequence, avkk_responsibility, avkk_responsibility_type, avkk_subject, profiles, user_roles) oder leer. Beleg: lesender Datenauftrag (Wiederholung RP-02 Teile G und H) hoechstens 7 Tage vor dem Publish; Stand heute: erfuellt laut RP-02 vom 2026-11-07, Aufwand ca. 0,5 h. Gate-Zaehlung nachziehen. G23 bleibt A29 (Migrationsanwendung beim Publish, Selbstregistrierung).'
+- 'QS-01 Migration C′ (Rechtebereinigung, siehe reports/A38-BERICHT.md) als Folgepunkt vor L8 im BACKLOG; kein Publish-Gate. Zuschnitt: anon ohne Rechte auf allen 25 Tabellen, authenticated auf den Rechten der Migrationen, Default-Privilegien fuer anon entziehen, zwei Guard-Funktionen bereinigen.'
+- 'G20 (Kiosk-Datenauftrag Weg B): Owner 2026-11-07 Folgepunkt nach dem Publish; Restrisiko bm@ (Anzeigemodus mit Rolle Systemadministrator) befristet akzeptiert. Neuer Eintrag RA-02 in risikoakzeptanzen (RISIKOREGISTER.yaml und .md) mit Datum der Nachfrist (Vorschlag: 30 Tage nach dem Publish, Owner bestaetigt). G20 im Gate-Bericht von Muss auf Folgepunkt umstellen, Zaehlung nachziehen.'
+- 'R-04: Owner 2026-11-07 benennt eine zweite Vertrauensperson in der Rolle Familie/Lebenspartner; Name steht nur im Notfallumschlag, nicht im Git. In docs/ZUGAENGE-UND-NOTFALLKONTO.md und im Notfallhandbuch Luecke 2 als "Rolle benannt, Umschlag und Zugang offen" fuehren; ADR-0037-Abweichung kiosk@ bleibt bis zur Bestaetigung durch diese Person offen. Kein Name, keine Adresse, keine Zugangsdaten in Dateien.'
+- 'PR 155 (SYSING-KIOSK-001) und PR 124 (Wallboard 0.7.1): Owner 2026-11-07 nach dem Publish behandeln; als Folgepunkte mit Verweis im BACKLOG. A07 (Standards in docs/ ablegen): nach der Restore-Probe A39.'
+- 'Lovable-Support: Antwort zu den leeren Migrations-Statements steht aus; Owner wartet bis Montag 2026-11-09. Stand in R-07/R-10 (stand_support) unveraendert lassen, Vermerk im Entwicklungstagebuch.'
+- 'Tracker, CURRENT-STATUS, ENTWICKLUNGSTAGEBUCH nachziehen; npm run docs:check, docs:project, Prettier --check.'
+- Bericht reports/A40-BERICHT.md mit eigenen Ideen.
+nachweis: Bericht reports/A40-BERICHT.md; Doku im Tagesbuendel (Draft 286).
+grenzen: Nur Doku. Entscheidungen nur mit Datum und Owner als Quelle. Kein Gate als erfuellt melden, das nur dokumentiert, aber nicht belegt ist. Kein Merge, kein Publish, keine Namen.
+status: bereit
