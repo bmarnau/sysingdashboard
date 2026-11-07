@@ -408,6 +408,39 @@ export function toExportActivity(a: Activity, scope: ExportBillingScope): Export
   return copy;
 }
 
+/** Inhalt des JSON-Backups aus dem Exportdialog („JSON-Backup“). */
+export interface JsonBackupPayload {
+  projects: Project[];
+  workPackages: WorkPackage[];
+  activities: ExportActivity[];
+  engineer: Engineer;
+  exportedAt: string;
+}
+
+/**
+ * QS-06 (F-QS6-ENG-02): JSON-Backup des Dashboards. Ohne `billing.view` fehlt
+ * `hourlyRate` je Tätigkeit (Feld entfällt, nicht 0). Andere Felder bleiben
+ * unverändert.
+ */
+export function buildJsonBackupPayload(
+  input: {
+    projects: Project[];
+    workPackages: WorkPackage[];
+    activities: Activity[];
+    engineer: Engineer;
+  },
+  scope: ExportBillingScope,
+  exportedAt: string = new Date().toISOString(),
+): JsonBackupPayload {
+  return {
+    projects: input.projects,
+    workPackages: input.workPackages,
+    activities: input.activities.map((a) => toExportActivity(a, scope)),
+    engineer: input.engineer,
+    exportedAt,
+  };
+}
+
 function stripGroupAmounts(nodes: ExportGroupNode[]): void {
   for (const n of nodes) {
     delete n.amount;

@@ -1,6 +1,6 @@
 # Sysing Dashboard — aktueller verbindlicher Status
 
-Stand: 2026-11-06
+Stand: 2026-11-07
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-10-28)
 

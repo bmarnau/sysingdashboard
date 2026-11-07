@@ -1038,7 +1038,7 @@ Anlegen, Bearbeiten und Löschen werden nur angeboten, wenn die Rolle die passen
     keywords: ["Tätigkeit", "Buchung", "Stunden", "billable", "Beschreibung"],
     lastUpdated: "2026-06-13",
     content: `## Erfassen
-Über "+ Neu → Tätigkeit" wird eine Buchung mit Datum, Uhrzeit (optional), Dauer in Stunden, Stundensatz und Beschreibung erfasst.
+Über "+ Neu → Tätigkeit" wird eine Buchung mit Datum, Uhrzeit (optional), Dauer in Stunden, Stundensatz (nur mit \`billing.view\` sichtbar) und Beschreibung erfasst.
 
 ## Billable markieren
 Aktivierst du "abrechenbar", fließt die Buchung in die Billable-Quote und in den Umsatz. Nicht-abrechenbare Stunden zählen weiterhin zur Auslastung.
@@ -1925,11 +1925,12 @@ Ohne \`billing.view\` (Systemingenieur, Kunde, Viewer, Kiosk) gilt:
 - Die Kachel **Umsatz gesamt** auf der Startseite fehlt.
 - Der Reiter **Abrechnung** fehlt.
 - In **Tätigkeiten** fehlen Stundensatz, Betrag, Abrechnungsstatus und der Filter nach Abrechnungsstatus; Stunden bleiben sichtbar.
+- Im Dialog **Tätigkeit bearbeiten** fehlen die Felder Stundensatz und Betrag. Ein vorhandener Stundensatz bleibt beim Speichern unverändert; „Abrechenbar“ und Abrechnungsstatus bleiben bedienbar.
 - Im **Projektdetail** und im **Projektbericht** erscheinen keine Beträge.
 
 Das Managementcockpit zeigt unabhängig davon keine Beträge. Die Server-Lesepfade liefern ohne \`billing.view\` keine Beträge (Prüfung QS6-4).
 
-**Exporte (QS6-5):** Ohne \`billing.view\` enthalten CSV, JSON, Azure-Table und PDF aus „Export…“ keine Stundensätze, Beträge oder Summen; die Spalten fehlen ganz, Stunden und Abrechenbarkeit bleiben. „Import / Export…“ verweigert ohne das Recht den Gesamtexport sowie die Bereiche Tätigkeiten, Zeitbuchungen und Leistungsnachweise, weil diese Datei je Tätigkeit einen Stundensatz verlangt.
+**Exporte (QS6-5):** Ohne \`billing.view\` enthalten CSV, JSON, Azure-Table und PDF aus „Export…“ keine Stundensätze, Beträge oder Summen; die Spalten fehlen ganz, Stunden und Abrechenbarkeit bleiben. „Import / Export…“ verweigert ohne das Recht den Gesamtexport sowie die Bereiche Tätigkeiten, Zeitbuchungen und Leistungsnachweise, weil diese Datei je Tätigkeit einen Stundensatz verlangt. Das **JSON-Backup** aus „Export…“ enthält ohne das Recht keinen Stundensatz. Die automatische Sicherung (ZIP, Backup-Dialog nur mit \`backup.restore\`) enthält Stundensätze unabhängig von der angemeldeten Rolle vollständig, weil sie die einzige Sicherung dieses Werts ist.
 
 ## Schutz vor Self-Lockout
 Der letzte aktive System-Administrator kann nicht degradiert, deaktiviert oder gelöscht werden. Rollenänderungen bleiben an \`roles.manage\` gebunden.

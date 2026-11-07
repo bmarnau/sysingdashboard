@@ -143,6 +143,7 @@ import { AvkkWorkspaceView } from "@/components/avkk/AvkkWorkspaceView";
 import { AvkkManagementView } from "@/components/avkk/management/AvkkManagementView";
 import { PermissionGate } from "@/components/PermissionGate";
 import { usePermission } from "@/hooks/usePermission";
+import { buildJsonBackupPayload } from "@/lib/export-data";
 import { CRUD_PERMISSION } from "@/lib/rbac/crud-guards";
 import { tasksFromLocalData } from "@/lib/avkk/workspace";
 import { ProjectDialog } from "@/components/dashboard/dialogs/ProjectDialog";
@@ -333,13 +334,11 @@ function Dashboard() {
   };
 
   const exportData = () => {
-    const payload = {
-      projects,
-      workPackages,
-      activities,
-      engineer: engineerState,
-      exportedAt: new Date().toISOString(),
-    };
+    // QS-06 (F-QS6-ENG-02): ohne `billing.view` kein `hourlyRate` im Backup.
+    const payload = buildJsonBackupPayload(
+      { projects, workPackages, activities, engineer: engineerState },
+      { includeBilling: canViewBilling },
+    );
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

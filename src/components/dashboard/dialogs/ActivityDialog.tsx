@@ -1,6 +1,10 @@
 /**
  * Formulardialog zum Anlegen und Bearbeiten einer Tätigkeit.
  * Verhaltensneutral aus dashboard.tsx extrahiert (Sprint 05).
+ *
+ * QS-06 (F-QS6-ENG-01): Stundensatz und Betrag nur mit `billing.view`. Ohne
+ * Recht entfallen beide Felder (nicht als 0 dargestellt); ein vorhandener
+ * Stundensatz bleibt beim Speichern unverändert erhalten.
  */
 import { useState } from "react";
 import { FolderKanban } from "lucide-react";
@@ -9,6 +13,7 @@ import { fmtEuro } from "../formatters";
 import { billingLabel, inputCls } from "../constants";
 import { FormActions, Modal } from "../primitives";
 import { validateActivity } from "../domain";
+import { usePermission } from "@/hooks/usePermission";
 
 export function ActivityDialog({
   activity,
@@ -23,6 +28,7 @@ export function ActivityDialog({
   onClose: () => void;
   onSave: (a: Activity) => void;
 }) {
+  const canViewBilling = usePermission("billing.view");
   const [form, setForm] = useState<Activity>({ ...activity });
   const isNew = !activity.title;
   const errors = validateActivity(form);
@@ -31,6 +37,13 @@ export function ActivityDialog({
   const wp = form.workPackageId ? workPackages.find((w) => w.id === form.workPackageId) : null;
   const project = wp?.projectId ? projects.find((p) => p.id === wp.projectId) : null;
   const amount = form.billable ? (Number(form.duration) || 0) * (Number(form.hourlyRate) || 0) : 0;
+  /**
+   * Ohne `billing.view` kann der Satz nicht bearbeitet werden: Für abrechenbare
+   * Tätigkeiten gilt der ursprüngliche Satz (auch nach Ab- und Wiederanwählen
+   * von „Abrechenbar“), für nicht abrechenbare die Invariante 0.
+   */
+  const toSave = (): Activity =>
+    canViewBilling ? form : { ...form, hourlyRate: form.billable ? activity.hourlyRate : 0 };
   const errCls = "mt-1 text-[11px] text-destructive";
 
   return (
@@ -130,26 +143,28 @@ export function ActivityDialog({
           />
           {errors.duration && <p className={errCls}>{errors.duration}</p>}
         </label>
-        <label className="text-xs font-medium">
-          Stundensatz (€)
-          <input
-            type="number"
-            min="0"
-            step="1"
-            disabled={!form.billable}
-            className={`mt-1 ${inputCls} disabled:opacity-50`}
-            value={form.hourlyRate}
-            onChange={(e) => setForm({ ...form, hourlyRate: Number(e.target.value) })}
-            aria-invalid={!!errors.hourlyRate}
-          />
-          {form.billable ? (
-            errors.hourlyRate && <p className={errCls}>{errors.hourlyRate}</p>
-          ) : (
-            <p className="mt-1 text-[11px] text-muted-foreground">
-              Nur für abrechenbare Tätigkeiten.
-            </p>
-          )}
-        </label>
+        {canViewBilling && (
+          <label className="text-xs font-medium">
+            Stundensatz (€)
+            <input
+              type="number"
+              min="0"
+              step="1"
+              disabled={!form.billable}
+              className={`mt-1 ${inputCls} disabled:opacity-50`}
+              value={form.hourlyRate}
+              onChange={(e) => setForm({ ...form, hourlyRate: Number(e.target.value) })}
+              aria-invalid={!!errors.hourlyRate}
+            />
+            {form.billable ? (
+              errors.hourlyRate && <p className={errCls}>{errors.hourlyRate}</p>
+            ) : (
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Nur für abrechenbare Tätigkeiten.
+              </p>
+            )}
+          </label>
+        )}
         <label className="flex items-center gap-2 text-xs font-medium pt-5">
           <input
             type="checkbox"
@@ -203,19 +218,21 @@ export function ActivityDialog({
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
         </label>
-        <div className="col-span-1 sm:col-span-2 rounded-md border border-border bg-secondary/30 px-3 py-2 text-xs">
-          Betrag:{" "}
-          <span className="font-mono font-semibold text-foreground">
-            {form.billable ? fmtEuro(amount) : "nicht abrechenbar"}
-          </span>
-        </div>
+        {canViewBilling && (
+          <div className="col-span-1 sm:col-span-2 rounded-md border border-border bg-secondary/30 px-3 py-2 text-xs">
+            Betrag:{" "}
+            <span className="font-mono font-semibold text-foreground">
+              {form.billable ? fmtEuro(amount) : "nicht abrechenbar"}
+            </span>
+          </div>
+        )}
       </div>
 
       <FormActions
         onCancel={onClose}
         saveDisabled={!valid}
         saveLabel={isNew ? "Buchen" : "Speichern"}
-        onSave={() => onSave(form)}
+        onSave={() => onSave(toSave())}
       />
     </Modal>
   );

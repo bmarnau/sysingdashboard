@@ -672,6 +672,13 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-07
+    ereignis: >-
+      A27 (PR 283, Draft): main 7dc4699d in fix/qs6-5-export-billing-view gemergt (Konflikt CURRENT-STATUS gelöst, PR 278 und 287 gemergt). F-QS6-ENG-01 (G08):
+      ActivityDialog zeigt ohne billing.view weder Stundensatz noch Betrag; der vorhandene Satz bleibt beim Speichern erhalten. F-QS6-ENG-02 (G09): JSON-Backup
+      (buildJsonBackupPayload) ohne billing.view ohne hourlyRate; ZIP 2.0 enthält hourlyRate rollenunabhängig weiter (einzige Sicherung, keine DB-Spalte);
+      Import einer Datei ohne hourlyRate wird vom Schema abgewiesen. G10 (Engineer-Abnahme) offen.
+    beleg: src/__tests__/components/ActivityDialog.billing-view.test.tsx, src/__tests__/security/qs6-ga09-json-backup.test.ts, PR 283
   - datum: 2026-11-06
     ereignis: >-
       Startroutine um automatisches Aufräumen ergänzt: `npm run git:hygiene -- --fix` löscht nur lokale, gemergte Branches (git branch -d, ohne aktuellen

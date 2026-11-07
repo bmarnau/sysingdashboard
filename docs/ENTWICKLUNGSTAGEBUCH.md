@@ -9,7 +9,11 @@ Abschnitt ergänzt. Bei produkt- oder versionswirksamen Änderungen wird zusätz
 keine künstliche Produktversion. Keine Zugangsdaten oder internen Adressen in
 dieser Datei.
 
-Stand: 2026-11-06 · Dashboard-Version 1.70.0
+Stand: 2026-11-07 · Dashboard-Version 1.70.0
+
+## 2026-11-07 — Tätigkeitsdialog und JSON-Backup ohne Beträge
+
+Wer das Recht „Abrechnungsdaten ansehen“ nicht hat, sieht im Dialog einer Tätigkeit keinen Stundensatz und keinen Betrag mehr; die Felder fehlen ganz. Der hinterlegte Satz bleibt beim Speichern trotzdem erhalten. Auch das JSON-Backup aus dem Exportdialog enthält ohne das Recht keinen Stundensatz. Die automatische Sicherung bleibt vollständig, weil sie die einzige Sicherung dieses Werts ist.
 
 ## 2026-11-06 — Automatisches Aufräumen beim Sitzungsstart
 
