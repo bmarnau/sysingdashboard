@@ -4,7 +4,7 @@ Stand: 2026-11-07
 
 ## Aktueller Wiederanlaufpunkt (Golden Gate, 2026-11-07)
 
-Sitzungsende 2026-11-07 07:20 (Teilautomatik mit Agenten): 16 Aufträge erledigt (A22, A23, A26 bis A33, A36 bis A38). Offen in der Warteschlange: A34 (Smoke-Test, nach A28 jetzt frei), A35 (Lehren R-14, nach A30 und A38 jetzt frei), A39 (wartet auf Freigabe). Wiederanlaufpunkt: Owner-Entscheidungen zu den Befunden mit Schwere 3 aus A38 (anon-Rechte, avkk_people_directory) und A22 (has_permission ohne Kontostatus), Gates G23 und G24, Merge-Freigaben 286, 288 und 282 vor 283; danach A34 und A35.
+Sitzungsende 2026-11-07 07:20 (Teilautomatik mit Agenten): 13 Aufträge erledigt (A22, A23, A26 bis A33, A36 bis A38). Offen in der Warteschlange: A34 (Smoke-Test, nach A28 jetzt frei), A35 (Lehren R-14, nach A30 und A38 jetzt frei), A39 (wartet auf Freigabe). Wiederanlaufpunkt: Owner-Entscheidungen zu den Befunden mit Schwere 3 aus A38 (anon-Rechte, avkk_people_directory) und A22 (has_permission ohne Kontostatus), Gates G23 und G24, Merge-Freigaben 286, 288 und 282 vor 283; danach A34 und A35.
 
 A38 – RP-02 ausgewertet: `anon` hat rohe Rechte auf 9 Tabellen (Schutz nur über RLS, heute wirksam), QS-01 Migration C ist nicht angewendet und muss als C′ erweitert werden, `avkk_people_directory` zeigt jedem `viewer` Namen und Rollen ohne Mandantenbezug (Schwere 3), die Restore-Probe hat mit Plan Abschnitt 15 konkrete Abnahmekriterien (S3 RP-02 B bis H, S4 J2) und wartet auf den Owner-Schritt `pg_restore --list`.
 
