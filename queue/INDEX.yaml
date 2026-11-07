@@ -1,4 +1,4 @@
-stand: 2026-11-07 06:42
+stand: 2026-11-07 07:15
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 18
@@ -193,7 +193,7 @@ auftraege:
   titel: Publish-Runbook und Owner-Entscheidungen D3, D4, D5 dokumentieren
   art: doku-pr
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von:
   - A23
 - id: A27
@@ -225,7 +225,7 @@ auftraege:
   titel: 'Notfallhandbuch: offene Lücken schließen (G04, REST-01, REST-05)'
   art: doku-pr
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A32
   titel: 'Rücknahme eines Publish: Recherche und Belegplan (G05, REST-10)'
