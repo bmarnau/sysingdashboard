@@ -20,13 +20,22 @@ einheit_der_schaetzung: Arbeits-/Promptbudget, keine Termin- oder Erfolgszusage
 # Gesamtschätzung (Stand 2026-10-27). Bisher nur in den Sitzungsabschlüssen geführt, jetzt in Git.
 # Grobe Einschätzung des Systemingenieurs, nicht aus den schaetzung-Feldern der Pakete errechnet.
 roadmap_schaetzung:
-  stand: 2026-10-31
+  stand: 2026-11-07
   einheit: 1 Sprint = 1 abgeschlossenes Arbeitspaket mit eigenem PR (ADR-0038, angenommen)
   bis_golden_gate:
     offene_pakete: [L0, L0b, L2, L3, L4, L5, L6, L7, L8]
-    sprints: 9
-    arbeitstage: "26-43"
-    herleitung: Summe der schaetzung-Felder der offenen Lieferpakete; Doku- und Wartezeiten nicht enthalten
+    sprints: "7-11 (erwartet 9)"
+    arbeitstage: "24-48 (erwartet 36)"
+    herleitung: >-
+      A26 (2026-11-07): Block A Publish 1.70.0 mit offenen Gates 3/6/10 AT (Gate-Bericht Dauer, Claude Code 16/25/40 h plus Owner 11/21/40 h,
+      8 h je AT), Block B Rest L0, L0b, L2 1/2/3 AT, Block C L3 bis L8 20/26,5/33 AT (Summe schaetzung-Felder), Zuschlag ungeplant 0/1,5/2 AT.
+      L0, L0b und L2 werden mit dem Publish 1.70.0 abgeschlossen. Wartezeit auf den Lovable-Support nicht enthalten.
+    spanne:
+      {
+        min: { sprints: 7, arbeitstage: 24 },
+        erwartet: { sprints: 9, arbeitstage: 36 },
+        max: { sprints: 11, arbeitstage: 48 },
+      }
   vor_golden_gate_s0:
     s0_06:
       titel: Auth-Broker aus dem Lovable-Projektstand entfernen (Weg B)
@@ -34,22 +43,23 @@ roadmap_schaetzung:
       lovable_prompts: "1-3"
       arbeitstage: "1-2"
       hinweis: >-
-        Neues Paket aus der Support-Antwort vom 2026-10-30; Analogieschätzung, nicht gemessen. Gehört zu Sprint 0 und ist in den 9 Paketen
-        bis zur Internen Freigabe 1.0 nicht enthalten. Fällt Weg B aus, tritt Weg A (Vertragstest und ADR-0036 ändern) an seine Stelle.
-  sprints_bis_bsf: 15
+        Abgeschlossen am 2026-10-31 (PR 253, 256, 258; Weg B hält). Analogieschätzung 1 bis 2 Arbeitstage, Ist innerhalb eines Kalendertags
+        mit mehreren PRs; Owner-Stunden nicht erfasst.
+  sprints_bis_bsf: "13-17 (erwartet 15)"
   sprints_bis_mvp: 0
-  belastbarkeit: grob, keine Zusage
+  belastbarkeit: grob, keine Zusage; Arbeitstag nicht nachgemessen (Owner-Stunden fehlen)
   werkzeuge: >-
-    Seit 2026-10-28 laufen Aufträge mit Claude Code und Lovable; Codex ist aus der Planung entfernt (Entscheidung Owner). Die Werte in claude_code_auftraege
-    wurden unverändert aus den früheren Codex-Schätzungen übernommen und sind nach den ersten Paketen am gemessenen Tempo zu prüfen.
-    Seit 2026-10-31 gilt ein einziger Arbeitsklon C:\dev\sysingdashboard (frischer Klon, nicht unter OneDrive); die CI nutzt Node 22 und
-    bun install --frozen-lockfile, Auftragsvorlagen sind darauf umzustellen (Backlog).
+    Seit 2026-10-28 laufen Aufträge mit Claude Code und Lovable; Codex ist aus der Planung entfernt (Entscheidung Owner). Seit 2026-11-05
+    Teilautomatikbetrieb (docs/BETRIEB-TEILAUTOMATIK.md, Warteschlange origin/ops/queue). Die Werte in claude_code_auftraege stammen aus den
+    früheren Codex-Schätzungen; beobachtet sind bisher nur S0-06 und L2. Einziger Arbeitsklon C:\dev\sysingdashboard; CI Node 22 und
+    bun install --frozen-lockfile.
   planungsrunde:
     stand: 2026-10-28
     einheit_arbeitstag: >-
       Ein Arbeitstag ist ein Tag Gesamtaufwand aus Claude-Code- und Lovable-Aufträgen plus Freigaben und Prüfungen des Owners (Entscheidung 2026-10-28).
-      Die Kalenderzeit hängt von der Verfügbarkeit des Owners ab; die Einheit ist nach den ersten drei Paketen am gemessenen Tempo nachzumessen.
-      Die Werte sind Analogieschätzungen aus dem Delivery Plan und dem Sprintplan, nicht gemessen.
+      Die Kalenderzeit hängt von der Verfügbarkeit des Owners ab. Nachmessung A26 (2026-11-07): Seit 28.10. sind Pakete mit zusammen etwa 4 bis 7
+      geschätzten Arbeitstagen in 1,5 Kalenderwochen erledigt (S0-06, L2 bis auf L2-12), also grob 3 bis 4 AT je Woche. Das liegt über der
+      Kapazitätsangabe; ohne Owner-Stunden ist die Einheit nicht belastbar nachgemessen.
     nach_golden_gate_bis_bsf:
       bsf_06: { claude_code_auftraege: "10-16", lovable_prompts: "4-8", arbeitstage: "6-10" } # Vorlage: ADR 0039/0040 aus backup/codex-2026-10-31 (nicht mergen, Entscheidung 2026-10-31)
       bsf_04: { claude_code_auftraege: "8-12", lovable_prompts: "3-6", arbeitstage: "5-8" }
@@ -62,22 +72,54 @@ roadmap_schaetzung:
       summe_arbeitstage: "25-40"
     bis_bsf_gesamt:
       {
-        pakete: 15,
-        arbeitstage: "51-83",
-        herleitung: "Golden Gate 26-43 (9 Pakete) plus Pakete bis BSF 25-40 (6 Pakete)",
+        pakete: "13-17 (erwartet 15)",
+        arbeitstage: "49-88 (erwartet 68)",
+        herleitung: "A26 2026-11-07: Golden Gate 24/36/48 AT (7 bis 11 Sprints) plus Pakete bis BSF 25/32/40 AT (6 Pakete, unverändert)",
       }
-  kapazitaet_owner: 1 bis 2 Tage pro Woche (Angabe 2026-10-28); Golden Gate damit grob 2 bis 6 Monate, nach 2 bis 3 Wochen am gemessenen Tempo neu bewerten
+  kapazitaet_owner: >-
+    1 bis 2 Tage pro Woche (Angabe 2026-10-28). Golden Gate damit grob 12 bis 48 Wochen, erwartet etwa 24 Wochen; BSF grob 25 bis 88 Wochen.
+    Beim gemessenen Durchsatz KW44/45 (grob 3 bis 4 AT je Woche) wären es etwa 6 bis 16 Wochen bis Golden Gate (Hinweis, keine Planungsgröße).
+    Keine Terminzusage. Nächste Neubewertung nach dem Publish 1.70.0 oder spätestens 2026-11-21.
   reihenfolge_owner: >-
     R-07, S0-04, S0-05, dann L2 integrieren, Publish und Tests N1 bis N5, danach L3 bis L8 (Entscheidung 2026-10-28).
     Ergänzung 2026-10-31 - R-07 wird über S0-06 (Weg B) bearbeitet, S0-05 ist erledigt.
+    Ergänzung 2026-11-07 (A26) - vor dem Publish 1.70.0 liegen 16 offene Gates; kritischer Pfad R-14 (G03, G05). Owner-Entscheidungen D1 bis D5
+    vom 2026-11-06 (Restore-Minimalprobe S1 bis S4 lokal, Engineer-Befunde in PR 283, zod 3 befristet akzeptiert, QS6-4 kein Serverbefund,
+    types.ts als Go-Ausnahme) sind in origin/ops/queue (A27, A28, A30) dokumentiert, noch nicht in docs/.
   tempo_historie: >-
     Gemergte PRs seit 2026-10-01 (GitHub-REST, Zuordnung nach Titel): KW40 4 Fach, KW42 3 Fach/7 Doku, KW43 12 Fach/14 Doku, KW44 2 Fach/12 Doku (bis 2026-10-28).
     Planungsgröße etwa 1 bis 1,5 Sprints pro Woche, grobe Näherung.
+    Nachmessung A26 (2026-11-07, merged_at in Europe/Berlin, Doku = Titel docs: oder docs(...):): KW40 4/0, KW41 0/0, KW42 3/7, KW43 13/13,
+    KW44 5/34, KW45 12/9 (Teilwoche bis 07.11.); gesamt 100 PRs, 37 Fach, 63 Doku. Streng nur docs: als Doku: 54 Fach, 46 Doku.
+    Abgeschlossene Lieferpakete seit 28.10.: S0-05, S0-06; L2 bis auf L2-12. Tempo grob 1 bis 1,3 Sprints pro Woche (unterer Rand der Planungsgröße).
+  messung_2026_11_07:
+    quelle: "gh api repos/bmarnau/sysingdashboard/pulls?state=closed (paginiert), Abruf 2026-11-07"
+    kw:
+      - { kw: 40, gesamt: 4, fach_weit: 4, doku_weit: 0, fach_streng: 4, doku_streng: 0 }
+      - { kw: 41, gesamt: 0, fach_weit: 0, doku_weit: 0, fach_streng: 0, doku_streng: 0 }
+      - { kw: 42, gesamt: 10, fach_weit: 3, doku_weit: 7, fach_streng: 6, doku_streng: 4 }
+      - { kw: 43, gesamt: 26, fach_weit: 13, doku_weit: 13, fach_streng: 24, doku_streng: 2 }
+      - { kw: 44, gesamt: 39, fach_weit: 5, doku_weit: 34, fach_streng: 8, doku_streng: 31 }
+      - {
+          kw: 45,
+          gesamt: 21,
+          fach_weit: 12,
+          doku_weit: 9,
+          fach_streng: 12,
+          doku_streng: 9,
+          hinweis: Teilwoche bis 2026-11-07,
+        }
+    sprints_je_woche: "1-1,3 (grob)"
+    arbeitstage_je_woche_gemessen: "3-4 (grob, ohne Owner-Stunden)"
+    gates: { grundlage: 7dc4699d, erfuellt: 3, in_pr: 2, extern: 1, offen: 16 }
   letzte_aenderung: >-
-    2026-10-28: Meilensteine geklärt (ADR-0038, angenommen am 2026-10-28). MVP formal abgeschlossen (MVP-CLOSURE-STATUS-2026-08-24, PR #60; Bestätigung des Owners 2026-10-28, Lanzerath). Golden Gate und BSF bottom-up hergeleitet (15 Pakete, 51 bis 83 Arbeitstage).
+    2026-11-07: Neubewertung A26 (Gates 3/2/1/16, Tempo nachgemessen, Spannen min/erwartet/max). Golden Gate 7/9/11 Sprints, 24/36/48 AT;
+    BSF 13/15/17 Sprints, 49/68/88 AT. Gegenüber 2026-10-28 (26 bis 43 bzw. 51 bis 83 AT) fast unverändert: erledigte Arbeit (S0-06, L2 U1 bis U7)
+    und neue Publish-Gates (R-14, QS-06-Befunde) gleichen sich grob aus.
   offen: >-
-    Antwort an den Lovable-Support (Lovable Cloud oder eigenes Supabase-Projekt) für die Migrationsfragen R-10; Freigabe der Schreiboperation in
-    Lovable für S0-06; Messung des Arbeitstags nach drei Paketen; Schätzung von S0-06 nach dem ersten Lauf prüfen.
+    Antwort des Lovable-Supports zu R-10 (Migrationsversionen, leere Statements; am 2026-11-06 zugesagt). Owner-Entscheidungen D1 bis D5 in docs/
+    übernehmen (A28, A27, A30). Arbeitstag mit Owner-Stunden je Paket nachmessen. Tracker L2 (code_merged, ist_stand_code) korrigieren.
+    Neubewertung nach dem Publish 1.70.0.
 
 # Vier getrennte Statusfelder je Paket (Delivery Plan, Abschnitt 2, Punkt 3).
 # Ein Feld ersetzt niemals ein anderes.
@@ -672,6 +714,12 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-07
+    ereignis: >-
+      A26 Roadmap-Neubewertung: Gates 3 erfüllt, 2 in PR, 1 extern, 16 offen (main 7dc4699d). Tempo seit 2026-10-01 nachgemessen
+      (100 gemergte PRs, KW45 12 Fach/9 Doku), etwa 1 bis 1,3 Sprints pro Woche. Schätzung grob: Golden Gate 7/9/11 Sprints, 24/36/48 AT;
+      BSF 13/15/17 Sprints, 49/68/88 AT; keine Zusage.
+    beleg: reports/A26-BERICHT.md; GitHub-REST pulls?state=closed (2026-11-07); docs/PUBLISH-GATE-BERICHT.md Nachtrag 2026-11-07
   - datum: 2026-11-07
     ereignis: >-
       A32 (Rücknahme eines Publish, Agent): Lovable dokumentiert kein Wiederherstellen einer früheren Veröffentlichung; Rücknahme nur per Revert im Verlauf und
