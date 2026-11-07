@@ -11,6 +11,58 @@ dieser Datei.
 
 Stand: 2026-11-07 · Dashboard-Version 1.70.0
 
+## 2026-11-07 — Datenbank lokal wiederhergestellt
+
+Der Datenexport aus Lovable vom 6. November ließ sich auf dem eigenen Rechner in eine leere Datenbank zurückspielen. Tabellen, Zugriffsregeln, Funktionen und alle Datenzeilen stimmen mit dem Live-Stand vom 7. November überein. Die Anmeldekonten wurden dabei bewusst nicht übernommen, sondern als Platzhalter ohne Passwort neu angelegt. Dabei zeigten sich drei Handgriffe, ohne die die Wiederherstellung scheitert oder zu offen ausfällt: Das Schema `private` muss ausdrücklich mit ausgewählt werden, eine Lovable-eigene Rolle muss vorher angelegt werden, und die Standardrechte der leeren Datenbank müssen vorher entzogen werden. Sonst hätten nicht angemeldete Zugriffe volle Tabellenrechte. Die Prüfung der Rollen steht noch aus, weil der Speicher des Rechners knapp wurde. Ein neuer Test (PR 289) sichert ab, dass nur Rollen mit Abrechnungsrecht Sicherungen wiederherstellen dürfen. Publish bleibt No-Go.
+
+## 2026-11-07 — Nachtrag nach dem Merge von PR 283
+
+Der Owner hat PR 283 um 07:08 Z gemergt. Alle 15 Prüfungen waren grün, auch auf `main` danach. PR 282 zeigt GitHub ebenfalls als gemergt. Er wurde aber nicht eigens gemergt: Sein Inhalt steckte schon in PR 283. Der Planer schrieb „PR 282 ist geschlossen“. Das stimmt nur halb, GitHub sagt „gemergt“.
+
+Damit sind zwei weitere Gates erfüllt: Exporte ohne Abrechnungsrecht zeigen keine Beträge mehr (G07). Das JSON-Backup aus „Export…“ enthält ohne dieses Recht keinen Stundensatz (G09). Zwei Gates bleiben offen. Im Tätigkeitsdialog sieht der Engineer noch den Schalter „abrechenbar“ und den Abrechnungsstatus. Ob das so bleiben darf, muss der Owner sagen (G08). Im CHANGELOG fehlen noch die Paket-Updates K1 und K2 und die PDF-Korrektur aus PR 278 (G15). Jetzt sind 9 von 22 Gates vor dem Publish erfüllt, keines liegt mehr in einem PR.
+
+Neu im Risikoregister ist die Annahme AN-01. Die automatische Sicherung (ZIP) enthält immer den Stundensatz. Das ist nur in Ordnung, solange jeder, der Sicherungen wiederherstellen darf, auch Abrechnungsdaten sehen darf. Heute sind das nur Systemadministrator und Administrator, ein Test prüft das. Aufgefallen ist: Die tägliche Sicherung läuft für jede Rolle im Browser. Öffnen kann sie aber nur, wer das Recht `backup.restore` hat. Ein eigener Vertragstest folgt als A42. Publish bleibt No-Go.
+
+## 2026-11-07 — Entscheidungen vom 7. November
+
+Der Owner hat am 7. November entschieden, dass vor jeder Veröffentlichung geprüft wird, ob der Datenbankschutz für alle 25 Tabellen eingeschaltet ist; die Prüfung von heute zeigt das, gilt aber nur eine Woche und muss kurz vor der Veröffentlichung wiederholt werden. Das eigene Anzeigekonto für das Wandgerät kommt erst nach der Veröffentlichung, bis dahin trägt der Owner das Restrisiko bewusst für höchstens 30 Tage, und für den Notfall ist eine zweite Vertrauensperson aus der Familie benannt, deren Name nur im Notfallumschlag steht (Umschlag und Zugang sind noch einzurichten). Auf die Antwort des Lovable-Supports zu den leeren Migrationseinträgen wartet der Owner noch bis Montag, 9. November.
+
+## 2026-11-07 — Rechte in der Datenbank geprüft
+
+Die Auswertung der Datenbankabfrage vom Morgen zeigt: Die Datenbank ist heute durch ihre Zugriffsregeln geschützt, aber nur durch diese eine Schicht; nicht angemeldete Zugriffe hätten ohne sie weitreichende Tabellenrechte. Außerdem kann jedes Leserkonto ein Personenverzeichnis abrufen, das mehr zeigt als nötig. Beides ist zur Entscheidung vorgelegt; der Plan für die Wiederherstellungsprobe hat jetzt konkrete Prüfkriterien.
+
+## 2026-11-07 — Ablaufplan für die Veröffentlichung
+
+Für die erste Veröffentlichung seit Version 1.69.0 gibt es jetzt einen schriftlichen Ablaufplan: Er legt die Reihenfolge der Schritte fest, was vorher geprüft sein muss und wie eine fehlerhafte Veröffentlichung binnen einer Stunde zurückgenommen wird. Drei Entscheidungen des Owners vom Vortag sind jetzt festgehalten: eine bekannte Schwachstelle in einer Prüfbibliothek nehmen wir bis nach der Veröffentlichung in Kauf, der Server gibt keine Beträge an Leser heraus, und eine kleine automatisch erzeugte Abweichung von Lovable ist erlaubt.
+
+## 2026-11-07 — Mehrere Analysen parallel
+
+Mehrere Prüfaufträge liefen heute gleichzeitig. Ergebnisse: Ein veröffentlichter Stand lässt sich bei Lovable nur zurücknehmen, indem man die alte Version wiederherstellt und neu veröffentlicht oder die App offline nimmt; das Notfallhandbuch beschreibt den Ablauf jetzt. Für die Wiederherstellungsprobe liegt ein Plan für eine lokale Testdatenbank vor. Benutzer mit Historie lassen sich nicht löschen; dabei fiel auf, dass archivierte Konten in der Datenbank ihre Rechte behalten. Die Roadmap ist neu geschätzt.
+
+## 2026-11-07 — Nachtrag zum 6. November
+
+Die Statusseite nannte einige Pull Requests noch als offen, die längst gemergt oder geschlossen sind. Die alten Angaben bleiben stehen und tragen jetzt einen Vermerk. Die PDF-Korrektur ist in der Lovable-Vorschau teilweise geprüft: Das PDF lädt und der Text ist markierbar. Formularfelder, Links und die geladenen Dateien sind noch nicht geprüft.
+
+## 2026-11-07 — Statuskorrektur Sicherheitsfunde und PDF-Korrektur
+
+Die Behebung der zwei kritischen Paketfunde und die PDF-Korrektur (#278) sind bereits am 06.11. gemergt; die Doku nannte sie noch als offen. Eine neue Paketprüfung auf dem aktuellen Stand meldet keinen kritischen Fund mehr. Offen bleibt die Prüfung der PDF-Korrektur in der Lovable-Vorschau.
+
+## 2026-11-06 — Engineer-Abnahme geplant, Lücke im Tätigkeitsdialog
+
+Für die Prüfung der Rolle Systemingenieur liegt ein Plan mit automatischen Tests je Rolle und einer Handliste vor. Dabei fiel auf, dass der Dialog zum Anlegen und Bearbeiten einer Tätigkeit Stundensatz und Betrag auch Systemingenieuren zeigt, die keine Beträge sehen sollen. Außerdem enthält die vollständige JSON-Sicherung Stundensätze für jede Rolle.
+
+## 2026-11-06 — Notfallhandbuch in Git
+
+Das Notfallhandbuch und die Regeln für die Zusammenarbeit mit Lovable liegen jetzt als Entwurf im Repository und sind damit auch ohne Chat und ohne Lovable-Zugang lesbar. Für die Kiosk-Demodaten liegt ein Vorschlag vor: Das Anzeigegerät erzeugt den synthetischen Datensatz selbst, ohne dass ein Administrator ihn dort laden muss.
+
+## 2026-11-06 — Sicherheitsfunde behoben, Kiosk-Konto neu geplant
+
+Die zwei kritischen Funde aus der Paketprüfung sind in zwei Entwürfen behoben (PDF-Bibliothek und ein Werkzeug des Entwicklungsservers); die CI ist grün, gemergt wird nach Freigabe. Das alte Kiosk-Konto lässt sich nicht löschen, weil das Änderungsprotokoll jedes Konto ab der Anlage festhält und nie geändert wird. Der Plan heißt jetzt: ein neues Anzeigekonto anlegen und die alten Konten archivieren. Dabei fiel auf, dass die Benutzerliste die Rolle Kiosk nicht anzeigen kann und stattdessen „System-Administrator“ zeigt.
+
+## 2026-11-06 — Bestand offener Pull Requests
+
+Von zehn offenen Pull Requests sind fünf alte Entwürfe inzwischen vollständig durch neuere, gemergte Pakete ersetzt (Managementcockpit und Abrechnungsrechte). Sie können geschlossen werden, sobald der Owner zustimmt. Die PDF-Korrektur (#278) wartet nur noch auf die Prüfung in der Lovable-Vorschau. Zwei ältere Dokumentationsvorschläge (Kiosk-Schnittstelle, Management-Wallboard) brauchen eine Entscheidung.
+
 ## 2026-11-07 — Tätigkeitsdialog und JSON-Backup ohne Beträge
 
 Wer das Recht „Abrechnungsdaten ansehen“ nicht hat, sieht im Dialog einer Tätigkeit keinen Stundensatz und keinen Betrag mehr; die Felder fehlen ganz. Der hinterlegte Satz bleibt beim Speichern trotzdem erhalten. Auch das JSON-Backup aus dem Exportdialog enthält ohne das Recht keinen Stundensatz. Die automatische Sicherung bleibt vollständig, weil sie die einzige Sicherung dieses Werts ist.

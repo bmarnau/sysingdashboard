@@ -2,7 +2,7 @@
 # Ein Eintrag je Nachweis: was geprüft wurde, womit, mit welchem Ergebnis und welchen Einschränkungen.
 # Konten nur mit lokalem Teil (zum Beispiel "alexa@"), keine vollständigen E-Mail-Adressen, keine Zugangsdaten.
 # EV-0001 bis EV-0004 am 2026-11-05 aus dem Entwurf des Owners übernommen (Auftrag A04) und gegen GitHub geprüft.
-stand: 2026-11-05
+stand: 2026-11-07
 nachweise:
   - id: EV-0001
     titel: L2 U7 QS-06 billing.view, Code gemergt
@@ -82,3 +82,112 @@ nachweise:
       - Kiosk als Anzeigemodus des Kontos bm@ (Rolle Systemadministrator) geprüft, nicht als eigenes Kiosk-Konto.
     befunde: [F-U7-03]
     beleg: Owner-Abnahme in der Lovable-Vorschau am 04.11.2026 (Meldung im Chat)
+  - id: EV-0006
+    titel: Kiosk-Konto Weg B, Prüfliste KK-01 bis KK-08 am Anzeigegerät (Entwurf)
+    datum: offen
+    umgebung: Anzeigegerät, veröffentlichte App oder Lovable-Vorschau (offen)
+    version: offen
+    bezug: [DATENAUFTRAG-KIOSK-KONTO, KK-01 bis KK-08, F-KK-01]
+    pruefer: Owner
+    art: manuelle Prüfung am Anzeigegerät
+    status: offen
+    ergebnis: offen
+    einschraenkungen:
+      - Entwurf; bleibt offen, bis KK-06 gemeldet und die Prüfliste mit anzeige@ wiederholt ist.
+      - Stand 2026-11-05 nur Beobachtungen des Owners ohne Screenshot; Konto der Beobachtung nicht belegt.
+    befunde: [F-KK-01]
+    beleg: offen
+  - id: EV-0007
+    titel: PR 278 react-pdf-Stylesheets, Prüfung in der Lovable-Vorschau (G19)
+    datum: 2026-11-06
+    umgebung: Lovable-Vorschau
+    version: PR 278 Head 4aad97a8, gemergt als main 02cb3d28
+    bezug: [G19, PR 278, Vorschau-Absturz react-pdf]
+    pruefer: Owner
+    art: manuelle Oberflächenprüfung
+    ergebnisse:
+      - pruefpunkt: Vorschau lädt
+        ergebnis: bestanden
+      - pruefpunkt: Viewer zeigt das PDF
+        ergebnis: bestanden
+      - pruefpunkt: Text markierbar
+        ergebnis: bestanden
+      - pruefpunkt: keine Meldung devSourcemap
+        ergebnis: bestanden
+      - pruefpunkt: Netzwerk-Reiter (Stylesheets aus /vendor/react-pdf/)
+        ergebnis: offen, nicht geprüft
+      - pruefpunkt: Formularfelder
+        ergebnis: offen, nicht geprüft
+      - pruefpunkt: Link klickbar
+        ergebnis: offen, nicht geprüft
+    ergebnis: teilweise
+    einschraenkungen:
+      - Uhrzeit ca. 05:45 bis 06:00 Berlin; Angaben laut Planer-Auftrag A23, Screenshots liegen nur im Chat, nicht in Git.
+      - Der Vorschau-Stand ist nicht per Commit-SHA im Protokoll festgehalten (Prüfschritt 1 in docs/BERICHT-PR-BESTAND-2026-11-06.md).
+      - Plugin sysing:ensure-css-config bleibt bis zu einem eigenen Folge-PR.
+    beleg: Owner-Screenshots im Chat am 2026-11-06 (nicht in Git); https://github.com/bmarnau/sysingdashboard/pull/278, Head 4aad97a8 CI 15/15, Merge 02cb3d28 am 2026-11-06T05:11Z
+  - id: EV-0008
+    titel: Lovable-Support, Erstantwort zu Auth-Storage-Helper und Migrationsfragen (R-07, R-10)
+    datum: 2026-11-06
+    umgebung: Lovable-Support (Thread des Owners)
+    version: nicht zutreffend
+    bezug: [R-07, R-10, A29, A28]
+    pruefer: Owner (Empfänger)
+    art: Antwort des Supports, dokumentiert per Doku-PR
+    absenderin: Lea (Lovable Support)
+    ergebnisse:
+      - punkt: Änderung der Speicherzeile in client.ts
+        aussage: wirkte
+      - punkt: Auth-Storage-Helper nach README-Änderung
+        aussage: kam nicht zurück
+      - punkt: Frage 1
+        gegenstand: Migrationen 20260913213000, 20260917182000, 20260917190000 unter anderen Versionsnummern als im Repository angewendet
+        aussage: Support will die Frage im selben Thread beantworten
+      - punkt: Frage 2
+        gegenstand: Statements in den Migrationsprotokollen leer
+        aussage: Support will die Frage im selben Thread beantworten
+    status: offen
+    ergebnis: offen
+    einschraenkungen:
+      - Erstantwort; die inhaltliche Antwort auf beide Fragen steht aus.
+      - Uhrzeit nur als "abends" überliefert; die Antwort liegt nur im Chat des Owners, nicht in Git.
+      - Aussagen des Supports, keine eigene Messung; über den genannten Inhalt hinaus wird nichts behauptet.
+    beleg: Chat des Owners am 2026-11-06 abends (nicht in Git)
+  - id: EV-0009
+    titel: Restore-Probe lokal (Entwurf), Export 2026-11-06 in Einzelcontainer, Struktur und Daten
+    datum: 2026-11-07
+    umgebung: >-
+      lokal, Docker Desktop; supabase/postgres:17.6.1.147 ohne veröffentlichte Ports, Client postgres:18 (pg_restore 18.6) im internen
+      Netz; Datenverzeichnis nur im Arbeitsspeicher (tmpfs)
+    version: main be712548 (Migrationen); Export pg_dump 18.6 aus Datenbank 17.6, erstellt 2026-11-06 17:27:58 UTC
+    bezug: [EV-0004, G03, R-14, REST-07, A39, A30, RP-02]
+    pruefer: Claude Code (Auftrag A39, Freigabe Owner E7 2026-11-07)
+    art: Probe-Protokoll (Entwurf)
+    ergebnisse:
+      - punkt: Struktur aus Migrationen (Plan S3, Weg W1)
+        ergebnis: >-
+          33/33 Migrationen ohne Fehler; RP-02 B bis H gleich, ausgenommen die 4 bekannten Funktions-md5 aus 20260913150000 und eine
+          zusätzliche EXECUTE-Zeile authenticated auf reference_value_validate_scope (beide in Plan 15.3 für W1 erwartet)
+      - punkt: Wiederherstellung aus dem Export (Plan S3, Weg W2)
+        ergebnis: >-
+          0 Fehler, 0 Warnungen im dritten Lauf; Spalten, Constraints, Indizes, Trigger, Policies, Funktionen (41/41 md5), EXECUTE (109)
+          und Tabellenrechte gleich RP-02; RLS 25/25
+      - punkt: Daten J2 (Plan S4)
+        ergebnis: 25/25 Tabellen mit gleicher Zeilenzahl und gleichem md5 wie RP-02 J2; 66/66 Fremdschlüssel angelegt und validiert
+      - punkt: auth.users
+        ergebnis: 9 Platzhalter mit Live-UUIDs und Probe-Adressen, 0 Passwort-Hashes; Auth-Daten des Exports nicht verwendet (E2)
+      - punkt: Rollenabnahme
+        ergebnis: nicht ausgeführt (Abbruch wegen Speichermangel; ohne Auth-Dienst keine App-Anmeldung)
+    status: entwurf
+    ergebnis: teilweise
+    einschraenkungen:
+      - Rückfall nach E1 (Einzelcontainer statt Supabase CLI), Begründung im Bericht A39.
+      - Spalten aus der J2-Ausschlussliste (u. a. audit_log.payload, jsonb, hash, email, phone) nicht geprüft; Stichproben je Kerntabelle offen.
+      - >-
+        Fehlerfreier Restore nur mit drei Vorschritten: Auswahl per TOC-Liste (pg_restore -n legt das Schema private nicht an), Rolle
+        sandbox_exec vorab, Default-Privilegien des Images in public entziehen und ACL getrennt einspielen; ohne Letzteres ist der Stand
+        offener als live.
+      - Export unter C:\dev\restore-probe, EFS-verschlüsselt; Löschung spätestens 2026-11-21, Löschung hier zu vermerken.
+    beleg: >-
+      ops/reports reports/A39-BERICHT.md; lokale Protokolle unter C:\dev\restore-probe\work (nicht in Git); Vergleichsbasis
+      ops/queue queue/anlagen/RP-02-ergebnis-2026-11-07.md

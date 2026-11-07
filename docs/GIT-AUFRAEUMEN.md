@@ -13,7 +13,7 @@ Stand: 2026-11-05 (GA-3 um `ops/*` ergänzt). Zweck: Das Repository enthält vie
 | ID   | Regel                                                                                                                                         |
 | ---- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | GA-1 | Es dürfen nur Branches gelöscht werden, die vollständig in `origin/main` enthalten sind (`git branch -r --merged origin/main`).               |
-| GA-2 | Branches mit offenem Pull Request (`#219`, `#220`, `#221`, `#155`, `#124`) dürfen nicht gelöscht werden.                                      |
+| GA-2 | Branches mit offenem Pull Request dürfen nicht gelöscht werden (Beispiele Stand 2026-11-07: `#282`, `#283`, `#286`, `#155`, `#124`).          |
 | GA-3 | Branches mit Präfix `backup/`, `audit/`, `ops/` und der Branch `aqgs-pilot` bleiben erhalten (Evidenz, Teilautomatik).                        |
 | GA-4 | Lovable-verwaltete Branches (`lovable-sync-*`, `merge/lovable-sync-*`, `lovable/*`) dürfen nur nach Rückfrage beim Betreiber gelöscht werden. |
 | GA-5 | Vor dem Löschen muss die Liste mit Commit-Kennung vorliegen (Abschnitt 3), damit jeder Branch aus `main` rekonstruierbar bleibt.              |

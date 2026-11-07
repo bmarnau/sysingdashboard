@@ -1,6 +1,6 @@
 # Lovable-Publish-Prüfung und Go/No-Go (R-07)
 
-Stand: 2026-10-24 · bezieht sich auf `main` 5a32898 · Tracker: R-07, L0b-Testplan, L8
+Stand: 2026-11-07 (Prompt und Go-Kriterien ergänzt, A28; Messungen unverändert) · ursprünglich bezogen auf `main` 5a32898 · Tracker: R-07, L0b-Testplan, L8 · Ablauf des Publish: `docs/PUBLISH-PLAN.md`
 
 ## Zweck
 
@@ -32,6 +32,8 @@ Bitte berichte als kurze Liste:
 3. Veröffentlichung: Welcher Stand ist aktuell veröffentlicht (Zeitpunkt, Commit oder Version)? Was würde ein Klick auf "Publish" jetzt veröffentlichen: den Stand von GitHub-main oder die Lovable-Arbeitskopie? Bitte konkret mit Commit.
 4. Dateien: Existieren src/components/dashboard/dialogs/PublishToTeamDialog.tsx und src/lib/demo-data/dataset.ts? Nenne in dataset.ts den Wert von DEMO_DATASET_VERSION (erwartet 2.2.0) und in src/lib/customer-data/publish-to-team.ts, ob die Funktion effectiveEngineerId vorhanden ist (ja/nein).
 5. Offene Lovable-Arbeit: Gibt es nicht übernommene Änderungen oder Branches mit dem Namen lovable-sync-*? Name und Anzahl der Commits.
+6. Migrationen: Werden Migrationen aus supabase/migrations beim Publish oder beim Sync auf die Datenbank angewendet? ja/nein/nicht ermittelbar, mit Quelle. Falls ja: Welche Versionen würden beim nächsten Publish laufen? Betrifft das insbesondere 20260917182000 (liegt live unter anderer Versionsnummer vor), die QS-01-Migration A (20261022090000, Commit 1ed6b920) und die FK-Migration (20261022120000, Commit cefa25aa)?
+7. Erreichbarkeit: Wie ist die veröffentlichte App erreichbar (öffentlich im Internet, nur mit Lovable-Anmeldung oder eingeschränkt)? Ist die Selbstregistrierung neuer Konten in der veröffentlichten App möglich (ja/nein) und wo ist sie eingestellt?
 
 Keine Schlüssel, Tokens oder Geheimnisse ausgeben. Wenn eine Frage nicht beantwortbar ist, schreibe "nicht ermittelbar" und den Grund.
 ```
@@ -46,9 +48,23 @@ Keine Schlüssel, Tokens oder Geheimnisse ausgeben. Wenn eine Frage nicht beantw
 | `PublishToTeamDialog`, `dataset.ts` 2.2.0, `effectiveEngineerId` vorhanden | ja                         | fehlt                                           |
 | Offene `lovable-sync-*`-Änderungen                                         | keine                      | vorhanden und nicht bewertet                    |
 | "nicht ermittelbar" bei Punkt 2 oder 3                                     | -                          | No-Go, bis geklärt (Support-Anfrage an Lovable) |
+| Migrationen beim Publish oder Sync (Punkt 6)                               | nein, oder ja ohne Wirkung | ja mit Wirkung, oder "nicht ermittelbar"        |
+| Erreichbarkeit und Selbstregistrierung (Punkt 7)                           | wie vom Owner entschieden  | abweichend oder "nicht ermittelbar"             |
 
 Ein Go gilt nur für den geprüften Commit. Nach jeder neuen Änderung in Lovable oder auf
 `main` ist die Prüfung zu wiederholen. Die Veröffentlichung selbst führt der Owner aus.
+
+### Go-Ausnahme `types.ts` (Owner 2026-11-06, D5)
+
+Quelle: Entscheidung des Owners 2026-11-06, dokumentiert im Planer-Auftrag A28 (`origin/ops/queue`, `queue/A28.yaml`). Gate G02.
+
+- Für das Kriterium „Arbeitskopie = erwarteter `main`-Commit“ ist ausschließlich die Abweichung in `src/integrations/supabase/types.ts` zulässig: +5 Zeilen, Block `__InternalSupabase` mit `PostgrestVersion` "14.5" (Standardblock laut Support 2026-10-30).
+- Die Abweichung muss im Diff des Sync-Branches gegen `main` genau diesen Block umfassen; jede weitere Zeile in `types.ts` und jede Abweichung in einer anderen Datei bleibt No-Go.
+- Die Abweichung wird nicht nach `main` übernommen (eine Übernahme macht die Schema-Drift-Prüfung rot, A14).
+
+### Hinweis zu Frage 6 (A29, 2026-11-07)
+
+Ob Lovable beim Publish oder Sync Repo-Migrationen anwendet, ist nicht belegt. Würde `20260917182000` erneut laufen, wäre das kein No-Op: `CREATE OR REPLACE` setzt `has_permission` zurück (Teamleiter verlieren `performance.statement.manage`) und `bsf02c_publish_shared_projection_snapshot` (Fälligkeitsprojektion P3b). Die Frage gehört zu R-10 (Antwort des Supports offen, EV-0008) und zum Gate-Vorschlag G23.
 
 ## Nach dem Go: Volltest auf der veröffentlichten App
 

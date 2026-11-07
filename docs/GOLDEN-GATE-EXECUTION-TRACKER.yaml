@@ -20,13 +20,22 @@ einheit_der_schaetzung: Arbeits-/Promptbudget, keine Termin- oder Erfolgszusage
 # Gesamtschätzung (Stand 2026-10-27). Bisher nur in den Sitzungsabschlüssen geführt, jetzt in Git.
 # Grobe Einschätzung des Systemingenieurs, nicht aus den schaetzung-Feldern der Pakete errechnet.
 roadmap_schaetzung:
-  stand: 2026-10-31
+  stand: 2026-11-07
   einheit: 1 Sprint = 1 abgeschlossenes Arbeitspaket mit eigenem PR (ADR-0038, angenommen)
   bis_golden_gate:
     offene_pakete: [L0, L0b, L2, L3, L4, L5, L6, L7, L8]
-    sprints: 9
-    arbeitstage: "26-43"
-    herleitung: Summe der schaetzung-Felder der offenen Lieferpakete; Doku- und Wartezeiten nicht enthalten
+    sprints: "7-11 (erwartet 9)"
+    arbeitstage: "24-48 (erwartet 36)"
+    herleitung: >-
+      A26 (2026-11-07): Block A Publish 1.70.0 mit offenen Gates 3/6/10 AT (Gate-Bericht Dauer, Claude Code 16/25/40 h plus Owner 11/21/40 h,
+      8 h je AT), Block B Rest L0, L0b, L2 1/2/3 AT, Block C L3 bis L8 20/26,5/33 AT (Summe schaetzung-Felder), Zuschlag ungeplant 0/1,5/2 AT.
+      L0, L0b und L2 werden mit dem Publish 1.70.0 abgeschlossen. Wartezeit auf den Lovable-Support nicht enthalten.
+    spanne:
+      {
+        min: { sprints: 7, arbeitstage: 24 },
+        erwartet: { sprints: 9, arbeitstage: 36 },
+        max: { sprints: 11, arbeitstage: 48 },
+      }
   vor_golden_gate_s0:
     s0_06:
       titel: Auth-Broker aus dem Lovable-Projektstand entfernen (Weg B)
@@ -34,22 +43,23 @@ roadmap_schaetzung:
       lovable_prompts: "1-3"
       arbeitstage: "1-2"
       hinweis: >-
-        Neues Paket aus der Support-Antwort vom 2026-10-30; Analogieschätzung, nicht gemessen. Gehört zu Sprint 0 und ist in den 9 Paketen
-        bis zur Internen Freigabe 1.0 nicht enthalten. Fällt Weg B aus, tritt Weg A (Vertragstest und ADR-0036 ändern) an seine Stelle.
-  sprints_bis_bsf: 15
+        Abgeschlossen am 2026-10-31 (PR 253, 256, 258; Weg B hält). Analogieschätzung 1 bis 2 Arbeitstage, Ist innerhalb eines Kalendertags
+        mit mehreren PRs; Owner-Stunden nicht erfasst.
+  sprints_bis_bsf: "13-17 (erwartet 15)"
   sprints_bis_mvp: 0
-  belastbarkeit: grob, keine Zusage
+  belastbarkeit: grob, keine Zusage; Arbeitstag nicht nachgemessen (Owner-Stunden fehlen)
   werkzeuge: >-
-    Seit 2026-10-28 laufen Aufträge mit Claude Code und Lovable; Codex ist aus der Planung entfernt (Entscheidung Owner). Die Werte in claude_code_auftraege
-    wurden unverändert aus den früheren Codex-Schätzungen übernommen und sind nach den ersten Paketen am gemessenen Tempo zu prüfen.
-    Seit 2026-10-31 gilt ein einziger Arbeitsklon C:\dev\sysingdashboard (frischer Klon, nicht unter OneDrive); die CI nutzt Node 22 und
-    bun install --frozen-lockfile, Auftragsvorlagen sind darauf umzustellen (Backlog).
+    Seit 2026-10-28 laufen Aufträge mit Claude Code und Lovable; Codex ist aus der Planung entfernt (Entscheidung Owner). Seit 2026-11-05
+    Teilautomatikbetrieb (docs/BETRIEB-TEILAUTOMATIK.md, Warteschlange origin/ops/queue). Die Werte in claude_code_auftraege stammen aus den
+    früheren Codex-Schätzungen; beobachtet sind bisher nur S0-06 und L2. Einziger Arbeitsklon C:\dev\sysingdashboard; CI Node 22 und
+    bun install --frozen-lockfile.
   planungsrunde:
     stand: 2026-10-28
     einheit_arbeitstag: >-
       Ein Arbeitstag ist ein Tag Gesamtaufwand aus Claude-Code- und Lovable-Aufträgen plus Freigaben und Prüfungen des Owners (Entscheidung 2026-10-28).
-      Die Kalenderzeit hängt von der Verfügbarkeit des Owners ab; die Einheit ist nach den ersten drei Paketen am gemessenen Tempo nachzumessen.
-      Die Werte sind Analogieschätzungen aus dem Delivery Plan und dem Sprintplan, nicht gemessen.
+      Die Kalenderzeit hängt von der Verfügbarkeit des Owners ab. Nachmessung A26 (2026-11-07): Seit 28.10. sind Pakete mit zusammen etwa 4 bis 7
+      geschätzten Arbeitstagen in 1,5 Kalenderwochen erledigt (S0-06, L2 bis auf L2-12), also grob 3 bis 4 AT je Woche. Das liegt über der
+      Kapazitätsangabe; ohne Owner-Stunden ist die Einheit nicht belastbar nachgemessen.
     nach_golden_gate_bis_bsf:
       bsf_06: { claude_code_auftraege: "10-16", lovable_prompts: "4-8", arbeitstage: "6-10" } # Vorlage: ADR 0039/0040 aus backup/codex-2026-10-31 (nicht mergen, Entscheidung 2026-10-31)
       bsf_04: { claude_code_auftraege: "8-12", lovable_prompts: "3-6", arbeitstage: "5-8" }
@@ -62,22 +72,54 @@ roadmap_schaetzung:
       summe_arbeitstage: "25-40"
     bis_bsf_gesamt:
       {
-        pakete: 15,
-        arbeitstage: "51-83",
-        herleitung: "Golden Gate 26-43 (9 Pakete) plus Pakete bis BSF 25-40 (6 Pakete)",
+        pakete: "13-17 (erwartet 15)",
+        arbeitstage: "49-88 (erwartet 68)",
+        herleitung: "A26 2026-11-07: Golden Gate 24/36/48 AT (7 bis 11 Sprints) plus Pakete bis BSF 25/32/40 AT (6 Pakete, unverändert)",
       }
-  kapazitaet_owner: 1 bis 2 Tage pro Woche (Angabe 2026-10-28); Golden Gate damit grob 2 bis 6 Monate, nach 2 bis 3 Wochen am gemessenen Tempo neu bewerten
+  kapazitaet_owner: >-
+    1 bis 2 Tage pro Woche (Angabe 2026-10-28). Golden Gate damit grob 12 bis 48 Wochen, erwartet etwa 24 Wochen; BSF grob 25 bis 88 Wochen.
+    Beim gemessenen Durchsatz KW44/45 (grob 3 bis 4 AT je Woche) wären es etwa 6 bis 16 Wochen bis Golden Gate (Hinweis, keine Planungsgröße).
+    Keine Terminzusage. Nächste Neubewertung nach dem Publish 1.70.0 oder spätestens 2026-11-21.
   reihenfolge_owner: >-
     R-07, S0-04, S0-05, dann L2 integrieren, Publish und Tests N1 bis N5, danach L3 bis L8 (Entscheidung 2026-10-28).
     Ergänzung 2026-10-31 - R-07 wird über S0-06 (Weg B) bearbeitet, S0-05 ist erledigt.
+    Ergänzung 2026-11-07 (A26) - vor dem Publish 1.70.0 liegen 16 offene Gates; kritischer Pfad R-14 (G03, G05). Owner-Entscheidungen D1 bis D5
+    vom 2026-11-06 (Restore-Minimalprobe S1 bis S4 lokal, Engineer-Befunde in PR 283, zod 3 befristet akzeptiert, QS6-4 kein Serverbefund,
+    types.ts als Go-Ausnahme) sind in origin/ops/queue (A27, A28, A30) dokumentiert, noch nicht in docs/.
   tempo_historie: >-
     Gemergte PRs seit 2026-10-01 (GitHub-REST, Zuordnung nach Titel): KW40 4 Fach, KW42 3 Fach/7 Doku, KW43 12 Fach/14 Doku, KW44 2 Fach/12 Doku (bis 2026-10-28).
     Planungsgröße etwa 1 bis 1,5 Sprints pro Woche, grobe Näherung.
+    Nachmessung A26 (2026-11-07, merged_at in Europe/Berlin, Doku = Titel docs: oder docs(...):): KW40 4/0, KW41 0/0, KW42 3/7, KW43 13/13,
+    KW44 5/34, KW45 12/9 (Teilwoche bis 07.11.); gesamt 100 PRs, 37 Fach, 63 Doku. Streng nur docs: als Doku: 54 Fach, 46 Doku.
+    Abgeschlossene Lieferpakete seit 28.10.: S0-05, S0-06; L2 bis auf L2-12. Tempo grob 1 bis 1,3 Sprints pro Woche (unterer Rand der Planungsgröße).
+  messung_2026_11_07:
+    quelle: "gh api repos/bmarnau/sysingdashboard/pulls?state=closed (paginiert), Abruf 2026-11-07"
+    kw:
+      - { kw: 40, gesamt: 4, fach_weit: 4, doku_weit: 0, fach_streng: 4, doku_streng: 0 }
+      - { kw: 41, gesamt: 0, fach_weit: 0, doku_weit: 0, fach_streng: 0, doku_streng: 0 }
+      - { kw: 42, gesamt: 10, fach_weit: 3, doku_weit: 7, fach_streng: 6, doku_streng: 4 }
+      - { kw: 43, gesamt: 26, fach_weit: 13, doku_weit: 13, fach_streng: 24, doku_streng: 2 }
+      - { kw: 44, gesamt: 39, fach_weit: 5, doku_weit: 34, fach_streng: 8, doku_streng: 31 }
+      - {
+          kw: 45,
+          gesamt: 21,
+          fach_weit: 12,
+          doku_weit: 9,
+          fach_streng: 12,
+          doku_streng: 9,
+          hinweis: Teilwoche bis 2026-11-07,
+        }
+    sprints_je_woche: "1-1,3 (grob)"
+    arbeitstage_je_woche_gemessen: "3-4 (grob, ohne Owner-Stunden)"
+    gates: { grundlage: 7dc4699d, erfuellt: 3, in_pr: 2, extern: 1, offen: 16 }
   letzte_aenderung: >-
-    2026-10-28: Meilensteine geklärt (ADR-0038, angenommen am 2026-10-28). MVP formal abgeschlossen (MVP-CLOSURE-STATUS-2026-08-24, PR #60; Bestätigung des Owners 2026-10-28, Lanzerath). Golden Gate und BSF bottom-up hergeleitet (15 Pakete, 51 bis 83 Arbeitstage).
+    2026-11-07: Neubewertung A26 (Gates 3/2/1/16, Tempo nachgemessen, Spannen min/erwartet/max). Golden Gate 7/9/11 Sprints, 24/36/48 AT;
+    BSF 13/15/17 Sprints, 49/68/88 AT. Gegenüber 2026-10-28 (26 bis 43 bzw. 51 bis 83 AT) fast unverändert: erledigte Arbeit (S0-06, L2 U1 bis U7)
+    und neue Publish-Gates (R-14, QS-06-Befunde) gleichen sich grob aus.
   offen: >-
-    Antwort an den Lovable-Support (Lovable Cloud oder eigenes Supabase-Projekt) für die Migrationsfragen R-10; Freigabe der Schreiboperation in
-    Lovable für S0-06; Messung des Arbeitstags nach drei Paketen; Schätzung von S0-06 nach dem ersten Lauf prüfen.
+    Antwort des Lovable-Supports zu R-10 (Migrationsversionen, leere Statements; am 2026-11-06 zugesagt). Owner-Entscheidungen D1 bis D5 in docs/
+    übernehmen (A28, A27, A30). Arbeitstag mit Owner-Stunden je Paket nachmessen. Tracker L2 (code_merged, ist_stand_code) korrigieren.
+    Neubewertung nach dem Publish 1.70.0.
 
 # Vier getrennte Statusfelder je Paket (Delivery Plan, Abschnitt 2, Punkt 3).
 # Ein Feld ersetzt niemals ein anderes.
@@ -672,6 +714,220 @@ risiken:
 # Fortschrittsprotokoll (neueste zuerst; je Eintrag ein Fakt mit Beleg)
 # ---------------------------------------------------------------------------
 fortschritt:
+  - datum: 2026-11-07
+    ereignis: >-
+      A39 Restore-Probe lokal (Entwurf EV-0009, teilweise): Rückfall E1 auf Einzelcontainer supabase/postgres:17.6.1.147 ohne Ports
+      (CLI veröffentlicht Ports, fremde CLI-Stacks aktiv, C: fast voll). S1 Struktur aus 33 Migrationen (main be712548) fehlerfrei,
+      RP-02 B bis H gleich bis auf die 4 bekannten Funktions-md5 und EXECUTE reference_value_validate_scope. S2 Restore aus dem Export
+      (pg_restore 18.6) nach drei Läufen fehlerfrei und gleich RP-02 (Funktionen 41/41, EXECUTE 109, Rechte, RLS 25/25). S3 J2 25/25
+      gleich, 66/66 FK validiert, auth.users 9 Platzhalter mit Live-UUIDs, 0 Hashes. S4 Rollenabnahme nicht ausgeführt (Speichermangel,
+      Container entfernt). Befunde: pg_restore -n legt Schema private nicht an; Rolle sandbox_exec fehlt lokal; Default-Privilegien des
+      Images machen den Restore offener als live (anon Vollrechte), Vorschritt nötig; Export enthält Auth-Daten mit Hashes. G03 und
+      EV-0004 bleiben offen. Löschung des Exports spätestens 2026-11-21.
+    beleg: >-
+      ops/reports reports/A39-BERICHT.md; docs/NACHWEISE.yaml EV-0009 (Entwurf); lokale Protokolle unter C:\dev\restore-probe\work
+      (nicht in Git)
+  - datum: 2026-11-07
+    ereignis: >-
+      A42 Vertragstest backup.restore setzt billing.view voraus (QS-06): neuer Test
+      src/__tests__/security/backup-restore-billing-view.contract.test.ts prüft über alle
+      Rollen der Frontend- und Backend-Matrix, dass jede Rolle mit backup.restore auch
+      billing.view hat (Meldung mit Verweis auf src/lib/backup/zip.ts, Nicht-Leerlauf,
+      Negativfall, Anker includeBilling: true). Die Invariante war bereits direkt in
+      qs6-5-export-billing.test.ts Z. 179-192 geprüft, jetzt mit Meldung, Backend-Abgleich
+      und Negativfall. Befund: DB-Funktion public.has_permission (Migration 20260921095742)
+      kennt billing.view für administrator, teamlead und projectmanager nicht; administrator
+      hat DB-seitig backup.restore ohne billing.view. Keine Rollenänderung, keine Migration.
+    beleg: PR #289 (Draft), Commit dcf2b23a, CI 15/15; ops/reports reports/A42-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
+      A40 Nachtrag 2 nach dem Merge von PR 283: PR 283 gemergt 2026-11-07T07:08:08Z (main be712548, Merge durch den Owner), 15/15 Checks
+      am Head 9c60a92f, CI und Security auf main be712548 success. PR 282 in gh MERGED (07:08:10Z, mergeCommit be712548, mergedBy leer),
+      weil sein Head 92bf1d3b über 34fc41a6 in PR 283 enthalten war; kein eigener Merge (Abweichung zur Planer-Aussage "PR 282 ist
+      geschlossen"). G07 und G09 erfüllt, G08 offen und teilweise belegt (Abrechnungsstatus für den Engineer sichtbar, Frage 1 offen), G15
+      offen statt in PR (CHANGELOG ohne K1/K2 und PR 278). Neue Zählung: 23 Gates, 22 vor dem Publish: 9 erfüllt, 0 in PR, 1 extern,
+      12 offen, 1 Folgepunkt (G20); Muss-Gates 6 von 15 erfüllt. Annahme AN-01 im Risikoregister (Owner 2026-11-07): ZIP-Backup 2.0
+      enthält hourlyRate immer, zulässig nur, solange jede Rolle mit backup.restore auch billing.view hat; Vertragstest als A42 (Draft-PR
+      folgt). Befund: automatische Tagessicherung läuft für jede Rolle (dashboard.tsx:309), Zugriff nur mit backup.restore; neuer
+      Sync-Branch lovable-sync-1793985842 (436ce690, Basis 7dc4699d) enthält be712548 nicht (G17 offen).
+    beleg: >-
+      gh pr view 283 --json statusCheckRollup (15/15 SUCCESS, Head 9c60a92f); gh pr view 282 --json state,mergedAt,mergeCommit; gh run list
+      --commit be712548 (CI 42349983730, Security 42349983737); src/__tests__/security/qs6-5-export-billing.test.ts:179-191;
+      src/lib/rbac/permissions.ts:131, :143, :156, :167; docs/PUBLISH-GATE-BERICHT.md (Ergänzung A40, Nachtrag 2); docs/PUBLISH-PLAN.md
+      Abschnitt 3; docs/RISIKOREGISTER.yaml annahmen AN-01
+  - datum: 2026-11-07
+    ereignis: >-
+      A41 (Plan, Agent): avkk_people_directory (A38 E2) und fünf Aufrufer beschrieben; UI braucht nur Namen zu RLS-sichtbaren
+      Verantwortungen und die Halterauswahl für assign, die Spalte role wird nicht angezeigt. Varianten a1 (Scope wie avkk_subject_read,
+      Aufrufer aktiv, globaler Zweig nur mit Mitgliedschaft), a2, b, c1, c2, d bewertet; Empfehlung a1 + d als eine Migration (6 bis 7 h,
+      gleiche Signatur, kein Rollenwechsel, kein Datenauftrag), c1 als Option in G23; Zeitpunkt hängt an R-10/PP-10. Befunde: "PGlite wie
+      A11" nicht tragfähig (A11 ohne RLS und Trigger), Alternative CI-Job Database Schema Drift; sec01-Verträge zur Funktion nicht in ci.yml;
+      Recht avkk.manage existiert nicht. Testplan T01 bis T13 (viewer, engineer, projectmanager, administrator, fremdes und gesperrtes Konto).
+    beleg: >-
+      ops/reports reports/A41-BERICHT.md; supabase/migrations/20260822110427_2dd06fe8-b4fc-418f-bd4c-e37f52826a1d.sql:9-56;
+      supabase/schema/public-schema.sql:3340-3342, :3384, :1654-1676; .github/workflows/ci.yml:80-142; origin/ops/queue queue/A41.yaml
+  - datum: 2026-11-07
+    ereignis: >-
+      Befund Hauptsitzung (2026-11-07 08:30): PR 282 und PR 283 wurden am 2026-11-07 um 07:08 Z gemergt (main be712548). G07 und G15 stehen in dieser Zählung noch als „in PR“, G08 und G09 als offen; ihr Code liegt jetzt auf main, G10 (Engineer-Abnahme) bleibt offen. Ob G07, G08, G09 und G15 damit erfüllt sind, hängt von der Gate-Definition ab und wird nicht geraten; die Zählung ist im nächsten Gate-Nachtrag neu abzuleiten.
+    beleg: gh pr view 282 und 283 (MERGED 2026-11-07T07:08Z, Merge be712548)
+  - datum: 2026-11-07
+    ereignis: >-
+      A40 Owner-Entscheidungen 2026-11-07 ins Git (Quelle Planer-Auftrag A40): Neues Muss-Gate G24 „RLS-Invariante vor Publish belegt“
+      (RLS 25/25, keine Policy für public/anon, anon-Rechte nur auf der bekannten Liste mit 9 Tabellen oder leer); erfüllt laut RP-02
+      vom 2026-11-07 (Teile G und H geprüft), gültig bis 2026-11-14, Wiederholung höchstens 7 Tage vor dem Publish (P4, PP-11).
+      G20 Kiosk-Datenauftrag Weg B wird Folgepunkt nach dem Publish; Restrisiko bm@ befristet akzeptiert als RA-02 (Nachfrist 30 Tage
+      nach dem Publish). QS-01 Migration C′ Folgepunkt vor L8, kein Publish-Gate. R-04: zweite Vertrauensperson in der Rolle
+      Familie/Lebenspartner benannt, Name nur im Notfallumschlag, Umschlag und Zugang offen, ADR-0037-Abweichung kiosk@ offen (ZN-18).
+      PR 155 und PR 124 nach dem Publish, A07 nach der Restore-Probe A39. Gate-Zählung: 23 geführte Gates, davon 22 vor dem Publish
+      (7 erfüllt, 2 in PR, 1 extern, 12 offen), 1 Folgepunkt (G20); G23 Vorschlag A29, nicht gezählt. R-07/R-10 unverändert;
+      Support-Antwort zu den leeren Migrations-Statements offen, Owner wartet bis 2026-11-09.
+    beleg: >-
+      docs/PUBLISH-GATE-BERICHT.md (Nachtrag A40, Tabelle, YAML); docs/PUBLISH-PLAN.md (D6 bis D8, PP-11, muss_gates);
+      docs/RISIKOREGISTER.yaml und .md (RA-02, Hinweis R-04); docs/ZUGAENGE-UND-NOTFALLKONTO.md; docs/NOTFALL-HANDBUCH.md (Lücke 2);
+      docs/BACKLOG.md; origin/ops/queue queue/A40.yaml und queue/anlagen/RP-02-ergebnis-2026-11-07.md; Bericht reports/A40-BERICHT.md;
+      Tagesbündel PR 286
+  - datum: 2026-11-07
+    ereignis: >-
+      A38 (lesend, Agent) wertet RP-02 aus (Owner, 2026-11-07 05:44 bis 05:45 +01:00): anon hat auf 9 Tabellen (u. a. profiles, user_roles, audit_log)
+      SELECT/INSERT/UPDATE/DELETE, Schutz allein durch RLS (25/25 aktiv, Policies nur authenticated); Ursache Default-Privilegien, im Git-Snapshot identisch.
+      QS-01 Migration C nicht angewendet und zu eng (nur TRUNCATE/REFERENCES/TRIGGER); Vorschlag C′ vor L8 und lesendes Gate „RLS-Invariante“ (G24, da G23
+      durch A29 belegt). Befund avkk_people_directory: jedes viewer-Konto sieht Name, Rolle, Status aller Personen mit aktiver AVKK-Verantwortung ohne
+      Mandantenbezug. Vorabvergleich Repo/Live: 302/302 Spalten, 65/65 Policy-md5, 37/41 Funktions-md5 (4 aus 20260913150000 abweichend). A30-Nachtrag:
+      Plan Abschnitt 15 (Soll, Abnahme S3/S4, Wege W1/W2, pg_restore --list durch Owner), RP-02 als ausgeführt vermerkt. Nichts ausgeführt.
+    beleg: >-
+      ops/queue queue/anlagen/RP-02-ergebnis-2026-11-07.md (Teile E, G, H, J2); ops/reports reports/A38-BERICHT.md; supabase/schema/public-schema.sql:3860-3988,
+      :3994-4017; supabase/migrations/20260822110427_2dd06fe8-b4fc-418f-bd4c-e37f52826a1d.sql:9-56; docs/PLAN-RESTORE-PROBE-LOKAL.md Abschnitt 15,
+      docs/DATENAUFTRAG-RESTORE-PROBE.md Abschnitt 3
+  - datum: 2026-11-07
+    ereignis: >-
+      A31 (Notfallhandbuch, Agent): Abschnitt 6 klassifiziert und als Tabelle neu gefasst (12 alte, 5 neue Lücken; geschlossen 3, 16, 17; 6 brauchen
+      Beleg, 8 Owner-Entscheidung). Neu: N8a Rotation je Secret (Inventar S-01 bis S-15 ohne Werte, Lovable-Cloud-Schritte zu belegen), Abschnitt 3 als
+      Feldtabelle mit Verweis auf ZUGAENGE-UND-NOTFALLKONTO, Bezugsdokumente ADR-0042 und Restore-Probe. N3 und N5 mit RP-01, RP-02 und A37 abgeglichen:
+      erster Export (pg_dump Custom) liegt vor, ungeprüft; W4 laut Lovable-Doku ohne Point-in-Time; App-Backup ist kein W2. A22 in N8 nachgezogen.
+      bun install statt npm ci, Grundlage korrigiert (A19). Zeilenverweise in ZUGAENGE-UND-NOTFALLKONTO auf Abschnitte umgestellt. 15 Owner-Fragen.
+    beleg: docs/NOTFALL-HANDBUCH.md, docs/ZUGAENGE-UND-NOTFALLKONTO.md (Tagesbündel, PR 286); ops/reports reports/A31-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
+      A28 (Doku, Agent): Publish-Runbook docs/PUBLISH-PLAN.md (Phasen P0 bis P5, Muss-Gates, PP-01 bis PP-10, Go frühestens KW 48, nicht in
+      der Nacht zum 01.12.). Owner-Entscheidungen vom 2026-11-06 (Quelle Planer-Auftrag A28) abgelegt: D3 zod 3.25.76 befristet bis nach dem
+      Publish akzeptiert (RA-01, G13), D4 QS6-4 kein Serverbefund und Smoke-Test N4a Viewer-Netzwerkprüfung (G06), D5 types.ts +5 als
+      Go-Ausnahme (G02). R-07 und R-10 um Stand Support-Antwort 2026-11-06 ergänzt (EV-0008), Bewertung unverändert. Lese-Prompt um Frage 6
+      (Migrationen beim Publish oder Sync, 20260917182000) und Frage 7 (Erreichbarkeit, Selbstregistrierung) ergänzt. Gates: 6 erfüllt, 2 in
+      PR, 1 extern, 13 offen.
+    beleg: >-
+      docs/PUBLISH-PLAN.md, docs/RISIKOREGISTER.yaml (RA-01, R-07, R-10), docs/QS-06-VIEWER-ABRECHNUNG.md, docs/MERGE-CHECKLISTE-GOLDEN-GATE.md
+      (N4a), docs/LOVABLE-PUBLISH-PRUEFUNG.md, docs/PUBLISH-GATE-BERICHT.md (Nachtrag 2026-11-07); origin/ops/queue queue/A28.yaml
+  - datum: 2026-11-07
+    ereignis: >-
+      A33 (Code-PR, Agent): Draft-PR 288 mit npm run check:bundle (scripts/check-bundle-security.mjs): prüft Broker-Kennungen lovable-preview-auth:get, :set,
+      :remove, :result im Bundle und @tanstack/react-start im Lockfile ab 1.168.60; 11 Tests, nicht in der Pflicht-CI. Abweichung: Dateiname, weil
+      scripts/check-bundle.mjs bereits die Größenmessung der CI ist (Bestätigung des Owners offen). Lovable-Build-Version von TanStack bleibt zu belegen.
+    beleg: PR 288, Head 8674505a, CI 15/15; ops/reports reports/A33-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
+      A37 (lesend, Agent): Das App-Backup Format 2.0 erreicht Weg W2 nicht; von 25 Tabellen 5 vollständig, 7 teilweise, 13 nicht gesichert (u. a. audit_log,
+      profiles, user_roles, customer*, shared_*_projection); der Restore schreibt nicht in die Datenbank. Ein Datenbank-Dump bleibt nötig (RP-02, A30).
+      hourlyRate hat keine Datenbankspalte; das App-Backup ist die einzige Sicherung (Hinweis an A27 für G09).
+    beleg: ops/reports reports/A37-BERICHT.md (Matrix mit Belegen, u. a. src/lib/backup/restore.ts:158-197)
+  - datum: 2026-11-07
+    ereignis: >-
+      A30 (Plan Restore-Probe lokal, Agent): Supabase CLI lokal statt reinem postgres:17 (auth, GoTrue, PostgREST, Rollen, supabase_vault nötig); 9 Konten mit
+      Live-UUIDs neu anlegen, keine Produktiv-Hashes. RP-01-Objektzahlen stimmen mit supabase/schema/public-schema.sql überein (Indiz). RP-02 lesend, 13
+      Änderungsvorschläge (4 hoch); RP-03 als lesender Entwurf. Aufwand 14 bis 37 h, über der G03-Spanne 8 bis 32 h. Nichts ausgeführt.
+    beleg: docs/PLAN-RESTORE-PROBE-LOKAL.md, docs/DATENAUFTRAG-RESTORE-PROBE.md, ops/reports reports/A30-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
+      A29 (lesend, Agent): EV-0007 vorhanden und belegt; EV-0008 (Erstantwort Lovable-Support, Antwort offen) angelegt. QS-01: nur Migration A
+      (20261022090000) im Repository und live; B und C nur als Entwurf (ADR-0036). Fremdes Konto startet als viewer ohne Systemhaus, sieht keine Kundendaten.
+      Ob Lovable beim Publish Migrationen anwendet, ist nicht belegt (Frage für A28). 20260917182000 wäre bei Anwendung kein No-Op. Vorschlag G23.
+    beleg: docs/NACHWEISE.yaml EV-0008, ops/reports reports/A29-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
+      A22 (lesend, Agent): Löschen von Konten mit Historie scheitert an Fremdschlüsseln ohne ON DELETE (audit_log.actor_id und 16 weitere auf auth.users, 6 auf
+      profiles). Empfehlung Sperre mit Hinweis plus Archivieren mit Rollenentzug (5 bis 7 h, ohne Migration). Befund: has_permission prüft den Kontostatus nicht,
+      ein archiviertes Konto mit gültigem Token behält Rechte über RLS (Nachprüfung auf main 7dc4699d bestätigt). Entscheidung des Owners offen.
+    beleg: ops/reports reports/A22-BERICHT.md; supabase/migrations/20260921095742_bsf03b_performance_statement.sql (has_permission ohne Statusprüfung)
+  - datum: 2026-11-07
+    ereignis: >-
+      A26 Roadmap-Neubewertung: Gates 3 erfüllt, 2 in PR, 1 extern, 16 offen (main 7dc4699d). Tempo seit 2026-10-01 nachgemessen
+      (100 gemergte PRs, KW45 12 Fach/9 Doku), etwa 1 bis 1,3 Sprints pro Woche. Schätzung grob: Golden Gate 7/9/11 Sprints, 24/36/48 AT;
+      BSF 13/15/17 Sprints, 49/68/88 AT; keine Zusage.
+    beleg: reports/A26-BERICHT.md; GitHub-REST pulls?state=closed (2026-11-07); docs/PUBLISH-GATE-BERICHT.md Nachtrag 2026-11-07
+  - datum: 2026-11-07
+    ereignis: >-
+      A32 (Rücknahme eines Publish, Agent): Lovable dokumentiert kein Wiederherstellen einer früheren Veröffentlichung; Rücknahme nur per Revert im Verlauf und
+      erneutem Publish oder per Unpublish. Revert setzt nur Code zurück, keine Daten. Notfallhandbuch um N1a (Ablauf, 60-Minuten-Kriterium, Belegplan RB-01
+      bis RB-10) ergänzt, Merge-Checkliste Abschnitt 5 korrigiert. Ausnahme zu Grundregel 4 nur als Vorschlag; Rücknahme auf 1.69.0 enthielte den Broker
+      (Entscheidung des Owners offen). G05 bleibt offen bis zum Beleg.
+    beleg: docs.lovable.dev features/publish, features/projects/history, features/hosting, integrations/git-sync-overview, features/database-backups (abgerufen 2026-11-07); ops/reports reports/A32-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
+      A23 (Doku-Nachtrag 2026-11-06): Wiederanlaufpunkt auf 2026-11-07, Spanne der Warteschlange A01 bis A37. Überholte PR-Aussagen in CURRENT-STATUS
+      ergänzt statt gelöscht (275, 276, 280, 262, 264, 266, 267, 269, 272, 253, 278, 281, TDF 46 gemergt; 222, 226, 231, 233, 234 geschlossen).
+      Ereignisse 06.11. nachgetragen (PR 284, PR 278 mit Vorschauprüfung, Alt-PRs geschlossen, A22). EV-0007 für G19 mit Ergebnis teilweise
+      (Netzwerk-Reiter, Formularfelder, Link ungeprüft). GA-2 ohne veraltete Nummern.
+    beleg: gh pr view je PR am 2026-11-07, PR 278 Head 4aad97a8 CI 15/15, Owner-Screenshots im Chat (nicht in Git), ops/reports reports/A23-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
+      Statuskorrektur: PR 278 gemergt 2026-11-06T05:11Z (02cb3d28), PR 287 gemergt 2026-11-06T06:10Z (7dc4699d, CI 15/15, enthält K1 und K2), PR 285 als
+      enthalten geschlossen. bun audit auf main 7dc4699d: 54 Funde (24 hoch, 24 mittel, 6 niedrig), 0 kritisch, dompurify und shell-quote nicht gemeldet.
+      Gates G11 und G12 erfüllt; G19 (Vorschauprüfung PR 278) bleibt offen. CURRENT-STATUS und Publish-Gate-Bericht (Nachtrag) korrigiert.
+    beleg: PR 278, PR 285 (Kommentar beim Schließen), PR 287, bun audit am 2026-11-07 auf main 7dc4699d (Worktree, nur lesen)
+  - datum: 2026-11-06
+    ereignis: >-
+      A09: Kontenübersicht ohne Werte docs/ZUGAENGE-UND-NOTFALLKONTO.md (Entwurf; 10 Dienste, Mail-Aliase, Prüfliste ZN-01 bis ZN-18). Für keinen Dienst ist eine
+      zweite Person, ein Notfallkonto oder eine Wiederherstellungsadresse belegt. Risikoregister R-04 um Hinweis und Verweise ergänzt, Bewertung unverändert.
+      Warteschlange: alle bereiten Aufträge (A16 bis A21, A05, A08, A09) abgearbeitet.
+    beleg: docs/ZUGAENGE-UND-NOTFALLKONTO.md, docs/RISIKOREGISTER.md, docs/RISIKOREGISTER.yaml, ops/reports reports/A09-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
+      A08: ADR-0042 „RTO, RPO und Schutzklassen“ als Entwurf (Status Proposed, nichts beschlossen): je Schutzklasse drei Optionen, Bewertung N1 bis N10,
+      Empfehlung normal N-B, hoch H-B, kritisch K-A; Entscheidungsfelder D1 bis D10 offen. Widersprüche benannt (Probe-Umfang S1 bis S6 oder S4, Skala 1 bis 3
+      gegen 1 bis 5 im Risikoregister, Bezug R-10).
+    beleg: docs/ADR/0042-rto-rpo-schutzklassen.md, docs/ADR/README.md, ops/reports reports/A08-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
+      A21: Publish-Gate-Bericht (nur lesen, keine Freigabe). 22 Gates: 1 erfüllt (TD-01, Tracker widersprüchlich), 4 in PR (282, 283, 285, 287), 1 extern
+      (TanStack im veröffentlichten Stand 1.69.0), 16 offen. Kritischer Pfad R-14 (Umfang, zweite Umgebung, Datenexport, Restore-Probe). Schätzung bis Tag
+      v1.70.0: 1 bis 6 Wochen, wahrscheinlich 3. Widersprüche: CHANGELOG 1.70.0 gegen F-QS6-ENG-01; Standard Wiederherstellbarkeit :59 (S1 bis S6) gegen :194 (mindestens S4).
+    beleg: docs/PUBLISH-GATE-BERICHT.md, ops/reports reports/A21-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
+      A20: Sammelbewertung bun audit (main 02cb3d28: 60 Funde; mit PR 287: 54, 0 kritisch). Nur zod@3.25.76 (GHSA-mrhx-c7xc-m3w5, hoch) liegt im
+      ausgelieferten Code (Server, nach Anmeldung); Klasse vor Publish: dokumentierte Entscheidung (Risikoakzeptanz oder Migration auf zod 4). vite und
+      launch-editor nach Publish per overrides; 38 Funde Dev-only beobachten, 7 ignorieren (nur Lint).
+    beleg: docs/BERICHT-AUDIT-SAMMELBEWERTUNG.md, ops/reports reports/A20-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
+      A05: Plan Engineer-Abnahme QS-06 in docs/QS-06-VIEWER-ABRECHNUNG.md Abschnitt 6 (Prüfpunkte, E2E-Lücken, Testfälle QS6-E2E-01 bis -11, Handliste
+      QS6-ENG-01 bis -14; Aufwand 8 bis 12 h). Neue Befunde: F-QS6-ENG-01 (Tätigkeitsdialog zeigt dem Engineer Stundensatz und Betrag, kein billing.view-Gate,
+      ActivityDialog.tsx:33, :134-146) und F-QS6-ENG-02 (JSON-Backup enthält hourlyRate für jede Rolle). Umsetzung nach Freigabe.
+    beleg: docs/QS-06-VIEWER-ABRECHNUNG.md, src/components/dashboard/dialogs/ActivityDialog.tsx, ops/reports reports/A05-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
+      A19: Notfallhandbuch (docs/NOTFALL-HANDBUCH.md) und Standard Lovable-Grenzen (docs/standards/STANDARD-LOVABLE-GRENZEN.md) als Entwurf abgelegt, Wortlaut
+      unverändert, nur Prettier-Formatierung; keine Zugangsdaten. ARTEFAKTE.yaml umgestellt. Abweichungen im Handbuch gemeldet, nicht korrigiert: Grundlage heißt
+      docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md, N2/N6/N10 nennen package-lock.json und npm ci (Repo nutzt bun.lock). A18 (Analyse Ladeweg Demodaten):
+      Empfehlung Variante A (Kiosk-Datensatz aus eingebautem Generator) mit Paket 2b nach dem Publish.
+    beleg: docs/NOTFALL-HANDBUCH.md, docs/standards/STANDARD-LOVABLE-GRENZEN.md, docs/ARTEFAKTE.yaml, ops/reports reports/A18-BERICHT.md, reports/A19-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
+      A17: Weg A für das Kiosk-Konto ist nicht ausführbar (audit_log.actor_id ohne ON DELETE, handle_new_user schreibt auth.bootstrap; bestätigt). Datenauftrag
+      auf Weg B umgestellt (anzeige@ mit Rolle kiosk anlegen, kiosk@ und bm@ archivieren; Freigaben offen). Befunde: F-KK-01 ist eine Rechteablehnung,
+      Kennzeichnung aus URL-Parameter; bm@ hat sehr wahrscheinlich Rolle kiosk (Auswahlfeld der Benutzerliste ohne Option kiosk); Rückabwicklung von
+      „Kiosk-Konto anlegen“ scheitert still. EV-0006 als Entwurf.
+    beleg: docs/DATENAUFTRAG-KIOSK-KONTO.md, docs/NACHWEISE.yaml, ops/reports reports/A17-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
+      A16: K1 und K2 per overrides behoben, dompurify 3.4.17 (PR 285) und shell-quote 1.12.0 (PR 287, enthält 285), beide Draft mit CI 15/15. bun audit 60 → 54
+      Funde, 0 kritisch. Lokale E2E-Starttests (3) auch auf main rot.
+    beleg: PR 285, PR 287, ops/reports reports/A16-BERICHT.md
+  - datum: 2026-11-06
+    ereignis: >-
+      PR-Bestand bewertet (nur lesen, Grundlage origin/main 34f20a3): #226, #231, #233, #234 und #222 inhaltlich auf main (Ersatz-PRs 262, 264, 266, 267,
+      269, 272, 273), Empfehlung ersetzt und schließen; #278 mergen nach Vorschau-Prüfung (Plugin sysing:ensure-css-config auf main vorhanden);
+      #155 und #124 Entscheidung des Owners. Keine PRs geschlossen oder kommentiert.
+    beleg: docs/BERICHT-PR-BESTAND-2026-11-06.md, ops/reports reports/PR-BESTAND-BERICHT.md
   - datum: 2026-11-07
     ereignis: >-
       A27 (PR 283, Draft): main 7dc4699d in fix/qs6-5-export-billing-view gemergt (Konflikt CURRENT-STATUS gelöst, PR 278 und 287 gemergt). F-QS6-ENG-01 (G08):
