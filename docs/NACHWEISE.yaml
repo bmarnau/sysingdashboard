@@ -2,7 +2,7 @@
 # Ein Eintrag je Nachweis: was geprüft wurde, womit, mit welchem Ergebnis und welchen Einschränkungen.
 # Konten nur mit lokalem Teil (zum Beispiel "alexa@"), keine vollständigen E-Mail-Adressen, keine Zugangsdaten.
 # EV-0001 bis EV-0004 am 2026-11-05 aus dem Entwurf des Owners übernommen (Auftrag A04) und gegen GitHub geprüft.
-stand: 2026-11-06
+stand: 2026-11-07
 nachweise:
   - id: EV-0001
     titel: L2 U7 QS-06 billing.view, Code gemergt
@@ -97,3 +97,32 @@ nachweise:
       - Stand 2026-11-05 nur Beobachtungen des Owners ohne Screenshot; Konto der Beobachtung nicht belegt.
     befunde: [F-KK-01]
     beleg: offen
+  - id: EV-0007
+    titel: PR 278 react-pdf-Stylesheets, Prüfung in der Lovable-Vorschau (G19)
+    datum: 2026-11-06
+    umgebung: Lovable-Vorschau
+    version: PR 278 Head 4aad97a8, gemergt als main 02cb3d28
+    bezug: [G19, PR 278, Vorschau-Absturz react-pdf]
+    pruefer: Owner
+    art: manuelle Oberflächenprüfung
+    ergebnisse:
+      - pruefpunkt: Vorschau lädt
+        ergebnis: bestanden
+      - pruefpunkt: Viewer zeigt das PDF
+        ergebnis: bestanden
+      - pruefpunkt: Text markierbar
+        ergebnis: bestanden
+      - pruefpunkt: keine Meldung devSourcemap
+        ergebnis: bestanden
+      - pruefpunkt: Netzwerk-Reiter (Stylesheets aus /vendor/react-pdf/)
+        ergebnis: offen, nicht geprüft
+      - pruefpunkt: Formularfelder
+        ergebnis: offen, nicht geprüft
+      - pruefpunkt: Link klickbar
+        ergebnis: offen, nicht geprüft
+    ergebnis: teilweise
+    einschraenkungen:
+      - Uhrzeit ca. 05:45 bis 06:00 Berlin; Angaben laut Planer-Auftrag A23, Screenshots liegen nur im Chat, nicht in Git.
+      - Der Vorschau-Stand ist nicht per Commit-SHA im Protokoll festgehalten (Prüfschritt 1 in docs/BERICHT-PR-BESTAND-2026-11-06.md).
+      - Plugin sysing:ensure-css-config bleibt bis zu einem eigenen Folge-PR.
+    beleg: Owner-Screenshots im Chat am 2026-11-06 (nicht in Git); https://github.com/bmarnau/sysingdashboard/pull/278, Head 4aad97a8 CI 15/15, Merge 02cb3d28 am 2026-11-06T05:11Z

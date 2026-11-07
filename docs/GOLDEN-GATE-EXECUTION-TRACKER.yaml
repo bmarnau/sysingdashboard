@@ -674,6 +674,13 @@ risiken:
 fortschritt:
   - datum: 2026-11-07
     ereignis: >-
+      A23 (Doku-Nachtrag 2026-11-06): Wiederanlaufpunkt auf 2026-11-07, Spanne der Warteschlange A01 bis A37. Überholte PR-Aussagen in CURRENT-STATUS
+      ergänzt statt gelöscht (275, 276, 280, 262, 264, 266, 267, 269, 272, 253, 278, 281, TDF 46 gemergt; 222, 226, 231, 233, 234 geschlossen).
+      Ereignisse 06.11. nachgetragen (PR 284, PR 278 mit Vorschauprüfung, Alt-PRs geschlossen, A22). EV-0007 für G19 mit Ergebnis teilweise
+      (Netzwerk-Reiter, Formularfelder, Link ungeprüft). GA-2 ohne veraltete Nummern.
+    beleg: gh pr view je PR am 2026-11-07, PR 278 Head 4aad97a8 CI 15/15, Owner-Screenshots im Chat (nicht in Git), ops/reports reports/A23-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
       Statuskorrektur: PR 278 gemergt 2026-11-06T05:11Z (02cb3d28), PR 287 gemergt 2026-11-06T06:10Z (7dc4699d, CI 15/15, enthält K1 und K2), PR 285 als
       enthalten geschlossen. bun audit auf main 7dc4699d: 54 Funde (24 hoch, 24 mittel, 6 niedrig), 0 kritisch, dompurify und shell-quote nicht gemeldet.
       Gates G11 und G12 erfüllt; G19 (Vorschauprüfung PR 278) bleibt offen. CURRENT-STATUS und Publish-Gate-Bericht (Nachtrag) korrigiert.

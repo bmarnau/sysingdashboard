@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-07 · Dashboard-Version 1.70.0
 
+## 2026-11-07 — Nachtrag zum 6. November
+
+Die Statusseite nannte einige Pull Requests noch als offen, die längst gemergt oder geschlossen sind. Die alten Angaben bleiben stehen und tragen jetzt einen Vermerk. Die PDF-Korrektur ist in der Lovable-Vorschau teilweise geprüft: Das PDF lädt und der Text ist markierbar. Formularfelder, Links und die geladenen Dateien sind noch nicht geprüft.
+
 ## 2026-11-07 — Statuskorrektur Sicherheitsfunde und PDF-Korrektur
 
 Die Behebung der zwei kritischen Paketfunde und die PDF-Korrektur (#278) sind bereits am 06.11. gemergt; die Doku nannte sie noch als offen. Eine neue Paketprüfung auf dem aktuellen Stand meldet keinen kritischen Fund mehr. Offen bleibt die Prüfung der PDF-Korrektur in der Lovable-Vorschau.
