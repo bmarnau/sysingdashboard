@@ -1,4 +1,4 @@
-stand: 2026-11-07 07:30
+stand: 2026-11-07 07:50
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 18
@@ -257,7 +257,7 @@ auftraege:
   titel: 'RP-02 auswerten: anon-Tabellenrechte, QS-01 Migration C, Schema-Soll für die Probe'
   art: lesen
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A39
   titel: 'Restore-Probe lokal im Docker-Container ausführen (S1 bis S4, EV-0004)'
