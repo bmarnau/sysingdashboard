@@ -1,8 +1,8 @@
-stand: 2026-11-06T06:57+01:00
-laufender_auftrag: keiner
+stand: 2026-11-07T04:58+01:00
+laufender_auftrag: {id: A23, start: "2026-11-07T04:58+01:00"}
 letzter_auftrag: {id: A09, status: erledigt, bericht: reports/A09-BERICHT.md}
-naechste_pruefung: "Warteschlange leer (Planer-Stand 2026-11-06 05:15); A07 wartet auf Entscheidung; neue Aufträge vom Planer"
-betrieb: normal, leerlauf
-offene_prs: {"282": "A06, Draft", "283": "A15, Draft, enthält 282", "285": "A16 K1, Draft, CI 15/15", "287": "A16 K2, Draft, enthält 285, CI 15/15", "286": "Doku-Bündel 2026-11-06 (A05, A08, A09, A16-A21, PR-Bestand), Draft"}
-erledigt_heute: [QUEUE-UPDATE-2, PR-BESTAND, A16, A17, A18, A19, A05, A20, A21, A08, A09]
+naechste_pruefung: "nach A23: nächster bereiter Auftrag laut queue/INDEX.yaml (Planer-Stand 2026-11-07 05:30); Sitzungsende ca. 07:15"
+betrieb: normal; Pause vom 2026-11-06 beendet, A25 vom Planer verworfen
+offene_prs: {"286": "Doku-Bündel 2026-11-06, Draft", "283": "A15 QS6-5, Draft, enthält 282", "282": "A06 L2-12, Draft", "155": "Kiosk-Schnittstellendokument, offen, Entscheidung", "124": "Wallboard 0.7.1, Draft, Entscheidung"}
+erledigt_heute: []
 fehler: []
