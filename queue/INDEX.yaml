@@ -1,4 +1,4 @@
-stand: 2026-11-07 06:30
+stand: 2026-11-07 06:42
 planer: Claude (Planer-Session)
 mindestbestand_bereit: 3
 hoechstbestand_offen: 18
@@ -206,20 +206,20 @@ auftraege:
   titel: 'Plan: lokale Restore-Probe im Docker-Container (R-14, G03, Minimalprobe S1 bis S4)'
   art: plan-dann-pr
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 
 - id: A37
   titel: 'App-Backup (Format 2.0): Deckt es die Datenbanktabellen ab? (Weg W2, R-14)'
   art: lesen
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A33
   titel: 'Skript: Bundle-Prüfung nach dem Publish (G22, G14)'
   art: code-pr
   gate: vor Publish
-  status: bereit
+  status: erledigt
   abhaengig_von: []
 - id: A31
   titel: 'Notfallhandbuch: offene Lücken schließen (G04, REST-01, REST-05)'
