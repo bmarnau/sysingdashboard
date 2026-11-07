@@ -84,7 +84,7 @@ function parseChangelog(src: string): ChangelogEntry[] {
 export const CHANGELOG: ChangelogEntry[] = parseChangelog(changelogSource);
 
 /** Manuelle Version des Handbuchs. Bei größeren Inhaltsänderungen hochzählen. */
-export const DOCUMENTATION_VERSION = "1.25.0";
+export const DOCUMENTATION_VERSION = "1.26.0";
 /** Aktuelle Dashboard-Version. Wird zentral aus dem obersten CHANGELOG-Eintrag übernommen. */
 export const DASHBOARD_VERSION = CURRENT_DASHBOARD_VERSION;
 /** Anzeigename des Dashboards für Handbuch-Footer. */
@@ -473,6 +473,85 @@ Hilft das nicht, Uhrzeit, Anzeige im Wortlaut und angemeldetes Konto notieren un
 ## Externe Integrationen
 KIOSK-02 enthält weiterhin keine produktive Microsoft-Graph-, SharePoint-, Exchange-, PRTG-, MCP- oder Agenten-Anbindung. Die UI arbeitet ausschließlich über die providerneutrale \`KioskDataProvider\`-Grenze.`,
     relatedTopics: ["project-controlling", "demo-data", "system-status"],
+  },
+  {
+    id: "management-cockpit",
+    title: "Managementcockpit — Handlungsbedarf und Bewertungskriterien",
+    category: "Fachmodell",
+    route: "/managementcockpit",
+    component: "ManagementCockpitView",
+    keywords: [
+      "Managementcockpit",
+      "Cockpit",
+      "Handlungsbedarf",
+      "Schweregrad",
+      "Risikoschwelle",
+      "Risikobewertung",
+      "Score",
+      "Teilweise ermittelt",
+      "Nicht ermittelbar",
+      "L2",
+    ],
+    lastUpdated: "2026-11-05",
+    content: `## Zweck
+Das Managementcockpit (\`/managementcockpit\`) beantwortet eine Frage: **Bei welchem Kunden oder Projekt besteht Handlungsbedarf?** Die Ansicht ist schreibgeschützt und zeigt keine Beträge. Jeder Grund verlinkt in die zuständige Fachansicht.
+
+## Zugang und Kundenkreis
+- Der Menüpunkt erscheint mit \`avkk.management.view\` oder \`project.controlling.view\`; der Server verlangt zusätzlich \`dashboard.view\`.
+- Das Cockpit zeigt nur Kunden aus „Meine Kunden“, auch für Systemadministratoren (ADR-0041).
+- Stichtag ist das heutige Datum in Europe/Berlin.
+
+## Gründe für Handlungsbedarf
+| Grund | Regel | Link |
+| --- | --- | --- |
+| Überfällige offene Arbeitspakete | Fälligkeit vor dem Stichtag, Arbeitspaket nicht erledigt | Arbeitssicht |
+| Ohne Verantwortlichen | offenes Arbeitspaket ohne verantwortliche Person | Arbeitssicht |
+| Hohe oder kritische AVKK-Folge | Aufgaben, deren höchster Schweregrad mindestens „hoch“ ist (siehe unten) | AVKK Management |
+| Controlling-Lücke | Tätigkeit ohne Arbeitspaket oder mit unbekannter Kategorie | Projektcontrolling |
+| Veröffentlichungsstand prüfen | letzte Veröffentlichung des Projekts liegt mehr als 7 Tage zurück; die Zahl nennt die Tage | Projektcontrolling |
+
+Einträge mit den meisten Gründen stehen oben, danach alphabetisch.
+
+## Datenzustände
+- **Verfügbar** und **Leer**: Die Zahl ist vollständig ermittelt.
+- **Teilweise**: Die Zahl erscheint mit dem Hinweis „Teilweise ermittelt, Quelle unvollständig“. Eine 0 steht nie ohne diesen Hinweis.
+- **Unbekannt** oder **Nicht verfügbar**: Statt einer Zahl steht „Nicht ermittelbar“. Das Cockpit zeigt nie 0 statt unbekannt.
+- **Nicht berechtigt**: Die Quelle ist für Ihr Konto gesperrt und wird ausgeblendet.
+
+## Bewertungskriterien 1: AVKK-Schweregrade im Cockpit
+**Schweregrad.** Jede Konsequenz einer AVKK-Aufgabe hat einen Schweregrad aus dem Referenzkatalog: gering (Rang 1), mittel (2), hoch (3), kritisch (4). Maßgeblich für die Aufgabe ist der höchste Rang ihrer gültigen Konsequenzen.
+
+**Schwellen.** Ab Rang 3 gilt eine Folge als „hoch“, ab Rang 4 als „kritisch“. Das Cockpit zählt je Kunde die Aufgaben mit Rang 3 oder 4.
+
+**Risikoschwelle (Gefährdung).** Eine Aufgabe ist gefährdet, wenn sie eine gültige Verantwortung hat und mindestens eine Kompetenzdimension „nicht vorhanden“ oder mindestens zwei Dimensionen „teilweise vorhanden“ sind (Einstellung \`avkk.risk_threshold\`, Standard 1 und 2). Ohne gültige Verantwortung gilt eine Aufgabe nicht als gefährdet; sie erscheint dann unter „Verantwortung fehlt“.
+
+**Handlungsbedarf „Kritisch“** in der Registerkarte „AVKK Management“: Schweregrad kritisch **und** gefährdet oder überfällig.
+
+**Beispiel.** Kunde Muster hat drei AVKK-Aufgaben:
+
+| Aufgabe | Konsequenzen | höchster Rang | Kompetenzen | gefährdet? |
+| --- | --- | --- | --- | --- |
+| A | Kunde: kritisch, Projekt: mittel | 4 (kritisch) | eine Dimension „nicht vorhanden“ | ja (1 ≥ 1) |
+| B | Projekt: hoch | 3 (hoch) | eine Dimension „teilweise“ | nein (1 < 2) |
+| C | Kunde: mittel | 2 (mittel) | alle vorhanden | nein |
+
+Ergebnis: Das Cockpit zeigt bei Kunde Muster „Hohe oder kritische AVKK-Folge: 2“ (A und B, Rang ≥ 3). C zählt nicht. In „AVKK Management“ steht A unter „Kritisch“ (Rang 4 und gefährdet), B unter „Hohe Projektkonsequenz“, aber nicht unter „Gefährdet“.
+
+## Bewertungskriterien 2: Risikobewertung des Projekts
+Die Projektrisiken (Risikoregister \`docs/RISIKOREGISTER.yaml\`) werden mit zwei Werten von 1 bis 5 bewertet:
+- **W** Eintrittswahrscheinlichkeit: 1 unwahrscheinlich bis 5 praktisch sicher
+- **A** Auswirkung: 1 gering bis 5 (Golden Gate oder Datenschutz gefährdet)
+
+**Score = W × A.** Stufen: **hoch** ab 15, **mittel** 8 bis 14, **niedrig** bis 7.
+
+**Beispiel R-07** (Herkunft des veröffentlichten Stands unklar): W = 3, A = 5, Score = 3 × 5 = 15. 15 erreicht die Schwelle „hoch“, also Stufe **hoch**. Bei W = 2 ergäbe sich 2 × 5 = 10, also mittel.
+
+Die Bewertung ist eine Einschätzung und gilt mit der Bestätigung des Owners. Diese Projektrisiken sind keine Daten des Cockpits; das Cockpit bewertet Kunden und Projekte nur nach den oben genannten Gründen.
+
+## Grenzen
+- Keine Beträge, keine personenbezogenen Ranglisten oder Leistungsbewertungen.
+- Die Links übergeben noch keinen Kunden- oder Zeitraumfilter.`,
+    relatedTopics: ["avkk-management", "rbac-rollen-berechtigungen", "meine-kunden"],
   },
   {
     id: "avkk-management",
@@ -959,7 +1038,7 @@ Anlegen, Bearbeiten und Löschen werden nur angeboten, wenn die Rolle die passen
     keywords: ["Tätigkeit", "Buchung", "Stunden", "billable", "Beschreibung"],
     lastUpdated: "2026-06-13",
     content: `## Erfassen
-Über "+ Neu → Tätigkeit" wird eine Buchung mit Datum, Uhrzeit (optional), Dauer in Stunden, Stundensatz und Beschreibung erfasst.
+Über "+ Neu → Tätigkeit" wird eine Buchung mit Datum, Uhrzeit (optional), Dauer in Stunden, Stundensatz (nur mit \`billing.view\` sichtbar) und Beschreibung erfasst.
 
 ## Billable markieren
 Aktivierst du "abrechenbar", fließt die Buchung in die Billable-Quote und in den Umsatz. Nicht-abrechenbare Stunden zählen weiterhin zur Auslastung.
@@ -1846,9 +1925,12 @@ Ohne \`billing.view\` (Systemingenieur, Kunde, Viewer, Kiosk) gilt:
 - Die Kachel **Umsatz gesamt** auf der Startseite fehlt.
 - Der Reiter **Abrechnung** fehlt.
 - In **Tätigkeiten** fehlen Stundensatz, Betrag, Abrechnungsstatus und der Filter nach Abrechnungsstatus; Stunden bleiben sichtbar.
+- Im Dialog **Tätigkeit bearbeiten** fehlen die Felder Stundensatz und Betrag. Ein vorhandener Stundensatz bleibt beim Speichern unverändert; „Abrechenbar“ und Abrechnungsstatus bleiben bedienbar.
 - Im **Projektdetail** und im **Projektbericht** erscheinen keine Beträge.
 
-Das Managementcockpit zeigt unabhängig davon keine Beträge. Die Ausblendung wirkt in der Oberfläche; die zusätzliche serverseitige Absicherung der Beträge ist in Arbeit (QS6-4).
+Das Managementcockpit zeigt unabhängig davon keine Beträge. Die Server-Lesepfade liefern ohne \`billing.view\` keine Beträge (Prüfung QS6-4).
+
+**Exporte (QS6-5):** Ohne \`billing.view\` enthalten CSV, JSON, Azure-Table und PDF aus „Export…“ keine Stundensätze, Beträge oder Summen; die Spalten fehlen ganz, Stunden und Abrechenbarkeit bleiben. „Import / Export…“ verweigert ohne das Recht den Gesamtexport sowie die Bereiche Tätigkeiten, Zeitbuchungen und Leistungsnachweise, weil diese Datei je Tätigkeit einen Stundensatz verlangt. Das **JSON-Backup** aus „Export…“ enthält ohne das Recht keinen Stundensatz. Die automatische Sicherung (ZIP, Backup-Dialog nur mit \`backup.restore\`) enthält Stundensätze unabhängig von der angemeldeten Rolle vollständig, weil sie die einzige Sicherung dieses Werts ist.
 
 ## Schutz vor Self-Lockout
 Der letzte aktive System-Administrator kann nicht degradiert, deaktiviert oder gelöscht werden. Rollenänderungen bleiben an \`roles.manage\` gebunden.

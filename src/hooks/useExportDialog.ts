@@ -14,6 +14,7 @@
  * `src/components/ExportDialog.tsx` bleibt damit reine Präsentation.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePermission } from "@/hooks/usePermission";
 import type { Activity, Engineer, Project, WorkPackage } from "@/lib/dashboard-data";
 import {
   createExportDTO,
@@ -121,6 +122,9 @@ export function useExportDialog({
 
   const fileName = fileNameOverride ?? autoFileName;
 
+  /** QS6-5: Sätze, Beträge und Summen nur mit `billing.view` im Export. */
+  const canViewBilling = usePermission("billing.view");
+
   const config: ExportConfiguration = useMemo(
     () => ({
       format,
@@ -139,8 +143,11 @@ export function useExportDialog({
   );
 
   const exportData = useMemo(
-    () => createExportDTO({ projects, workPackages, activities, engineer }, config),
-    [projects, workPackages, activities, engineer, config],
+    () =>
+      createExportDTO({ projects, workPackages, activities, engineer }, config, {
+        includeBilling: canViewBilling,
+      }),
+    [projects, workPackages, activities, engineer, config, canViewBilling],
   );
 
   const hasData = exportData.summary.activities > 0;

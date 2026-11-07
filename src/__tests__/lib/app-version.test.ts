@@ -11,9 +11,9 @@ import {
 describe("app version", () => {
   it("uses the newest CHANGELOG entry as current release", () => {
     expect(DASHBOARD_VERSION).toBe("1.70.0");
-    expect(DASHBOARD_RELEASE_DATE).toBe("2026-11-04");
-    expect(DASHBOARD_RELEASE_DATE_DE).toBe("04.11.2026");
-    expect(DASHBOARD_VERSION_LABEL).toBe("Version 1.70.0 · 04.11.2026");
+    expect(DASHBOARD_RELEASE_DATE).toBe("2026-11-05");
+    expect(DASHBOARD_RELEASE_DATE_DE).toBe("05.11.2026");
+    expect(DASHBOARD_VERSION_LABEL).toBe("Version 1.70.0 · 05.11.2026");
   });
 
   it("parses and formats a release header deterministically", () => {

@@ -32,7 +32,7 @@ flowchart TD
   G -- ja --> H[Support-Fall, Publish No-Go]
   G -- nein --> I[Publish]
   I --> J[Test auf veröffentlichter App: Bernd, Petra, Alex, Alexa]
-  J --> K[Tag v1.69.0 / Release]
+  J --> K[Tag v1.70.0 / Release]
 ```
 
 ## 4 Test nach dem Publish (veröffentlichte App)

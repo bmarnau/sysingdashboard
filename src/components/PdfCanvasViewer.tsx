@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
 import { Button } from "@/components/ui/button";
+import { ensureReactPdfStylesheets } from "@/lib/react-pdf-styles";
 import { Loader2, Maximize2, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
 
 // pdf.js Worker als Vite-Asset bundeln (kein CDN, offline-fähig).
@@ -28,6 +27,10 @@ export function PdfCanvasViewer({ blob }: PdfCanvasViewerProps) {
 
   // Stabile Referenz für <Document file=...>, sonst lädt es bei jedem Render neu.
   const file = useMemo(() => blob ?? null, [blob]);
+
+  useEffect(() => {
+    ensureReactPdfStylesheets();
+  }, []);
 
   useEffect(() => {
     setError(null);

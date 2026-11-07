@@ -44,6 +44,14 @@ import { logger } from "@/lib/logger";
 /* ------------------------------- Optionen ------------------------------- */
 
 export interface ExportOptions {
+  /**
+   * QS6-5: `can(user, "billing.view")` des aktiven Kontos (Pflicht). Ohne Recht
+   * verweigert der Export alle Bereiche mit Stundensätzen oder Beträgen
+   * (Gesamtexport, Tätigkeiten, Zeitbuchungen, Leistungsnachweise). Das Schema
+   * verlangt `hourlyRate` je Tätigkeit; eine Datei ohne Satz wäre nicht
+   * wieder importierbar.
+   */
+  includeBilling: boolean;
   /** Wenn gesetzt, wird `exportedBy` aus dem aktiven Benutzer abgeleitet. */
   exportedBy?: string;
   includeUsers?: boolean;
@@ -62,7 +70,9 @@ export interface ExportOptions {
   performanceStatements?: PerformanceStatementBackupPayload;
 }
 
-type ResolvedOptions = Required<Omit<ExportOptions, "avkk" | "performanceStatements">>;
+type ResolvedOptions = Required<
+  Omit<ExportOptions, "avkk" | "performanceStatements" | "includeBilling">
+>;
 
 const DEFAULT_OPTIONS: ResolvedOptions = {
   exportedBy: "system",
@@ -71,6 +81,24 @@ const DEFAULT_OPTIONS: ResolvedOptions = {
   includeTimeEntries: true,
   includeManualMeta: true,
 };
+
+/** Bereiche des Teil-Exports, die Stundensätze oder Beträge enthalten (QS6-5). */
+export const BILLING_SCOPES: readonly ExportScope[] = [
+  "activities",
+  "timeentries",
+  "performance-statements",
+];
+
+export const BILLING_REQUIRED_MESSAGE =
+  "Dieser Export enthält Stundensätze und Beträge und erfordert das Recht „Abrechnungsdaten ansehen“ (billing.view).";
+
+/** Zentrale Rechteprüfung am Datenaufbau (QS6-5). */
+function assertBilling(options: ExportOptions, scope: ExportScope | "full"): void {
+  if (options.includeBilling) return;
+  if (scope === "full" || BILLING_SCOPES.includes(scope)) {
+    throw new Error(BILLING_REQUIRED_MESSAGE);
+  }
+}
 
 /* ----------------------------- Hilfsfunktionen --------------------------- */
 
@@ -294,7 +322,8 @@ function finalizeExport(
 
 export const JsonExportService = {
   /** Voll-Export aller Bereiche. */
-  exportFullJson(options: ExportOptions = {}): JsonExportResult {
+  exportFullJson(options: ExportOptions): JsonExportResult {
+    assertBilling(options, "full");
     const opts = { ...DEFAULT_OPTIONS, ...options };
     const { projects, workPackages, activities } = loadDashboardPersisted();
     const { customers, lookup } = buildCustomers(projects);
@@ -322,7 +351,8 @@ export const JsonExportService = {
   },
 
   /** Teil-Export einer einzelnen Domäne. */
-  exportPartialJson(scope: ExportScope, options: ExportOptions = {}): JsonExportResult {
+  exportPartialJson(scope: ExportScope, options: ExportOptions): JsonExportResult {
+    assertBilling(options, scope);
     const opts = { ...DEFAULT_OPTIONS, ...options };
     const { projects, workPackages, activities } = loadDashboardPersisted();
     const { customers, lookup } = buildCustomers(projects);

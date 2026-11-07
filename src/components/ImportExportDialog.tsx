@@ -86,10 +86,13 @@ export function ImportExportDialog({
   const currentUser = useCurrentUser();
   const canViewAvkk = usePermission("avkk.view");
   const canManagePerformanceStatements = usePermission("performance.statement.manage");
+  const canViewBilling = usePermission("billing.view");
   const [tab, setTab] = useState<ImportExportTab>(initialTab);
   const [scope, setScope] = useState<ScopeChoice>("full");
   const [opts, setOpts] = useState<
-    Required<Omit<ExportOptions, "exportedBy" | "avkk" | "performanceStatements">>
+    Required<
+      Omit<ExportOptions, "exportedBy" | "avkk" | "performanceStatements" | "includeBilling">
+    >
   >({
     includeUsers: true,
     includeSettings: true,
@@ -156,7 +159,14 @@ export function ImportExportDialog({
       loadAvkk(),
       loadPerformanceStatements(),
     ]);
-    const options = { ...opts, exportedBy, avkk, performanceStatements };
+    // QS6-5: Rechteprüfung zentral im JsonExportService.
+    const options = {
+      ...opts,
+      includeBilling: canViewBilling,
+      exportedBy,
+      avkk,
+      performanceStatements,
+    };
     return scope === "full"
       ? JsonExportService.exportFullJson(options)
       : JsonExportService.exportPartialJson(scope, options);

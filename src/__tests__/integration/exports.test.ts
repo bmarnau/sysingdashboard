@@ -37,6 +37,7 @@ describe("Export-Pipeline (Round-Trip)", () => {
     const dto = createExportDTO(
       { projects: [project], workPackages: [wp], activities, engineer: makeEngineer() },
       config,
+      { includeBilling: true },
     );
     const roundTrip = JSON.parse(JSON.stringify(dto));
 
@@ -50,6 +51,7 @@ describe("Export-Pipeline (Round-Trip)", () => {
     const dto = createExportDTO(
       { projects: [], workPackages: [], activities: [], engineer: makeEngineer() },
       config,
+      { includeBilling: true },
     );
     expect(dto.summary.activities).toBe(0);
     expect(dto.groups).toEqual([]);

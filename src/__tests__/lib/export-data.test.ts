@@ -95,6 +95,7 @@ describe("createExportDTO", () => {
     const dto = createExportDTO(
       { projects: [project], workPackages: [wp], activities, engineer: makeEngineer() },
       baseConfig(),
+      { includeBilling: true },
     );
 
     expect(dto.summary.totalHours).toBe(6);

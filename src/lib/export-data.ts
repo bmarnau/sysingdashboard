@@ -35,7 +35,8 @@ export interface ExportSummary {
   totalHours: number;
   billableHours: number;
   nonBillableHours: number;
-  totalAmount: number;
+  /** Nur mit `billing.view` (QS-06/QS6-5); sonst fehlt das Feld. */
+  totalAmount?: number;
 }
 
 export interface ExportGroupNode {
@@ -44,13 +45,19 @@ export interface ExportGroupNode {
   level: "customer" | "project" | "workpackage" | "activity" | "employee" | "month";
   hours: number;
   billableHours: number;
-  amount: number;
+  /** Nur mit `billing.view` (QS-06/QS6-5); sonst fehlt das Feld. */
+  amount?: number;
   children: ExportGroupNode[];
   /** Aktivitäts-IDs, die diesem Knoten direkt zugeordnet sind (für Leafs). */
   activityIds?: string[];
 }
 
 export interface ExportData {
+  /**
+   * QS6-5: `true` nur mit `billing.view`. Ohne Recht enthält der Export weder
+   * Stundensätze noch Beträge oder Summen; alle Renderer richten sich danach.
+   */
+  includeBilling: boolean;
   configuration: ExportConfiguration;
   summary: ExportSummary;
   groups: ExportGroupNode[];
@@ -300,7 +307,7 @@ export function buildExportGroups(
 
       node.hours = round2(node.hours + hours);
       node.billableHours = round2(node.billableHours + billableHours);
-      node.amount = round2(node.amount + amount);
+      node.amount = round2((node.amount ?? 0) + amount);
 
       const isLeaf = d === dims.length - 1;
       if (isLeaf) {
@@ -381,12 +388,77 @@ export function calculateSummary(data: {
 
 /* ------------------------------- DTO ----------------------------------- */
 
+/** Rechte-Kontext des Exports (QS6-5). Pflichtangabe, damit kein Aufrufer ihn vergisst. */
+export interface ExportBillingScope {
+  /** `can(user, "billing.view")` des aktiven Kontos. */
+  includeBilling: boolean;
+}
+
+/** Tätigkeit im Export: ohne `billing.view` fehlt `hourlyRate`. */
+export type ExportActivity = Omit<Activity, "hourlyRate"> & { hourlyRate?: number };
+
+/**
+ * Zentrale Bereinigung einer Tätigkeit für Exporte: Ohne `billing.view` wird der
+ * Stundensatz entfernt (Feld fehlt, nicht 0).
+ */
+export function toExportActivity(a: Activity, scope: ExportBillingScope): ExportActivity {
+  if (scope.includeBilling) return a;
+  const copy: ExportActivity = { ...a };
+  delete copy.hourlyRate;
+  return copy;
+}
+
+/** Inhalt des JSON-Backups aus dem Exportdialog („JSON-Backup“). */
+export interface JsonBackupPayload {
+  projects: Project[];
+  workPackages: WorkPackage[];
+  activities: ExportActivity[];
+  engineer: Engineer;
+  exportedAt: string;
+}
+
+/**
+ * QS-06 (F-QS6-ENG-02): JSON-Backup des Dashboards. Ohne `billing.view` fehlt
+ * `hourlyRate` je Tätigkeit (Feld entfällt, nicht 0). Andere Felder bleiben
+ * unverändert.
+ */
+export function buildJsonBackupPayload(
+  input: {
+    projects: Project[];
+    workPackages: WorkPackage[];
+    activities: Activity[];
+    engineer: Engineer;
+  },
+  scope: ExportBillingScope,
+  exportedAt: string = new Date().toISOString(),
+): JsonBackupPayload {
+  return {
+    projects: input.projects,
+    workPackages: input.workPackages,
+    activities: input.activities.map((a) => toExportActivity(a, scope)),
+    engineer: input.engineer,
+    exportedAt,
+  };
+}
+
+function stripGroupAmounts(nodes: ExportGroupNode[]): void {
+  for (const n of nodes) {
+    delete n.amount;
+    if (n.children.length) stripGroupAmounts(n.children);
+  }
+}
+
 export function createExportDTO(
   input: ExportInput,
   configuration: ExportConfiguration,
+  scope: ExportBillingScope,
 ): ExportData {
   const filtered = loadExportData(input, configuration);
   const summary = calculateSummary(filtered);
   const groups = buildExportGroups(filtered, configuration, input.engineer.name);
-  return { configuration, summary, groups };
+  if (!scope.includeBilling) {
+    delete summary.totalAmount;
+    stripGroupAmounts(groups);
+  }
+  return { includeBilling: scope.includeBilling, configuration, summary, groups };
 }

@@ -36,13 +36,14 @@ function bigContext(count: number) {
   const dto = createExportDTO(
     { projects: [project], workPackages: [wp], activities, engineer },
     cfg,
+    { includeBilling: true },
   );
   return { engineer, projects: [project], workPackages: [wp], activities, exportData: dto };
 }
 
 describe("JSON-Export (Schema & Struktur)", () => {
   it("erzeugt Voll-Export, dessen Document gegen das Schema validiert", async () => {
-    const res = JsonExportService.exportFullJson({ exportedBy: "tester" });
+    const res = JsonExportService.exportFullJson({ includeBilling: true, exportedBy: "tester" });
     expect(res.byteLength).toBeGreaterThan(0);
     const text = await res.blob.text();
     const parsed = JSON.parse(text);
@@ -58,14 +59,17 @@ describe("JSON-Export (Schema & Struktur)", () => {
   });
 
   it("Teil-Export ('projects') begrenzt Inhalte auf Scope", () => {
-    const res = JsonExportService.exportPartialJson("projects", { exportedBy: "tester" });
+    const res = JsonExportService.exportPartialJson("projects", {
+      includeBilling: true,
+      exportedBy: "tester",
+    });
     expect(res.document.scopes).toEqual(["projects"]);
     expect(res.document.activities).toBeUndefined();
     expect(res.document.timeEntries).toBeUndefined();
   });
 
   it("entfernt sensible Felder aus dem Voll-Export", () => {
-    const res = JsonExportService.exportFullJson({ exportedBy: "tester" });
+    const res = JsonExportService.exportFullJson({ includeBilling: true, exportedBy: "tester" });
     const text = JSON.stringify(res.document);
     expect(text.toLowerCase()).not.toMatch(/passwordhash|mfasecret|access_token/);
   });
@@ -95,6 +99,7 @@ describe("CSV-Export", () => {
     const dto = createExportDTO(
       { projects: [project], workPackages: [wp], activities: [act], engineer: makeEngineer() },
       cfg,
+      { includeBilling: true },
     );
     const res = buildCsv({
       projects: [project],
@@ -112,6 +117,7 @@ describe("CSV-Export", () => {
     const dto = createExportDTO(
       { projects: [], workPackages: [], activities: [], engineer: makeEngineer() },
       cfg,
+      { includeBilling: true },
     );
     const res = buildCsv({
       projects: [],

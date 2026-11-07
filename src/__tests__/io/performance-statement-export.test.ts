@@ -6,6 +6,7 @@ describe("BSF-03B administrativer JSON-Gesamtdatenvertrag", () => {
   it("exportiert die interne Statement-Serie additiv in Schema 1.3.0", async () => {
     const performanceStatements = performanceStatementFixture();
     const result = JsonExportService.exportFullJson({
+      includeBilling: true,
       exportedBy: "backup-test",
       performanceStatements,
     });

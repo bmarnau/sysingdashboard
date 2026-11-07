@@ -6,7 +6,7 @@
  */
 
 import type { Activity, Engineer, Project, WorkPackage } from "@/lib/dashboard-data";
-import type { ExportData, ExportFormat } from "@/lib/export-data";
+import { toExportActivity, type ExportData, type ExportFormat } from "@/lib/export-data";
 
 export interface TextExportContext {
   engineer: Engineer;
@@ -79,7 +79,8 @@ export function buildJson(ctx: TextExportContext): TextExportResult {
     configuration: ctx.exportData.configuration,
     summary: ctx.exportData.summary,
     groups: ctx.exportData.groups,
-    activities: selectedActivities(ctx),
+    // QS6-5: ohne billing.view ohne Stundensatz (Feld fehlt).
+    activities: selectedActivities(ctx).map((a) => toExportActivity(a, ctx.exportData)),
   };
   const text = JSON.stringify(payload, null, 2);
   const blob = new Blob([text], { type: "application/json" });
@@ -88,6 +89,8 @@ export function buildJson(ctx: TextExportContext): TextExportResult {
 
 export function buildCsv(ctx: TextExportContext): TextExportResult {
   const reportId = generateReportId();
+  // QS6-5: Satz- und Betragsspalten nur mit billing.view, sonst entfallen sie ganz.
+  const billing = ctx.exportData.includeBilling;
   const header = [
     "reportId",
     "date",
@@ -99,8 +102,7 @@ export function buildCsv(ctx: TextExportContext): TextExportResult {
     "durationHours",
     "billable",
     "billingStatus",
-    "hourlyRate",
-    "amountEur",
+    ...(billing ? ["hourlyRate", "amountEur"] : []),
     "description",
   ];
   const rows = selectedActivities(ctx).map((a) => {
@@ -118,8 +120,7 @@ export function buildCsv(ctx: TextExportContext): TextExportResult {
       a.duration,
       a.billable ? "true" : "false",
       a.billingStatus,
-      a.hourlyRate ?? 0,
-      amount.toFixed(2),
+      ...(billing ? [a.hourlyRate ?? 0, amount.toFixed(2)] : []),
       a.description ?? "",
     ]
       .map(csvEscape)
@@ -133,6 +134,7 @@ export function buildCsv(ctx: TextExportContext): TextExportResult {
 export function buildAzureTable(ctx: TextExportContext): TextExportResult {
   const reportId = generateReportId();
   const partitionKey = ctx.exportData.configuration.month; // YYYY-MM
+  const billing = ctx.exportData.includeBilling;
   const lines = selectedActivities(ctx).map((a) => {
     const p = projectOf(ctx, a);
     const wp = workPackageOf(ctx, a);
@@ -149,8 +151,13 @@ export function buildAzureTable(ctx: TextExportContext): TextExportResult {
       DurationHours: a.duration,
       Billable: a.billable,
       BillingStatus: a.billingStatus,
-      HourlyRate: a.hourlyRate ?? 0,
-      AmountEur: a.billable ? a.duration * (a.hourlyRate ?? 0) : 0,
+      // QS6-5: nur mit billing.view.
+      ...(billing
+        ? {
+            HourlyRate: a.hourlyRate ?? 0,
+            AmountEur: a.billable ? a.duration * (a.hourlyRate ?? 0) : 0,
+          }
+        : {}),
     });
   });
   const text = lines.join("\n") + (lines.length ? "\n" : "");
