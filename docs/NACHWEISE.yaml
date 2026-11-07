@@ -126,3 +126,30 @@ nachweise:
       - Der Vorschau-Stand ist nicht per Commit-SHA im Protokoll festgehalten (Prüfschritt 1 in docs/BERICHT-PR-BESTAND-2026-11-06.md).
       - Plugin sysing:ensure-css-config bleibt bis zu einem eigenen Folge-PR.
     beleg: Owner-Screenshots im Chat am 2026-11-06 (nicht in Git); https://github.com/bmarnau/sysingdashboard/pull/278, Head 4aad97a8 CI 15/15, Merge 02cb3d28 am 2026-11-06T05:11Z
+  - id: EV-0008
+    titel: Lovable-Support, Erstantwort zu Auth-Storage-Helper und Migrationsfragen (R-07, R-10)
+    datum: 2026-11-06
+    umgebung: Lovable-Support (Thread des Owners)
+    version: nicht zutreffend
+    bezug: [R-07, R-10, A29, A28]
+    pruefer: Owner (Empfänger)
+    art: Antwort des Supports, dokumentiert per Doku-PR
+    absenderin: Lea (Lovable Support)
+    ergebnisse:
+      - punkt: Änderung der Speicherzeile in client.ts
+        aussage: wirkte
+      - punkt: Auth-Storage-Helper nach README-Änderung
+        aussage: kam nicht zurück
+      - punkt: Frage 1
+        gegenstand: Migrationen 20260913213000, 20260917182000, 20260917190000 unter anderen Versionsnummern als im Repository angewendet
+        aussage: Support will die Frage im selben Thread beantworten
+      - punkt: Frage 2
+        gegenstand: Statements in den Migrationsprotokollen leer
+        aussage: Support will die Frage im selben Thread beantworten
+    status: offen
+    ergebnis: offen
+    einschraenkungen:
+      - Erstantwort; die inhaltliche Antwort auf beide Fragen steht aus.
+      - Uhrzeit nur als "abends" überliefert; die Antwort liegt nur im Chat des Owners, nicht in Git.
+      - Aussagen des Supports, keine eigene Messung; über den genannten Inhalt hinaus wird nichts behauptet.
+    beleg: Chat des Owners am 2026-11-06 abends (nicht in Git)

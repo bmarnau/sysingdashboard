@@ -6,7 +6,7 @@ Erstellt 2026-11-06T06:38+01:00 aus `C:\dev\sysingdashboard` (Branch `docs/2026-
 
 ## Nachtrag 2026-11-07
 
-PR 287 ist am 2026-11-06T06:10Z gemergt (`7dc4699d`, CI 15/15), PR 285 ist als in 287 enthalten geschlossen. `bun audit` auf `main` `7dc4699d` am 2026-11-07: 54 Funde (24 hoch, 24 mittel, 6 niedrig), 0 kritisch, `dompurify` und `shell-quote` nicht gemeldet. G11 und G12 sind damit erfüllt. G19 ist teilweise belegt: Vorschauprüfung des Owners am 2026-11-06 (EV-0007), Netzwerk-Reiter, Formularfelder und Link ungeprüft. Stand der Gates: 3 erfüllt (TD-01, G11, G12), 2 in PR (QS6-5, L2-12), 1 extern, 16 offen. Die übrigen Aussagen dieses Berichts gelten unverändert; die Zeilen zu PR 285 und 287 in Ergebnis, Diagramm und Aufwand sind überholt.
+PR 287 ist am 2026-11-06T06:10Z gemergt (`7dc4699d`, CI 15/15), PR 285 ist als in 287 enthalten geschlossen. `bun audit` auf `main` `7dc4699d` am 2026-11-07: 54 Funde (24 hoch, 24 mittel, 6 niedrig), 0 kritisch, `dompurify` und `shell-quote` nicht gemeldet. Vorschlag A29 (Entscheidung des Owners offen): neues Gate G23 „Migrationsanwendung beim Publish geklärt und Selbstregistrierung entschieden“ (nicht „QS-01 B/C angewendet“; B und C liegen nicht im Repository). G11 und G12 sind damit erfüllt. G19 ist teilweise belegt: Vorschauprüfung des Owners am 2026-11-06 (EV-0007), Netzwerk-Reiter, Formularfelder und Link ungeprüft. Stand der Gates: 3 erfüllt (TD-01, G11, G12), 2 in PR (QS6-5, L2-12), 1 extern, 16 offen. Die übrigen Aussagen dieses Berichts gelten unverändert; die Zeilen zu PR 285 und 287 in Ergebnis, Diagramm und Aufwand sind überholt.
 
 ## Ergebnis
 

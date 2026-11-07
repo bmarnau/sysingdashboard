@@ -716,6 +716,30 @@ risiken:
 fortschritt:
   - datum: 2026-11-07
     ereignis: >-
+      A37 (lesend, Agent): Das App-Backup Format 2.0 erreicht Weg W2 nicht; von 25 Tabellen 5 vollständig, 7 teilweise, 13 nicht gesichert (u. a. audit_log,
+      profiles, user_roles, customer*, shared_*_projection); der Restore schreibt nicht in die Datenbank. Ein Datenbank-Dump bleibt nötig (RP-02, A30).
+      hourlyRate hat keine Datenbankspalte; das App-Backup ist die einzige Sicherung (Hinweis an A27 für G09).
+    beleg: ops/reports reports/A37-BERICHT.md (Matrix mit Belegen, u. a. src/lib/backup/restore.ts:158-197)
+  - datum: 2026-11-07
+    ereignis: >-
+      A30 (Plan Restore-Probe lokal, Agent): Supabase CLI lokal statt reinem postgres:17 (auth, GoTrue, PostgREST, Rollen, supabase_vault nötig); 9 Konten mit
+      Live-UUIDs neu anlegen, keine Produktiv-Hashes. RP-01-Objektzahlen stimmen mit supabase/schema/public-schema.sql überein (Indiz). RP-02 lesend, 13
+      Änderungsvorschläge (4 hoch); RP-03 als lesender Entwurf. Aufwand 14 bis 37 h, über der G03-Spanne 8 bis 32 h. Nichts ausgeführt.
+    beleg: docs/PLAN-RESTORE-PROBE-LOKAL.md, docs/DATENAUFTRAG-RESTORE-PROBE.md, ops/reports reports/A30-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
+      A29 (lesend, Agent): EV-0007 vorhanden und belegt; EV-0008 (Erstantwort Lovable-Support, Antwort offen) angelegt. QS-01: nur Migration A
+      (20261022090000) im Repository und live; B und C nur als Entwurf (ADR-0036). Fremdes Konto startet als viewer ohne Systemhaus, sieht keine Kundendaten.
+      Ob Lovable beim Publish Migrationen anwendet, ist nicht belegt (Frage für A28). 20260917182000 wäre bei Anwendung kein No-Op. Vorschlag G23.
+    beleg: docs/NACHWEISE.yaml EV-0008, ops/reports reports/A29-BERICHT.md
+  - datum: 2026-11-07
+    ereignis: >-
+      A22 (lesend, Agent): Löschen von Konten mit Historie scheitert an Fremdschlüsseln ohne ON DELETE (audit_log.actor_id und 16 weitere auf auth.users, 6 auf
+      profiles). Empfehlung Sperre mit Hinweis plus Archivieren mit Rollenentzug (5 bis 7 h, ohne Migration). Befund: has_permission prüft den Kontostatus nicht,
+      ein archiviertes Konto mit gültigem Token behält Rechte über RLS (Nachprüfung auf main 7dc4699d bestätigt). Entscheidung des Owners offen.
+    beleg: ops/reports reports/A22-BERICHT.md; supabase/migrations/20260921095742_bsf03b_performance_statement.sql (has_permission ohne Statusprüfung)
+  - datum: 2026-11-07
+    ereignis: >-
       A26 Roadmap-Neubewertung: Gates 3 erfüllt, 2 in PR, 1 extern, 16 offen (main 7dc4699d). Tempo seit 2026-10-01 nachgemessen
       (100 gemergte PRs, KW45 12 Fach/9 Doku), etwa 1 bis 1,3 Sprints pro Woche. Schätzung grob: Golden Gate 7/9/11 Sprints, 24/36/48 AT;
       BSF 13/15/17 Sprints, 49/68/88 AT; keine Zusage.

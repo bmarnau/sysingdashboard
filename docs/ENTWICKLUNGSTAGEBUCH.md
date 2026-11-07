@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-07 · Dashboard-Version 1.70.0
 
+## 2026-11-07 — Mehrere Analysen parallel
+
+Mehrere Prüfaufträge liefen heute gleichzeitig. Ergebnisse: Ein veröffentlichter Stand lässt sich bei Lovable nur zurücknehmen, indem man die alte Version wiederherstellt und neu veröffentlicht oder die App offline nimmt; das Notfallhandbuch beschreibt den Ablauf jetzt. Für die Wiederherstellungsprobe liegt ein Plan für eine lokale Testdatenbank vor. Benutzer mit Historie lassen sich nicht löschen; dabei fiel auf, dass archivierte Konten in der Datenbank ihre Rechte behalten. Die Roadmap ist neu geschätzt.
+
 ## 2026-11-07 — Nachtrag zum 6. November
 
 Die Statusseite nannte einige Pull Requests noch als offen, die längst gemergt oder geschlossen sind. Die alten Angaben bleiben stehen und tragen jetzt einen Vermerk. Die PDF-Korrektur ist in der Lovable-Vorschau teilweise geprüft: Das PDF lädt und der Text ist markierbar. Formularfelder, Links und die geladenen Dateien sind noch nicht geprüft.
