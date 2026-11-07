@@ -1,0 +1,23 @@
+id: A39
+titel: Restore-Probe lokal im Docker-Container ausführen (S1 bis S4, EV-0004)
+art: plan-dann-pr
+gate: vor Publish
+abhaengig_von:
+- A30
+- A38
+ziel: 'G03 und R-14: Nachweis, dass sich Schema und Daten der Live-Datenbank aus dem Export (sysingdashboard_261106.backup, pg_dump Custom-Format) lokal wiederherstellen lassen. Stufen S1 bis S4; S5 (Domain, Auth-Provider, Hosting) bleibt dokumentierte Lücke. Start erst nach Prüfung des Plans aus A30 und ausdrücklicher Freigabe des Owners.'
+vorgaben:
+- 'Der Owner hat am 2026-11-07 ca. 06:04 bestätigt: Docker läuft lokal. Freigabe für die Ausführung steht noch aus; der Planer setzt den Status auf bereit, sobald sie vorliegt.'
+schritte:
+- Plan aus reports/A30-BERICHT.md und docs/PLAN-RESTORE-PROBE-LOKAL.md lesen; Abweichungen vom Plan nur mit Begründung im Bericht.
+- 'Vorprüfung ohne Wiederherstellung: ZIP entpacken in C:\dev\restore-probe\work, pg_restore --list (nur Inhaltsverzeichnis) auswerten: Schemas (public, auth, storage, supabase_vault?), Tabellen, Erweiterungen, Besitzer und Rollen. Ergebnis als Tabelle; keine Dateiinhalte in den Bericht.'
+- 'S1 Struktur aus Migrationen: frischer Container (Image laut A30), supabase/migrations anwenden (npm run db:schema:rebuild oder gleichwertig), dann RP-02 Teile B bis H lokal ausführen (queue/anlagen/RP-02-datenauftrag.txt) und gegen die Anlage RP-02-ergebnis-2026-11-07.md vergleichen: Spalten, Constraints, Indizes, Trigger, Policies, Tabellenrechte, Funktions-md5. Differenzen als Befund (erwartet: Versionsnummern der Migrationen, evtl. Rechte).'
+- 'S2 Wiederherstellung aus dem Dump: zweiter frischer Container, pg_restore (ohne Besitzer und Rechte, wenn Rollen fehlen: Rollen anon, authenticated, service_role vorab anlegen und dokumentieren). Fehler und Warnungen im Wortlaut zählen und einordnen.'
+- 'S3 Daten: RP-02 Teil J2 lokal ausführen (Zeilenzahl und md5 je Tabelle ohne die ausgeschlossenen Spalten) und gegen die Soll-Werte vergleichen; Abweichungen je Tabelle erklären (Datenstand des Dumps gegen Stand 2026-11-07 04:45 UTC).'
+- 'S4 Rollenabnahme: App lokal (npm run dev) gegen die Probe-Datenbank, soweit ohne Auth-Dienst möglich; wenn Auth fehlt, genau das als Grenze dokumentieren und die Rollenprüfung auf Datenbankebene (Policies, has_permission mit Testkennungen) ausführen. Kein Zugriff auf Produktionsadressen.'
+- 'Protokoll nach docs/standards/STANDARD-WIEDERHERSTELLBARKEIT.md und Vorlage für docs/NACHWEISE.yaml (EV-0004-Nachfolger, nächste freie ID prüfen): Umgebung, Image-Tag, Dauer je Stufe, Ergebnis, Befunde, Grenzen (S5). Nur Ergebnisse eintragen, die belegt sind; "bestanden" nur mit Beleg.'
+- 'Aufräumen: Container und Volumes nach der Probe entfernen oder stoppen (im Bericht nennen), Arbeitsverzeichnis nicht ins Repository übernehmen.'
+- Bericht reports/A39-BERICHT.md mit YAML-Block (Reifegrad, Projektstatus, Offene_Fragen, Roadmap) und Aufwand je Stufe.
+nachweis: Bericht reports/A39-BERICHT.md; Protokoll als Entwurf für NACHWEISE.yaml im Tagesbündel; Messwerte aus den lokalen Läufen.
+grenzen: Kein Merge, kein Publish, keine Änderung an Lovable Cloud oder der Produktion, keine Zugangsdaten in Dateien oder Commits. Der Export und alle daraus entstehenden Dateien bleiben unter C:\dev\restore-probe (nicht in Git, nicht in OneDrive). Datenbank-Container nur auf localhost.
+status: wartet_auf_entscheidung
