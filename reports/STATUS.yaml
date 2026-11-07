@@ -1,12 +1,11 @@
-stand: 2026-11-07T07:08+01:00
+stand: 2026-11-07T07:09+01:00
 laufender_auftrag:
   - {id: A38, start: "2026-11-07T05:57+01:00", art: Agent, "lesen, mit Nachtrag A30 (RP-02, Export)"}
-  - {id: A27, start: "2026-11-07T05:12+01:00", art: Agent, "Code-PR 283"}
 betriebsart: "Owner-Vorgabe 2026-11-07: Aufträge parallel mit Agenten, nicht auf Merge warten, Stand kommentieren, Bericht je Auftrag mit eigenen Ideen. Agenten arbeiten lesend oder auf eigenem Branch; Commits auf Tagesbündel und ops/reports nur durch die Hauptsitzung."
 zurueckgestellt: {A34: "abhängig von A28", A35: "abhängig von A30 und A38"}
-letzter_auftrag: {id: A31, status: erledigt, bericht: reports/A31-BERICHT.md}
+letzter_auftrag: {id: A27, status: erledigt, bericht: reports/A27-BERICHT.md}
 naechste_pruefung: "laufend; Sitzungsende ca. 07:15"
 betrieb: normal; Pause vom 2026-11-06 beendet, A25 vom Planer verworfen
 offene_prs: {"286": "Doku-Bündel 2026-11-06, Draft", "283": "A15 QS6-5, Draft, enthält 282 (A27 in Arbeit)", "282": "A06 L2-12, Draft", "155": "Kiosk-Schnittstellendokument, offen, Entscheidung", "124": "Wallboard 0.7.1, Draft, Entscheidung"}
-erledigt_heute: [A23, A32, A36, A26, A22, A29, A30, A37, A33, A28, A31]
+erledigt_heute: [A23, A32, A36, A26, A22, A29, A30, A37, A33, A28, A31, A27]
 fehler: []
