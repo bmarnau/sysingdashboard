@@ -1,6 +1,6 @@
 # QS-06 – Abrechnungsdaten rollenabhängig anzeigen (Befund M4)
 
-Stand: 2026-11-03 · Status: QS6-1 bis QS6-3 umgesetzt (Paket U7, Gate vor dem ersten Publish seit 2026-11-02), QS6-4 und QS6-5 offen · Quelle: Test T9 (Alexa, Viewer)
+Stand: 2026-11-07 · Status: QS6-1 bis QS6-3 umgesetzt (Paket U7, Gate vor dem ersten Publish seit 2026-11-02), QS6-4 geschlossen als „kein Serverbefund“ (Owner 2026-11-06), QS6-5 offen · Quelle: Test T9 (Alexa, Viewer)
 
 ## 1 Befund
 
@@ -46,7 +46,8 @@ Einordnung: Im Test sind es lokale Demodaten im Browser. Bei Team-Daten (Datenba
 - Nutzer 2026-10-25: `engineer` sieht keine Beträge, nur Stunden. `teamlead` sieht Beträge. `customer` und `viewer` sehen keine Beträge.
 - Owner 2026-11-02: QS-06 ist Gate vor dem ersten Publish; Umsetzung als Paket U7 (Neuaufbau auf aktuellem `main`, Draft-PR 222 bleibt unverändert).
 - Owner 2026-11-04 (Abnahme U7, Nachweis EV-0005 in `docs/NACHWEISE.yaml`): Kiosk ist ein Anzeigemodus, keine Rolle. Das in der Abnahme genutzte Konto bm@ hat die Rolle Systemadministrator; im Anzeigemodus erscheinen keine Beträge. Befund: Im Code existiert `kiosk` weiter als Rolle (`app_role`, Migration `20260914062000_bsf_kiosk_01_add_role.sql`, `src/lib/rbac/permissions.ts`); QS6-2 und `docs/RBAC-MATRIX.md` nennen Kiosk als Rolle. Restrisiko: Ein Systemadministrator-Konto im Anzeigemodus hat außerhalb des Anzeigemodus volle Rechte einschließlich `billing.view`. Entscheidung offen (eigenes Kiosk-Konto oder Restrisiko annehmen; Begriff in QS6-2 und RBAC-Matrix angleichen).
-- Offen: QS6-4 (serverseitig) und QS6-5 (Export, Leistungsnachweis).
+- Owner 2026-11-06 (D4, Quelle: Planer-Auftrag A28 in `origin/ops/queue`): QS6-4 wird als **kein Serverbefund** geschlossen. Grundlage ist die Ist-Analyse A01 (`docs/BERICHT-QS6-4-ANALYSE.md`): Kein Server-Pfad auf `main` speichert oder liefert Stundensätze, Beträge oder Umsätze; die Projektion enthält keinen Satz. Ausgleich: Der Smoke-Test nach dem Publish erhält die Netzwerkprüfung N4a mit Viewer-Konto (`docs/MERGE-CHECKLISTE-GOLDEN-GATE.md`, Abschnitt 4). Gate G06 gilt damit als erfüllt (Beleg: Entscheidung des Owners 2026-11-06). Die Datensparsamkeit beim Eingang (`hourlyRate` im Schema der Veröffentlichung) bleibt ein Folgepunkt ohne Gate.
+- Offen: QS6-5 (Export, Leistungsnachweis).
 
 ## 6 Plan Engineer-Abnahme (A05, Entwurf 2026-11-06)
 

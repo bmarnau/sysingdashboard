@@ -43,7 +43,10 @@ flowchart TD
 | N2  | Petra | Kunde B, Veröffentlichen, Verantwortliche sichtbar         |
 | N3  | Alex  | kein Veröffentlichen, keine Kunden                         |
 | N4  | Alexa | nur Ansicht; Abrechnung (M4) bleibt bis QS-06 offen        |
+| N4a | Alexa | Netzwerkprüfung Viewer, siehe unten                        |
 | N5  | alle  | erledigte Pakete nicht „Überfällig“ (Fix #220)             |
+
+N4a (Owner 2026-11-06, D4; QS6-4 als „kein Serverbefund“ geschlossen): Mit dem Viewer-Konto in der veröffentlichten App die Entwicklerwerkzeuge öffnen, Reiter Netzwerk, Seite neu laden und die Antwort der Server-Funktion zum Lesen der gemeinsamen Projektion (`shared-projection.functions.ts`) öffnen. Erwartung: Die Antwort muss frei von Satz- und Betragsfeldern sein (Felder `hourly`, `rate`, `amount` und Varianten wie `hourlyRate`). Prüfung per Suche im Antworttext nach `hourly`, `rate` und `amount`; Treffer in Namen ohne Satz- oder Betragsbezug (z. B. `generatedAt`) sind kein Befund. Beleg: Screenshot mit Uhrzeit, nur Feldnamen, keine Werte und keine Tokens. Ein Fund ist ein Befund QS6-4 und löst die Bewertung nach `docs/NOTFALL-HANDBUCH.md` N1a aus.
 
 ## 5 Rücknahme
 

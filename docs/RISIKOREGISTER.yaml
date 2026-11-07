@@ -1,5 +1,5 @@
 # Risikoregister Golden Gate (Interne Freigabe 1.0)
-# Stand: 2026-11-02. Führend für Bewertung, Verantwortung und Prüfrhythmus.
+# Stand: 2026-11-07 (Bewertung vom 2026-11-02 unverändert; Ergänzungen R-07, R-10, RA-01). Führend für Bewertung, Verantwortung und Prüfrhythmus.
 # Beschreibung, Wirkung und Gegenmaßnahmen der Risiken R-01 bis R-14 stehen im Tracker
 # (docs/GOLDEN-GATE-EXECUTION-TRACKER.yaml, Abschnitt risiken) und werden hier nicht wiederholt.
 # L2-R1 bis L2-R5 stehen in docs/L2-COCKPIT-SCHNITT-KONZEPT.md (Abschnitt Risiken).
@@ -13,7 +13,7 @@
 #   Wirkt ein Risiko auf mehrere Pakete, steht es unter betroffene_pakete.
 
 version: 1
-stand: 2026-11-02
+stand: 2026-11-07
 bestaetigt_durch_owner: true
 bestaetigung: "Owner 2026-11-02: R-04, R-11, R-07 und R-14 einzeln ohne Änderung übernommen; die übrigen Bewertungen gelten nach der vereinbarten Regel als bestätigt (Änderungen jederzeit möglich)."
 abnahme_ablauf: "Owner 2026-11-02: die vier hoch bewerteten Risiken (R-04, R-11, R-07, R-14) werden einzeln durchgegangen; die übrigen gelten als bestätigt, wenn der Owner nichts ändert."
@@ -125,6 +125,7 @@ risiken:
     funktionale_sicherheit: false
     betroffene_pakete: [Publish, L2, L8]
     naechste_pruefung: 2026-11-05
+    stand_support: "2026-11-06: Erstantwort des Lovable-Supports (EV-0008 in docs/NACHWEISE.yaml): Änderung der Speicherzeile in client.ts wirkte, Auth-Storage-Helper kam nach README-Änderung nicht zurück; die inhaltliche Antwort zu den Migrationsversionen und den leeren Statements ist zugesagt (offen). Bewertung unverändert bis zur Antwort."
   - id: R-08
     kategorie: Daten
     w: 1
@@ -164,6 +165,7 @@ risiken:
     funktionale_sicherheit: false
     betroffene_pakete: [Publish]
     naechste_pruefung: 2026-11-05
+    stand_support: "2026-11-06: Lovable-Support hat geantwortet und die inhaltliche Antwort zu den Migrationsversionen (20260913213000, 20260917182000, 20260917190000) und den leeren Statements im selben Thread zugesagt (offen; EV-0008 in docs/NACHWEISE.yaml). Bewertung unverändert bis zur Antwort. Ergänzung A29: Ob Lovable beim Publish oder Sync Repo-Migrationen anwendet, ist nicht belegt; Frage 6 im Lese-Prompt (docs/LOVABLE-PUBLISH-PRUEFUNG.md)."
   - id: R-11
     kategorie: Termin
     w: 4
@@ -285,6 +287,22 @@ risiken:
     funktionale_sicherheit: true
     betroffene_pakete: [L2]
     naechste_pruefung: 2026-11-02
+
+# Risikoakzeptanzen: bewusst getragene Risiken mit Frist; Entscheidung und Quelle je Eintrag.
+risikoakzeptanzen:
+  - id: RA-01
+    titel: "zod@3.25.76 im ausgelieferten Code (GHSA-mrhx-c7xc-m3w5, hoch), behoben erst in zod@4.6.6"
+    kategorie: Sicherheit
+    entscheidung: "Risiko befristet akzeptiert bis nach dem Publish 1.70.0 (D3)"
+    entschieden_durch: Owner
+    datum: 2026-11-06
+    quelle: "Entscheidung des Owners 2026-11-06, dokumentiert im Planer-Auftrag A28 (origin/ops/queue, queue/A28.yaml)"
+    befristung: "bis nach dem Publish 1.70.0; danach Migration auf zod@4.6.6 (8 bis 16 h, docs/BACKLOG.md)"
+    einordnung: "Server-Funktionen, erreichbar nur nach Anmeldung (docs/BERICHT-AUDIT-SAMMELBEWERTUNG.md, A20)"
+    gate: G13
+    eigner: Owner
+    status: akzeptiert
+    naechste_pruefung: "nach dem Publish 1.70.0"
 
 einordnung:
   spof_gesamt: [R-04, R-07, R-11, R-12, R-14, L2-R5]

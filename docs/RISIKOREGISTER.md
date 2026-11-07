@@ -1,6 +1,6 @@
 # Risikoregister Golden Gate
 
-Stand: 2026-11-02 · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung) · Texte zu R-01 bis R-14: Tracker, Abschnitt `risiken` · Status: **Bewertung vom Owner am 2026-11-02 bestätigt** (R-04, R-11, R-07 und R-14 einzeln, die übrigen nach der vereinbarten Regel)
+Stand: 2026-11-07 (Bewertung vom 2026-11-02 unverändert) · Daten: `docs/RISIKOREGISTER.yaml` (führend für Bewertung) · Texte zu R-01 bis R-14: Tracker, Abschnitt `risiken` · Status: **Bewertung vom Owner am 2026-11-02 bestätigt** (R-04, R-11, R-07 und R-14 einzeln, die übrigen nach der vereinbarten Regel)
 
 ## 1 Methode
 
@@ -72,15 +72,25 @@ quadrantChart
 
 **Hinweis R-04 (2026-11-06):** Zugänge, zweite berechtigte Person und Notfallkonto je Dienst stehen ohne Werte in `docs/ZUGAENGE-UND-NOTFALLKONTO.md` (Entwurf, A09; Prüfliste ZN-01 bis ZN-18, REST-20, REST-21, N7, N9). Stand: für keinen Dienst ist eine zweite Person oder ein Notfallkonto belegt; Wiederherstellungsadressen sind offen; Auth-Mails der App-Konten und der Aliase kiosk@ und anzeige@ erreichen nur das Postfach info@. RTO-Werte nach ADR-0042 gelten bis dahin nur bei Verfügbarkeit des Owners.
 
+**Hinweis R-07 und R-10 (2026-11-06):** Der Lovable-Support hat am 2026-11-06 geantwortet (EV-0008 in `docs/NACHWEISE.yaml`): Die Änderung der Speicherzeile in `client.ts` wirkte, der Auth-Storage-Helper kam nach der README-Änderung nicht zurück. Die inhaltliche Antwort zu den Migrationsversionen (20260913213000, 20260917182000, 20260917190000) und den leeren Statements ist zugesagt und offen. Die Bewertung bleibt unverändert, bis die Antwort vorliegt. Ergänzung A29: Ob Lovable beim Publish oder Sync Repo-Migrationen anwendet, ist nicht belegt; `20260917182000` wäre bei Anwendung kein No-Op. Die Frage steht als Frage 6 im Lese-Prompt (`docs/LOVABLE-PUBLISH-PRUEFUNG.md`).
+
 **Funktionale Sicherheit:** R-02 (unwiderrufliche Migrationen), R-14 (Daten nicht wiederherstellbar nachgewiesen), L2-R1, L2-R2, L2-R3 und L2-R5 (falsche oder unberechtigte Anzeige im Cockpit). Gegenmaßnahmen sind die RED-Testmatrix und die Sicherheitstests aus U2 und U3 (Voraussetzung für Entscheidung E2).
 
 **Schwerpunkte der nächsten sieben Tage:**
 
-1. R-07/R-10: Nachfrage beim Lovable-Support am 2026-11-05; Publish bleibt No-Go.
+1. R-07/R-10: inhaltliche Antwort des Lovable-Supports abwarten (Erstantwort 2026-11-06, EV-0008); Publish bleibt No-Go.
 2. R-03/L2-R3/L2-R5: Sicherheitstests und RED-Fälle in U2 und U3 mit Beleg.
 3. R-04/R-11: Betreiberhoheit (BSF-06) als Konzept einplanen; zweite berechtigte Person benennen und offene Felder in `docs/ZUGAENGE-UND-NOTFALLKONTO.md` füllen; Tempo nach drei L2-Schritten neu messen.
 
-## 5 Pflege
+## 5 Risikoakzeptanzen
+
+| ID    | Risiko                                                                     | Entscheidung                                     | Quelle                                                      | Frist                   | Gate | Status     |
+| ----- | -------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------- | ----------------------- | ---- | ---------- |
+| RA-01 | `zod@3.25.76` im Server-Code (GHSA-mrhx-c7xc-m3w5, hoch), behoben in 4.6.6 | befristet akzeptiert bis nach dem Publish 1.70.0 | Entscheidung des Owners 2026-11-06 (Planer-Auftrag A28, D3) | nach dem Publish 1.70.0 | G13  | akzeptiert |
+
+Nach dem Publish folgt die Migration auf `zod@4.6.6` (8 bis 16 h, `docs/BACKLOG.md`). Die Akzeptanz endet mit dem Merge dieser Migration oder mit einer neuen Entscheidung des Owners.
+
+## 6 Pflege
 
 - Neues Risiko: Eintrag im Tracker (`risiken`, Text und Gegenmaßnahme) und im Register (Bewertung); `npm run docs:project` prüft, dass jede Tracker-ID im Register steht.
 - Geschlossene Risiken bleiben im Register mit Status `geschlossen` (Nachvollziehbarkeit im Diff).

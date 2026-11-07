@@ -11,6 +11,10 @@ dieser Datei.
 
 Stand: 2026-11-07 · Dashboard-Version 1.70.0
 
+## 2026-11-07 — Ablaufplan für die Veröffentlichung
+
+Für die erste Veröffentlichung seit Version 1.69.0 gibt es jetzt einen schriftlichen Ablaufplan: Er legt die Reihenfolge der Schritte fest, was vorher geprüft sein muss und wie eine fehlerhafte Veröffentlichung binnen einer Stunde zurückgenommen wird. Drei Entscheidungen des Owners vom Vortag sind jetzt festgehalten: eine bekannte Schwachstelle in einer Prüfbibliothek nehmen wir bis nach der Veröffentlichung in Kauf, der Server gibt keine Beträge an Leser heraus, und eine kleine automatisch erzeugte Abweichung von Lovable ist erlaubt.
+
 ## 2026-11-07 — Mehrere Analysen parallel
 
 Mehrere Prüfaufträge liefen heute gleichzeitig. Ergebnisse: Ein veröffentlichter Stand lässt sich bei Lovable nur zurücknehmen, indem man die alte Version wiederherstellt und neu veröffentlicht oder die App offline nimmt; das Notfallhandbuch beschreibt den Ablauf jetzt. Für die Wiederherstellungsprobe liegt ein Plan für eine lokale Testdatenbank vor. Benutzer mit Historie lassen sich nicht löschen; dabei fiel auf, dass archivierte Konten in der Datenbank ihre Rechte behalten. Die Roadmap ist neu geschätzt.
