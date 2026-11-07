@@ -1,11 +1,11 @@
 stand: 2026-11-07T09:09+01:00
 laufender_auftrag:
-letzter_auftrag: {id: A40, status: erledigt, bericht: reports/A40-BERICHT.md}
-betrieb: "normal; Auftrag des Owners 2026-11-07 ca. 08:00: A40, A41, A39"
+letzter_auftrag: {id: A40, status: erledigt (Nachtrag 2), bericht: reports/A40-BERICHT.md}
+betrieb: "normal; Auftrag des Owners 2026-11-07 ca. 08:40: A40, A41, A42, A39; A39 teilweise (S4 offen, Speichermangel)"
 betriebsart: "Owner-Vorgabe 2026-11-07 (dauerhaft): Aufträge parallel mit Agenten, nicht auf Merge warten, Stand kommentieren, Bericht je Auftrag mit eigenen Ideen. Agenten arbeiten lesend oder auf eigenem Worktree; Commits auf Tagesbündel und ops/reports nur durch die Hauptsitzung."
-erledigt_heute: [A23, A32, A36, A26, A22, A29, A30, A37, A33, A28, A31, A27, A38, A40, A41, A39, A42, A40]
-offen_in_warteschlange: {A34: "bereit (A28 erledigt)", A35: "bereit (A30, A38 erledigt)", A39: "wartet auf Freigabe", A07: wartet_auf_entscheidung, A24: geplant}
-offene_prs: {"286": "Doku-Bündel 2026-11-06/07, Draft, Head 0abc7662", "283": "QS6-5 + G08/G09 (A27), Draft, 9c60a92f, CI 15/15, mergeable, enthält 282", "288": "A33 check:bundle, Draft, 8674505a, CI 15/15", "282": "L2-12, Draft", "155": "Kiosk-Schnittstellendokument, Entscheidung", "124": "Wallboard 0.7.1, Draft, Entscheidung"}
+erledigt_heute: [A23, A32, A36, A26, A22, A29, A30, A37, A33, A28, A31, A27, A38, A40, A41, A42]
+offen_in_warteschlange: {A39: "teilweise: S1 bis S3 belegt, S4 Rollenabnahme offen (Bericht A39)", A34: bereit, A35: bereit, A07: "wartet_auf_entscheidung (nach A39)", A24: geplant}
+offene_prs: {"286": "Doku-Bündel 2026-11-06/07, Draft, Head fd83f100", "288": "A33 check:bundle, Draft, CI 15/15", "289": "A42 Vertragstest, Draft, dcf2b23a, CI 15/15", "155": "Kiosk-Schnittstellendokument, nach Publish", "124": "Wallboard 0.7.1, Draft, nach Publish"}
 owner_entscheidungen_offen:
   - "Schwere 3 (A38): anon-Rohrechte auf 9 Tabellen, authenticated mit UPDATE/DELETE auf audit_log, QS-01 C′ vor L8"
   - "Schwere 3 (A38): avkk_people_directory zeigt jedem viewer Personen ohne Mandantenbezug"
